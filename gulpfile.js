@@ -20,6 +20,7 @@ let eslintConfig = {
     "moment",
     "html2canvas",
     "ClipboardItem",
+    "grecaptcha",
   ],
   envs: ["es6", "browser", "node"],
   plugins: ["json"],

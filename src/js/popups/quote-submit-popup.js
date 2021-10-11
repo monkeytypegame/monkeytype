@@ -23,7 +23,13 @@ async function submitQuote() {
     text: $("#quoteSubmitPopup #submitQuoteText").val(),
     source: $("#quoteSubmitPopup #submitQuoteSource").val(),
     language: $("#quoteSubmitPopup #submitQuoteLanguage").val(),
+    captcha: $("#quoteSubmitPopup #g-recaptcha-response").val(),
   };
+
+  if (!data.text || !data.source || !data.language) {
+    Notifications.add("Please fill in all fields", 0);
+    return;
+  }
 
   Loader.show();
   let response;
@@ -42,7 +48,7 @@ async function submitQuote() {
     Notifications.add("Quote submitted.", 1);
     $("#quoteSubmitPopup #submitQuoteText").val("");
     $("#quoteSubmitPopup #submitQuoteSource").val("");
-    $("#quoteSubmitPopup #submitQuoteLanguage").val("");
+    grecaptcha.reset();
   }
 }
 
