@@ -85,6 +85,14 @@ export function restart() {
   }
 }
 
+export function updateStyle() {
+  hide();
+  update();
+  setTimeout(() => {
+    show();
+  }, 125);
+}
+
 export function update() {
   let time = TestTimer.time;
   if (
