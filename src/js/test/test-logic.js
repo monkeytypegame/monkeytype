@@ -1748,7 +1748,9 @@ export async function finish(difficultyFailed = false) {
               }
             }
             let themecolors = await ThemeColors.get();
-            let chartlpb = Config.alwaysShowCPM ? lpb * 5 : lpb;
+            let chartlpb = Misc.roundTo2(
+              Config.alwaysShowCPM ? lpb * 5 : lpb
+            ).toFixed(2);
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
@@ -1854,9 +1856,9 @@ export async function finish(difficultyFailed = false) {
                       position: annotationSide,
                       xAdjust: labelAdjust,
                       enabled: true,
-                      content: `${tag.name} PB: ${
+                      content: `${tag.name} PB: ${Misc.roundTo2(
                         Config.alwaysShowCPM ? tpb * 5 : tpb
-                      }`,
+                      ).toFixed(2)}`,
                     },
                   });
                   if (annotationSide === "left") {
