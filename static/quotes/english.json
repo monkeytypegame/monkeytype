@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -33886,12 +33874,6 @@
       "source": "Kurt Cobain",
       "length": 62,
       "id": 5717
-    },
-    {
-      "text": "I’d rather be hated for who I am, than loved for who I am not.",
-      "source": "Kurt Cobain",
-      "length": 62,
-      "id": 5718
     }
   ]
 }
