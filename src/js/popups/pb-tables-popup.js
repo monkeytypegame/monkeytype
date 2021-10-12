@@ -27,7 +27,7 @@ function update(mode) {
   let mode2memory;
 
   list.forEach((pb) => {
-    let dateText = "-";
+    let dateText = `-<br><span class="sub">-</span>`;
     if (pb.timestamp) {
       dateText =
         moment(pb.timestamp).format("DD MMM YYYY") +

@@ -77,13 +77,13 @@ export function update() {
   const pb = DB.getSnapshot().personalBests;
   let pbData;
   let text;
-  let dateText = "-";
+  let dateText = `-<br><span class="sub">-</span>`;
   let multiplier = Config.alwaysShowCPM ? 5 : 1;
 
   text = "";
   try {
     pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -111,7 +111,7 @@ export function update() {
   }
   try {
     pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -139,7 +139,7 @@ export function update() {
   }
   try {
     pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -167,7 +167,7 @@ export function update() {
   }
   try {
     pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -198,7 +198,7 @@ export function update() {
   text = "";
   try {
     pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -226,7 +226,7 @@ export function update() {
   }
   try {
     pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -254,7 +254,7 @@ export function update() {
   }
   try {
     pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
@@ -282,7 +282,7 @@ export function update() {
   }
   try {
     pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
-    dateText = "-";
+    dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
