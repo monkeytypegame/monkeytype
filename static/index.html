@@ -411,17 +411,20 @@
           <li>
             <b>
               Submitting low quality quotes or misusing this form will cause you
-              to loose access to this feature
+              to lose access to this feature
             </b>
           </li>
         </ul>
         <label>Quote</label>
-        <textarea
-          id="submitQuoteText"
-          class=""
-          type="text"
-          autocomplete="off"
-        ></textarea>
+        <div style="position: relative">
+          <textarea
+            id="submitQuoteText"
+            class=""
+            type="text"
+            autocomplete="off"
+          ></textarea>
+          <div class="characterCount">-</div>
+        </div>
         <label>Source</label>
         <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
         <label>Language</label>
