@@ -4,6 +4,7 @@ import * as Misc from "./misc";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
+import * as BackgroundFilter from "./custom-background-filter";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -199,6 +200,8 @@ export function applyCustomBackground() {
       src: Config.customBackground,
     });
     $(".customBackground").html($img);
+    BackgroundFilter.apply();
+    applyCustomBackgroundSize();
   }
 }
 
