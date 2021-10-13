@@ -1,0 +1,79 @@
+name: Bug report
+description: Create a report to help us improve
+title: "<title>"
+labels: [bug]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: checkboxes
+    attributes:
+      label: Did you clear cache before opening an issue?
+      description: Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or is just a side effect of a new update. If you don't know how to do that, this website should help https://www.pcmag.com/how-to/how-to-clear-your-cache-on-any-browser.
+      options:
+        - label: I have cleared my cache
+          required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        examples:
+          - **OS**: Windows 10
+          - **Browser**: Google Chrome
+          - **Browser Version**: 94.0.4606.71 (Official Build) (64-bit)
+      value: |
+        - OS:
+        - Browser:
+        - Browser Version:
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Links? References? Anything that will give us more context about the issue you are encountering!
+
+        Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false
+  - type: checkboxes
+    attributes:
+      label: Did you check incognito mode?
+      description: Sometimes bugs may be dependent on your config. If the issue does not show up in incognito mode, then this could mean it's an issue with your settings.
+      options:
+        - label: I have checked incognito mode
+          required: false
+  - type: textarea
+    attributes:
+      label: Config
+      description: If your issue DOES NOT happen in incognito, please export your config and paste it here. Go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
+      placeholder: '{"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}'
+    validations:
+      required: false

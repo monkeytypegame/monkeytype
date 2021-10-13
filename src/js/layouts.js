@@ -285,6 +285,16 @@ const layouts = {
             " "
         ]
     },
+    ina: {
+        keymapShowTopRow: true,
+        keys: [
+            "`~", "1[", "2]", "3#", "4$", "5%", "6^", "7&", "8*", "9{", "0}", "qQ", "xX",
+            "!+", "pP", "uU", "oO", "-_", "cC", "hH", "lL", "dD", "jJ", "zZ", "vV", "\\|",
+            "iI", "nN", "eE", "aA", ",;", "mM", "tT", "kK", "rR", "sS", "'\"",
+            "\\|", "=(", "@)", ":<", ".>", "?/", "gG", "bB", "yY", "wW", "fF",
+            " "
+        ]
+    },
     soul: {
         keymapShowTopRow: false,
         keys: [
@@ -322,6 +332,16 @@ const layouts = {
             "yY", "cC", "lL", "mM", "kK", "zZ", "fF", "uU", ",<", "'\"", "[{", "]}", "\\|",
             "iI", "sS", "rR", "tT", "gG", "pP", "nN", "eE", "aA", "oO", ";:",
             "\\|", "qQ", "vV", "wW", "dD", "jJ", "bB", "hH", "/?", ".>", "xX",
+            " "
+        ],
+    },
+    ISRT_Angle: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "yY", "cC", "lL", "mM", "kK", "zZ", "fF", "uU", ",<", "'\"", "[{", "]}", "\\|",
+            "iI", "sS", "rR", "tT", "gG", "pP", "nN", "eE", "aA", "oO", ";:",
+            "\\|", "vV", "wW", "dD", "jJ", "qQ", "bB", "hH", "/?", ".>", "xX",
             " "
         ],
     },

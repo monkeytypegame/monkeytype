@@ -27,6 +27,14 @@ function update(mode) {
   let mode2memory;
 
   list.forEach((pb) => {
+    let dateText = `-<br><span class="sub">-</span>`;
+    if (pb.timestamp) {
+      dateText =
+        moment(pb.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pb.timestamp).format("HH:mm") +
+        "</div>";
+    }
     $("#pbTablesPopup table tbody").append(`
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
@@ -46,9 +54,7 @@ function update(mode) {
         <td>${pb.language ? pb.language.replace(/_/g, " ") : "-"}</td>
         <td>${pb.punctuation ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${pb.lazyMode ? '<i class="fas fa-check"></i>' : ""}</td>
-        <td>${moment(pb.timestamp).format(
-          "DD MMM YYYY"
-        )}<br><div class='sub'>${moment(pb.timestamp).format("HH:mm")}</td>
+        <td>${dateText}</td>
       </tr>
     `);
     mode2memory = pb.mode2;
