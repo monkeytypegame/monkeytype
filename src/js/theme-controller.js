@@ -186,6 +186,20 @@ export function clearRandom() {
   randomTheme = null;
 }
 
+export function applyCustomBackgroundSize() {
+  if (Config.customBackgroundSize == "max") {
+    $(".customBackground img").css({
+      // width: "calc(100%)",
+      // height: "calc(100%)",
+      objectFit: "",
+    });
+  } else if (Config.customBackgroundSize != "") {
+    $(".customBackground img").css({
+      objectFit: Config.customBackgroundSize,
+    });
+  }
+}
+
 export function applyCustomBackground() {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
@@ -202,19 +216,5 @@ export function applyCustomBackground() {
     $(".customBackground").html($img);
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
-  }
-}
-
-export function applyCustomBackgroundSize() {
-  if (Config.customBackgroundSize == "max") {
-    $(".customBackground img").css({
-      // width: "calc(100%)",
-      // height: "calc(100%)",
-      objectFit: "",
-    });
-  } else if (Config.customBackgroundSize != "") {
-    $(".customBackground img").css({
-      objectFit: Config.customBackgroundSize,
-    });
   }
 }
