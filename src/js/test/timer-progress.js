@@ -85,15 +85,6 @@ export function restart() {
   }
 }
 
-export function updateStyle() {
-  if (!TestLogic.active) return;
-  hide();
-  update();
-  setTimeout(() => {
-    show();
-  }, 125);
-}
-
 export function update() {
   let time = TestTimer.time;
   if (
@@ -189,4 +180,13 @@ export function update() {
       $("#miniTimerAndLiveWpm .time").html(`${TestLogic.input.history.length}`);
     }
   }
+}
+
+export function updateStyle() {
+  if (!TestLogic.active) return;
+  hide();
+  update();
+  setTimeout(() => {
+    show();
+  }, 125);
 }
