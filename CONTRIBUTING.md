@@ -80,9 +80,9 @@ Follow these steps if you want to work on anything involving the database/accoun
 1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started`.
 
-#### NodeJS
+#### NodeJS and NPM
 
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`.
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
 
 Alternatively, if you use `nvm` then you can run `nvm install && nvm use` to use the version of Node.js in the `.nvmrc` file.
 
