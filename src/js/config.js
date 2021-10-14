@@ -116,6 +116,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  showLiveBurst: false,
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",
@@ -830,7 +831,7 @@ export function setShowTimerProgress(timer, nosave) {
     timer = false;
   }
   config.showTimerProgress = timer;
-  if (config.showTimerProgress) {
+  if (config.showTimerProgress && TestLogic.active) {
     TimerProgress.show();
   } else {
     TimerProgress.hide();
@@ -961,6 +962,7 @@ export function setTimerStyle(style, nosave) {
     style = "mini";
   }
   config.timerStyle = style;
+  TimerProgress.updateStyle();
   if (!nosave) saveToLocalStorage();
 }
 

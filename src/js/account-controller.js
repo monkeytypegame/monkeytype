@@ -141,7 +141,13 @@ export function signIn() {
           //TODO: redirect user to relevant page
         })
         .catch(function (error) {
-          Notifications.add(error.message, -1);
+          let message = error.message;
+          if (error.code === "auth/wrong-password") {
+            message = "Incorrect password.";
+          } else if (error.code === "auth/user-not-found") {
+            message = "User not found.";
+          }
+          Notifications.add(message, -1);
           $(".pageLogin .preloader").addClass("hidden");
         });
     });

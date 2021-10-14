@@ -1,4 +1,4 @@
-#customTextPopupWrapper {
+.popupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -10,7 +10,9 @@
   justify-content: center;
   align-items: center;
   padding: 5rem 0;
+}
 
+#customTextPopupWrapper {
   #customTextPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -60,18 +62,6 @@
 }
 
 #wordFilterPopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #wordFilterPopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -109,18 +99,6 @@
 }
 
 #rateQuotePopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #rateQuotePopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -217,18 +195,6 @@
 }
 
 #simplePopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #simplePopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -258,18 +224,6 @@
 #customTestDurationPopupWrapper,
 #practiseWordsPopupWrapper,
 #pbTablesPopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #customWordAmountPopup,
   #customTestDurationPopup,
   #practiseWordsPopup,
@@ -358,18 +312,6 @@
 }
 
 #customThemeShareWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #customThemeShare {
     width: 50vw;
     background: var(--bg-color);
@@ -382,18 +324,6 @@
 }
 
 #quoteSearchPopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #quoteSearchPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -405,12 +335,27 @@
     height: 80vh;
     grid-template-rows: auto auto auto 1fr;
 
+    #quoteSearchTop {
+      display: flex;
+      justify-content: space-between;
+
+      .title {
+        font-size: 1.5rem;
+        color: var(--sub-color);
+      }
+
+      .buttons {
+        width: 33%;
+        display: grid;
+        gap: 0.5rem;
+        .button {
+          width: 100%;
+        }
+      }
+    }
+
     #extraResults {
       text-align: center;
-      color: var(--sub-color);
-    }
-    .title {
-      font-size: 1.5rem;
       color: var(--sub-color);
     }
     #quoteSearchResults {
@@ -487,18 +432,6 @@
   }
 }
 #settingsImportWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #settingsImport {
     width: 50vw;
     background: var(--bg-color);
@@ -510,19 +443,131 @@
   }
 }
 
-#resultEditTagsPanelWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
+#quoteSubmitPopup {
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+  padding: 2rem;
   display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
+  gap: 1rem;
+  width: 1000px;
+  grid-template-rows: auto auto auto auto auto auto auto auto auto;
+  height: 100%;
+  max-height: 40rem;
+  overflow-y: scroll;
 
+  label {
+    color: var(--sub-color);
+    margin-bottom: -1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    color: var(--sub-color);
+  }
+  textarea {
+    resize: vertical;
+    width: 100%;
+    padding: 10px;
+    line-height: 1.2rem;
+    min-height: 5rem;
+  }
+  .characterCount {
+    position: absolute;
+    top: -1.25rem;
+    right: 0.25rem;
+    color: var(--sub-color);
+    user-select: none;
+    &.red {
+      color: var(--error-color);
+    }
+  }
+}
+
+#quoteApprovePopup {
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+  padding: 2rem;
+  display: grid;
+  gap: 1rem;
+  width: 1000px;
+  height: 80vh;
+  grid-template-rows: auto 1fr;
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    .button {
+      width: 33%;
+    }
+  }
+
+  .quotes {
+    display: grid;
+    gap: 1rem;
+    height: auto;
+    overflow-y: scroll;
+    align-content: baseline;
+
+    .quote {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-auto-rows: auto 2rem;
+      width: 100%;
+      gap: 1rem;
+      transition: 0.25s;
+      box-sizing: border-box;
+      user-select: none;
+      height: min-content;
+      margin-bottom: 1rem;
+
+      .text {
+        grid-column: 1/2;
+        grid-row: 1/2;
+        overflow: visible;
+        color: var(--text-color);
+        resize: vertical;
+        min-height: 4rem;
+      }
+      .source {
+        grid-column: 1/2;
+        grid-row: 2/3;
+        color: var(--text-color);
+      }
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-right: 1rem;
+        grid-column: 2/3;
+        grid-row: 1/4;
+        color: var(--sub-color);
+      }
+
+      .bottom {
+        display: flex;
+        justify-content: space-around;
+        color: var(--sub-color);
+        .length.red {
+          color: var(--error-color);
+        }
+      }
+
+      .sub {
+        opacity: 0.5;
+      }
+    }
+    .searchResult:hover {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+  }
+}
+
+#resultEditTagsPanelWrapper {
   #resultEditTagsPanel {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -606,18 +651,6 @@
 }
 
 #supportMeWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #supportMe {
     width: 900px;
     // height: 400px;
@@ -675,18 +708,6 @@
 }
 
 #presetWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #presetEdit {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -698,18 +719,6 @@
 }
 
 #tagsWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #tagsEdit {
     background: var(--bg-color);
     border-radius: var(--roundness);

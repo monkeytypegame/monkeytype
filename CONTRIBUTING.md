@@ -20,7 +20,6 @@
 
 When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in Javascript, CSS, and HTML (in order of language usage within the project); thus, we assume you are comfortable in these languages or have basic knowledge of them. Our backend is in NodeJS and we use MongoDB to store our user data. Furthermore, we use Prettier to format our code.
 
-
 ## Prerequisites
 
 While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
@@ -81,10 +80,11 @@ Follow these steps if you want to work on anything involving the database/accoun
 1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started`.
 
-#### NodeJS
+#### NodeJS and NPM
 
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`.
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
 
+Alternatively, if you use `nvm` then you can run `nvm install && nvm use` to use the version of Node.js in the `.nvmrc` file.
 
 ## Building and Running Monkeytype
 
@@ -92,7 +92,6 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 1. Run `npm install` in the project root directory to install dependencies.
 1. Run `npm run start:dev` (`npm run start:dev:nodb` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
-
 
 ## Standards and Guidelines
 
@@ -116,7 +115,7 @@ Before submitting a theme make sure...
 - Do not include swear words
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
 - Be sure to add your language to the `_list` and `_groups` files
-- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `langugeName_1k.json` is 1000 words, and so on)
+- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
 #### Quote Guidelines
 
@@ -127,8 +126,6 @@ Before submitting a theme make sure...
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
 
-
 ## Questions
 
 If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions) and a contributor will be happy to assist you.
-

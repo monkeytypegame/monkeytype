@@ -34,6 +34,7 @@ export default class SettingsGroup {
         } else {
           const value = target.attr(configName);
           const params = target.attr("params");
+          if (!value && !params) return;
           this.setValue(value, params);
         }
       }
