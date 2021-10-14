@@ -286,12 +286,12 @@ const layouts = {
         ]
     },
     ina: {
-        keymapShowTopRow: true,
+        keymapShowTopRow: false,
         keys: [
             "`~", "1[", "2]", "3#", "4$", "5%", "6^", "7&", "8*", "9{", "0}", "qQ", "xX",
-            "!+", "pP", "uU", "oO", "-_", "cC", "hH", "lL", "dD", "jJ", "zZ", "vV", "\\|",
-            "iI", "nN", "eE", "aA", ",;", "mM", "tT", "kK", "rR", "sS", "'\"",
-            "\\|", "=(", "@)", ":<", ".>", "?/", "gG", "bB", "yY", "wW", "fF",
+            "!+", "pP", "uU", "oO", "-_", "jJ", "bB", "lL", "mM", "yY", "zZ", "vV", "\\|",
+            "iI", "nN", "eE", "aA", ",;", "dD", "tT", "kK", "rR", "sS", "'\"",
+            "\\|", "=(", "@)", ":<", ".>", "?/", "gG", "hH", "cC", "wW", "fF",
             " "
         ]
     },
