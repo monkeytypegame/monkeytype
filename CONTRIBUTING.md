@@ -84,7 +84,7 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
 
-Alternatively, if you use `nvm` then you can run `nvm install && nvm use` to use the version of Node.js in the `.nvmrc` file.
+Alternatively, if you use `nvm` then you can run `nvm install && nvm use` to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
 
 ## Building and Running Monkeytype
 
