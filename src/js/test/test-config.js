@@ -67,7 +67,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
   if (len == -2) {
-    UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
+    // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     QuoteSearchPopup.show();
   } else {
     if (len == -1) {
