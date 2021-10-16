@@ -116,6 +116,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  showLiveBurst: false,
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",

@@ -4,6 +4,7 @@ import * as Misc from "./misc";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
+import * as BackgroundFilter from "./custom-background-filter";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -185,6 +186,20 @@ export function clearRandom() {
   randomTheme = null;
 }
 
+export function applyCustomBackgroundSize() {
+  if (Config.customBackgroundSize == "max") {
+    $(".customBackground img").css({
+      // width: "calc(100%)",
+      // height: "calc(100%)",
+      objectFit: "",
+    });
+  } else if (Config.customBackgroundSize != "") {
+    $(".customBackground img").css({
+      objectFit: Config.customBackgroundSize,
+    });
+  }
+}
+
 export function applyCustomBackground() {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
@@ -199,19 +214,7 @@ export function applyCustomBackground() {
       src: Config.customBackground,
     });
     $(".customBackground").html($img);
-  }
-}
-
-export function applyCustomBackgroundSize() {
-  if (Config.customBackgroundSize == "max") {
-    $(".customBackground img").css({
-      // width: "calc(100%)",
-      // height: "calc(100%)",
-      objectFit: "",
-    });
-  } else if (Config.customBackgroundSize != "") {
-    $(".customBackground img").css({
-      objectFit: Config.customBackgroundSize,
-    });
+    BackgroundFilter.apply();
+    applyCustomBackgroundSize();
   }
 }

@@ -1776,10 +1776,10 @@ export async function finish(difficultyFailed = false) {
                 },
               });
               if (
-                maxChartVal >= chartlpb - 15 &&
-                maxChartVal <= chartlpb + 15
+                maxChartVal >= parseFloat(chartlpb) - 20 &&
+                maxChartVal <= parseFloat(chartlpb) + 20
               ) {
-                maxChartVal = chartlpb + 15;
+                maxChartVal = parseFloat(chartlpb) + 20;
               }
               ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal

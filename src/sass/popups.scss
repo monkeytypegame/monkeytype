@@ -450,7 +450,7 @@
   display: grid;
   gap: 1rem;
   width: 1000px;
-  grid-template-rows: auto auto auto 5rem auto auto auto auto auto;
+  grid-template-rows: auto auto auto auto auto auto auto auto auto;
   height: 100%;
   max-height: 40rem;
   overflow-y: scroll;
@@ -465,9 +465,21 @@
     color: var(--sub-color);
   }
   textarea {
-    resize: none;
+    resize: vertical;
+    width: 100%;
     padding: 10px;
     line-height: 1.2rem;
+    min-height: 5rem;
+  }
+  .characterCount {
+    position: absolute;
+    top: -1.25rem;
+    right: 0.25rem;
+    color: var(--sub-color);
+    user-select: none;
+    &.red {
+      color: var(--error-color);
+    }
   }
 }
 
