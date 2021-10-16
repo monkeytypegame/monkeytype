@@ -9,6 +9,7 @@ import * as SimplePopups from "./simple-popups";
 import * as CustomWordAmountPopup from "./custom-word-amount-popup";
 import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as CustomTextPopup from "./custom-text-popup";
+import * as QuoteSearchPopupWrapper from "./quote-search-popup";
 
 let commandLineMouseMode = false;
 
@@ -360,6 +361,9 @@ $(document).ready((e) => {
       } else if (!$("#customTextPopupWrapper").hasClass("hidden")) {
         event.preventDefault();
         CustomTextPopup.hide();
+      } else if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        QuoteSearchPopupWrapper.hide();
       } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (CommandlineLists.current.length > 1) {
           CommandlineLists.current.pop();
