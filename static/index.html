@@ -242,14 +242,14 @@
       </div>
     </div>
 
-    <div id="settingsImportWrapper" class="hidden">
+    <div id="settingsImportWrapper" class="popupWrapper hidden">
       <div id="settingsImport" action="">
         <input type="text" />
         <div class="button">import settings</div>
       </div>
     </div>
 
-    <div id="customThemeShareWrapper" class="hidden">
+    <div id="customThemeShareWrapper" class="popupWrapper hidden">
       <div id="customThemeShare" action="">
         <input type="text" />
         <div class="button">ok</div>
@@ -411,17 +411,20 @@
           <li>
             <b>
               Submitting low quality quotes or misusing this form will cause you
-              to loose access to this feature
+              to lose access to this feature
             </b>
           </li>
         </ul>
         <label>Quote</label>
-        <textarea
-          id="submitQuoteText"
-          class=""
-          type="text"
-          autocomplete="off"
-        ></textarea>
+        <div style="position: relative">
+          <textarea
+            id="submitQuoteText"
+            class=""
+            type="text"
+            autocomplete="off"
+          ></textarea>
+          <div class="characterCount">-</div>
+        </div>
         <label>Source</label>
         <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
         <label>Language</label>
@@ -593,7 +596,7 @@
         </div>
       </div>
     </div>
-    <div id="supportMeWrapper" class="hidden">
+    <div id="supportMeWrapper" class="popupWrapper hidden">
       <div id="supportMe">
         <div class="title">Support Monkeytype</div>
         <div class="text">
@@ -1633,6 +1636,8 @@
                 <div>Taran</div>
                 <div>Roux</div>
                 <div>Ochiba</div>
+                <div>merwie</div>
+                <div>dogger</div>
                 <div>Artem</div>
                 <div>DarkBlu</div>
                 <div>John</div>

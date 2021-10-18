@@ -1,11 +1,12 @@
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as DB from "./db";
+import * as TestUI from "./test-ui";
 
 export let selectedId = 1;
 
@@ -111,6 +112,7 @@ export function hide(noAnim = false) {
         noAnim ? 0 : 100,
         (e) => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
+          TestUI.focusWords();
         }
       );
   }
@@ -121,6 +123,7 @@ function apply(val) {
     val = document.getElementById("searchBox").value;
   }
   if (val !== null && !isNaN(val) && val >= 0) {
+    UpdateConfig.setQuoteLength(-2, false);
     selectedId = val;
     ManualRestart.set();
     TestLogic.restart();

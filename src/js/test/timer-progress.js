@@ -85,14 +85,6 @@ export function restart() {
   }
 }
 
-export function updateStyle() {
-  hide();
-  update();
-  setTimeout(() => {
-    show();
-  }, 125);
-}
-
 export function update() {
   let time = TestTimer.time;
   if (
@@ -144,7 +136,7 @@ export function update() {
       }
     }
     if (Config.mode === "quote") {
-      outof = TestLogic.randomQuote.textSplit.length;
+      outof = TestLogic?.randomQuote?.textSplit?.length ?? 1;
     }
     if (Config.timerStyle === "bar") {
       let percent = Math.floor(
@@ -188,4 +180,13 @@ export function update() {
       $("#miniTimerAndLiveWpm .time").html(`${TestLogic.input.history.length}`);
     }
   }
+}
+
+export function updateStyle() {
+  if (!TestLogic.active) return;
+  hide();
+  update();
+  setTimeout(() => {
+    show();
+  }, 125);
 }

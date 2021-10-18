@@ -48,6 +48,8 @@ async function submitQuote() {
     Notifications.add("Quote submitted.", 1);
     $("#quoteSubmitPopup #submitQuoteText").val("");
     $("#quoteSubmitPopup #submitQuoteSource").val("");
+    $("#quoteSubmitPopup .characterCount").removeClass("red");
+    $("#quoteSubmitPopup .characterCount").text("-");
     grecaptcha.reset();
   }
 }
@@ -92,6 +94,18 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
 
 $(document).on("click", "#quoteSubmitPopup #submitQuoteButton", (e) => {
   submitQuote();
+});
+
+$("#quoteSubmitPopup textarea").on("input", (e) => {
+  setTimeout(() => {
+    let len = $("#quoteSubmitPopup textarea").val().length;
+    $("#quoteSubmitPopup .characterCount").text(len);
+    if (len < 60) {
+      $("#quoteSubmitPopup .characterCount").addClass("red");
+    } else {
+      $("#quoteSubmitPopup .characterCount").removeClass("red");
+    }
+  }, 1);
 });
 
 $("#quoteSubmitPopup input").on("keydown", (e) => {
