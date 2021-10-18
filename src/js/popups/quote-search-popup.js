@@ -134,6 +134,7 @@ function apply(val) {
 }
 
 $("#quoteSearchPopup .searchBox").keydown((e) => {
+  if (e.code == "Escape") return;
   setTimeout(() => {
     let searchText = document.getElementById("searchBox").value;
     searchText = searchText
