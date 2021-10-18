@@ -33886,12 +33886,15 @@
       "source": "Kurt Cobain",
       "length": 62,
       "id": 5717
+<<<<<<< HEAD
     },
     {
       "text": "I’d rather be hated for who I am, than loved for who I am not.",
       "source": "Kurt Cobain",
       "length": 62,
       "id": 5718
+=======
+>>>>>>> 1221b1170ff6add0d097365445aa1afb1dbc495a
     }
   ]
 }
