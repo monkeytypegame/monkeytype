@@ -342,59 +342,43 @@ export async function saveLocalPB(
 ) {
   if (mode == "quote") return;
   function cont() {
-    try {
-      let found = false;
-      if (dbSnapshot.personalBests[mode][mode2] === undefined) {
-        dbSnapshot.personalBests[mode][mode2] = [];
-      }
-      dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
-        if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
-        ) {
-          found = true;
-          pb.wpm = wpm;
-          pb.acc = acc;
-          pb.raw = raw;
-          pb.timestamp = Date.now();
-          pb.consistency = consistency;
-          pb.lazyMode = lazyMode;
-        }
-      });
-      if (!found) {
-        //nothing found
-        dbSnapshot.personalBests[mode][mode2].push({
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        });
-      }
-    } catch (e) {
-      //that mode or mode2 is not found
-      dbSnapshot.personalBests = {};
+    let found = false;
+    if (dbSnapshot.personalBests === undefined) dbSnapshot.personalBests = {};
+    if (dbSnapshot.personalBests[mode] === undefined)
       dbSnapshot.personalBests[mode] = {};
-      dbSnapshot.personalBests[mode][mode2] = [
-        {
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        },
-      ];
+    if (dbSnapshot.personalBests[mode][mode2] === undefined)
+      dbSnapshot.personalBests[mode][mode2] = [];
+
+    dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
+      if (
+        pb.punctuation == punctuation &&
+        pb.difficulty == difficulty &&
+        pb.language == language &&
+        (pb.lazyMode === lazyMode ||
+          (pb.lazyMode === undefined && lazyMode === false))
+      ) {
+        found = true;
+        pb.wpm = wpm;
+        pb.acc = acc;
+        pb.raw = raw;
+        pb.timestamp = Date.now();
+        pb.consistency = consistency;
+        pb.lazyMode = lazyMode;
+      }
+    });
+    if (!found) {
+      //nothing found
+      dbSnapshot.personalBests[mode][mode2].push({
+        language: language,
+        difficulty: difficulty,
+        lazyMode: lazyMode,
+        punctuation: punctuation,
+        wpm: wpm,
+        acc: acc,
+        raw: raw,
+        timestamp: Date.now(),
+        consistency: consistency,
+      });
     }
   }
 

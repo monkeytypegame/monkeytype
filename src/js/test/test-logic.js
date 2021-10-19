@@ -954,7 +954,15 @@ export function restart(
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
-        await Funbox.activate();
+        if (Config.funbox === "plus_one" || Config.funbox === "plus_two") {
+          Notifications.add(
+            "Sorry, this funbox won't work with repeated tests.",
+            0
+          );
+          await Funbox.activate("none");
+        } else {
+          await Funbox.activate();
+        }
         TestUI.showWords();
         PaceCaret.init();
       }

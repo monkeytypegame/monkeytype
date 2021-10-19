@@ -2,12 +2,18 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
 import * as Loader from "./loader";
+import Config from "./config";
 
 let dropdownReady = false;
 async function initDropdown() {
   if (dropdownReady) return;
   let languages = await Misc.getLanguageList();
   languages.forEach((language) => {
+    if (
+      language === "english_commonly_misspelled" ||
+      language === "hungarian_2.5k"
+    )
+      return;
     if (!/_\d*k$/g.test(language)) {
       $("#quoteSubmitPopup #submitQuoteLanguage").append(
         `<option value="${language}">${language.replace(/_/g, " ")}</option>`
@@ -56,7 +62,11 @@ async function submitQuote() {
 
 export async function show(noAnim = false) {
   if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
-    initDropdown();
+    await initDropdown();
+    $("#quoteSubmitPopup #submitQuoteLanguage").val(
+      Config.language.replace(/_\d*k$/g, "")
+    );
+    $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
     $("#quoteSubmitPopup input").val("");
     $("#quoteSubmitPopupWrapper")
       .stop(true, true)
