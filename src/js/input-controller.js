@@ -727,7 +727,7 @@ $(document).keydown((event) => {
     ).toggleClass("dead");
   }
 
-  if (Config.oppositeShiftMode === "on") {
+  if (Config.oppositeShiftMode !== "off") {
     correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
   }
 

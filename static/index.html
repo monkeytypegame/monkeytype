@@ -2351,7 +2351,11 @@
                   <key>Y</key>
                   , and
                   <key>^</key>
-                  because many people use the other hand for those keys.
+                  because many people use the other hand for those keys. If
+                  you're using external software to emulate your layout
+                  (including QMK), you should use the "keymap" mode - the
+                  standard "on" will not work. This will enforce opposite shift
+                  based on the "keymap layout" setting.
                 </div>
                 <div class="buttons">
                   <div
@@ -2369,6 +2373,14 @@
                     onclick="this.blur();"
                   >
                     on
+                  </div>
+                  <div
+                    class="button"
+                    oppositeShiftMode="keymap"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    keymap
                   </div>
                 </div>
               </div>
