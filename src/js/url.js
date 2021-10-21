@@ -288,13 +288,10 @@ export function loadFromUrl() {
 
   window.history.replaceState(null, null, url); // update the URL with new params
   // ui.js:129 prevents params from being shown for longer time
-  console.log(url);
 
   let appliedSettings = 0;
   // Search for and apply settings
   Object.keys(Settings).forEach((name) => {
-    console.log(name);
-    console.log(Settings[name].options);
     let val = url.searchParams.get(name.toLowerCase()); // value of parameter
     if (val !== null) {
       let res = Settings[name].set(val);
