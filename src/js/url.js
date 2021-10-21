@@ -29,7 +29,7 @@ class OptionsSetting {
       else
         command.list.forEach(
           (option) => (this.options[option.configValue] = option.configValue)
-        ); // migth be better to take option.display as input and convert it to option.configValue for some settings
+        );
     }
   }
 
@@ -155,9 +155,8 @@ class CustomBackgroundFilterSetting {
 
   set(val) {
     let arr = val.split(this.sep);
-    if (arr.lenght !== this.values.lenght)
-      // input array is incomplete
-      return false;
+    // input array is incomplete
+    if (arr.lenght !== this.values.lenght) return false;
 
     let converted = []; // values converted from string to float
     arr.forEach((num, i) => {
