@@ -2,7 +2,7 @@ import * as UpdateConfig from "./config";
 import * as Notifications from "./notifications";
 import * as Commands from "./commandline-lists";
 import * as CustomText from "./custom-text";
-import * as Settings from "./settings";
+import * as GlobalSettings from "./settings";
 
 // === Setting classes ===
 // the callback is used in `set()` method to set value in config
@@ -161,7 +161,8 @@ class CustomBackgroundFilterSetting {
     let converted = []; // values converted from string to float
     arr.forEach((num, i) => {
       let parsed = parseFloat(num);
-      if (this.validate(parsed) && this.check(parsed)) converted.push(parsed);
+      if (this.validate(parsed, i) && this.check(parsed, i))
+        converted.push(parsed);
       else return false;
     });
     this.callback(converted);
@@ -249,7 +250,7 @@ let Settings = {
     if (val.lenght === 9) {
       UpdateConfig.setCustomThemeColors(val);
       UpdateConfig.setCustomTheme(true);
-      Settings.setCustomThemeInputs();
+      GlobalSettings.setCustomThemeInputs();
     }
   }),
   randomTheme: new OptionsSetting(
