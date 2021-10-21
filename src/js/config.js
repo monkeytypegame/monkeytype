@@ -122,7 +122,7 @@ let defaultConfig = {
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
-  customBackgroundFilter: [0, 1, 1, 1, 1],
+  customBackgroundFilter: [0, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
   minBurst: "off",
