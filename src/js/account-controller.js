@@ -66,22 +66,6 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     UI.setPageTransition(false);
     if ($(".pageLoading").hasClass("active")) UI.changePage("");
   }
-  let theme = Misc.findGetParameter("customTheme");
-  if (theme !== null) {
-    try {
-      theme = theme.split(",");
-      UpdateConfig.setCustomThemeColors(theme);
-      Notifications.add("Custom theme applied.", 1);
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0
-      );
-      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    UpdateConfig.setCustomTheme(true);
-    Settings.setCustomThemeInputs();
-  }
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",

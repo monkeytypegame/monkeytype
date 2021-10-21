@@ -5,6 +5,7 @@ import * as VerificationController from "./verification-controller";
 import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
+import * as URLParser from "./url";
 import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
 import * as NewVersionNotification from "./new-version-notification";
@@ -12,6 +13,7 @@ import * as NewVersionNotification from "./new-version-notification";
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
+URLParser.loadFromUrl();
 Misc.getReleasesFromGitHub().then((v) => {
   NewVersionNotification.show(v[0].name);
 });

@@ -39,7 +39,7 @@ function canBailOut() {
   );
 }
 
-let commandsLayouts = {
+export let commandsLayouts = {
   title: "Layout emulator...",
   configKey: "layout",
   list: [
@@ -103,7 +103,7 @@ if (Object.keys(layouts).length > 0) {
   });
 }
 
-let commandsLanguages = {
+export let commandsLanguages = {
   title: "Language...",
   configKey: "language",
   list: [
@@ -129,7 +129,7 @@ Misc.getLanguageList().then((languages) => {
   });
 });
 
-let commandsFunbox = {
+export let commandsFunbox = {
   title: "Funbox...",
   configKey: "funbox",
   list: [
@@ -162,7 +162,7 @@ Misc.getFunboxList().then((funboxes) => {
   });
 });
 
-let commandsFonts = {
+export let commandsFonts = {
   title: "Font family...",
   configKey: "fontFamily",
   list: [],
@@ -196,7 +196,7 @@ Misc.getFontsList().then((fonts) => {
   });
 });
 
-let commandsTags = {
+export let commandsTags = {
   title: "Change tags...",
   list: [],
 };
@@ -261,7 +261,7 @@ export function updateTagCommands() {
   }
 }
 
-let commandsPresets = {
+export let commandsPresets = {
   title: "Presets...",
   list: [],
 };
@@ -285,7 +285,7 @@ export function updatePresetCommands() {
   }
 }
 
-let commandsRepeatQuotes = {
+export let commandsRepeatQuotes = {
   title: "Repeat quotes...",
   configKey: "repeatQuotes",
   list: [
@@ -308,7 +308,7 @@ let commandsRepeatQuotes = {
   ],
 };
 
-let commandsLiveWpm = {
+export let commandsLiveWpm = {
   title: "Live WPM...",
   configKey: "showLiveWpm",
   list: [
@@ -331,7 +331,7 @@ let commandsLiveWpm = {
   ],
 };
 
-let commandsLiveAcc = {
+export let commandsLiveAcc = {
   title: "Live accuracy...",
   configKey: "showLiveAcc",
   list: [
@@ -354,7 +354,7 @@ let commandsLiveAcc = {
   ],
 };
 
-let commandsLiveBurst = {
+export let commandsLiveBurst = {
   title: "Live burst...",
   configKey: "showLiveBurst",
   list: [
@@ -377,7 +377,7 @@ let commandsLiveBurst = {
   ],
 };
 
-let commandsShowTimer = {
+export let commandsShowTimer = {
   title: "Timer/progress...",
   configKey: "showTimerProgress",
   list: [
@@ -400,7 +400,7 @@ let commandsShowTimer = {
   ],
 };
 
-let commandsKeyTips = {
+export let commandsKeyTips = {
   title: "Key tips...",
   configKey: "showKeyTips",
   list: [
@@ -423,7 +423,7 @@ let commandsKeyTips = {
   ],
 };
 
-let commandsFreedomMode = {
+export let commandsFreedomMode = {
   title: "Freedom mode...",
   configKey: "freedomMode",
   list: [
@@ -446,7 +446,7 @@ let commandsFreedomMode = {
   ],
 };
 
-let commandsStrictSpace = {
+export let commandsStrictSpace = {
   title: "Strict space...",
   configKey: "strictSpace",
   list: [
@@ -469,7 +469,7 @@ let commandsStrictSpace = {
   ],
 };
 
-let commandsBlindMode = {
+export let commandsBlindMode = {
   title: "Blind mode...",
   configKey: "blindMode",
   list: [
@@ -492,7 +492,7 @@ let commandsBlindMode = {
   ],
 };
 
-let commandsShowWordsHistory = {
+export let commandsShowWordsHistory = {
   title: "Always show words history...",
   configKey: "alwaysShowWordsHistory",
   list: [
@@ -515,7 +515,7 @@ let commandsShowWordsHistory = {
   ],
 };
 
-let commandsIndicateTypos = {
+export let commandsIndicateTypos = {
   title: "Indicate typos...",
   configKey: "indicateTypos",
   list: [
@@ -538,7 +538,7 @@ let commandsIndicateTypos = {
   ],
 };
 
-let commandsHideExtraLetters = {
+export let commandsHideExtraLetters = {
   title: "Hide extra letters...",
   configKey: "hideExtraLetters",
   list: [
@@ -561,7 +561,7 @@ let commandsHideExtraLetters = {
   ],
 };
 
-let commandsQuickEnd = {
+export let commandsQuickEnd = {
   title: "Quick end...",
   configKey: "quickEnd",
   list: [
@@ -584,7 +584,7 @@ let commandsQuickEnd = {
   ],
 };
 
-let commandsOppositeShiftMode = {
+export let commandsOppositeShiftMode = {
   title: "Change opposite shift mode...",
   configKey: "oppositeShiftMode",
   list: [
@@ -609,7 +609,7 @@ let commandsOppositeShiftMode = {
   ],
 };
 
-let commandsSoundOnError = {
+export let commandsSoundOnError = {
   title: "Sound on error...",
   configKey: "playSoundOnError",
   list: [
@@ -632,7 +632,7 @@ let commandsSoundOnError = {
   ],
 };
 
-let commandsFlipTestColors = {
+export let commandsFlipTestColors = {
   title: "Flip test colors...",
   configKey: "flipTestColors",
   list: [
@@ -655,7 +655,7 @@ let commandsFlipTestColors = {
   ],
 };
 
-let commandsSmoothLineScroll = {
+export let commandsSmoothLineScroll = {
   title: "Smooth line scroll...",
   configKey: "smoothLineScroll",
   list: [
@@ -678,7 +678,7 @@ let commandsSmoothLineScroll = {
   ],
 };
 
-let commandsAlwaysShowDecimal = {
+export let commandsAlwaysShowDecimal = {
   title: "Always show decimal places...",
   configKey: "alwaysShowDecimalPlaces",
   list: [
@@ -701,7 +701,7 @@ let commandsAlwaysShowDecimal = {
   ],
 };
 
-let commandsAlwaysShowCPM = {
+export let commandsAlwaysShowCPM = {
   title: "Always show CPM...",
   configKey: "alwaysShowCPM",
   list: [
@@ -724,7 +724,7 @@ let commandsAlwaysShowCPM = {
   ],
 };
 
-let commandsStartGraphsAtZero = {
+export let commandsStartGraphsAtZero = {
   title: "Start graphs at zero...",
   configKey: "startGraphsAtZero",
   list: [
@@ -747,7 +747,7 @@ let commandsStartGraphsAtZero = {
   ],
 };
 
-let commandsLazyMode = {
+export let commandsLazyMode = {
   title: "Lazy mode...",
   configKey: "lazyMode",
   list: [
@@ -772,7 +772,7 @@ let commandsLazyMode = {
   ],
 };
 
-let commandsSwapEscAndTab = {
+export let commandsSwapEscAndTab = {
   title: "Swap esc and tab...",
   configKey: "swapEscAndTab",
   list: [
@@ -795,7 +795,7 @@ let commandsSwapEscAndTab = {
   ],
 };
 
-let commandsShowAllLines = {
+export let commandsShowAllLines = {
   title: "Show all lines...",
   configKey: "showAllLines",
   list: [
@@ -818,7 +818,7 @@ let commandsShowAllLines = {
   ],
 };
 
-let commandsColorfulMode = {
+export let commandsColorfulMode = {
   title: "Colorful mode...",
   configKey: "colorfulMode",
   list: [
@@ -841,7 +841,7 @@ let commandsColorfulMode = {
   ],
 };
 
-let commandsOutOfFocusWarning = {
+export let commandsOutOfFocusWarning = {
   title: "Colorful mode...",
   configKey: "showOutOfFocusWarning",
   list: [
@@ -864,7 +864,7 @@ let commandsOutOfFocusWarning = {
   ],
 };
 
-let commandsKeymapMode = {
+export let commandsKeymapMode = {
   title: "Keymap mode...",
   configKey: "keymapMode",
   list: [
@@ -903,7 +903,7 @@ let commandsKeymapMode = {
   ],
 };
 
-let commandsSoundOnClick = {
+export let commandsSoundOnClick = {
   title: "Sound on click...",
   configKey: "playSoundOnClick",
   list: [
@@ -981,7 +981,7 @@ let commandsSoundOnClick = {
   ],
 };
 
-let commandsRandomTheme = {
+export let commandsRandomTheme = {
   title: "Random theme...",
   configKey: "randomTheme",
   list: [
@@ -1028,7 +1028,7 @@ let commandsRandomTheme = {
   ],
 };
 
-let commandsDifficulty = {
+export let commandsDifficulty = {
   title: "Difficulty...",
   configKey: "difficulty",
   list: [
@@ -1090,7 +1090,7 @@ export let commandsEnableAds = {
   ],
 };
 
-let commandsCustomTheme = {
+export let commandsCustomTheme = {
   title: "Custom theme...",
   configKey: "customTheme",
   list: [
@@ -1113,7 +1113,7 @@ let commandsCustomTheme = {
   ],
 };
 
-let commandsCaretStyle = {
+export let commandsCaretStyle = {
   title: "Change caret style...",
   configKey: "caretStyle",
   list: [
@@ -1178,7 +1178,7 @@ let commandsCaretStyle = {
   ],
 };
 
-let commandsPaceCaretStyle = {
+export let commandsPaceCaretStyle = {
   title: "Change pace caret style...",
   configKey: "paceCaretStyle",
   list: [
@@ -1235,7 +1235,7 @@ let commandsPaceCaretStyle = {
   ],
 };
 
-let commandsRepeatedPace = {
+export let commandsRepeatedPace = {
   title: "Repeated pace...",
   configKey: "repeatedPace",
   list: [
@@ -1258,7 +1258,7 @@ let commandsRepeatedPace = {
   ],
 };
 
-let commandsPaceCaret = {
+export let commandsPaceCaret = {
   title: "Pace caret mode...",
   configKey: "paceCaret",
   list: [
@@ -1303,7 +1303,7 @@ let commandsPaceCaret = {
   ],
 };
 
-let commandsMinWpm = {
+export let commandsMinWpm = {
   title: "Change min wpm mode...",
   configKey: "minWpm",
   list: [
@@ -1328,7 +1328,7 @@ let commandsMinWpm = {
   ],
 };
 
-let commandsMinAcc = {
+export let commandsMinAcc = {
   title: "Change min accuracy mode...",
   configKey: "minAcc",
   list: [
@@ -1353,7 +1353,7 @@ let commandsMinAcc = {
   ],
 };
 
-let commandsMinBurst = {
+export let commandsMinBurst = {
   title: "Change min burst mode...",
   configKey: "minBurst",
   list: [
@@ -1388,7 +1388,7 @@ let commandsMinBurst = {
   ],
 };
 
-let commandsKeymapStyle = {
+export let commandsKeymapStyle = {
   title: "Keymap style...",
   configKey: "keymapStyle",
   list: [
@@ -1427,7 +1427,7 @@ let commandsKeymapStyle = {
   ],
 };
 
-let commandsKeymapLegendStyle = {
+export let commandsKeymapLegendStyle = {
   title: "Keymap legend style...",
   configKey: "keymapLegendStyle",
   list: [
@@ -1458,7 +1458,7 @@ let commandsKeymapLegendStyle = {
   ],
 };
 
-let commandsBritishEnglish = {
+export let commandsBritishEnglish = {
   title: "British english...",
   configKey: "britishEnglish",
   list: [
@@ -1483,7 +1483,7 @@ let commandsBritishEnglish = {
   ],
 };
 
-let commandsHighlightMode = {
+export let commandsHighlightMode = {
   title: "Highlight mode...",
   configKey: "highlightMode",
   list: [
@@ -1514,7 +1514,7 @@ let commandsHighlightMode = {
   ],
 };
 
-let commandsTimerStyle = {
+export let commandsTimerStyle = {
   title: "Timer/progress style...",
   configKey: "timerStyle",
   list: [
@@ -1545,7 +1545,7 @@ let commandsTimerStyle = {
   ],
 };
 
-let commandsTimerColor = {
+export let commandsTimerColor = {
   title: "Timer/progress color...",
   configKey: "timerColor",
   list: [
@@ -1584,7 +1584,7 @@ let commandsTimerColor = {
   ],
 };
 
-let commandsSingleListCommandLine = {
+export let commandsSingleListCommandLine = {
   title: "Single list command line...",
   configKey: "singleListCommandLine",
   list: [
@@ -1607,7 +1607,7 @@ let commandsSingleListCommandLine = {
   ],
 };
 
-let commandsTimerOpacity = {
+export let commandsTimerOpacity = {
   title: "Timer/progress opacity...",
   configKey: "timerOpacity",
   list: [
@@ -1646,7 +1646,7 @@ let commandsTimerOpacity = {
   ],
 };
 
-let commandsWordCount = {
+export let commandsWordCount = {
   title: "Change word count...",
   configKey: "words",
   list: [
@@ -1713,7 +1713,7 @@ let commandsWordCount = {
   ],
 };
 
-let commandsQuoteLengthConfig = {
+export let commandsQuoteLengthConfig = {
   title: "Change quote length...",
   configKey: "quoteLength",
   list: [
@@ -1774,7 +1774,7 @@ let commandsQuoteLengthConfig = {
   ],
 };
 
-let commandsPunctuation = {
+export let commandsPunctuation = {
   title: "Change punctuation...",
   configKey: "punctuation",
   list: [
@@ -1799,7 +1799,7 @@ let commandsPunctuation = {
   ],
 };
 
-let commandsNumbers = {
+export let commandsNumbers = {
   title: "Numbers...",
   configKey: "numbers",
   list: [
@@ -1824,7 +1824,7 @@ let commandsNumbers = {
   ],
 };
 
-let commandsSmoothCaret = {
+export let commandsSmoothCaret = {
   title: "Smooth caret...",
   configKey: "smoothCaret",
   list: [
@@ -1847,7 +1847,7 @@ let commandsSmoothCaret = {
   ],
 };
 
-let commandsQuickTab = {
+export let commandsQuickTab = {
   title: "Quick tab...",
   configKey: "quickTab",
   list: [
@@ -1870,7 +1870,7 @@ let commandsQuickTab = {
   ],
 };
 
-let commandsMode = {
+export let commandsMode = {
   title: "Change mode...",
   configKey: "mode",
   list: [
@@ -1923,7 +1923,7 @@ let commandsMode = {
   ],
 };
 
-let commandsTimeConfig = {
+export let commandsTimeConfig = {
   title: "Change time config...",
   configKey: "time",
   list: [
@@ -1980,7 +1980,7 @@ let commandsTimeConfig = {
   ],
 };
 
-let commandsConfidenceMode = {
+export let commandsConfidenceMode = {
   title: "Confidence mode...",
   configKey: "confidenceMode",
   list: [
@@ -2011,7 +2011,7 @@ let commandsConfidenceMode = {
   ],
 };
 
-let commandsStopOnError = {
+export let commandsStopOnError = {
   title: "Stop on error...",
   configKey: "stopOnError",
   list: [
@@ -2042,7 +2042,7 @@ let commandsStopOnError = {
   ],
 };
 
-let commandsFontSize = {
+export let commandsFontSize = {
   title: "Font size...",
   configKey: "fontSize",
   list: [
@@ -2103,7 +2103,7 @@ let commandsFontSize = {
   ],
 };
 
-let commandsPageWidth = {
+export let commandsPageWidth = {
   title: "Page width...",
   configKey: "pageWidth",
   list: [
@@ -2150,7 +2150,7 @@ let commandsPageWidth = {
   ],
 };
 
-let commandsPractiseWords = {
+export let commandsPractiseWords = {
   title: "Practice words...",
   list: [
     {
@@ -2257,7 +2257,7 @@ export function updateThemeCommands() {
   }
 }
 
-let commandsCopyWordsToClipboard = {
+export let commandsCopyWordsToClipboard = {
   title: "Are you sure...",
   list: [
     {
@@ -2284,7 +2284,7 @@ let commandsCopyWordsToClipboard = {
   ],
 };
 
-let commandsMonkeyPowerLevel = {
+export let commandsMonkeyPowerLevel = {
   title: "Power mode...",
   configKey: "monkeyPowerLevel",
   list: [

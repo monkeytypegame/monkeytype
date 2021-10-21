@@ -184,6 +184,8 @@ const refactoredSrc = [
   "./src/js/test/wordset.js",
   "./src/js/test/tts.js",
   "./src/js/replay.js",
+
+  "./src/js/url.js",
 ];
 
 //legacy files
