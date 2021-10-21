@@ -1,11 +1,10 @@
 import * as Notifications from "./notifications";
-import Config, * as UpdateConfig from "./config";
+import * as UpdateConfig from "./config";
 import * as AccountButton from "./account-button";
 import * as Account from "./account";
 import * as AccountController from "./account-controller";
 import * as CommandlineLists from "./commandline-lists";
 import * as VerificationController from "./verification-controller";
-import * as Misc from "./misc";
 import * as Settings from "./settings";
 import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
