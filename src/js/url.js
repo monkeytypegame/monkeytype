@@ -17,19 +17,18 @@ class OptionsSetting {
     this.callback = callback;
     this.options = {};
     if (byDisplay) {
-      command.list.forEach(
-        (option) =>
-          (this.options[option.display.toLowerCase()] = option.configValue)
-      );
+      command.list.forEach((option) => {
+        this.options[option.display.toLowerCase()] = option.configValue;
+      });
     } else {
       if (Array.isArray(command))
-        command.forEach(
-          (option) => (this.options[option.configValue] = option.configValue)
-        );
+        command.forEach((option) => {
+          this.options[option] = option;
+        });
       else
-        command.list.forEach(
-          (option) => (this.options[option.configValue] = option.configValue)
-        );
+        command.list.forEach((option) => {
+          this.options[option.configValue] = option.configValue;
+        });
     }
   }
 
@@ -43,7 +42,7 @@ class OptionsSetting {
   }
 
   validate(val) {
-    return this.options.keys().includes(val.toLowerCase());
+    return Object.keys(this.options).includes(val.toLowerCase());
   }
 }
 
