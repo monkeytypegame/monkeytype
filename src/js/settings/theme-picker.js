@@ -14,6 +14,52 @@ export function updateActiveButton() {
   );
 }
 
+function updateColors(colorPicker, color) {
+  let colorREGEX = [
+    {
+      rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
+      start: "rgb(",
+      end: ")",
+    },
+    {
+      rule: /\b[A-Z, a-z, 0-9]{6}\b/,
+      start: "#",
+      end: "",
+    },
+    {
+      rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
+      start: "hsl(",
+      end: ")",
+    },
+  ];
+
+  color = color.replace("°", "");
+
+  for (let regex of colorREGEX) {
+    if (color.match(regex.rule)) {
+      color = regex.start + color + regex.end;
+      break;
+    }
+  }
+
+  $(".colorConverter").css("color", color);
+  color = Misc.convertRGBtoHEX($(".colorConverter").css("color"));
+  if (!color) {
+    return;
+  }
+
+  let colorid = colorPicker.find("input[type=color]").attr("id");
+
+  document.documentElement.style.setProperty(colorid, color);
+  let pickerButton = colorPicker.find("label");
+
+  pickerButton.val(color);
+  pickerButton.attr("value", color);
+  pickerButton.css("background-color", color);
+  colorPicker.find("input[type=text]").val(color);
+  colorPicker.find("input[type=color]").attr("value", color);
+}
+
 export function refreshButtons() {
   let favThemesEl = $(
     ".pageSettings .section.themes .favThemes.buttons"
@@ -65,15 +111,16 @@ export function refreshButtons() {
 
 export function setCustomInputs() {
   $(
-    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((n, index) => {
+    console.log(index);
     let currentColor =
       Config.customThemeColors[
-        ThemeController.colorVars.indexOf($(index).attr("id"))
+        ThemeController.colorVars.indexOf(
+          $(index).find("input[type=color]").attr("id")
+        )
       ];
-    $(index).val(currentColor);
-    $(index).attr("value", currentColor);
-    $(index).prev().text(currentColor);
+    updateColors($(index), currentColor);
   });
 }
 
@@ -197,15 +244,31 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
-).on("input", (e) => {
+).on("change", (e) => {
   // UpdateConfig.setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();
 
-  document.documentElement.style.setProperty($colorVar, $pickedColor);
-  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
+  updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
 });
+
+$(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
+  .on("blur", (e) => {
+    let $colorVar = $(e.currentTarget).attr("id");
+    let $pickedColor = $(e.currentTarget).val();
+
+    updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
+  })
+  .on("keypress", function (e) {
+    if (e.which === 13) {
+      $(this).attr("disabled", "disabled");
+      let $colorVar = $(e.currentTarget).attr("id");
+      let $pickedColor = $(e.currentTarget).val();
+
+      updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
+      $(this).removeAttr("disabled");
+    }
+  });
 
 $(".pageSettings .saveCustomThemeButton").click((e) => {
   let save = [];
@@ -254,9 +317,7 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
       } else if (colorName === "--colorful-error-extra-color") {
         color = themecolors.colorfulErrorExtra;
       }
-      $(".colorPicker #" + colorName).attr("value", color);
-      $(".colorPicker #" + colorName).val(color);
-      $(".colorPicker [for=" + colorName + "]").text(color);
+      updateColors($(".colorPicker #" + colorName).parent(), color);
     });
   }, 250);
 });
