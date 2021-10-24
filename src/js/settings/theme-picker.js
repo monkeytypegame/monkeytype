@@ -55,7 +55,8 @@ function updateColors(colorPicker, color) {
 
   pickerButton.val(color);
   pickerButton.attr("value", color);
-  pickerButton.css("background-color", color);
+  if (pickerButton.attr("for") !== "--bg-color")
+    pickerButton.css("background-color", color);
   colorPicker.find("input[type=text]").val(color);
   colorPicker.find("input[type=color]").attr("value", color);
 }
@@ -250,7 +251,7 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
-).on("change", (e) => {
+).on("input", (e) => {
   // UpdateConfig.setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();

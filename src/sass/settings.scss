@@ -82,6 +82,15 @@
       }
     }
 
+    &.themes .tabContainer [tabcontent="custom"] {
+      label.button:first-child {
+        color: var(--text-color);
+      }
+      label.button {
+        color: var(--bg-color);
+      }
+    }
+
     &.customBackgroundFilter {
       .groups {
         grid-area: buttons;
