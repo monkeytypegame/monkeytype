@@ -2108,7 +2108,7 @@
                   threshold.
                 </div>
                 <div>
-                  <div class="inputAndSave">
+                  <div class="inputAndButton">
                     <input
                       type="number"
                       placeholder="min wpm"
@@ -2153,7 +2153,7 @@
                   threshold.
                 </div>
                 <div>
-                  <div class="inputAndSave">
+                  <div class="inputAndButton">
                     <input
                       type="number"
                       placeholder="min accuracy"
@@ -2199,7 +2199,7 @@
                   threshold to automatically decrease for longer words.
                 </div>
                 <div>
-                  <div class="inputAndSave">
+                  <div class="inputAndButton">
                     <input
                       type="number"
                       placeholder="min burst"
@@ -2291,7 +2291,7 @@
                   Select which layouts you want the layoutfluid funbox to cycle
                   through.
                 </div>
-                <div class="inputAndSave">
+                <div class="inputAndButton">
                   <input
                     type="text"
                     placeholder="layouts (separated by space)"
@@ -2709,7 +2709,7 @@
                   'average' option average the speed of last 10 results.
                 </div>
                 <div>
-                  <div class="inputAndSave">
+                  <div class="inputAndButton">
                     <input
                       type="number"
                       placeholder="wpm"
@@ -3327,7 +3327,7 @@
                   fully visible. Max fits the image corner to corner.
                 </div>
                 <div>
-                  <div class="inputAndSave">
+                  <div class="inputAndButton">
                     <input
                       type="text"
                       placeholder="image url"
@@ -3478,79 +3478,194 @@
                   </div>
                 </div>
                 <!-- <div class='tabs'>
-                <button tab="preset" class="tab">preset</button>
-                <button tab="custom" class="tab">custom</button>
-              </div> -->
+                  <button tab="preset" class="tab">preset</button>
+                  <button tab="custom" class="tab">custom</button>
+                </div> -->
+
+                <!-- Used to convert colors to hex  -->
+                <div class="colorConverter"></div>
+
                 <div class="tabContainer">
                   <div
                     tabContent="custom"
                     class="tabContent section customTheme hidden"
                   >
                     <label class="colorText">background</label>
-                    <span class="colorPicker">
-                      <label for="--bg-color">#000000</label>
-                      <input type="color" value="#000000" id="--bg-color" />
-                    </span>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--bg-color-txt"
+                      />
+                      <label
+                        for="--bg-color"
+                        class="button"
+                        style="
+                          color: var(--text-color);
+                          background: rgba(0, 0, 0, 0.1);
+                        "
+                      >
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
+                      <input
+                        type="color"
+                        class="color"
+                        value="#000000"
+                        id="--bg-color"
+                      />
+                    </div>
                     <label class="colorText">main</label>
-                    <span class="colorPicker">
-                      <label for="--main-color">#000000</label>
-                      <input type="color" value="#000000" id="--main-color" />
-                    </span>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--main-color-txt"
+                      />
+                      <label for="--main-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
+                      <input
+                        type="color"
+                        class="color"
+                        value="#000000"
+                        id="--main-color"
+                      />
+                    </div>
                     <label class="colorText">caret</label>
-                    <span class="colorPicker">
-                      <label for="--caret-color">#000000</label>
-                      <input type="color" value="#000000" id="--caret-color" />
-                    </span>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--caret-color-txt"
+                      />
+                      <label for="--caret-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
+                      <input
+                        type="color"
+                        class="color"
+                        value="#000000"
+                        id="--caret-color"
+                      />
+                    </div>
                     <label class="colorText">sub</label>
-                    <span class="colorPicker">
-                      <label for="--sub-color">#000000</label>
-                      <input type="color" value="#000000" id="--sub-color" />
-                    </span>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--sub-color-txt"
+                      />
+                      <label for="--sub-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
+                      <input
+                        type="color"
+                        class="color"
+                        value="#000000"
+                        id="--sub-color"
+                      />
+                    </div>
                     <label class="colorText">text</label>
-                    <span class="colorPicker">
-                      <label for="--text-color">#000000</label>
-                      <input type="color" value="#000000" id="--text-color" />
-                    </span>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--text-color-txt"
+                      />
+                      <label for="--text-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
+                      <input
+                        type="color"
+                        class="color"
+                        value="#000000"
+                        id="--text-color"
+                      />
+                    </div>
 
                     <span class="spacer"></span>
 
                     <label class="colorText">error</label>
-                    <span class="colorPicker">
-                      <label for="--error-color">#000000</label>
-                      <input type="color" value="#000000" id="--error-color" />
-                    </span>
-                    <label class="colorText">extra error</label>
-                    <span class="colorPicker">
-                      <label for="--error-extra-color">#000000</label>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--error-color-txt"
+                      />
+                      <label for="--error-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
                       <input
                         type="color"
+                        class="color"
+                        value="#000000"
+                        id="--error-color"
+                      />
+                    </div>
+                    <label class="colorText">extra error</label>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--error-extra-color-txt"
+                      />
+                      <label for="--error-extra-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
+                      <input
+                        type="color"
+                        class="color"
                         value="#000000"
                         id="--error-extra-color"
                       />
-                    </span>
+                    </div>
 
                     <p>colorful mode</p>
 
                     <label class="colorText">error</label>
-                    <span class="colorPicker">
-                      <!-- Change variable names here -->
-                      <label for="--colorful-error-color">#000000</label>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--colorful-error-color-txt"
+                      />
+                      <label for="--colorful-error-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
                       <input
                         type="color"
+                        class="color"
                         value="#000000"
                         id="--colorful-error-color"
                       />
-                    </span>
+                    </div>
+
                     <label class="colorText">extra error</label>
-                    <span class="colorPicker">
-                      <!-- Change variable names here -->
-                      <label for="--colorful-error-extra-color">#000000</label>
+                    <div class="colorPicker inputAndButton">
+                      <input
+                        type="text"
+                        value="#000000"
+                        class="input"
+                        id="--colorful-error-extra-color-txt"
+                      />
+                      <label for="--colorful-error-extra-color" class="button">
+                        <i class="fas fa-fw fa-palette"></i>
+                      </label>
                       <input
                         type="color"
+                        class="color"
                         value="#000000"
                         id="--colorful-error-extra-color"
                       />
-                    </span>
+                    </div>
                     <!-- <div
                       style="
                         display: grid;
