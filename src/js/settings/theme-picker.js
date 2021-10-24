@@ -14,7 +14,19 @@ export function updateActiveButton() {
   );
 }
 
-function updateColors(colorPicker, color) {
+function updateColors(colorPicker, color, onlyStyle) {
+  if (onlyStyle) {
+    let colorid = colorPicker.find("input[type=color]").attr("id");
+    document.documentElement.style.setProperty(colorid, color);
+    let pickerButton = colorPicker.find("label");
+    pickerButton.val(color);
+    pickerButton.attr("value", color);
+    if (pickerButton.attr("for") !== "--bg-color")
+      pickerButton.css("background-color", color);
+    colorPicker.find("input[type=text]").val(color);
+    colorPicker.find("input[type=color]").attr("value", color);
+    return;
+  }
   let colorREGEX = [
     {
       rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
@@ -252,6 +264,34 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("input", (e) => {
+  // UpdateConfig.setCustomTheme(true, true);
+  let $colorVar = $(e.currentTarget).attr("id");
+  let $pickedColor = $(e.currentTarget).val();
+
+  //todo check if needed
+  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
+  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  //   $(".colorPicker #" + $colorVar).val($pickedColor);
+  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+  // });
+
+  // $(
+  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
+  // ).on("input", (e) => {
+  //   // UpdateConfig.setCustomTheme(true, true);
+  //   let $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
+  //   let $pickedColor = $(e.currentTarget).val();
+
+  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
+  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  //   $(".colorPicker #" + $colorVar).val($pickedColor);
+  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+  updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor, true);
+});
+
+$(
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+).on("change", (e) => {
   // UpdateConfig.setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();
