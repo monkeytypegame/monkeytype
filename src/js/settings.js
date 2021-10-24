@@ -489,7 +489,7 @@ export function update() {
   LanguagePicker.setActiveGroup();
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs();
+  ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
 
@@ -771,42 +771,46 @@ $(".pageSettings #deleteAccount").on("click", (e) => {
   SimplePopups.list.deleteAccount.show();
 });
 
-$(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
+$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomBackground(
-      $(".pageSettings .section.customBackgroundSize .inputAndSave input").val()
+      $(
+        ".pageSettings .section.customBackgroundSize .inputAndButton input"
+      ).val()
     );
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndSave input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomBackground(
         $(
-          ".pageSettings .section.customBackgroundSize .inputAndSave input"
+          ".pageSettings .section.customBackgroundSize .inputAndButton input"
         ).val()
       );
     }
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndSave .save").on(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomLayoutfluid(
-      $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+      $(".pageSettings .section.customLayoutfluid .inputAndButton input").val()
     );
     Notifications.add("Custom layoutfluid saved", 1);
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomLayoutfluid(
-        $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+        $(
+          ".pageSettings .section.customLayoutfluid .inputAndButton input"
+        ).val()
       );
       Notifications.add("Custom layoutfluid saved", 1);
     }
