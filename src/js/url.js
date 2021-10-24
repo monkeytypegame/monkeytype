@@ -261,13 +261,6 @@ let Settings = {
   ),
 };
 
-export function loadFromUrl() {
-  Misc.getLanguageList().then((data) => {
-    (Settings.language = new OptionsSetting(UpdateConfig.setLanguage, data)),
-      applySettings(); // Needs to be called here to apply settings after language options are loaded
-  });
-}
-
 function applySettings() {
   let url = new URL(window.location.href);
 
@@ -313,4 +306,11 @@ function applySettings() {
       "Settings from URL"
     );
   }
+}
+
+export function loadFromUrl() {
+  Misc.getLanguageList().then((data) => {
+    (Settings.language = new OptionsSetting(UpdateConfig.setLanguage, data)),
+      applySettings(); // Needs to be called here to apply settings after language options are loaded
+  });
 }
