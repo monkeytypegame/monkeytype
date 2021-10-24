@@ -238,11 +238,6 @@ let Settings = {
     CustomText.setText(val);
     CustomText.setWord(val.length);
   }),
-  // maybe merge theme and customTheme into one?
-  theme: new OptionsSetting(function (theme) {
-    UpdateConfig.setTheme(theme);
-    UpdateConfig.setCustomTheme(false);
-  }, Commands.themeCommands),
   // possibly create custom setting to return validation status
   customTheme: new TextSetting(function (val) {
     val = val.split(",");
@@ -252,10 +247,6 @@ let Settings = {
       GlobalSettings.setCustomThemeInputs();
     }
   }),
-  randomTheme: new OptionsSetting(
-    UpdateConfig.setRandomTheme,
-    Commands.commandsRandomTheme
-  ),
   difficulty: new OptionsSetting(UpdateConfig.setDifficulty, [
     "normal",
     "expert",
