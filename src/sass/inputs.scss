@@ -38,11 +38,12 @@ input[type="range"] {
 }
 
 input[type="color"] {
-  height: 0;
+  height: 3px; //i dont know why its 3, but safari gods have spoken - 3 makes it work
   opacity: 0;
   padding: 0;
   margin: 0;
   position: absolute;
+  pointer-events: none;
 }
 
 ::-moz-color-swatch {
