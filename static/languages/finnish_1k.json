@@ -1,6 +1,7 @@
 {
   "name": "finnish_1k",
   "leftToRight": true,
+  "bcp47": "fi-FI",
   "words": [
     "aamu",
     "aihe",

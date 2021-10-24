@@ -12,6 +12,10 @@
     ]
   },
   {
+    "name": "georgian",
+    "languages": ["georgian"]
+  },
+  {
     "name": "spanish",
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
@@ -61,6 +65,7 @@
       "german",
       "german_1k",
       "german_10k",
+      "german_250k",
       "swiss_german",
       "swiss_german_1k"
     ]
@@ -79,13 +84,19 @@
   },
   {
     "name": "italian",
-    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
+    "languages": [
+      "italian",
+      "italian_1k",
+      "italian_7k",
+      "italian_60k",
+      "italian_280k"
+    ]
   },
   {
     "name": "thai",
     "languages": ["thai"]
   },
- {
+  {
     "name": "tamil",
     "languages": ["tamil"]
   },
@@ -144,6 +155,10 @@
   {
     "name": "finnish",
     "languages": ["finnish", "finnish_1k", "finnish_10k"]
+  },
+  {
+    "name": "estonian",
+    "languages": ["estonian", "estonian_1k", "estonian_10k"]
   },
   {
     "name": "welsh",
@@ -226,6 +241,10 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "japanese",
+    "languages": ["japanese_hiragana", "japanese_katakana"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -236,6 +255,7 @@
       "code_javascript",
       "code_javascript_1k",
       "code_html",
+      "code_pascal",
       "code_java",
       "code_go",
       "code_rust",

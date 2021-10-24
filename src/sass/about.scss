@@ -1,0 +1,63 @@
+.pageAbout {
+  display: grid;
+  gap: 2rem;
+
+  .created {
+    text-align: center;
+    color: var(--sub-color);
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .section {
+    display: grid;
+    gap: 0.25rem;
+
+    .title {
+      font-size: 2rem;
+      line-height: 2rem;
+      color: var(--sub-color);
+      margin: 1rem 0;
+    }
+
+    .contactButtons,
+    .supportButtons {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+      .button {
+        text-decoration: none;
+        font-size: 1.5rem;
+        padding: 2rem 0;
+        .fas,
+        .fab {
+          margin-right: 1rem;
+        }
+      }
+    }
+
+    .supporters,
+    .contributors {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 0.25rem;
+      color: var(--text-color);
+    }
+
+    h1 {
+      font-size: 1rem;
+      line-height: 1rem;
+      color: var(--sub-color);
+      margin: 0;
+      font-weight: 300;
+    }
+
+    p {
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+    }
+  }
+}

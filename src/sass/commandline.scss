@@ -1,0 +1,132 @@
+#commandLineWrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem 0;
+
+  #commandInput {
+    width: 700px;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+
+    input {
+      background: var(--bg-color);
+      padding: 1rem;
+      color: var(--main-color);
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      width: 100%;
+      border-radius: var(--roundness);
+    }
+
+    .shiftEnter {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      line-height: 0.75rem;
+      color: var(--sub-color);
+      text-align: center;
+    }
+  }
+
+  #commandLine {
+    width: 700px;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+
+    .searchicon {
+      color: var(--sub-color);
+      margin: 1px 1rem 0 1rem;
+    }
+
+    input {
+      background: var(--bg-color);
+      padding: 1rem 1rem 1rem 0;
+      color: var(--text-color);
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      width: 100%;
+      border-radius: var(--roundness);
+    }
+
+    .separator {
+      background: black;
+      width: 100%;
+      height: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    .listTitle {
+      color: var(--text-color);
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      line-height: 0.75rem;
+    }
+
+    .suggestions {
+      display: block;
+      @extend .ffscroll;
+      overflow-y: scroll;
+      max-height: calc(100vh - 10rem - 3rem);
+      display: grid;
+      cursor: pointer;
+      user-select: none;
+
+      .entry {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        line-height: 0.75rem;
+        color: var(--sub-color);
+        display: grid;
+        grid-template-columns: auto 1fr;
+
+        div {
+          pointer-events: none;
+        }
+
+        .textIcon {
+          font-weight: 900;
+          /* width: 1.25rem; */
+          display: inline-block;
+          letter-spacing: -0.1rem;
+          margin-right: 0.5rem;
+          text-align: center;
+          width: 1.25em;
+        }
+
+        .fas {
+          margin-right: 0.5rem;
+        }
+
+        &:last-child {
+          border-radius: 0 0 var(--roundness) var(--roundness);
+        }
+
+        &.activeMouse {
+          color: var(--bg-color);
+          background: var(--text-color);
+          cursor: pointer;
+        }
+
+        &.activeKeyboard {
+          color: var(--bg-color);
+          background: var(--text-color);
+        }
+
+        // &:hover {
+        //   color: var(--text-color);
+        //   background: var(--sub-color);
+        //   cursor: pointer;
+        // }
+      }
+    }
+  }
+}

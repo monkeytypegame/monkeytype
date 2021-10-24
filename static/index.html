@@ -124,11 +124,40 @@
       <i class="fas closeButton fa-times"></i>
     </div>
 
-    <div id="simplePopupWrapper" class="hidden">
+    <div id="simplePopupWrapper" class="popupWrapper hidden">
       <div id="simplePopup" popupId=""></div>
     </div>
 
-    <div id="practiseWordsPopupWrapper" class="hidden">
+    <div id="pbTablesPopupWrapper" class="popupWrapper hidden">
+      <div id="pbTablesPopup">
+        <!-- <div class="title">All words personal bests</div> -->
+        <table>
+          <thead>
+            <tr>
+              <td width="1%">words</td>
+              <td>
+                wpm
+                <br />
+                <span class="sub">accuracy</span>
+              </td>
+              <td>
+                raw
+                <br />
+                <span class="sub">consistency</span>
+              </td>
+              <td>difficulty</td>
+              <td>language</td>
+              <td>punctuation</td>
+              <td>lazy mode</td>
+              <td>date</td>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="practiseWordsPopupWrapper" class="popupWrapper hidden">
       <div id="practiseWordsPopup" action="">
         <div class="title">Practice words</div>
         <div class="text">
@@ -142,7 +171,7 @@
       </div>
     </div>
 
-    <div id="rateQuotePopupWrapper" class="hidden">
+    <div id="rateQuotePopupWrapper" class="popupWrapper hidden">
       <div id="rateQuotePopup" quoteId="">
         <div class="quote">
           <div class="text">-</div>
@@ -213,20 +242,20 @@
       </div>
     </div>
 
-    <div id="settingsImportWrapper" class="hidden">
+    <div id="settingsImportWrapper" class="popupWrapper hidden">
       <div id="settingsImport" action="">
         <input type="text" />
         <div class="button">import settings</div>
       </div>
     </div>
 
-    <div id="customThemeShareWrapper" class="hidden">
+    <div id="customThemeShareWrapper" class="popupWrapper hidden">
       <div id="customThemeShare" action="">
         <input type="text" />
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customTextPopupWrapper" class="hidden">
+    <div id="customTextPopupWrapper" class="popupWrapper hidden">
       <div id="customTextPopup" action="">
         <div class="wordfilter button">
           <i class="fas fa-filter"></i>
@@ -275,7 +304,7 @@
         <div class="button apply">ok</div>
       </div>
     </div>
-    <div id="wordFilterPopupWrapper" class="hidden">
+    <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
       <div id="wordFilterPopup">
         <div class="group">
           <div class="title">language</div>
@@ -318,32 +347,44 @@
         <div class="button">add</div>
       </div>
     </div>
-    <div id="customWordAmountPopupWrapper" class="hidden">
+    <div id="customWordAmountPopupWrapper" class="popupWrapper hidden">
       <div id="customWordAmountPopup">
         <div class="title">Word amount</div>
         <input type="number" value="1" min="1" max="10000" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
-          use the Bail Out feature (esc > Bail Out)
+          use the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
         </div>
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customTestDurationPopupWrapper" class="hidden">
+    <div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
       <div id="customTestDurationPopup">
         <div class="title">Test duration</div>
         <div class="preview"></div>
         <input value="1" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
-          use the Bail Out feature (esc > Bail Out)
+          use the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
         </div>
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="quoteSearchPopupWrapper" class="hidden">
+    <div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
       <div id="quoteSearchPopup" mode="">
-        <div class="title">Quote Search</div>
+        <div id="quoteSearchTop">
+          <div class="title">Quote Search</div>
+          <div class="buttons">
+            <div id="gotoSubmitQuoteButton" class="button">
+              <i class="fas fa-plus"></i>
+              Submit a quote
+            </div>
+            <div id="goToApproveQuotes" class="button">
+              <i class="fas fa-check"></i>
+              Approve quotes
+            </div>
+          </div>
+        </div>
         <input
           id="searchBox"
           class="searchBox"
@@ -355,20 +396,72 @@
         <div id="quoteSearchResults" class="quoteSearchResults"></div>
       </div>
     </div>
-    <div id="tagsWrapper" class="wrapper hidden">
+    <div id="quoteSubmitPopupWrapper" class="popupWrapper hidden">
+      <div id="quoteSubmitPopup" mode="">
+        <div class="title">Submit a Quote</div>
+        <ul>
+          <li>
+            Do not include content that contains any libelous or otherwise
+            unlawful, abusive or obscene text.
+          </li>
+          <li>Verify quotes added aren't duplicates of any already present</li>
+          <li>
+            Please do not add extremely short quotes (less than 60 characters)
+          </li>
+          <li>
+            <b>
+              Submitting low quality quotes or misusing this form will cause you
+              to lose access to this feature
+            </b>
+          </li>
+        </ul>
+        <label>Quote</label>
+        <div style="position: relative">
+          <textarea
+            id="submitQuoteText"
+            class=""
+            type="text"
+            autocomplete="off"
+          ></textarea>
+          <div class="characterCount">-</div>
+        </div>
+        <label>Source</label>
+        <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
+        <label>Language</label>
+        <select name="language" id="submitQuoteLanguage"></select>
+        <div
+          class="g-recaptcha"
+          data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+        ></div>
+        <div id="submitQuoteButton" class="button">Submit</div>
+      </div>
+    </div>
+    <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
+      <div id="quoteApprovePopup" mode="">
+        <div class="top">
+          <div class="title">Approve Quotes</div>
+          <div class="button refreshList">
+            <i class="fas fa-sync-alt"></i>
+            Refresh list
+          </div>
+        </div>
+        <div class="quotes"></div>
+      </div>
+    </div>
+    <div id="tagsWrapper" class="popupWrapper hidden">
       <div id="tagsEdit" action="" tagid="">
         <div class="title"></div>
         <input type="text" />
         <div class="button"><i class="fas fa-plus"></i></div>
       </div>
     </div>
-    <div id="resultEditTagsPanelWrapper" class="hidden">
+    <div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
       <div id="resultEditTagsPanel" resultid="">
         <div class="buttons"></div>
         <div class="button confirmButton"><i class="fas fa-check"></i></div>
       </div>
     </div>
-    <div id="presetWrapper" class="wrapper hidden">
+    <div id="presetWrapper" class="popupWrapper hidden">
       <div id="presetEdit" action="" presetid="">
         <div class="title"></div>
         <input type="text" class="text" />
@@ -503,7 +596,7 @@
         </div>
       </div>
     </div>
-    <div id="supportMeWrapper" class="hidden">
+    <div id="supportMeWrapper" class="popupWrapper hidden">
       <div id="supportMe">
         <div class="title">Support Monkeytype</div>
         <div class="text">
@@ -810,7 +903,15 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
+              <input
+                id="wordsInput"
+                class=""
+                tabindex="0"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+              />
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
@@ -1033,7 +1134,7 @@
               <div id="premidTestMode" class="hidden"></div>
               <div id="premidSecondsLeft" class="hidden"></div>
             </div>
-            <div id="result" class="hidden">
+            <div id="result" tabindex="0" class="hidden">
               <div class="stats">
                 <!-- <div class="info">words 10<br>punctuation</div> -->
 
@@ -1156,7 +1257,7 @@
                       data-balloon-pos="up"
                       style="display: inline-block"
                     >
-                      <i class="fas fa-copy"></i>
+                      <i class="fas fa-fw fa-copy"></i>
                     </span>
                     <span
                       id="toggleBurstHeatmap"
@@ -1165,7 +1266,7 @@
                       data-balloon-pos="up"
                       style="display: inline-block"
                     >
-                      <i class="fas fa-fire-alt"></i>
+                      <i class="fas fa-fw fa-fire-alt"></i>
                     </span>
                     <div class="heatmapLegend hidden">
                       <div>slow</div>
@@ -1299,6 +1400,12 @@
                 <key>tab</key>
                 if you have quick tab mode enabled) to restart the typing test.
                 Open the command line by pressing
+                <key>ctrl/cmd</key>
+                +
+                <key>shift</key>
+                +
+                <key>p</key>
+                or
                 <key>esc</key>
                 - there you can access all the functionality you need without
                 touching your mouse
@@ -1466,6 +1573,7 @@
                 <div>Not Gate</div>
                 <div>Corey</div>
                 <div>Jashe</div>
+                <div>Nubby</div>
                 <div>Nick</div>
                 <div>Eugeniu</div>
                 <div>Weedle</div>
@@ -1527,6 +1635,9 @@
                 <div>Sonicv6</div>
                 <div>Taran</div>
                 <div>Roux</div>
+                <div>Ochiba</div>
+                <div>merwie</div>
+                <div>dogger</div>
                 <div>Artem</div>
                 <div>DarkBlu</div>
                 <div>John</div>
@@ -1710,6 +1821,12 @@
             <div class="tip">
               tip: You can also change all these settings quickly using the
               command line (
+              <key>ctrl/cmd</key>
+              +
+              <key>shift</key>
+              +
+              <key>p</key>
+              or
               <key>esc</key>
               )
             </div>
@@ -2234,7 +2351,11 @@
                   <key>Y</key>
                   , and
                   <key>^</key>
-                  because many people use the other hand for those keys.
+                  because many people use the other hand for those keys. If
+                  you're using external software to emulate your layout
+                  (including QMK), you should use the "keymap" mode - the
+                  standard "on" will not work. This will enforce opposite shift
+                  based on the "keymap layout" setting.
                 </div>
                 <div class="buttons">
                   <div
@@ -2252,6 +2373,14 @@
                     onclick="this.blur();"
                   >
                     on
+                  </div>
+                  <div
+                    class="button"
+                    oppositeShiftMode="keymap"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    keymap
                   </div>
                 </div>
               </div>
@@ -2383,18 +2512,6 @@
                   </div>
                 </div>
               </div>
-              <div class="section capsLockBackspace">
-                <h1>caps lock backspace</h1>
-                <div class="text">Makes caps lock act like backspace.</div>
-                <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
-                    off
-                  </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
-                    on
-                  </div>
-                </div>
-              </div>
               <div class="section lazyMode">
                 <h1>lazy mode</h1>
                 <div class="text">
@@ -2410,11 +2527,11 @@
                 </div>
               </div>
               <div class="section layout fullWidth">
-                <h1>layout override</h1>
+                <h1>layout emulator</h1>
                 <div class="text">
                   With this setting you can emulate other layouts. This setting
-                  is best kept default, as it can break things like dead keys
-                  and alt layers.
+                  is best kept off, as it can break things like dead keys and
+                  alt layers.
                 </div>
                 <div class="buttons"></div>
               </div>
@@ -2428,7 +2545,7 @@
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="settingsGroup sound">
-              <div class="section playSoundOnClick">
+              <div class="section playSoundOnClick fullWidth">
                 <h1>play sound on click</h1>
                 <div class="text">
                   Plays a short sound when you press a key.
@@ -2448,7 +2565,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    1
+                    click
                   </div>
                   <div
                     class="button"
@@ -2456,7 +2573,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    2
+                    beep
                   </div>
                   <div
                     class="button"
@@ -2464,7 +2581,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    3
+                    pop
                   </div>
                   <div
                     class="button"
@@ -2472,7 +2589,31 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    4
+                    nk creams
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="5"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    typewriter
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="6"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    osu
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="7"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    hitmarker
                   </div>
                 </div>
               </div>
@@ -3337,9 +3478,13 @@
                   </div>
                 </div>
                 <!-- <div class='tabs'>
-                <button tab="preset" class="tab">preset</button>
-                <button tab="custom" class="tab">custom</button>
-              </div> -->
+                  <button tab="preset" class="tab">preset</button>
+                  <button tab="custom" class="tab">custom</button>
+                </div> -->
+
+                <!-- Used to convert colors to hex  -->
+                <div class="colorConverter"></div>
+
                 <div class="tabContainer">
                   <div
                     tabContent="custom"
@@ -3950,6 +4095,7 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="button showAllTimePbs">show all</div>
                   </div>
                   <div class="titleAndTable wordsPbTable">
                     <table width="100%">
@@ -3996,6 +4142,7 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="button showAllWordsPbs">show all</div>
                   </div>
                 </div>
               </div>
@@ -4290,6 +4437,12 @@
             <key>enter</key>
             - Restart Test
             <br />
+            <key>ctrl/cmd</key>
+            +
+            <key>shift</key>
+            +
+            <key>p</key>
+            or
             <key>esc</key>
             - Command Line
           </div>
@@ -4390,5 +4543,6 @@
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="js/monkeytype.js"></script>
 </html>

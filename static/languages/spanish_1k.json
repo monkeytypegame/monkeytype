@@ -1,6 +1,7 @@
 {
   "name": "spanish_1k",
   "_comment": "Source from: http://corpus.rae.es/lfrecuencias.html",
+  "bcp47": "es-ES",
   "leftToRight": true,
   "words": [
     "de",

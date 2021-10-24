@@ -1,5 +1,6 @@
 import * as DB from "./db";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
+import * as Misc from "./misc";
 
 export function update() {
   $(".pageAccount .timePbTable tbody").html(`
@@ -76,25 +77,29 @@ export function update() {
   const pb = DB.getSnapshot().personalBests;
   let pbData;
   let text;
-
+  let dateText = `-<br><span class="sub">-</span>`;
   let multiplier = Config.alwaysShowCPM ? 5 : 1;
 
   text = "";
   try {
     pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>15</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -106,19 +111,23 @@ export function update() {
   }
   try {
     pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
     <td>30</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -130,19 +139,23 @@ export function update() {
   }
   try {
     pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>60</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -154,19 +167,23 @@ export function update() {
   }
   try {
     pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>120</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -181,19 +198,23 @@ export function update() {
   text = "";
   try {
     pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>10</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -205,19 +226,23 @@ export function update() {
   }
   try {
     pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>25</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -229,19 +254,23 @@ export function update() {
   }
   try {
     pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>50</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -253,19 +282,23 @@ export function update() {
   }
   try {
     pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
+    dateText = `-<br><span class="sub">-</span>`;
+    if (pbData.timestamp) {
+      dateText =
+        moment(pbData.timestamp).format("DD MMM YYYY") +
+        "<br><div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div>";
+    }
     text += `<tr>
       <td>100</td>
-      <td>${pbData.wpm * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw * multiplier}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
-      <td>${moment(pbData.timestamp).format(
-        "DD MMM YYYY"
-      )}<br><div class='sub'>${moment(pbData.timestamp).format(
-      "HH:mm"
-    )}</div></td>
+      <td>${dateText}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>

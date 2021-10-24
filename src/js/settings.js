@@ -196,10 +196,6 @@ async function initGroups() {
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll
   );
-  groups.capsLockBackspace = new SettingsGroup(
-    "capsLockBackspace",
-    UpdateConfig.setCapsLockBackspace
-  );
   groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
   groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
@@ -287,16 +283,15 @@ async function fillSettingsPage() {
   let layoutEl = $(".pageSettings .section.layout .buttons").empty();
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
-      `<div class="layout button" layout='${layout}'>${layout.replace(
-        /_/g,
-        " "
-      )}</div>`
+      `<div class="layout button" layout='${layout}'>${
+        layout === "default" ? "off" : layout.replace(/_/g, " ")
+      }</div>`
     );
   });
 
   let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
   keymapEl.append(
-    `<div class="layout button" keymapLayout='overrideSync'>override sync</div>`
+    `<div class="layout button" keymapLayout='overrideSync'>emulator sync</div>`
   );
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {

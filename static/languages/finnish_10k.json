@@ -1,6 +1,7 @@
 {
   "name": "finnish_10k",
   "leftToRight": true,
+  "bcp47": "fi-FI",
   "words": [
     "aallotar",
     "aallottaa",

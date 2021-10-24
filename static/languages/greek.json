@@ -2,6 +2,7 @@
   "name": "greek",
   "leftToRight": true,
   "noLazyMode": true,
+  "bcp47": "el-GR",
   "words": [
     "άρθρο",
     "στέψη",
