@@ -14,10 +14,11 @@ export function updateActiveButton() {
   );
 }
 
-function updateColors(colorPicker, color, onlyStyle) {
+function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
   if (onlyStyle) {
     let colorid = colorPicker.find("input[type=color]").attr("id");
-    document.documentElement.style.setProperty(colorid, color);
+    if (!noThemeUpdate)
+      document.documentElement.style.setProperty(colorid, color);
     let pickerButton = colorPicker.find("label");
     pickerButton.val(color);
     pickerButton.attr("value", color);
@@ -62,7 +63,9 @@ function updateColors(colorPicker, color, onlyStyle) {
 
   let colorid = colorPicker.find("input[type=color]").attr("id");
 
-  document.documentElement.style.setProperty(colorid, color);
+  if (!noThemeUpdate)
+    document.documentElement.style.setProperty(colorid, color);
+
   let pickerButton = colorPicker.find("label");
 
   pickerButton.val(color);
@@ -122,7 +125,7 @@ export function refreshButtons() {
   });
 }
 
-export function setCustomInputs() {
+export function setCustomInputs(noThemeUpdate) {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((n, index) => {
@@ -138,8 +141,7 @@ export function setCustomInputs() {
     // $(index).find("input[type=color]").val(currentColor);
     // $(index).find("input[type=color]").attr("value", currentColor);
     // $(index).find("input[type=text]").val(currentColor);
-
-    updateColors($(index), currentColor);
+    updateColors($(index), currentColor, false, noThemeUpdate);
   });
 }
 
@@ -172,21 +174,21 @@ export function updateActiveTab() {
       "active"
     );
 
-    UI.swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      250
-    );
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   250
+    // );
   } else {
     $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
       "active"
     );
 
-    UI.swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      250
-    );
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   250
+    // );
   }
 }
 

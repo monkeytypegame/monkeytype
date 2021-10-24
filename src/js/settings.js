@@ -489,7 +489,7 @@ export function update() {
   LanguagePicker.setActiveGroup();
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs();
+  ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
 
