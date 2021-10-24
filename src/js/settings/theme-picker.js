@@ -129,7 +129,6 @@ export function setCustomInputs(noThemeUpdate) {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((n, index) => {
-    console.log(index);
     let currentColor =
       Config.customThemeColors[
         ThemeController.colorVars.indexOf(
