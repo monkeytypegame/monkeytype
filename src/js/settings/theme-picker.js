@@ -5,7 +5,6 @@ import * as Notifications from "./notifications";
 import * as CommandlineLists from "./commandline-lists";
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
-import * as UI from "./ui";
 
 export function updateActiveButton() {
   $(`.pageSettings .section.themes .theme`).removeClass("active");
