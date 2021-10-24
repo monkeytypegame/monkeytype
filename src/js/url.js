@@ -3,6 +3,7 @@ import * as Notifications from "./notifications";
 import * as Commands from "./commandline-lists";
 import * as CustomText from "./custom-text";
 import * as GlobalSettings from "./settings";
+import * as Misc from "./misc";
 
 // === Setting classes ===
 // the callback is used in `set()` method to set value in config
@@ -227,10 +228,8 @@ let Settings = {
     UpdateConfig.setHighlightMode,
     Commands.commandsHighlightMode
   ),
-  language: new OptionsSetting(
-    UpdateConfig.setLanguage,
-    Commands.commandsLanguages
-  ),
+  // Moved to loadFromUrl() to wait for languages options to load
+  // language: new OptionsSetting(UpdateConfig.setLanguage, languages),
   funbox: new OptionsSetting(UpdateConfig.setFunbox, Commands.commandsFunbox),
   layout: new OptionsSetting(UpdateConfig.setLayout, Commands.commandsLayouts),
   custom: new TextSetting(function (val) {
@@ -263,6 +262,13 @@ let Settings = {
 };
 
 export function loadFromUrl() {
+  Misc.getLanguageList().then((data) => {
+    (Settings.language = new OptionsSetting(UpdateConfig.setLanguage, data)),
+      applySettings(); // Needs to be called here to apply settings after language options are loaded
+  });
+}
+
+function applySettings() {
   let url = new URL(window.location.href);
 
   // Parse URL params - set param keys to lower case
