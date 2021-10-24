@@ -35,6 +35,7 @@ class LeaderboardsController {
         if (uid && item.uid == uid) {
           //
         } else {
+          delete item.discordId;
           delete item.uid;
         }
       });
