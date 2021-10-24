@@ -13,15 +13,13 @@
 }
 
 @media only screen and (max-width: 1050px) {
-  #centerContent {
-    .pageSettings .section.fullWidth .buttons {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
+  .pageSettings .section.fullWidth .buttons {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 
-    #result .morestats {
-      gap: 1rem;
-      grid-template-rows: 1fr 1fr;
-    }
+  #result .morestats {
+    gap: 1rem;
+    grid-template-rows: 1fr 1fr;
   }
   #supportMe {
     width: 90vw !important;
@@ -83,8 +81,10 @@
 }
 
 @media only screen and (max-width: 800px) {
-  .settingsGroup.quickNav {
-    display: none;
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-auto-flow: unset;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
   }
   #centerContent {
     #top {
@@ -123,6 +123,11 @@
     }
   }
 
+  .pageSettings {
+    .section.themes .tabContent.customTheme {
+    }
+  }
+
   #commandLine,
   #commandLineInput {
     width: 600px !important;
@@ -155,9 +160,9 @@
   .pageSettings .section {
     grid-template-columns: 1fr;
     grid-template-areas:
-      "title title"
-      "text text"
-      "buttons buttons";
+      "title"
+      "text"
+      "buttons";
 
     & > .text {
       margin-bottom: 1rem;
@@ -190,10 +195,8 @@
     }
   }
 
-  #centerContent {
-    .pageSettings .section.fullWidth .buttons {
-      grid-template-columns: 1fr 1fr;
-    }
+  .pageSettings .section.fullWidth .buttons {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -265,7 +268,25 @@
 @media only screen and (max-width: 500px) {
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+
+  .pageSettings {
+    .settingsGroup.quickNav {
+      display: none;
+    }
+    .section.fullWidth .buttons {
+      grid-template-columns: 1fr;
+    }
+    .section .buttons {
+      grid-auto-flow: row;
+    }
+    .section.customBackgroundFilter .groups .group {
+      grid-template-columns: auto 1fr;
+      .title {
+        grid-column: 1/3;
+      }
+    }
   }
 
   #top {
@@ -355,6 +376,20 @@
 
   #bottom {
     font-size: 0.65rem;
+    .leftright {
+      grid-template-columns: 1fr;
+      .left {
+        grid-template-rows: unset;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: row;
+      }
+      .right {
+        justify-self: left;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        gap: 0.25rem 1rem;
+      }
+    }
   }
 
   #commandLine,
