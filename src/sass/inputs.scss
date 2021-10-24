@@ -38,7 +38,11 @@ input[type="range"] {
 }
 
 input[type="color"] {
-  display: none;
+  height: 0;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute;
 }
 
 ::-moz-color-swatch {
