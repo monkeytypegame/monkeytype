@@ -122,6 +122,14 @@
       color: var(--sub-color);
     }
 
+    &.personalBestTables {
+      .tables {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+    }
+
     &.history {
       .active {
         animation: flashHighlight 4s linear 0s 1;

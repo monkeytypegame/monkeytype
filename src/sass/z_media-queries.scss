@@ -78,6 +78,25 @@
       padding: 0.25rem 0;
     }
   }
+  .pageAccount {
+    .group.personalBestTables {
+      .tables {
+        grid-template-columns: 1fr;
+      }
+    }
+    .group.history {
+      table {
+        thead,
+        tbody {
+          td:nth-child(1),
+          td:nth-child(8),
+          td:nth-child(9) {
+            display: none;
+          }
+        }
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 800px) {
@@ -146,6 +165,32 @@
       .leaderboardsTop {
         flex-direction: column;
         align-items: baseline;
+      }
+    }
+  }
+  .pageAccount {
+    .triplegroup {
+      grid-template-columns: 1fr 1fr;
+      .emptygroup {
+        display: none;
+      }
+    }
+    .group.chart .below {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .group.topFilters .buttonsAndTitle .buttons {
+      display: grid;
+      justify-content: unset;
+    }
+    .group.history {
+      table {
+        thead,
+        tbody {
+          td:nth-child(6) {
+            display: none;
+          }
+        }
       }
     }
   }
@@ -269,6 +314,19 @@
       }
     }
   }
+  .pageAccount {
+    .group.history {
+      table {
+        thead,
+        tbody {
+          td:nth-child(7),
+          td:nth-child(5) {
+            display: none;
+          }
+        }
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 500px) {
@@ -299,6 +357,22 @@
     .contactButtons,
     .supportButtons {
       grid-template-columns: 1fr;
+    }
+  }
+
+  .pageAccount {
+    .triplegroup {
+      grid-template-columns: 1fr;
+    }
+    .group.history {
+      table {
+        thead,
+        tbody {
+          td:nth-child(3) {
+            display: none;
+          }
+        }
+      }
     }
   }
 
