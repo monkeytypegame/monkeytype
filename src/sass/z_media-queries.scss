@@ -340,6 +340,10 @@
     grid-template-columns: 1fr;
   }
 
+  #simplePopupWrapper #simplePopup {
+    width: 90vw;
+  }
+
   .pageSettings {
     .settingsGroup.quickNav {
       display: none;
