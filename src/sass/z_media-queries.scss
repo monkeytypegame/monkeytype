@@ -469,16 +469,16 @@
   #bottom {
     font-size: 0.65rem;
     .leftright {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       .left {
-        grid-template-rows: unset;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
         grid-template-columns: 1fr 1fr;
         grid-auto-flow: row;
       }
       .right {
-        justify-self: left;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr;
+        // justify-self: left;
+        // grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
         gap: 0.25rem 1rem;
       }
     }
