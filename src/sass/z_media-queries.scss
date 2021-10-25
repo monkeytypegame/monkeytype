@@ -259,6 +259,11 @@
   #top .logo .bottom {
     margin-top: 0;
   }
+  .pageLogin {
+    display: grid;
+    gap: 10rem;
+    grid-auto-flow: unset;
+  }
   #middle {
     #result {
       grid-template-areas:
