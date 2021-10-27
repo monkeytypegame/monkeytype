@@ -273,5 +273,9 @@
       "pig_latin",
       "twitch_emotes"
     ]
+  },
+  {
+    "name": "hindi",
+    "languages": ["hindi", "hindi_1k"]
   }
 ]
