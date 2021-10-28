@@ -1853,41 +1853,42 @@
               account
               <i class="fas fa-chevron-down"></i>
             </div>
-            <div class="section discordIntegration">
-              <h1>discord integration</h1>
-              <div class="text">
-                When you connect your monkeytype account to your Discord
-                account, you will be automatically assigned a new role every
-                time you achieve a new personal best in a 60 second test. If you
-                pair your accounts before joining the Discord server the bot
-                <i>will not</i>
-                give you a role.
-              </div>
-              <div class="buttons">
-                <a
-                  class="button"
-                  href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-                  style="text-decoration: none"
-                >
-                  Link with Discord
-                </a>
-              </div>
-              <div class="info hidden">
-                <div>
-                  <i class="fas fa-check"></i>
-                  Your accounts are paired!
-                </div>
-                <div
-                  id="unlinkDiscordButton"
-                  class="text-button"
-                  aria-label="Unlink"
-                  data-balloon-pos="up"
-                >
-                  <i class="fas fa-unlink" aria-hidden="true"></i>
-                </div>
-              </div>
-            </div>
             <div class="settingsGroup account hidden">
+              <div class="section discordIntegration">
+                <h1>discord integration</h1>
+                <div class="text">
+                  When you connect your monkeytype account to your Discord
+                  account, you will be automatically assigned a new role every
+                  time you achieve a new personal best in a 60 second test. If
+                  you pair your accounts before joining the Discord server the
+                  bot
+                  <i>will not</i>
+                  give you a role.
+                </div>
+                <div class="buttons">
+                  <a
+                    class="button"
+                    href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+                    style="text-decoration: none"
+                  >
+                    Link with Discord
+                  </a>
+                </div>
+                <div class="info hidden">
+                  <div>
+                    <i class="fas fa-check"></i>
+                    Your accounts are paired!
+                  </div>
+                  <div
+                    id="unlinkDiscordButton"
+                    class="text-button"
+                    aria-label="Unlink"
+                    data-balloon-pos="up"
+                  >
+                    <i class="fas fa-unlink" aria-hidden="true"></i>
+                  </div>
+                </div>
+              </div>
               <div class="section tags">
                 <h1>tags</h1>
                 <div class="text">
@@ -4048,15 +4049,9 @@
                 </div>
               </div>
               <div class="group createdDate">Account created on -</div>
-              <div class="group">
+              <div class="group personalBestTables">
                 <div class="title">personal bests</div>
-                <div
-                  style="
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 2rem;
-                  "
-                >
+                <div class="tables">
                   <div class="titleAndTable timePbTable">
                     <table width="100%">
                       <thead>
@@ -4279,7 +4274,7 @@
                 <i class="fas fa-fw fa-spin fa-circle-notch"></i>
               </div> -->
                 <div class="above"></div>
-                <div class="chart" style="height: 400px">
+                <div class="chart">
                   <canvas id="accountHistoryChart"></canvas>
                 </div>
                 <div class="below">
@@ -4359,7 +4354,7 @@
                   </div>
                   <div class="val">-</div>
                 </div>
-                <div></div>
+                <div class="emptygroup"></div>
                 <div class="group avgAcc">
                   <div class="title">avg accuracy</div>
                   <div class="val">-</div>
@@ -4372,7 +4367,7 @@
                   </div>
                   <div class="val">-</div>
                 </div>
-                <div></div>
+                <div class="emptygroup"></div>
                 <div class="group avgCons">
                   <div class="title">avg consistency</div>
                   <div class="val">-</div>

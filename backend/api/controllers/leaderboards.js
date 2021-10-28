@@ -35,7 +35,10 @@ class LeaderboardsController {
         if (uid && item.uid == uid) {
           //
         } else {
+          delete item.discordId;
           delete item.uid;
+          delete item.difficulty;
+          delete item.language;
         }
       });
       return res.status(200).json(retval);

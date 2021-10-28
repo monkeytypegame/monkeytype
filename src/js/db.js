@@ -129,7 +129,8 @@ export async function getUserResults() {
         if (result.lazyMode === undefined) result.lazyMode = false;
         if (result.difficulty === undefined) result.difficulty = "normal";
         if (result.funbox === undefined) result.funbox = "none";
-        if (result.language === undefined) result.language = "english";
+        if (result.language === undefined || result.language === null)
+          result.language = "english";
         if (result.numbers === undefined) result.numbers = false;
         if (result.punctuation === undefined) result.punctuation = false;
       });

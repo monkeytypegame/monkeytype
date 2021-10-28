@@ -35,8 +35,8 @@
     display: grid;
     gap: 2rem;
     &.quickNav .links {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-auto-flow: column;
       a {
         text-decoration: none;
         // opacity: 0.5;

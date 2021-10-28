@@ -607,7 +607,7 @@ let commandsOppositeShiftMode = {
       },
     },
     {
-      id: "setOppositeShiftModeOn",
+      id: "setOppositeShiftModeKeymap",
       display: "keymap",
       configValue: "keymap",
       exec: () => {
