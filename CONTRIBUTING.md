@@ -32,6 +32,12 @@ If you are not a developer and wish to contribute themes, new languages, or quot
 
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management system(SCM) for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. However using a Git client won't give you access to the full functionality of Git but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
+#### NodeJS and NPM
+
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
+
+Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
+
 #### Firebase
 
 1. Create a Firebase account if you already haven't done so.
@@ -40,7 +46,7 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
    - The project name doesn't matter, but the name `monkeytype` would be preferred.
    - Google Analytics is not necessary.
 
-1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
+1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
 1. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
@@ -79,12 +85,6 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started`.
-
-#### NodeJS and NPM
-
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
-
-Alternatively, if you use `nvm` then you can run `nvm install && nvm use` to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
 
 ## Building and Running Monkeytype
 
