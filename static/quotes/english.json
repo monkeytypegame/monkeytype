@@ -33916,6 +33916,12 @@
       "source": "Bruce Lee",
       "length": 69,
       "id": 5723
+    },
+    {
+      "text": "Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat.",
+      "source": "Sun Tzu, The Art of War",
+      "length": 110,
+      "id": 5724
     }
   ]
 }
