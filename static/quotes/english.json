@@ -33988,6 +33988,12 @@
       "source": "Wikipedia - Colemak",
       "length": 623,
       "id": 5735
+    },
+    {
+      "text": "The Colemak layout was designed with the QWERTY layout as a base, changing the positions of 17 keys while retaining the QWERTY positions of most non-alphabetic characters and many popular keyboard shortcuts, supposedly making it easier to learn than Dvorak layout for people who already type in QWERTY without losing efficiency. It shares several design goals with the Dvorak layout, such as minimizing finger path distance and making heavy use of the home row. 74% of typing is done on the home row compared to 70% for Dvorak and 32% for QWERTY. The default Colemak layout lacks a Caps Lock key; an additional Backspace key occupies the position typically occupied by Caps Lock on modern keyboards.",
+      "source": "Wikipedia - Colemak",
+      "length": 699,
+      "id": 5736
     }
   ]
 }
