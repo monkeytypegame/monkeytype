@@ -1,10 +1,22 @@
 {
   "language": "spanish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -240,6 +252,12 @@
       "source": "Zuhayr Ibn Abi Sulma, Mu'allaqa",
       "length": 95,
       "id": 39
+    },
+    {
+      "text": "El intenso perfume de las rosas embalsamaba el estudio y, cuando la ligera brisa agitaba los árboles del jardín, entraba, por la puerta abierta, un intenso olor a lilas o el aroma más delicado de las flores rosadas de los espinos.",
+      "source": "Oscar Wilde",
+      "length": 230,
+      "id": 40
     }
   ]
 }
