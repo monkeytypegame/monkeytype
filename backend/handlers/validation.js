@@ -26,8 +26,9 @@ function validateResult(result) {
     );
     return false;
   }
-  let wpm = roundTo2((result.correctChars * (60 / result.testDuration)) / 5);
+  let wpm = roundTo2((result.charStats[0] * (60 / result.testDuration)) / 5);
   if (
+    isNaN(wpm) ||
     wpm < result.wpm - result.wpm * 0.01 ||
     wpm > result.wpm + result.wpm * 0.01
   ) {

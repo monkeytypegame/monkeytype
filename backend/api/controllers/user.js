@@ -47,8 +47,13 @@ class UserController {
           message:
             "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
         });
+      let olduser = await UsersDAO.getUser(uid);
       await UsersDAO.updateName(uid, name);
-      Logger.log("user_name_updated", `changed name to ${name}`, uid);
+      Logger.log(
+        "user_name_updated",
+        `changed name from ${olduser.name} to ${name}`,
+        uid
+      );
       return res.sendStatus(200);
     } catch (e) {
       return next(e);

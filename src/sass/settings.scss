@@ -35,8 +35,8 @@
     display: grid;
     gap: 2rem;
     &.quickNav .links {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-auto-flow: column;
       a {
         text-decoration: none;
         // opacity: 0.5;
@@ -66,23 +66,28 @@
       }
     }
 
-    .inputAndSave {
+    .inputAndButton {
       display: grid;
       grid-template-columns: 8fr 1fr;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
-      input {
-        // grid-column: 1/3;
-      }
 
-      .save {
-        // grid-column: 3/4;
+      .button {
         height: auto;
 
         .fas {
           margin-right: 0rem;
           vertical-align: sub;
         }
+      }
+    }
+
+    &.themes .tabContainer [tabcontent="custom"] {
+      label.button:first-child {
+        color: var(--text-color);
+      }
+      label.button {
+        color: var(--bg-color);
       }
     }
 

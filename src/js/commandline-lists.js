@@ -606,6 +606,15 @@ let commandsOppositeShiftMode = {
         TestUI.updateModesNotice();
       },
     },
+    {
+      id: "setOppositeShiftModeKeymap",
+      display: "keymap",
+      configValue: "keymap",
+      exec: () => {
+        UpdateConfig.setOppositeShiftMode("keymap");
+        TestUI.updateModesNotice();
+      },
+    },
   ],
 };
 

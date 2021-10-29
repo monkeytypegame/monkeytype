@@ -688,6 +688,11 @@ $(document).keydown((event) => {
     ) {
       event.preventDefault();
     }
+
+    if (Config.confidenceMode === "max") {
+      event.preventDefault();
+      return;
+    }
   }
 
   Monkey.type();
@@ -727,7 +732,7 @@ $(document).keydown((event) => {
     ).toggleClass("dead");
   }
 
-  if (Config.oppositeShiftMode === "on") {
+  if (Config.oppositeShiftMode !== "off") {
     correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
   }
 

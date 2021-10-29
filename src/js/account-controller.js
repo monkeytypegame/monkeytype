@@ -277,6 +277,14 @@ export function linkWithGoogle() {
     });
 }
 
+export function unlinkGoogle() {
+  firebase.auth().currentUser.unlink("google.com").then((result) => {
+    console.log(result);
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
 export function linkWithEmail(email, password) {
   var credential = firebase.auth.EmailAuthProvider.credential(email, password);
   firebase
