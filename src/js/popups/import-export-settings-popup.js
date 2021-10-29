@@ -2,8 +2,17 @@ import * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 import * as Notifications from "./notifications";
 
-function show() {
+export function show(mode, config) {
   if ($("#settingsImportWrapper").hasClass("hidden")) {
+    $("#settingsImportWrapper").attr("mode", mode);
+
+    if (mode === "export") {
+      $("#settingsImportWrapper .button").addClass("hidden");
+      $("#settingsImportWrapper input").val(config);
+    } else if (mode === "import") {
+      $("#settingsImportWrapper .button").removeClass("hidden");
+    }
+
     $("#settingsImportWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -38,10 +47,6 @@ function hide() {
       });
   }
 }
-
-$("#importSettingsButton").click((e) => {
-  show();
-});
 
 $("#settingsImport .button").click((e) => {
   hide();

@@ -13,6 +13,7 @@ import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
 import * as EditPresetPopup from "./edit-preset-popup";
 import * as ThemePicker from "./theme-picker";
+import * as ImportExportSettingsPopup from "./import-export-settings-popup";
 
 export let groups = {};
 async function initGroups() {
@@ -732,6 +733,10 @@ $("#resetSettingsButton").click((e) => {
   SimplePopups.list.resetSettings.show();
 });
 
+$("#importSettingsButton").click((e) => {
+  ImportExportSettingsPopup.show("import");
+});
+
 $("#exportSettingsButton").click((e) => {
   let configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
@@ -739,10 +744,7 @@ $("#exportSettingsButton").click((e) => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function (err) {
-      Notifications.add(
-        "Something went wrong when copying the settings JSON: " + err,
-        -1
-      );
+      ImportExportSettingsPopup.show("export");
     }
   );
 });
