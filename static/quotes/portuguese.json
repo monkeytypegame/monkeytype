@@ -1,10 +1,22 @@
 {
   "language": "portuguese",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -318,6 +330,12 @@
       "source": "Morris Gleitzman, Uma vez",
       "length": 347,
       "id": 51
+    },
+    {
+      "text": "O que é meditação? O que é o abandono do corpo? Que significa o jejum? E a suspensão do fôlego? São modos de fugirmos de nós mesmos. São momentos durante os quais o homem escapa à tortura de seu eu. Fazem-nos esquecer, passageiramente, o sofrimento e a insensatez da vida.",
+      "source": "Herman Hesse, Sidarta",
+      "length": 272,
+      "id": 52
     }
   ]
 }
