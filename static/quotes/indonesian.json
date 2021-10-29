@@ -1,10 +1,22 @@
 {
   "language": "indonesian",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -846,6 +858,54 @@
       "source": "Boy Candra",
       "length": 119,
       "id": 141
+    },
+    {
+      "text": "Kau beri rasa yang berbeda. Mungkin ku salah mengartikannya, yang kurasa cinta",
+      "source": "Ariel",
+      "length": 78,
+      "id": 142
+    },
+    {
+      "text": "Tiba-tiba langkahku terhenti. Sejuta tangan telah menahanku. Ingin kumaki, mereka berkata \"Tak perlu kau berlari mengejar mimpi yang tak pasti. Hari ini juga mimpi, maka biarkan ia datang di hatimu.\"",
+      "source": "Ebiet G Ade",
+      "length": 199,
+      "id": 143
+    },
+    {
+      "text": "Kapan lagi kita akan bertemu? Meski hanya sekilas kau tersenyum. Kapan lagi kita nyanyi bersama? Tatapanmu membasuh luka.",
+      "source": "Ebiet G Ade",
+      "length": 121,
+      "id": 144
+    },
+    {
+      "text": "Ayah, dalam hening sepi kurindu. Untuk menuai padi milik kita. Tapi kerinduan tinggal hanya kerinduan. Anakmu sekarang banyak menanggung beban.",
+      "source": "Ebiet G Ade",
+      "length": 143,
+      "id": 145
+    },
+    {
+      "text": "Cinta telah memberikan bukti bahwa cinta merupakan kekuatan yang jauh lebih besar dari apa pun.",
+      "source": "Eka Kurniawan",
+      "length": 95,
+      "id": 146
+    },
+    {
+      "text": "Hanya dirimu yang kucinta dan kukenang di dalam hatiku, takkan pernah hilang. Bayangan dirimu untuk selamanya.",
+      "source": "Tito Soemarsono",
+      "length": 110,
+      "id": 147
+    },
+    {
+      "text": "Kita berdua jatuh di bawah pelukan awan yang dingin. Kita bersama, walau hati enggan menyatu.",
+      "source": "Syamsul Rizal",
+      "length": 93,
+      "id": 148
+    },
+    {
+      "text": "Katanya mimpiku 'kan terwujud. Mereka lupa tentang mimpi buruk. Tentang kata \"Maaf sayang, aku harus pergi.\"",
+      "source": "Nadin Amizah",
+      "length": 108,
+      "id": 149
     }
   ]
 }
