@@ -1,10 +1,22 @@
 {
   "language": "french",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -654,6 +666,12 @@
       "source": "Gérard Leclerc - Avec Bernanos",
       "length": 696,
       "id": 107
+    },
+    {
+      "text": "Il peut quelquefois suffire pour que nous aimions une femme qu'elle nous regarde avec mépris.",
+      "source": "Marcel Proust - Du côté de chez Swann",
+      "length": 93,
+      "id": 108
     }
   ]
 }
