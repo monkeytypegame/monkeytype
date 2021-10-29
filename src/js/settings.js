@@ -14,6 +14,7 @@ import * as EditTagsPopup from "./edit-tags-popup";
 import * as EditPresetPopup from "./edit-preset-popup";
 import * as ThemePicker from "./theme-picker";
 import * as ImportExportSettingsPopup from "./import-export-settings-popup";
+import * as CustomThemePopup from "./custom-theme-popup";
 
 export let groups = {};
 async function initGroups() {
@@ -745,6 +746,29 @@ $("#exportSettingsButton").click((e) => {
     },
     function (err) {
       ImportExportSettingsPopup.show("export");
+    }
+  );
+});
+
+$("#shareCustomThemeButton").click((e) => {
+  let share = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (index, element) => {
+      share.push($(element).attr("value"));
+    }
+  );
+
+  let url =
+    "https://monkeytype.com?" +
+    Misc.objectToQueryString({ customTheme: share });
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function (err) {
+      CustomThemePopup.show(url);
     }
   );
 });
