@@ -168,6 +168,10 @@
       line-height: 3.5rem;
     }
 
+    .chartjs-render-monitor {
+      width: 100% !important;
+    }
+
     &.chart {
       position: relative;
 
@@ -207,6 +211,9 @@
           display: grid;
           gap: 0.5rem;
         }
+      }
+      .chart {
+        height: 400px;
       }
       .chartPreloader {
         position: absolute;

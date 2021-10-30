@@ -1,10 +1,22 @@
 {
   "language": "french",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -654,6 +666,24 @@
       "source": "Gérard Leclerc - Avec Bernanos",
       "length": 696,
       "id": 107
+    },
+    {
+      "text": "Il peut quelquefois suffire pour que nous aimions une femme qu'elle nous regarde avec mépris.",
+      "source": "Marcel Proust - Du côté de chez Swann",
+      "length": 93,
+      "id": 108
+    },
+    {
+      "text": "Ce sont les vices (ou seulement les faiblesses et les ridicules) du milieu où ils vivaient, les propos inconséquents, la vie frivole et choquante de leur fille, les trahisons de leur femme ou leurs propres fautes, que les écrivains ont le plus souvent flétris dans leurs diatribes sans changer pour cela le train de leur ménage ou le mauvais ton qui règne dans leur foyer.",
+      "source": "Marcel Proust - A l'ombre des jeunes filles en fleurs",
+      "length": 372,
+      "id": 109
+    },
+    {
+      "text": "A la mauvaise habitude de parler de soi et de ses défauts il faut ajouter, comme faisant bloc avec elle, cette autre de dénoncer chez les autres des défauts précisément analogues à ceux qu'on a. Or, c'est toujours de ces défauts-là qu'on parle, comme si c'était une manière de parler de soi, détournée, et qui joint au plaisir de s'absoudre celui d'avouer. D'ailleurs il semble que notre attention, toujours attirée sur ce qui nous caractérise, le remarque plus que tout autre chose chez les autres.",
+      "source": "Marcel Proust - A l'ombre des jeunes filles en fleurs",
+      "length": 499,
+      "id": 110
     }
   ]
 }

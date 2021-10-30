@@ -190,33 +190,6 @@ export function updateActiveTab() {
   }
 }
 
-$("#shareCustomThemeButton").click((e) => {
-  if (!e.shiftKey) {
-    let share = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        share.push($(element).attr("value"));
-      }
-    );
-
-    let url =
-      "https://monkeytype.com?" +
-      Misc.objectToQueryString({ customTheme: share });
-    navigator.clipboard.writeText(url).then(
-      function () {
-        Notifications.add("URL Copied to clipboard", 0);
-      },
-      function (err) {
-        Notifications.add(
-          "Something went wrong when copying the URL: " + err,
-          -1
-        );
-      }
-    );
-  }
-});
-
 $(".pageSettings .section.themes .tabs .button").click((e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   var $target = $(e.currentTarget);
