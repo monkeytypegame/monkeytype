@@ -52,7 +52,7 @@ export function verify(result) {
         } else if (requirementType == "acc") {
           let accMode = Object.keys(requirementValue)[0];
           if (accMode == "exact") {
-            if (Math.round(result.acc) != requirementValue.exact) {
+            if (result.acc != requirementValue.exact) {
               requirementsMet = false;
               failReasons.push(`Accuracy not ${requirementValue.exact}`);
             }
@@ -79,7 +79,7 @@ export function verify(result) {
             }
           }
         } else if (requirementType == "funbox") {
-          let funboxMode = requirementValue[0];
+          let funboxMode = requirementValue;
           if (funboxMode != result.funbox) {
             requirementsMet = false;
             failReasons.push(`${funboxMode} funbox not active`);

@@ -2,6 +2,7 @@
   "name": "danish_1k",
   "_comment": "This list is licensed by Dansk Sprog- og Litteraturselskab and can only be used with their permission.",
   "leftToRight": true,
+  "bcp47": "da-DK",
   "words": [
     "være",
     "og",

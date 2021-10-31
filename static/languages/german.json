@@ -1,6 +1,7 @@
 {
   "name": "german",
   "leftToRight": true,
+  "bcp47": "de-DE",
   "words": [
     "der",
     "die",

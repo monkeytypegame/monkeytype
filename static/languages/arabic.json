@@ -2,6 +2,7 @@
   "name": "arabic",
   "leftToRight": false,
   "ligatures": true,
+  "bcp47": "ar-SA",
   "words": [
     "أَتَمَنَّى",
     "أَثِقْ",

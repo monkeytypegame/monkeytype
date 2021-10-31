@@ -19,6 +19,7 @@ import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
+import * as TTS from "./tts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -74,7 +75,6 @@ let defaultConfig = {
   caretStyle: "default",
   paceCaretStyle: "default",
   flipTestColors: false,
-  capsLockBackspace: false,
   layout: "default",
   funbox: "none",
   confidenceMode: "off",
@@ -116,6 +116,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  showLiveBurst: false,
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",
@@ -340,8 +341,14 @@ export function setFavThemes(themes, nosave) {
 }
 
 export function setFunbox(funbox, nosave) {
-  config.funbox = funbox ? funbox : "none";
+  let val = funbox ? funbox : "none";
+  config.funbox = val;
   ChallengeContoller.clearActive();
+  if (val === "none") {
+    TTS.clear();
+  } else if (val === "tts") {
+    TTS.init();
+  }
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -824,7 +831,7 @@ export function setShowTimerProgress(timer, nosave) {
     timer = false;
   }
   config.showTimerProgress = timer;
-  if (config.showTimerProgress) {
+  if (config.showTimerProgress && TestLogic.active) {
     TimerProgress.show();
   } else {
     TimerProgress.hide();
@@ -955,6 +962,7 @@ export function setTimerStyle(style, nosave) {
     style = "mini";
   }
   config.timerStyle = style;
+  TimerProgress.updateStyle();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1149,11 +1157,11 @@ export function setQuickTabMode(mode, nosave) {
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   if (!nosave) saveToLocalStorage();
 }
@@ -1165,11 +1173,11 @@ export function toggleQuickTabMode() {
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   saveToLocalStorage();
 }
@@ -1333,6 +1341,9 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
+  if (config.funbox === "tts") {
+    TTS.setLanguage();
+  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,
@@ -1364,18 +1375,6 @@ export function setMonkey(monkey, nosave) {
     $("#monkey").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function setCapsLockBackspace(capsLockBackspace, nosave) {
-  if (capsLockBackspace === null || capsLockBackspace === undefined) {
-    capsLockBackspace = false;
-  }
-  config.capsLockBackspace = capsLockBackspace;
-  if (!nosave) saveToLocalStorage();
-}
-
-export function toggleCapsLockBackspace() {
-  setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
 export function setKeymapMode(mode, nosave) {
@@ -1624,7 +1623,6 @@ export function apply(configObj) {
     setQuoteLength(configObj.quoteLength, true);
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
-    setCapsLockBackspace(configObj.capsLockBackspace, true);
     // setSavedLayout(configObj.savedLayout, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);

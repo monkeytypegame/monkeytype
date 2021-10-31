@@ -20,16 +20,33 @@
     "languages": ["french", "french_1k", "french_2k", "french_10k"]
   },
   {
+    "name": "german",
+    "languages": [
+      "german",
+      "german_1k",
+      "german_10k",
+      "german_250k",
+      "swiss_german",
+      "swiss_german_1k"
+    ]
+  },
+  {
+    "name": "portuguese",
+    "languages": ["portuguese", "portuguese_3k"]
+  },
+  {
     "name": "arabic",
     "languages": ["arabic", "arabic_10k"]
   },
   {
-    "name": "malagasy",
-    "languages": ["malagasy", "malagasy_1k"]
-  },
-  {
-    "name": "malay",
-    "languages": ["malay"]
+    "name": "italian",
+    "languages": [
+      "italian",
+      "italian_1k",
+      "italian_7k",
+      "italian_60k",
+      "italian_280k"
+    ]
   },
   {
     "name": "mongolian",
@@ -40,12 +57,20 @@
     "languages": ["russian", "russian_1k", "russian_10k"]
   },
   {
-    "name": "ukrainian",
-    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
+    "name": "polish",
+    "languages": ["polish", "polish_2k", "polish_200k"]
   },
   {
-    "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k"]
+    "name": "czech",
+    "languages": ["czech", "czech_1k", "czech_10k"]
+  },
+  {
+    "name": "slovak",
+    "languages": ["slovak", "slovak_1k", "slovak_10k"]
+  },
+  {
+    "name": "ukrainian",
+    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
   },
   {
     "name": "lithuanian",
@@ -54,16 +79,6 @@
   {
     "name": "indonesian",
     "languages": ["indonesian", "indonesian_1k"]
-  },
-  {
-    "name": "german",
-    "languages": [
-      "german",
-      "german_1k",
-      "german_10k",
-      "swiss_german",
-      "swiss_german_1k"
-    ]
   },
   {
     "name": "greek",
@@ -78,28 +93,12 @@
     "languages": ["irish"]
   },
   {
-    "name": "italian",
-    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
-  },
-  {
     "name": "thai",
     "languages": ["thai"]
   },
- {
+  {
     "name": "tamil",
     "languages": ["tamil"]
-  },
-  {
-    "name": "polish",
-    "languages": ["polish", "polish_2k", "polish_200k"]
-  },
-  {
-    "name": "czech",
-    "languages": ["czech", "czech_1k", "czech_10k"]
-  },
-  {
-    "name": "slovak",
-    "languages": ["slovak", "slovak_1k", "slovak_10k"]
   },
   {
     "name": "slovenian",
@@ -138,12 +137,24 @@
     "languages": ["icelandic_1k"]
   },
   {
+    "name": "malagasy",
+    "languages": ["malagasy", "malagasy_1k"]
+  },
+  {
+    "name": "malay",
+    "languages": ["malay"]
+  },
+  {
     "name": "romanian",
     "languages": ["romanian"]
   },
   {
     "name": "finnish",
     "languages": ["finnish", "finnish_1k", "finnish_10k"]
+  },
+  {
+    "name": "estonian",
+    "languages": ["estonian", "estonian_1k", "estonian_10k"]
   },
   {
     "name": "welsh",
@@ -172,6 +183,10 @@
   {
     "name": "serbian",
     "languages": ["serbian"]
+  },
+  {
+    "name": "georgian",
+    "languages": ["georgian"]
   },
   {
     "name": "yoruba",
@@ -226,6 +241,10 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "japanese",
+    "languages": ["japanese_hiragana", "japanese_katakana"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -236,6 +255,7 @@
       "code_javascript",
       "code_javascript_1k",
       "code_html",
+      "code_pascal",
       "code_java",
       "code_go",
       "code_rust",
@@ -253,5 +273,9 @@
       "pig_latin",
       "twitch_emotes"
     ]
+  },
+  {
+    "name": "hindi",
+    "languages": ["hindi", "hindi_1k"]
   }
 ]

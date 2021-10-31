@@ -572,7 +572,7 @@
   ["uncategorized", "uncategorised"],
   ["categorized", "categorised"],
   ["vapor", "vapour"],
-  ["synchronization", "synchronisation"], 
+  ["synchronization", "synchronisation"],
   ["synchronize", "synchronise"],
   ["synchronized", "synchronised"],
   ["rumors", "rumours"],
@@ -580,5 +580,6 @@
   ["customization", "customisation"],
   ["honorable", "honourable"],
   ["generalized", "generalised"],
-  ["generalization", "generalisation"]
+  ["generalization", "generalisation"],
+  ["mobilize", "mobilise"]
 ]

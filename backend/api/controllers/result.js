@@ -25,6 +25,7 @@ class ResultController {
     try {
       const { uid } = req.decodedToken;
       await ResultDAO.deleteAll(uid);
+      Logger.log("user_results_deleted", ``, uid);
       return res.sendStatus(200);
     } catch (e) {
       next(e);
@@ -219,8 +220,13 @@ class ResultController {
         //
       }
 
-      const isPb = await UserDAO.checkIfPb(uid, result);
-      const tagPbs = await UserDAO.checkIfTagPb(uid, result);
+      let isPb = false;
+      let tagPbs = [];
+
+      if (!result.bailedOut) {
+        isPb = await UserDAO.checkIfPb(uid, result);
+        tagPbs = await UserDAO.checkIfTagPb(uid, result);
+      }
 
       if (isPb) {
         result.isPb = true;

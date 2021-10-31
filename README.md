@@ -9,7 +9,7 @@
 
 # About
 
-Monkeytype is a minimalistic, customizable typing test, featuring many test modes, an account system to save your typing speed history, and user-configurable features like themes, sounds, a smooth caret, and more.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features like themes, sounds, a smooth caret, and more.
 
 # Features
 
@@ -34,7 +34,7 @@ On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added 
 
 If you encounter a bug or have a feature request, [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
-# Contribute
+# Want to Contribute?
 
 Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
 

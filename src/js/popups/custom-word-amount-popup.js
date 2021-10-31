@@ -15,7 +15,7 @@ export function show() {
   }
 }
 
-function hide() {
+export function hide() {
   if (!$("#customWordAmountPopupWrapper").hasClass("hidden")) {
     $("#customWordAmountPopupWrapper")
       .stop(true, true)

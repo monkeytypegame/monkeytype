@@ -46,6 +46,7 @@ export async function initSnapshot() {
       completed: 0,
     },
     quoteRatings: undefined,
+    quoteMod: false,
   };
   let snap = defaultSnap;
   try {
@@ -62,6 +63,7 @@ export async function initSnapshot() {
       started: userData.startedTests,
       completed: userData.completedTests,
     };
+    if (userData.quoteMod === true) snap.quoteMod = true;
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
@@ -127,7 +129,8 @@ export async function getUserResults() {
         if (result.lazyMode === undefined) result.lazyMode = false;
         if (result.difficulty === undefined) result.difficulty = "normal";
         if (result.funbox === undefined) result.funbox = "none";
-        if (result.language === undefined) result.language = "english";
+        if (result.language === undefined || result.language === null)
+          result.language = "english";
         if (result.numbers === undefined) result.numbers = false;
         if (result.punctuation === undefined) result.punctuation = false;
       });
@@ -340,59 +343,43 @@ export async function saveLocalPB(
 ) {
   if (mode == "quote") return;
   function cont() {
-    try {
-      let found = false;
-      if (dbSnapshot.personalBests[mode][mode2] === undefined) {
-        dbSnapshot.personalBests[mode][mode2] = [];
-      }
-      dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
-        if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
-        ) {
-          found = true;
-          pb.wpm = wpm;
-          pb.acc = acc;
-          pb.raw = raw;
-          pb.timestamp = Date.now();
-          pb.consistency = consistency;
-          pb.lazyMode = lazyMode;
-        }
-      });
-      if (!found) {
-        //nothing found
-        dbSnapshot.personalBests[mode][mode2].push({
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        });
-      }
-    } catch (e) {
-      //that mode or mode2 is not found
-      dbSnapshot.personalBests = {};
+    let found = false;
+    if (dbSnapshot.personalBests === undefined) dbSnapshot.personalBests = {};
+    if (dbSnapshot.personalBests[mode] === undefined)
       dbSnapshot.personalBests[mode] = {};
-      dbSnapshot.personalBests[mode][mode2] = [
-        {
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
-          timestamp: Date.now(),
-          consistency: consistency,
-        },
-      ];
+    if (dbSnapshot.personalBests[mode][mode2] === undefined)
+      dbSnapshot.personalBests[mode][mode2] = [];
+
+    dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
+      if (
+        pb.punctuation == punctuation &&
+        pb.difficulty == difficulty &&
+        pb.language == language &&
+        (pb.lazyMode === lazyMode ||
+          (pb.lazyMode === undefined && lazyMode === false))
+      ) {
+        found = true;
+        pb.wpm = wpm;
+        pb.acc = acc;
+        pb.raw = raw;
+        pb.timestamp = Date.now();
+        pb.consistency = consistency;
+        pb.lazyMode = lazyMode;
+      }
+    });
+    if (!found) {
+      //nothing found
+      dbSnapshot.personalBests[mode][mode2].push({
+        language: language,
+        difficulty: difficulty,
+        lazyMode: lazyMode,
+        punctuation: punctuation,
+        wpm: wpm,
+        acc: acc,
+        raw: raw,
+        timestamp: Date.now(),
+        consistency: consistency,
+      });
     }
   }
 
@@ -538,9 +525,8 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    let response;
     try {
-      response = await axiosInstance.post("/config/save", { config });
+      await axiosInstance.post("/config/save", { config });
     } catch (e) {
       AccountButton.loading(false);
 

@@ -1,8 +1,13 @@
 import Config from "./config";
 import { Howl } from "howler";
 
-let errorSound = new Howl({ src: ["../sound/error.wav"] });
+let errorSound = null;
 let clickSounds = null;
+
+export function initErrorSound() {
+  if (errorSound !== null) return;
+  errorSound = new Howl({ src: ["../sound/error.wav"] });
+}
 
 export function init() {
   if (clickSounds !== null) return;
@@ -120,6 +125,96 @@ export function init() {
         counter: 0,
       },
     ],
+    5: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click5/click5_1.wav" }),
+          new Howl({ src: "../sound/click5/click5_11.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click5/click5_2.wav" }),
+          new Howl({ src: "../sound/click5/click5_22.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click5/click5_3.wav" }),
+          new Howl({ src: "../sound/click5/click5_33.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click5/click5_4.wav" }),
+          new Howl({ src: "../sound/click5/click5_44.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click5/click5_5.wav" }),
+          new Howl({ src: "../sound/click5/click5_55.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click5/click5_6.wav" }),
+          new Howl({ src: "../sound/click5/click5_66.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    6: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click6/click6_1.wav" }),
+          new Howl({ src: "../sound/click6/click6_11.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click6/click6_2.wav" }),
+          new Howl({ src: "../sound/click6/click6_22.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click6/click6_3.wav" }),
+          new Howl({ src: "../sound/click6/click6_33.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    7: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click7/click7_1.wav" }),
+          new Howl({ src: "../sound/click7/click7_11.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click7/click7_2.wav" }),
+          new Howl({ src: "../sound/click7/click7_22.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click7/click7_3.wav" }),
+          new Howl({ src: "../sound/click7/click7_33.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
   };
 }
 
@@ -139,6 +234,7 @@ export function playClick() {
 
 export function playError() {
   if (!Config.playSoundOnError) return;
+  if (errorSound === null) initErrorSound();
   errorSound.seek(0);
   errorSound.play();
 }

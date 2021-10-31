@@ -1,10 +1,22 @@
 {
   "language": "french",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -45,13 +57,13 @@
     },
     {
       "text": "Ces agents mineurs sont utilisés en dernier recours dans le cadre d'opérations d'infiltration, lorsque les agents adultes se révèlent incapables de tromper la vigilance des criminels. Les membres de CHERUB, en raison de leur âge, demeurent insoupçonnables tant qu'ils n'ont pas été pris en flagrant délit d'espionnage.",
-      "source": "CHERUB, Avant_propos",
+      "source": "CHERUB, Avant-propos",
       "length": 318,
       "id": 7
     },
     {
       "text": "La seule chance de sortir du jeu vivant est de parvenir au centième étage d'Aincrad, terrasser le boss de fin qui vous y attend afin de compléter votre quête et terminer le jeu. A cet instant et seulement à cet instant, tous les joueurs encore présents pourront se déconnecter en toute sécurité.",
-      "source": "Sword Art Online: Aincrad, tome1",
+      "source": "Sword Art Online: Aincrad, tome 1",
       "length": 295,
       "id": 8
     },
@@ -62,7 +74,7 @@
       "id": 9
     },
     {
-      "text": "Dans le temps on levait les yeux en se cherchant une place parmi les étoiles... Là on fait que baisser les yeux et se soucier de trouver notre place dans la gadoue.",
+      "text": "Dans le temps on levait les yeux en se cherchant une place parmi les étoiles… Là on fait que baisser les yeux et se soucier de trouver notre place dans la gadoue.",
       "source": "Interstellar",
       "length": 162,
       "id": 10
@@ -80,13 +92,13 @@
       "id": 12
     },
     {
-      "text": "Dans cette nuit qui m'enveloppe, perdu dans ce puits de ténèbres, je loue les dieux qui m'ont donné une âme noble et indomptable. Entre les serres qui me tiennent, je n'ai ni failli ni crié. Sous les coups cruels du destin, ma tête est en sang, mais jamais je ne l'ai baissée. Passé la colère et les larmes me guette l'effroi de la mort. mais demain, quel que soit mon sort, je resterai sourd à la peur. Aussi étroite soit la porte et lourd le poids des châtiments, je suis maître de mon destin et capitaine de mon âme.",
+      "text": "Dans cette nuit qui m'enveloppe, perdu dans ce puits de ténèbres, je loue les dieux qui m'ont donné une âme noble et indomptable. Entre les serres qui me tiennent, je n'ai ni failli ni crié. Sous les coups cruels du destin, ma tête est en sang, mais jamais je ne l'ai baissée. Passé la colère et les larmes me guette l'effroi de la mort. Mais demain, quel que soit mon sort, je resterai sourd à la peur. Aussi étroite soit la porte et lourd le poids des châtiments, je suis maître de mon destin et capitaine de mon âme.",
       "source": "Invictus de William Ernest Henley (traduction du tome 6 de rush)",
       "length": 519,
       "id": 13
     },
     {
-      "text": "La religion traduit des aspirations profondes de la race humaine. Nulles qu'elles n'ont davantage façonné l'histoire. Ceci que l'on tente en a tiré des leçons. Devenir de meilleurs croyants où de meilleurs athées ça signifie avant tout \"regarder au plus profond denous pour ne pas reproduire les erreurs du passé.\"",
+      "text": "La religion traduit des aspirations profondes de la race humaine. Nulles qu'elles n'ont davantage façonné l'histoire. Ceci que l'on tente en a tiré des leçons. Devenir de meilleurs croyants où de meilleurs athées ça signifie avant tout \"regarder au plus profond de nous pour ne pas reproduire les erreurs du passé.\"",
       "source": "Simon Puech - DIEU EST MORT",
       "length": 314,
       "id": 14
@@ -146,7 +158,7 @@
       "id": 22
     },
     {
-      "text": "Ce qui est élevé est destiné à être aplani... Ce qui est dense deviendra fluide... L'entropie fait son œuvre et, en définitive, toute chose tend vers l'uniformisation. C'est une loi inévitable et irréversible d'équilibre. L'homme croit toujours pouvoir inverser ce fleuve cosmique. Mais il n'est qu'un fétu de paille emporté par les flots.",
+      "text": "Ce qui est élevé est destiné à être aplani… Ce qui est dense deviendra fluide… L'entropie fait son œuvre et, en définitive, toute chose tend vers l'uniformisation. C'est une loi inévitable et irréversible d'équilibre. L'homme croit toujours pouvoir inverser ce fleuve cosmique. Mais il n'est qu'un fétu de paille emporté par les flots.",
       "source": "Katsuhiro Otomo - Akira, tome 4",
       "length": 339,
       "id": 23
@@ -164,7 +176,7 @@
       "id": 25
     },
     {
-      "text": "Je trouve que la plus belle chose qui puisse arriver à un auteur - pour reprendre la métaphore de la cartographie - c'est de continuer à explorer et à cartographier son imaginaire. Le problème, c'est que tout est là pour vous fossiliser, les gens attendent que vous fassiez le même livre parce qu'ils l'ont aimé. Et toi, tu DOIS les décevoir pour pouvoir survivre. C'est une telle équation ! Et tellement douloureuse ! Les gens me disent : est-ce que tu ne pourrais pas me dessiner quelques immeubles, quelques bâtiments Art Nouveau, etc... Et j'ai envie de leur répondre : c'est presque vulgaire, ce que vous me demandez ! Pour moi, tout ça, c'est le résultat de récits et de personnages, mais ça ne m'intéresse pas de dessiner des briques !",
+      "text": "Je trouve que la plus belle chose qui puisse arriver à un auteur - pour reprendre la métaphore de la cartographie - c'est de continuer à explorer et à cartographier son imaginaire. Le problème, c'est que tout est là pour vous fossiliser, les gens attendent que vous fassiez le même livre parce qu'ils l'ont aimé. Et toi, tu DOIS les décevoir pour pouvoir survivre. C'est une telle équation ! Et tellement douloureuse ! Les gens me disent : est-ce que tu ne pourrais pas me dessiner quelques immeubles, quelques bâtiments Art Nouveau, etc… Et j'ai envie de leur répondre : c'est presque vulgaire, ce que vous me demandez ! Pour moi, tout ça, c'est le résultat de récits et de personnages, mais ça ne m'intéresse pas de dessiner des briques !",
       "source": "François Schuiten - « Interview de François Schuiten à l'occasion de la sortie de \"La Frontière Invisible\" »",
       "length": 742,
       "id": 26
@@ -177,13 +189,13 @@
     },
     {
       "text": "Si je prends un peu de recul avec toutes mes années de labeur, je me rends compte que je ne suis plus en phase avec le système de la BD actuelle. Je ne sais pas m'adapter à cela. Ce système d'édition, qui pousse les auteurs à la surproduction d'albums, m'inquiète et me fait peur.",
-      "source": "François Schuiten - « Arrêter la BD? Il ne faut jamais dire jamais ! »",
+      "source": "François Schuiten - « Arrêter la BD ? Il ne faut jamais dire jamais ! »",
       "length": 280,
       "id": 28
     },
     {
-      "text": "J'ai le sentiment qu'aujourd'hui un dessinateur de BD vit de moins en moins bien de son art. Moi-même, au fur et à mesure de ma carrière, j'ai dû me diversifier. Je me suis tourné vers l'illustration, l'affiche, la scénographie. Pour financer la création longue de mes BD, j'ai dû parfois avoir recours à la vente d'originaux. C'est une équation que je n'arrive plus à résoudre. C'est pour cette raison que j'ai envie de tirer le signal d'alarme pour moi comme pour les autres dessinateurs. Le scénariste Yann disait il y a peu que \"les dessinateurs de BD étaient la variable d'ajustement de la création\"... Je vois un système qui s'affole... Cela m'inquiète fortement.",
-      "source": "François Schuiten - « Arrêter la BD? Il ne faut jamais dire jamais ! »",
+      "text": "J'ai le sentiment qu'aujourd'hui un dessinateur de BD vit de moins en moins bien de son art. Moi-même, au fur et à mesure de ma carrière, j'ai dû me diversifier. Je me suis tourné vers l'illustration, l'affiche, la scénographie. Pour financer la création longue de mes BD, j'ai dû parfois avoir recours à la vente d'originaux. C'est une équation que je n'arrive plus à résoudre. C'est pour cette raison que j'ai envie de tirer le signal d'alarme pour moi comme pour les autres dessinateurs. Le scénariste Yann disait il y a peu que \"les dessinateurs de BD étaient la variable d'ajustement de la création\"… Je vois un système qui s'affole… Cela m'inquiète fortement.",
+      "source": "François Schuiten - « Arrêter la BD ? Il ne faut jamais dire jamais ! »",
       "length": 669,
       "id": 29
     },
@@ -218,7 +230,7 @@
       "id": 34
     },
     {
-      "text": "J'aime celui qui ne veux pas avoir trop de vertu. Une vertu est davantage vertu que deux, parce qu'elle est davantage noeud auquel se pend la fatalité.",
+      "text": "J'aime celui qui ne veut pas avoir trop de vertus. Il y a plus de vertus en une vertu qu'en deux vertus, c'est un nœud où s'accroche la destinée.",
       "source": "Friedrich Nietzsche - Ainsi parlait Zarathoustra",
       "length": 151,
       "id": 35
@@ -242,7 +254,7 @@
       "id": 38
     },
     {
-      "text": "Notre refus de la transmission a engendré ce qui ressemble parfois à une société d'enfants sauvages. Développement des incivilités, distension de tous les liens, consumérisme irresponsable, difficultés quotidiennes dans la vie en collectivité, échec de l'insertion sociale et de l'engagement citoyen, rupture du dialogue entre les générations, explosion de la délinquance... Partout, nous voyons l'homme \"dégradé, insociable, grossier\" --- partout, nous voyons l'homme inhumain. Au coeur de nos pays \"développés\", nous avons le sentiment de voir resurgir la barbarie. Et nous n'arrivons pas à nous l'expliquer.",
+      "text": "Notre refus de la transmission a engendré ce qui ressemble parfois à une société d'enfants sauvages. Développement des incivilités, distension de tous les liens, consumérisme irresponsable, difficultés quotidiennes dans la vie en collectivité, échec de l'insertion sociale et de l'engagement citoyen, rupture du dialogue entre les générations, explosion de la délinquance… Partout, nous voyons l'homme \"dégradé, insociable, grossier\" --- partout, nous voyons l'homme inhumain. Au coeur de nos pays \"développés\", nous avons le sentiment de voir resurgir la barbarie. Et nous n'arrivons pas à nous l'expliquer.",
       "source": "François-Xavier Bellamy - Les Déshérités",
       "length": 610,
       "id": 39
@@ -266,7 +278,7 @@
       "id": 42
     },
     {
-      "text": "Doué par la nature d'un fonds de naïveté que les années n'ont pu parvenir à épuiser, j'ai longtemps cherché à comprendre. Ce n'est pas la lumière qui manque, me disais-je, c'est mon oeil qui est mauvais ; j'accusais mon imbécillité native, je faisais pour pénétrer le sens de ces dissertations les efforts les plus sincères ; si bien qu'un jour, retrouvant ces mêmes raisonnements, inintelligibles pour moi, sous la plume d'un critique dont le style a d'ordinaire la limpidité du cristal de roche, je lui écrivis pour lui demander s'il ne pourrait, eu égard à la faiblesse de ma vue, éclairer un peu la lanterne. Il eut la gracieuseté de publier ma lettre et de la faire suivre d'une réponse – qui ne répondait à rien, n'éclaircissait rien, et laissait les choses en l'état.",
+      "text": "Doué par la nature d'un fonds de naïveté que les années n'ont pu parvenir à épuiser, j'ai longtemps cherché à comprendre. Ce n'est pas la lumière qui manque, me disais-je, c'est mon œil qui est mauvais ; j'accusais mon imbécillité native, je faisais pour pénétrer le sens de ces dissertations les efforts les plus sincères ; si bien qu'un jour, retrouvant ces mêmes raisonnements, inintelligibles pour moi, sous la plume d'un critique dont le style a d'ordinaire la limpidité du cristal de roche, je lui écrivis pour lui demander s'il ne pourrait, eu égard à la faiblesse de ma vue, éclairer un peu la lanterne. Il eut la gracieuseté de publier ma lettre et de la faire suivre d'une réponse – qui ne répondait à rien, n'éclaircissait rien, et laissait les choses en l'état.",
       "source": "Camille Saint-Saëns - Regards sur mes contemporains",
       "length": 774,
       "id": 43
@@ -326,7 +338,7 @@
       "id": 52
     },
     {
-      "text": "Contrairement à la vertu, la violence survit longtemps à ceux qui l'ont manifesté.",
+      "text": "Contrairement à la vertu, la violence survit longtemps à ceux qui l'ont manifestée.",
       "source": "Brian Aldiss - Croisière sans escale",
       "length": 82,
       "id": 53
@@ -392,19 +404,19 @@
       "id": 63
     },
     {
-      "text": "Si les bilatérales était un contrat entre deux partenaires d'égal à égal, il n'en est rien de l'accord-cadre institutionnel. L'UE décide et la Suisse obéit. La reprise dynamique ou plutôt automatique du droit européen est contraire à tout principe démocratique qui veut que l'assemblée fédérale puis éventuellement le peuple décide des lois dans notre pays. Ce système a fait ses preuves et la Suisse n'aurait rien à gagner de perdre ses particularités.",
+      "text": "Si les bilatérales étaient un contrat entre deux partenaires d'égal à égal, il n'en est rien de l'accord-cadre institutionnel. L'UE décide et la Suisse obéit. La reprise dynamique ou plutôt automatique du droit européen est contraire à tout principe démocratique qui veut que l'assemblée fédérale puis éventuellement le peuple décide des lois dans notre pays. Ce système a fait ses preuves et la Suisse n'aurait rien à gagner de perdre ses particularités.",
       "source": "Michaël Buffat - « Non au traité colonial qui soumet la Suisse à l'UE »",
       "length": 453,
       "id": 64
     },
     {
-      "text": "Ce serait comme dans un match de football Suisse-France où les Français fixeraient les règles du jeu, les modifierait en cours de rencontre, nommeraient l'arbitre et auraient de surcroît le droit de donner des coups de pieds aux joueurs suisses. Parmi les 194 pays du monde, je n'en vois pas un seul acceptant un accord aussi \"unilatéral\", un traité de soumission qui le livrerait pieds et poings liés à une organisation d'Etats.",
+      "text": "Ce serait comme dans un match de football Suisse-France où les français fixeraient les règles du jeu, les modifieraient en cours de rencontre, nommeraient l'arbitre et auraient de surcroît le droit de donner des coups de pieds aux joueurs suisses. Parmi les 194 pays du monde, je n'en vois pas un seul acceptant un accord aussi \"unilatéral\", un traité de soumission qui le livrerait pieds et poings liés à une organisation d'États.",
       "source": "Michaël Buffat - « Comme dans un match Suisse-France où la France fixerait les règles du jeu »",
       "length": 429,
       "id": 65
     },
     {
-      "text": "Leur non-violence les a menés à la mort. L'être humain est obligé de se défendre, mais il est aussi appelé à pardonner. Pas de paix sans pardon... Le pardon, oui, pour ceux qui sont encore là et qui le peuvent. En ce qui me concerne, je le peux toujours.",
+      "text": "Leur non-violence les a menés à la mort. L'être humain est obligé de se défendre, mais il est aussi appelé à pardonner. Pas de paix sans pardon… Le pardon, oui, pour ceux qui sont encore là et qui le peuvent. En ce qui me concerne, je le peux toujours.",
       "source": "Bernard Le Solleu - « Le père de la bombe livre enfin ses secrets »",
       "length": 254,
       "id": 66
@@ -470,7 +482,7 @@
       "id": 76
     },
     {
-      "text": "La vérité n'est plus séduisante... Le mensonge, triomphant, conduit en maître les affaires du monde.",
+      "text": "La vérité n'est plus séduisante…  Le mensonge, triomphant, conduit en maître les affaires du monde.",
       "source": "Boubou Hama - Contes et légendes du Niger",
       "length": 100,
       "id": 77
@@ -482,14 +494,14 @@
       "id": 78
     },
     {
-      "text": "Le travail forcé, avec son triste cortège de bas salaires, de sévices, de paucinatalité, d'exode vers les villes ou, ce qui est pire, vers les colonies étrangères, crée entre ce qu'il est convenu d'appeler colonisés et colonisateurs un fossée qui va grandissant et que nous avons ici, tous, le devoir de combler si nous voulons que l'Union française soit une réalité vivante.",
-      "source": "Félix Houphouët-Boigny - Entologie des discours",
+      "text": "Le travail forcé, avec son triste cortège de bas salaires, de sévices, de paucinatalité, d'exode vers les villes ou, ce qui est pire, vers les colonies étrangères, crée entre ce qu'il est convenu d'appeler colonisés et colonisateurs un fossé qui va grandissant et que nous avons ici, tous, le devoir de combler si nous voulons que l'Union française soit une réalité vivante.",
+      "source": "Félix Houphouët-Boigny - Anthologie des discours",
       "length": 375,
       "id": 79
     },
     {
       "text": "En face de cet arbre que vous voyez là-bas, l'arbre des suppliciés, l'arbre des sacrifices de mes anciens, j'avais pris l'engagement, il y a bientôt trente ans, à ma sortie de l'école, en reconnaissance de tout ce que les Akoués ont fait pour moi, d'offrir d'autres sacrifices, le sacrifice d'amour-propre, le sacrifice d'argent, le sacrifice de moi-même.",
-      "source": "Félix Houphouët-Boigny - Entologie des discours",
+      "source": "Félix Houphouët-Boigny - Anthologie des discours",
       "length": 355,
       "id": 80
     },
@@ -654,6 +666,24 @@
       "source": "Gérard Leclerc - Avec Bernanos",
       "length": 696,
       "id": 107
+    },
+    {
+      "text": "Il peut quelquefois suffire pour que nous aimions une femme qu'elle nous regarde avec mépris.",
+      "source": "Marcel Proust - Du côté de chez Swann",
+      "length": 93,
+      "id": 108
+    },
+    {
+      "text": "Ce sont les vices (ou seulement les faiblesses et les ridicules) du milieu où ils vivaient, les propos inconséquents, la vie frivole et choquante de leur fille, les trahisons de leur femme ou leurs propres fautes, que les écrivains ont le plus souvent flétris dans leurs diatribes sans changer pour cela le train de leur ménage ou le mauvais ton qui règne dans leur foyer.",
+      "source": "Marcel Proust - A l'ombre des jeunes filles en fleurs",
+      "length": 372,
+      "id": 109
+    },
+    {
+      "text": "A la mauvaise habitude de parler de soi et de ses défauts il faut ajouter, comme faisant bloc avec elle, cette autre de dénoncer chez les autres des défauts précisément analogues à ceux qu'on a. Or, c'est toujours de ces défauts-là qu'on parle, comme si c'était une manière de parler de soi, détournée, et qui joint au plaisir de s'absoudre celui d'avouer. D'ailleurs il semble que notre attention, toujours attirée sur ce qui nous caractérise, le remarque plus que tout autre chose chez les autres.",
+      "source": "Marcel Proust - A l'ombre des jeunes filles en fleurs",
+      "length": 499,
+      "id": 110
     }
   ]
 }

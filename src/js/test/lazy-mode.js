@@ -1,11 +1,14 @@
 let accents = [
   ["áàâäåãąą́āą̄", "a"],
-  ["éèêëẽęę́ēę̄ė", "e"],
+  ["éèêëẽęę́ēę̄ėě", "e"],
   ["íìîïĩįį́īį̄", "i"],
   ["óòôöøõóōǫǫ́ǭ", "o"],
   ["úùûüŭũúūů", "u"],
-  ["ñń", "n"],
-  ["çĉć", "c"],
+  ["ńň", "n"],
+  ["çĉčć", "c"],
+  ["ř", "r"],
+  ["ď", "d"],
+  ["ť", "t"],
   ["æ", "ae"],
   ["œ", "oe"],
   ["ẅ", "w"],
@@ -13,9 +16,9 @@ let accents = [
   ["ĥ", "h"],
   ["ĵ", "j"],
   ["ń", "n"],
-  ["ŝś", "s"],
-  ["żź", "z"],
-  ["ÿỹ", "y"],
+  ["ŝśš", "s"],
+  ["żźž", "z"],
+  ["ÿỹýÿŷ", "y"],
   ["ł", "l"],
   ["أإآ", "ا"],
   ["َ", ""],
@@ -28,13 +31,14 @@ let accents = [
   ["ّ", ""],
 ];
 
-export function replaceAccents(word) {
+export function replaceAccents(word, accentsOverride) {
   let newWord = word;
-  if (!accents) return newWord;
+  if (!accents && !accentsOverride) return newWord;
   let regex;
-  for (let i = 0; i < accents.length; i++) {
-    regex = new RegExp(`[${accents[i][0]}]`, "gi");
-    newWord = newWord.replace(regex, accents[i][1]);
+  let list = accentsOverride || accents;
+  for (let i = 0; i < list.length; i++) {
+    regex = new RegExp(`[${list[i][0]}]`, "gi");
+    newWord = newWord.replace(regex, list[i][1]);
   }
   return newWord;
 }

@@ -1,6 +1,7 @@
 {
   "name": "norwegian",
   "leftToRight": true,
+  "bcp47": "no-NO",
   "words": [
     "i",
     "og",

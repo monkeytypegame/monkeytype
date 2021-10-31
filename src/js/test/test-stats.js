@@ -12,9 +12,9 @@ export let burstHistory = [];
 export let keypressPerSecond = [];
 export let currentKeypress = {
   count: 0,
-  mod: 0,
   errors: 0,
   words: [],
+  afk: true,
 };
 export let lastKeypress;
 export let currentBurstStart = 0;
@@ -42,7 +42,7 @@ export let keypressTimings = {
 };
 
 export function getStats() {
-  return {
+  let ret = {
     start,
     end,
     wpmHistory,
@@ -57,6 +57,31 @@ export function getStats() {
     accuracy,
     keypressTimings,
   };
+
+  try {
+    ret.keySpacingStats = {
+      average:
+        keypressTimings.spacing.array.reduce(
+          (previous, current) => (current += previous)
+        ) / keypressTimings.spacing.array.length,
+      sd: Misc.stdDev(keypressTimings.spacing.array),
+    };
+  } catch (e) {
+    //
+  }
+  try {
+    ret.keyDurationStats = {
+      average:
+        keypressTimings.duration.array.reduce(
+          (previous, current) => (current += previous)
+        ) / keypressTimings.duration.array.length,
+      sd: Misc.stdDev(keypressTimings.duration.array),
+    };
+  } catch (e) {
+    //
+  }
+
+  return ret;
 }
 
 export function restart() {
@@ -69,9 +94,9 @@ export function restart() {
   keypressPerSecond = [];
   currentKeypress = {
     count: 0,
-    mod: 0,
     errors: 0,
     words: [],
+    afk: true,
   };
   currentBurstStart = 0;
   // errorsPerSecond = [];
@@ -154,8 +179,8 @@ export function incrementKeypressCount() {
   currentKeypress.count++;
 }
 
-export function incrementKeypressMod() {
-  currentKeypress.mod++;
+export function setKeypressNotAfk() {
+  currentKeypress.afk = false;
 }
 
 export function incrementKeypressErrors() {
@@ -170,9 +195,9 @@ export function pushKeypressesToHistory() {
   keypressPerSecond.push(currentKeypress);
   currentKeypress = {
     count: 0,
-    mod: 0,
     errors: 0,
     words: [],
+    afk: true,
   };
 }
 
@@ -192,7 +217,7 @@ export function calculateAfkSeconds(testSeconds) {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  let ret = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0).length;
+  let ret = keypressPerSecond.filter((x) => x.afk).length;
   return ret + extraAfk;
 }
 
@@ -208,7 +233,7 @@ export function calculateBurst() {
   let timeToWrite = (performance.now() - currentBurstStart) / 1000;
   let wordLength;
   if (Config.mode === "zen") {
-    wordLength = TestLogic.input.getCurrent().length;
+    wordLength = TestLogic.input.current.length;
   } else {
     wordLength = TestLogic.words.getCurrent().length;
   }
