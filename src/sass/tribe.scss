@@ -23,7 +23,8 @@
       display: grid;
       grid-template-areas:
         "welcome welcome"
-        "mm priv";
+        "mm mm"
+        "custom custom";
       grid-template-columns: 3fr 1fr;
       gap: 0.5rem 2rem;
       .welcome {
@@ -59,7 +60,7 @@
         grid-area: mm;
         display: grid;
         gap: 1rem;
-        grid-template-rows: auto 2fr auto;
+        grid-template-rows: auto 8rem auto;
         .title,
         .subtitle {
           color: var(--sub-color);
@@ -92,26 +93,31 @@
         }
       }
       .customRooms {
-        grid-area: priv;
+        grid-area: custom;
         display: grid;
         gap: 1rem;
-        grid-template-rows: auto 2fr auto;
+        grid-template-rows: auto 8rem;
         .title {
           color: var(--sub-color);
         }
-        #createCustomRoom {
-          height: 100%;
-          padding: 1rem;
+        .buttons {
           display: grid;
-          gap: 0.25rem;
-          .icon {
-            font-size: 1.5rem;
-            line-height: 1.5rem;
-          }
-          .subtext {
-            opacity: 0.5;
-            font-size: 0.75rem;
-            line-height: 0.75rem;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 1rem;
+          .button {
+            height: 100%;
+            padding: 1rem;
+            display: grid;
+            gap: 0.25rem;
+            .icon {
+              font-size: 1.5rem;
+              line-height: 1.5rem;
+            }
+            .subtext {
+              opacity: 0.5;
+              font-size: 0.75rem;
+              line-height: 0.75rem;
+            }
           }
         }
       }
