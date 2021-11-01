@@ -1,0 +1,22 @@
+.pageTribe {
+  .tribePage {
+    &.preloader {
+      display: grid;
+      justify-content: center;
+      grid-template-rows: 2rem auto 1.8rem;
+      gap: 1rem;
+      justify-items: center;
+      .icon {
+        font-size: 2rem;
+        justify-self: center;
+        color: var(--main-color);
+      }
+      .text {
+        text-align: center;
+      }
+      .button {
+        width: 10rem;
+      }
+    }
+  }
+}
