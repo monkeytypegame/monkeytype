@@ -11,6 +11,13 @@ export function hideLoading() {
   $(".pageTribe .prelobby .welcome .onlineStatsLoader").addClass("hidden");
 }
 
+export function updateQueueButtons() {
+  let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
+  inQueueNumbers.forEach((num, index) => {
+    $(buttons[index]).find(".subtext .waiting").text(`Waiting: ${num}`);
+  });
+}
+
 export function incrementQueues(queues) {
   queues.forEach((queue) => {
     inQueueNumbers[queue]++;
@@ -30,25 +37,14 @@ export function setInQueue(newNum) {
   updateQueueButtons();
 }
 
-export function updateQueueButtons() {
-  let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
-  inQueueNumbers.forEach((num, index) => {
-    $(buttons[index]).find(".subtext .waiting").text(`Waiting: ${num}`);
-    // .html(`
-    // <div class='races'>Races: 0</div>
-    // <div class='waiting'></div>
-    // `);
-  });
-}
-
 export function updateRaces(races) {
   let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
   races.public.forEach((num, index) => {
     $(buttons[index]).find(".subtext .races").text(`Races: ${num}`);
   });
-  $(
-    ".pageTribe .prelobby .privateRooms #createPrivateRoom .subtext .rooms"
-  ).text(`Rooms: ${races.private}`);
+  $(".pageTribe .prelobby .customRooms #createCustomRoom .subtext .rooms").text(
+    `Rooms: ${races.private}`
+  );
 }
 
 let to = null;

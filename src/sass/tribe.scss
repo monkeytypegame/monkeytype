@@ -51,7 +51,7 @@
           color: var(--sub-color);
         }
         .text {
-          font-size: 2rem;
+          font-size: 2.5rem;
           color: var(--text-color);
         }
       }
@@ -91,7 +91,7 @@
           padding: 0.7rem;
         }
       }
-      .privateRooms {
+      .customRooms {
         grid-area: priv;
         display: grid;
         gap: 1rem;
@@ -99,7 +99,7 @@
         .title {
           color: var(--sub-color);
         }
-        #createPrivateRoom {
+        #createCustomRoom {
           height: 100%;
           padding: 1rem;
           display: grid;

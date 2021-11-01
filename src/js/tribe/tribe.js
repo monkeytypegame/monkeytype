@@ -4,6 +4,7 @@ import * as UpdateConfig from "./config";
 import * as DB from "./db";
 import * as TribePages from "./tribe-pages";
 import * as AccountController from "./account-controller";
+import "./tribe-prelobby";
 
 export const socket = io(
   window.location.hostname === "localhost"
