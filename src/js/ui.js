@@ -14,6 +14,7 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
+import * as Tribe from "./tribe";
 
 export let pageTransition = true;
 
@@ -139,6 +140,14 @@ export function changePage(page, norestart = false) {
     ManualRestart.set();
     if (!norestart) TestLogic.restart();
     Funbox.activate(Config.funbox);
+  } else if (page === "tribe") {
+    setPageTransition(true);
+    swapElements(activePage, $(".page.pageTribe"), 250, () => {
+      setPageTransition(false);
+      $(".page.pageTribe").addClass("active");
+      history.pushState("tribe", null, "tribe");
+      Tribe.init();
+    });
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();

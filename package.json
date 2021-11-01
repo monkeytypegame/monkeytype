@@ -68,6 +68,7 @@
     "object-hash": "^2.2.0",
     "path": "^0.12.7",
     "simple-git": "^2.45.1",
+    "socket.io-client": "^4.3.2",
     "string-similarity": "^4.0.4",
     "tinycolor2": "^1.4.2",
     "ua-parser-js": "^0.7.28",
