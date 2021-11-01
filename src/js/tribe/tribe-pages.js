@@ -19,6 +19,8 @@ export async function change(
       250,
       async () => {
         active = page;
+        activePage.removeClass("active");
+        $(`.page.pageTribe .tribePage.${page}`).addClass("active");
         transition = false;
         await finishCallback();
         resolve();
