@@ -155,6 +155,7 @@ const refactoredSrc = [
   "./src/js/settings/settings-group.js",
 
   "./src/js/tribe/tribe.js",
+  "./src/js/tribe/tribe-pages.js",
 
   "./src/js/test/custom-text.js",
   "./src/js/test/british-english.js",

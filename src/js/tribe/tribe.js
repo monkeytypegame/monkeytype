@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import * as Notifications from "./notifications";
 import * as UpdateConfig from "./config";
 import * as DB from "./db";
+import * as TribePages from "./tribe-pages";
 
 const socket = io(
   window.location.hostname === "localhost"
@@ -44,6 +45,7 @@ socket.on("connect", (e) => {
     name = snapName;
   }
   socket.emit("user_set_name", { name });
+  TribePages.change("prelobby");
   // setName(name);
   // changeActiveSubpage("prelobby");
 });
