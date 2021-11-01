@@ -18,5 +18,136 @@
         width: 10rem;
       }
     }
+    &.prelobby {
+      user-select: none;
+      display: grid;
+      grid-template-areas:
+        "welcome welcome"
+        "mm priv";
+      grid-template-columns: 3fr 1fr;
+      gap: 0.5rem 2rem;
+      .welcome {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        align-items: center;
+        grid-area: welcome;
+        position: relative;
+        .stats {
+          justify-self: right;
+          color: var(--sub-color);
+          text-align: right;
+          .num {
+            color: var(--text-color);
+          }
+          .small {
+            font-size: 0.65rem;
+            // line-height: 1.25rem;
+          }
+        }
+        .onlineStatsLoader {
+          position: absolute;
+          right: 0;
+          margin-right: -1.5rem;
+          color: var(--sub-color);
+        }
+        .text {
+          font-size: 2rem;
+          color: var(--text-color);
+        }
+      }
+      .matchmaking {
+        grid-area: mm;
+        display: grid;
+        gap: 1rem;
+        grid-template-rows: auto 2fr auto;
+        .title,
+        .subtitle {
+          color: var(--sub-color);
+        }
+        .buttons {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+          gap: 1rem;
+          .button {
+            display: grid;
+            gap: 0.25rem;
+            height: 100%;
+            padding: 1rem;
+            .icon {
+              font-size: 1.5rem;
+              line-height: 1.5rem;
+            }
+            .subtext {
+              opacity: 0.5;
+              font-size: 0.75rem;
+              line-height: 0.75rem;
+            }
+          }
+        }
+        .button {
+          padding: 0.7rem 0.7rem;
+        }
+        .leaveMatchmakingButton {
+          padding: 0.7rem;
+        }
+      }
+      .privateRooms {
+        grid-area: priv;
+        display: grid;
+        gap: 1rem;
+        grid-template-rows: auto 2fr auto;
+        .title {
+          color: var(--sub-color);
+        }
+        #createPrivateRoom {
+          height: 100%;
+          padding: 1rem;
+          display: grid;
+          gap: 0.25rem;
+          .icon {
+            font-size: 1.5rem;
+            line-height: 1.5rem;
+          }
+          .subtext {
+            opacity: 0.5;
+            font-size: 0.75rem;
+            line-height: 0.75rem;
+          }
+        }
+      }
+      #joinByCode {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: 2fr 1fr;
+        gap: 1rem;
+        .button {
+          padding: 0.7rem;
+          i {
+            margin: 0;
+          }
+        }
+        input {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+        }
+        .customInput {
+          color: var(--sub-color);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.5rem;
+          .byte {
+            transition: 0.125s;
+            &.focused {
+              color: var(--main-color);
+            }
+          }
+          &.disabled {
+            opacity: 0.5;
+          }
+        }
+      }
+    }
   }
 }

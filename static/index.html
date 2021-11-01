@@ -1378,7 +1378,117 @@
               <div class="text">Please wait...</div>
               <div class="reconnectButton button hidden">Reconnect</div>
             </div>
-            <div class="tribePage prelobby hidden">prelobby</div>
+            <div class="tribePage prelobby hidden">
+              <div class="welcome">
+                <div class="text">
+                  Welcome to
+                  <span style="color: var(--main-color)">Tribe</span>
+                  Alpha
+                </div>
+                <div class="stats"></div>
+                <div class="onlineStatsLoader hidden">
+                  <i class="fas fa-spin fa-circle-notch"></i>
+                </div>
+              </div>
+              <div class="matchmaking">
+                <!-- <div id="joinRandomRoom" class="button">Join random room</div> -->
+                <div class="title">matchmaking</div>
+                <div class="buttons">
+                  <div class="button" queue="0">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="text">Time 15</div>
+                    <div class="subtext">
+                      <div class="races">Races: 0</div>
+                      <div class="waiting">Waiting: 0</div>
+                    </div>
+                  </div>
+                  <div class="button" queue="1">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="text">Time 60</div>
+                    <div class="subtext">
+                      <div class="races">Races: 0</div>
+                      <div class="waiting">Waiting: 0</div>
+                    </div>
+                  </div>
+                  <div class="button" queue="2">
+                    <div class="icon"><i class="fas fa-quote-right"></i></div>
+                    <div class="text">Medium Quotes</div>
+                    <div class="subtext">
+                      <div class="races">Races: 0</div>
+                      <div class="waiting">Waiting: 0</div>
+                    </div>
+                  </div>
+                  <div class="button" queue="3">
+                    <div class="icon"><i class="fas fa-quote-right"></i></div>
+                    <div class="text">Long Quotes</div>
+                    <div class="subtext">
+                      <div class="races">Races: 0</div>
+                      <div class="waiting">Waiting: 0</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="button startMatchmakingButton disabled">
+                  <i class="fas fa-times"></i>
+                  Select at least one queue
+                </div>
+                <div class="button leaveMatchmakingButton hidden">
+                  <i class="fas fa-times"></i>
+                  Leave queue
+                </div>
+                <!-- <span
+                  style="
+                    text-align: center;
+                    color: var(--sub-color);
+                    line-height: 5rem;
+                    height: 5rem;
+                  "
+                >
+                  Coming soon...
+                </span> -->
+              </div>
+              <div class="privateRooms">
+                <div class="title">private rooms</div>
+                <div id="createPrivateRoom" class="button">
+                  <div class="icon"><i class="fas fa-users"></i></div>
+                  <div class="text">Create room</div>
+                  <div class="subtext">
+                    <div class="rooms">Rooms: 0</div>
+                  </div>
+                </div>
+                <div id="joinByCode">
+                  <div class="customInput">
+                    <span class="byte">--</span>
+                    /
+                    <span class="byte">--</span>
+                    /
+                    <span class="byte">--</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Code"
+                    maxlength="6"
+                    class=""
+                  />
+                  <div class="button">
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  grid-column: 1/3;
+                  margin-top: 2rem;
+                  color: var(--sub-color);
+                "
+              >
+                Remember: Things will break, the server will go down randomly.
+                This is using a different database with test saving disabled, so
+                you cannot access your live account including your personal
+                bests. If you find a problem please report it (ideally with
+                steps on how to reproduce the issue) - I'll do my best to fix
+                things. Most importantly - have fun.
+              </div>
+            </div>
           </div>
           <div class="page pageAbout hidden">
             <div class="scrollToTopButton">
