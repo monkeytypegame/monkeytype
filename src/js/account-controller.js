@@ -17,6 +17,11 @@ import * as PSA from "./psa";
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
 
+let authFinished;
+export let authPromise = new Promise((v) => {
+  authFinished = v;
+});
+
 async function loadUser(user) {
   // User is signed in.
   $(".pageAccount .content p.accountVerificatinNotice").remove();
@@ -96,6 +101,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     // }, 1000);
   }
   PSA.show();
+  authFinished();
 });
 
 export function signIn() {
@@ -278,11 +284,15 @@ export function linkWithGoogle() {
 }
 
 export function unlinkGoogle() {
-  firebase.auth().currentUser.unlink("google.com").then((result) => {
-    console.log(result);
-  }).catch((error) => {
-    console.log(error);
-  });
+  firebase
+    .auth()
+    .currentUser.unlink("google.com")
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 export function linkWithEmail(email, password) {
