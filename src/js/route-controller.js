@@ -1,6 +1,7 @@
 import * as Funbox from "./funbox";
 import * as UI from "./ui";
 import Config from "./config";
+import * as Tribe from "./tribe";
 
 let mappedRoutes = {
   "/": "pageLoading",
@@ -9,6 +10,7 @@ let mappedRoutes = {
   "/about": "pageAbout",
   "/account": "pageAccount",
   "/verify": "pageLoading",
+  "/tribe": "pageTribe",
 };
 
 export function handleInitialPageClasses(pathname) {
@@ -18,6 +20,9 @@ export function handleInitialPageClasses(pathname) {
   let el = $(".page." + mappedRoutes[pathname]);
   $(el).removeClass("hidden");
   $(el).addClass("active");
+  if (pathname === "/tribe") {
+    Tribe.init();
+  }
 }
 
 (function (history) {
