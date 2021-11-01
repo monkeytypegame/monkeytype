@@ -5,7 +5,7 @@ import * as DB from "./db";
 import * as TribePages from "./tribe-pages";
 import * as AccountController from "./account-controller";
 
-const socket = io(
+export const socket = io(
   window.location.hostname === "localhost"
     ? "http://localhost:3000"
     : "https://tribe.monkeytype.com",

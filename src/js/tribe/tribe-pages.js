@@ -1,4 +1,5 @@
 import { swapElements } from "./ui";
+import * as TribeStats from "./tribe-stats";
 
 let active = "preloader";
 let transition = false;
@@ -23,6 +24,9 @@ export async function change(
         $(`.page.pageTribe .tribePage.${page}`).addClass("active");
         transition = false;
         await finishCallback();
+        if (page === "prelobby") {
+          TribeStats.refresh();
+        }
         resolve();
       },
       () => {
