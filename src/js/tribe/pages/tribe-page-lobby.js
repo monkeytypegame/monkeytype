@@ -8,7 +8,7 @@ export function init() {
   updatePlayerList();
 }
 
-function updatePlayerList() {
+export function updatePlayerList() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
   let usersArray = [];
   Object.keys(Tribe.room.users).forEach((userId) => {

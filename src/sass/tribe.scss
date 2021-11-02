@@ -314,12 +314,13 @@
       overflow-y: scroll;
       .systemMessage {
         color: var(--sub-color);
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
+        margin-top: 0.5rem;
+        // margin-bottom: 0.15rem;
       }
+
       .message {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
+        // margin-top: 0.15rem;
+        // margin-bottom: 0.15rem;
         display: flex;
         gap: 0.5rem;
         color: var(--text-color);
@@ -353,6 +354,9 @@
           &.me {
             color: var(--main-color);
           }
+        }
+        &.newAuthor {
+          margin-top: 0.25rem;
         }
       }
     }

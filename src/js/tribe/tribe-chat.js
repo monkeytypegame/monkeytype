@@ -29,7 +29,7 @@ export function scrollChat() {
 
   if (shouldScrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;
-    chatEl2.scrollTop = chatEl2.scrollHeight;
+    // chatEl2.scrollTop = chatEl2.scrollHeight;
     shouldScrollChat = true;
   }
 }
@@ -41,10 +41,23 @@ export function appendMessage(data) {
     cls = "systemMessage";
   } else {
     let me = "";
-    if (data.from.name == name) me = " me";
+    if (data.from.id == Tribe.socket.id) me = " me";
     author = `<div class="author ${me}">${data.from.name}:</div>`;
   }
   // data.message = await insertImageEmoji(data.message);
+
+  let previousAuthor = $(".pageTribe .lobby .chat .messages .message")
+    .last()
+    .find(".author")
+    .text();
+  previousAuthor = previousAuthor.substring(0, previousAuthor.length - 1);
+
+  if (previousAuthor == data?.from?.name) {
+    // author = author.replace(`class="author`, `class="author invisible`);
+  } else {
+    cls += " newAuthor";
+  }
+
   $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);

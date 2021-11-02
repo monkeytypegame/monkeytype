@@ -26,6 +26,7 @@ export let state = -1;
 export let expectedVersion = "0.9.12";
 
 let autoJoin = undefined;
+let name = undefined;
 
 export let room = undefined;
 
@@ -83,9 +84,9 @@ socket.on("connect", async (e) => {
   TribePageMenu.enableButtons();
   state = 1;
   // Notifications.add("Connected", 1, undefined, "Tribe");
-  let name = "Guest";
-  let snapName = DB.getSnapshot().name;
-  if (snapName !== null) {
+  name = "Guest";
+  let snapName = DB.getSnapshot()?.name;
+  if (snapName !== undefined) {
     name = snapName;
   }
   socket.emit("user_set_name", { name });
@@ -138,6 +139,12 @@ socket.on("room_joined", (e) => {
   TribeSound.play("join");
 });
 
+socket.on("room_player_joined", (e) => {
+  room.users[e.user.id] = e.user;
+  TribePageLobby.updatePlayerList();
+  TribeSound.play("join");
+});
+
 socket.on("room_left", (e) => {
   room = undefined;
   TribePageMenu.enableButtons();
@@ -165,7 +172,7 @@ socket.on("chat_message", async (data) => {
       "i"
     );
   }
-  if (!data.isSystem && data.from.name != name) {
+  if (!data.isSystem && data.from.id != socket.id) {
     if (nameregex.test(data.message)) {
       TribeSound.play("chat_mention");
       data.message = data.message.replace(
