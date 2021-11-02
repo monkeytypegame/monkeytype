@@ -5,7 +5,7 @@ import * as DB from "./db";
 import * as TribePages from "./tribe-pages";
 import * as TribePagePreloader from "./tribe-page-preloader";
 import * as AccountController from "./account-controller";
-import "./tribe-page-menu";
+import * as TribePageMenu from "./tribe-page-menu";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -61,7 +61,7 @@ socket.on("connect", async (e) => {
   if (!versionCheck) return;
   UpdateConfig.setTimerStyle("mini", true);
   state = 1;
-  Notifications.add("Connected", 1, undefined, "Tribe");
+  // Notifications.add("Connected", 1, undefined, "Tribe");
   let name = "Guest";
   let snapName = DB.getSnapshot().name;
   if (snapName !== null) {
@@ -69,6 +69,7 @@ socket.on("connect", async (e) => {
   }
   socket.emit("user_set_name", { name });
   TribePages.change("menu");
+  TribePageMenu.enableButtons();
   // setName(name);
   // changeActiveSubpage("prelobby");
 });
@@ -97,4 +98,13 @@ socket.on("connect_error", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection error");
   TribePagePreloader.showReconnectButton();
+});
+
+socket.on("system_message", (e) => {
+  Notifications.add(e.message, e.level ?? 0);
+});
+
+socket.on("room_joined", (e) => {
+  console.log(e);
+  Notifications.add("todo: room joined", -1);
 });
