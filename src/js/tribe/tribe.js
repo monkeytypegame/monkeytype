@@ -145,6 +145,12 @@ socket.on("room_player_joined", (e) => {
   TribeSound.play("join");
 });
 
+socket.on("room_player_left", (e) => {
+  delete room.users[e.userId];
+  TribePageLobby.updatePlayerList();
+  TribeSound.play("leave");
+});
+
 socket.on("room_left", (e) => {
   room = undefined;
   TribePageMenu.enableButtons();
