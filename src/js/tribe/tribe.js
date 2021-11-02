@@ -3,8 +3,9 @@ import * as Notifications from "./notifications";
 import * as UpdateConfig from "./config";
 import * as DB from "./db";
 import * as TribePages from "./tribe-pages";
+import * as TribePagePreloader from "./tribe-page-preloader";
 import * as AccountController from "./account-controller";
-import "./tribe-prelobby";
+import "./tribe-page-menu";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -28,24 +29,15 @@ export function setAutoJoin(code) {
 }
 
 export async function init() {
-  $(".pageTribe .tribePage.preloader .icon").html(
-    `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
-  );
-  $(".pageTribe .tribePage.preloader .text").text("Waiting for login");
-
+  TribePagePreloader.updateIcon("circle-notch", true);
+  TribePagePreloader.updateText("Waiting for login");
   await AccountController.authPromise;
-
-  $(".pageTribe .tribePage.preloader .text").text("Connecting to Tribe");
-
+  TribePagePreloader.updateText("Connecting to Tribe");
+  TribePagePreloader.hideReconnectButton();
   setTimeout(() => {
     socket.connect();
   }, 500);
 }
-
-$(".pageTribe .tribePage.preloader .reconnectButton").click((e) => {
-  $(".pageTribe .tribePage.preloader .reconnectButton").addClass(`hidden`);
-  init();
-});
 
 socket.on("connect", async (e) => {
   let versionCheck = await new Promise((resolve, reject) => {
@@ -55,10 +47,8 @@ socket.on("connect", async (e) => {
       (response) => {
         if (response.status !== "ok") {
           socket.disconnect();
-          $(".pageTribe .tribePage.preloader .icon").html(
-            `<i class="fas fa-exclamation-triangle"></i>`
-          );
-          $(".pageTribe .tribePage.preloader .text").html(
+          TribePagePreloader.updateIcon("exclamation-triangle");
+          TribePagePreloader.updateText(
             `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${response.version}`
           );
           resolve(false);
@@ -78,7 +68,7 @@ socket.on("connect", async (e) => {
     name = snapName;
   }
   socket.emit("user_set_name", { name });
-  TribePages.change("prelobby");
+  TribePages.change("menu");
   // setName(name);
   // changeActiveSubpage("prelobby");
 });
@@ -86,31 +76,25 @@ socket.on("connect", async (e) => {
 socket.on("disconnect", (e) => {
   state = -1;
   TribePages.change("preloader");
-  $(".pageTribe .tribePage.preloader .icon").html(
-    `<i class="fas fa-fw fa-times"></i>`
-  );
-  $(".pageTribe .tribePage.preloader .text").text(`Disconnected`);
-  $(".pageTribe .tribePage.preloader .reconnectButton").removeClass(`hidden`);
+  TribePagePreloader.updateIcon("times");
+  TribePagePreloader.updateText("Disconnected");
+  TribePagePreloader.showReconnectButton();
 });
 
 socket.on("connect_failed", (e) => {
   state = -1;
   console.error(e);
   TribePages.change("preloader");
-  $(".pageTribe .tribePage.preloader .icon").html(
-    `<i class="fas fa-fw fa-times"></i>`
-  );
-  $(".pageTribe .tribePage.preloader .text").text(`Connection failed`);
-  $(".pageTribe .tribePage.preloader .reconnectButton").removeClass(`hidden`);
+  TribePagePreloader.updateIcon("times");
+  TribePagePreloader.updateText("Connection failed");
+  TribePagePreloader.showReconnectButton();
 });
 
 socket.on("connect_error", (e) => {
   state = -1;
   console.error(e);
   TribePages.change("preloader");
-  $(".pageTribe .tribePage.preloader .icon").html(
-    `<i class="fas fa-fw fa-times"></i>`
-  );
-  $(".pageTribe .tribePage.preloader .text").text(`Connection error`);
-  $(".pageTribe .tribePage.preloader .reconnectButton").removeClass(`hidden`);
+  TribePagePreloader.updateIcon("times");
+  TribePagePreloader.updateText("Connection error");
+  TribePagePreloader.showReconnectButton();
 });

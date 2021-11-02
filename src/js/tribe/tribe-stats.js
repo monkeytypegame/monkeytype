@@ -4,15 +4,15 @@ import * as Notifications from "./notifications";
 export let inQueueNumbers = [0, 0, 0, 0];
 
 export function showLoading() {
-  $(".pageTribe .prelobby .welcome .onlineStatsLoader").removeClass("hidden");
+  $(".pageTribe .menu .welcome .onlineStatsLoader").removeClass("hidden");
 }
 
 export function hideLoading() {
-  $(".pageTribe .prelobby .welcome .onlineStatsLoader").addClass("hidden");
+  $(".pageTribe .menu .welcome .onlineStatsLoader").addClass("hidden");
 }
 
 export function updateQueueButtons() {
-  let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
+  let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
   inQueueNumbers.forEach((num, index) => {
     $(buttons[index]).find(".subtext .waiting").text(`Waiting: ${num}`);
   });
@@ -37,14 +37,16 @@ export function setInQueue(newNum) {
   updateQueueButtons();
 }
 
-export function updateRaces(races) {
-  let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
-  races.public.forEach((num, index) => {
+export function updateMenuButtons(races) {
+  let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
+  races.mm.forEach((num, index) => {
     $(buttons[index]).find(".subtext .races").text(`Races: ${num}`);
   });
-  $(".pageTribe .prelobby .customRooms #createCustomRoom .subtext .rooms").text(
-    `Rooms: ${races.private}`
-  );
+
+  buttons = $(".pageTribe .menu .customRooms .buttons .button");
+  races.custom.forEach((num, index) => {
+    $(buttons[index]).find(".subtext .rooms").text(`Rooms: ${num}`);
+  });
 }
 
 let to = null;
@@ -58,22 +60,22 @@ export function refresh() {
       let ping = Math.round(performance.now() - data.pingStart);
       hideLoading();
       setInQueue(data.stats[2]);
-      updateRaces(data.stats[1]);
-      $(".pageTribe .prelobby .welcome .stats").empty();
-      $(".pageTribe .prelobby .welcome .stats").append(
+      updateMenuButtons(data.stats[1]);
+      $(".pageTribe .menu .welcome .stats").empty();
+      $(".pageTribe .menu .welcome .stats").append(
         `<div>Online <span class="num">${data.stats[0]}</span></div>`
       );
-      $(".pageTribe .prelobby .welcome .stats").append(
+      $(".pageTribe .menu .welcome .stats").append(
         `<div class="small">Version ${data.stats[3]}</div>`
       );
-      $(".pageTribe .prelobby .welcome .stats").append(
+      $(".pageTribe .menu .welcome .stats").append(
         `<div class="small">Ping ${ping}ms</div>`
       );
     }
   );
   if (
     $(".pageTribe").hasClass("active") &&
-    !$(".pageTribe .prelobby").hasClass("hidden") &&
+    !$(".pageTribe .menu").hasClass("hidden") &&
     to == null
   ) {
     to = setTimeout(() => {

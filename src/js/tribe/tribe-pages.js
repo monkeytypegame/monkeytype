@@ -24,7 +24,7 @@ export async function change(
         $(`.page.pageTribe .tribePage.${page}`).addClass("active");
         transition = false;
         await finishCallback();
-        if (page === "prelobby") {
+        if (page === "menu") {
           TribeStats.refresh();
         }
         resolve();

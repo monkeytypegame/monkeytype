@@ -157,7 +157,8 @@ const refactoredSrc = [
   "./src/js/tribe/tribe.js",
   "./src/js/tribe/tribe-pages.js",
   "./src/js/tribe/tribe-stats.js",
-  "./src/js/tribe/tribe-prelobby.js",
+  "./src/js/tribe/pages/tribe-page-preloader.js",
+  "./src/js/tribe/pages/tribe-page-menu.js",
 
   "./src/js/test/custom-text.js",
   "./src/js/test/british-english.js",
