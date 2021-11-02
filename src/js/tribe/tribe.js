@@ -136,7 +136,6 @@ socket.on("room_joined", (e) => {
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
-  // Notifications.add("todo: room joined", -1);
 });
 
 socket.on("room_left", (e) => {
@@ -144,7 +143,6 @@ socket.on("room_left", (e) => {
   TribePageMenu.enableButtons();
   TribePages.change("menu");
   TribeSound.play("leave");
-  // Notifications.add("todo: room joined", -1);
 });
 
 socket.on("chat_message", async (data) => {
