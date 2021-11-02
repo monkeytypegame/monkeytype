@@ -22,3 +22,6 @@ global.filterDebug = Account.toggleFilterDebug;
 global.stats = TestStats.getStats;
 
 global.replay = Replay.getReplayExport;
+
+//TODO REMOGVE THIS
+global.tribe = Tribe;
