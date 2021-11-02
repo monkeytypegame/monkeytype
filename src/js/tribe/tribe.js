@@ -24,6 +24,8 @@ export let expectedVersion = "0.9.12";
 
 let autoJoin = undefined;
 
+let room = undefined;
+
 export function setAutoJoin(code) {
   autoJoin = code;
 }
@@ -106,5 +108,7 @@ socket.on("system_message", (e) => {
 
 socket.on("room_joined", (e) => {
   console.log(e);
-  Notifications.add("todo: room joined", -1);
+  room = e.room;
+  TribePages.change("lobby");
+  // Notifications.add("todo: room joined", -1);
 });
