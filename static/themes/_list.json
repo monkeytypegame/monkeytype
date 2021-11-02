@@ -608,5 +608,11 @@
     "name" : "chaos_theory",
     "bgColor" : "#141221",
     "textColor":"#fd77d7"
+  },
+  {
+    "name": "retrowave",
+    "bgColor": "#0d032d",
+    "textColor": "#ed19fe"
   }
+
 ]

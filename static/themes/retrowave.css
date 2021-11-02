@@ -1,0 +1,36 @@
+:root {
+  --bg-color: #0d032d;
+  --main-color: #02a9ca;
+  --caret-color: #e2b714;
+  --sub-color: #9173b0;
+  --text-color: #ed19fe;
+  --error-color: #efb041;
+  --error-extra-color: #efb041;
+  --colorful-error-color: #efb041;
+  --colorful-error-extra-color: #efb041;
+}
+#menu {
+  color: #02a9ca;
+}
+#testModesNotice .text-button {
+  color: #02a9ca;
+}
+#timerNumber div,
+#largeLiveWpmAndAcc div {
+  color: #02a9ca;
+}
+.register.side form input,
+.login.side form input {
+  border: 1px solid #9173b0;
+}
+.register.side form div.button,
+.login.side form div.button {
+  background: #ed19fe;
+  color: #0d032d;
+}
+
+.register.side form div.button:hover,
+.login.side form div.button:hover {
+  background: #02a9ca;
+  color: #0d032d;
+}
