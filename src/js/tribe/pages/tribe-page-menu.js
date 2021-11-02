@@ -1,4 +1,5 @@
 import * as Notifications from "./notifications";
+import * as Tribe from "./tribe";
 
 export let queues = [false, false, false, false];
 
@@ -94,6 +95,12 @@ export function joinRoomByCode(code) {
   //   <span class="byte">--</span>
   // `);
 }
+
+$(".pageTribe .menu .customRooms #createCustomRoom").click((e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
+  disableButtons();
+  Tribe.socket.emit("room_create");
+});
 
 $(".pageTribe .menu .matchmaking .buttons .button").click((e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
