@@ -6,6 +6,8 @@ import * as TribePages from "./tribe-pages";
 import * as TribePagePreloader from "./tribe-page-preloader";
 import * as AccountController from "./account-controller";
 import * as TribePageMenu from "./tribe-page-menu";
+import * as TribePageLobby from "./tribe-page-lobby";
+import * as TribeSound from "./tribe-sound";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -24,7 +26,7 @@ export let expectedVersion = "0.9.12";
 
 let autoJoin = undefined;
 
-let room = undefined;
+export let room = undefined;
 
 export function setAutoJoin(code) {
   autoJoin = code;
@@ -107,8 +109,9 @@ socket.on("system_message", (e) => {
 });
 
 socket.on("room_joined", (e) => {
-  console.log(e);
   room = e.room;
+  TribePageLobby.init();
   TribePages.change("lobby");
+  TribeSound.play("join");
   // Notifications.add("todo: room joined", -1);
 });
