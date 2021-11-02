@@ -1,5 +1,4 @@
 import * as Tribe from "./tribe";
-import * as Notifications from "./notifications";
 
 export let inQueueNumbers = [0, 0, 0, 0];
 
