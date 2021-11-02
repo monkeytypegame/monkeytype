@@ -760,6 +760,19 @@ export function regexIndexOf(string, regex, startpos) {
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
+export function convertRGBtoHEX(rgb) {
+  rgb = rgb.match(/^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/);
+  if (rgb === null) return;
+  if (rgb.length < 3) return;
+  function hexCode(i) {
+    // Take the last 2 characters and convert
+    // them to Hexadecimal.
+
+    return ("0" + parseInt(i).toString(16)).slice(-2);
+  }
+  return "#" + hexCode(rgb[1]) + hexCode(rgb[2]) + hexCode(rgb[3]);
+}
+
 String.prototype.lastIndexOfRegex = function (regex) {
   var match = this.match(regex);
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;

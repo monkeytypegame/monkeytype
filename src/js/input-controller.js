@@ -688,6 +688,11 @@ $(document).keydown((event) => {
     ) {
       event.preventDefault();
     }
+
+    if (Config.confidenceMode === "max") {
+      event.preventDefault();
+      return;
+    }
   }
 
   Monkey.type();

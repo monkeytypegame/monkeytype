@@ -17,8 +17,6 @@ import { toggleGlarses } from "./test-logic";
 import "./caps-warning";
 import "./support-popup";
 import "./version-popup";
-import "./custom-theme-popup";
-import "./import-settings-popup";
 import "./input-controller";
 import "./ready";
 import "./about-page";

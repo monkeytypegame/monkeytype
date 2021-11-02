@@ -622,9 +622,11 @@ export function updateModesNotice() {
     );
   }
 
-  if (Config.oppositeShiftMode === "on") {
+  if (Config.oppositeShiftMode !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift</div>`
+      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift${
+        Config.oppositeShiftMode === "keymap" ? " (keymap)" : ""
+      }</div>`
     );
   }
 
