@@ -1,11 +1,36 @@
 import * as Tribe from "./tribe";
 import * as Notifications from "./notifications";
+import * as TribeChat from "./tribe-chat";
 
 export function init() {
   let link = location.origin + "/tribe_" + Tribe.room.id;
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
   updatePlayerList();
+  updateButtons();
+}
+
+export function reset() {
+  $(".pageTribe .tribePage.lobby .userlist .list").empty();
+  TribeChat.reset();
+}
+
+export function updateButtons() {
+  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+    $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").removeClass(
+      "hidden"
+    );
+    $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
+      "hidden"
+    );
+  } else {
+    $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
+      "hidden"
+    );
+    $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
+      "hidden"
+    );
+  }
 }
 
 export function updatePlayerList() {

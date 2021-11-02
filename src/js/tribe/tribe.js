@@ -154,6 +154,7 @@ socket.on("room_player_left", (e) => {
 socket.on("room_left", (e) => {
   room = undefined;
   TribePageMenu.enableButtons();
+  TribePageLobby.reset();
   TribePages.change("menu");
   TribeSound.play("leave");
 });

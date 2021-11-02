@@ -4,6 +4,11 @@ import * as Tribe from "./tribe";
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
 
+export function reset() {
+  $(".pageTribe .lobby .chat .messages").empty();
+  $(".pageTest #result .tribeResultChat .chat .messages").empty();
+}
+
 function limitChatMessages() {
   let messages1 = $(".pageTribe .lobby .chat .messages .message");
   let messages2 = $(
@@ -84,5 +89,16 @@ $(".pageTribe .tribePage.lobby .chat .input input").keyup((e) => {
       message: msg,
     });
     $(".pageTribe .lobby .chat .input input").val("");
+  }
+});
+
+$(document).keydown((e) => {
+  //TODO only enalbe while chat is visible
+  if (
+    e.key === "/" &&
+    !$(".pageTribe .lobby .chat .input input").is(":focus")
+  ) {
+    $(".pageTribe .lobby .chat .input input").focus();
+    e.preventDefault();
   }
 });
