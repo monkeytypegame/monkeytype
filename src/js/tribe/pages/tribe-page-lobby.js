@@ -19,6 +19,10 @@ $(".pageTribe .tribePage.lobby .inviteLink .text").hover(
   }
 );
 
+$(".pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton").click((e) => {
+  Tribe.socket.emit("room_leave");
+});
+
 $(".pageTribe .tribePage.lobby .inviteLink .text").click(async (e) => {
   try {
     await navigator.clipboard.writeText(

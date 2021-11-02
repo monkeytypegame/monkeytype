@@ -53,7 +53,8 @@ socket.on("connect", async (e) => {
           socket.disconnect();
           TribePagePreloader.updateIcon("exclamation-triangle");
           TribePagePreloader.updateText(
-            `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${response.version}`
+            `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${response.version}`,
+            true
           );
           resolve(false);
         } else {
@@ -64,6 +65,7 @@ socket.on("connect", async (e) => {
   });
   if (!versionCheck) return;
   UpdateConfig.setTimerStyle("mini", true);
+  TribePageMenu.enableButtons();
   state = 1;
   // Notifications.add("Connected", 1, undefined, "Tribe");
   let name = "Guest";
@@ -72,8 +74,23 @@ socket.on("connect", async (e) => {
     name = snapName;
   }
   socket.emit("user_set_name", { name });
-  TribePages.change("menu");
-  TribePageMenu.enableButtons();
+  if (autoJoin) {
+    TribePagePreloader.updateText(`Joining room ${autoJoin}`);
+    setTimeout(() => {
+      socket.emit("room_join", { roomId: autoJoin }, (res) => {
+        if (res.room) {
+          room = res.room;
+          TribePageLobby.init();
+          TribePages.change("lobby");
+          TribeSound.play("join");
+        } else {
+          TribePages.change("menu");
+        }
+      });
+    }, 500);
+  } else {
+    TribePages.change("menu");
+  }
   // setName(name);
   // changeActiveSubpage("prelobby");
 });
@@ -113,5 +130,13 @@ socket.on("room_joined", (e) => {
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
+  // Notifications.add("todo: room joined", -1);
+});
+
+socket.on("room_left", (e) => {
+  room = undefined;
+  TribePageMenu.enableButtons();
+  TribePages.change("menu");
+  TribeSound.play("leave");
   // Notifications.add("todo: room joined", -1);
 });

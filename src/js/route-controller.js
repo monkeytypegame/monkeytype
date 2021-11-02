@@ -14,14 +14,18 @@ let mappedRoutes = {
 };
 
 export function handleInitialPageClasses(pathname) {
-  if (!mappedRoutes[pathname]) {
-    pathname = "/";
-  }
-  let el = $(".page." + mappedRoutes[pathname]);
-  $(el).removeClass("hidden");
-  $(el).addClass("active");
-  if (pathname === "/tribe") {
+  if (/tribe/.test(pathname)) {
+    let el = $(".page.pageTribe");
+    $(el).removeClass("hidden");
+    $(el).addClass("active");
     Tribe.init();
+  } else {
+    if (!mappedRoutes[pathname]) {
+      pathname = "/";
+    }
+    let el = $(".page." + mappedRoutes[pathname]);
+    $(el).removeClass("hidden");
+    $(el).addClass("active");
   }
 }
 

@@ -6,8 +6,12 @@ export function updateIcon(iconName, spinning = false) {
   );
 }
 
-export function updateText(text) {
-  $(".pageTribe .tribePage.preloader .text").html(text);
+export function updateText(text, html = false) {
+  if (html) {
+    $(".pageTribe .tribePage.preloader .text").text(text);
+  } else {
+    $(".pageTribe .tribePage.preloader .text").html(text);
+  }
 }
 
 export function showReconnectButton() {

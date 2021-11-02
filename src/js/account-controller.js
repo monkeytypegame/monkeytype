@@ -13,6 +13,7 @@ import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 import * as PSA from "./psa";
+import * as Tribe from "./tribe";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -99,6 +100,13 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     // setTimeout(() => {
     //   ChallengeController.setup(challengeName);
     // }, 1000);
+  }
+  if (/\/tribe/.test(window.location.pathname)) {
+    if (/\/tribe_.+/.test(window.location.pathname)) {
+      let code = window.location.pathname.split("/")[1];
+      code = code.split("_")[1];
+      Tribe.setAutoJoin(code);
+    }
   }
   PSA.show();
   authFinished();
