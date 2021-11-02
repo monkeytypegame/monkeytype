@@ -149,6 +149,7 @@ const refactoredSrc = [
   "./src/js/popups/custom-theme-popup.js",
   "./src/js/popups/import-export-settings-popup.js",
   "./src/js/popups/custom-background-filter.js",
+  "./src/js/popups/tribe-room-code-popup.js",
 
   "./src/js/settings/language-picker.js",
   "./src/js/settings/theme-picker.js",

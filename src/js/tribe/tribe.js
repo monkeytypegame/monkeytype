@@ -43,6 +43,20 @@ export async function init() {
   }, 500);
 }
 
+export function joinRoom(roomId) {
+  socket.emit("room_join", { roomId }, (res) => {
+    if (res.room) {
+      room = res.room;
+      TribePageLobby.init();
+      TribePages.change("lobby");
+      TribeSound.play("join");
+    } else {
+      TribePages.change("menu");
+      history.replaceState("/tribe", null, "/tribe");
+    }
+  });
+}
+
 socket.on("connect", async (e) => {
   let versionCheck = await new Promise((resolve, reject) => {
     socket.emit(
@@ -77,16 +91,7 @@ socket.on("connect", async (e) => {
   if (autoJoin) {
     TribePagePreloader.updateText(`Joining room ${autoJoin}`);
     setTimeout(() => {
-      socket.emit("room_join", { roomId: autoJoin }, (res) => {
-        if (res.room) {
-          room = res.room;
-          TribePageLobby.init();
-          TribePages.change("lobby");
-          TribeSound.play("join");
-        } else {
-          TribePages.change("menu");
-        }
-      });
+      joinRoom(autoJoin);
     }, 500);
   } else {
     TribePages.change("menu");

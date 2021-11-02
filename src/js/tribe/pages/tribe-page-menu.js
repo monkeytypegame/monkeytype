@@ -1,5 +1,6 @@
 import * as Notifications from "./notifications";
 import * as Tribe from "./tribe";
+import * as TribeRoomCodePopup from "./tribe-room-code-popup";
 
 export let queues = [false, false, false, false];
 
@@ -100,6 +101,11 @@ $(".pageTribe .menu .customRooms #createCustomRoom").click((e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   disableButtons();
   Tribe.socket.emit("room_create");
+});
+
+$(".pageTribe .menu .customRooms #enterRoomCode").click((e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
+  TribeRoomCodePopup.show();
 });
 
 $(".pageTribe .menu .matchmaking .buttons .button").click((e) => {
