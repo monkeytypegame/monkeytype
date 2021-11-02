@@ -2,13 +2,13 @@ import * as Notifications from "./notifications";
 
 export let queues = [false, false, false, false];
 
-export function disableLobbyButtons() {
+export function disableButtons() {
   $(".pageTribe .menu .matchmaking .buttons .button").addClass("disabled");
   $(".pageTribe .menu .customRooms .button").addClass("disabled");
   $(".pageTribe .menu .customRooms .customInput").addClass("disabled");
 }
 
-export function enableLobbyButtons() {
+export function enableButtons() {
   $(".pageTribe .menu .matchmaking .buttons .button").removeClass("disabled");
   $(".pageTribe .menu .customRooms .button").removeClass("disabled");
   $(".pageTribe .menu .customRooms .customInput").removeClass("disabled");
