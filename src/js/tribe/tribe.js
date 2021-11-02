@@ -8,6 +8,7 @@ import * as AccountController from "./account-controller";
 import * as TribePageMenu from "./tribe-page-menu";
 import * as TribePageLobby from "./tribe-page-lobby";
 import * as TribeSound from "./tribe-sound";
+import * as TribeChat from "./tribe-chat";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -144,4 +145,39 @@ socket.on("room_left", (e) => {
   TribePages.change("menu");
   TribeSound.play("leave");
   // Notifications.add("todo: room joined", -1);
+});
+
+socket.on("chat_message", async (data) => {
+  data.message = data.message.trim();
+  let nameregex;
+  if (data.isLeader) {
+    nameregex = new RegExp(
+      ` @${name.replace(/[.()]/g, "\\$&")} |^@${name.replace(
+        /[.()]/g,
+        "\\$&"
+      )}$|ready|@everyone`,
+      "i"
+    );
+  } else {
+    nameregex = new RegExp(
+      ` @${name.replace(/[.()]/g, "\\$&")} |^@${name.replace(
+        /[.()]/g,
+        "\\$&"
+      )}$`,
+      "i"
+    );
+  }
+  if (!data.isSystem && data.from.name != name) {
+    if (nameregex.test(data.message)) {
+      TribeSound.play("chat_mention");
+      data.message = data.message.replace(
+        nameregex,
+        "<span class='mention'>$&</span>"
+      );
+    } else {
+      TribeSound.play("chat2");
+    }
+  }
+
+  TribeChat.appendMessage(data);
 });
