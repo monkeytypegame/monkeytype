@@ -20,6 +20,7 @@ import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
 import * as TTS from "./tts";
+import * as TribeConfig from "./tribe-config";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -219,7 +220,8 @@ export function togglePunctuation() {
   saveToLocalStorage();
 }
 
-export function setMode(mode, nosave) {
+export function setMode(mode, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (TestUI.testRestarting) return;
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
@@ -292,6 +294,7 @@ export function setMode(mode, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 export function setPlaySoundOnError(val, nosave) {
