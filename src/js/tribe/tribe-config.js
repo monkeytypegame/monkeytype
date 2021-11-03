@@ -48,7 +48,7 @@ export function apply(config) {
   }
 }
 
-function setLoadingIndicator(truefalse) {
+export function setLoadingIndicator(truefalse) {
   if (truefalse) {
     $(
       ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator"
@@ -60,9 +60,27 @@ function setLoadingIndicator(truefalse) {
   }
 }
 
+export function canChange(override) {
+  if (Tribe.state <= 1) return true;
+  if (Tribe.state !== 5) return false;
+  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+    //is leader, allow
+    return true;
+  } else {
+    //not leader, check if its being forced by tribe
+    if (override) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
 let syncConfigTimeout = null;
 
 export function sync() {
+  if (Tribe.state <= 1) return;
+  if (!Tribe.room.users[Tribe.socket.id].isLeader) return;
   setLoadingIndicator(true);
   TribePageLobby.disableStartButton();
   if (syncConfigTimeout === null) {
