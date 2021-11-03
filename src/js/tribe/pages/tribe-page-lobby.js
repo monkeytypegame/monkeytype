@@ -1,9 +1,12 @@
 import * as Tribe from "./tribe";
 import * as Notifications from "./notifications";
 import * as TribeChat from "./tribe-chat";
+import * as CustomText from "./custom-text";
 
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
+  $(".pageTribe .tribePage.lobby .inviteLink .code .text").text("");
+  $(".pageTribe .tribePage.lobby .inviteLink .link").text("");
   TribeChat.reset();
 }
 
@@ -65,6 +68,176 @@ export function updateRoomName() {
   $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .text").text(
     Tribe.room.name
   );
+}
+
+export function updateRoomConfig() {
+  if (Tribe.room == undefined) return;
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").empty();
+
+  let room = Tribe.room;
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Mode" data-balloon-pos="up" commands="commandsMode">
+    <i class="fas fa-bars"></i>${room.config.mode}
+    </div>
+    `);
+
+  if (room.config.mode === "time") {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Time" data-balloon-pos="up" commands="commandsTimeConfig">
+    <i class="fas fa-clock"></i>${room.config.mode2}
+    </div>
+    `);
+  } else if (room.config.mode === "words") {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Words" data-balloon-pos="up" commands="commandsWordCount">
+    <i class="fas fa-font"></i>${room.config.mode2}
+    </div>
+    `);
+  } else if (room.config.mode === "quote") {
+    let qstring = "all";
+    let num = room.config.mode2;
+    if (num == 0) {
+      qstring = "short";
+    } else if (num == 1) {
+      qstring = "medium";
+    } else if (num == 2) {
+      qstring = "long";
+    } else if (num == 3) {
+      qstring = "thicc";
+    }
+
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Quote length" data-balloon-pos="up" commands="commandsQuoteLengthConfig">
+    <i class="fas fa-quote-right"></i>${qstring}
+    </div>
+    `);
+  } else if (room.config.mode === "custom") {
+    let t = "Custom settings:";
+
+    t += `\ntext length: ${CustomText.text.length}`;
+    if (CustomText.isTimeRandom || CustomText.isWordRandom) {
+      let r = "";
+      let n = "";
+      if (CustomText.isTimeRandom) {
+        r = "time";
+        n = CustomText.time;
+      } else if (CustomText.isWordRandom) {
+        r = "words";
+        n = CustomText.word;
+      }
+      t += `\nrandom: ${r} ${n}`;
+    }
+
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break commands="commandsQuoteLengthConfig">
+    <i class="fas fa-tools"></i>custom
+    </div>
+    `);
+  }
+
+  if (room.config.difficulty === "normal") {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
+    <i class="far fa-star"></i>normal
+    </div>
+    `);
+  } else if (room.config.difficulty === "expert") {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
+    <i class="fas fa-star-half-alt"></i>expert
+    </div>
+    `);
+  } else if (room.config.difficulty === "master") {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
+    <i class="fas fa-star"></i>master
+    </div>
+    `);
+  }
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Language" data-balloon-pos="up" commands="commandsLanguages">
+    <i class="fas fa-globe-americas"></i>${room.config.language}
+    </div>
+    `);
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Punctuation" data-balloon-pos="up" function="togglePunctuation()">
+    <span class="punc" style="font-weight: 900;
+      color: var(--main-color);
+      width: 1.25rem;
+      text-align: center;
+      display: inline-block;
+      margin-right: .5rem;
+      letter-spacing: -.1rem;">!?</span>${
+        room.config.punctuation ? "on" : "off"
+      }
+    </div>
+    `);
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Numbers" data-balloon-pos="up" function="toggleNumbers()">
+    <span class="numbers" style="font-weight: 900;
+        color: var(--main-color);
+        width: 1.25rem;
+        text-align: center;
+        margin-right: .1rem;
+        display: inline-block;
+        margin-right: .5rem;
+        letter-spacing: -.1rem;">15</span>${room.config.numbers ? "on" : "off"}
+    </div>
+    `);
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Funbox" data-balloon-pos="up" commands="commandsFunbox">
+    <i class="fas fa-gamepad"></i>${room.config.funbox}
+    </div>
+    `);
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Lazy mode" data-balloon-pos="up" commands="commandsLazyMode">
+    <i class="fas fa-couch"></i>${room.config.lazyMode}
+    </div>
+    `);
+
+  if (room.config.stopOnError === "off") {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="commandsStopOnError">
+    <i class="fas fa-hand-paper"></i>off
+    </div>
+    `);
+  } else {
+    $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="commandsStopOnError">
+    <i class="fas fa-hand-paper"></i>stop on ${room.config.stopOnError}
+    </div>
+    `);
+  }
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Min Wpm" data-balloon-pos="up" commands="commandsMinWpm">
+    <i class="fas fa-bomb"></i>${
+      room.config.minWpm == null ? "off" : room.config.minWpm + "wpm"
+    }
+    </div>
+    `);
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="commandsMinAcc">
+    <i class="fas fa-bomb"></i>${
+      room.config.minAcc == null ? "off" : room.config.minAcc + "%"
+    }
+    </div>
+    `);
+
+  $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
+    <div class='group' aria-label="Min Burst" data-balloon-pos="up" commands="commandsMinBurst">
+    <i class="fas fa-bomb"></i>${
+      room.config.minBurst == null ? "off" : room.config.minBurst + "wpm"
+    }
+    </div>
+    `);
 }
 
 export function updatePlayerList() {
@@ -136,6 +309,7 @@ export function updatePlayerList() {
 }
 
 export function init() {
+  reset();
   let link = location.origin + "/tribe_" + Tribe.room.id;
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
@@ -143,6 +317,7 @@ export function init() {
   updateButtons();
   updateVisibility();
   updateRoomName();
+  updateRoomConfig();
 }
 
 $(".pageTribe .tribePage.lobby .inviteLink .text").hover(
