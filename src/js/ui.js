@@ -148,6 +148,7 @@ export function changePage(page, norestart = false) {
       history.pushState("tribe", null, "tribe");
       Tribe.init();
     });
+    TestConfig.hide();
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
