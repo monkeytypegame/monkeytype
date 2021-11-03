@@ -177,12 +177,33 @@
         .userReadyButton {
           background: var(--main-color);
           color: var(--bg-color);
+          padding: 1.4rem 0.4rem;
           &:hover {
             background: var(--text-color);
           }
           &.disabled {
             pointer-events: none;
             opacity: 0.1;
+          }
+        }
+      }
+      .visibilityAndName {
+        display: grid;
+        // grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+
+        margin-bottom: 1rem;
+        .group .value {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          width: max-content;
+          .icon-button {
+            color: var(--sub-color);
+            padding: 0;
+            margin-left: 0.25rem;
+            &:hover {
+              color: var(--text-color);
+            }
           }
         }
       }
@@ -208,24 +229,6 @@
           display: inline;
           margin-left: 0.5rem;
           color: var(--main-color);
-        }
-        .visibilityAndName {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          margin-bottom: 2rem;
-          .group .value {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            width: max-content;
-            .icon-button {
-              color: var(--sub-color);
-              padding: 0;
-              margin-left: 0.25rem;
-              &:hover {
-                color: var(--text-color);
-              }
-            }
-          }
         }
       }
 
@@ -328,7 +331,7 @@
     grid-area: chat;
     gap: 1rem;
     .messages {
-      height: 200px;
+      height: 20rem;
       overflow-y: scroll;
       .systemMessage {
         color: var(--sub-color);
@@ -396,6 +399,10 @@
   }
   .userlist {
     grid-area: userlist;
+    .list {
+      max-height: 15rem;
+      overflow-y: scroll;
+    }
     .user {
       display: flex;
       justify-content: space-between;
