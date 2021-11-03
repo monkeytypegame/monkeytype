@@ -232,25 +232,25 @@ export function updateRoomConfig() {
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Wpm" data-balloon-pos="up" commands="commandsMinWpm">
-    <i class="fas fa-bomb"></i>${
-      room.config.minWpm == null ? "off" : room.config.minWpm + "wpm"
-    }
+    <i class="fas fa-bomb"></i>${room.config.minWpm}${
+    room.config.minWpm !== "off" ? "wpm" : ""
+  }
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="commandsMinAcc">
-    <i class="fas fa-bomb"></i>${
-      room.config.minAcc == null ? "off" : room.config.minAcc + "%"
-    }
+    <i class="fas fa-bomb"></i>${room.config.minAcc}${
+    room.config.minAcc !== "off" ? "wpm" : ""
+  }
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Burst" data-balloon-pos="up" commands="commandsMinBurst">
-    <i class="fas fa-bomb"></i>${
-      room.config.minBurst == null ? "off" : room.config.minBurst + "wpm"
-    }
+    <i class="fas fa-bomb"></i>${room.config.minBurst}${
+    room.config.minBurst !== "off" ? "wpm" : ""
+  }
     </div>
     `);
 }
