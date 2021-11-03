@@ -205,3 +205,9 @@ socket.on("chat_message", async (data) => {
 
   TribeChat.appendMessage(data);
 });
+
+socket.on("room_config_changed", (e) => {
+  TribeConfig.apply(e.config);
+  TribePageLobby.enableStartButton();
+  TribeConfig.setLoadingIndicator(false);
+});

@@ -3,12 +3,26 @@ import * as Notifications from "./notifications";
 import * as TribeChat from "./tribe-chat";
 import * as CustomText from "./custom-text";
 import * as TribeConfig from "./tribe-config";
+import * as Commandline from "./commandline";
+import * as CommandlineLists from "./commandline-lists";
 
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text("");
   $(".pageTribe .tribePage.lobby .inviteLink .link").text("");
   TribeChat.reset();
+}
+
+export function disableStartButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
+    "disabled"
+  );
+}
+
+export function enableStartButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").removeClass(
+    "disabled"
+  );
 }
 
 export function updateButtons() {
@@ -164,7 +178,7 @@ export function updateRoomConfig() {
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Punctuation" data-balloon-pos="up" function="togglePunctuation()">
+    <div class='group' aria-label="Punctuation" data-balloon-pos="up" commands="commandsPunctuation">
     <span class="punc" style="font-weight: 900;
       color: var(--main-color);
       width: 1.25rem;
@@ -178,7 +192,7 @@ export function updateRoomConfig() {
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Numbers" data-balloon-pos="up" function="toggleNumbers()">
+    <div class='group' aria-label="Numbers" data-balloon-pos="up" commands="commandsNumbers">
     <span class="numbers" style="font-weight: 900;
         color: var(--main-color);
         width: 1.25rem;
@@ -373,3 +387,23 @@ $(
   let name = prompt("Enter new room name");
   Tribe.socket.emit("room_update_name", { name });
 });
+
+$(document).on(
+  "click",
+  ".pageTribe .tribePage.lobby .currentConfig .groups .group",
+  (e) => {
+    if (Tribe.room.users[Tribe.socket.id].isLeader) {
+      // let commands = eval($(e.currentTarget).attr("commands"));
+      let commands = CommandlineLists.getList(
+        $(e.currentTarget).attr("commands")
+      );
+      if (commands != undefined) {
+        if ($(e.currentTarget).attr("commands") === "commandsTags") {
+          CommandlineLists.updateTagCommands();
+        }
+        CommandlineLists.pushCurrent(commands);
+        Commandline.show();
+      }
+    }
+  }
+);

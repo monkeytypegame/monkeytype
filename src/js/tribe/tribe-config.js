@@ -1,7 +1,9 @@
-import * as UpdateConfig from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as Funbox from "./funbox";
 import * as Notifications from "./notifications";
 import * as CustomText from "./custom-text";
+import * as TribePageLobby from "./tribe-page-lobby";
+import * as Tribe from "./tribe";
 
 export function apply(config) {
   Notifications.add("applying room config", 0);
@@ -43,5 +45,63 @@ export function apply(config) {
     UpdateConfig.setMinBurst("custom", true, true);
   } else {
     UpdateConfig.setMinBurst("off", true, true);
+  }
+}
+
+function setLoadingIndicator(truefalse) {
+  if (truefalse) {
+    $(
+      ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator"
+    ).removeClass("hidden");
+  } else {
+    $(".pageTribe .tribePage.lobby .currentConfig .loadingIndicator").addClass(
+      "hidden"
+    );
+  }
+}
+
+let syncConfigTimeout = null;
+
+export function sync() {
+  setLoadingIndicator(true);
+  TribePageLobby.disableStartButton();
+  if (syncConfigTimeout === null) {
+    syncConfigTimeout = setTimeout(() => {
+      // setLoadingIndicator(false);
+      let mode2;
+      if (Config.mode === "time") {
+        mode2 = Config.time;
+      } else if (Config.mode === "words") {
+        mode2 = Config.words;
+      } else if (Config.mode === "quote") {
+        mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
+      }
+      Tribe.socket.emit("room_update_config", {
+        config: {
+          mode: Config.mode,
+          mode2: mode2,
+          difficulty: Config.difficulty,
+          language: Config.language,
+          punctuation: Config.punctuation,
+          numbers: Config.numbers,
+          funbox: Config.funbox,
+          lazyMode: Config.lazyMode,
+          stopOnError: Config.stopOnError,
+          minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
+          minAcc: Config.minAcc === "custom" ? Config.minAccCustom : null,
+          minBurst:
+            Config.minBurst === "custom" ? Config.minBurstCustomSpeed : "off",
+          customText: {
+            text: CustomText.text,
+            isWordRandom: CustomText.isWordRandom,
+            isTimeRandom: CustomText.isTimeRandom,
+            word: CustomText.word,
+            time: CustomText.time,
+          },
+        },
+      });
+      clearTimeout(syncConfigTimeout);
+      syncConfigTimeout = null;
+    }, 500);
   }
 }
