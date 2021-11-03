@@ -2,6 +2,7 @@ import * as Tribe from "./tribe";
 import * as Notifications from "./notifications";
 import * as TribeChat from "./tribe-chat";
 import * as CustomText from "./custom-text";
+import * as TribeConfig from "./tribe-config";
 
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
@@ -197,7 +198,7 @@ export function updateRoomConfig() {
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Lazy mode" data-balloon-pos="up" commands="commandsLazyMode">
-    <i class="fas fa-couch"></i>${room.config.lazyMode}
+    <i class="fas fa-couch"></i>${room.config.lazyMode ? "on" : "off"}
     </div>
     `);
 
@@ -318,6 +319,7 @@ export function init() {
   updateVisibility();
   updateRoomName();
   updateRoomConfig();
+  TribeConfig.apply(Tribe.room.config);
 }
 
 $(".pageTribe .tribePage.lobby .inviteLink .text").hover(
