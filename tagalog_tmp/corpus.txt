@@ -10008,10 +10008,7 @@ nagkakamit 1
 nagkakapunit-punit 1
 punit-punit 1
 punit 1
-<<<<<<< HEAD
-=======
 napunit 1
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagkakaroon 4
 nagkakasakit 1
 nagkakasala 2
@@ -10187,10 +10184,7 @@ nagpabagsak 1
 nagpabaya 1
 nagpabiling-biling 1
 nagpabilin 1
-<<<<<<< HEAD
-=======
 nagpabuway 1
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpadala 2
 nagpadentista 1
 dentista 1
@@ -10200,11 +10194,8 @@ punongguro 1
 nagpagalaw 1
 nagpagalit 1
 nagpagawa 2
-<<<<<<< HEAD
-=======
 pagbabasa 1
 napagkasunduang 1
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpagod 1
 nagpahalaga 1
 nagpahalik 1
@@ -10222,13 +10213,10 @@ nagpakadalubhasa 1
 nagpakagambala 1
 nagpakahinahon 1
 nagpakahinhing 1
-<<<<<<< HEAD
 nagpakahinhin 1
 nagpakahulugan 1
-=======
 napakahinhing 1
 nagpakahulog 1
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpakahusay 3
 nagpakamatay 1
 nagpakana 2
@@ -10255,7 +10243,6 @@ nagpamana 1
 nagpamanang 1
 nagpanatili 1
 nagpanggap 1
-<<<<<<< HEAD
 nagpaalila 1
 panggap 1
 patintero 1
@@ -10263,8 +10250,6 @@ piko 1
 sungka 1
 saranggola 1
 holen 1
-=======
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpanukala 1
 nagpapaalala 1
 nagpapaalam 1
@@ -10310,11 +10295,8 @@ nagpapalaganap 1
 nagpapalakas 1
 nagpapalawig 1
 nagpapalaya 1
-<<<<<<< HEAD
 nagpapaliku-liko 1
 liku-liko 1
-=======
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpapalimos 1
 nagpapalipat 1
 nagpapalitan 1
@@ -10324,13 +10306,10 @@ nagpapanatili 1
 nagpapapista 1
 nagpaparangal 2
 nagpapasalamat 3
-<<<<<<< HEAD
 nagpapasasa 3
 pasasa 1
-=======
 nagpasasa 3
 magpasasa 1
->>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpapasigla 1
 nagpapasimple 1
 nagpapasulong 1
@@ -10424,7 +10403,7 @@ nagrerebelde 2
 nagrerebolusyon 1
 nagresulta 2
 nagsabi 6
-nagsabing 2 <-- NARITO AKO
+nagsabing 2
 nagsabit 2
 nagsabong 1
 nagsagawa 6
@@ -10451,7 +10430,6 @@ nagsasalisod 1
 nagsasalita 7
 nagsasalitaan 1
 nagsasama-sama 1
-nagsasaman 1
 nagsasamantala 12
 nagsasampa 1
 nagsasanib 1
@@ -10466,9 +10444,8 @@ nagsaysay 11
 nagselos 1
 nagsepilyo 1
 nagsesesyon 1
-nagsi 1
 nagsialsa 1
-nagsibabang 1
+nagsibaba 1
 nagsigawan 1
 nagsikap 2
 nagsikhay 1
@@ -10505,7 +10482,7 @@ nagsitago 1
 nagsiyasat 2
 nagsolo 1
 nagsugal 1
-nagsugapaan 1
+nagsagupaan 1
 nagsugo 1
 nagsulat 1
 nagsumite 1
@@ -10555,6 +10532,7 @@ nagtataguri 1
 nagtataguyod 3
 nagtataka 1
 nagtatakang 1
+nagtatakbuhan 1
 nagtatakbuhang 1
 nagtatakda 10
 nagtatakdang 1
@@ -10571,7 +10549,7 @@ nagtatapal 1
 nagtatapos 2
 nagtatatag 1
 nagtatawa 4
-nagtatawan 1
+nagtatawanan 1
 nagtatawang 1
 nagtatayo 1
 nagtatrabaho 1
@@ -10606,7 +10584,6 @@ nagtulakan 1
 nagtulong 1
 nagtuloy 2
 nagtuluy-tuloy 1
-nagtumining 1
 nagtungo 8
 nagtungong 2
 nagtutugma-tugma 1
@@ -10614,29 +10591,30 @@ nagtutulak 2
 nagtutulakan 1
 nagtutulungan 1
 nagtutunggaling 2
+nagtutunggali 2
 nagugulat 1
 nagugulong 1
+naguguluhan 1
 naguguluhang 1
 nagugulumihanan 2
 nagugutom 3
 nagulat 4
 nagumon 2
 nagunamgunam 1
+gunamgunam 1
 nagunita 4
 nagustuhan 3
-naguudyok 1
 nagwakas 2
 nagwasak 2
 nagwawagayway 1
 nagwawakas 3
 nagwawalang 1
+nagwawala 1
 nagwelga 1
 nagyabang 1
 nagyakap 1
-nagyayao 1
 nagyayaya 1
 nagyeyelong 1
-nagyo 1
 nahabla 1
 nahagip 1
 nahahabla 1
@@ -10647,7 +10625,6 @@ nahaharap 4
 nahahatak 1
 nahahati 4
 nahahawig 1
-nahakahanap 1
 nahalal 3
 nahanap 2
 nahapis 1
@@ -10670,7 +10647,6 @@ nahihiya 4
 nahihiyang 2
 nahihiyasan 1
 nahimatay 1
-nahing 2
 nahipo 1
 nahirang 3
 nahirapan 1
@@ -10681,7 +10657,6 @@ nahuhugasan 1
 nahuhuli 2
 nahuli 1
 nahuling 1
-nahulo 2
 nahulog 1
 naiahon 1
 naiba 2
@@ -10772,8 +10747,6 @@ naisin 2
 naisip 26
 naisipan 1
 naisipang 1
-naisipkong 1
-naisuma 2
 naisusulat 1
 naisusulong 1
 naitaboy 3
@@ -10797,14 +10770,8 @@ naiwaksi 2
 naiwala 1
 naiwan 6
 naiwang 3
-nak 1
 naka 6
-naka-amerikana 1
-naka-cba 1
-naka-plaster 1
-naka-sandal 1
-naka-sentro 1
-naka-unat 1
+amerikana 1
 nakaaalis 1
 nakaaangat 2
 nakaaapekto 2
@@ -10823,7 +10790,6 @@ nakaasa 3
 nakaawang 1
 nakabababa 1
 nakabababang 22
-nakabababang-panggitnang 2
 nakababad 1
 nakababagot 1
 nakababasa 3
@@ -10841,7 +10807,6 @@ nakabaluktot 1
 nakabaon 1
 nakabara 1
 nakabatay 20
-nakabatay-sa-salapi 2
 nakabitin 1
 nakabuka 1
 nakabukas 2
@@ -10895,7 +10860,7 @@ nakakadena 1
 nakakadenang 1
 nakakahanap 1
 nakakaharap 1
-nakakahiya 3
+nakakahiya 3 <-- NARITO AKO
 nakakain 2
 nakakainis 1
 nakakaintindi 6
@@ -11157,7 +11122,6 @@ nakatanod 1
 nakatapo 1
 nakatapos 3
 nakatataas 4
-nakatataas-na-panggitnang 1
 nakatatag 1
 nakatatanda 3
 nakatatandang 2
