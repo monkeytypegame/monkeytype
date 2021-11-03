@@ -164,6 +164,11 @@ socket.on("room_visibility_changed", (e) => {
   TribePageLobby.updateVisibility();
 });
 
+socket.on("room_name_changed", (e) => {
+  room.name = e.name;
+  TribePageLobby.updateRoomName();
+});
+
 socket.on("chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;

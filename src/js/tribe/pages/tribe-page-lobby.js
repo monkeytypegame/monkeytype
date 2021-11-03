@@ -52,6 +52,21 @@ export function updateVisibility() {
   }
 }
 
+export function updateRoomName() {
+  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+    $(
+      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+    ).removeClass("hidden");
+  } else {
+    $(
+      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+    ).addClass("hidden");
+  }
+  $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .text").text(
+    Tribe.room.name
+  );
+}
+
 export function updatePlayerList() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
   let usersArray = [];
@@ -127,6 +142,7 @@ export function init() {
   updatePlayerList();
   updateButtons();
   updateVisibility();
+  updateRoomName();
 }
 
 $(".pageTribe .tribePage.lobby .inviteLink .text").hover(
@@ -171,4 +187,12 @@ $(
   ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
 ).click((e) => {
   Tribe.socket.emit("room_toggle_visibility");
+});
+
+$(
+  ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+).click((e) => {
+  //TODO proper popup
+  let name = prompt("Enter new room name");
+  Tribe.socket.emit("room_update_name", { name });
 });
