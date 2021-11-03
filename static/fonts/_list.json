@@ -15,6 +15,9 @@
     "name": "Fira Code"
   },
   {
+    "name": "JetBrains Mono"
+  },
+  {
     "name": "Roboto"
   },
   {
@@ -53,5 +56,8 @@
   },
   {
     "name": "Lato"
+  },
+  {
+    "name": "Lalezar"
   }
 ]

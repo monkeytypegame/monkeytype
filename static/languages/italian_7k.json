@@ -1,6 +1,7 @@
 {
   "name": "italian_7k",
   "leftToRight": true,
+  "bcp47": "it-IT",
   "words": [
     "abbagliante",
     "abbaiare",

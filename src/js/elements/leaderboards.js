@@ -3,7 +3,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import axiosInstance from "./axios-instance";
 import * as Misc from "./misc";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 
 let currentLeaderboard = "time_15";
 

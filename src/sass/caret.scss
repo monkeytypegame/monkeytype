@@ -1,0 +1,128 @@
+#caret {
+  height: 1.5rem;
+  background: var(--caret-color);
+  animation: caretFlashSmooth 1s infinite;
+  position: absolute;
+  border-radius: var(--roundness);
+  // transition: 0.05s;
+  transform-origin: top left;
+}
+
+#paceCaret {
+  height: 1.5rem;
+  // background: var(--sub-color);
+  background: var(--sub-color);
+  opacity: 0.5;
+  position: absolute;
+  border-radius: var(--roundness);
+  // transition: 0.25s;
+  transform-origin: top left;
+  width: 2px;
+}
+
+#caret,
+#paceCaret {
+  &.off {
+    width: 0;
+  }
+
+  &.default {
+    width: 2px;
+  }
+
+  &.carrot {
+    background-color: transparent;
+    background-image: url("../images/carrot.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 0.25rem;
+    &.size2 {
+      margin-left: -0.1rem;
+    }
+    &.size3 {
+      margin-left: -0.2rem;
+    }
+    &.size4 {
+      margin-left: -0.3rem;
+    }
+  }
+
+  &.banana {
+    background-color: transparent;
+    background-image: url("../images/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1rem;
+    &.size2 {
+      margin-left: -0.1rem;
+    }
+    &.size3 {
+      margin-left: -0.5rem;
+    }
+    &.size4 {
+      margin-left: -0.3rem;
+    }
+  }
+
+  &.block {
+    width: 0.7em;
+    margin-left: 0.25em;
+    border-radius: 0;
+    z-index: -1;
+  }
+
+  &.outline {
+    @extend #caret, .block;
+    animation-name: none;
+    background: transparent;
+    border: 1px solid var(--caret-color);
+  }
+
+  &.underline {
+    height: 2px;
+    width: 0.8em;
+    margin-top: 1.3em;
+    margin-left: 0.3em;
+
+    &.size125 {
+      margin-top: 1.8em;
+    }
+
+    &.size15 {
+      margin-top: 2.1em;
+    }
+
+    &.size2 {
+      margin-top: 2.7em;
+    }
+
+    &.size3 {
+      margin-top: 3.9em;
+    }
+    &.size4 {
+      margin-top: 4.7em;
+    }
+  }
+
+  &.size125 {
+    transform: scale(1.25);
+  }
+
+  &.size15 {
+    transform: scale(1.45);
+  }
+
+  &.size2 {
+    transform: scale(1.9);
+  }
+
+  &.size3 {
+    transform: scale(2.8);
+  }
+
+  &.size4 {
+    transform: scale(3.7);
+  }
+}

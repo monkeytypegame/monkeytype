@@ -34,38 +34,44 @@ class LeaderboardsDAO {
     let start1 = performance.now();
     let lb = await mongoDB()
       .collection("users")
-      .aggregate([
-        {
-          $match: {
-            [str + ".wpm"]: {
-              $exists: true,
+      .aggregate(
+        [
+          {
+            $match: {
+              [str + ".wpm"]: {
+                $exists: true,
+              },
+              [str + ".acc"]: {
+                $exists: true,
+              },
+              [str + ".timestamp"]: {
+                $exists: true,
+              },
+              banned: { $exists: false },
             },
-            [str + ".acc"]: {
-              $exists: true,
+          },
+          {
+            $set: {
+              [str + ".uid"]: "$uid",
+              [str + ".name"]: "$name",
+              [str + ".discordId"]: "$discordId",
             },
-            banned: { $exists: false },
           },
-        },
-        {
-          $set: {
-            [str + ".uid"]: "$uid",
-            [str + ".name"]: "$name",
-            [str + ".discordId"]: "$discordId",
+          {
+            $replaceRoot: {
+              newRoot: "$" + str,
+            },
           },
-        },
-        {
-          $replaceRoot: {
-            newRoot: "$" + str,
+          {
+            $sort: {
+              wpm: -1,
+              acc: -1,
+              timestamp: -1,
+            },
           },
-        },
-        {
-          $sort: {
-            wpm: -1,
-            acc: -1,
-            timestamp: -1,
-          },
-        },
-      ])
+        ],
+        { allowDiskUse: true }
+      )
       .toArray();
     let end1 = performance.now();
 

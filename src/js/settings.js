@@ -13,6 +13,8 @@ import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
 import * as EditPresetPopup from "./edit-preset-popup";
 import * as ThemePicker from "./theme-picker";
+import * as ImportExportSettingsPopup from "./import-export-settings-popup";
+import * as CustomThemePopup from "./custom-theme-popup";
 
 export let groups = {};
 async function initGroups() {
@@ -196,10 +198,6 @@ async function initGroups() {
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll
   );
-  groups.capsLockBackspace = new SettingsGroup(
-    "capsLockBackspace",
-    UpdateConfig.setCapsLockBackspace
-  );
   groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
   groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
@@ -287,16 +285,15 @@ async function fillSettingsPage() {
   let layoutEl = $(".pageSettings .section.layout .buttons").empty();
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
-      `<div class="layout button" layout='${layout}'>${layout.replace(
-        /_/g,
-        " "
-      )}</div>`
+      `<div class="layout button" layout='${layout}'>${
+        layout === "default" ? "off" : layout.replace(/_/g, " ")
+      }</div>`
     );
   });
 
   let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
   keymapEl.append(
-    `<div class="layout button" keymapLayout='overrideSync'>override sync</div>`
+    `<div class="layout button" keymapLayout='overrideSync'>emulator sync</div>`
   );
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
@@ -494,7 +491,7 @@ export function update() {
   LanguagePicker.setActiveGroup();
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs();
+  ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
 
@@ -737,6 +734,10 @@ $("#resetSettingsButton").click((e) => {
   SimplePopups.list.resetSettings.show();
 });
 
+$("#importSettingsButton").click((e) => {
+  ImportExportSettingsPopup.show("import");
+});
+
 $("#exportSettingsButton").click((e) => {
   let configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
@@ -744,10 +745,30 @@ $("#exportSettingsButton").click((e) => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function (err) {
-      Notifications.add(
-        "Something went wrong when copying the settings JSON: " + err,
-        -1
-      );
+      ImportExportSettingsPopup.show("export");
+    }
+  );
+});
+
+$("#shareCustomThemeButton").click((e) => {
+  let share = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (index, element) => {
+      share.push($(element).attr("value"));
+    }
+  );
+
+  let url =
+    "https://monkeytype.com?" +
+    Misc.objectToQueryString({ customTheme: share });
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function (err) {
+      CustomThemePopup.show(url);
     }
   );
 });
@@ -776,42 +797,46 @@ $(".pageSettings #deleteAccount").on("click", (e) => {
   SimplePopups.list.deleteAccount.show();
 });
 
-$(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
+$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomBackground(
-      $(".pageSettings .section.customBackgroundSize .inputAndSave input").val()
+      $(
+        ".pageSettings .section.customBackgroundSize .inputAndButton input"
+      ).val()
     );
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndSave input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomBackground(
         $(
-          ".pageSettings .section.customBackgroundSize .inputAndSave input"
+          ".pageSettings .section.customBackgroundSize .inputAndButton input"
         ).val()
       );
     }
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndSave .save").on(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomLayoutfluid(
-      $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+      $(".pageSettings .section.customLayoutfluid .inputAndButton input").val()
     );
     Notifications.add("Custom layoutfluid saved", 1);
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomLayoutfluid(
-        $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+        $(
+          ".pageSettings .section.customLayoutfluid .inputAndButton input"
+        ).val()
       );
       Notifications.add("Custom layoutfluid saved", 1);
     }

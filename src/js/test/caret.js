@@ -36,6 +36,9 @@ export async function updatePosition() {
   let caret = $("#caret");
 
   let inputLen = TestLogic.input.current.length;
+  inputLen = Misc.trailingComposeChars.test(TestLogic.input.current)
+    ? TestLogic.input.current.search(Misc.trailingComposeChars) + 1
+    : inputLen;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;
@@ -104,9 +107,15 @@ export async function updatePosition() {
       let contentHeight = document.body.scrollHeight;
 
       if (newTop >= middlePos && contentHeight > browserHeight) {
+        let newscrolltop = newTop - middlePos / 2;
+        // console.log('---------');
+        // console.log(newTop);
+        // console.log(middlePos);
+        // console.log(browserHeight);
+        // console.log(contentHeight);
         window.scrollTo({
           left: 0,
-          top: newTop - middlePos,
+          top: newscrolltop,
           behavior: "smooth",
         });
       }

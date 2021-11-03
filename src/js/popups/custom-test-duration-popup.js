@@ -81,7 +81,7 @@ export function show() {
   previewDuration();
 }
 
-function hide() {
+export function hide() {
   if (!$("#customTestDurationPopupWrapper").hasClass("hidden")) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)

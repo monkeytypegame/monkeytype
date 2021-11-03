@@ -2,6 +2,7 @@
   "name": "dutch_10k",
   "leftToRight": true,
   "noLazyMode": true,
+  "bcp47": "nl-NL",
   "words": [
     "aambeeld",
     "achtergrondstudie",

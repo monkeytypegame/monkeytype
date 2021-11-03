@@ -1,0 +1,76 @@
+#bottom {
+  position: relative;
+  text-align: center;
+  line-height: 1rem;
+  font-size: 0.75rem;
+  color: var(--sub-color);
+  // transition: 0.25s;
+  padding: 0 5px;
+
+  // margin-bottom: 2rem;
+  .keyTips {
+    transition: 0.25s;
+    margin-bottom: 2rem;
+  }
+
+  #supportMeButton {
+    transition: 0.25s;
+    &:hover {
+      color: var(--text-color);
+      cursor: pointer;
+    }
+  }
+
+  .leftright {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1rem;
+    a {
+      text-decoration: none;
+    }
+    .left {
+      text-align: left;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
+      gap: 1rem;
+      width: -moz-fit-content;
+    }
+    .right {
+      text-align: right;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
+      width: -moz-fit-content;
+      justify-self: right;
+      gap: 1rem;
+      // align-items: center;
+    }
+    .left a,
+    .right a {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 0.25rem;
+      align-items: baseline;
+      width: max-content;
+      width: -moz-available;
+      &:hover {
+        color: var(--text-color);
+        cursor: pointer;
+      }
+    }
+  }
+
+  .version {
+    opacity: 0;
+  }
+}
+
+#bottom.focus {
+  .keyTips {
+    opacity: 0 !important;
+  }
+  a {
+    opacity: 0 !important;
+  }
+}

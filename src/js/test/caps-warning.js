@@ -1,5 +1,3 @@
-import Config from "./config";
-
 function show() {
   if ($("#capsWarning").hasClass("hidden")) {
     $("#capsWarning").removeClass("hidden");
@@ -14,10 +12,7 @@ function hide() {
 
 $(document).keydown(function (event) {
   try {
-    if (
-      !Config.capsLockBackspace &&
-      event.originalEvent.getModifierState("CapsLock")
-    ) {
+    if (event.originalEvent.getModifierState("CapsLock")) {
       show();
     } else {
       hide();

@@ -275,9 +275,7 @@ export async function screenshot() {
   }, 3000);
 }
 
-export function updateWordElement(showError) {
-  // if (Config.mode == "zen") return;
-
+export function updateWordElement(showError = !Config.blindMode) {
   let input = TestLogic.input.current;
   let wordAtIndex;
   let currentWord;
@@ -295,28 +293,31 @@ export function updateWordElement(showError) {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
-        ret +=
-          `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
+        ret += `<letter class="correct">${TestLogic.input.current[i]}</letter>`;
       }
     }
   } else {
     let correctSoFar = false;
-    if (currentWord.slice(0, input.length) == input) {
-      // this is when input so far is correct
+
+    // slice earlier if input has trailing compose characters
+    const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
+      ? input.search(Misc.trailingComposeChars)
+      : input.length;
+    if (
+      input.search(Misc.trailingComposeChars) < currentWord.length &&
+      currentWord.slice(0, inputWithoutComposeLength) ===
+        input.slice(0, inputWithoutComposeLength)
+    ) {
       correctSoFar = true;
     }
+
     let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
 
     for (let i = 0; i < input.length; i++) {
-      let charCorrect;
-      if (currentWord[i] == input[i]) {
-        charCorrect = true;
-      } else {
-        charCorrect = false;
-      }
+      let charCorrect = currentWord[i] == input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -334,51 +335,64 @@ export function updateWordElement(showError) {
         currentLetter = `<i class="fas fa-angle-down"></i>`;
       }
 
+      if (
+        Misc.trailingComposeChars.test(input) &&
+        i > input.search(Misc.trailingComposeChars)
+      )
+        continue;
+
       if (charCorrect) {
         ret += `<letter class="${
           Config.highlightMode == "word"
             ? wordHighlightClassString
             : correctClass
         } ${tabChar}${nlChar}">${currentLetter}</letter>`;
-      } else {
-        if (!showError) {
-          if (currentLetter !== undefined) {
-            ret += `<letter class="${
-              Config.highlightMode == "word"
-                ? wordHighlightClassString
-                : correctClass
-            } ${tabChar}${nlChar}">${currentLetter}</letter>`;
-          }
-        } else {
-          if (currentLetter == undefined) {
-            if (!Config.hideExtraLetters) {
-              let letter = input[i];
-              if (letter == " " || letter == "\t" || letter == "\n") {
-                letter = "_";
-              }
-              ret += `<letter class="${
-                Config.highlightMode == "word"
-                  ? wordHighlightClassString
-                  : "incorrect"
-              } extra ${tabChar}${nlChar}">${letter}</letter>`;
-            }
-          } else {
-            ret +=
-              `<letter class="${
-                Config.highlightMode == "word"
-                  ? wordHighlightClassString
-                  : "incorrect"
-              } ${tabChar}${nlChar}">` +
-              currentLetter +
-              (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
-              "</letter>";
-          }
+      } else if (
+        currentLetter !== undefined &&
+        Misc.trailingComposeChars.test(input) &&
+        i === input.search(Misc.trailingComposeChars)
+      ) {
+        ret += `<letter class="${
+          Config.highlightMode == "word" ? wordHighlightClassString : ""
+        } dead">${currentLetter}</letter>`;
+      } else if (!showError) {
+        if (currentLetter !== undefined) {
+          ret += `<letter class="${
+            Config.highlightMode == "word"
+              ? wordHighlightClassString
+              : correctClass
+          } ${tabChar}${nlChar}">${currentLetter}</letter>`;
         }
+      } else if (currentLetter === undefined) {
+        if (!Config.hideExtraLetters) {
+          let letter = input[i];
+          if (letter == " " || letter == "\t" || letter == "\n") {
+            letter = "_";
+          }
+          ret += `<letter class="${
+            Config.highlightMode == "word"
+              ? wordHighlightClassString
+              : "incorrect"
+          } extra ${tabChar}${nlChar}">${letter}</letter>`;
+        }
+      } else {
+        ret +=
+          `<letter class="${
+            Config.highlightMode == "word"
+              ? wordHighlightClassString
+              : "incorrect"
+          } ${tabChar}${nlChar}">` +
+          currentLetter +
+          (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+          "</letter>";
       }
     }
 
-    if (input.length < currentWord.length) {
-      for (let i = input.length; i < currentWord.length; i++) {
+    const inputWithSingleComposeLength = Misc.trailingComposeChars.test(input)
+      ? input.search(Misc.trailingComposeChars) + 1
+      : input.length;
+    if (inputWithSingleComposeLength < currentWord.length) {
+      for (let i = inputWithSingleComposeLength; i < currentWord.length; i++) {
         if (currentWord[i] === "\t") {
           ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
         } else if (currentWord[i] === "\n") {
@@ -601,13 +615,18 @@ export function updateModesNotice() {
 
   if (Config.layout !== "default") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLayouts"><i class="fas fa-keyboard"></i>${Config.layout}</div>`
+      `<div class="text-button" commands="commandsLayouts"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
+        /_/g,
+        " "
+      )}</div>`
     );
   }
 
-  if (Config.oppositeShiftMode === "on") {
+  if (Config.oppositeShiftMode !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift</div>`
+      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift${
+        Config.oppositeShiftMode === "keymap" ? " (keymap)" : ""
+      }</div>`
     );
   }
 
@@ -957,7 +976,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${burst}wpm
+          ${Math.round(Config.alwaysShowCPM ? burst * 5 : burst)}${
+          Config.alwaysShowCPM ? "cpm" : "wpm"
+        }
           </div>
           </div>`
       );
@@ -996,7 +1017,7 @@ $("#wordsInput").on("focusout", () => {
 });
 
 $(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key == "Enter") {
     ManualRestart.reset();
     if (
       TestLogic.active &&

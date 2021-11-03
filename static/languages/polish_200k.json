@@ -1,6 +1,7 @@
 {
   "name": "polish_200k",
   "leftToRight": true,
+  "bcp47": "pl-PL",
   "words": [
     "A",
     "AA",

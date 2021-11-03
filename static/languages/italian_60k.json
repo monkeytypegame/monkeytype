@@ -1,6 +1,7 @@
 {
   "name": "italian_60k",
   "leftToRight": true,
+  "bcp47": "it-IT",
   "words": [
     "abate",
     "abati",
