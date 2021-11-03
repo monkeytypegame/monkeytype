@@ -2,14 +2,6 @@ import * as Tribe from "./tribe";
 import * as Notifications from "./notifications";
 import * as TribeChat from "./tribe-chat";
 
-export function init() {
-  let link = location.origin + "/tribe_" + Tribe.room.id;
-  $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
-  $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
-  updatePlayerList();
-  updateButtons();
-}
-
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
   TribeChat.reset();
@@ -30,6 +22,33 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
       "hidden"
     );
+  }
+}
+
+export function updateVisibility() {
+  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+    $(
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+    ).removeClass("hidden");
+  } else {
+    $(
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+    ).addClass("hidden");
+  }
+  if (Tribe.room.isPrivate) {
+    $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .text").text(
+      "private"
+    );
+    $(
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+    ).html(`<i class="fa fa-fw fa-lock"></i>`);
+  } else {
+    $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .text").text(
+      "public"
+    );
+    $(
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+    ).html(`<i class="fa fa-fw fa-lock-open"></i>`);
   }
 }
 
@@ -101,6 +120,15 @@ export function updatePlayerList() {
   });
 }
 
+export function init() {
+  let link = location.origin + "/tribe_" + Tribe.room.id;
+  $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
+  $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
+  updatePlayerList();
+  updateButtons();
+  updateVisibility();
+}
+
 $(".pageTribe .tribePage.lobby .inviteLink .text").hover(
   function () {
     $(this).css(
@@ -137,4 +165,10 @@ $(".pageTribe .tribePage.lobby .inviteLink .link").click(async (e) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
+});
+
+$(
+  ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+).click((e) => {
+  Tribe.socket.emit("room_toggle_visibility");
 });

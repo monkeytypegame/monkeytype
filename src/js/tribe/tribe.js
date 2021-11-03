@@ -159,6 +159,11 @@ socket.on("room_left", (e) => {
   TribeSound.play("leave");
 });
 
+socket.on("room_visibility_changed", (e) => {
+  room.isPrivate = e.isPrivate;
+  TribePageLobby.updateVisibility();
+});
+
 socket.on("chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;
