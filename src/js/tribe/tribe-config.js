@@ -6,7 +6,6 @@ import * as TribePageLobby from "./tribe-page-lobby";
 import * as Tribe from "./tribe";
 
 export function apply(config) {
-  Notifications.add("applying room config", 0);
   UpdateConfig.setMode(config.mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2, true, true);
