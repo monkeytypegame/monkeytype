@@ -21,6 +21,7 @@ function rememberSetting(settingName, value, setFunction) {
 }
 
 function loadMemory() {
+  if (Object.keys(settingsMemory).length === 0) return;
   Notifications.add("Reverting funbox settings", 0);
   Object.keys(settingsMemory).forEach((setting) => {
     setting = settingsMemory[setting];
