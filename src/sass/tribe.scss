@@ -159,7 +159,7 @@
       display: grid;
       grid-template-areas:
         "players players"
-        "currentsettings lobbyButtons"
+        "currentconfig lobbyButtons"
         "chat userlist"
         "invitecode invitecode";
       gap: 2rem;
@@ -186,9 +186,9 @@
           }
         }
       }
-      .currentSettings {
+      .currentConfig {
         user-select: none;
-        grid-area: currentsettings;
+        grid-area: currentconfig;
         .groups {
           display: grid;
           // grid-auto-flow: column;
@@ -208,6 +208,24 @@
           display: inline;
           margin-left: 0.5rem;
           color: var(--main-color);
+        }
+        .visibilityAndName {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          margin-bottom: 2rem;
+          .group .value {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            width: max-content;
+            .icon-button {
+              color: var(--sub-color);
+              padding: 0;
+              margin-left: 0.25rem;
+              &:hover {
+                color: var(--text-color);
+              }
+            }
+          }
         }
       }
 
