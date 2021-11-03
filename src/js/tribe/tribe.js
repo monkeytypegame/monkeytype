@@ -9,6 +9,7 @@ import * as TribePageMenu from "./tribe-page-menu";
 import * as TribePageLobby from "./tribe-page-lobby";
 import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
+import * as TribeConfig from "./tribe-config";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -207,7 +208,9 @@ socket.on("chat_message", async (data) => {
 });
 
 socket.on("room_config_changed", (e) => {
+  room.config = e.config;
   TribeConfig.apply(e.config);
+  TribePageLobby.updateRoomConfig();
   TribePageLobby.enableStartButton();
   TribeConfig.setLoadingIndicator(false);
 });
