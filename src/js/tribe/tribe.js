@@ -134,6 +134,7 @@ socket.on("system_message", (e) => {
 
 socket.on("room_joined", (e) => {
   room = e.room;
+  state = 5;
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
@@ -153,6 +154,7 @@ socket.on("room_player_left", (e) => {
 
 socket.on("room_left", (e) => {
   room = undefined;
+  state = 1;
   TribePageMenu.enableButtons();
   TribePageLobby.reset();
   TribePages.change("menu");
