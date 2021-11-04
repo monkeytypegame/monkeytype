@@ -58,6 +58,7 @@ export function joinRoom(roomId) {
   socket.emit("room_join", { roomId }, (res) => {
     if (res.room) {
       room = res.room;
+      state = res.room.state;
       TribePageLobby.init();
       TribePages.change("lobby");
       TribeSound.play("join");
@@ -158,7 +159,7 @@ socket.on("room_player_joined", (e) => {
   room.size = Object.keys(room.users).length;
   TribePageLobby.updatePlayerList();
   TribeSound.play("join");
-  TribePageLobby.updateButtons();
+  // TribePageLobby.updateButtons();
 });
 
 socket.on("room_player_left", (e) => {
@@ -191,9 +192,29 @@ socket.on("room_name_changed", (e) => {
 socket.on("room_user_is_ready", (e) => {
   room.users[e.userId].isReady = true;
   TribePageLobby.updatePlayerList();
-  if (e.userId === socket.id) {
-    TribePageLobby.updateButtons();
+  TribePageLobby.updateButtons();
+  if (getSelf().isLeader) {
+    let everyoneReady = true;
+    Object.keys(room.users).forEach((userId) => {
+      if (room.users[userId].isLeader) return;
+      if (!room.users[userId].isReady) {
+        everyoneReady = false;
+      }
+    });
+    if (everyoneReady) {
+      Notifications.add("Everyone is ready", 1, undefined, "Tribe");
+      TribeSound.play("chat_mention");
+    }
   }
+});
+
+socket.on("room_leader_changed", (e) => {
+  Object.keys(room.users).forEach((userId) => {
+    delete room.users[userId].isLeader;
+  });
+  room.users[e.userId].isLeader = true;
+  TribePageLobby.updatePlayerList();
+  TribePageLobby.updateButtons();
 });
 
 socket.on("room_chatting_changed", (e) => {
