@@ -45,10 +45,17 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
       "hidden"
     );
-    if (Tribe.room.size == 1) {
-      disableStartButton();
-    } else {
+    let readyCount = 0;
+    Object.keys(Tribe.room.users).forEach((userId) => {
+      if (Tribe.room.users[userId].isLeader) return;
+      if (Tribe.room.users[userId].isReady) {
+        readyCount++;
+      }
+    });
+    if (readyCount > 0) {
       enableStartButton();
+    } else {
+      disableStartButton();
     }
   } else {
     $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
