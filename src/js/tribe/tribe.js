@@ -35,6 +35,10 @@ export function setAutoJoin(code) {
   autoJoin = code;
 }
 
+export function getSelf() {
+  return room?.users[socket?.id];
+}
+
 export async function init() {
   TribePagePreloader.updateIcon("circle-notch", true);
   TribePagePreloader.updateText("Waiting for login");
@@ -143,14 +147,18 @@ socket.on("room_joined", (e) => {
 
 socket.on("room_player_joined", (e) => {
   room.users[e.user.id] = e.user;
+  room.size = Object.keys(room.users).length;
   TribePageLobby.updatePlayerList();
   TribeSound.play("join");
+  TribePageLobby.updateButtons();
 });
 
 socket.on("room_player_left", (e) => {
   delete room.users[e.userId];
+  room.size = Object.keys(room.users).length;
   TribePageLobby.updatePlayerList();
   TribeSound.play("leave");
+  TribePageLobby.updateButtons();
 });
 
 socket.on("room_left", (e) => {

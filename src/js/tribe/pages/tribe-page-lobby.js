@@ -25,14 +25,31 @@ export function enableStartButton() {
   );
 }
 
+export function disableReadyButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
+    "disabled"
+  );
+}
+
+export function enableReadyButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
+    "disabled"
+  );
+}
+
 export function updateButtons() {
-  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+  if (Tribe.getSelf().isLeader) {
     $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").removeClass(
       "hidden"
     );
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
       "hidden"
     );
+    if (Tribe.room.size == 1) {
+      disableStartButton();
+    } else {
+      enableStartButton();
+    }
   } else {
     $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
       "hidden"
@@ -40,11 +57,16 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
       "hidden"
     );
+    if (Tribe.getSelf().isReady) {
+      disableReadyButton();
+    } else {
+      enableReadyButton();
+    }
   }
 }
 
 export function updateVisibility() {
-  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+  if (Tribe.getSelf().isLeader) {
     $(
       ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
     ).removeClass("hidden");
@@ -71,7 +93,7 @@ export function updateVisibility() {
 }
 
 export function updateRoomName() {
-  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+  if (Tribe.getSelf().isLeader) {
     $(
       ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
     ).removeClass("hidden");
@@ -392,7 +414,7 @@ $(document).on(
   "click",
   ".pageTribe .tribePage.lobby .currentConfig .groups .group",
   (e) => {
-    if (Tribe.room.users[Tribe.socket.id].isLeader) {
+    if (Tribe.getSelf().isLeader) {
       // let commands = eval($(e.currentTarget).attr("commands"));
       let commands = CommandlineLists.getList(
         $(e.currentTarget).attr("commands")

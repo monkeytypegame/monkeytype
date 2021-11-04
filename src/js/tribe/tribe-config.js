@@ -62,7 +62,7 @@ export function setLoadingIndicator(truefalse) {
 export function canChange(override) {
   if (Tribe.state <= 1) return true;
   if (Tribe.state !== 5) return false;
-  if (Tribe.room.users[Tribe.socket.id].isLeader) {
+  if (Tribe.getSelf().isLeader) {
     //is leader, allow
     return true;
   } else {
@@ -79,7 +79,7 @@ let syncConfigTimeout = null;
 
 export function sync() {
   if (Tribe.state <= 1) return;
-  if (!Tribe.room.users[Tribe.socket.id].isLeader) return;
+  if (!Tribe.getSelf().isLeader) return;
   setLoadingIndicator(true);
   TribePageLobby.disableStartButton();
   if (syncConfigTimeout === null) {
