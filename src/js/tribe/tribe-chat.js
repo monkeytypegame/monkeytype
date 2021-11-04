@@ -9,6 +9,12 @@ export function reset() {
   $(".pageTest #result .tribeResultChat .chat .messages").empty();
 }
 
+function sendChattingUpdate(value) {
+  Tribe.socket.emit("room_chatting_update", {
+    isChatting: value,
+  });
+}
+
 function limitChatMessages() {
   let messages1 = $(".pageTribe .lobby .chat .messages .message");
   let messages2 = $(
@@ -37,6 +43,38 @@ export function scrollChat() {
     // chatEl2.scrollTop = chatEl2.scrollHeight;
     shouldScrollChat = true;
   }
+}
+
+export function updateIsTyping() {
+  let string = "";
+
+  let names = [];
+  Object.keys(Tribe.room.users).forEach((userId) => {
+    if (Tribe.room.users[userId].isChatting && userId !== Tribe.socket.id) {
+      names.push(Tribe.room.users[userId].name);
+    }
+  });
+  if (names.length > 0) {
+    for (let i = 0; i < names.length; i++) {
+      if (i === 0) {
+        string += `<span class="who">${names[i]}</span>`;
+      } else if (i === names.length - 1) {
+        string += ` and <span class="who">${names[i]}</span>`;
+      } else {
+        string += `, <span class="who">${names[i]}</span>`;
+      }
+    }
+    if (names.length == 1) {
+      string += " is typing...";
+    } else {
+      string += " are typing...";
+    }
+  } else {
+    string = " ";
+  }
+
+  $(".pageTribe .lobby .chat .whoIsTyping").html(string);
+  $(".pageTest #result .tribeResultChat .chat .whoIsTyping").html(string);
 }
 
 export function appendMessage(data) {
@@ -83,8 +121,7 @@ $(".pageTribe .tribePage.lobby .chat .input input").keyup((e) => {
     }
     if (performance.now() < lastMessageTimestamp + 500) return;
     lastMessageTimestamp = performance.now();
-    //TODO reenable
-    // sendIsTypingUpdate(false);
+    sendChattingUpdate(false);
     Tribe.socket.emit("chat_message", {
       message: msg,
     });
@@ -100,5 +137,14 @@ $(document).keydown((e) => {
   ) {
     $(".pageTribe .lobby .chat .input input").focus();
     e.preventDefault();
+  }
+});
+
+$(".pageTribe .tribePage.lobby .chat .input input").on("input", (e) => {
+  let vallen = $(".pageTribe .tribePage.lobby .chat .input input").val().length;
+  if (vallen === 1) {
+    sendChattingUpdate(true);
+  } else if (vallen === 0) {
+    sendChattingUpdate(false);
   }
 });

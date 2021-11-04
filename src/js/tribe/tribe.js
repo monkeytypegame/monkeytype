@@ -192,6 +192,11 @@ socket.on("room_user_is_ready", (e) => {
   }
 });
 
+socket.on("room_chatting_changed", (e) => {
+  room.users[e.userId].isChatting = e.isChatting;
+  TribeChat.updateIsTyping();
+});
+
 socket.on("chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;
