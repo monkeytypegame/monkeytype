@@ -51,6 +51,10 @@ export async function init() {
 }
 
 export function joinRoom(roomId) {
+  if (!/^[a-f0-9]{6}$/i.test(roomId)) {
+    Notifications.add("Incorrect room code format", 0);
+    return;
+  }
   socket.emit("room_join", { roomId }, (res) => {
     if (res.room) {
       room = res.room;

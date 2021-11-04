@@ -106,11 +106,19 @@
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 250px;
+    width: 300px;
 
     input {
       width: 100%;
       font-size: 1.5rem;
+    }
+
+    .icon-button {
+      position: absolute;
+      right: 0;
+      top: 0;
+      font-size: 1.5rem;
+      height: 3rem;
     }
   }
 }

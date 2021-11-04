@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import * as Notifications from "./notifications";
 
 export function show() {
   if ($("#tribeRoomCodePopupWrapper").hasClass("hidden")) {
@@ -52,4 +53,17 @@ $("#tribeRoomCodePopup input").keydown((e) => {
 $("#tribeRoomCodePopup .button").click((e) => {
   Tribe.joinRoom($("#tribeRoomCodePopup input").val());
   hide();
+});
+
+$("#tribeRoomCodePopup .icon-button").click(async (e) => {
+  try {
+    let text = await navigator.clipboard.readText();
+    Tribe.joinRoom(text);
+    hide();
+  } catch (e) {
+    Notifications.add(
+      "Something went wrong when trying to paste: " + e.message,
+      -1
+    );
+  }
 });
