@@ -111,6 +111,10 @@ socket.on("connect", async (e) => {
   // changeActiveSubpage("prelobby");
 });
 
+// socket.on("user_update_name", e => {
+//   name = e.name;
+// })
+
 socket.on("disconnect", (e) => {
   state = -1;
   TribePages.change("preloader");
