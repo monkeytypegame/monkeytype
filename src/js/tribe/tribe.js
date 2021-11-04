@@ -180,6 +180,14 @@ socket.on("room_name_changed", (e) => {
   TribePageLobby.updateRoomName();
 });
 
+socket.on("room_user_is_ready", (e) => {
+  room.users[e.userId].isReady = true;
+  TribePageLobby.updatePlayerList();
+  if (e.userId === socket.id) {
+    TribePageLobby.updateButtons();
+  }
+});
+
 socket.on("chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;
