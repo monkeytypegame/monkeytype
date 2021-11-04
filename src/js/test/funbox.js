@@ -6,6 +6,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 import * as TTS from "./tts";
+import * as TribeConfig from "./tribe-config";
 
 let modeSaved = null;
 let memoryTimer = null;
@@ -85,10 +86,12 @@ export function toggleScript(...params) {
   }
 }
 
-export function setFunbox(funbox, mode) {
+export function setFunbox(funbox, mode, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (funbox === "none") loadMemory();
   modeSaved = mode;
-  UpdateConfig.setFunbox(funbox, false);
+  UpdateConfig.setFunbox(funbox, false, tribeOverride);
+  if (!tribeOverride) TribeConfig.sync();
   return true;
 }
 

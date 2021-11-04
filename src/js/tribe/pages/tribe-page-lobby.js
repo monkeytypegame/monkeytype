@@ -263,7 +263,7 @@ export function updateRoomConfig() {
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="commandsMinAcc">
     <i class="fas fa-bomb"></i>${room.config.minAcc}${
-    room.config.minAcc !== "off" ? "wpm" : ""
+    room.config.minAcc !== "off" ? "%" : ""
   }
     </div>
     `);

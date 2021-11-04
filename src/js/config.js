@@ -21,6 +21,7 @@ import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
 import * as TTS from "./tts";
 import * as TribeConfig from "./tribe-config";
+import * as Tribe from "./tribe";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -165,7 +166,8 @@ export async function saveToLocalStorage(noDbCheck = false) {
 }
 
 //numbers
-export function setNumbers(numb, nosave) {
+export function setNumbers(numb, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (config.mode === "quote") {
     numb = false;
   }
@@ -177,6 +179,7 @@ export function setNumbers(numb, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 export function toggleNumbers() {
@@ -193,7 +196,8 @@ export function toggleNumbers() {
 }
 
 //punctuation
-export function setPunctuation(punc, nosave) {
+export function setPunctuation(punc, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (config.mode === "quote") {
     punc = false;
   }
@@ -205,6 +209,7 @@ export function setPunctuation(punc, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 export function togglePunctuation() {
@@ -322,7 +327,8 @@ export function togglePlaySoundOnError() {
 }
 
 //difficulty
-export function setDifficulty(diff, nosave) {
+export function setDifficulty(diff, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (
     (diff !== "normal" && diff !== "expert" && diff !== "master") ||
     diff == undefined
@@ -333,6 +339,7 @@ export function setDifficulty(diff, nosave) {
   if (!nosave) TestLogic.restart(false, nosave);
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //set fav themes
@@ -343,7 +350,8 @@ export function setFavThemes(themes, nosave) {
   }
 }
 
-export function setFunbox(funbox, nosave) {
+export function setFunbox(funbox, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   let val = funbox ? funbox : "none";
   config.funbox = val;
   ChallengeContoller.clearActive();
@@ -352,9 +360,8 @@ export function setFunbox(funbox, nosave) {
   } else if (val === "tts") {
     TTS.init();
   }
-  if (!nosave) {
-    saveToLocalStorage();
-  }
+  if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //blind mode
@@ -433,7 +440,8 @@ export function setChartStyle(chartStyle, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function setStopOnError(soe, nosave) {
+export function setStopOnError(soe, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
@@ -443,6 +451,7 @@ export function setStopOnError(soe, nosave) {
   }
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //alwaysshowdecimal
@@ -557,57 +566,73 @@ export function setRepeatedPace(pace, nosave) {
 }
 
 //min wpm
-export function setMinWpm(minwpm, nosave) {
+export function setMinWpm(minwpm, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (minwpm == undefined) {
     minwpm = "off";
   }
   config.minWpm = minwpm;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setMinWpmCustomSpeed(val, nosave) {
+export function setMinWpmCustomSpeed(val, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //min acc
-export function setMinAcc(min, nosave) {
+export function setMinAcc(min, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (min == undefined) {
     min = "off";
   }
   config.minAcc = min;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setMinAccCustom(val, nosave) {
+export function setMinAccCustom(val, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 90;
   }
   config.minAccCustom = val;
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //min burst
-export function setMinBurst(min, nosave) {
+export function setMinBurst(min, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (Tribe.state > 1 && min == "flex") {
+    Notifications.add("Can't use flex mode with Tribe", 0);
+    return;
+  }
   if (min == undefined) {
     min = "off";
   }
   config.minBurst = min;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setMinBurstCustomSpeed(val, nosave) {
+export function setMinBurstCustomSpeed(val, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //always show words history
@@ -1040,7 +1065,8 @@ export function toggleKeyTips() {
 }
 
 //mode
-export function setTimeConfig(time, nosave) {
+export function setTimeConfig(time, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (time === null || isNaN(time) || time < 0) {
     time = 15;
   }
@@ -1056,10 +1082,12 @@ export function setTimeConfig(time, nosave) {
   );
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //quote length
-export function setQuoteLength(len, nosave, multipleMode) {
+export function setQuoteLength(len, nosave, multipleMode, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (Array.isArray(len)) {
     //config load
     if (len.length === 1 && len[0] === -1) len = [1];
@@ -1089,9 +1117,11 @@ export function setQuoteLength(len, nosave, multipleMode) {
     ).addClass("active");
   });
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setWordCount(wordCount, nosave) {
+export function setWordCount(wordCount, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (wordCount === null || isNaN(wordCount) || wordCount < 0) {
     wordCount = 10;
   }
@@ -1107,6 +1137,7 @@ export function setWordCount(wordCount, nosave) {
   ).addClass("active");
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 //caret
@@ -1311,12 +1342,14 @@ export function setBritishEnglish(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function setLazyMode(val, nosave) {
+export function setLazyMode(val, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (!val) {
     val = false;
   }
   config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 export function toggleCustomTheme(nosave) {
@@ -1339,7 +1372,8 @@ export function setCustomThemeColors(colors, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function setLanguage(language, nosave) {
+export function setLanguage(language, nosave, tribeOverride) {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   if (language == null || language == undefined) {
     language = "english";
   }
@@ -1355,6 +1389,7 @@ export function setLanguage(language, nosave) {
     console.log("Analytics unavailable");
   }
   if (!nosave) saveToLocalStorage();
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 export function toggleMonkey(nosave) {

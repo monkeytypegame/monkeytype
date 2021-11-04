@@ -14,11 +14,11 @@ export function apply(config) {
   } else if (config.mode === "quote") {
     UpdateConfig.setQuoteLength(config.mode2, true, true, true);
   } else if (config.mode === "custom") {
-    CustomText.setText(config.customText.text);
-    CustomText.setIsWordRandom(config.customText.isWordRandom);
-    CustomText.setIsTimeRandom(config.customText.isTimeRandom);
-    CustomText.setTime(config.customText.time);
-    CustomText.setWord(config.customText.word);
+    CustomText.setText(config.customText.text, true);
+    CustomText.setIsWordRandom(config.customText.isWordRandom, true);
+    CustomText.setIsTimeRandom(config.customText.isTimeRandom, true);
+    CustomText.setTime(config.customText.time, true);
+    CustomText.setWord(config.customText.word, true);
   }
   UpdateConfig.setDifficulty(config.difficulty, true, true);
   UpdateConfig.setLanguage(config.language, true, true);
@@ -105,9 +105,9 @@ export function sync() {
           lazyMode: Config.lazyMode,
           stopOnError: Config.stopOnError,
           minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
-          minAcc: Config.minAcc === "custom" ? Config.minAccCustom : null,
+          minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
           minBurst:
-            Config.minBurst === "custom" ? Config.minBurstCustomSpeed : "off",
+            Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
           customText: {
             text: CustomText.text,
             isWordRandom: CustomText.isWordRandom,
