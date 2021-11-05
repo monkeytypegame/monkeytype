@@ -5,6 +5,7 @@ import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 import * as WordFilterPopup from "./word-filter-popup";
 import * as ChallengeController from "./challenge-controller";
+import Config, * as UpdateConfig from "./config";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
@@ -177,6 +178,7 @@ $("#customTextPopup .apply").click(() => {
 
   ChallengeController.clearActive();
   ManualRestart.set();
+  if (Config.mode !== "custom") UpdateConfig.setMode("custom");
   TestLogic.restart();
   hide();
 });
