@@ -1153,10 +1153,11 @@ export async function addWord() {
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
+      (
       previousWordStripped == randomWord ||
       previousWord2Stripped == randomWord ||
       randomWord.indexOf(" ") > -1 ||
-      (!Config.punctuation && randomWord == "I")
+      (!Config.punctuation && randomWord == "I"))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
