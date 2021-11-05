@@ -1150,12 +1150,15 @@ export async function addWord() {
   } else if (Config.mode === "quote") {
     randomWord = randomQuote.textSplit[words.length];
   } else {
+    let regenarationCount = 0; //infinite loop emergency stop button
     while (
+      regenarationCount < 100 &&
       previousWordStripped == randomWord ||
       previousWord2Stripped == randomWord ||
       randomWord.indexOf(" ") > -1 ||
       (!Config.punctuation && randomWord == "I")
     ) {
+      regenarationCount++;
       randomWord = wordset.randomWord();
     }
   }
