@@ -1172,6 +1172,10 @@ export async function addWord() {
     if (britishWord) randomWord = britishWord;
   }
 
+  if (Config.lazyMode === true && !language.noLazyMode) {
+    randomWord = LazyMode.replaceAccents(randomWord, language.accents);
+  }
+
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
     for (let i = 0; i < randomWord.length; i++) {
