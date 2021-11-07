@@ -67,3 +67,9 @@ $("#tribeRoomCodePopup .icon-button").click(async (e) => {
     );
   }
 });
+
+$("#tribeRoomCodePopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "tribeRoomCodePopupWrapper") {
+    hide();
+  }
+});
