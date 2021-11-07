@@ -7,7 +7,8 @@ export class Section {
 }
 
 export async function getSection() {
-  console.log("Getting section");
+  // console.log("Getting section");
+  
 
   const randomPostURL =
     "https://en.wikipedia.org/api/rest_v1/page/random/summary";
