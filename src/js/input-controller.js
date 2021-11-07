@@ -398,15 +398,15 @@ function handleChar(char, charIndex) {
     char +
     TestLogic.input.current.substring(charIndex + 1);
 
-  MonkeyPower.addPower(thisCharCorrect);
-  TestStats.incrementAccuracy(thisCharCorrect);
-
   if (!thisCharCorrect && Misc.trailingComposeChars.test(resultingWord)) {
     TestLogic.input.current = resultingWord;
     TestUI.updateWordElement();
     Caret.updatePosition();
     return;
   }
+
+  MonkeyPower.addPower(thisCharCorrect);
+  TestStats.incrementAccuracy(thisCharCorrect);
 
   if (!thisCharCorrect) {
     TestStats.incrementKeypressErrors();
