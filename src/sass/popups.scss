@@ -123,6 +123,96 @@
   }
 }
 
+#tribeBrowsePublicRoomsPopupWrapper {
+  #tribeBrowsePublicRoomsPopup {
+    color: var(--sub-color);
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 80vw;
+    height: 80vh;
+    max-width: 600px;
+    grid-template-rows: auto 1fr;
+
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .list {
+      display: grid;
+      gap: 0.5rem;
+      height: auto;
+      overflow-y: scroll;
+
+      .room {
+        display: grid;
+        grid-template-columns: 1fr 1fr 3fr 0fr;
+        grid-auto-rows: auto;
+        width: 100%;
+        gap: 0.5rem;
+        transition: 0.25s;
+        padding: 1rem;
+        box-sizing: border-box;
+        user-select: none;
+        cursor: pointer;
+        height: min-content;
+        grid-template-areas:
+          "name name name chevron"
+          "state players config chevron";
+        border-radius: var(--roundness);
+
+        .title {
+          color: var(--sub-color);
+          font-size: 0.8rem;
+          opacity: 0.5;
+        }
+        .value {
+          color: var(--sub-color);
+          font-size: 0.8rem;
+        }
+
+        .name {
+          grid-area: name;
+          .title {
+            font-size: 1rem;
+          }
+          .value {
+            color: var(--text-color);
+            font-size: 1.5rem;
+          }
+        }
+
+        .config {
+          grid-area: config;
+        }
+
+        .players {
+          grid-area: players;
+        }
+
+        .state {
+          grid-area: state;
+        }
+
+        .chevron {
+          grid-area: chevron;
+          display: flex;
+          align-items: center;
+          justify-items: center;
+          color: var(--sub-color);
+          font-size: 2rem;
+        }
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+}
+
 #rateQuotePopupWrapper {
   #rateQuotePopup {
     color: var(--sub-color);

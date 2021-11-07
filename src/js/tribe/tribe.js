@@ -55,12 +55,12 @@ export async function init() {
   }, 500);
 }
 
-export function joinRoom(roomId) {
+export function joinRoom(roomId, fromBrowser = false) {
   if (!/^[a-f0-9]{6}$/i.test(roomId)) {
     Notifications.add("Incorrect room code format", 0);
     return;
   }
-  socket.emit("room_join", { roomId }, (res) => {
+  socket.emit("room_join", { roomId, fromBrowser }, (res) => {
     if (res.room) {
       room = res.room;
       state = res.room.state;
