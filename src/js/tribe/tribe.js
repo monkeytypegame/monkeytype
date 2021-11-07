@@ -39,6 +39,11 @@ export function getSelf() {
   return room?.users[socket?.id];
 }
 
+export function getStateString(state) {
+  if (state === 5) return "lobby";
+  return state;
+}
+
 export async function init() {
   TribePagePreloader.updateIcon("circle-notch", true);
   TribePagePreloader.updateText("Waiting for login");
