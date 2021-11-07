@@ -610,6 +610,11 @@
     "textColor":"#fd77d7"
   },
   {
+    "name" : "hanok",
+    "bgColor" : "#d8d2c3",
+    "textColor":"#513a2a"
+  },
+  {
     "name": "retrowave",
     "bgColor": "#0d032d",
     "textColor": "#ed19fe"

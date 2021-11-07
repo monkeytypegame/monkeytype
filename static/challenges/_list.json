@@ -386,7 +386,7 @@
       "time": {
         "min": 3600
       },
-      "funbox": "mirror"
+      "funbox": "choo_choo"
     }
   }
   ,{
@@ -463,7 +463,7 @@
       "time": {
         "min": 60
       },
-      "funbox": "58008"
+      "funbox": "read_ahead_hard"
     }
   }
   ,{

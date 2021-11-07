@@ -244,6 +244,11 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       const { tagid, newname } = req.body;
+      if (!isTagPresetNameValid(newname))
+        return res.status(400).json({
+          message:
+            "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
+        });
       await UsersDAO.editTag(uid, tagid, newname);
       return res.sendStatus(200);
     } catch (e) {

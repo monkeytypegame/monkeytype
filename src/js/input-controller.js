@@ -40,7 +40,7 @@ function setWordsInput(value) {
 
 function updateUI() {
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  LiveAcc.update(acc);
+  if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
