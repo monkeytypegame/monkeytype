@@ -1,3 +1,5 @@
+import * as Loader from "./loader";
+
 export class Section {
   constructor(title, author, words) {
     this.title = title;
@@ -8,7 +10,7 @@ export class Section {
 
 export async function getSection() {
   // console.log("Getting section");
-  
+  Loader.show();
 
   const randomPostURL =
     "https://en.wikipedia.org/api/rest_v1/page/random/summary";
@@ -24,6 +26,7 @@ export async function getSection() {
 
   return new Promise((res, rej) => {
     if (randomPostReq.status != 200) {
+      Loader.hide();
       rej(randomPostReq.status);
     }
 
@@ -48,8 +51,10 @@ export async function getSection() {
           });
 
           let section = new Section(sectionObj.title, sectionObj.author, words);
+          Loader.hide();
           res(section);
         } else {
+          Loader.hide();
           rej(sectionReq.status);
         }
       }
