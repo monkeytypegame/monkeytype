@@ -110,6 +110,11 @@
     "info": "Practice typing some beautiful prose."
   },
   {
+    "name": "wikipedia",
+    "type": "script",
+    "info": "Practice typing wikipedia sections."
+  },
+  {
     "name": "weakspot",
     "type": "script",
     "info": "Focus on slow and mistyped letters."

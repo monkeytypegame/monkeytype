@@ -30,6 +30,7 @@ import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
+import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
@@ -556,6 +557,16 @@ export async function init() {
       poem.words.forEach((word) => {
         words.push(word);
       });
+    } else if (Config.funbox == "wikipedia") {
+      let section = await Wikipedia.getSection();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        words.push(word);
+      }
     } else {
       for (let i = 0; i < wordsBound; i++) {
         let randomWord = wordset.randomWord();
