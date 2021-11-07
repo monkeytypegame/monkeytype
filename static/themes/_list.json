@@ -608,5 +608,10 @@
     "name" : "chaos_theory",
     "bgColor" : "#141221",
     "textColor":"#fd77d7"
+  },
+  {
+    "name" : "hanok",
+    "bgColor" : "#d8d2c3",
+    "textColor":"#513a2a"
   }
 ]
