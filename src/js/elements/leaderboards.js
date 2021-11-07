@@ -111,10 +111,14 @@ function updateFooter(lb) {
     <tr>
     <td>${entry.rank}</td>
     <td><span class="top">You</span><br><span class="sub">${toppercent}</span></td>
-    <td class="alignRight">${entry.wpm.toFixed(
-      2
-    )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
+    <td class="alignRight">${(Config.alwaysShowCPM
+      ? entry.wpm * 5
+      : entry.wpm
+    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${(Config.alwaysShowCPM
+      ? entry.raw * 5
+      : entry.raw
+    ).toFixed(2)}<br><div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
