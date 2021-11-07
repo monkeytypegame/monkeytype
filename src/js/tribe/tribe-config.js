@@ -5,6 +5,54 @@ import * as CustomText from "./custom-text";
 import * as TribePageLobby from "./tribe-page-lobby";
 import * as Tribe from "./tribe";
 
+export function getArray(config) {
+  let ret = [];
+
+  if (config["mode"] === "quote") {
+    let quoteLengthString = "";
+    if (config["mode2"].length == 4) {
+      quoteLengthString = "";
+    } else {
+      config["mode2"].forEach((ql) => {
+        if (ql == 0) {
+          quoteLengthString += "short,";
+        } else if (ql == 1) {
+          quoteLengthString += "medium,";
+        } else if (ql == 2) {
+          quoteLengthString += "long,";
+        } else if (ql == 3) {
+          quoteLengthString += "thicc,";
+        }
+      });
+      quoteLengthString = quoteLengthString.substring(
+        0,
+        quoteLengthString.length - 1
+      );
+    }
+    if (quoteLengthString !== "") ret.push(quoteLengthString);
+    ret.push("quote");
+  } else {
+    ret.push(config["mode"]);
+    ret.push(config["mode2"]);
+  }
+
+  if (config["difficulty"] !== "normal") ret.push(config["difficulty"]);
+  // if(config['language'] !== "english")
+  ret.push(config["language"]);
+  if (config["punctuation"] !== false) ret.push("punctuation");
+  if (config["numbers"] !== false) ret.push("numbers");
+  if (config["funbox"] !== "none") ret.push(config["funbox"]);
+  if (config["lazyMode"] !== false) ret.push("lazy mode");
+  if (config["stopOnError"] !== "off")
+    ret.push("stop on " + config["stopOnError"] == "word" ? "word" : "letter");
+  if (config["minWpm"] !== "off") ret.push(`min ${config["minWpm"]}wpm`);
+  if (config["minAcc"] !== "off") ret.push(`min ${config["minAcc"]}% acc`);
+  if (config["minBurst"] !== "off")
+    ret.push(`min ${config["minBurst"]}wpm burst`);
+
+  return ret;
+}
+
 export function apply(config) {
   UpdateConfig.setMode(config.mode, true, true);
   if (config.mode === "time") {
