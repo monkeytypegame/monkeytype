@@ -271,11 +271,11 @@ export function setMode(mode, nosave, tribeOverride) {
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
-    setPunctuation(false, true);
-    setNumbers(false, true);
+    setPunctuation(false, true, tribeOverride);
+    setNumbers(false, true, tribeOverride);
   } else if (config.mode == "quote") {
-    setPunctuation(false, true);
-    setNumbers(false, true);
+    setPunctuation(false, true, tribeOverride);
+    setNumbers(false, true, tribeOverride);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
