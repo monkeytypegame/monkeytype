@@ -690,7 +690,7 @@ export function cleanTypographySymbols(textToClean) {
     " ": " ",
     " ": " ",
   };
-  return textToClean.replace(/[“”’‘—,…«»–]/g, (char) => specials[char] || "");
+  return textToClean.replace(/[“”’‘—,…«»–\u2007\u202F\u00A0\s]/g, () => "");
 }
 
 export function isUsernameValid(name) {
