@@ -2035,7 +2035,6 @@ ganito 1
 ganiyan 1
 ganoon 1
 ganti 5
-gantimpagal 1
 gantimpala 10
 ganting-salakay 1
 ganya 1
@@ -10860,7 +10859,7 @@ nakakadena 1
 nakakadenang 1
 nakakahanap 1
 nakakaharap 1
-nakakahiya 3 <-- NARITO AKO
+nakakahiya 3
 nakakain 2
 nakakainis 1
 nakakaintindi 6
@@ -10876,11 +10875,9 @@ nakakalap 1
 nakakalat 1
 nakakalayo 1
 nakakalimutan 1
-nakakalingat 1
 nakakalipas 1
 nakakamit 1
 nakakapag-ipon 1
-nakakapagal 1
 nakakapagbigay 1
 nakakapagdikta 3
 nakakapagkamal 1
@@ -10930,9 +10927,9 @@ nakalahad 2
 nakalalagim 1
 nakalalahad 1
 nakalalamang 1
-nakalalangong 1
 nakalalapit 1
 nakalalasong 1
+nakalalason 1
 nakalantad 1
 nakalapag 1
 nakalapit 1
@@ -10949,7 +10946,7 @@ nakalimutan 3
 nakalipas 1
 nakalitaw 1
 nakalubog 1
-nakalugay 1
+nakalugar 1
 nakaluhod 1
 nakalulugod 1
 nakalululang 1
@@ -10960,6 +10957,7 @@ nakalutang 2
 nakamamatay 3
 nakamana 1
 nakamasid 1
+pagpapatikwal 1
 nakamata 1
 nakamatyag 1
 nakamihasnan 2
@@ -10981,22 +10979,17 @@ nakapagitna 1
 nakapagkuwento 1
 nakapaglakbay 1
 nakapaglathala 1
-nakapagmalimit 1
-nakapagmamalimutin 1
 nakapagpabarya 1
 nakapagpagalit 1
 nakapagpakilos 1
 nakapagpalawak 1
 nakapagpanatili 1
-nakapagpanibagong 1
+panibagong 1
 nakapagpapahina 1
-nakapagpapainam 1
-nakapagpapalaki 1
-nakapagpapaligaya 1
-nakapagpapalusog 1
-nakapagpapatawad 1
-nakapagpapayaman 1
-nakapagpasidhi 1
+paligaya 1
+palusog 1
+payaman 1
+sidhi 1
 nakapagpigil 1
 nakapagpipighati 1
 nakapagreresiklo 1
@@ -11012,12 +11005,11 @@ nakapagtatakang 2
 nakapagtayo 2
 nakapagtinda 1
 nakapailalim 2
-nakapakabilis 1
+napakabilis 1
 nakapako 1
 nakapalibot 2
 nakapaligid 3
 nakapaloob 12
-nakapamaywang 1
 nakapanayam 2
 nakapangibabaw 1
 nakapangikil 1
@@ -11035,10 +11027,10 @@ nakapigil 1
 nakapikit 1
 nakapili 2
 nakapinid 1
+pinid 1
 nakapipinsala 2
 nakapipinsalang 1
 nakapokus 2
-nakaprak 1
 nakapugal 1
 nakapulang 1
 nakapunta 2
@@ -11063,9 +11055,9 @@ nakasabit 2
 nakasadlak 1
 nakasagot 3
 nakasakay 1
-nakasaklay 1
 nakasal 1
 nakasalagmak 1
+salagmak 1
 nakasalalay 6
 nakasalamin 2
 nakasalaming 1
@@ -11075,13 +11067,13 @@ nakasalansan 1
 nakasalig 5
 nakasama 4
 nakasamang 1
-nakasampa 1
 nakasampay 1
 nakasanayang 1
 nakasandal 2
 nakasandig 3
 nakasapat 1
 nakasapit 1
+nakasarado 1
 nakasaradong 1
 nakasardinas 1
 nakasasakit 1
@@ -11097,15 +11089,12 @@ nakasisindak 1
 nakasulat 1
 nakasungaw 3
 nakasuntok 1
-nakasuot-europea 1
 nakasupot 1
 nakasusulat 3
 nakasutana 1
 nakasuwerte 1
-nakata 1
 nakataas 4
 nakatabi 1
-nakatad 1
 nakatagong 1
 nakatagpo 5
 nakatakdang 2
@@ -11116,10 +11105,8 @@ nakataling 1
 nakatalungko 2
 nakatampok 1
 nakatanaw 2
-nakatang 1
 nakatanggap 6
 nakatanod 1
-nakatapo 1
 nakatapos 3
 nakatataas 4
 nakatatag 1
@@ -11142,7 +11129,7 @@ nakatipon 1
 nakatira 6
 nakatirang 1
 nakatitig 3
-nakatittis 1
+nakatitiis 1
 nakatoreador 1
 nakatuklas 3
 nakatukod 1
@@ -11152,11 +11139,12 @@ nakatunghay 1
 nakatungong 1
 nakatuon 7
 nakatutok 2
-nakatutulig 1
+nakatutuligsa 1
 nakatutulong 1
 nakaugalian 1
 nakaugaliang 2
 nakaugat 2
+uklo 1
 nakauklo 1
 nakaumang 1
 nakaupo 13
@@ -11166,7 +11154,8 @@ nakaw 1
 nakaw-tingin 1
 nakayapak 1
 nakayuko 3
-nakayupyop 1
+yupyop
+nakayupyop 1 <-- NARITO AKO
 naki-mayor 1
 nakialam 3
 nakibagay 1
