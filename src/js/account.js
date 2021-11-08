@@ -42,7 +42,7 @@ export async function getDataAndInit() {
         0
       );
       Notifications.add(
-        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enalbed) to restart the test.",
+        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
         0,
         0
       );
