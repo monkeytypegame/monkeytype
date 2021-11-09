@@ -108,11 +108,12 @@ export function swapElements(
   }
 }
 
-export function changePage(page, norestart = false) {
+export function changePage(page, norestart = false, tribeOverride = false) {
   if (pageTransition) {
     console.log(`change page ${page} stopped`);
     return;
   }
+  if (Tribe.state >= 10 && Tribe.state <= 20 && !tribeOverride) return;
   console.log(`change page ${page}`);
   let activePage = $(".page.active");
   $(".page").removeClass("active");
