@@ -47,6 +47,8 @@ export function updateState(newState) {
   if (state === 10) {
     TribePageLobby.disableStartButton();
     TribePageLobby.disableReadyButton();
+    TribePageLobby.disableConfigButtons();
+    TribePageLobby.disableNameVisibilityButtons();
   }
 }
 

@@ -25,6 +25,36 @@ export function enableStartButton() {
   );
 }
 
+export function disableConfigButtons() {
+  $(".pageTribe .tribePage.lobby .currentConfig .groups .group").addClass(
+    "disabled"
+  );
+}
+
+export function enableConfigButtons() {
+  $(".pageTribe .tribePage.lobby .currentConfig .groups .group").removeClass(
+    "disabled"
+  );
+}
+
+export function disableNameVisibilityButtons() {
+  $(
+    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+  ).addClass("disabled");
+  $(
+    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+  ).addClass("disabled");
+}
+
+export function enableNameVisibilityButtons() {
+  $(
+    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+  ).removeClass("disabled");
+  $(
+    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+  ).removeClass("disabled");
+}
+
 export function disableReadyButton() {
   $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
     "disabled"
@@ -45,17 +75,19 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
       "hidden"
     );
-    let readyCount = 0;
-    Object.keys(Tribe.room.users).forEach((userId) => {
-      if (Tribe.room.users[userId].isLeader) return;
-      if (Tribe.room.users[userId].isReady) {
-        readyCount++;
+    if (Tribe.state === 5) {
+      let readyCount = 0;
+      Object.keys(Tribe.room.users).forEach((userId) => {
+        if (Tribe.room.users[userId].isLeader) return;
+        if (Tribe.room.users[userId].isReady) {
+          readyCount++;
+        }
+      });
+      if (readyCount > 0) {
+        enableStartButton();
+      } else {
+        disableStartButton();
       }
-    });
-    if (readyCount > 0) {
-      enableStartButton();
-    } else {
-      disableStartButton();
     }
   } else {
     $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
@@ -362,6 +394,8 @@ export function init() {
   updateVisibility();
   updateRoomName();
   updateRoomConfig();
+  enableConfigButtons();
+  enableNameVisibilityButtons();
   TribeConfig.apply(Tribe.room.config);
 }
 

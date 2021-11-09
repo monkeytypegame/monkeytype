@@ -205,6 +205,11 @@
             &:hover {
               color: var(--text-color);
             }
+            &.disabled {
+              opacity: 0.5;
+              cursor: default;
+              pointer-events: none;
+            }
           }
         }
       }
@@ -223,6 +228,11 @@
             .far {
               margin-right: 0.5rem;
               color: var(--main-color);
+            }
+            &.disabled {
+              opacity: 0.5;
+              cursor: default;
+              pointer-events: none;
             }
           }
         }
