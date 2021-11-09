@@ -10,6 +10,8 @@ import * as TribePageLobby from "./tribe-page-lobby";
 import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
+import seedrandom from "seedrandom";
+import * as UI from "./ui";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -284,6 +286,14 @@ socket.on("room_config_changed", (e) => {
   TribePageLobby.updateRoomConfig();
   TribePageLobby.enableStartButton();
   TribeConfig.setLoadingIndicator(false);
+});
+
+socket.on("room_init_race", (e) => {
+  seedrandom(e.seed, { global: true });
+  console.log(`seed: ${e.seed}`);
+  console.log(`random: ${Math.random()}`);
+  updateState(11);
+  UI.changePage("test", false, true);
 });
 
 socket.on("room_state_changed", (e) => {
