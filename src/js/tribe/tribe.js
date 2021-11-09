@@ -39,8 +39,17 @@ export function getSelf() {
   return room?.users[socket?.id];
 }
 
+export function updateState(state) {
+  room.state = e.state;
+  state = e.state;
+  Notifications.add(getStateString(state), 0, undefined, "Tribe State");
+}
+
 export function getStateString(state) {
   if (state === 5) return "lobby";
+  if (state === 10) return "preparing race";
+  if (state === 11) return "race countdown";
+  if (state === 12) return "race active";
   return state;
 }
 
@@ -268,4 +277,8 @@ socket.on("room_config_changed", (e) => {
   TribePageLobby.updateRoomConfig();
   TribePageLobby.enableStartButton();
   TribeConfig.setLoadingIndicator(false);
+});
+
+socket.on("room_state_changed", (e) => {
+  updateState(e.state);
 });
