@@ -39,10 +39,15 @@ export function getSelf() {
   return room?.users[socket?.id];
 }
 
-export function updateState(state) {
-  room.state = e.state;
-  state = e.state;
+export function updateState(newState) {
+  room.state = newState;
+  state = newState;
   Notifications.add(getStateString(state), 0, undefined, "Tribe State");
+
+  if (state === 10) {
+    TribePageLobby.disableStartButton();
+    TribePageLobby.disableReadyButton();
+  }
 }
 
 export function getStateString(state) {
