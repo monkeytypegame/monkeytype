@@ -385,6 +385,10 @@ $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").click((e) => {
   Tribe.socket.emit("room_ready_update");
 });
 
+$(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").click((e) => {
+  Tribe.socket.emit("room_race_start");
+});
+
 $(".pageTribe .tribePage.lobby .inviteLink .text").click(async (e) => {
   try {
     await navigator.clipboard.writeText(
