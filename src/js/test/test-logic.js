@@ -450,6 +450,7 @@ export function startTest() {
 }
 
 export async function init() {
+  console.log(`test random: ${Math.random()}`);
   setActive(false);
   Replay.stopReplayRecording();
   words.reset();
