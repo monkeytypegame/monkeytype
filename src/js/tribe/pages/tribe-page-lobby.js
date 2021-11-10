@@ -420,7 +420,7 @@ $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").click((e) => {
 });
 
 $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").click((e) => {
-  Tribe.socket.emit("room_race_start");
+  Tribe.socket.emit("room_init_race");
 });
 
 $(".pageTribe .tribePage.lobby .inviteLink .text").click(async (e) => {

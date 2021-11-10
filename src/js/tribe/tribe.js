@@ -12,6 +12,7 @@ import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
 import seedrandom from "seedrandom";
 import * as UI from "./ui";
+import * as TribeCountdown from "./tribe-countdown";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -294,8 +295,21 @@ socket.on("room_init_race", (e) => {
   console.log(`random: ${Math.random()}`);
   updateState(11);
   UI.changePage("test", false, true);
+  TribeCountdown.show();
+  TribeSound.play("start");
 });
 
 socket.on("room_state_changed", (e) => {
   updateState(e.state);
+});
+
+socket.on("room_countdown", (e) => {
+  TribeCountdown.update(e.time);
+  if (e.time <= 3) TribeSound.play("cd");
+});
+
+socket.on("room_race_started", (e) => {
+  updateState(12);
+  TribeSound.play("cd_go");
+  TribeCountdown.hide();
 });

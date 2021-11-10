@@ -461,3 +461,17 @@
     }
   }
 }
+
+.pageTest #typingTest .tribeCountdown {
+  position: absolute;
+  width: 100%;
+  display: grid;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
+  font-size: 10rem;
+  line-height: 0;
+  z-index: 10;
+  color: var(--main-color);
+  pointer-events: none;
+}
