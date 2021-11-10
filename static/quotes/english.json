@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -2391,7 +2379,7 @@
     },
     {
       "text": "Do you hear the people sing? Singing the song of angry men. It is the music of the people who will not be slaves again! When the beating of your heart echoes the beating of the drums, there is a life about to start when tomorrow comes!",
-      "source": "Les MisÃ©rables",
+      "source": "Les Misérables",
       "id": 398,
       "length": 235
     },
@@ -6933,7 +6921,7 @@
     },
     {
       "text": "Charge 'em for the lice, extra for the mice, two percent for looking in the mirror twice. Here a little slice, there a little cut, three percent for sleeping with the window shut. When it comes to fixing prices, there are a lot of tricks he knows.",
-      "source": "Les MisÃ©rables",
+      "source": "Les Misérables",
       "id": 1163,
       "length": 247
     },
@@ -8565,7 +8553,7 @@
     },
     {
       "text": "I dreamed a dream in time gone by, when hope was high and life worth living. I dreamed that love would never die. I dreamed that God would be forgiving. Then I was young and unafraid when dreams were made and used and wasted. There was no ransom to be paid, no song unsung, no wine untasted.",
-      "source": "Les MisÃ©rables",
+      "source": "Les Misérables",
       "id": 1440,
       "length": 291
     },
@@ -9765,7 +9753,7 @@
     },
     {
       "text": "Stars, in your multitudes - scarce to be counted, filling the darkness with order and light. You are the sentinels, silent and sure, keeping watch in the night. You know your place in the sky, you hold your course and your aim, and each in your season returns and returns and is always the same.",
-      "source": "Les MisÃ©rables",
+      "source": "Les Misérables",
       "id": 1643,
       "length": 295
     },
@@ -28143,7 +28131,7 @@
     },
     {
       "text": "Master of the house, quick to catch your eye, never wants a passerby to pass him by. Servant to the poor, butler to the great, comforter, philosopher, and lifelong mate. Everybody's boon companion, everybody's chaperone.",
-      "source": "Les MisÃ©rables",
+      "source": "Les Misérables",
       "id": 4738,
       "length": 220
     },
