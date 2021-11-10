@@ -119,15 +119,18 @@ class Input {
   constructor() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   reset() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   resetHistory() {
     this.history = [];
+    this.length = 0;
   }
 
   setCurrent(val) {
@@ -1153,11 +1156,10 @@ export async function addWord() {
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      (
-      previousWordStripped == randomWord ||
-      previousWord2Stripped == randomWord ||
-      randomWord.indexOf(" ") > -1 ||
-      (!Config.punctuation && randomWord == "I"))
+      (previousWordStripped == randomWord ||
+        previousWord2Stripped == randomWord ||
+        randomWord.indexOf(" ") > -1 ||
+        (!Config.punctuation && randomWord == "I"))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
