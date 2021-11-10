@@ -37,6 +37,7 @@ import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
+import * as Tribe from "./tribe";
 
 const objecthash = require("object-hash");
 
@@ -807,9 +808,14 @@ export function restart(
   withSameWordset = false,
   nosave = false,
   event,
-  practiseMissed = false
+  practiseMissed = false,
+  tribeOverride = false
 ) {
-  if (TestUI.testRestarting || TestUI.resultCalculating) {
+  if (
+    TestUI.testRestarting ||
+    TestUI.resultCalculating ||
+    (Tribe.state >= 5 && !tribeOverride)
+  ) {
     try {
       event.preventDefault();
     } catch {}

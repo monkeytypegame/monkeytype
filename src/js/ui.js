@@ -139,7 +139,14 @@ export function changePage(page, norestart = false, tribeOverride = false) {
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
     ManualRestart.set();
-    if (!norestart) TestLogic.restart();
+    if (!norestart)
+      TestLogic.restart(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        tribeOverride
+      );
     Funbox.activate(Config.funbox);
   } else if (page === "tribe") {
     setPageTransition(true);
