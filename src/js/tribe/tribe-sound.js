@@ -1,5 +1,5 @@
 import { Howl } from "howler";
-import * as TestLogic from "./test-logic";
+import * as Tribe from "./tribe";
 
 let sounds = {
   join: new Howl({ src: "../sound/tribe_ui/join.wav" }),
@@ -16,7 +16,7 @@ let sounds = {
 
 export function play(name) {
   if (
-    TestLogic.active &&
+    [10, 11, 12].includes(Tribe.state) &&
     ["join", "leave", "chat", "chat_mention"].includes(name)
   )
     return;
