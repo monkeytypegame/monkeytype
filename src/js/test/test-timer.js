@@ -159,7 +159,7 @@ function checkIfTimeIsUp() {
 
 // ---------------------------------------
 
-function timerStep() {
+async function timerStep() {
   time++;
   premid();
   updateTimer();
@@ -196,6 +196,7 @@ export function start() {
     expected += stepIntervalMS;
     let delay = Math.max(0, stepIntervalMS - dt);
     if (timerDebug) console.log(`deltatime ${dt}ms`);
+    if (timerDebug) console.log(`delay ${delay}ms`);
     setTimeout(loop, delay);
   }
   expected = TestStats.start + stepIntervalMS;
