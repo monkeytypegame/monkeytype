@@ -53,6 +53,14 @@ export function updateState(newState) {
     TribePageLobby.disableReadyButton();
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
+  } else if (state === 11) {
+    Object.keys(room.users).forEach((userId) => {
+      let u = room.users[userId];
+      if (u.isReady || u.isLeader) {
+        u.isTyping = true;
+      }
+    });
+    TribePageLobby.updatePlayerList();
   }
 }
 
