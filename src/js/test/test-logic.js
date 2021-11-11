@@ -557,15 +557,23 @@ export async function init() {
       poem.words.forEach((word) => {
         words.push(word);
       });
-    } else if (Config.funbox == "wikipedia") {
-      let section = await Wikipedia.getSection();
+    } else if (Config.funbox == "wikipedia" && Config.mode != "custom") {
       let wordCount = 0;
-      for (let word of section.words) {
-        if (wordCount >= Config.words && Config.mode == "words") {
-          break;
+
+      // If mode is words, get as many sections as you need until the wordCount is fullfilled
+      while (
+        (Config.mode == "words" && Config.words >= wordCount) ||
+        (Config.mode === "time" && wordCount === 0)
+      ) {
+        let section = await Wikipedia.getSection();
+        for (let word of section.words) {
+          if (wordCount >= Config.words && Config.mode == "words") {
+            wordCount++;
+            break;
+          }
+          wordCount++;
+          words.push(word);
         }
-        wordCount++;
-        words.push(word);
       }
     } else {
       for (let i = 0; i < wordsBound; i++) {
@@ -1110,6 +1118,24 @@ export function calculateWpmAndRaw() {
 
 export async function addWord() {
   let bound = 100;
+
+  if (Config.funbox === "wikipedia") {
+    //                           difference from text - written text
+    if (Config.mode == "time" && words.length - input.history.length < 20) {
+      let section = await Wikipedia.getSection();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        words.push(word);
+      }
+    } else {
+      return;
+    }
+  }
+
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
   if (
