@@ -13,6 +13,7 @@ import * as TribeConfig from "./tribe-config";
 import seedrandom from "seedrandom";
 import * as UI from "./ui";
 import * as TribeCountdown from "./tribe-countdown";
+import * as TestLogic from "./test-logic";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -274,7 +275,7 @@ socket.on("chat_message", async (data) => {
         "<span class='mention'>$&</span>"
       );
     } else {
-      TribeSound.play("chat2");
+      TribeSound.play("chat");
     }
   }
 
@@ -312,4 +313,9 @@ socket.on("room_race_started", (e) => {
   updateState(12);
   TribeSound.play("cd_go");
   TribeCountdown.hide();
+  setTimeout(() => {
+    if (!TestLogic.active) {
+      TestLogic.startTest();
+    }
+  }, 500);
 });
