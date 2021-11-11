@@ -24,6 +24,7 @@ import * as ShiftTracker from "./shift-tracker";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as WeakSpot from "./weak-spot";
+import * as Tribe from "./tribe";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -658,11 +659,20 @@ $(document).keydown((event) => {
     }
   }
 
+  if ([10, 11].includes(Tribe.state)) {
+    event.preventDefault();
+    return;
+  }
+
   //tab
   if (
     (event.key == "Tab" && !Config.swapEscAndTab) ||
     (event.key == "Escape" && Config.swapEscAndTab)
   ) {
+    if ([10, 11, 12].includes(Tribe.state)) {
+      event.preventDefault();
+      return;
+    }
     handleTab(event);
   }
 
@@ -759,6 +769,11 @@ $("#wordsInput").keyup((event) => {
     return;
   }
 
+  if ([10, 11].includes(Tribe.state)) {
+    event.preventDefault();
+    return;
+  }
+
   if (TestUI.resultVisible) return;
   let now = performance.now();
   if (TestStats.keypressTimings.duration.current !== -1) {
@@ -779,6 +794,11 @@ $("#wordsInput").on("beforeinput", (event) => {
 $("#wordsInput").on("input", (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.target.value = " ";
+    return;
+  }
+
+  if ([10, 11].includes(Tribe.state)) {
+    event.preventDefault();
     return;
   }
 
