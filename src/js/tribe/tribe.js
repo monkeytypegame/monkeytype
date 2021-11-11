@@ -14,6 +14,7 @@ import seedrandom from "seedrandom";
 import * as UI from "./ui";
 import * as TribeCountdown from "./tribe-countdown";
 import * as TestLogic from "./test-logic";
+import * as TribeBars from "./tribe-bars";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -299,10 +300,17 @@ socket.on("room_config_changed", (e) => {
 });
 
 socket.on("room_init_race", (e) => {
+  updateState(11);
+  if (getSelf().isTyping) {
+    TribeBars.init("test");
+    TribeBars.show("test");
+  } else {
+    //TODO update lobby bars
+    return;
+  }
   seedrandom(e.seed, { global: true });
   console.log(`seed: ${e.seed}`);
   console.log(`random: ${Math.random()}`);
-  updateState(11);
   UI.changePage("test", false, true);
   TribeCountdown.show();
   TribeSound.play("start");
@@ -319,6 +327,7 @@ socket.on("room_countdown", (e) => {
 
 socket.on("room_race_started", (e) => {
   updateState(12);
+  if (!getSelf().isTyping) return;
   TribeSound.play("cd_go");
   TribeCountdown.hide();
   setTimeout(() => {
