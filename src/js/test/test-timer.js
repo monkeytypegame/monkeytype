@@ -9,112 +9,195 @@ import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 
+export let slowTimer = false;
 export let time = 0;
 let timer = null;
 const stepIntervalMS = 1000;
+let expected = 0;
+
+let timerDebug = false;
+export function enableTimerDebug() {
+  timerDebug = true;
+}
 
 export function clear() {
   time = 0;
   clearTimeout(timer);
 }
 
+function premid() {
+  if (timerDebug) console.time("premid");
+  document.querySelector("#premidSecondsLeft").innerHTML = Config.time - time;
+  if (timerDebug) console.timeEnd("premid");
+}
+
+function updateTimer() {
+  if (timerDebug) console.time("timer progress update");
+  if (
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.isTimeRandom)
+  ) {
+    TimerProgress.update(time);
+  }
+  if (timerDebug) console.timeEnd("timer progress update");
+}
+
+function calculateWpmRaw() {
+  if (timerDebug) console.time("calculate wpm and raw");
+  let wpmAndRaw = TestLogic.calculateWpmAndRaw();
+  if (timerDebug) console.timeEnd("calculate wpm and raw");
+  if (timerDebug) console.time("update live wpm");
+  LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+  if (timerDebug) console.timeEnd("update live wpm");
+  if (timerDebug) console.time("push to history");
+  TestStats.pushToWpmHistory(wpmAndRaw.wpm);
+  TestStats.pushToRawHistory(wpmAndRaw.raw);
+  if (timerDebug) console.timeEnd("push to history");
+  return wpmAndRaw;
+}
+
+function monkey(wpmAndRaw) {
+  if (timerDebug) console.time("update monkey");
+  Monkey.updateFastOpacity(wpmAndRaw.wpm);
+  if (timerDebug) console.timeEnd("update monkey");
+}
+
+function calculateAcc() {
+  if (timerDebug) console.time("calculate acc");
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  if (timerDebug) console.timeEnd("calculate acc");
+  return acc;
+}
+
+function layoutfluid() {
+  if (timerDebug) console.time("layoutfluid");
+  if (Config.funbox === "layoutfluid" && Config.mode === "time") {
+    const layouts = Config.customLayoutfluid
+      ? Config.customLayoutfluid.split("#")
+      : ["qwerty", "dvorak", "colemak"];
+    // console.log(Config.customLayoutfluid);
+    // console.log(layouts);
+    const numLayouts = layouts.length;
+    let index = 0;
+    index = Math.floor(time / (Config.time / numLayouts));
+
+    if (
+      time == Math.floor(Config.time / numLayouts) - 3 ||
+      time == (Config.time / numLayouts) * 2 - 3
+    ) {
+      Notifications.add("3", 0, 1);
+    }
+    if (
+      time == Math.floor(Config.time / numLayouts) - 2 ||
+      time == Math.floor(Config.time / numLayouts) * 2 - 2
+    ) {
+      Notifications.add("2", 0, 1);
+    }
+    if (
+      time == Math.floor(Config.time / numLayouts) - 1 ||
+      time == Math.floor(Config.time / numLayouts) * 2 - 1
+    ) {
+      Notifications.add("1", 0, 1);
+    }
+
+    if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
+      Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+      UpdateConfig.setLayout(layouts[index], true);
+      UpdateConfig.setKeymapLayout(layouts[index], true);
+    }
+  }
+  if (timerDebug) console.timeEnd("layoutfluid");
+}
+
+function checkIfFailed(wpmAndRaw, acc) {
+  if (timerDebug) console.time("fail conditions");
+  TestStats.pushKeypressesToHistory();
+  if (
+    Config.minWpm === "custom" &&
+    wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
+    TestLogic.words.currentIndex > 3
+  ) {
+    clearTimeout(timer);
+    TestLogic.fail("min wpm");
+    return;
+  }
+  if (
+    Config.minAcc === "custom" &&
+    acc < parseInt(Config.minAccCustom) &&
+    TestLogic.words.currentIndex > 3
+  ) {
+    clearTimeout(timer);
+    TestLogic.fail("min accuracy");
+    return;
+  }
+  if (timerDebug) console.timeEnd("fail conditions");
+}
+
+function checkIfTimeIsUp() {
+  if (timerDebug) console.time("times up check");
+  if (
+    Config.mode == "time" ||
+    (Config.mode === "custom" && CustomText.isTimeRandom)
+  ) {
+    if (
+      (time >= Config.time && Config.time !== 0 && Config.mode === "time") ||
+      (time >= CustomText.time &&
+        CustomText.time !== 0 &&
+        Config.mode === "custom")
+    ) {
+      //times up
+      clearTimeout(timer);
+      Caret.hide();
+      TestLogic.input.pushHistory();
+      TestLogic.corrected.pushHistory();
+      TestLogic.finish();
+      return;
+    }
+  }
+  if (timerDebug) console.timeEnd("times up check");
+}
+
+// ---------------------------------------
+
+function timerStep() {
+  time++;
+  premid();
+  updateTimer();
+  let wpmAndRaw = calculateWpmRaw();
+  let acc = calculateAcc();
+  monkey(wpmAndRaw);
+  layoutfluid();
+  checkIfFailed(wpmAndRaw, acc);
+  checkIfTimeIsUp();
+  if (timerDebug) console.log("timer step -----------------------------");
+}
+
 export function start() {
-  (function loop(expectedStepEnd) {
-    const delay = expectedStepEnd - performance.now();
-    timer = setTimeout(function () {
-      time++;
-      $(".pageTest #premidSecondsLeft").text(Config.time - time);
-      if (
-        Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.isTimeRandom)
-      ) {
-        TimerProgress.update(time);
-      }
-      let wpmAndRaw = TestLogic.calculateWpmAndRaw();
-      LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
-      TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-      TestStats.pushToRawHistory(wpmAndRaw.raw);
-      Monkey.updateFastOpacity(wpmAndRaw.wpm);
+  function loop() {
+    let dt = performance.now() - expected; //delta time
 
-      let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+    if (dt > stepIntervalMS / 2) {
+      //slow timer, disable animations?
+      slowTimer = true;
+    }
 
-      if (Config.funbox === "layoutfluid" && Config.mode === "time") {
-        const layouts = Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")
-          : ["qwerty", "dvorak", "colemak"];
-        // console.log(Config.customLayoutfluid);
-        // console.log(layouts);
-        const numLayouts = layouts.length;
-        let index = 0;
-        index = Math.floor(time / (Config.time / numLayouts));
+    if (dt > stepIntervalMS) {
+      // stop timer maybe?
+      // Tribe.setNoAnim(true);
+    }
 
-        if (
-          time == Math.floor(Config.time / numLayouts) - 3 ||
-          time == (Config.time / numLayouts) * 2 - 3
-        ) {
-          Notifications.add("3", 0, 1);
-        }
-        if (
-          time == Math.floor(Config.time / numLayouts) - 2 ||
-          time == Math.floor(Config.time / numLayouts) * 2 - 2
-        ) {
-          Notifications.add("2", 0, 1);
-        }
-        if (
-          time == Math.floor(Config.time / numLayouts) - 1 ||
-          time == Math.floor(Config.time / numLayouts) * 2 - 1
-        ) {
-          Notifications.add("1", 0, 1);
-        }
+    if (!TestLogic.active) {
+      clearTimeout(timer);
+      return;
+    }
 
-        if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
-          Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
-          UpdateConfig.setLayout(layouts[index], true);
-          UpdateConfig.setKeymapLayout(layouts[index], true);
-        }
-      }
+    timerStep();
 
-      TestStats.pushKeypressesToHistory();
-      if (
-        Config.minWpm === "custom" &&
-        wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-        TestLogic.words.currentIndex > 3
-      ) {
-        clearTimeout(timer);
-        TestLogic.fail("min wpm");
-        return;
-      }
-      if (
-        Config.minAcc === "custom" &&
-        acc < parseInt(Config.minAccCustom) &&
-        TestLogic.words.currentIndex > 3
-      ) {
-        clearTimeout(timer);
-        TestLogic.fail("min accuracy");
-        return;
-      }
-      if (
-        Config.mode == "time" ||
-        (Config.mode === "custom" && CustomText.isTimeRandom)
-      ) {
-        if (
-          (time >= Config.time &&
-            Config.time !== 0 &&
-            Config.mode === "time") ||
-          (time >= CustomText.time &&
-            CustomText.time !== 0 &&
-            Config.mode === "custom")
-        ) {
-          //times up
-          clearTimeout(timer);
-          Caret.hide();
-          TestLogic.input.pushHistory();
-          TestLogic.corrected.pushHistory();
-          TestLogic.finish();
-          return;
-        }
-      }
-      loop(expectedStepEnd + stepIntervalMS);
-    }, delay);
-  })(TestStats.start + stepIntervalMS);
+    expected += stepIntervalMS;
+    let delay = Math.max(0, stepIntervalMS - dt);
+    if (timerDebug) console.log(`deltatime ${dt}ms`);
+    setTimeout(loop, delay);
+  }
+  expected = TestStats.start + stepIntervalMS;
+  setTimeout(loop, stepIntervalMS);
 }

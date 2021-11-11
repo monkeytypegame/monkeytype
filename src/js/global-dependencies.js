@@ -24,3 +24,4 @@ import "./pb-tables-popup";
 import * as Account from "./account";
 import * as TestStats from "./test-stats";
 import * as Replay from "./replay";
+import * as TestTimer from "./test-timer";
