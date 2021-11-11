@@ -659,7 +659,7 @@ $(document).keydown((event) => {
     }
   }
 
-  if ([10, 11].includes(Tribe.state)) {
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
     event.preventDefault();
     return;
   }
@@ -669,7 +669,7 @@ $(document).keydown((event) => {
     (event.key == "Tab" && !Config.swapEscAndTab) ||
     (event.key == "Escape" && Config.swapEscAndTab)
   ) {
-    if ([10, 11, 12].includes(Tribe.state)) {
+    if ([10, 11, 12].includes(Tribe.state) && Tribe.getSelf().isTyping) {
       event.preventDefault();
       return;
     }
@@ -769,7 +769,7 @@ $("#wordsInput").keyup((event) => {
     return;
   }
 
-  if ([10, 11].includes(Tribe.state)) {
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
     event.preventDefault();
     return;
   }
@@ -797,7 +797,7 @@ $("#wordsInput").on("input", (event) => {
     return;
   }
 
-  if ([10, 11].includes(Tribe.state)) {
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
     event.preventDefault();
     return;
   }
