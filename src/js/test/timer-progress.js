@@ -85,6 +85,11 @@ export function restart() {
   }
 }
 
+let timerNumberElement = document.querySelector("#timerNumber");
+let miniTimerNumberElement = document.querySelector(
+  "#miniTimerAndLiveWpm .time"
+);
+
 export function update() {
   let time = TestTimer.time;
   if (
@@ -111,13 +116,13 @@ export function update() {
       if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
-      $("#timerNumber").html("<div>" + displayTime + "</div>");
+      timerNumberElement.innerHTML = "<div>" + displayTime + "</div>";
     } else if (Config.timerStyle === "mini") {
       let displayTime = Misc.secondsToString(maxtime - time);
       if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
-      $("#miniTimerAndLiveWpm .time").html(displayTime);
+      miniTimerNumberElement.innerHTML = displayTime;
     }
   } else if (
     Config.mode === "words" ||
@@ -152,32 +157,25 @@ export function update() {
         );
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
-        $("#timerNumber").html(
-          "<div>" + `${TestLogic.input.history.length}` + "</div>"
-        );
+        timerNumberElement.innerHTML =
+          "<div>" + `${TestLogic.input.history.length}` + "</div>";
       } else {
-        $("#timerNumber").html(
-          "<div>" + `${TestLogic.input.history.length}/${outof}` + "</div>"
-        );
+        timerNumberElement.innerHTML =
+          "<div>" + `${TestLogic.input.history.length}/${outof}` + "</div>";
       }
     } else if (Config.timerStyle === "mini") {
       if (Config.words === 0) {
-        $("#miniTimerAndLiveWpm .time").html(
-          `${TestLogic.input.history.length}`
-        );
+        miniTimerNumberElement.innerHTML = `${TestLogic.input.history.length}`;
       } else {
-        $("#miniTimerAndLiveWpm .time").html(
-          `${TestLogic.input.history.length}/${outof}`
-        );
+        miniTimerNumberElement.innerHTML = `${TestLogic.input.history.length}/${outof}`;
       }
     }
   } else if (Config.mode == "zen") {
     if (Config.timerStyle === "text") {
-      $("#timerNumber").html(
-        "<div>" + `${TestLogic.input.history.length}` + "</div>"
-      );
+      timerNumberElement.innerHTML =
+        "<div>" + `${TestLogic.input.history.length}` + "</div>";
     } else {
-      $("#miniTimerAndLiveWpm .time").html(`${TestLogic.input.history.length}`);
+      miniTimerNumberElement.innerHTML = `${TestLogic.input.history.length}`;
     }
   }
 }
