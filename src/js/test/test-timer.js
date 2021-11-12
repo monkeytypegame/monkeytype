@@ -1,3 +1,6 @@
+//most of the code is thanks to
+//https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
+
 import Config, * as UpdateConfig from "./config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
@@ -12,8 +15,12 @@ import * as Caret from "./caret";
 export let slowTimer = false;
 export let time = 0;
 let timer = null;
-const stepIntervalMS = 1000;
+const interval = 1000;
 let expected = 0;
+
+let drift_history = [];
+let drift_history_samples = 10;
+let drift_correction = 0;
 
 let timerDebug = false;
 export function enableTimerDebug() {
@@ -159,6 +166,29 @@ function checkIfTimeIsUp() {
 
 // ---------------------------------------
 
+function calc_drift(arr) {
+  // Calculate drift correction.
+
+  /*
+  In this example I've used a simple median.
+  You can use other methods, but it's important not to use an average. 
+  If the user switches tabs and back, an average would put far too much
+  weight on the outlier.
+  */
+
+  var values = arr.concat(); // copy array so it isn't mutated
+
+  values.sort(function (a, b) {
+    return a - b;
+  });
+  if (values.length === 0) return 0;
+  var half = Math.floor(values.length / 2);
+  if (values.length % 2) return values[half];
+  var median = (values[half - 1] + values[half]) / 2.0;
+
+  return median;
+}
+
 async function timerStep() {
   time++;
   premid();
@@ -173,15 +203,15 @@ async function timerStep() {
 }
 
 export function start() {
-  function loop() {
-    let dt = performance.now() - expected; //delta time
+  function step() {
+    let dt = Date.now() - expected; //delta time
 
-    if (dt > stepIntervalMS / 2) {
+    if (dt > interval / 2) {
       //slow timer, disable animations?
       slowTimer = true;
     }
 
-    if (dt > stepIntervalMS) {
+    if (dt > interval) {
       // stop timer maybe?
       // Tribe.setNoAnim(true);
     }
@@ -193,12 +223,27 @@ export function start() {
 
     timerStep();
 
-    expected += stepIntervalMS;
-    let delay = Math.max(0, stepIntervalMS - dt);
+    // don't update the history for exceptionally large values
+    if (dt <= interval) {
+      // sample drift amount to history after removing current correction
+      // (add to remove because the correction is applied by subtraction)
+      drift_history.push(dt + drift_correction);
+
+      // predict new drift correction
+      drift_correction = calc_drift(drift_history);
+
+      // cap and refresh samples
+      if (drift_history.length >= drift_history_samples) {
+        drift_history.shift();
+      }
+    }
+
+    expected += interval;
+    let delay = Math.max(0, interval - dt - drift_correction);
     if (timerDebug) console.log(`deltatime ${dt}ms`);
     if (timerDebug) console.log(`delay ${delay}ms`);
-    setTimeout(loop, delay);
+    setTimeout(step, delay);
   }
-  expected = TestStats.start + stepIntervalMS;
-  setTimeout(loop, stepIntervalMS);
+  expected = Date.now() + interval;
+  setTimeout(step, interval);
 }
