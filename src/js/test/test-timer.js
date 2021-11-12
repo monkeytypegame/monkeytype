@@ -166,6 +166,12 @@ function checkIfTimeIsUp() {
 
 // ---------------------------------------
 
+let timerStats = [];
+
+export function getTimerStats() {
+  return timerStats;
+}
+
 function calc_drift(arr) {
   // Calculate drift correction.
 
@@ -203,6 +209,10 @@ async function timerStep() {
 }
 
 export function start() {
+  drift_history = [];
+  drift_correction = 0;
+  timerStats = [];
+
   function step() {
     let dt = Date.now() - expected; //delta time
 
@@ -242,6 +252,12 @@ export function start() {
     let delay = Math.max(0, interval - dt - drift_correction);
     if (timerDebug) console.log(`deltatime ${dt}ms`);
     if (timerDebug) console.log(`delay ${delay}ms`);
+    timerStats.push({
+      timestamp: Date.now(),
+      delta: dt,
+      correction: drift_correction,
+      actualDelay: delay,
+    });
     setTimeout(step, delay);
   }
   expected = Date.now() + interval;
