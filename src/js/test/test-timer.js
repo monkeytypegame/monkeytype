@@ -18,9 +18,16 @@ let timer = null;
 const interval = 1000;
 let expected = 0;
 
-let drift_history = [];
-let drift_history_samples = 10;
-let drift_correction = 0;
+function setSlowTimer() {
+  if (slowTimer) return;
+  slowTimer = true;
+  console.error("Slow timer, disabling animations");
+  // Notifications.add("Slow timer detected", -1, 5);
+}
+
+function clearSlowTimer() {
+  slowTimer = false;
+}
 
 let timerDebug = false;
 export function enableTimerDebug() {
@@ -126,6 +133,7 @@ function checkIfFailed(wpmAndRaw, acc) {
   ) {
     clearTimeout(timer);
     TestLogic.fail("min wpm");
+    clearSlowTimer();
     return;
   }
   if (
@@ -135,6 +143,7 @@ function checkIfFailed(wpmAndRaw, acc) {
   ) {
     clearTimeout(timer);
     TestLogic.fail("min accuracy");
+    clearSlowTimer();
     return;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -158,6 +167,7 @@ function checkIfTimeIsUp() {
       TestLogic.input.pushHistory();
       TestLogic.corrected.pushHistory();
       TestLogic.finish();
+      clearSlowTimer();
       return;
     }
   }
@@ -170,29 +180,6 @@ let timerStats = [];
 
 export function getTimerStats() {
   return timerStats;
-}
-
-function calc_drift(arr) {
-  // Calculate drift correction.
-
-  /*
-  In this example I've used a simple median.
-  You can use other methods, but it's important not to use an average. 
-  If the user switches tabs and back, an average would put far too much
-  weight on the outlier.
-  */
-
-  var values = arr.concat(); // copy array so it isn't mutated
-
-  values.sort(function (a, b) {
-    return a - b;
-  });
-  if (values.length === 0) return 0;
-  var half = Math.floor(values.length / 2);
-  if (values.length % 2) return values[half];
-  var median = (values[half - 1] + values[half]) / 2.0;
-
-  return median;
 }
 
 async function timerStep() {
@@ -209,57 +196,42 @@ async function timerStep() {
 }
 
 export function start() {
-  drift_history = [];
-  drift_correction = 0;
+  clearSlowTimer();
   timerStats = [];
-
-  function step() {
-    let dt = Date.now() - expected; //delta time
-
-    if (dt > interval / 2) {
-      //slow timer, disable animations?
-      slowTimer = true;
-    }
-
-    if (dt > interval) {
-      // stop timer maybe?
-      // Tribe.setNoAnim(true);
-    }
-
-    if (!TestLogic.active) {
-      clearTimeout(timer);
-      return;
-    }
-
-    timerStep();
-
-    // don't update the history for exceptionally large values
-    if (dt <= interval) {
-      // sample drift amount to history after removing current correction
-      // (add to remove because the correction is applied by subtraction)
-      drift_history.push(dt + drift_correction);
-
-      // predict new drift correction
-      drift_correction = calc_drift(drift_history);
-
-      // cap and refresh samples
-      if (drift_history.length >= drift_history_samples) {
-        drift_history.shift();
-      }
-    }
-
-    expected += interval;
-    let delay = Math.max(0, interval - dt - drift_correction);
-    if (timerDebug) console.log(`deltatime ${dt}ms`);
-    if (timerDebug) console.log(`delay ${delay}ms`);
+  expected = TestStats.start + interval;
+  (function loop() {
+    const delay = expected - performance.now();
     timerStats.push({
-      timestamp: Date.now(),
-      delta: dt,
-      correction: drift_correction,
-      actualDelay: delay,
+      dateNow: Date.now(),
+      now: performance.now(),
+      expected: expected,
+      nextDelay: delay,
     });
-    setTimeout(step, delay);
-  }
-  expected = Date.now() + interval;
-  setTimeout(step, interval);
+    if (delay < (interval / 3) * 2) {
+      //slow timer
+      setSlowTimer();
+    }
+    if (delay < interval / 3) {
+      //slow timer
+      Notifications.add(
+        "Stopping the test due to very bad timer performance. This would cause the test duration and other calculations to be incorrect. If this happens a lot, please report this.",
+        -1
+      );
+      TestLogic.fail("slow timer");
+    }
+    timer = setTimeout(function () {
+      // time++;
+
+      if (!TestLogic.active) {
+        clearTimeout(timer);
+        clearSlowTimer();
+        return;
+      }
+
+      timerStep();
+
+      expected += interval;
+      loop();
+    }, delay);
+  })();
 }
