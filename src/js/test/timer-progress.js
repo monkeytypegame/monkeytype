@@ -108,7 +108,7 @@ export function update() {
           {
             width: percent + "vw",
           },
-          1000,
+          TestTimer.slowTimer ? 0 : 1000,
           "linear"
         );
     } else if (Config.timerStyle === "text") {
@@ -153,7 +153,7 @@ export function update() {
           {
             width: percent + "vw",
           },
-          250
+          TestTimer.slowTimer ? 0 : 250
         );
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
