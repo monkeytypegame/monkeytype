@@ -1,5 +1,6 @@
 import * as Notifications from "./notifications";
 import * as Tribe from "./tribe";
+import * as Misc from "./misc";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
@@ -57,11 +58,11 @@ export function updateIsTyping() {
   if (names.length > 0) {
     for (let i = 0; i < names.length; i++) {
       if (i === 0) {
-        string += `<span class="who">${names[i]}</span>`;
+        string += `<span class="who">${Misc.escapeHTML(names[i])}</span>`;
       } else if (i === names.length - 1) {
-        string += ` and <span class="who">${names[i]}</span>`;
+        string += ` and <span class="who">${Misc.escapeHTML(names[i])}</span>`;
       } else {
-        string += `, <span class="who">${names[i]}</span>`;
+        string += `, <span class="who">${Misc.escapeHTML(names[i])}</span>`;
       }
     }
     if (names.length == 1) {
