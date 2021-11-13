@@ -3,6 +3,7 @@ import * as ThemeColors from "./theme-colors";
 import layouts from "./layouts";
 import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
+import * as TestTimer from "./test-timer";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
@@ -124,7 +125,7 @@ export async function flashKey(key, correct) {
             backgroundColor: "transparent",
             borderColor: themecolors.sub,
           },
-          500,
+          TestTimer.slowTimer ? 0 : 500,
           "easeOutExpo"
         );
     } else {
@@ -141,7 +142,7 @@ export async function flashKey(key, correct) {
             backgroundColor: "transparent",
             borderColor: themecolors.sub,
           },
-          500,
+          TestTimer.slowTimer ? 0 : 500,
           "easeOutExpo"
         );
     }

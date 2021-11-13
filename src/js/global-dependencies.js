@@ -25,3 +25,4 @@ import * as Account from "./account";
 import * as TestStats from "./test-stats";
 import * as Replay from "./replay";
 import * as Tribe from "./tribe";
+import * as TestTimer from "./test-timer";

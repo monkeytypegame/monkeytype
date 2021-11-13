@@ -5,6 +5,7 @@ import * as TestStats from "./test-stats";
 
 export let invalid = false;
 export let start, end;
+export let start2, end2;
 export let wpmHistory = [];
 export let rawHistory = [];
 export let burstHistory = [];
@@ -157,10 +158,12 @@ export function calculateTestSeconds(now) {
 
 export function setEnd(e) {
   end = e;
+  end2 = Date.now();
 }
 
 export function setStart(s) {
   start = s;
+  start2 = Date.now();
 }
 
 export function updateLastKeypress() {
@@ -417,8 +420,11 @@ export function calculateStats() {
   if (Config.mode == "custom") {
     testSeconds = TestStats.calculateTestSeconds();
   } else {
-    testSeconds = Misc.roundTo2(TestStats.calculateTestSeconds());
+    testSeconds = TestStats.calculateTestSeconds();
   }
+  console.log((TestStats.end2 - TestStats.start2) / 1000);
+  console.log(testSeconds);
+  testSeconds = Misc.roundTo2(testSeconds);
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5

@@ -1,4 +1,5 @@
 import { mapRange } from "./misc";
+import Config from "./config";
 
 let left = false;
 let right = false;
@@ -19,6 +20,7 @@ let last = "right";
 // 1 down
 
 function update() {
+  if (!Config.monkey) return;
   if (!document.querySelector("#monkey").classList.contains("hidden")) {
     Object.keys(elements).forEach((key) => {
       elements[key].classList.add("hidden");
@@ -36,6 +38,7 @@ function update() {
 }
 
 export function updateFastOpacity(num) {
+  if (!Config.monkey) return;
   let opacity = mapRange(num, 100, 200, 0, 1);
   $("#monkey .fast").animate({ opacity: opacity }, 1000);
   let animDuration = mapRange(num, 100, 200, 0.5, 0.01);
@@ -44,6 +47,7 @@ export function updateFastOpacity(num) {
 }
 
 export function type() {
+  if (!Config.monkey) return;
   if (!left && last == "right") {
     left = true;
     last = "left";
@@ -55,6 +59,7 @@ export function type() {
 }
 
 export function stop() {
+  if (!Config.monkey) return;
   if (left) {
     left = false;
   } else if (right) {

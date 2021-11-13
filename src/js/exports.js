@@ -23,5 +23,8 @@ global.stats = TestStats.getStats;
 
 global.replay = Replay.getReplayExport;
 
-//TODO REMOGVE THIS
+//TODO REMOVE THIS
 global.tribe = Tribe;
+
+global.enableTimerDebug = TestTimer.enableTimerDebug;
+global.getTimerStats = TestTimer.getTimerStats;

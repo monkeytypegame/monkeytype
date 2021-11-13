@@ -120,15 +120,18 @@ class Input {
   constructor() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   reset() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   resetHistory() {
     this.history = [];
+    this.length = 0;
   }
 
   setCurrent(val) {

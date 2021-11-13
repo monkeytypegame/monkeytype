@@ -20,6 +20,7 @@ import * as TestUI from "./test-ui";
 import * as ChallengeController from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as UI from "./ui";
+import * as TestTimer from "./test-timer";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -444,7 +445,7 @@ export function lineJump(currentTop) {
         {
           height: 0,
         },
-        125,
+        TestTimer.slowTimer ? 0 : 125,
         () => {
           $("#words .smoothScroller").remove();
         }
@@ -453,13 +454,13 @@ export function lineJump(currentTop) {
         {
           top: document.querySelector("#paceCaret").offsetTop - wordHeight,
         },
-        125
+        TestTimer.slowTimer ? 0 : 125
       );
       $("#words").animate(
         {
           marginTop: `-${wordHeight}px`,
         },
-        125,
+        TestTimer.slowTimer ? 0 : 125,
         () => {
           activeWordTop = document.querySelector("#words .active").offsetTop;
 
