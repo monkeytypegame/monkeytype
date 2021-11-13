@@ -68,13 +68,13 @@ export function enableReadyButton() {
 }
 
 export function disableAfkButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
     "disabled"
   );
 }
 
 export function enableAfkButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
     "disabled"
   );
 }
@@ -129,19 +129,16 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
       "hidden"
     );
-    if (Tribe.getSelf().isReady) {
-      enableAfkButton();
-      disableReadyButton();
-    } else {
-      disableAfkButton();
-      enableReadyButton();
-    }
+    deactivateAfkButton();
+    enableReadyButton();
+    enableAfkButton();
     if (Tribe.getSelf().isAfk) {
       activateAfkButton();
       disableReadyButton();
-    } else {
-      deactivateAfkButton();
-      enableReadyButton();
+    }
+    if (Tribe.getSelf().isReady) {
+      disableAfkButton();
+      disableReadyButton();
     }
   }
 }
