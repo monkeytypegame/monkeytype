@@ -67,6 +67,30 @@ export function enableReadyButton() {
   );
 }
 
+export function disableAfkButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
+    "disabled"
+  );
+}
+
+export function enableAfkButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
+    "disabled"
+  );
+}
+
+export function deactivateAfkButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
+    "active"
+  );
+}
+
+export function activateAfkButton() {
+  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
+    "active"
+  );
+}
+
 export function updateButtons() {
   if (Tribe.getSelf().isLeader) {
     $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").removeClass(
@@ -75,13 +99,16 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
       "hidden"
     );
+    $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
+      "hidden"
+    );
 
     enableStartButton();
     // TODO REENABLE
     // if (Tribe.state === 5) {
     //   let readyCount = 0;
     //   Object.keys(Tribe.room.users).forEach((userId) => {
-    //     if (Tribe.room.users[userId].isLeader) return;
+    //     if (Tribe.room.users[userId].isLeader || room.users[userId].isAfk) return;
     //     if (Tribe.room.users[userId].isReady) {
     //       readyCount++;
     //     }
@@ -99,9 +126,21 @@ export function updateButtons() {
     $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
       "hidden"
     );
+    $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
+      "hidden"
+    );
     if (Tribe.getSelf().isReady) {
+      enableAfkButton();
       disableReadyButton();
     } else {
+      disableAfkButton();
+      enableReadyButton();
+    }
+    if (Tribe.getSelf().isAfk) {
+      activateAfkButton();
+      disableReadyButton();
+    } else {
+      deactivateAfkButton();
       enableReadyButton();
     }
   }
@@ -328,16 +367,17 @@ export function updatePlayerList() {
   let sortedUsers = usersArray.sort((a, b) => b.points - a.points);
   sortedUsers.forEach((user) => {
     let icons = "";
-    if (user.isLeader) {
+    if (user.isTyping) {
+      icons += `<div class="icon "active"><i class="fas fa-fw fa-keyboard"></i></div>`;
+    } else if (user.isAfk) {
+      icons += `<div class="icon active"><i class="fas fa-fw fa-mug-hot"></i></div>`;
+    } else if (user.isLeader) {
       icons += `<div class="icon active"><i class="fas fa-fw fa-star"></i></div>`;
     } else {
       icons += `<div class="icon ${
         user.isReady ? "active" : ""
       }"><i class="fas fa-fw fa-check"></i></div>`;
     }
-    icons += `<div class="icon ${
-      user.isTyping ? "active" : ""
-    }"><i class="fas fa-fw fa-keyboard"></i></div>`;
     let pointsString;
     if (user.points == undefined) {
       pointsString = "";
@@ -345,7 +385,9 @@ export function updatePlayerList() {
       pointsString = user.points + (user.points == 1 ? "pt" : "pts");
     }
     $(".pageTribe .lobby .userlist .list").append(`
-    <div class='user ${user.id === Tribe.socket.id ? "me" : ""}'>
+    <div class='user ${user.id === Tribe.socket.id ? "me" : ""} ${
+      user.isAfk ? "afk" : ""
+    }'>
     <div class="nameAndIcons">
       <div class='icons'>
       ${icons}
@@ -420,6 +462,11 @@ $(".pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton").click((e) => {
 
 $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").click((e) => {
   Tribe.socket.emit("room_ready_update");
+});
+
+$(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").click((e) => {
+  let self = Tribe.getSelf();
+  Tribe.socket.emit("room_afk_update", { isAfk: !self.isAfk });
 });
 
 $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").click((e) => {

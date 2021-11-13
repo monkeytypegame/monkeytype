@@ -57,7 +57,7 @@ export function updateState(newState) {
   } else if (state === 11) {
     Object.keys(room.users).forEach((userId) => {
       let u = room.users[userId];
-      if (u.isReady || u.isLeader) {
+      if ((u.isReady || u.isLeader) && !u.isAfk) {
         u.isTyping = true;
       }
     });
@@ -230,7 +230,7 @@ socket.on("room_user_is_ready", (e) => {
   if (getSelf().isLeader) {
     let everyoneReady = true;
     Object.keys(room.users).forEach((userId) => {
-      if (room.users[userId].isLeader) return;
+      if (room.users[userId].isLeader || room.users[userId].isAfk) return;
       if (!room.users[userId].isReady) {
         everyoneReady = false;
       }
@@ -242,11 +242,19 @@ socket.on("room_user_is_ready", (e) => {
   }
 });
 
+socket.on("room_user_afk_update", (e) => {
+  room.users[e.userId].isAfk = e.isAfk;
+  TribePageLobby.updatePlayerList();
+  TribePageLobby.updateButtons();
+});
+
 socket.on("room_leader_changed", (e) => {
   Object.keys(room.users).forEach((userId) => {
     delete room.users[userId].isLeader;
   });
   room.users[e.userId].isLeader = true;
+  room.users[e.userId].isAfk = false;
+  room.users[e.userId].isReady = false;
   TribePageLobby.updatePlayerList();
   TribePageLobby.updateButtons();
 });

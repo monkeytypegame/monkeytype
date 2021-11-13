@@ -181,6 +181,8 @@
           &:hover {
             background: var(--text-color);
           }
+        }
+        .button {
           &.disabled {
             pointer-events: none;
             opacity: 0.1;
@@ -457,6 +459,9 @@
       }
       &.me {
         color: var(--main-color);
+      }
+      &.afk {
+        opacity: 0.25;
       }
     }
   }
