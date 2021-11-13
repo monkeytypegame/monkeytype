@@ -312,6 +312,7 @@ socket.on("room_init_race", (e) => {
   if (getSelf().isTyping) {
     TribeBars.init("test");
     TribeBars.show("test");
+    Notifications.add("Race is starting...", 1, undefined, "Tribe");
   } else {
     //TODO update lobby bars
     return;
@@ -331,6 +332,18 @@ socket.on("room_state_changed", (e) => {
 socket.on("room_countdown", (e) => {
   TribeCountdown.update(e.time);
   if (e.time <= 3) TribeSound.play("cd");
+});
+
+socket.on("room_users_update", (e) => {
+  console.log(e);
+  Object.keys(e).forEach((userId) => {
+    let user = e[userId];
+    if (user.isTyping) room.users[userId].isTyping = user.isTyping;
+    if (user.isAfk) room.users[userId].isAfk = user.isAfk;
+    if (user.isReady) room.users[userId].isReady = user.isReady;
+  });
+  TribePageLobby.updatePlayerList();
+  TribePageLobby.updateButtons();
 });
 
 socket.on("room_race_started", (e) => {
