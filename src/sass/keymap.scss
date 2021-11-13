@@ -113,6 +113,7 @@
   // height: 140px;
   gap: 0.25rem;
   margin-top: 1rem;
+  user-select: none;
 }
 
 .keymap {
@@ -245,16 +246,128 @@
     .r2 {
       display: grid;
       grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      .keymap-key:nth-child(2) {
+        //Q
+        margin-left: 20%;
+      }
+      .keymap-key:nth-child(3),
+      .keymap-key:nth-child(4),
+      .keymap-key:nth-child(5),
+      .keymap-key:nth-child(6) {
+        //WERT
+        transform: rotate(10deg);
+        margin-left: 45%;
+      }
+      .keymap-key:nth-child(4),
+      .keymap-key:nth-child(10) {
+        //EI
+        margin-top: 8px;
+      }
+      .keymap-key:nth-child(5),
+      .keymap-key:nth-child(9) {
+        //RU
+        margin-top: 15px;
+      }
+      .keymap-key:nth-child(6),
+      .keymap-key:nth-child(8) {
+        //TY
+        margin-top: 22px;
+      }
+
+      .keymap-key:nth-child(8),
+      .keymap-key:nth-child(9),
+      .keymap-key:nth-child(10),
+      .keymap-key:nth-child(11) {
+        //YUIO
+        transform: rotate(-10deg);
+        margin-left: -12%;
+      }
     }
 
     .r3 {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+      .keymap-key:nth-child(2) {
+        //A
+        margin-left: -5px;
+      }
+      .keymap-key:nth-child(3),
+      .keymap-key:nth-child(4),
+      .keymap-key:nth-child(5),
+      .keymap-key:nth-child(6) {
+        //SDFG
+        margin-left: -1px;
+        transform: rotate(10deg);
+      }
+      .keymap-key:nth-child(4),
+      .keymap-key:nth-child(10) {
+        //DK
+        margin-top: 8px;
+      }
+      .keymap-key:nth-child(5),
+      .keymap-key:nth-child(9) {
+        //FJ
+        margin-top: 15px;
+      }
+      .keymap-key:nth-child(6),
+      .keymap-key:nth-child(8) {
+        //GH
+        margin-top: 22px;
+      }
+
+      .keymap-key:nth-child(8),
+      .keymap-key:nth-child(9),
+      .keymap-key:nth-child(10),
+      .keymap-key:nth-child(11) {
+        //HJKL
+        transform: rotate(-10deg);
+        margin-left: -25%;
+      }
     }
 
     .r4 {
       display: grid;
       grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+      .keymap-key:nth-child(3) {
+        //Z
+        margin-left: -15px;
+      }
+      .keymap-key:nth-child(4),
+      .keymap-key:nth-child(5),
+      .keymap-key:nth-child(6),
+      .keymap-key:nth-child(7) {
+        //XCVB
+        margin-left: -11px;
+        transform: rotate(10deg);
+        margin-top: 2px;
+      }
+      .keymap-key:nth-child(12) {
+        //,
+        margin-top: 4px;
+        margin-left: -5px;
+      }
+      .keymap-key:nth-child(5),
+      .keymap-key:nth-child(11) {
+        //CM
+        margin-top: 10px;
+      }
+      .keymap-key:nth-child(6),
+      .keymap-key:nth-child(10) {
+        //VN
+        margin-top: 18px;
+      }
+      .keymap-key:nth-child(7) {
+        //B
+        margin-top: 24px;
+      }
+
+      .keymap-key:nth-child(10),
+      .keymap-key:nth-child(11),
+      .keymap-key:nth-child(12) {
+        //NM,
+        transform: rotate(-10deg);
+        margin-left: -25%;
+      }
     }
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
@@ -263,156 +376,105 @@
       opacity: 1;
     }
 
-    div#KeyQ.keymap-key {
-      margin-left: 20%;
-    }
-    div#KeyA.keymap-key {
-      margin-left: -5px;
-    }
-    div#KeyZ.keymap-key {
-      margin-left: -15px;
-    }
-    div#KeyW.keymap-key,
-    div#KeyE.keymap-key,
-    div#KeyR.keymap-key,
-    div#KeyT.keymap-key {
-      transform: rotate(10deg) !important;
-      margin-left: 45%;
-    }
-    div#KeyS.keymap-key,
-    div#KeyD.keymap-key,
-    div#KeyF.keymap-key {
-      margin-left: -1px;
-      transform: rotate(10deg);
-    }
-    div#KeyG.keymap-key {
-      margin-left: -2px;
-      transform: rotate(10deg);
-    }
-    div#KeyX.keymap-key,
-    div#KeyC.keymap-key,
-    div#KeyV.keymap-key,
-    div#KeyB.keymap-key {
-      margin-left: -11px;
-      transform: rotate(10deg);
-      margin-top: 2px;
-    }
-    div#KeyE.keymap-key,
-    div#KeyD.keymap-key {
-      margin-top: 6px;
-    }
-    div#KeyC.keymap-key {
-      margin-top: 8px;
-    }
-    div#KeyR.keymap-key,
-    div#KeyF.keymap-key {
-      margin-top: 12px;
-    }
-    div#KeyV.keymap-key {
-      margin-top: 14px;
-    }
-    div#KeyT.keymap-key,
-    div#KeyG.keymap-key {
-      margin-top: 18px;
-    }
-    div#KeyB.keymap-key {
-      margin-top: 20px;
-    }
-    div#KeyY.keymap-key,
-    div#KeyU.keymap-key,
-    div#KeyI.keymap-key,
-    div#KeyO.keymap-key {
-      transform: rotate(-10deg);
-      margin-left: -25%;
-    }
-    div#KeyH.keymap-key,
-    div#KeyJ.keymap-key,
-    div#KeyK.keymap-key,
-    div#KeyL.keymap-key {
-      transform: rotate(-10deg);
-      margin-left: -35%;
-    }
-    div#KeyN.keymap-key,
-    div#KeyM.keymap-key,
-    div#KeyComma.keymap-key {
-      transform: rotate(-10deg);
-      margin-left: -16%;
-    }
-    div#KeyP.keymap-key,
-    div#KeyLeftBracket.keymap-key,
-    div#KeyRightBracket.keymap-key {
-      margin-left: 5%;
-    }
-    div#KeySemicolon.keymap-key,
-    div#KeyQuote.keymap-key {
-      margin-left: -25%;
-    }
-    div#KeyPeriod.keymap-key,
-    div#KeySlash.keymap-key {
-      margin-left: -3px;
-    }
-    div#KeyO.keymap-key,
-    div#KeyComma.keymap-key {
-      margin-top: 3px;
-    }
-    div#KeyL.keymap-key {
-      margin-top: 1px;
-    }
-    div#KeyI.keymap-key,
-    div#KeyM.keymap-key {
-      margin-top: 9px;
-    }
-    div#KeyK.keymap-key {
-      margin-top: 7px;
-    }
-    div#KeyU.keymap-key,
-    div#KeyN.keymap-key {
-      margin-top: 15px;
-    }
-    div#KeyJ.keymap-key {
-      margin-top: 13px;
-    }
-    div#KeyY.keymap-key {
-      margin-top: 21px;
-    }
-    div#KeyH.keymap-key {
-      margin-top: 19px;
-    }
+    // div#KeyE.keymap-key,
+    // div#KeyD.keymap-key {
+    //   margin-top: 6px;
+    // }
+    // div#KeyC.keymap-key {
+    //   margin-top: 8px;
+    // }
+    // div#KeyR.keymap-key,
+    // div#KeyF.keymap-key {
+    //   margin-top: 12px;
+    // }
+    // div#KeyV.keymap-key {
+    //   margin-top: 14px;
+    // }
+    // div#KeyT.keymap-key,
+    // div#KeyG.keymap-key {
+    //   margin-top: 18px;
+    // }
+    // div#KeyB.keymap-key {
+    //   margin-top: 20px;
+    // }
+    // div#KeyY.keymap-key,
+    // div#KeyU.keymap-key,
+    // div#KeyI.keymap-key,
+    // div#KeyO.keymap-key {
+    //   transform: rotate(-10deg);
+    //   margin-left: -25%;
+    // }
+    // div#KeyH.keymap-key,
+    // div#KeyJ.keymap-key,
+    // div#KeyK.keymap-key,
+    // div#KeyL.keymap-key {
+    //   transform: rotate(-10deg);
+    //   margin-left: -35%;
+    // }
+    // div#KeyN.keymap-key,
+    // div#KeyM.keymap-key,
+    // div#KeyComma.keymap-key {
+    //   transform: rotate(-10deg);
+    //   margin-left: -16%;
+    // }
+    // div#KeyP.keymap-key,
+    // div#KeyLeftBracket.keymap-key,
+    // div#KeyRightBracket.keymap-key {
+    //   margin-left: 5%;
+    // }
+    // div#KeySemicolon.keymap-key,
+    // div#KeyQuote.keymap-key {
+    //   margin-left: -25%;
+    // }
+    // div#KeyPeriod.keymap-key,
+    // div#KeySlash.keymap-key {
+    //   margin-left: -3px;
+    // }
+    // div#KeyO.keymap-key,
+    // div#KeyComma.keymap-key {
+    //   margin-top: 3px;
+    // }
+    // div#KeyL.keymap-key {
+    //   margin-top: 1px;
+    // }
+    // div#KeyI.keymap-key,
+    // div#KeyM.keymap-key {
+    //   margin-top: 9px;
+    // }
+    // div#KeyK.keymap-key {
+    //   margin-top: 7px;
+    // }
+    // div#KeyU.keymap-key,
+    // div#KeyN.keymap-key {
+    //   margin-top: 15px;
+    // }
+    // div#KeyJ.keymap-key {
+    //   margin-top: 13px;
+    // }
+    // div#KeyY.keymap-key {
+    //   margin-top: 21px;
+    // }
+    // div#KeyH.keymap-key {
+    //   margin-top: 19px;
+    // }
     div#KeySpace.keymap-key {
       transform: rotate(10deg);
       margin-left: -5%;
-      margin-top: 16%;
-      width: 88%;
+      margin-top: 21%;
     }
     div#KeySpace2.keymap-key {
       transform: rotate(-10deg);
       margin-left: -33%;
-      margin-top: 16%;
+      margin-top: 20%;
     }
     div#KeyBackslash.keymap-key {
       visibility: hidden;
     }
-    // div.keymap-key.hidden-key {
-    //     opacity: 1;
-    //     transform: rotate( -10deg);
-    //     margin-top: -10%;
-    //     margin-left: -96%;
-    // }
-    // .keymap-key .bump {
-    //     border-bottom: 2px solid var(--sub-color)
-    // }
-    // div.keymap-key {
-    //     border: 2px solid;
-    //     border-radius: 0.3rem!important
-    // }
-    // span.letter {
-    //     font-weight: 600!important
-    // }
-    /*USE THIS AS THE ARTISAN KEY*/
+
     div.extraKey {
-      margin-top: 22px;
+      margin-top: 25px;
       transform: rotate(-10deg) !important;
-      margin-left: -5px !important;
+      margin-left: -7px !important;
       display: flex;
       background-color: transparent;
       color: var(--sub-color);
