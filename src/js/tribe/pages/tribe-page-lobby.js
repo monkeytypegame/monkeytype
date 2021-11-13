@@ -365,7 +365,7 @@ export function updatePlayerList() {
   sortedUsers.forEach((user) => {
     let icons = "";
     if (user.isTyping) {
-      icons += `<div class="icon "active"><i class="fas fa-fw fa-keyboard"></i></div>`;
+      icons += `<div class="icon active"><i class="fas fa-fw fa-keyboard"></i></div>`;
     } else if (user.isAfk) {
       icons += `<div class="icon active"><i class="fas fa-fw fa-mug-hot"></i></div>`;
     } else if (user.isLeader) {
