@@ -11,6 +11,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
+import * as Tribe from "./tribe";
 
 export let slowTimer = false;
 export let time = 0;
@@ -192,6 +193,17 @@ async function timerStep() {
   layoutfluid();
   checkIfFailed(wpmAndRaw, acc);
   checkIfTimeIsUp();
+
+  if (
+    Tribe.state >= 10 &&
+    Tribe.state <= 21 &&
+    time >= 3 &&
+    TestLogic.input.current === "" &&
+    TestLogic.input.getHistory().length === 0
+  ) {
+    TestLogic.fail("afk");
+  }
+
   if (timerDebug) console.log("timer step -----------------------------");
 }
 
