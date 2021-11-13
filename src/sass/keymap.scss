@@ -328,6 +328,9 @@
     .r4 {
       display: grid;
       grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+      .keymap-key:nth-child(2) {
+        margin-left: -18px;
+      }
       .keymap-key:nth-child(3) {
         //Z
         margin-left: -15px;
