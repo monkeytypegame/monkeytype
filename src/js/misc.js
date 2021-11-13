@@ -779,3 +779,10 @@ String.prototype.lastIndexOfRegex = function (regex) {
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
+
+//https://portswigger.net/web-security/cross-site-scripting/preventing
+export function escapeHTML(str) {
+  return String(str).replace(/[^\w. ]/gi, function (c) {
+    return "&#" + c.charCodeAt(0) + ";";
+  });
+}
