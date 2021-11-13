@@ -254,7 +254,8 @@ export function pushBurstToHistory(speed) {
 }
 
 export function calculateAccuracy() {
-  return (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
+  let acc = (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
+  return isNaN(acc) ? 100 : acc;
 }
 
 export function incrementAccuracy(correctincorrect) {
