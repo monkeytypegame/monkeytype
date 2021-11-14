@@ -119,15 +119,18 @@ class Input {
   constructor() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   reset() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   resetHistory() {
     this.history = [];
+    this.length = 0;
   }
 
   setCurrent(val) {
@@ -1150,12 +1153,15 @@ export async function addWord() {
   } else if (Config.mode === "quote") {
     randomWord = randomQuote.textSplit[words.length];
   } else {
+    let regenarationCount = 0; //infinite loop emergency stop button
     while (
-      previousWordStripped == randomWord ||
-      previousWord2Stripped == randomWord ||
-      randomWord.indexOf(" ") > -1 ||
-      (!Config.punctuation && randomWord == "I")
+      regenarationCount < 100 &&
+      (previousWordStripped == randomWord ||
+        previousWord2Stripped == randomWord ||
+        randomWord.indexOf(" ") > -1 ||
+        (!Config.punctuation && randomWord == "I"))
     ) {
+      regenarationCount++;
       randomWord = wordset.randomWord();
     }
   }
@@ -1170,6 +1176,10 @@ export async function addWord() {
   ) {
     let britishWord = await BritishEnglish.replace(randomWord);
     if (britishWord) randomWord = britishWord;
+  }
+
+  if (Config.lazyMode === true && !language.noLazyMode) {
+    randomWord = LazyMode.replaceAccents(randomWord, language.accents);
   }
 
   if (Config.funbox === "rAnDoMcAsE") {

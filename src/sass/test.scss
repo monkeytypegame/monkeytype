@@ -595,6 +595,8 @@
     // grid-area: login;
     grid-column: 1/3;
     .link {
+      text-decoration: underline;
+      display: inline-block;
       cursor: pointer;
     }
   }

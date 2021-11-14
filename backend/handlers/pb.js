@@ -114,7 +114,8 @@ module.exports = {
       //updating lbpersonalbests object
       //verify structure first
       if (lbObj[mode] === undefined) lbObj[mode] = {};
-      if (lbObj[mode][mode2] === undefined) lbObj[mode][mode2] = {};
+      if (lbObj[mode][mode2] === undefined || Array.isArray(lbObj[mode][mode2]))
+        lbObj[mode][mode2] = {};
 
       let bestForEveryLanguage = {};
       if (obj?.[mode]?.[mode2]) {

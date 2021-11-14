@@ -514,6 +514,17 @@ const layouts = {
             "ـ", "ظ'", "ط", "ذئ", "دء", "زأ", "رإ", "وؤ", "،>", ".<", "/؟",
             " "
         ]
+    },
+    brasileiro_nativo: {
+        keymapShowTopRow: false,
+        iso: true,
+        keys: [
+            "=+", "1!", "2@", "3#", "4$", "5%", "6¨", "7&", "8*", "9(", "0)", "[{", "]}",
+            "/?", ",<", ".>", "hH", "xX", "wW", "lL", "tT", "cC", "pP", "~^", "-_", "'\"",
+            "iI", "eE", "aA", "oO", "uU", "mM", "dD", "sS", "rR", "nN", "´`",
+            ";:", "yY", "çÇ", "jJ", "bB", "kK", "qQ", "vV", "gG", "fF", "zZ", "\\|",
+            " "
+        ]
     }
 }
 export default layouts;
