@@ -38,6 +38,7 @@ import * as RateQuotePopup from "./rate-quote-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Tribe from "./tribe";
+import * as TribeResults from "./tribe-results";
 
 const objecthash = require("object-hash");
 
@@ -1999,6 +2000,16 @@ export async function finish(difficultyFailed = false) {
                     //   );
                     // }
                   }
+
+                  TribeResults.send({
+                    wpm: completedEvent.wpm,
+                    raw: completedEvent.wpmRaw,
+                    acc: completedEvent.acc,
+                    consistency: completedEvent.consistency,
+                    testDuration: completedEvent.testDuration,
+                    charStats: completedEvent.charStats,
+                    isPb: response.data.isPb,
+                  });
                 }
               })
               .catch((e) => {
@@ -2212,6 +2223,7 @@ export async function finish(difficultyFailed = false) {
         TestUI.toggleResultWords();
       }
       Keymap.hide();
+      TribeResults.update("result");
     }
   );
 }

@@ -364,3 +364,8 @@ socket.on("room_progress_update", (e) => {
   room.users[e.userId].progress = e.progress;
   TribeBars.update("test", e.userId);
 });
+
+socket.on("room_user_result", (e) => {
+  room.users[e.userId].result = e.result;
+  room.users[e.userId].isFinished = true;
+});
