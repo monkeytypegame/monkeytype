@@ -1459,6 +1459,7 @@ export function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
+  $(".keymap").removeClass("alice");
   style = style || "staggered";
 
   $(".keymap").addClass(style);

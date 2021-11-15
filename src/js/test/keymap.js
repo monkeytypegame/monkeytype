@@ -177,6 +177,12 @@ export function refreshKeys(layout) {
       $(".keymap .r1").addClass("hidden");
     }
 
+    if (Config.keymapStyle === "alice") {
+      $(".keymap .extraKey").removeClass("hidden");
+    } else {
+      $(".keymap .extraKey").addClass("hidden");
+    }
+
     $($(".keymap .r5 .keymap-key .letter")[0]).text(
       layoutString.replace(/_/g, " ")
     );
@@ -190,7 +196,8 @@ export function refreshKeys(layout) {
     var toReplace = lts.keys.slice(1, 48);
     var count = 0;
 
-    $(".keymap .letter")
+    // let repeatB = false;
+    $(".keymap .keymap-key .letter")
       .map(function () {
         if (count < toReplace.length) {
           var key = toReplace[count].charAt(0);
@@ -236,7 +243,16 @@ export function refreshKeys(layout) {
               this.parentElement.id = `Key${key.toUpperCase()}`;
           }
         }
+
+        // if (count == 41 && !repeatB) {
+        //   repeatB = true;
+        // }else{
+        //   repeatB = false;
+        //   count++;
+        // }
+
         count++;
+
         // }
       })
       .get();
