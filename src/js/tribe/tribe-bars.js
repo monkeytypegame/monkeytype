@@ -49,20 +49,29 @@ export function update(page, userId) {
     el = $(".pageTest #typingTest .tribeBars");
   }
   let user = Tribe.room.users[userId];
-  el.find(`.player[id=${userId}] .wpm`).text(user.wpm);
-  el.find(`.player[id=${userId}] .acc`).text(user.acc);
+  el.find(`.player[id=${userId}] .wpm`).text(user.progress.wpm);
+  el.find(`.player[id=${userId}] .acc`).text(user.progress.acc);
   el.find(`.player[id=${userId}] .bar`)
     .stop(true, false)
     .animate(
       {
         width:
           Config.mode === "time"
-            ? user.test.wpmProgress + "%"
-            : user.test.progress + "%",
+            ? user.progress.wpmProgress + "%"
+            : user.progress.progress + "%",
       },
       1000,
       "linear"
     );
+}
+
+export function sendUpdate(wpm, raw, acc, progress) {
+  Tribe.socket.emit("room_progress_update", {
+    wpm: wpm,
+    raw: raw,
+    acc: acc,
+    progress: progress,
+  });
 }
 
 // function refreshTestUserList() {

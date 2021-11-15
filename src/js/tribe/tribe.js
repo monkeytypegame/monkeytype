@@ -357,3 +357,10 @@ socket.on("room_race_started", (e) => {
     }
   }, 500);
 });
+
+socket.on("room_progress_update", (e) => {
+  room.maxWpm = e.roomMaxWpm;
+  room.maxRaw = e.roomMaxRaw;
+  room.users[e.userId].progress = e.progress;
+  TribeBars.update("test", e.userId);
+});

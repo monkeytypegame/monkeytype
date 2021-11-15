@@ -12,6 +12,7 @@ import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as Tribe from "./tribe";
+import * as TribeBars from "./tribe-bars";
 
 export let slowTimer = false;
 export let time = 0;
@@ -175,6 +176,31 @@ function checkIfTimeIsUp() {
   if (timerDebug) console.timeEnd("times up check");
 }
 
+function sendTribeProgress(wpm, raw, acc) {
+  if (timerDebug) console.time("tribe progress");
+  let progress = 0;
+  if (Config.mode === "time") {
+    progress = 100 - ((time + 1) / Config.time) * 100;
+  } else {
+    let outof = TestLogic.words.length;
+    if (Config.mode === "words") {
+      outof = Config.words;
+    }
+    progress = Math.floor((TestLogic.words.currentIndex / (outof - 1)) * 100);
+  }
+  if (Tribe.state >= 10 && Tribe.state <= 21) {
+    TribeBars.sendUpdate(wpm, raw, acc, progress);
+    if (
+      time >= 3 &&
+      TestLogic.input.current === "" &&
+      TestLogic.input.getHistory().length === 0
+    ) {
+      TestLogic.fail("afk");
+    }
+  }
+  if (timerDebug) console.timeEnd("tribe progress");
+}
+
 // ---------------------------------------
 
 let timerStats = [];
@@ -193,17 +219,7 @@ async function timerStep() {
   layoutfluid();
   checkIfFailed(wpmAndRaw, acc);
   checkIfTimeIsUp();
-
-  if (
-    Tribe.state >= 10 &&
-    Tribe.state <= 21 &&
-    time >= 3 &&
-    TestLogic.input.current === "" &&
-    TestLogic.input.getHistory().length === 0
-  ) {
-    TestLogic.fail("afk");
-  }
-
+  sendTribeProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc);
   if (timerDebug) console.log("timer step -----------------------------");
 }
 
