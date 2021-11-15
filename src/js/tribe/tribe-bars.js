@@ -1,5 +1,6 @@
 import * as Tribe from "./tribe";
 import Config from "./config";
+import * as TestTimer from "./test-timer";
 
 export function init(page) {
   let el;
@@ -60,7 +61,7 @@ export function update(page, userId) {
             ? user.progress.wpmProgress + "%"
             : user.progress.progress + "%",
       },
-      1000,
+      TestTimer.slowTimer ? 0 : 1000,
       "linear"
     );
 }
