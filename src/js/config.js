@@ -41,6 +41,7 @@ let loadDone;
 
 let defaultConfig = {
   theme: "serika_dark",
+  themeLight: "serika",
   customTheme: false,
   customThemeColors: [
     "#323437",
