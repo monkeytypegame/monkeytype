@@ -55,6 +55,7 @@ export function updateState(newState) {
     TribePageLobby.disableReadyButton();
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
+    Notifications.add("Race is starting...", 1, undefined, "Tribe");
   } else if (state === 11) {
     Object.keys(room.users).forEach((userId) => {
       let u = room.users[userId];
@@ -313,7 +314,6 @@ socket.on("room_init_race", (e) => {
   if (getSelf().isTyping) {
     TribeBars.init("test");
     TribeBars.show("test");
-    Notifications.add("Race is starting...", 1, undefined, "Tribe");
   } else {
     //TODO update lobby bars
     return;
