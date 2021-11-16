@@ -417,15 +417,12 @@ function countChars() {
 }
 
 export function calculateStats() {
-  let testSeconds;
-  if (Config.mode == "custom") {
-    testSeconds = TestStats.calculateTestSeconds();
-  } else {
-    testSeconds = TestStats.calculateTestSeconds();
-  }
+  let testSeconds = TestStats.calculateTestSeconds();
   console.log((TestStats.end2 - TestStats.start2) / 1000);
   console.log(testSeconds);
-  testSeconds = Misc.roundTo2(testSeconds);
+  if (Config.mode != "custom") {
+    testSeconds = Misc.roundTo2(testSeconds);
+  }
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
