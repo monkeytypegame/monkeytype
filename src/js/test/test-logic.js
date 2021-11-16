@@ -1118,10 +1118,8 @@ export function calculateWpmAndRaw() {
 
 export async function addWord() {
   let bound = 100;
-
   if (Config.funbox === "wikipedia") {
-    //                           difference from text - written text
-    if (Config.mode == "time" && words.length - input.history.length < 20) {
+    if (Config.mode == "time" && words.length - words.currentIndex < 20) {
       let section = await Wikipedia.getSection();
       let wordCount = 0;
       for (let word of section.words) {
@@ -1130,6 +1128,7 @@ export async function addWord() {
         }
         wordCount++;
         words.push(word);
+        TestUI.addWord(word);
       }
     } else {
       return;
