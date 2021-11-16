@@ -2262,11 +2262,11 @@ export async function finish(difficultyFailed = false) {
         TestUI.toggleResultWords();
       }
       Keymap.hide();
-      TribeResults.update("result");
 
       //result buttons
       $("#result .buttons div").addClass("hidden");
       if (Tribe.state > 12) {
+        TribeResults.update("result");
         if (Tribe.getSelf().isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
           $("#result #backToLobbyButton").removeClass("hidden");
@@ -2276,10 +2276,11 @@ export async function finish(difficultyFailed = false) {
       } else {
         $("#result #nextTestButton").removeClass("hidden");
         $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
-        $("#result #practiseMissedWordsButton").removeClass("hidden");
+        $("#result #practiseWordsButton").removeClass("hidden");
+        $("#result #watchReplayButton").removeClass("hidden");
       }
       $("#result #showWordHistoryButton").removeClass("hidden");
-      $("#result #copyResultToClipboardButton").removeClass("hidden");
+      $("#result #saveScreenshotButton").removeClass("hidden");
     }
   );
 }
