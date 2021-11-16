@@ -21,6 +21,7 @@ import * as ChallengeController from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as UI from "./ui";
 import * as TestTimer from "./test-timer";
+import * as Tribe from "./tribe";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -1059,13 +1060,21 @@ $(document.body).on("click", "#practiseWordsButton", () => {
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.keyCode == 13) {
-    TestLogic.restart();
+    if (Tribe.room) {
+      Tribe.socket.emit("room_init_race");
+    } else {
+      TestLogic.restart();
+    }
   }
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
-  ManualRestart.set();
-  TestLogic.restart();
+  if (Tribe.room) {
+    Tribe.socket.emit("room_init_race");
+  } else {
+    ManualRestart.set();
+    TestLogic.restart();
+  }
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
