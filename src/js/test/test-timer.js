@@ -183,6 +183,7 @@ export function getTimerStats() {
 }
 
 async function timerStep() {
+  if (timerDebug) console.time("timer step -----------------------------");
   time++;
   premid();
   updateTimer();
@@ -192,10 +193,10 @@ async function timerStep() {
   layoutfluid();
   checkIfFailed(wpmAndRaw, acc);
   checkIfTimeIsUp();
-  if (timerDebug) console.log("timer step -----------------------------");
+  if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
 
-export function start() {
+export async function start() {
   clearSlowTimer();
   timerStats = [];
   expected = TestStats.start + interval;
@@ -207,17 +208,22 @@ export function start() {
       expected: expected,
       nextDelay: delay,
     });
-    if (delay < (interval / 3) * 2) {
-      //slow timer
-      setSlowTimer();
-    }
-    if (delay < interval / 3) {
-      //slow timer
-      Notifications.add(
-        "Stopping the test due to very bad timer performance. This would cause the test duration and other calculations to be incorrect. If this happens a lot, please report this.",
-        -1
-      );
-      TestLogic.fail("slow timer");
+    if (
+      (Config.mode === "time" && Config.time < 130) ||
+      (Config.mode === "words" && Config.words < 250)
+    ) {
+      if (delay < interval / 2) {
+        //slow timer
+        setSlowTimer();
+      }
+      if (delay < interval / 10) {
+        //slow timer
+        Notifications.add(
+          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+          -1
+        );
+        TestLogic.fail("slow timer");
+      }
     }
     timer = setTimeout(function () {
       // time++;
