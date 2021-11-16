@@ -2263,6 +2263,23 @@ export async function finish(difficultyFailed = false) {
       }
       Keymap.hide();
       TribeResults.update("result");
+
+      //result buttons
+      $("#result .buttons div").addClass("hidden");
+      if (Tribe.state > 12) {
+        if (Tribe.getSelf().isLeader) {
+          $("#result #nextTestButton").removeClass("hidden");
+          $("#result #backToLobbyButton").removeClass("hidden");
+        } else {
+          $("#result #readyButton").removeClass("hidden");
+        }
+      } else {
+        $("#result #nextTestButton").removeClass("hidden");
+        $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
+        $("#result #practiseMissedWordsButton").removeClass("hidden");
+      }
+      $("#result #showWordHistoryButton").removeClass("hidden");
+      $("#result #copyResultToClipboardButton").removeClass("hidden");
     }
   );
 }

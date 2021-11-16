@@ -1367,6 +1367,35 @@
                 </div>
                 <div class="buttons">
                   <div
+                    id="readyButton"
+                    class="hidden"
+                    aria-label="Ready"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-check"></i>
+                  </div>
+                  <div
+                    id="queueAgainButton"
+                    aria-label="Queue again"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fas fa-satellite-dish"></i>
+                  </div>
+                  <div
+                    id="backToLobbyButton"
+                    class="hidden"
+                    aria-label="Back to lobby"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-home"></i>
+                  </div>
+                  <div
                     id="nextTestButton"
                     aria-label="Next test"
                     data-balloon-pos="down"
