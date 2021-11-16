@@ -15,6 +15,7 @@ import * as UI from "./ui";
 import * as TribeCountdown from "./tribe-countdown";
 import * as TestLogic from "./test-logic";
 import * as TribeBars from "./tribe-bars";
+import * as TribeResults from "./tribe-results";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -368,4 +369,7 @@ socket.on("room_progress_update", (e) => {
 socket.on("room_user_result", (e) => {
   room.users[e.userId].result = e.result;
   room.users[e.userId].isFinished = true;
+  if (!TestLogic.active) {
+    TribeResults.update("result", e.userId);
+  }
 });

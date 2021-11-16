@@ -1578,12 +1578,27 @@ export async function finish(difficultyFailed = false) {
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
 
+  let resolveTestSavePromise;
+  let testSavePromise = new Promise((resolve) => {
+    resolveTestSavePromise = resolve;
+  });
+
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
+    resolveTestSavePromise({
+      failed: true,
+      failedReason: failReason,
+    });
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
+    resolveTestSavePromise({
+      afk: true,
+    });
   } else if (isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
+    resolveTestSavePromise({
+      repeated: true,
+    });
   } else if (
     (Config.mode === "time" && mode2 < 15 && mode2 > 0) ||
     (Config.mode === "time" && mode2 == 0 && testtime < 15) ||
@@ -1604,6 +1619,9 @@ export async function finish(difficultyFailed = false) {
     (Config.mode === "zen" && testtime < 15)
   ) {
     Notifications.add("Test too short", 0);
+    resolveTestSavePromise({
+      tooShort: true,
+    });
   } else {
     let activeTags = [];
     let activeTagsIds = [];
@@ -1698,6 +1716,7 @@ export async function finish(difficultyFailed = false) {
       // incompleteTestSeconds = 0;
       TestStats.resetIncomplete();
     }
+
     if (
       stats.wpm > 0 &&
       stats.wpm < 350 &&
@@ -2000,14 +2019,9 @@ export async function finish(difficultyFailed = false) {
                     //   );
                     // }
                   }
-
-                  TribeResults.send({
-                    wpm: completedEvent.wpm,
-                    raw: completedEvent.wpmRaw,
-                    acc: completedEvent.acc,
-                    consistency: completedEvent.consistency,
-                    testDuration: completedEvent.testDuration,
-                    charStats: completedEvent.charStats,
+                  resolveTestSavePromise({
+                    login: true,
+                    saved: true,
                     isPb: response.data.isPb,
                   });
                 }
@@ -2016,10 +2030,18 @@ export async function finish(difficultyFailed = false) {
                 AccountButton.loading(false);
                 let msg = e?.response?.data?.message ?? e.message;
                 Notifications.add("Failed to save result: " + msg, -1);
+                resolveTestSavePromise({
+                  login: true,
+                  saved: false,
+                  saveFailedMessage: msg,
+                });
               });
           });
         });
       } else {
+        resolveTestSavePromise({
+          login: false,
+        });
         $(".pageTest #result #rateQuoteButton").addClass("hidden");
         try {
           firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
@@ -2029,6 +2051,9 @@ export async function finish(difficultyFailed = false) {
         notSignedInLastResult = completedEvent;
       }
     } else {
+      resolveTestSavePromise({
+        valid: false,
+      });
       Notifications.add("Test invalid", 0);
       TestStats.setInvalid();
       try {
@@ -2202,6 +2227,20 @@ export async function finish(difficultyFailed = false) {
       `Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`
     );
   }
+  TribeResults.send({
+    wpm: stats.wpm,
+    raw: stats.wpmRaw,
+    acc: stats.acc,
+    consistency: consistency,
+    testDuration: testtime,
+    charStats: [
+      stats.correctChars + stats.correctSpaces,
+      stats.incorrectChars,
+      stats.extraChars,
+      stats.missedChars,
+    ],
+    resolve: await testSavePromise,
+  });
 
   UI.swapElements(
     $("#typingTest"),

@@ -9,7 +9,7 @@ export function send(result) {
 export function reset(page) {
   if (page == "result") {
     initialised[page] = {};
-    $(".pageTest #result #tribeResults").empty();
+    $(".pageTest #result #tribeResults tbody").empty();
     $(".pageTest #result #tribeResults").addClass("hidden");
   }
 }
@@ -18,17 +18,46 @@ export function init(page) {
   if (page === "result") {
     reset(page);
 
-    let el = $(".pageTest #result #tribeResults");
+    let el = $(".pageTest #result #tribeResults tbody");
 
     Object.keys(Tribe.room.users).forEach((userId) => {
       el.append(`
         <tr class="user" id="${userId}">
           <td class="name">${Tribe.room.users[userId].name}</td>
-          <td class="points">-</td>
-          <td class="wpm">-</td>
-          <td class="raw">-</td>
-          <td class="acc">-</td>
-          <td class="consistency">-</td>
+          <td>
+            <div class="pos">-</div>
+            <div class="points">-</div>
+          </td>
+          <td>
+            <div class="crown">
+              <div class="icon invisible"><i class="fas fa-crown"></i></div>
+              <div class="glow invisible"></div>
+            </div>
+          </td>
+          <td>
+            <div class="wpm">
+              <div class="text">-</div>
+            </div>
+            <div class="acc">
+              <div class="text">-</div>
+            </div>
+          </td>
+          <td>
+            <div class="raw">
+              <div class="text">-</div>
+            </div>
+            <div class="con">
+              <div class="text">-</div>
+            </div>
+          </td>
+          <td>
+            <div class="char">
+              <div class="text">-</div>
+            </div>
+            <div class="other">
+              <div class="text">-</div>
+            </div>
+          </td>
         </tr>
       `);
     });
@@ -51,13 +80,45 @@ export function update(page, userId) {
 
 function updateUser(page, userId) {
   if (page == "result") {
-    let userEl = $(`.pageTest #result #tribeResults .user[id="${userId}"]`);
+    let userEl = $(
+      `.pageTest #result #tribeResults tbody tr.user[id="${userId}"]`
+    );
     let user = Tribe.room.users[userId];
     if (user.isFinished) {
-      userEl.find(`.wpm`).text(user.result.wpm);
-      userEl.find(`.raw`).text(user.result.raw);
-      userEl.find(`.acc`).text(user.result.acc);
-      userEl.find(`.consistency`).text(user.result.consistency);
+      userEl.find(`.wpm .text`).text(user.result.wpm);
+      userEl.find(`.raw .text`).text(user.result.raw);
+      userEl.find(`.acc .text`).text(user.result.acc + "%");
+      userEl.find(`.con .text`).text(user.result.consistency + "%");
+      userEl.find(`.char .text`).text(
+        `
+        ${user.result.charStats[0]}/${user.result.charStats[1]}/${user.result.charStats[2]}/${user.result.charStats[3]}
+        `
+      );
+      let otherText = "";
+      let faded = false;
+      let resolve = user.result.resolve;
+      if (resolve.afk) {
+        otherText = "afk";
+        faded = true;
+      } else if (resolve.repeated) {
+        otherText = "repeated";
+        faded = true;
+      } else if (resolve.failed) {
+        otherText = `failed(${resolve.failedReason})`;
+        faded = true;
+      } else if (resolve.saved === false) {
+        otherText = `save failed(${resolve.saveFailedMessage})`;
+        faded = true;
+      } else if (resolve.valid === false) {
+        otherText = `invalid`;
+        faded = true;
+      } else if (resolve.saved && resolve.isPb) {
+        otherText = "new pb";
+      }
+      userEl.find(`.other .text`).text(otherText);
+      if (faded) {
+        userEl.addClass("faded");
+      }
     }
   }
 }
