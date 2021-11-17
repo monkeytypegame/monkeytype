@@ -613,5 +613,10 @@
     "name" : "hanok",
     "bgColor" : "#d8d2c3",
     "textColor":"#513a2a"
+  },
+  {
+    "name": "comfy",
+    "bgColor" : "#4A5B6E",
+    "textColor":"#F8CDC6"
   }
 ]
