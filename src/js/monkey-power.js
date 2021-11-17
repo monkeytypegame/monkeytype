@@ -1,5 +1,6 @@
 import * as TestLogic from "./test-logic";
 import * as ThemeColors from "./theme-colors";
+import * as TestTimer from "./test-timer";
 import * as UI from "./ui";
 import Config from "./config";
 
@@ -132,7 +133,7 @@ function render() {
   }
   ctx.particles = keep;
 
-  if (ctx.particles.length) {
+  if (ctx.particles.length && !TestTimer.slowTimer) {
     requestAnimationFrame(render);
   } else {
     ctx.context2d.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -176,7 +177,12 @@ function randomColor() {
  * @param {boolean} good Good power or not?
  */
 export async function addPower(good = true, extra = false) {
-  if (!TestLogic.active || Config.monkeyPowerLevel === "off") return;
+  if (
+    !TestLogic.active ||
+    Config.monkeyPowerLevel === "off" ||
+    TestLogic.slowTimer
+  )
+    return;
 
   // Shake
   if (["3", "4"].includes(Config.monkeyPowerLevel)) {
