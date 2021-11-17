@@ -475,6 +475,16 @@ const layouts = {
             " "
         ],
     },
+    semimak_jq: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~",  "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(",  "0)", "-_", "=+",
+            "fF",  "lL", "hH", "vV", "zZ", "'\"", "wW", "uU", "oO",  "yY", "[{", "]}", "\\|",
+            "sS",  "rR", "nN", "tT", "kK", "cC", "dD", "eE", "aA",  "iI",  ";:",
+            "\\|", "xX", "jJ", "bB", "mM", "qQ", "pP", "gG", ",<",  ".>", "/?",
+            " "
+        ],
+    },
     boo: {
         keymapShowTopRow: false,
         keys: [
