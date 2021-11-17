@@ -552,20 +552,21 @@ export async function init() {
     }
     const wordset = Wordset.withWords(wordList);
 
-    if (Config.funbox == "poetry") {
-      let poem = await Poetry.getPoem();
-      poem.words.forEach((word) => {
-        words.push(word);
-      });
-    } else if (Config.funbox == "wikipedia" && Config.mode != "custom") {
+    if (
+      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
+      Config.mode != "custom"
+    ) {
       let wordCount = 0;
 
       // If mode is words, get as many sections as you need until the wordCount is fullfilled
       while (
         (Config.mode == "words" && Config.words >= wordCount) ||
-        (Config.mode === "time" && wordCount === 0)
+        (Config.mode === "time" && wordCount < 100)
       ) {
-        let section = await Wikipedia.getSection();
+        let section =
+          Config.funbox == "wikipedia"
+            ? await Wikipedia.getSection()
+            : await Poetry.getPoem();
         for (let word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
             wordCount++;
@@ -1118,9 +1119,12 @@ export function calculateWpmAndRaw() {
 
 export async function addWord() {
   let bound = 100;
-  if (Config.funbox === "wikipedia") {
+  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
     if (Config.mode == "time" && words.length - words.currentIndex < 20) {
-      let section = await Wikipedia.getSection();
+      let section =
+        Config.funbox == "wikipedia"
+          ? await Wikipedia.getSection()
+          : await Poetry.getPoem();
       let wordCount = 0;
       for (let word of section.words) {
         if (wordCount >= Config.words && Config.mode == "words") {
