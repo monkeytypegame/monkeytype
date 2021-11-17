@@ -816,6 +816,16 @@ const layouts = {
             " "
         ],
     },
+    sertain: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(",  "0)", "-_", "=+",
+            "qQ", "lL", "dD", "kK", "vV", "zZ", "wW", "oO", "uU", ".>", "[{", "]}", "\\|",
+            "sS", "rR", "tT", "nN", "fF", "gG", "yY", "eE", "iI", "aA", "/?",
+            "\\|", "xX", "jJ", "mM", "hH", "bB", "pP", "cC", "'\"", ",<", ";:",
+            " "
+        ],
+    },
     ctgap: {
         keymapShowTopRow: false,
         keys: [
