@@ -30,6 +30,7 @@ import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
+import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
@@ -554,11 +555,30 @@ export async function init() {
     }
     const wordset = Wordset.withWords(wordList);
 
-    if (Config.funbox == "poetry") {
-      let poem = await Poetry.getPoem();
-      poem.words.forEach((word) => {
-        words.push(word);
-      });
+    if (
+      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
+      Config.mode != "custom"
+    ) {
+      let wordCount = 0;
+
+      // If mode is words, get as many sections as you need until the wordCount is fullfilled
+      while (
+        (Config.mode == "words" && Config.words >= wordCount) ||
+        (Config.mode === "time" && wordCount < 100)
+      ) {
+        let section =
+          Config.funbox == "wikipedia"
+            ? await Wikipedia.getSection()
+            : await Poetry.getPoem();
+        for (let word of section.words) {
+          if (wordCount >= Config.words && Config.mode == "words") {
+            wordCount++;
+            break;
+          }
+          wordCount++;
+          words.push(word);
+        }
+      }
     } else {
       for (let i = 0; i < wordsBound; i++) {
         let randomWord = wordset.randomWord();
@@ -1102,6 +1122,26 @@ export function calculateWpmAndRaw() {
 
 export async function addWord() {
   let bound = 100;
+  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+    if (Config.mode == "time" && words.length - words.currentIndex < 20) {
+      let section =
+        Config.funbox == "wikipedia"
+          ? await Wikipedia.getSection()
+          : await Poetry.getPoem();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        words.push(word);
+        TestUI.addWord(word);
+      }
+    } else {
+      return;
+    }
+  }
+
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
   if (
