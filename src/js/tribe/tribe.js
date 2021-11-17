@@ -159,32 +159,44 @@ socket.on("connect", async (e) => {
 
 socket.on("disconnect", (e) => {
   state = -1;
+  if (!$(".pageTribe").hasClass("active"))
+    Notifications.add("Disconnected", -1, undefined, "Tribe");
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Disconnected");
   TribePagePreloader.showReconnectButton();
+  TribeBars.hide();
+  TribeBars.reset();
 });
 
 socket.on("connect_failed", (e) => {
   state = -1;
   console.error(e);
+  if (!$(".pageTribe").hasClass("active"))
+    Notifications.add("Connection failed", -1, undefined, "Tribe");
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
   TribePagePreloader.showReconnectButton();
+  TribeBars.hide();
+  TribeBars.reset();
 });
 
 socket.on("connect_error", (e) => {
   state = -1;
   console.error(e);
+  if (!$(".pageTribe").hasClass("active"))
+    Notifications.add("Connection error", -1, undefined, "Tribe");
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection error");
   TribePagePreloader.showReconnectButton();
+  TribeBars.hide();
+  TribeBars.reset();
 });
 
 socket.on("system_message", (e) => {
-  Notifications.add(e.message, e.level ?? 0);
+  Notifications.add(e.message, e.level ?? 0, undefined, "Tribe");
 });
 
 socket.on("room_joined", (e) => {

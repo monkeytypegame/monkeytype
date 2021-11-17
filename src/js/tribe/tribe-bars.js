@@ -39,8 +39,18 @@ export function show(page) {
 }
 
 export function hide(page) {
-  if (page === "test") {
+  if (page === undefined) {
     $(".pageTest #typingTest .tribeBars").addClass("hidden");
+  } else if (page === "test") {
+    $(".pageTest #typingTest .tribeBars").addClass("hidden");
+  }
+}
+
+export function reset(page) {
+  if (page === undefined) {
+    $(".pageTest #typingTest .tribeBars").empty();
+  } else if (page === "test") {
+    $(".pageTest #typingTest .tribeBars").empty();
   }
 }
 
