@@ -1,29 +1,5 @@
 import * as Tribe from "./tribe";
-import * as Notifications from "./notifications";
 import * as TribeConfig from "./tribe-config";
-
-export function show() {
-  Tribe.socket.emit(
-    "get_public_rooms",
-    {
-      page: 0,
-      search: "",
-    },
-    (e) => {
-      updateList(e.rooms);
-    }
-  );
-  if ($("#tribeBrowsePublicRoomsPopupWrapper").hasClass("hidden")) {
-    $("#tribeBrowsePublicRoomsPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
-        $("#tribeBrowsePublicRoomsPopup .search").focus();
-        $("#tribeBrowsePublicRoomsPopup .search").val("");
-      });
-  }
-}
 
 function updateList(list) {
   $("#tribeBrowsePublicRoomsPopup .list").html("");
@@ -53,6 +29,29 @@ function updateList(list) {
     </div>
     `;
     $("#tribeBrowsePublicRoomsPopup .list").append(html);
+  }
+}
+
+export function show() {
+  Tribe.socket.emit(
+    "get_public_rooms",
+    {
+      page: 0,
+      search: "",
+    },
+    (e) => {
+      updateList(e.rooms);
+    }
+  );
+  if ($("#tribeBrowsePublicRoomsPopupWrapper").hasClass("hidden")) {
+    $("#tribeBrowsePublicRoomsPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 125, () => {
+        $("#tribeBrowsePublicRoomsPopup .search").focus();
+        $("#tribeBrowsePublicRoomsPopup .search").val("");
+      });
   }
 }
 

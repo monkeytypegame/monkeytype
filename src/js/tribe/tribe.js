@@ -45,6 +45,14 @@ export function getSelf() {
   return room?.users[socket?.id];
 }
 
+export function getStateString(state) {
+  if (state === 5) return "lobby";
+  if (state === 10) return "preparing race";
+  if (state === 11) return "race countdown";
+  if (state === 12) return "race active";
+  return state;
+}
+
 export function updateState(newState) {
   room.state = newState;
   state = newState;
@@ -70,14 +78,6 @@ export function updateState(newState) {
       TribeCountdown.show(true);
     }
   }
-}
-
-export function getStateString(state) {
-  if (state === 5) return "lobby";
-  if (state === 10) return "preparing race";
-  if (state === 11) return "race countdown";
-  if (state === 12) return "race active";
-  return state;
 }
 
 export async function init() {

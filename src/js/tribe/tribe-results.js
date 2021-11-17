@@ -67,17 +67,6 @@ export function init(page) {
   }
 }
 
-export function update(page, userId) {
-  if (!initialised[page]) init(page);
-  if (userId) {
-    updateUser(page, userId);
-  } else {
-    Object.keys(Tribe.room.users).forEach((userId) => {
-      updateUser(page, userId);
-    });
-  }
-}
-
 function updateUser(page, userId) {
   if (page == "result") {
     let userEl = $(
@@ -120,5 +109,16 @@ function updateUser(page, userId) {
         userEl.addClass("faded");
       }
     }
+  }
+}
+
+export function update(page, userId) {
+  if (!initialised[page]) init(page);
+  if (userId) {
+    updateUser(page, userId);
+  } else {
+    Object.keys(Tribe.room.users).forEach((userId) => {
+      updateUser(page, userId);
+    });
   }
 }

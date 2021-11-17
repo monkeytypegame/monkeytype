@@ -37,7 +37,7 @@ function limitChatMessages() {
 
 export function scrollChat() {
   let chatEl = $(".pageTribe .lobby .chat .messages")[0];
-  let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages")[0];
+  // let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages")[0];
 
   if (shouldScrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;

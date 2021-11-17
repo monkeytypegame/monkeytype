@@ -1,6 +1,6 @@
 import Config, * as UpdateConfig from "./config";
 import * as Funbox from "./funbox";
-import * as Notifications from "./notifications";
+// import * as Notifications from "./notifications";
 import * as CustomText from "./custom-text";
 import * as TribePageLobby from "./tribe-page-lobby";
 import * as Tribe from "./tribe";
