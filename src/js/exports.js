@@ -22,3 +22,7 @@ global.filterDebug = Account.toggleFilterDebug;
 global.stats = TestStats.getStats;
 
 global.replay = Replay.getReplayExport;
+
+global.enableTimerDebug = TestTimer.enableTimerDebug;
+
+global.getTimerStats = TestTimer.getTimerStats;

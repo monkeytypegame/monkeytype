@@ -1410,6 +1410,14 @@ let commandsKeymapStyle = {
       },
     },
     {
+      id: "setKeymapStyleAlice",
+      display: "alice",
+      configValue: "alice",
+      exec: () => {
+        UpdateConfig.setKeymapStyle("alice");
+      },
+    },
+    {
       id: "setKeymapStyleMatrix",
       display: "matrix",
       configValue: "matrix",

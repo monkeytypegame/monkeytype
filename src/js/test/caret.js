@@ -1,6 +1,7 @@
 import * as Misc from "./misc";
 import Config from "./config";
 import * as TestLogic from "./test-logic";
+import * as TestTimer from "./test-timer";
 
 export let caretAnimating = true;
 
@@ -14,7 +15,7 @@ export function stopAnimation() {
 
 export function startAnimation() {
   if (caretAnimating === false) {
-    if (Config.smoothCaret) {
+    if (Config.smoothCaret && !TestTimer.slowTimer) {
       $("#caret").css("animation-name", "caretFlashSmooth");
     } else {
       $("#caret").css("animation-name", "caretFlashHard");
@@ -89,7 +90,7 @@ export async function updatePosition() {
           top: newTop - smoothlinescroll,
           left: newLeft,
         },
-        100
+        TestTimer.slowTimer ? 0 : 100
       );
     } else {
       caret.stop(true, true).animate(
