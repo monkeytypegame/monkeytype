@@ -64,6 +64,11 @@ export function updateState(newState) {
       }
     });
     TribePageLobby.updatePlayerList();
+  } else if (state === 20) {
+    if (TestLogic.active) {
+      TribeCountdown.update("");
+      TribeCountdown.show(true);
+    }
   }
 }
 
@@ -371,5 +376,18 @@ socket.on("room_user_result", (e) => {
   room.users[e.userId].isFinished = true;
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
+  }
+});
+
+socket.on("room_finishTimer_countdown", (e) => {
+  if (TestLogic.active) {
+    TribeCountdown.update(e.time);
+  }
+});
+
+socket.on("room_finishTimer_over", (e) => {
+  TribeCountdown.hide();
+  if (TestLogic.active) {
+    TestLogic.fail("out of time");
   }
 });

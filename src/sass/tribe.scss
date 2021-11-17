@@ -572,6 +572,12 @@
     z-index: 10;
     color: var(--main-color);
     pointer-events: none;
+    margin-top: 1rem;
+    z-index: -10;
+    opacity: 1;
+    &.faded {
+      opacity: 0.25;
+    }
   }
 
   #typingTest .tribeBars {
