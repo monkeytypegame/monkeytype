@@ -2,7 +2,7 @@ import Config, * as UpdateConfig from "./config";
 import * as Funbox from "./funbox";
 // import * as Notifications from "./notifications";
 import * as CustomText from "./custom-text";
-import * as TribePageLobby from "./tribe-page-lobby";
+import * as TribeButtons from "./tribe-buttons";
 import * as Tribe from "./tribe";
 
 export function getArray(config) {
@@ -129,7 +129,7 @@ export function sync() {
   if (Tribe.state <= 1) return;
   if (!Tribe.getSelf().isLeader) return;
   setLoadingIndicator(true);
-  TribePageLobby.disableStartButton();
+  TribeButtons.disableStartButton();
   if (syncConfigTimeout === null) {
     syncConfigTimeout = setTimeout(() => {
       // setLoadingIndicator(false);

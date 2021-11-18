@@ -6,6 +6,7 @@ import * as TribeConfig from "./tribe-config";
 import * as Commandline from "./commandline";
 import * as CommandlineLists from "./commandline-lists";
 import * as TribeUserList from "./tribe-user-list";
+import * as TribeButtons from "./tribe-buttons";
 
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
@@ -14,18 +15,6 @@ export function reset() {
   $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text("");
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text("");
   TribeChat.reset();
-}
-
-export function disableStartButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
-    "disabled"
-  );
-}
-
-export function enableStartButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").removeClass(
-    "disabled"
-  );
 }
 
 export function disableConfigButtons() {
@@ -56,94 +45,6 @@ export function enableNameVisibilityButtons() {
   $(
     ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
   ).removeClass("disabled");
-}
-
-export function disableReadyButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
-    "disabled"
-  );
-}
-
-export function enableReadyButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
-    "disabled"
-  );
-}
-
-export function disableAfkButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
-    "disabled"
-  );
-}
-
-export function enableAfkButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
-    "disabled"
-  );
-}
-
-export function deactivateAfkButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
-    "active"
-  );
-}
-
-export function activateAfkButton() {
-  $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
-    "active"
-  );
-}
-
-export function updateButtons() {
-  if (Tribe.getSelf().isLeader) {
-    $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").removeClass(
-      "hidden"
-    );
-    $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").addClass(
-      "hidden"
-    );
-    $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").addClass(
-      "hidden"
-    );
-
-    enableStartButton();
-    // TODO REENABLE
-    // if (Tribe.state === 5) {
-    //   let readyCount = 0;
-    //   Object.keys(Tribe.room.users).forEach((userId) => {
-    //     if (Tribe.room.users[userId].isLeader || room.users[userId].isAfk) return;
-    //     if (Tribe.room.users[userId].isReady) {
-    //       readyCount++;
-    //     }
-    //   });
-    //   if (readyCount > 0) {
-    //     enableStartButton();
-    //   } else {
-    //     disableStartButton();
-    //   }
-    // }
-  } else {
-    $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").addClass(
-      "hidden"
-    );
-    $(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").removeClass(
-      "hidden"
-    );
-    $(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").removeClass(
-      "hidden"
-    );
-    deactivateAfkButton();
-    enableReadyButton();
-    enableAfkButton();
-    if (Tribe.getSelf().isAfk) {
-      activateAfkButton();
-      disableReadyButton();
-    }
-    if (Tribe.getSelf().isReady) {
-      disableAfkButton();
-      disableReadyButton();
-    }
-  }
 }
 
 export function updateVisibility() {
@@ -368,7 +269,7 @@ export function init() {
   );
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text(link);
   TribeUserList.update("lobby");
-  updateButtons();
+  TribeButtons.update("lobby");
   updateVisibility();
   updateRoomName();
   updateRoomConfig();

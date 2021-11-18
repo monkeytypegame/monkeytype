@@ -41,6 +41,7 @@ import * as LazyMode from "./lazy-mode";
 import * as Tribe from "./tribe";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
+import * as TribeButtons from "./tribe-buttons";
 
 const objecthash = require("object-hash");
 
@@ -2306,6 +2307,7 @@ export async function finish(difficultyFailed = false) {
         $("#result #tribeResultBottom").removeClass("hidden");
         TribeResults.update("result");
         TribeUserList.update("result");
+        TribeButtons.update("result");
         if (Tribe.getSelf().isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
           $("#result #backToLobbyButton").removeClass("hidden");

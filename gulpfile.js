@@ -163,6 +163,7 @@ const refactoredSrc = [
   "./src/js/tribe/tribe-bars.js",
   "./src/js/tribe/tribe-results.js",
   "./src/js/tribe/tribe-user-list.js",
+  "./src/js/tribe/tribe-buttons.js",
   "./src/js/tribe/tribe-chat.js",
   "./src/js/tribe/tribe-config.js",
   "./src/js/tribe/tribe-countdown.js",

@@ -17,6 +17,7 @@ import * as TestLogic from "./test-logic";
 import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
+import * as TribeButtons from "./tribe-buttons";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -60,8 +61,8 @@ export function updateState(newState) {
   Notifications.add(getStateString(state), 0, undefined, "Tribe State");
 
   if (state === 10) {
-    TribePageLobby.disableStartButton();
-    TribePageLobby.disableReadyButton();
+    TribeButtons.disableStartButton("lobby");
+    TribeButtons.disableReadyButton("lobby");
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
     Notifications.add("Race is starting...", 1, undefined, "Tribe");
@@ -234,7 +235,7 @@ socket.on("room_player_joined", (e) => {
   room.size = Object.keys(room.users).length;
   TribeUserList.update("lobby");
   TribeSound.play("join");
-  // TribePageLobby.updateButtons();
+  // TribeButtons.update("lobby")
 });
 
 socket.on("room_player_left", (e) => {
@@ -242,7 +243,7 @@ socket.on("room_player_left", (e) => {
   room.size = Object.keys(room.users).length;
   TribeUserList.update("lobby");
   TribeSound.play("leave");
-  TribePageLobby.updateButtons();
+  TribeButtons.update("lobby");
 });
 
 socket.on("room_left", (e) => {
@@ -267,7 +268,7 @@ socket.on("room_name_changed", (e) => {
 socket.on("room_user_is_ready", (e) => {
   room.users[e.userId].isReady = true;
   TribeUserList.update("lobby");
-  TribePageLobby.updateButtons();
+  TribeButtons.update("lobby");
   if (getSelf().isLeader) {
     let everyoneReady = true;
     Object.keys(room.users).forEach((userId) => {
@@ -286,7 +287,7 @@ socket.on("room_user_is_ready", (e) => {
 socket.on("room_user_afk_update", (e) => {
   room.users[e.userId].isAfk = e.isAfk;
   TribeUserList.update("lobby");
-  TribePageLobby.updateButtons();
+  TribeButtons.update("lobby");
 });
 
 socket.on("room_leader_changed", (e) => {
@@ -297,7 +298,7 @@ socket.on("room_leader_changed", (e) => {
   room.users[e.userId].isAfk = false;
   room.users[e.userId].isReady = false;
   TribeUserList.update("lobby");
-  TribePageLobby.updateButtons();
+  TribeButtons.update("lobby");
 });
 
 socket.on("room_chatting_changed", (e) => {
@@ -384,7 +385,7 @@ socket.on("room_users_update", (e) => {
   });
   TribeUserList.update("lobby");
   TribeUserList.update("result");
-  TribePageLobby.updateButtons();
+  TribeButtons.update("lobby");
 });
 
 socket.on("room_race_started", (e) => {
