@@ -16,6 +16,7 @@ import * as TribeCountdown from "./tribe-countdown";
 import * as TestLogic from "./test-logic";
 import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
+import * as TribeUserList from "./tribe-user-list";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -71,7 +72,14 @@ export function updateState(newState) {
         u.isTyping = true;
       }
     });
-    TribePageLobby.updatePlayerList();
+    TribeUserList.update("lobby");
+  } else if (state === 12) {
+    Object.keys(room.users).forEach((userId) => {
+      let u = room.users[userId];
+      if (u.isReady) {
+        u.isReady = false;
+      }
+    });
   } else if (state === 20) {
     if (TestLogic.active) {
       TribeCountdown.update("");
@@ -212,7 +220,7 @@ socket.on("room_joined", (e) => {
 socket.on("room_player_joined", (e) => {
   room.users[e.user.id] = e.user;
   room.size = Object.keys(room.users).length;
-  TribePageLobby.updatePlayerList();
+  TribeUserList.update("lobby");
   TribeSound.play("join");
   // TribePageLobby.updateButtons();
 });
@@ -220,7 +228,7 @@ socket.on("room_player_joined", (e) => {
 socket.on("room_player_left", (e) => {
   delete room.users[e.userId];
   room.size = Object.keys(room.users).length;
-  TribePageLobby.updatePlayerList();
+  TribeUserList.update("lobby");
   TribeSound.play("leave");
   TribePageLobby.updateButtons();
 });
@@ -246,7 +254,7 @@ socket.on("room_name_changed", (e) => {
 
 socket.on("room_user_is_ready", (e) => {
   room.users[e.userId].isReady = true;
-  TribePageLobby.updatePlayerList();
+  TribeUserList.update("lobby");
   TribePageLobby.updateButtons();
   if (getSelf().isLeader) {
     let everyoneReady = true;
@@ -265,7 +273,7 @@ socket.on("room_user_is_ready", (e) => {
 
 socket.on("room_user_afk_update", (e) => {
   room.users[e.userId].isAfk = e.isAfk;
-  TribePageLobby.updatePlayerList();
+  TribeUserList.update("lobby");
   TribePageLobby.updateButtons();
 });
 
@@ -276,7 +284,7 @@ socket.on("room_leader_changed", (e) => {
   room.users[e.userId].isLeader = true;
   room.users[e.userId].isAfk = false;
   room.users[e.userId].isReady = false;
-  TribePageLobby.updatePlayerList();
+  TribeUserList.update("lobby");
   TribePageLobby.updateButtons();
 });
 
@@ -362,7 +370,8 @@ socket.on("room_users_update", (e) => {
     if (user.isAfk) room.users[userId].isAfk = user.isAfk;
     if (user.isReady) room.users[userId].isReady = user.isReady;
   });
-  TribePageLobby.updatePlayerList();
+  TribeUserList.update("lobby");
+  TribeUserList.update("result");
   TribePageLobby.updateButtons();
 });
 
@@ -390,6 +399,7 @@ socket.on("room_user_result", (e) => {
   room.users[e.userId].isFinished = true;
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
+    TribeUserList.update("result");
   }
 });
 
