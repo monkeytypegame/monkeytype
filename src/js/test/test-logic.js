@@ -2298,9 +2298,11 @@ export async function finish(difficultyFailed = false) {
       }
       Keymap.hide();
 
-      //result buttons
+      //tribe
       $("#result .bottom .buttons div").addClass("hidden");
+      $("#result #tribeResultBottom").addClass("hidden");
       if (Tribe.state > 12) {
+        $("#result #tribeResultBottom").removeClass("hidden");
         TribeResults.update("result");
         if (Tribe.getSelf().isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
