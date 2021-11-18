@@ -471,91 +471,98 @@
   #result {
     #tribeResults {
       grid-area: tribeResults;
-      thead {
-        color: var(--sub-color);
-        font-size: 0.75rem;
-        span {
-          opacity: 0.5;
+      display: grid;
+      gap: 1rem;
+      .top {
+        justify-self: center;
+      }
+      table {
+        thead {
+          color: var(--sub-color);
+          font-size: 0.75rem;
+          span {
+            opacity: 0.5;
+          }
         }
-      }
-      td {
-        text-align: right;
-        padding: 0 0.5rem;
-      }
-      tr td:first-child {
-        text-align: left;
-        padding: 0 0.5rem 0 0;
-      }
-      tr td:last-child {
-        padding: 0 0 0 0.5rem;
-      }
+        td {
+          text-align: right;
+          padding: 0 0.5rem;
+        }
+        tr td:first-child {
+          text-align: left;
+          padding: 0 0.5rem 0 0;
+        }
+        tr td:last-child {
+          padding: 0 0 0 0.5rem;
+        }
 
-      tbody tr {
-        color: var(--text-color);
-        &.me {
-          color: var(--main-color);
-          .crown .glow {
-            box-shadow: 0 0 1rem 0.2rem var(--main-color);
+        tbody tr {
+          color: var(--text-color);
+          &.me {
+            color: var(--main-color);
+            .crown .glow {
+              box-shadow: 0 0 1rem 0.2rem var(--main-color);
+            }
           }
-        }
-        &.faded {
-          opacity: 0.25;
-        }
-        .progressAndGraph {
-          width: 25%;
-        }
-        .wpm,
-        .acc,
-        .raw,
-        .con {
+          &.faded {
+            opacity: 0.25;
+          }
+          .progressAndGraph {
+            width: 25%;
+          }
+          .wpm,
+          .acc,
+          .raw,
+          .con {
+            .miniCrown {
+              margin-left: 0.25rem;
+            }
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+          }
+          .acc .text,
+          .con .text,
+          .other .text,
+          .points .text {
+            opacity: 0.5;
+          }
+          .crown {
+            width: 1px;
+            .glow {
+              width: 5px;
+              height: 5px;
+              position: absolute;
+              margin-left: 0.45rem;
+              margin-top: -0.7rem;
+              box-shadow: 0 0 1rem 0.2rem var(--text-color);
+            }
+          }
+          .text {
+            display: inline-block;
+          }
           .miniCrown {
-            margin-left: 0.25rem;
+            display: inline-block;
+            width: 0;
+            font-size: 0.5rem;
+            vertical-align: super;
+            opacity: 0;
           }
-          display: grid;
-          grid-template-columns: 1fr auto;
-          align-items: center;
-        }
-        .acc .text,
-        .con .text,
-        .other .text,
-        .points .text {
-          opacity: 0.5;
-        }
-        .crown {
-          width: 1px;
-          .glow {
-            width: 5px;
-            height: 5px;
-            position: absolute;
-            margin-left: 0.45rem;
-            margin-top: -0.7rem;
-            box-shadow: 0 0 1rem 0.2rem var(--text-color);
+          .pos {
+            // margin-right: 0.5rem;
+            font-size: 1.4rem;
+            display: block;
+            line-height: 1.4rem;
+            margin-top: 0.4rem;
           }
-        }
-        .text {
-          display: inline-block;
-        }
-        .miniCrown {
-          display: inline-block;
-          width: 0;
-          font-size: 0.5rem;
-          vertical-align: super;
-          opacity: 0;
-        }
-        .pos {
-          // margin-right: 0.5rem;
-          font-size: 1.4rem;
-          display: block;
-          line-height: 1.4rem;
-          margin-top: 0.4rem;
-        }
-        .points {
-          opacity: 0.5;
-          font-size: 0.6rem;
-          vertical-align: super;
-        }
-        td:nth-child(2) {
-          width: 4rem;
+          .points {
+            opacity: 0.5;
+            font-size: 0.6rem;
+            vertical-align: super;
+          }
+          td:nth-child(2) {
+            width: 4rem;
+          }
         }
       }
     }

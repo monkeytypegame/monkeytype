@@ -76,6 +76,8 @@ export function updateState(newState) {
     if (TestLogic.active) {
       TribeCountdown.update("");
       TribeCountdown.show(true);
+    } else {
+      TribeResults.updateTimerText("Time left for everyone to finish");
     }
   }
 }
@@ -394,11 +396,14 @@ socket.on("room_user_result", (e) => {
 socket.on("room_finishTimer_countdown", (e) => {
   if (TestLogic.active) {
     TribeCountdown.update(e.time);
+  } else {
+    TribeResults.updateTimer(e.time);
   }
 });
 
 socket.on("room_finishTimer_over", (e) => {
   TribeCountdown.hide();
+  TribeResults.hideTimer();
   if (TestLogic.active) {
     TestLogic.fail("out of time");
   }

@@ -9,7 +9,7 @@ export function send(result) {
 export function reset(page) {
   if (page == "result") {
     initialised[page] = {};
-    $(".pageTest #result #tribeResults tbody").empty();
+    $(".pageTest #result #tribeResults table tbody").empty();
     $(".pageTest #result #tribeResults").addClass("hidden");
   }
 }
@@ -18,7 +18,7 @@ export function init(page) {
   if (page === "result") {
     reset(page);
 
-    let el = $(".pageTest #result #tribeResults tbody");
+    let el = $(".pageTest #result #tribeResults table tbody");
 
     Object.keys(Tribe.room.users).forEach((userId) => {
       el.append(`
@@ -70,7 +70,7 @@ export function init(page) {
 function updateUser(page, userId) {
   if (page == "result") {
     let userEl = $(
-      `.pageTest #result #tribeResults tbody tr.user[id="${userId}"]`
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
     let user = Tribe.room.users[userId];
     if (user.isFinished) {
@@ -121,4 +121,35 @@ export function update(page, userId) {
       updateUser(page, userId);
     });
   }
+}
+
+let timerText = "Time left for everyone to finish";
+let timerVisible = false;
+
+export function updateTimerText(text) {
+  timerText = text;
+}
+
+export function updateTimer(value) {
+  if (!timerVisible) showTimer();
+  $(".pageTest #result #tribeResults .top").text(
+    timerText + ": " + value + "s"
+  );
+}
+
+function showTimer() {
+  timerVisible = true;
+  $(".pageTest #result #tribeResults .top")
+    .removeClass("invisible")
+    .css({ opacity: 0 })
+    .animate({ opacity: 1 }, 125);
+}
+
+export function hideTimer() {
+  timerVisible = false;
+  $(".pageTest #result #tribeResults .top")
+    .css({ opacity: 1 })
+    .animate({ opacity: 0 }, 125, () => {
+      $(".pageTest #result #tribeResults .top").addClass("invisible");
+    });
 }
