@@ -5,6 +5,7 @@ import * as CustomText from "./custom-text";
 import * as TribeConfig from "./tribe-config";
 import * as Commandline from "./commandline";
 import * as CommandlineLists from "./commandline-lists";
+import * as TribeUserList from "./tribe-user-list";
 
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
@@ -357,77 +358,6 @@ export function updateRoomConfig() {
     `);
 }
 
-export function updatePlayerList() {
-  $(".pageTribe .tribePage.lobby .userlist .list").empty();
-  let usersArray = [];
-  Object.keys(Tribe.room.users).forEach((userId) => {
-    usersArray.push(Tribe.room.users[userId]);
-  });
-  let sortedUsers = usersArray.sort((a, b) => b.points - a.points);
-  sortedUsers.forEach((user) => {
-    let icons = "";
-    if (user.isTyping) {
-      icons += `<div class="icon active"><i class="fas fa-fw fa-keyboard"></i></div>`;
-    } else if (user.isAfk) {
-      icons += `<div class="icon active"><i class="fas fa-fw fa-mug-hot"></i></div>`;
-    } else if (user.isLeader) {
-      icons += `<div class="icon active"><i class="fas fa-fw fa-star"></i></div>`;
-    } else {
-      icons += `<div class="icon ${
-        user.isReady ? "active" : ""
-      }"><i class="fas fa-fw fa-check"></i></div>`;
-    }
-    let pointsString;
-    if (user.points == undefined) {
-      pointsString = "";
-    } else {
-      pointsString = user.points + (user.points == 1 ? "pt" : "pts");
-    }
-    $(".pageTribe .lobby .userlist .list").append(`
-    <div class='user ${user.id === Tribe.socket.id ? "me" : ""} ${
-      user.isAfk ? "afk" : ""
-    }'>
-    <div class="nameAndIcons">
-      <div class='icons'>
-      ${icons}
-      </div>
-      <div class='name'>
-      ${user.name}
-      </div>
-      ${
-        Tribe.room.isLeader && user.id !== Tribe.socket.id
-          ? `<div class='userSettings' id='` +
-            user.id +
-            `' aria-label="User settings" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
-          : ``
-      }
-    </div>
-    <div class='points'>${pointsString}</div>
-    </div>
-    `);
-    $(".pageTest #result .tribeResultChat .userlist .list").append(`
-    <div class='user ${user.id === Tribe.socket.id ? "me" : ""}'>
-    <div class="nameAndIcons">
-      <div class='icons'>
-      ${icons}
-      </div>
-      <div class='name'>
-      ${user.name}
-      </div>
-      ${
-        Tribe.room.isLeader && user.id !== Tribe.socket.id
-          ? `<div class='userSettings' id='` +
-            user.id +
-            `' aria-label="User settings" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
-          : ``
-      }
-    </div>
-    <div class='points'>${pointsString}</div>
-    </div>
-    `);
-  });
-}
-
 export function init() {
   reset();
   let link = location.origin + "/tribe_" + Tribe.room.id;
@@ -437,7 +367,7 @@ export function init() {
     Tribe.room.id
   );
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text(link);
-  updatePlayerList();
+  TribeUserList.update("lobby");
   updateButtons();
   updateVisibility();
   updateRoomName();
