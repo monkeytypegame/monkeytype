@@ -119,6 +119,7 @@ export function changePage(page, norestart = false, tribeOverride = false) {
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
+    if (Tribe.state === 5 && !tribeOverride) return;
     setPageTransition(true);
     swapElements(
       activePage,
