@@ -10,6 +10,8 @@ export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text("");
   $(".pageTribe .tribePage.lobby .inviteLink .link").text("");
+  $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text("");
+  $(".pageTest #result #tribeResultBottom .inviteLink .link").text("");
   TribeChat.reset();
 }
 
@@ -431,6 +433,10 @@ export function init() {
   let link = location.origin + "/tribe_" + Tribe.room.id;
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
+  $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text(
+    Tribe.room.id
+  );
+  $(".pageTest #result #tribeResultBottom .inviteLink .link").text(link);
   updatePlayerList();
   updateButtons();
   updateVisibility();
@@ -446,6 +452,18 @@ $(".pageTribe .tribePage.lobby .inviteLink .text").hover(
     $(this).css(
       "color",
       "#" + $(".pageTribe .tribePage.lobby .inviteLink .text").text()
+    );
+  },
+  function () {
+    $(this).css("color", "");
+  }
+);
+
+$(".pageTest #result #tribeResultBottom .inviteLink .text").hover(
+  function () {
+    $(this).css(
+      "color",
+      "#" + $(".pageTest #result #tribeResultBottom .inviteLink .text").text()
     );
   },
   function () {
@@ -470,7 +488,9 @@ $(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").click((e) => {
   Tribe.socket.emit("room_init_race");
 });
 
-$(".pageTribe .tribePage.lobby .inviteLink .text").click(async (e) => {
+$(
+  ".pageTribe .tribePage.lobby .inviteLink .text, .pageTest #result #tribeResultBottom .inviteLink .text"
+).click(async (e) => {
   try {
     await navigator.clipboard.writeText(
       $(".pageTribe .tribePage.lobby .inviteLink .text").text()
@@ -481,7 +501,9 @@ $(".pageTribe .tribePage.lobby .inviteLink .text").click(async (e) => {
   }
 });
 
-$(".pageTribe .tribePage.lobby .inviteLink .link").click(async (e) => {
+$(
+  ".pageTribe .tribePage.lobby .inviteLink .link, .pageTest #result #tribeResultBottom .inviteLink .link"
+).click(async (e) => {
   try {
     await navigator.clipboard.writeText(
       $(".pageTribe .tribePage.lobby .inviteLink .link").text()
