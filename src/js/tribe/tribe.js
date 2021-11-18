@@ -175,6 +175,10 @@ socket.on("disconnect", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Disconnected");
   TribePagePreloader.showReconnectButton();
+  $("#result #tribeResultBottom").addClass("hidden");
+  TribeUserList.reset();
+  TribeResults.reset();
+  TribeChat.reset();
   TribeBars.hide();
   TribeBars.reset();
 });
@@ -188,6 +192,10 @@ socket.on("connect_failed", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
   TribePagePreloader.showReconnectButton();
+  $("#result #tribeResultBottom").addClass("hidden");
+  TribeUserList.reset();
+  TribeResults.reset();
+  TribeChat.reset();
   TribeBars.hide();
   TribeBars.reset();
 });
@@ -201,6 +209,10 @@ socket.on("connect_error", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection error");
   TribePagePreloader.showReconnectButton();
+  $("#result #tribeResultBottom").addClass("hidden");
+  TribeUserList.reset();
+  TribeResults.reset();
+  TribeChat.reset();
   TribeBars.hide();
   TribeBars.reset();
 });
