@@ -76,6 +76,7 @@ let defaultConfig = {
   caretStyle: "default",
   paceCaretStyle: "default",
   flipTestColors: false,
+  autoSwitchTheme: false,
   layout: "default",
   funbox: "none",
   confidenceMode: "off",
@@ -710,6 +711,11 @@ export function toggleFlipTestColors() {
   config.flipTestColors = !config.flipTestColors;
   TestUI.flipColors(config.flipTestColors);
   saveToLocalStorage();
+}
+
+export function setAutoSwitchTheme(val, nosave) {
+  config.autoSwitchTheme = val;
+  if (!nosave) saveToLocalStorage();
 }
 
 //extra color

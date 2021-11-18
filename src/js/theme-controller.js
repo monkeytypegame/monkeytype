@@ -223,9 +223,11 @@ window
   .matchMedia("(prefers-color-scheme: dark)")
   .addEventListener("change", (e) => {
     let newColorTheme = e.matches ? "dark" : "light";
-    if (newColorTheme == "light") {
-      apply(Config.themeLight);
-    } else if (newColorTheme == "dark") {
-      apply(Config.theme);
+    if (Config.autoSwitchTheme) {
+      if (newColorTheme == "light") {
+        apply(Config.themeLight);
+      } else if (newColorTheme == "dark") {
+        apply(Config.theme);
+      }
     }
   });

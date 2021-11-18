@@ -143,6 +143,10 @@ async function initGroups() {
     "flipTestColors",
     UpdateConfig.setFlipTestColors
   );
+  groups.autoSwitchTheme = new SettingsGroup(
+    "autoSwitchTheme",
+    UpdateConfig.setAutoSwitchTheme
+  );
   groups.swapEscAndTab = new SettingsGroup(
     "swapEscAndTab",
     UpdateConfig.setSwapEscAndTab

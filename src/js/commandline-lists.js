@@ -664,6 +664,29 @@ let commandsFlipTestColors = {
   ],
 };
 
+let commandsAutoSwitchTheme = {
+  title: "Auto switch theme accroding to system",
+  configKey: "autoSwitchTheme",
+  list: [
+    {
+      id: "setAutoSwitchingOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setAutoSwitchTheme(false);
+      },
+    },
+    {
+      id: "setAutoSwitchingOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setAutoSwitchTheme(true);
+      },
+    },
+  ],
+};
+
 let commandsSmoothLineScroll = {
   title: "Smooth line scroll...",
   configKey: "smoothLineScroll",
@@ -2558,6 +2581,12 @@ export let defaultCommands = {
       display: "Flip test colors...",
       icon: "fa-adjust",
       subgroup: commandsFlipTestColors,
+    },
+    {
+      id: "changeAutoSwitchTheme",
+      display: "Toggle auto switching theme...",
+      icon: "fa-adjust",
+      subgroup: commandsAutoSwitchTheme,
     },
     {
       id: "changeSmoothLineScroll",
