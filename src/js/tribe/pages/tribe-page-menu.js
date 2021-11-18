@@ -2,6 +2,7 @@ import * as Notifications from "./notifications";
 import * as Tribe from "./tribe";
 import * as TribeRoomCodePopup from "./tribe-room-code-popup";
 import * as TribeBrowsePublicRoomsPopup from "./tribe-browse-public-rooms-popup";
+import Config from "./config";
 
 export let queues = [false, false, false, false];
 
@@ -101,7 +102,15 @@ export function joinRoomByCode(code) {
 $(".pageTribe .menu .customRooms #createCustomRoom").click((e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   disableButtons();
-  Tribe.socket.emit("room_create");
+  let mode2;
+  if (Config.mode === "time") {
+    mode2 = Config.time;
+  } else if (Config.mode === "words") {
+    mode2 = Config.words;
+  } else if (Config.mode === "quote") {
+    mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
+  }
+  Tribe.socket.emit("room_create", { mode: Config.mode, mode2 });
 });
 
 $(".pageTribe .menu .customRooms #browseCustomRooms").click((e) => {
