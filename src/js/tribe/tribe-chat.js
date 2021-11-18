@@ -113,9 +113,7 @@ export function appendMessage(data) {
   scrollChat();
 }
 
-$(
-  ".pageTribe .tribePage.lobby .chat .input input, .pageTest #result #tribeResultBottom .chat .input input"
-).keyup((e) => {
+$(".pageTribe .tribePage.lobby .chat .input input").keyup((e) => {
   if (e.key === "Enter") {
     let msg = $(".pageTribe .lobby .chat .input input").val();
     if (msg === "") return;
@@ -130,12 +128,31 @@ $(
       message: msg,
     });
     $(".pageTribe .lobby .chat .input input").val("");
+  }
+});
+
+$(".pageTest #result #tribeResultBottom .chat .input input").keyup((e) => {
+  if (e.key === "Enter") {
+    let msg = $(
+      ".pageTest #result #tribeResultBottom .chat .input input"
+    ).val();
+    if (msg === "") return;
+    if (msg.length > 512) {
+      Notifications.add("Message cannot be longer than 512 characters.", 0);
+      return;
+    }
+    if (performance.now() < lastMessageTimestamp + 500) return;
+    lastMessageTimestamp = performance.now();
+    sendChattingUpdate(false);
+    Tribe.socket.emit("chat_message", {
+      message: msg,
+    });
     $(".pageTest #result #tribeResultBottom .chat .input input").val("");
   }
 });
 
 $(document).keydown((e) => {
-  if (TestUI.resultVisible && Tribe.state >= 20) {
+  if (Tribe.state === 5) {
     if (
       e.key === "/" &&
       !$(".pageTribe .lobby .chat .input input").is(":focus")
@@ -143,7 +160,7 @@ $(document).keydown((e) => {
       $(".pageTribe .lobby .chat .input input").focus();
       e.preventDefault();
     }
-  } else if (Tribe.state === 5) {
+  } else if (TestUI.resultVisible && Tribe.state >= 20) {
     if (
       e.key === "/" &&
       !$(".pageTest #result #tribeResultBottom .chat .input input").is(":focus")
