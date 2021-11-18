@@ -7,7 +7,9 @@ export function send(result) {
 }
 
 export function reset(page) {
-  if (page == "result") {
+  if (page === undefined) {
+    reset("result");
+  } else if (page == "result") {
     initialised[page] = {};
     $(".pageTest #result #tribeResults table tbody").empty();
     $(".pageTest #result #tribeResults").addClass("hidden");
