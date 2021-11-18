@@ -469,6 +469,31 @@
 
 .pageTest {
   #result {
+    #tribeResultBottom {
+      display: grid;
+      grid-template-areas:
+        "chat buttons"
+        "chat users"
+        "inviteLink inviteLink";
+      gap: 1rem;
+      grid-template-columns: 3fr 1fr;
+      grid-template-rows: auto 1fr;
+      grid-area: tribeBottom;
+      .chat {
+        grid-area: chat;
+      }
+      .buttons {
+        grid-area: buttons;
+        gap: 0.5rem;
+        display: grid;
+      }
+      .userlist {
+        grid-area: users;
+      }
+      .inviteLink {
+        grid-area: inviteLink;
+      }
+    }
     #tribeResults {
       grid-area: tribeResults;
       display: grid;

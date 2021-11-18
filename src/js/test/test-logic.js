@@ -2299,7 +2299,7 @@ export async function finish(difficultyFailed = false) {
       Keymap.hide();
 
       //result buttons
-      $("#result .buttons div").addClass("hidden");
+      $("#result .bottom .buttons div").addClass("hidden");
       if (Tribe.state > 12) {
         TribeResults.update("result");
         if (Tribe.getSelf().isLeader) {
