@@ -184,3 +184,28 @@ export function update(page) {
     }
   }
 }
+
+$(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
+  .pageTest #tribeResultBottom .buttons .startTestButton`).click((e) => {
+  Tribe.socket.emit("room_init_race");
+});
+
+$(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
+  .pageTest #tribeResultBottom .buttons .userAfkButton`).click((e) => {
+  let self = Tribe.getSelf();
+  Tribe.socket.emit("room_afk_update", { isAfk: !self.isAfk });
+});
+
+$(`.pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton,
+.pageTest #tribeResultBottom .buttons .leaveRoomButton`).click((e) => {
+  Tribe.socket.emit(`room_leave`);
+});
+
+$(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
+.pageTest #tribeResultBottom .buttons .userReadyButton`).click((e) => {
+  Tribe.socket.emit(`room_ready_update`);
+});
+
+$(`.pageTest #result .bottom .buttons #backToLobbyButton`).click((e) => {
+  Tribe.socket.emit("room_back_to_lobby");
+});

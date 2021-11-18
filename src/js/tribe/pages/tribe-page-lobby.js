@@ -302,23 +302,6 @@ $(".pageTest #result #tribeResultBottom .inviteLink .text").hover(
   }
 );
 
-$(".pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton").click((e) => {
-  Tribe.socket.emit("room_leave");
-});
-
-$(".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton").click((e) => {
-  Tribe.socket.emit("room_ready_update");
-});
-
-$(".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton").click((e) => {
-  let self = Tribe.getSelf();
-  Tribe.socket.emit("room_afk_update", { isAfk: !self.isAfk });
-});
-
-$(".pageTribe .tribePage.lobby .lobbyButtons .startTestButton").click((e) => {
-  Tribe.socket.emit("room_init_race");
-});
-
 $(
   ".pageTribe .tribePage.lobby .inviteLink .text, .pageTest #result #tribeResultBottom .inviteLink .text"
 ).click(async (e) => {
