@@ -431,3 +431,7 @@ socket.on("room_finishTimer_over", (e) => {
     TestLogic.fail("out of time");
   }
 });
+
+socket.on("room_back_to_lobby", (e) => {
+  UI.changePage("tribe", false, true);
+});
