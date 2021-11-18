@@ -20,7 +20,7 @@ export function update(page) {
   let sortedUsers = usersArray.sort((a, b) => b.points - a.points);
   sortedUsers.forEach((user) => {
     let icons = "";
-    if (user.isTyping) {
+    if (user.isTyping && !user.isFinished) {
       icons += `<div class="icon active"><i class="fas fa-fw fa-keyboard"></i></div>`;
     } else if (user.isAfk) {
       icons += `<div class="icon active"><i class="fas fa-fw fa-mug-hot"></i></div>`;
