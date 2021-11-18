@@ -1,13 +1,14 @@
 import * as Notifications from "./notifications";
 import * as Tribe from "./tribe";
 import * as Misc from "./misc";
+import * as TestUI from "./test-ui";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
 
 export function reset() {
   $(".pageTribe .lobby .chat .messages").empty();
-  $(".pageTest #result .tribeResultChat .chat .messages").empty();
+  $(".pageTest #result #tribeResultBottom .chat .messages").empty();
 }
 
 function sendChattingUpdate(value) {
@@ -18,9 +19,7 @@ function sendChattingUpdate(value) {
 
 function limitChatMessages() {
   let messages1 = $(".pageTribe .lobby .chat .messages .message");
-  let messages2 = $(
-    ".pageTest #result .tribeResultChat .chat .messages .message"
-  );
+  let messages2 = $(".pageTest #result #tribeResultBottom .chat .messages");
 
   let limit = 100;
 
@@ -37,11 +36,11 @@ function limitChatMessages() {
 
 export function scrollChat() {
   let chatEl = $(".pageTribe .lobby .chat .messages")[0];
-  // let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages")[0];
+  let chatEl2 = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
 
   if (shouldScrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;
-    // chatEl2.scrollTop = chatEl2.scrollHeight;
+    chatEl2.scrollTop = chatEl2.scrollHeight;
     shouldScrollChat = true;
   }
 }
@@ -75,7 +74,9 @@ export function updateIsTyping() {
   }
 
   $(".pageTribe .lobby .chat .whoIsTyping").html(string);
-  $(".pageTest #result .tribeResultChat .chat .whoIsTyping").html(string);
+  $(".pageTest #result #tribeResultBottom .chat .messages .whoIsTyping").html(
+    string
+  );
 }
 
 export function appendMessage(data) {
@@ -105,14 +106,16 @@ export function appendMessage(data) {
   $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
-  $(".pageTest #result .tribeResultChat .chat .messages").append(`
+  $(".pageTest #result #tribeResultBottom .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
   limitChatMessages();
   scrollChat();
 }
 
-$(".pageTribe .tribePage.lobby .chat .input input").keyup((e) => {
+$(
+  ".pageTribe .tribePage.lobby .chat .input input, .pageTest #result #tribeResultBottom .chat .input input"
+).keyup((e) => {
   if (e.key === "Enter") {
     let msg = $(".pageTribe .lobby .chat .input input").val();
     if (msg === "") return;
@@ -127,22 +130,34 @@ $(".pageTribe .tribePage.lobby .chat .input input").keyup((e) => {
       message: msg,
     });
     $(".pageTribe .lobby .chat .input input").val("");
+    $(".pageTest #result #tribeResultBottom .chat .input input").val("");
   }
 });
 
 $(document).keydown((e) => {
-  //TODO only enalbe while chat is visible
-  if (
-    e.key === "/" &&
-    !$(".pageTribe .lobby .chat .input input").is(":focus")
-  ) {
-    $(".pageTribe .lobby .chat .input input").focus();
-    e.preventDefault();
+  if (TestUI.resultVisible && Tribe.state >= 20) {
+    if (
+      e.key === "/" &&
+      !$(".pageTribe .lobby .chat .input input").is(":focus")
+    ) {
+      $(".pageTribe .lobby .chat .input input").focus();
+      e.preventDefault();
+    }
+  } else if (Tribe.state === 5) {
+    if (
+      e.key === "/" &&
+      !$(".pageTest #result #tribeResultBottom .chat .input input").is(":focus")
+    ) {
+      $(".pageTest #result #tribeResultBottom .chat .input input").focus();
+      e.preventDefault();
+    }
   }
 });
 
 $(".pageTribe .tribePage.lobby .chat .input input").on("input", (e) => {
-  let vallen = $(".pageTribe .tribePage.lobby .chat .input input").val().length;
+  let val = $(".pageTribe .tribePage.lobby .chat .input input").val();
+  $(".pageTest #result #tribeResultBottom .chat .input input").val(val);
+  let vallen = val.length;
   if (vallen === 1) {
     sendChattingUpdate(true);
   } else if (vallen === 0) {
