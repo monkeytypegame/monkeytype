@@ -12,6 +12,11 @@ export function reset(page) {
 }
 
 export function update(page) {
+  if (!page) {
+    update("lobby");
+    update("result");
+    return;
+  }
   reset(page);
   let usersArray = [];
   Object.keys(Tribe.room.users).forEach((userId) => {
