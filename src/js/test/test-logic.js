@@ -2305,15 +2305,15 @@ export async function finish(difficultyFailed = false) {
       $("#result #tribeResultBottom").addClass("hidden");
       if (Tribe.state > 12) {
         $("#result #tribeResultBottom").removeClass("hidden");
-        TribeResults.update("result");
-        TribeUserList.update("result");
-        TribeButtons.update("result");
         if (Tribe.getSelf().isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
           $("#result #backToLobbyButton").removeClass("hidden");
         } else {
           $("#result #readyButton").removeClass("hidden");
         }
+        TribeResults.update("result");
+        TribeUserList.update("result");
+        TribeButtons.update("result");
       } else {
         $("#result #nextTestButton").removeClass("hidden");
         $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
