@@ -452,5 +452,6 @@ socket.on("room_readyTimer_over", (e) => {
 });
 
 socket.on("room_back_to_lobby", (e) => {
+  TribePageLobby.enableConfigButtons();
   UI.changePage("tribe", false, true);
 });
