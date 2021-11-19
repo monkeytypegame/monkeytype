@@ -595,14 +595,28 @@ function handleTab(event) {
             ManualRestart.reset();
           }
           event.preventDefault();
-          if (
-            TestLogic.active &&
-            Config.repeatQuotes === "typing" &&
-            Config.mode === "quote"
-          ) {
-            TestLogic.restart(true, false, event);
+          if (Tribe.state >= 5) {
+            if (Tribe.getSelf().isLeader) {
+              if (Tribe.state === 5 || Tribe.state === 22) {
+                Tribe.initRace();
+              }
+            } else if (
+              Tribe.state === 5 ||
+              Tribe.state === 21 ||
+              Tribe.state === 22
+            ) {
+              Tribe.socket.emit(`room_ready_update`);
+            }
           } else {
-            TestLogic.restart(false, false, event);
+            if (
+              TestLogic.active &&
+              Config.repeatQuotes === "typing" &&
+              Config.mode === "quote"
+            ) {
+              TestLogic.restart(true, false, event);
+            } else {
+              TestLogic.restart(false, false, event);
+            }
           }
         } else {
           event.preventDefault();
@@ -623,8 +637,38 @@ function handleTab(event) {
           setWordsInput(" " + TestLogic.input.current);
         }
       }
+    } else if ($(".pageTribe").hasClass("active")) {
+      if (Tribe.state >= 5) {
+        if (Tribe.getSelf().isLeader) {
+          if (Tribe.state === 5 || Tribe.state === 22) {
+            Tribe.initRace();
+          }
+        } else if (
+          Tribe.state === 5 ||
+          Tribe.state === 21 ||
+          Tribe.state === 22
+        ) {
+          Tribe.socket.emit(`room_ready_update`);
+        }
+      } else {
+        UI.changePage("test");
+      }
     } else if (Config.quickTab) {
-      UI.changePage("test");
+      //not on the test page
+
+      // if (Tribe.state === 5 || Tribe.state === 22) {
+      //   if (Tribe.getSelf().isLeader) {
+      //     Tribe.initRace();
+      //   }else {
+      //     Tribe.socket.emit(`room_ready_update`);
+      //   }
+      // }
+
+      if (Tribe.state >= 5) {
+        UI.changePage("tribe");
+      } else {
+        UI.changePage("test");
+      }
     }
   }
 }
