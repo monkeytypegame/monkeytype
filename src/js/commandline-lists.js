@@ -636,6 +636,7 @@ let commandsSoundOnError = {
       configValue: true,
       exec: () => {
         UpdateConfig.setPlaySoundOnError(true);
+        Sound.playError();
       },
     },
   ],

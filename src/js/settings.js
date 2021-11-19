@@ -172,7 +172,10 @@ async function initGroups() {
   );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
-    UpdateConfig.setPlaySoundOnError
+    UpdateConfig.setPlaySoundOnError,
+    () => {
+      if (Config.playSoundOnError) Sound.playError();
+    }
   );
   groups.playSoundOnClick = new SettingsGroup(
     "playSoundOnClick",
