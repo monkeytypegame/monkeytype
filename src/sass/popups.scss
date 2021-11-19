@@ -140,6 +140,13 @@
       font-size: 1.5rem;
     }
 
+    .error {
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-color);
+    }
+
     .list {
       display: grid;
       gap: 0.5rem;

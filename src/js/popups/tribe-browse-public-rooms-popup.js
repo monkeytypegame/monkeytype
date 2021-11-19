@@ -1,7 +1,15 @@
 import * as Tribe from "./tribe";
 import * as TribeConfig from "./tribe-config";
+import * as Loader from "./loader";
 
 function updateList(list) {
+  if (list.length === 0) {
+    $("#tribeBrowsePublicRoomsPopup .error").removeClass("hidden");
+    $("#tribeBrowsePublicRoomsPopup .list").addClass("hidden");
+    return;
+  }
+  $("#tribeBrowsePublicRoomsPopup .error").addClass("hidden");
+  $("#tribeBrowsePublicRoomsPopup .list").removeClass("hidden");
   $("#tribeBrowsePublicRoomsPopup .list").html("");
   for (let i = 0; i < list.length; i++) {
     let room = list[i];
@@ -33,6 +41,7 @@ function updateList(list) {
 }
 
 export function show() {
+  Loader.show();
   Tribe.socket.emit(
     "get_public_rooms",
     {
@@ -40,6 +49,7 @@ export function show() {
       search: "",
     },
     (e) => {
+      Loader.hide();
       updateList(e.rooms);
     }
   );
