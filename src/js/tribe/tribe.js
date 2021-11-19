@@ -439,6 +439,7 @@ socket.on("room_progress_update", (e) => {
 socket.on("room_user_result", (e) => {
   room.users[e.userId].result = e.result;
   room.users[e.userId].isFinished = true;
+  TribeBars.completeBar("test", e.userId);
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
     TribeUserList.update("result");

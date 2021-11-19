@@ -96,6 +96,22 @@ export function update(page, userId) {
     );
 }
 
+export function completeBar(page, userId) {
+  let el;
+  if (page === "test") {
+    el = $(".pageTest #typingTest .tribeBars");
+  }
+  el.find(`.player[id=${userId}] .bar`)
+    .stop(true, false)
+    .animate(
+      {
+        width: "100%",
+      },
+      TestTimer.slowTimer ? 0 : 1000,
+      "linear"
+    );
+}
+
 export function sendUpdate(wpm, raw, acc, progress) {
   Tribe.socket.emit("room_progress_update", {
     wpm: wpm,
