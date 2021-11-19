@@ -404,9 +404,10 @@ socket.on("room_users_update", (e) => {
   console.log(e);
   Object.keys(e).forEach((userId) => {
     let user = e[userId];
-    if (user.isTyping) room.users[userId].isTyping = user.isTyping;
-    if (user.isAfk) room.users[userId].isAfk = user.isAfk;
-    if (user.isReady) room.users[userId].isReady = user.isReady;
+    if (user.isTyping !== undefined)
+      room.users[userId].isTyping = user.isTyping;
+    if (user.isAfk !== undefined) room.users[userId].isAfk = user.isAfk;
+    if (user.isReady !== undefined) room.users[userId].isReady = user.isReady;
   });
   TribeUserList.update("lobby");
   TribeUserList.update("result");
