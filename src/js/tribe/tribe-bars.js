@@ -60,8 +60,10 @@ export function update(page, userId) {
     el = $(".pageTest #typingTest .tribeBars");
   }
   let user = Tribe.room.users[userId];
-  el.find(`.player[id=${userId}] .wpm`).text(user.progress.wpm);
-  el.find(`.player[id=${userId}] .acc`).text(user.progress.acc);
+  el.find(`.player[id=${userId}] .wpm`).text(Math.round(user.progress.wpm));
+  el.find(`.player[id=${userId}] .acc`).text(
+    Math.floor(user.progress.acc) + "%"
+  );
   el.find(`.player[id=${userId}] .bar`)
     .stop(true, false)
     .animate(
