@@ -5,7 +5,8 @@ function showStartButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .startTestButton";
+    elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
+                .pageTest #result .bottom .buttons #nextTestButton`;
   }
   $(elString).removeClass("hidden");
 }
@@ -15,7 +16,8 @@ function hideStartButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .startTestButton";
+    elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
+                .pageTest #result .bottom .buttons #nextTestButton`;
   }
   $(elString).addClass("hidden");
 }
@@ -30,7 +32,9 @@ export function disableStartButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .startTestButton";
+    elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
+                .pageTest #result .bottom .buttons #nextTestButton,
+                .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).addClass("disabled");
 }
@@ -40,7 +44,9 @@ export function enableStartButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .startTestButton";
+    elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
+                .pageTest #result .bottom .buttons #nextTestButton,
+                .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).removeClass("disabled");
 }
@@ -50,7 +56,8 @@ function showReadyButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .userReadyButton";
+    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
+                .pageTest #result .bottom .buttons #readyButton`;
   }
   $(elString).removeClass("hidden");
 }
@@ -60,7 +67,8 @@ function hideReadyButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .userReadyButton";
+    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
+                .pageTest #result .bottom .buttons #readyButton`;
   }
   $(elString).addClass("hidden");
 }
@@ -70,7 +78,8 @@ export function disableReadyButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .userReadyButton";
+    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
+                .pageTest #result .bottom .buttons #readyButton`;
   }
   $(elString).addClass("disabled");
 }
@@ -80,7 +89,8 @@ export function enableReadyButton(page) {
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
   } else if (page === "result") {
-    elString = ".pageTest #tribeResultBottom .buttons .userReadyButton";
+    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
+                .pageTest #result .bottom .buttons #readyButton`;
   }
   $(elString).removeClass("disabled");
 }
