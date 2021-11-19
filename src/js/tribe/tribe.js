@@ -405,7 +405,6 @@ socket.on("room_countdown", (e) => {
 });
 
 socket.on("room_users_update", (e) => {
-  console.log(e);
   Object.keys(e).forEach((userId) => {
     let user = e[userId];
     if (user.isTyping !== undefined)
