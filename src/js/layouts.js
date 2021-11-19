@@ -82,7 +82,7 @@ const layouts = {
             " "
         ],
     },
-	  colemak_dhv: {
+      colemak_dhv: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "=+", "[{",
@@ -304,7 +304,7 @@ const layouts = {
             "\\|", "(`", ")?", "'*", ".;", "_&", "bB", "fF", "gG", "vV", "jJ",
             " "
         ]
-	  },
+      },
     ina: {
         keymapShowTopRow: false,
         keys: [
@@ -425,7 +425,7 @@ const layouts = {
             " "
         ],
     },
-	  colemak_Qi: {
+      colemak_Qi: {
         keymapShowTopRow: true,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "=+", "[{",
@@ -445,7 +445,7 @@ const layouts = {
             " "
         ],
     },
-	  colemaQ_F: {
+      colemaQ_F: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "=+", "[{",
@@ -596,7 +596,7 @@ const layouts = {
             " "
         ]
     },
-	  Foalmak: {
+      Foalmak: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
@@ -606,7 +606,7 @@ const layouts = {
             " "
         ]
     },
-	  quartz: {
+      quartz: {
         keymapShowTopRow: true,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "=+", "6^", "7&", "8*", "9(", "0)", "-_", 
@@ -696,7 +696,7 @@ const layouts = {
             " "
         ]
     },
-	  klauser: {
+      klauser: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
@@ -756,7 +756,7 @@ const layouts = {
             " "
         ]
     },
-	  three: {
+      three: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
@@ -776,7 +776,7 @@ const layouts = {
             " "
         ],
     },
-	  asset: {
+      asset: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
