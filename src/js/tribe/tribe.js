@@ -377,10 +377,14 @@ socket.on("room_config_changed", (e) => {
 socket.on("room_init_race", (e) => {
   updateState(11);
   if (getSelf().isTyping) {
+    TribeResults.init("result");
     TribeBars.init("test");
     TribeBars.show("test");
   } else {
     //TODO update lobby bars
+    if (!$(".pageTest").hasClass("hidden")) {
+      UI.changePage("tribe", undefined, true);
+    }
     return;
   }
   seedrandom(e.seed, { global: true });
