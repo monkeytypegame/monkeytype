@@ -48,6 +48,8 @@ export function getSelf() {
 }
 
 export function getStateString(state) {
+  if (state === -1) return "error";
+  if (state === 1) return "connected";
   if (state === 5) return "lobby";
   if (state === 10) return "preparing race";
   if (state === 11) return "race countdown";
@@ -95,6 +97,8 @@ export function updateState(newState) {
   } else if (state === 21) {
     TribeResults.hideTimer();
     TribeResults.updateTimerText("Time left for everyone to get ready");
+  } else if (state === 22) {
+    TribePageLobby.enableConfigButtons();
   }
 }
 
@@ -117,7 +121,7 @@ export function joinRoom(roomId, fromBrowser = false) {
   socket.emit("room_join", { roomId, fromBrowser }, (res) => {
     if (res.room) {
       room = res.room;
-      state = res.room.state;
+      updateState(res.room.state);
       TribePageLobby.init();
       TribePages.change("lobby");
       TribeSound.play("join");
@@ -151,7 +155,7 @@ socket.on("connect", async (e) => {
   if (!versionCheck) return;
   UpdateConfig.setTimerStyle("mini", true);
   TribePageMenu.enableButtons();
-  state = 1;
+  updateState(1);
   // Notifications.add("Connected", 1, undefined, "Tribe");
   name = "Guest";
   let snapName = DB.getSnapshot()?.name;
@@ -176,7 +180,7 @@ socket.on("connect", async (e) => {
 // })
 
 socket.on("disconnect", (e) => {
-  state = -1;
+  updateState(-1);
   if (!$(".pageTribe").hasClass("active"))
     Notifications.add("Disconnected", -1, undefined, "Tribe");
   TribePages.change("preloader");
@@ -193,7 +197,7 @@ socket.on("disconnect", (e) => {
 });
 
 socket.on("connect_failed", (e) => {
-  state = -1;
+  updateState(-1);
   console.error(e);
   if (!$(".pageTribe").hasClass("active"))
     Notifications.add("Connection failed", -1, undefined, "Tribe");
@@ -211,7 +215,7 @@ socket.on("connect_failed", (e) => {
 });
 
 socket.on("connect_error", (e) => {
-  state = -1;
+  updateState(-1);
   console.error(e);
   if (!$(".pageTribe").hasClass("active"))
     Notifications.add("Connection error", -1, undefined, "Tribe");
@@ -234,7 +238,7 @@ socket.on("system_message", (e) => {
 
 socket.on("room_joined", (e) => {
   room = e.room;
-  state = 5;
+  updateState(5);
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
@@ -258,7 +262,7 @@ socket.on("room_player_left", (e) => {
 
 socket.on("room_left", (e) => {
   room = undefined;
-  state = 1;
+  updateState(1);
   TribePageMenu.enableButtons();
   TribePageLobby.reset();
   TribePages.change("menu");
@@ -465,6 +469,5 @@ socket.on("room_readyTimer_over", (e) => {
 });
 
 socket.on("room_back_to_lobby", (e) => {
-  TribePageLobby.enableConfigButtons();
   UI.changePage("tribe", false, true);
 });
