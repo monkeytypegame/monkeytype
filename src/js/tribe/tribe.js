@@ -88,6 +88,9 @@ export function updateState(newState) {
     } else {
       TribeResults.updateTimerText("Time left for everyone to finish");
     }
+  } else if (state === 21) {
+    TribeResults.hideTimer();
+    TribeResults.updateTimerText("Time left for everyone to get ready");
   }
 }
 
@@ -267,8 +270,8 @@ socket.on("room_name_changed", (e) => {
 
 socket.on("room_user_is_ready", (e) => {
   room.users[e.userId].isReady = true;
-  TribeUserList.update("lobby");
-  TribeButtons.update("lobby");
+  TribeUserList.update();
+  TribeButtons.update();
   if (getSelf().isLeader) {
     let everyoneReady = true;
     Object.keys(room.users).forEach((userId) => {
@@ -425,6 +428,22 @@ socket.on("room_finishTimer_countdown", (e) => {
 });
 
 socket.on("room_finishTimer_over", (e) => {
+  TribeCountdown.hide();
+  TribeResults.hideTimer();
+  if (TestLogic.active) {
+    TestLogic.fail("out of time");
+  }
+});
+
+socket.on("room_readyTimer_countdown", (e) => {
+  if (TestLogic.active) {
+    TribeCountdown.update(e.time);
+  } else {
+    TribeResults.updateTimer(e.time);
+  }
+});
+
+socket.on("room_readyTimer_over", (e) => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestLogic.active) {
