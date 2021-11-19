@@ -317,8 +317,8 @@ socket.on("room_leader_changed", (e) => {
   room.users[e.userId].isLeader = true;
   room.users[e.userId].isAfk = false;
   room.users[e.userId].isReady = false;
-  TribeUserList.update("lobby");
-  TribeButtons.update("lobby");
+  TribeUserList.update();
+  TribeButtons.update();
 });
 
 socket.on("room_chatting_changed", (e) => {
