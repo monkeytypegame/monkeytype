@@ -61,7 +61,7 @@ export function getStateString(state) {
 }
 
 export function updateState(newState) {
-  room.state = newState;
+  if (room) room.state = newState;
   state = newState;
   $("#tribeStateDisplay").text(`${state} - ${getStateString(state)}`);
 
@@ -70,7 +70,7 @@ export function updateState(newState) {
     TribeButtons.disableReadyButton("lobby");
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
-    if (Tribe.getSelf().isReady)
+    if (getSelf().isReady || getSelf().isLeader)
       Notifications.add("Race is starting...", 1, undefined, "Tribe");
   } else if (state === 11) {
     Object.keys(room.users).forEach((userId) => {
