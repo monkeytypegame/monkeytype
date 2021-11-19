@@ -156,7 +156,11 @@ export function update(page) {
     hideReadyButton(page);
     hideAfkButton(page);
 
-    enableStartButton(page);
+    disableStartButton(page);
+    if (Tribe.state === 5 || Tribe.state === 22) {
+      enableStartButton(page);
+    }
+
     // TODO REENABLE
     // if (Tribe.state === 5) {
     //   let readyCount = 0;
@@ -207,7 +211,8 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton,
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
-.pageTest #tribeResultBottom .buttons .userReadyButton`).click((e) => {
+.pageTest #tribeResultBottom .buttons .userReadyButton,
+.pageTest #result .bottom .buttons #readyButton`).click((e) => {
   Tribe.socket.emit(`room_ready_update`);
 });
 
