@@ -468,6 +468,62 @@
       justify-content: center;
       // grid-area: buttons;
       grid-column: 1/3;
+
+      #restartTestButton,
+      #showWordHistoryButton,
+      #saveScreenshotButton,
+      #restartTestButtonWithSameWordset,
+      #nextTestButton,
+      #readyButton,
+      #backToLobbyButton,
+      #practiseWordsButton,
+      #watchReplayButton {
+        position: relative;
+        border-radius: var(--roundness);
+        padding: 1rem 2rem;
+        width: min-content;
+        width: -moz-min-content;
+        color: var(--sub-color);
+        transition: 0.25s;
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+          color: var(--main-color);
+          outline: none;
+        }
+
+        &:focus {
+          background: var(--sub-color);
+        }
+        &.disabled {
+          opacity: 0.5;
+          cursor: default;
+          pointer-events: none;
+          &:hover {
+            color: var(--sub-color);
+          }
+        }
+      }
+
+      #showWordHistoryButton {
+        opacity: 1;
+      }
+
+      #replayWords {
+        cursor: pointer;
+      }
+
+      #replayStopwatch {
+        color: var(--main-color);
+        display: inline-block;
+        margin: 0;
+      }
+
+      #restartTestButton {
+        margin: 0 auto;
+        margin-top: 1rem;
+      }
     }
   }
 
@@ -812,54 +868,6 @@
   }
 }
 
-#restartTestButton,
-#showWordHistoryButton,
-#saveScreenshotButton,
-#restartTestButtonWithSameWordset,
-#nextTestButton,
-#readyButton,
-#backToLobbyButton,
-#practiseWordsButton,
-#watchReplayButton {
-  position: relative;
-  border-radius: var(--roundness);
-  padding: 1rem 2rem;
-  width: min-content;
-  width: -moz-min-content;
-  color: var(--sub-color);
-  transition: 0.25s;
-  cursor: pointer;
-
-  &:hover,
-  &:focus {
-    color: var(--main-color);
-    outline: none;
-  }
-
-  &:focus {
-    background: var(--sub-color);
-  }
-}
-
-#showWordHistoryButton {
-  opacity: 1;
-}
-
-#replayWords {
-  cursor: pointer;
-}
-
-#replayStopwatch {
-  color: var(--main-color);
-  display: inline-block;
-  margin: 0;
-}
-
-#restartTestButton {
-  margin: 0 auto;
-  margin-top: 1rem;
-}
-
 .pageTest {
   #wordsWrapper {
     position: relative;
@@ -970,6 +978,35 @@
       margin-top: -4.5rem;
       font-size: 4rem;
       line-height: 4rem;
+    }
+  }
+  #restartTestButton {
+    position: relative;
+    border-radius: var(--roundness);
+    padding: 1rem 2rem;
+    width: min-content;
+    width: -moz-min-content;
+    color: var(--sub-color);
+    transition: 0.25s;
+    cursor: pointer;
+    margin: 0 auto;
+    margin-top: 1rem;
+    &:hover,
+    &:focus {
+      color: var(--main-color);
+      outline: none;
+    }
+
+    &:focus {
+      background: var(--sub-color);
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+      &:hover {
+        color: var(--sub-color);
+      }
     }
   }
 }
