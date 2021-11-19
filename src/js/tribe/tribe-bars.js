@@ -10,6 +10,7 @@ export function init(page) {
   let room = Tribe.room;
   el.empty();
   Object.keys(room.users).forEach((userId) => {
+    if (userId === Tribe.socket.id) return;
     let user = room.users[userId];
     let me = false;
     if (userId === Tribe.socket.id) me = true;
@@ -30,6 +31,23 @@ export function init(page) {
       `);
     }
   });
+  let self = Tribe.getSelf();
+  if (self.isTyping) {
+    el.append(`
+      <tr class="player me" id="${self.id}">
+        <td class="name">${self.name}</td>
+        <td class="progress">
+          <div class="barBg">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
+        </td>
+        <td class="stats">
+          <div class="wpm">-</div>
+          <div class="acc">-</div>
+        </td>
+      </tr>
+      `);
+  }
 }
 
 export function show(page) {
