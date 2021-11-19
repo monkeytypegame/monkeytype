@@ -184,6 +184,7 @@ socket.on("disconnect", (e) => {
   TribeResults.reset();
   TribeChat.reset();
   TribeBars.hide();
+  TribePageLobby.reset();
   TribeBars.reset();
 });
 
@@ -201,6 +202,7 @@ socket.on("connect_failed", (e) => {
   TribeResults.reset();
   TribeChat.reset();
   TribeBars.hide();
+  TribePageLobby.reset();
   TribeBars.reset();
 });
 
@@ -218,6 +220,7 @@ socket.on("connect_error", (e) => {
   TribeResults.reset();
   TribeChat.reset();
   TribeBars.hide();
+  TribePageLobby.reset();
   TribeBars.reset();
 });
 
@@ -256,6 +259,12 @@ socket.on("room_left", (e) => {
   TribePageLobby.reset();
   TribePages.change("menu");
   TribeSound.play("leave");
+  $("#result #tribeResultBottom").addClass("hidden");
+  TribeUserList.reset();
+  TribeResults.reset();
+  TribeChat.reset();
+  TribeBars.hide();
+  TribeBars.reset();
 });
 
 socket.on("room_visibility_changed", (e) => {
