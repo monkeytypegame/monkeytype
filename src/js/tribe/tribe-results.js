@@ -2,7 +2,7 @@ import * as Tribe from "./tribe";
 
 let initialised = {};
 
-export function send(result) {
+export async function send(result) {
   Tribe.socket.emit("room_result", { result });
 }
 
