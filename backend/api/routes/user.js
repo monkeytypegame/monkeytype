@@ -7,7 +7,7 @@ const router = Router();
 
 router.get(
   "/",
-  RateLimit.limit60perhour,
+  RateLimit.limit120perhour,
   authenticateRequest,
   UserController.getUser
 );
