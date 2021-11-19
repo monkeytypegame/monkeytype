@@ -99,6 +99,7 @@ export function updateState(newState) {
     TribeResults.updateTimerText("Time left for everyone to get ready");
   } else if (state === 22) {
     TribePageLobby.enableConfigButtons();
+    TribeButtons.update();
   }
 }
 
