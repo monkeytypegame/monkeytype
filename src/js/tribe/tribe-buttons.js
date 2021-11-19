@@ -7,6 +7,7 @@ function showStartButton(page) {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
                 .pageTest #result .bottom .buttons #nextTestButton`;
   }
   $(elString).removeClass("hidden");
@@ -18,6 +19,7 @@ function hideStartButton(page) {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
                 .pageTest #result .bottom .buttons #nextTestButton`;
   }
   $(elString).addClass("hidden");
@@ -35,6 +37,7 @@ export function disableStartButton(page) {
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
                 .pageTest #result .bottom .buttons #nextTestButton,
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
                 .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).addClass("disabled");
@@ -47,6 +50,7 @@ export function enableStartButton(page) {
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
                 .pageTest #result .bottom .buttons #nextTestButton,
+                .pageTest #tribeResultBottom .buttons .backToLobbyButton,
                 .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).removeClass("disabled");
@@ -239,6 +243,8 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
   Tribe.socket.emit(`room_ready_update`);
 });
 
-$(`.pageTest #result .bottom .buttons #backToLobbyButton`).click((e) => {
+$(
+  `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`
+).click((e) => {
   Tribe.socket.emit("room_back_to_lobby");
 });
