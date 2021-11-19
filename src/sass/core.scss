@@ -270,6 +270,7 @@ key {
   &.disabled {
     opacity: 0.5;
     cursor: default;
+    pointer-events: none;
     &:hover {
       color: var(--text-color);
       background: rgba(0, 0, 0, 0.1);
