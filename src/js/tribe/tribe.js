@@ -255,9 +255,9 @@ socket.on("room_player_joined", (e) => {
 socket.on("room_player_left", (e) => {
   delete room.users[e.userId];
   room.size = Object.keys(room.users).length;
-  TribeUserList.update("lobby");
+  TribeUserList.update();
   TribeSound.play("leave");
-  TribeButtons.update("lobby");
+  TribeButtons.update();
 });
 
 socket.on("room_left", (e) => {
