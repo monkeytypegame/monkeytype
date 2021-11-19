@@ -68,7 +68,8 @@ export function updateState(newState) {
     TribeButtons.disableReadyButton("lobby");
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
-    Notifications.add("Race is starting...", 1, undefined, "Tribe");
+    if (Tribe.getSelf().isReady)
+      Notifications.add("Race is starting...", 1, undefined, "Tribe");
   } else if (state === 11) {
     Object.keys(room.users).forEach((userId) => {
       let u = room.users[userId];
