@@ -23,9 +23,11 @@ export function init(page) {
     let el = $(".pageTest #result #tribeResults table tbody");
 
     Object.keys(Tribe.room.users).forEach((userId) => {
+      let user = Tribe.room.users[userId];
+      if (user.isAfk) return;
       el.append(`
         <tr class="user" id="${userId}">
-          <td class="name">${Tribe.room.users[userId].name}</td>
+          <td class="name">${user.name}</td>
           <td>
             <div class="pos">-</div>
             <div class="points">-</div>
