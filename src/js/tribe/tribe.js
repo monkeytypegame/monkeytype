@@ -264,15 +264,19 @@ socket.on("room_left", (e) => {
   room = undefined;
   updateState(1);
   TribePageMenu.enableButtons();
-  TribePageLobby.reset();
-  TribePages.change("menu");
-  TribeSound.play("leave");
-  $("#result #tribeResultBottom").addClass("hidden");
-  TribeUserList.reset();
-  TribeResults.reset();
-  TribeChat.reset();
-  TribeBars.hide();
-  TribeBars.reset();
+  if (!$(".pageTribe").hasClass("active")) {
+    UI.changePage("tribe");
+  }
+  TribePages.change("menu").then(() => {
+    TribePageLobby.reset();
+    TribeSound.play("leave");
+    $("#result #tribeResultBottom").addClass("hidden");
+    TribeUserList.reset();
+    TribeResults.reset();
+    TribeChat.reset();
+    TribeBars.hide();
+    TribeBars.reset();
+  });
 });
 
 socket.on("room_visibility_changed", (e) => {
