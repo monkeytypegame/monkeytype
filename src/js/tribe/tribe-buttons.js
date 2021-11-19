@@ -146,6 +146,11 @@ export function activateAfkButton(page) {
 }
 
 export function update(page) {
+  if (!page) {
+    update("lobby");
+    update("result");
+    return;
+  }
   if (Tribe.getSelf().isLeader) {
     showStartButton(page);
     hideReadyButton(page);
