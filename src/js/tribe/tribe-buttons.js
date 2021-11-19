@@ -211,19 +211,7 @@ export function update(page) {
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
   .pageTest #tribeResultBottom .buttons .startTestButton`).click((e) => {
-  let room = Tribe.room;
-  let everyoneReady = true;
-  Object.keys(room.users).forEach((userId) => {
-    if (room.users[userId].isLeader || room.users[userId].isAfk) return;
-    if (!room.users[userId].isReady) {
-      everyoneReady = false;
-    }
-  });
-  if (everyoneReady) {
-    Tribe.socket.emit("room_init_race");
-  } else {
-    TribeStartRacePopup.show();
-  }
+  Tribe.initRace();
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,

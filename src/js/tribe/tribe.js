@@ -18,6 +18,7 @@ import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
+import * as TribeStartRacePopup from "./tribe-start-race-popup";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -131,6 +132,21 @@ export function joinRoom(roomId, fromBrowser = false) {
       history.replaceState("/tribe", null, "/tribe");
     }
   });
+}
+
+export function initRace() {
+  let everyoneReady = true;
+  Object.keys(room.users).forEach((userId) => {
+    if (room.users[userId].isLeader || room.users[userId].isAfk) return;
+    if (!room.users[userId].isReady) {
+      everyoneReady = false;
+    }
+  });
+  if (everyoneReady) {
+    socket.emit("room_init_race");
+  } else {
+    TribeStartRacePopup.show();
+  }
 }
 
 socket.on("connect", async (e) => {
