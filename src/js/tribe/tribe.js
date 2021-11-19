@@ -310,8 +310,8 @@ socket.on("room_user_is_ready", (e) => {
 
 socket.on("room_user_afk_update", (e) => {
   room.users[e.userId].isAfk = e.isAfk;
-  TribeUserList.update("lobby");
-  TribeButtons.update("lobby");
+  TribeUserList.update();
+  TribeButtons.update();
 });
 
 socket.on("room_leader_changed", (e) => {
