@@ -52,13 +52,16 @@ export function getStateString(state) {
   if (state === 10) return "preparing race";
   if (state === 11) return "race countdown";
   if (state === 12) return "race active";
+  if (state === 20) return "at least one finished";
+  if (state === 21) return "everyone finished";
+  if (state === 22) return "everyone ready / timer over";
   return state;
 }
 
 export function updateState(newState) {
   room.state = newState;
   state = newState;
-  Notifications.add(getStateString(state), 0, undefined, "Tribe State");
+  $("#tribeStateDisplay").text(`${state} - ${getStateString(state)}`);
 
   if (state === 10) {
     TribeButtons.disableStartButton("lobby");
