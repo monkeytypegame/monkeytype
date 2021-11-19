@@ -203,6 +203,8 @@ export async function screenshot() {
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (firebase.auth().currentUser == null)
       $(".pageTest .loginTip").removeClass("hidden");
+    if (Tribe.state > 5)
+      $(".pageTest #result .inviteLink").removeClass("hidden");
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -231,6 +233,7 @@ export async function screenshot() {
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
+  $(".pageTest #result .inviteLink").addClass("hidden");
   try {
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
