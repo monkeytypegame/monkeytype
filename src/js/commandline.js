@@ -10,6 +10,7 @@ import * as CustomWordAmountPopup from "./custom-word-amount-popup";
 import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as QuoteSearchPopupWrapper from "./quote-search-popup";
+import * as TribeStartRacePopup from "./tribe-start-race-popup";
 
 let commandLineMouseMode = false;
 
@@ -364,6 +365,9 @@ $(document).ready((e) => {
       } else if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
         event.preventDefault();
         QuoteSearchPopupWrapper.hide();
+      } else if (!$("#tribeStarRacePopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        TribeStartRacePopup.hide();
       } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (CommandlineLists.current.length > 1) {
           CommandlineLists.current.pop();

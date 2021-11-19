@@ -642,7 +642,8 @@ $(document).keydown((event) => {
     !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
     !$("#quoteSubmitPopupWrapper").hasClass("hidden") ||
     !$("#quoteApprovePopupWrapper").hasClass("hidden") ||
-    !$("#wordFilterPopupWrapper").hasClass("hidden");
+    !$("#wordFilterPopupWrapper").hasClass("hidden") ||
+    !$(".popupWrapper").hasClass("hidden");
 
   const allowTyping =
     pageTestActive &&

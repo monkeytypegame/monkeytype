@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import * as TribeStartRacePopup from "./tribe-start-race-popup";
 
 function showStartButton(page) {
   let elString = "";
@@ -206,7 +207,19 @@ export function update(page) {
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
   .pageTest #tribeResultBottom .buttons .startTestButton`).click((e) => {
-  Tribe.socket.emit("room_init_race");
+  let room = Tribe.room;
+  let everyoneReady = true;
+  Object.keys(room.users).forEach((userId) => {
+    if (room.users[userId].isLeader || room.users[userId].isAfk) return;
+    if (!room.users[userId].isReady) {
+      everyoneReady = false;
+    }
+  });
+  if (everyoneReady) {
+    Tribe.socket.emit("room_init_race");
+  } else {
+    TribeStartRacePopup.show();
+  }
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
