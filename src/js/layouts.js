@@ -40,6 +40,16 @@ const layouts = {
             " "
         ],
     },
+    colemak_dh_wide: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "=+", "7&", "8*", "9(", "0)", "-_",
+            "qQ", "wW", "fF", "pP", "bB", "[{", "jJ", "lL", "uU", "yY", ";:", "'\"", "\\|",
+            "aA", "rR", "sS", "tT", "gG", "]}", "mM", "nN", "eE", "iI", "oO",
+            "\\|", "xX", "cC", "dD", "vV", "zZ", "/?", "kK", "hH", ",<", ".>",
+            " "
+        ],
+    },
     colemak_dhk: {
         keymapShowTopRow: false,
         keys: [
