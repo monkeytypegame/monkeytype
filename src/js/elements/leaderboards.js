@@ -451,7 +451,7 @@ let leftScrollEnabled = true;
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem.scrollTop() == 0) {
+  if (Math.round(elem.scrollTop()) <= 50) {
     requestMore(15, true);
   }
 });
@@ -459,7 +459,10 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
+  if (
+    Math.round(elem[0].scrollHeight - elem.scrollTop()) <=
+    Math.round(elem.outerHeight()) + 50
+  ) {
     requestMore(15);
   }
 });
@@ -469,14 +472,17 @@ let rightScrollEnabled = true;
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   if (!rightScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem.scrollTop() == 0) {
+  if (Math.round(elem.scrollTop()) <= 50) {
     requestMore(60, true);
   }
 });
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
+  if (
+    Math.round(elem[0].scrollHeight - elem.scrollTop()) <=
+    Math.round(elem.outerHeight() + 50)
+  ) {
     requestMore(60);
   }
 });
