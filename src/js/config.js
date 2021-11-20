@@ -1617,6 +1617,7 @@ export function apply(configObj) {
     }
   });
   if (configObj && configObj != null && configObj != "null") {
+    setAutoSwitchTheme(configObj.autoSwitchTheme, true);
     setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setCustomTheme(configObj.customTheme, true, true);

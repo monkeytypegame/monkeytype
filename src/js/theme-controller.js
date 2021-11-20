@@ -1,5 +1,6 @@
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
+import * as Notifications from "./notifications";
 import * as Misc from "./misc";
 import Config from "./config";
 import * as UI from "./ui";
@@ -226,8 +227,10 @@ window
     if (Config.autoSwitchTheme) {
       if (newColorTheme == "light") {
         apply(Config.themeLight);
+        Notifications.add("Switched to light mode", 0, 1000, null, null);
       } else if (newColorTheme == "dark") {
         apply(Config.theme);
+        Notifications.add("Switched to dark mode", 0, 1000, null, null);
       }
     }
   });
