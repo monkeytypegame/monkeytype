@@ -24,7 +24,9 @@ export async function replace(word) {
         (_, $1, $2, $3) =>
           $1 +
           ($2.charAt(0) === $2.charAt(0).toUpperCase()
-            ? capitalizeFirstLetter(replacement[1])
+            ? $2 === $2.toUpperCase()
+              ? replacement[1].toUpperCase()
+              : capitalizeFirstLetter(replacement[1])
             : replacement[1]) +
           $3
       )
