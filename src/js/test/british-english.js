@@ -20,13 +20,13 @@ export async function replace(word) {
   );
   return replacement
     ? word.replace(
-        RegExp(`^(?:([\\W]*)${replacement[0]}([\\W]*))$`, "gi"),
-        (_, $1, $2) =>
+        RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
+        (_, $1, $2, $3) =>
           $1 +
-          (word.charAt(0) === word.charAt(0).toUpperCase()
+          ($2.charAt(0) === $2.charAt(0).toUpperCase()
             ? capitalizeFirstLetter(replacement[1])
             : replacement[1]) +
-          $2
+          $3
       )
     : word;
 }
