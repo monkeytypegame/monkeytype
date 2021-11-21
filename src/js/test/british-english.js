@@ -16,11 +16,11 @@ export async function getList() {
 export async function replace(word) {
   let list = await getList();
   let replacement = list.find((a) =>
-    word.match(RegExp(`([\\W\\D]*)${a[0]}([\\W\\D]*)`, "gi"))
+    word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
   );
   return replacement
     ? word.replace(
-        RegExp(`([\\W\\D]*)${replacement[0]}([\\W\\D]*)`, "gi"),
+        RegExp(`^(?:([\\W]*)${replacement[0]}([\\W]*))$`, "gi"),
         (_, $1, $2) =>
           $1 +
           (word.charAt(0) === word.charAt(0).toUpperCase()
