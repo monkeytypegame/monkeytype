@@ -15,12 +15,18 @@ export async function getList() {
 
 export async function replace(word) {
   let list = await getList();
-  var britishWord =
-    list[list.findIndex((a) => a[0] === word.toLowerCase())]?.[1];
-  if (typeof britishWord !== "undefined") {
-    if (word.charAt(0) === word.charAt(0).toUpperCase()) {
-      britishWord = capitalizeFirstLetter(britishWord);
-    }
-  }
-  return britishWord;
+  let replacement = list.find((a) =>
+    word.match(RegExp(`([\\W\\D]*)${a[0]}([\\W\\D]*)`, "gi"))
+  );
+  return replacement
+    ? word.replace(
+        RegExp(`([\\W\\D]*)${replacement[0]}([\\W\\D]*)`, "gi"),
+        (_, $1, $2) =>
+          $1 +
+          (word.charAt(0) === word.charAt(0).toUpperCase()
+            ? capitalizeFirstLetter(replacement[1])
+            : replacement[1]) +
+          $2
+      )
+    : word;
 }
