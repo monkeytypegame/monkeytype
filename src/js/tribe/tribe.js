@@ -501,6 +501,10 @@ socket.on("room_back_to_lobby", (e) => {
 socket.on("room_final_positions", (e) => {
   // console.log(e);
   TribeResults.updatePositions("result", e.sorted);
+  e.sorted.forEach((user) => {
+    room.users[user.id].points = user.newPoints;
+  });
+  TribeUserList.update();
   if (e.sorted[0].id === socket.id) {
     TribeSound.play("finish_win");
   } else {
