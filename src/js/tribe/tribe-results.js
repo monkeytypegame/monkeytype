@@ -83,7 +83,13 @@ export function updatePositions(page, orderedList) {
       );
       let string = Misc.getPositionString(index + 1);
       userEl.find(".pos").text(string);
-      userEl.find(".points").text(points[index] ? `+${points[index]}pts` : "");
+      userEl
+        .find(".points")
+        .text(
+          points[index]
+            ? `+${points[index]}${points[index] === 1 ? "pt" : "pts"}`
+            : ""
+        );
     });
   }
 }
