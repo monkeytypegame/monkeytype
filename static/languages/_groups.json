@@ -278,5 +278,9 @@
   {
     "name": "hindi",
     "languages": ["hindi", "hindi_1k"]
+  },
+  {
+    "name": "macedonian",
+    "languages": ["macedonian"]
   }
 ]

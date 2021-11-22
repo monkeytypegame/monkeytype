@@ -1557,6 +1557,10 @@ export async function finish(difficultyFailed = false) {
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = chartData2;
 
+  ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
+    ? "cpm"
+    : "wpm";
+
   let maxChartVal = Math.max(
     ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
