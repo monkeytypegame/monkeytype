@@ -497,3 +497,13 @@ socket.on("room_readyTimer_over", (e) => {
 socket.on("room_back_to_lobby", (e) => {
   UI.changePage("tribe", false, true);
 });
+
+socket.on("room_final_positions", (e) => {
+  // console.log(e);
+  TribeResults.updatePositions("result", e.sorted);
+  if (e.sorted[0].id === socket.id) {
+    TribeSound.play("finish_win");
+  } else {
+    TribeSound.play("finish");
+  }
+});

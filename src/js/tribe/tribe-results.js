@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import * as Misc from "./misc";
 
 let initialised = {};
 
@@ -26,7 +27,9 @@ export function init(page) {
       let user = Tribe.room.users[userId];
       if (user.isAfk) return;
       el.append(`
-        <tr class="user" id="${userId}">
+        <tr class="user ${
+          userId === Tribe.socket.id ? "me" : ""
+        }" id="${userId}">
           <td class="name">${user.name}</td>
           <td>
             <div class="pos">-</div>
@@ -68,6 +71,20 @@ export function init(page) {
 
     $(".pageTest #result #tribeResults").removeClass("hidden");
     initialised[page] = true;
+  }
+}
+
+export function updatePositions(page, orderedList) {
+  let points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+  if (page === "result") {
+    orderedList.forEach((user, index) => {
+      let userEl = $(
+        `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`
+      );
+      let string = Misc.getPositionString(index + 1);
+      userEl.find(".pos").text(string);
+      userEl.find(".points").text(points[index] ? `+${points[index]}pts` : "");
+    });
   }
 }
 
