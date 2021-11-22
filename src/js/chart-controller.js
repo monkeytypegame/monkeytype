@@ -400,7 +400,7 @@ export let accountActivity = new Chart(
               },
             },
             bounds: "ticks",
-            distribution: "series",
+            distribution: "linear",
             display: true,
             scaleLabel: {
               display: false,

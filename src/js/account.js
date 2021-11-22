@@ -756,30 +756,36 @@ export function update() {
     let activityChartData_avgWpm = [];
     let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
-      let datecheck;
-      if (lastTimestamp > 0) {
-        datecheck = lastTimestamp;
-      } else {
-        datecheck = thisDate;
-      }
+      //this was used to fill in empty days between the results before i realised chart js can do it for me
+      // let datecheck;
+      // if (lastTimestamp > 0) {
+      //   datecheck = lastTimestamp;
+      // } else {
+      //   datecheck = thisDate;
+      // }
 
-      let numDaysBetweenTheDays = (datecheck - date) / 86400000;
+      // let numDaysBetweenTheDays = (datecheck - date) / 86400000;
 
-      if (numDaysBetweenTheDays > 1) {
-        if (datecheck === thisDate) {
-          activityChartData_amount.push({
-            x: parseInt(thisDate),
-            y: 0,
-          });
-        }
+      // if (numDaysBetweenTheDays > 1) {
+      //   if (datecheck === thisDate) {
+      //     activityChartData_amount.push({
+      //       x: parseInt(thisDate),
+      //       y: 0,
+      //     });
+      //   }
 
-        for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
-          activityChartData_amount.push({
-            x: parseInt(datecheck) - 86400000 * (i + 1),
-            y: 0,
-          });
-        }
-      }
+      //   for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
+      //     activityChartData_amount.push({
+      //       x: parseInt(datecheck) - 86400000 * (i + 1),
+      //       y: 0,
+      //     });
+      //     activityChartData_time.push({
+      //       x: parseInt(datecheck) - 86400000 * (i + 1),
+      //       y: 0,
+      //       amount: 0,
+      //     });
+      //   }
+      // }
 
       activityChartData_amount.push({
         x: parseInt(date),
@@ -798,8 +804,10 @@ export function update() {
             : activityChartData[date].totalWpm) / activityChartData[date].amount
         ),
       });
-      lastTimestamp = date;
+      // lastTimestamp = date;
     });
+
+    console.log(activityChartData_amount);
 
     if (Config.alwaysShowCPM) {
       ChartController.accountActivity.options.scales.yAxes[1].scaleLabel.labelString =

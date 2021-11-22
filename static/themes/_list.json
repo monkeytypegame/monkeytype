@@ -618,5 +618,10 @@
     "name": "comfy",
     "bgColor" : "#4A5B6E",
     "textColor":"#F8CDC6"
+  },
+  {
+    "name": "tiramisu",
+    "bgColor" : "#CFC6B9",
+    "textColor":"#C0976F"
   }
 ]
