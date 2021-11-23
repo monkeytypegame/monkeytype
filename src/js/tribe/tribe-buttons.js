@@ -44,6 +44,11 @@ export function disableStartButton(page) {
 }
 
 export function enableStartButton(page) {
+  if (!page) {
+    enableStartButton("lobby");
+    enableStartButton("result");
+    return;
+  }
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
