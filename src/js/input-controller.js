@@ -629,6 +629,8 @@ function handleTab(event) {
 }
 
 $(document).keydown((event) => {
+  if ($(".pageLoading").hasClass("active")) return event.preventDefault();
+
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
   const pageTestActive = !$(".pageTest").hasClass("hidden");
