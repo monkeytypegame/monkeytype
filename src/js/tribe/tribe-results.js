@@ -111,30 +111,21 @@ function updateUser(page, userId) {
         `
       );
       let otherText = "";
-      let faded = false;
       let resolve = user.result.resolve;
       if (resolve.afk) {
         otherText = "afk";
-        faded = true;
       } else if (resolve.repeated) {
         otherText = "repeated";
-        faded = true;
       } else if (resolve.failed) {
         otherText = `failed(${resolve.failedReason})`;
-        faded = true;
       } else if (resolve.saved === false) {
         otherText = `save failed(${resolve.saveFailedMessage})`;
-        faded = true;
       } else if (resolve.valid === false) {
         otherText = `invalid`;
-        faded = true;
       } else if (resolve.saved && resolve.isPb) {
         otherText = "new pb";
       }
       userEl.find(`.other .text`).text(otherText);
-      if (faded) {
-        userEl.addClass("faded");
-      }
     }
   }
 }
@@ -147,6 +138,15 @@ export function update(page, userId) {
     Object.keys(Tribe.room.users).forEach((userId) => {
       updateUser(page, userId);
     });
+  }
+}
+
+export function fadeUser(page, userId) {
+  if (page == "result") {
+    let userEl = $(
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+    );
+    userEl.addClass("faded");
   }
 }
 

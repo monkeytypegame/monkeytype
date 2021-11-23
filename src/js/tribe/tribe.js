@@ -457,13 +457,13 @@ socket.on("room_user_result", (e) => {
   room.users[e.userId].isFinished = true;
   let resolve = e.result.resolve;
   if (
-    resolve.afk ||
-    resolve.repeated ||
-    resolve.failed ||
-    resolve.valid === false ||
-    resolve.saved === false
+    resolve?.afk ||
+    resolve?.repeated ||
+    resolve?.valid === false ||
+    resolve?.saved === false
   ) {
     TribeBars.fadeUser("test", e.userId);
+    TribeResults.fadeUser("result", e.userId);
   } else {
     TribeBars.completeBar("test", e.userId);
   }
