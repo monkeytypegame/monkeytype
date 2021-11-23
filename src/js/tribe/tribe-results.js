@@ -150,6 +150,15 @@ export function update(page, userId) {
   }
 }
 
+export function fadeUser(page, userId) {
+  if (page == "result") {
+    let userEl = $(
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+    );
+    userEl.addClass("faded");
+  }
+}
+
 let timerText = "Time left for everyone to finish";
 let timerVisible = false;
 
