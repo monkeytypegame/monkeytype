@@ -514,12 +514,29 @@ socket.on("room_back_to_lobby", (e) => {
 socket.on("room_final_positions", (e) => {
   // console.log(e);
   TribeResults.updatePositions("result", e.sorted);
+  TribeResults.updateMiniCrowns("result", e.miniCrowns);
   e.sorted.forEach((user) => {
     room.users[user.id].points = user.newPoints;
   });
   TribeUserList.update();
+
+  let isGlowing = false;
+  if (
+    e.miniCrowns.wpm === e.miniCrowns.raw &&
+    e.miniCrowns.raw === e.miniCrowns.acc &&
+    e.miniCrowns.acc === e.miniCrowns.consistency
+  ) {
+    isGlowing = true;
+  }
+
+  if (e.sorted[0]?.id)
+    TribeResults.showCrown("result", e.sorted[0]?.id, isGlowing);
+
   if (e?.sorted[0]?.id === socket.id) {
     TribeSound.play("finish_win");
+    if (isGlowing) {
+      TribeSound.play("glow");
+    }
   } else {
     TribeSound.play("finish");
   }

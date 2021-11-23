@@ -37,7 +37,7 @@ export function init(page) {
           </td>
           <td>
             <div class="crown">
-              <div class="icon invisible"><i class="fas fa-crown"></i></div>
+              <div class="icon invisible"><i class="fas fa-fw fa-crown"></i></div>
               <div class="glow invisible"></div>
             </div>
           </td>
@@ -53,7 +53,7 @@ export function init(page) {
             <div class="raw">
               <div class="text">-</div>
             </div>
-            <div class="con">
+            <div class="consistency">
               <div class="text">-</div>
             </div>
           </td>
@@ -94,6 +94,36 @@ export function updatePositions(page, orderedList) {
   }
 }
 
+export function updateMiniCrowns(page, miniCrowns) {
+  if (page === "result") {
+    Object.keys(miniCrowns).forEach((crown) => {
+      let userId = miniCrowns[crown];
+      let userEl = $(
+        `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+      );
+      userEl.find(`.${crown}`).append(`
+        <div class="miniCrown">
+        <i class="fas fa-fw fa-crown"></i>
+        </div>
+      `);
+    });
+  }
+}
+
+export function showCrown(page, userId, isGlowing) {
+  if (page === "result") {
+    let userEl = $(
+      `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+    );
+    userEl.find(`.crown .icon`).removeClass("invisible");
+    if (isGlowing) {
+      userEl.find(".crown").attr("aria-label", "Dominated");
+      userEl.find(".crown").attr("data-balloon-pos", "up");
+      userEl.find(`.crown .glow`).removeClass("invisible");
+    }
+  }
+}
+
 function updateUser(page, userId) {
   if (page == "result") {
     let userEl = $(
@@ -104,7 +134,7 @@ function updateUser(page, userId) {
       userEl.find(`.wpm .text`).text(user.result.wpm);
       userEl.find(`.raw .text`).text(user.result.raw);
       userEl.find(`.acc .text`).text(user.result.acc + "%");
-      userEl.find(`.con .text`).text(user.result.consistency + "%");
+      userEl.find(`.consistency .text`).text(user.result.consistency + "%");
       userEl.find(`.char .text`).text(
         `
         ${user.result.charStats[0]}/${user.result.charStats[1]}/${user.result.charStats[2]}/${user.result.charStats[3]}

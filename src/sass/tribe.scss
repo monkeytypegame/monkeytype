@@ -538,7 +538,7 @@
           .wpm,
           .acc,
           .raw,
-          .con {
+          .consistency {
             .miniCrown {
               margin-left: 0.25rem;
             }
@@ -547,13 +547,13 @@
             align-items: center;
           }
           .acc .text,
-          .con .text,
+          .consistency .text,
           .other .text,
           .points .text {
             opacity: 0.5;
           }
           .crown {
-            width: 1px;
+            width: 1.25rem;
             .glow {
               width: 5px;
               height: 5px;
@@ -571,7 +571,6 @@
             width: 0;
             font-size: 0.5rem;
             vertical-align: super;
-            opacity: 0;
           }
           .pos {
             // margin-right: 0.5rem;
