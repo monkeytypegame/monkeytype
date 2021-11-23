@@ -17,6 +17,7 @@ module.exports = {
       });
   },
   mongoDB() {
+    if (!mongoClient) throw new Error("Database is offline");
     return mongoClient.db(process.env.DB_NAME);
   },
 };
