@@ -461,10 +461,10 @@ socket.on("room_user_result", (e) => {
     resolve.afk ||
     resolve.repeated ||
     resolve.failed ||
-    resolve.valid === false
+    resolve.valid === false ||
+    resolve.saved === false
   ) {
     TribeBars.fadeUser("test", e.userId);
-    TribeResults.fadeUser("result", e.userId);
   }
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
