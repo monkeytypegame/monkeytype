@@ -209,8 +209,8 @@ export async function start() {
       nextDelay: delay,
     });
     if (
-      (Config.mode === "time" && Config.time < 130) ||
-      (Config.mode === "words" && Config.words < 250)
+      (Config.mode === "time" && Config.time < 130 && Config.time > 0) ||
+      (Config.mode === "words" && Config.words < 250 && Config.words > 0)
     ) {
       if (delay < interval / 2) {
         //slow timer
