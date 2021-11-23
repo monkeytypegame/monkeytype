@@ -21,7 +21,7 @@ router.post(
 
 router.post(
   "/updateTags",
-  RateLimit.limit60perhour,
+  RateLimit.limit500perhour,
   authenticateRequest,
   ResultController.updateTags
 );
