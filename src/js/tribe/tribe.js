@@ -465,7 +465,9 @@ socket.on("room_user_result", (e) => {
     TribeBars.fadeUser("test", e.userId);
     TribeResults.fadeUser("result", e.userId);
   } else {
-    TribeBars.completeBar("test", e.userId);
+    if (resolve?.failed !== true) {
+      TribeBars.completeBar("test", e.userId);
+    }
   }
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
@@ -516,7 +518,7 @@ socket.on("room_final_positions", (e) => {
     room.users[user.id].points = user.newPoints;
   });
   TribeUserList.update();
-  if (e.sorted[0].id === socket.id) {
+  if (e?.sorted[0]?.id === socket.id) {
     TribeSound.play("finish_win");
   } else {
     TribeSound.play("finish");
