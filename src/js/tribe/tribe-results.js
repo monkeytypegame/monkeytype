@@ -65,6 +65,15 @@ export function init(page) {
               <div class="text">-</div>
             </div>
           </td>
+          <td>
+            <div class="progress">
+              <div class="barBg">
+                <div class="bar" style="width: 0%;"></div>
+              </div>
+            </div>
+            <div class="chart hidden">
+            </div>
+          </td>
         </tr>
       `);
     });
