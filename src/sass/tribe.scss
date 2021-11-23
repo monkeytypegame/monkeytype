@@ -584,6 +584,21 @@
             font-size: 0.6rem;
             vertical-align: super;
           }
+          .progress {
+            width: 100%;
+            .barBg {
+              width: 100%;
+              height: 0.25rem;
+              background: rgba(0, 0, 0, 0.1);
+              border-radius: var(--roundness);
+              .bar {
+                height: 0.25rem;
+                background: var(--sub-color);
+                left: 0;
+                border-radius: var(--roundness);
+              }
+            }
+          }
           td:nth-child(2) {
             width: 4rem;
           }
