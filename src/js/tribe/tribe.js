@@ -386,7 +386,7 @@ socket.on("room_config_changed", (e) => {
   room.config = e.config;
   TribeConfig.apply(e.config);
   TribePageLobby.updateRoomConfig();
-  TribePageLobby.enableStartButton();
+  TribeButtons.enableStartButton();
   TribeConfig.setLoadingIndicator(false);
 });
 
@@ -456,6 +456,16 @@ socket.on("room_user_result", (e) => {
   room.users[e.userId].result = e.result;
   room.users[e.userId].isFinished = true;
   TribeBars.completeBar("test", e.userId);
+  let resolve = e.result.resolve;
+  if (
+    resolve.afk ||
+    resolve.repeated ||
+    resolve.failed ||
+    resolve.valid === false
+  ) {
+    TribeBars.fadeUser("test", e.userId);
+    TribeResults.fadeUser("result", e.userId);
+  }
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
     TribeUserList.update("result");
