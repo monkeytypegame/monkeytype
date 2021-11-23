@@ -195,7 +195,7 @@ function sendTribeProgress(wpm, raw, acc) {
       TestLogic.input.current === "" &&
       TestLogic.input.getHistory().length === 0
     ) {
-      TestLogic.fail("afk");
+      TestLogic.finish();
     }
   }
   if (timerDebug) console.timeEnd("tribe progress");
