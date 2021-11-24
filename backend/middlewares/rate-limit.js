@@ -18,6 +18,22 @@ exports.limit60perhour = rateLimit({
   },
 });
 
+exports.limit120perhour = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 min
+  max: 120 * multiplier,
+  message: {
+    message: "Too many requests, please try again later",
+  },
+  keyGenerator: (req) => {
+    return `${
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "255.255.255.255"
+    }`;
+  },
+});
+
 exports.limit3perday = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 3 * multiplier,

@@ -133,6 +133,7 @@
   ,"code_python"
   ,"code_c"
   ,"code_csharp"
+  ,"code_css"
   ,"code_c++"
   ,"code_dart"
   ,"code_javascript"
@@ -140,6 +141,7 @@
   ,"code_html"
   ,"code_pascal"
   ,"code_java"
+  ,"code_kotlin"
   ,"code_go"
   ,"code_rust"
   ,"code_ruby"
@@ -147,4 +149,5 @@
   ,"code_swift"
   ,"hindi"
   ,"hindi_1k"
+  ,"macedonian"
 ]

@@ -17,6 +17,7 @@ module.exports = {
       });
   },
   mongoDB() {
+    if (!mongoClient) throw new Error("Could not connect to the database");
     return mongoClient.db(process.env.DB_NAME);
   },
 };

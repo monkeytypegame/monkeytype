@@ -312,6 +312,54 @@
       "source": "Mario Vargas Llosa, La Ciudad y los Perros",
       "length": 471,
       "id": 49
+    },
+    {
+      "text": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.",
+      "source": "Don Quijote de la Mancha",
+      "length": 177,
+      "id": 50
+    },
+    {
+      "text": "Dar el ejemplo no es la principal manera de influir sobre los demás; es la única manera",
+      "source" : "Albert Einstein",
+      "length": 87,
+      "id" : 51
+    },
+    {
+      "text": "Un hermano puede no ser un amigo, pero un amigo será siempre un hermano.",
+      "source" : "Benjamin Franklin",
+      "length": 72,
+      "id" : 52
+    },
+    {
+      "text": "GitHub es una compañía sin fines de lucro que ofrece un servicio de hosting de repositorios almacenados en la nube. Esencialmente, hace que sea más fácil para individuos y equipos usar Git como la versión de control y colaboración.",
+      "source" : "https://kinsta.com/es/base-de-conocimiento/que-es-github/",
+      "length": 231,
+      "id" : 53
+    },
+    {
+      "text" : "Estar en paz consigo mismo es el medio más seguro de comenzar a estarlo con los demás",
+      "source" : "Fray Luis de Leon",
+      "length": 85,
+      "id" : 54
+    },
+    {
+      "text" : "Señor, las tristezas no se hicieron para las bestias, sino para los hombres; pero si los hombres las sienten demasiado, se vuelven bestias",
+      "source" : "Don Quijote de la Mancha, de Miguel de Cervantes",
+      "length": 138,
+      "id" : 55
+    },
+    {
+      "text" : "No importa las condiciones en las que uno nace, sino lo que llega a ser cuando crece.",
+      "source" : "Harry Potter y el cáliz de fuego, de J.K. Rowling",
+      "length": 85,
+      "id" : 56
+    },
+    {
+      "text" : "Me pregunto si las estrellas se iluminan con el fin de que algún día, cada uno pueda encontrar la suya”",
+      "source" : "El Principito",
+      "length": 103,
+      "id" : 57
     }
   ]
 }
