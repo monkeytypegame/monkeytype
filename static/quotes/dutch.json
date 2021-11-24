@@ -1,10 +1,22 @@
 {
   "language": "dutch",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -282,6 +294,12 @@
       "source": "Peter R. de Vries",
       "length": 264,
       "id": 46
+    },
+    {
+      "text": "Ik zit mij voor het vensterglas  onnoemlijk te vervelen. Ik wou dat ik twee hondjes was, dan kon ik samen spelen.",
+      "source": "Spleen, Michel van der Plas (1954)",
+      "length": 112,
+      "id": 47
     }
   ]
 }
