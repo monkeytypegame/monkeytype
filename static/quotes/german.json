@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -3000,6 +3012,12 @@
       "source": "Jane Austen",
       "length": 60,
       "id": 500
+    },
+    {
+      "text": "Achtung, Achtung! Ein bärtiger alter Mann ist heute Abend unterwegs und versucht uns allen was in die Schuhe zu schieben.",
+      "source": "Unbekannt (für Nikolaus)",
+      "length": 121,
+      "id": 501
     }
   ]
 }
