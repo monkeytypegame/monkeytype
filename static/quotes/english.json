@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -34174,6 +34186,516 @@
       "source": "Assassin's Creed Valhalla",
       "length": 430,
       "id": 5768
+    },
+    {
+      "text": "Yes, I have a dream, and it's not some MLK dream for equality. I want to own a decommissioned lighthouse. And I want to live at the top. And nobody knows I live there. And there's a button that I can press, and launch that lighthouse into space.",
+      "source": "The Office",
+      "length": 245,
+      "id": 5769
+    },
+    {
+      "text": "Don't ever, for any reason, do anything to anyone for any reason ever, no matter what, no matter where, or who, or who you are with, or where you are going, or where you've been... ever, for any reason whatsoever.",
+      "source": "The Office",
+      "length": 213,
+      "id": 5770
+    },
+    {
+      "text": "Toby is in HR, which technically means he works for corporate. So he's really not a part of our family. Also, he's divorced, so he's really not a part of his family",
+      "source": "The Office",
+      "length": 164,
+      "id": 5771
+    },
+    {
+      "text": "My mom always used to say that average people are the most special people in the world. And that's why God made so many of them. ",
+      "source": "The Office",
+      "length": 129,
+      "id": 5772
+    },
+    {
+      "text": "I don't think it would be the worst thing if they let me go. Because then I might...  It's just... I don't think it's many girls' dream to be a receptionist.",
+      "source": "The Office",
+      "length": 157,
+      "id": 5773
+    },
+    {
+      "text": "'Cause you're not a man. You're just a mannequin. I wish you could feel that my love is real but you're not a man.",
+      "source": "Mannequin",
+      "length": 114,
+      "id": 5774
+    },
+    {
+      "text": "Too many of us are not living our dreams because we are living our fears",
+      "source": "A Friend",
+      "length": 72,
+      "id": 5775
+    },
+    {
+      "text": "But courage need not be remembered, for it is never forgotten.",
+      "source": "Breath of the Wild",
+      "length": 62,
+      "id": 5776
+    },
+    {
+      "text": "From the Wisconsin region, a nice firm cheddar. Also from the great state of Wisconsin, an aged Parmesan. Uh, here you will find a cheddar-style spread, which has reacted nicely with the air to form a light rind, which I think you'll find both challenging and delicious. At that point, I would recommend you take a quick trip south of the border to the great state of Illinois, where you will find this fine blue cheese dressing. If I may be so bold, it's a lot of fun to let the goldfish take a little swim in the blue cheese.",
+      "source": "The Office",
+      "length": 527,
+      "id": 5777
+    },
+    {
+      "text": "I was born in a town that was straight out of a fairy tale. Many people died there, and when I walked away, I held hands with my other self. To me it seemed like we were the only two people in the world. Neither one of us possessed a real name.",
+      "source": "Naoki Urasawa's Monster",
+      "length": 244,
+      "id": 5778
+    },
+    {
+      "text": "Killing people is simple. All you have to do is forget the taste of sugar.",
+      "source": "Naoki Urasawa's Monster",
+      "length": 73,
+      "id": 5779
+    },
+    {
+      "text": "If my mind can conceive it, and my heart can believe it, then I can achieve it.",
+      "source": "Muhammad Ali",
+      "length": 79,
+      "id": 5780
+    },
+    {
+      "text": "When you become untouchable you are unable to touch. ",
+      "source": "My Ordinary Life (The Living Tombstones) ",
+      "length": 53,
+      "id": 5781
+    },
+    {
+      "text": "It's only after we've lost everything that we're free to do anything.",
+      "source": "Fight Club",
+      "length": 69,
+      "id": 5782
+    },
+    {
+      "text": "You're going to learn a lot of things. But it might be easier for you to keep living, if you didn't learn them, if you didn't know them. You don't realize your body is on fire and burning up because of the things you did. You'll understand one day. And then you'll realize for the first time that you have many burns. ",
+      "source": "Violet Evergarden",
+      "length": 318,
+      "id": 5783
+    },
+    {
+      "text": "You either die a hero or you live long enough to see yourself become the villain.",
+      "source": "The Dark Knight (2008)",
+      "length": 81,
+      "id": 5784
+    },
+    {
+      "text": "If somehow the Lord gave me a second chance at that moment, I would do it all over again.",
+      "source": "The Last Of Us 2",
+      "length": 89,
+      "id": 5785
+    },
+    {
+      "text": "I worshipped you! Your mind, your conscience, wanting to help others... the way you never gave up!",
+      "source": "Spider-Man 2018 PS4",
+      "length": 95,
+      "id": 5786
+    },
+    {
+      "text": "To achieve great things, two things are needed; a plan, and not quite enough time.",
+      "source": "Leonard Bernstein",
+      "length": 82,
+      "id": 5787
+    },
+    {
+      "text": "I'm dealing with fools and trolls and soft targets. It's just strafing runs in my underwear before my first cup of coffee. I don't have time for these clowns.",
+      "source": "Charlie Sheen",
+      "length": 158,
+      "id": 5788
+    },
+    {
+      "text": "I'm different. I have a different constitution, I have a different brain, I have a different heart. I got tiger blood, man. Dying's for fools, dying's for amateurs.",
+      "source": "Charlie Sheen",
+      "length": 164,
+      "id": 5789
+    },
+    {
+      "text": "By the pricking of my thumbs, something wicked this way comes.",
+      "source": "Macbeth",
+      "length": 62,
+      "id": 5790
+    },
+    {
+      "text": "The thousand injuries of Fortunato I had borne as I best could, but when he ventured upon insult I vowed revenge.",
+      "source": "The Cask of Amontillado",
+      "length": 113,
+      "id": 5791
+    },
+    {
+      "text": "Ashes, ashes, dust to dust, I think I found a place for us. It's down by garden after dark, it's in my arms, it's in my arms.",
+      "source": "Cabo",
+      "length": 125,
+      "id": 5792
+    },
+    {
+      "text": "My happiness can only be... can only be made with my own hands! My happiness doesn't depend on anyone but me!",
+      "source": "Minori Kushieda, Toradora!",
+      "length": 107,
+      "id": 5793
+    },
+    {
+      "text": "I heard from a wise person that, \"Teamwork makes the dream work!\" You need to know who is willing to work as a team with you first.",
+      "source": "Tiktok: JayD_2025",
+      "length": 131,
+      "id": 5794
+    },
+    {
+      "text": "You only live once, but if you do it right, once is enough.",
+      "source": "Mae West",
+      "length": 61,
+      "id": 5795
+    },
+    {
+      "text": "How did I escape? With difficulty. How did I plan this moment? With pleasure.",
+      "source": "Alexandre Dumas, The Count of Monte Cristo",
+      "length": 77,
+      "id": 5796
+    },
+    {
+      "text": "All for one and one for all, united we stand divided we fall.",
+      "source": "Alexandre Dumas, The Three Musketeers",
+      "length": 61,
+      "id": 5797
+    },
+    {
+      "text": "“There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though the have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.”\n",
+      "source": "Death Note",
+      "length": 677,
+      "id": 5798
+    },
+    {
+      "text": "I'm the one that's got to die when it's time for me to die, so let me live my life the way I want to.",
+      "source": "Jimi Hendrix, Jimi Hendrix - Axis: Bold as Love",
+      "length": 101,
+      "id": 5799
+    },
+    {
+      "text": "Wake up to reality! Nothing ever goes as planned in this world. The longer you live, the more you realize that in this reality, only pain, suffering, and futility exist.",
+      "source": "Madara Uchiha",
+      "length": 169,
+      "id": 5800
+    },
+    {
+      "text": "It may be hard right now but you must silent those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
+      "source": "one piece",
+      "length": 182,
+      "id": 5801
+    },
+    {
+      "text": "The caterpillar ate through one nice green leaf, and after that he felt much better.",
+      "source": "The Very Hungry Caterpillar - Eric Carle",
+      "length": 86,
+      "id": 5802
+    },
+    {
+      "text": "It may be hard right now but you must silent those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
+      "source": "One piece",
+      "length": 182,
+      "id": 5803
+    },
+    {
+      "text": "You will face many defeats in life, but never let yourself be defeated.",
+      "source": "Maya Angelou",
+      "length": 71,
+      "id": 5804
+    },
+    {
+      "text": "Ludwig Boltzmann, who spent much of his life studying statistical mechanics, died in 1906, by his own hand. Paul Ehrenfest, carrying on the work, died similarly in 1933. Now it is our turn to study statistical mechanics.",
+      "source": "States of Matter",
+      "length": 220,
+      "id": 5805
+    },
+    {
+      "text": "The fight against censorship is open and dangerous, therefore heroic, while the battle against self-censorship is anonymous, lonely and unwitnessed, and it makes its subject feel humiliated.",
+      "source": "Danilo Kiš",
+      "length": 189,
+      "id": 5806
+    },
+    {
+      "text": "Hello, hello? Uh, I wanted to record a message for you to help you get settled in on your first night. Um, I actually worked in that office before you. I'm finishing up my last week now, as a matter of fact. So, I know it can be a bit overwhelming, but I'm here to tell you there's nothing to worry about. Uh, you'll do fine. So, let's just focus on getting you through your first week. Okay? Uh, let's see, first there's an introductory greeting from the company that I'm supposed to read. Uh, it's kind of a legal thing, you know. Um, \"Welcome to Freddy Fazbear's Pizza. A magical place for kids and grown-ups alike, where fantasy and fun come to life. Fazbear Entertainment is not responsible for damage to property or person. Upon discovering that damage or death has occurred, a missing person report will be filed within 90 days, or as soon property and premises have been thoroughly cleaned and bleached, and the carpets have been replaced.\" Blah blah blah, now that might sound bad, I know, but there's really nothing to worry about. Uh, the animatronic characters here do get a bit quirky at night, but do I blame them? No. If I were forced to sing those same stupid songs for twenty years and I never got a bath? I'd probably be a bit irritable at night too. So, remember, these characters hold a special place in the hearts of children and we need to show them a little respect, right? Okay. So, just be aware, the characters do tend to wander a bit. Uh, they're left in some kind of free roaming mode at night. Uh... Something about their servos locking up if they get turned off for too long. Uh, they used to be allowed to walk around during the day too. But then there was The Bite of '87. Yeah. I-It's amazing that the human body can live without the frontal lobe, you know? Uh, now concerning your safety, the only real risk to you as a night watchman here, if any, is the fact that these characters, uh, if they happen to see you after hours probably won't recognize you as a person. They'll pr- they'll most likely see you as a metal endoskeleton without its costume on. Now since that's against the rules here at Freddy Fazbear's Pizza, they'll probably try to...forcefully stuff you inside a Freddy Fazbear suit. Um, now, that wouldn't be so bad if the suits themselves weren't filled with crossbeams, wires, and animatronic devices, especially around the facial area. So, you could imagine how having your head forcefully pressed inside one of those could cause a bit of discomfort...and death. Uh, the only parts of you that would likely see the light of day again would be your eyeballs and teeth when they pop out the front of the mask, heh. Y-Yeah, they don't tell you these things when you sign up. But hey, first day should be a breeze. I'll chat with you tomorrow. Uh, check those cameras, and remember to close the doors only if absolutely necessary. Gotta conserve power. Alright, good night.",
+      "source": "Phone Guy - Five Nights at Freddy's",
+      "length": 2923,
+      "id": 5807
+    },
+    {
+      "text": "“I’m like you,” he said. “I remember everything.” I stopped for a second. If you remember everything, I wanted to say, and if you are really like me, then before you leave tomorrow, or when you’re just ready to shut the door of the taxi and have already said goodbye to everyone else and there’s not a thing left to say in this life, then, just this once, turn to me, even in jest, or as an afterthought, which would have meant everything to me when we were together, and, as you did back then, look me in the face, hold my gaze, and call me by your name.",
+      "source": "Call Me By Your Name",
+      "length": 555,
+      "id": 5808
+    },
+    {
+      "text": "Do you come from a land down under? Where women glow and men plunder. Can't you hear, can't you hear the thunder? You better run, you better take cover.",
+      "source": "Down Under, Men at Work",
+      "length": 151,
+      "id": 5809
+    },
+    {
+      "text": "I would rather go swimming with great white sharks, than wade in romance. 'Cause I can never find the courage to ask her to dinner or even to dance.",
+      "source": "Adam Young",
+      "length": 148,
+      "id": 5810
+    },
+    {
+      "text": "Maybe the best thing to do is stop trying to figure out where you're going and just enjoy where you're at. ",
+      "source": "Scrubs",
+      "length": 107,
+      "id": 5811
+    },
+    {
+      "text": "Everyone is a slave to their past. No matter how much you wish to move forward, the events of last year will bear down on you like the light of the stars as soon as you glance up. Unable to laugh or to banish your past, you carry it ceaselessly in a corner of your heart, waiting for it to resurrect at an inopportune moment.",
+      "source": "Yahari Ore no Seishun Love Come wa Machigatteiru - Hikigaya Hachiman",
+      "length": 325,
+      "id": 5812
+    },
+    {
+      "text": "I don't want other people to mention my \"self\". Besides if I can be changed by a few words, then that wouldn't be my \"self\" would it?",
+      "source": "Yahari Ore no Seishun Love Come wa Machigatteiru - Hikigaya Hachiman",
+      "length": 133,
+      "id": 5813
+    },
+    {
+      "text": "Youth is both a lie, and a form of evil. Those that glorify that youth are only fooling themselves and those around them, and believe that their surroundings always affirm their actions. By using the word “youth” they twist and distort common sense and anything logical. For them, lies, secrets, sins, and failures do nothing but add spice to their youth.",
+      "source": "Oregairu - Hikigaya Hachiman",
+      "length": 355,
+      "id": 5814
+    },
+    {
+      "text": "Can we pretend that airplanes in the night sky are like shooting stars? I could really use a wish right now, wish right now, wish right now.",
+      "source": "B.o.B - Airplanes",
+      "length": 140,
+      "id": 5815
+    },
+    {
+      "text": "I just want to lie on the beach and eat hot dogs. That's all I've ever wanted.",
+      "source": "The Office.",
+      "length": 78,
+      "id": 5816
+    },
+    {
+      "text": "And I knew exactly what to do. But in a much more real sense, I had no idea what to do.",
+      "source": "The Office",
+      "length": 87,
+      "id": 5817
+    },
+    {
+      "text": "I wish there was a way to know you were in the good old days before you've actually left them. Someone should write a song about that.",
+      "source": "The Office",
+      "length": 134,
+      "id": 5818
+    },
+    {
+      "text": "The scientist does not study nature because it is useful; he studies it because he delights in it, and he delights in it because it is beautiful.",
+      "source": "Henri Poincaré",
+      "length": 145,
+      "id": 5819
+    },
+    {
+      "text": "Imagine an art class in which they only teach you how to paint fences and walls, but never show you the paintings of the great masters. Then of course you will say, 'I hate art.' But in fact what you would really be saying is 'I hate painting the fence.'",
+      "source": "Edward Frenkel (The Numberphile Podcast)",
+      "length": 254,
+      "id": 5820
+    },
+    {
+      "text": "I would rather have questions that can't be answered than have answers that can't be questioned.",
+      "source": "Richard Feynman",
+      "length": 96,
+      "id": 5821
+    },
+    {
+      "text": "There's a lot of beauty in ordinary things. Isn't that kind of the point?",
+      "source": "The Office",
+      "length": 73,
+      "id": 5822
+    },
+    {
+      "text": "Look, it doesn't take a genius to know that every organization thrives when it has two leaders. Go ahead, name a country that doesn't have two presidents; a boat that sets sail without two captains. Where would Catholicism be, without the Popes? ",
+      "source": "The Office",
+      "length": 246,
+      "id": 5823
+    },
+    {
+      "text": "No man can win every battle, but no man should fall without a struggle.",
+      "source": "SpiderMan: Homecoming",
+      "length": 71,
+      "id": 5824
+    },
+    {
+      "text": "In times of crisis, the wise build bridges while the foolish build barriers.",
+      "source": "Black Panther",
+      "length": 76,
+      "id": 5825
+    },
+    {
+      "text": "I was already slipping when you happened to punch me in the face. The two events are not related.",
+      "source": "Captain Marvel",
+      "length": 97,
+      "id": 5826
+    },
+    {
+      "text": "Whatever happens tomorrow, you must promise me one thing, that you will stay who you are. Not a perfect soldier but a good man.",
+      "source": "Captain America: The First Avenger",
+      "length": 127,
+      "id": 5827
+    },
+    {
+      "text": "The silver trump of freedom had roused my soul to eternal wakefulness. Freedom now appeared, to disappear no more forever. It was heard in every sound, and seen in every thing. It was ever present to torment me with a sense of my wretched condition. I saw nothing without seeing it, I saw heard nothing without hearing it, and felt nothing without feeling it. It looked in every star, it smiled in every calm, breathed in every wind, and moved in every storm.",
+      "source": "Frederick Douglas, Narrative of the Life of Frederick Douglass, An American Slave",
+      "length": 459,
+      "id": 5828
+    },
+    {
+      "text": "Should anything happen to me Claudia, should my skills fail me, or my ambition lead me astray, do not seek retribution or revenge in my memory, but fight to continue the search for truth, so that all may benefit. My story is one of many thousands, and the world will not suffer if it ends too soon.",
+      "source": "Ezio Auditore da Firenze",
+      "length": 298,
+      "id": 5829
+    },
+    {
+      "text": "In the first age, in the first battle, when the shadows first lengthened, one stood. Burned by the embers of Armageddon, his soul blistered by the fires of Hell and tainted beyond ascension, he chose the path of perpetual torment. In his ravenous hatred he found no peace; and with boiling blood he scoured the Umbral Plains seeking vengeance against the dark lords who had wronged him. He wore the crown of the Night Sentinels, and those that tasted the bite of his sword named him... the Doom Slayer.",
+      "source": "Doom",
+      "length": 502,
+      "id": 5830
+    },
+    {
+      "text": "If you love what you're doing, then you've already succeeded. ",
+      "source": "Never Let it Die, Watsky",
+      "length": 62,
+      "id": 5831
+    },
+    {
+      "text": "How much love does one need in a lifetime? Is there a quantity of brain space that is allocated to love? And for those of us who have loved less, does this space become occupied by something else? Like cricket, or religion, perhaps. How many minutes of an average life are spent happy? How many are not? Does the sum of one outweigh the other? By how much?",
+      "source": "Chinaman: The Legend of Pradeep Mathew",
+      "length": 356,
+      "id": 5832
+    },
+    {
+      "text": "I have been told by members of my own family that there is no use or value in sports. I only agree with the first part. I may be drunk, but I am not stupid. Of course there is little point to sports. But, at the risk of depressing you, let me add two more cents. There is little point to anything. In a thousand years, grass will have grown over all our cities. Nothing of anything will matter. Left-arm spinners cannot unclog your drains, teach your children or cure you of disease. But once in a while, the very best of them will bowl a ball that will bring an entire nation to its feet. And while there may be no practical use in that, there is most certainly value.",
+      "source": "Chinaman: The Legend of Pradeep Mathew",
+      "length": 669,
+      "id": 5833
+    },
+    {
+      "text": "I was rushing desperately, trying to reach the light. When I thought I did, I reached a dead end instead. Then I decided I wanted to enter that light. And at the edge of it, I found you. \n",
+      "source": "Weathering with You",
+      "length": 188,
+      "id": 5834
+    },
+    {
+      "text": "The human mind works in mysterious ways. You just need to see the sun shining in the morning to feel energized. A blue sky makes you feel happy you're alive.",
+      "source": "Weathering with You",
+      "length": 157,
+      "id": 5835
+    },
+    {
+      "text": "God, if you really exist, then I beg you. This is more than enough. I don't need anything else. We'll manage somehow. So please. Don't throw anything more at us. But don't take anything more from us either. I'm begging you. Please, God. I want to stay like this. Together. Forever and ever.",
+      "source": "Weathering with You",
+      "length": 290,
+      "id": 5836
+    },
+    {
+      "text": "Listen, Just because you have psychic powers, it doesn't make you any less human. It's the same as people who are fast, people who are book smart, and people with strong body odor. Psychic powers are just another characteristic. You must embrace that as a part of yourself and continue to live positively. The truth behind one's charm is kindness. Become a good person. That is all.",
+      "source": "Mob Psycho 100",
+      "length": 382,
+      "id": 5837
+    },
+    {
+      "text": "In a world filled with misery and uncertainty, it is a great comfort to know that in the end, there is light in the darkness.",
+      "source": "Fallout: New Vegas - Joshua Graham",
+      "length": 125,
+      "id": 5838
+    },
+    {
+      "text": "Sometimes I feel like I’ve already seen everything that’s gonna happen and it’s a nightmare.",
+      "source": "Cherry",
+      "length": 92,
+      "id": 5839
+    },
+    {
+      "text": "Sometimes I feel like love doesn’t actually exist. It’s just pheromones playing tricks on people.",
+      "source": "Cherry",
+      "length": 97,
+      "id": 5840
+    },
+    {
+      "text": "Yesterday is history, tomorrow is a mystery but today is a gift - that's why it's called the present.",
+      "source": "Master Oogway",
+      "length": 97,
+      "id": 5841
+    },
+    {
+      "text": "If you only do what you can do, you will never be more than you are now.",
+      "source": "Master Oogway",
+      "length": 72,
+      "id": 5842
+    },
+    {
+      "text": "Size matters not. Look at me. Judge me by my size, do you? Hmm? Hmm. And well you should not. For my ally is the Force, and a powerful ally it is. Life creates it, makes it grow. Its energy surrounds us and binds us. Luminous beings are we, not this crude matter. You must feel the Force around you; here, between you, me, the tree, the rock, everywhere, yes. Even between the land and the ship.",
+      "source": "Master Yoda",
+      "length": 395,
+      "id": 5843
+    },
+    {
+      "text": "When one chooses to walk the Way of the Mandalore, you are both hunter and prey.",
+      "source": "The Mandalorian",
+      "length": 80,
+      "id": 5844
+    },
+    {
+      "text": "I’ve seen what such feelings can do to a fully trained Jedi Knight. To the best of us.",
+      "source": "The Mandalorian",
+      "length": 86,
+      "id": 5845
+    },
+    {
+      "text": "You have something I want. You may think you have some idea of what you have in your possession, but you do not. Soon, he will be back with me. He means more to me than you will ever know.",
+      "source": "The Mandalorian",
+      "length": 188,
+      "id": 5846
+    },
+    {
+      "text": "Like walking into a dream, so unlike what you've seen, so unsure but it seems, 'cause we've been waiting for you.",
+      "source": "Afterlife - Avenged Sevenfold",
+      "length": 113,
+      "id": 5847
+    },
+    {
+      "text": "Some people are like clouds. When they disappear, it's a beautiful day.",
+      "source": "Unknown",
+      "length": 71,
+      "id": 5848
+    },
+    {
+      "text": "The biggest lie I tell myself is: \"I don't need to write it down, I'll remember it.\"",
+      "source": "Unknown",
+      "length": 84,
+      "id": 5849
+    },
+    {
+      "text": "Alright, close your eyes. I want you to think of a flower. Look at its contours, its curves. Now I want you to imagine it: changing, moving backwards, returning to its bud. Think of that bud, unopened. Look at it, as a whole, and silently repeat these phrases: \"May you be free from suffering. May you be free from fear. May you know peace and joy.\"",
+      "source": "Twelve Minutes",
+      "length": 349,
+      "id": 5850
+    },
+    {
+      "text": "In this world, wherever there is light, there are always shadows. As long as there is a concept of victory, the vanquished will also exist. The selfish desire for peace give rise to war. And hatred is born in order to protect love. These are all nexuses, causal relationships that cannot be separated.",
+      "source": "Naruto: Madara Uchiha",
+      "length": 301,
+      "id": 5851
+    },
+    {
+      "text": "I'm tired of being what you want me to be. Feeling so faithless, lost under the surface. Don't know what you're expecting of me. Put under the pressure of walking in your shoes.",
+      "source": "Numb",
+      "length": 177,
+      "id": 5852
+    },
+    {
+      "text": "\"The past is so much less terrifying than the future,\" he explained after some coaxing. \"Even the most terrifying terrible era of the past is at least knowable. It can be studied. The world survived it. But in the present, one never knows when the whole world survived it. But in the present, oe never knows when the whole world could come to a terrible, crashing end. ",
+      "source": "A Map of Days",
+      "length": 369,
+      "id": 5853
     }
   ]
 }
