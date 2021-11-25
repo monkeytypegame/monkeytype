@@ -1565,12 +1565,11 @@ export async function finish(difficultyFailed = false) {
     ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
   if (!Config.startGraphsAtZero) {
-    ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...chartData1
+    let minChartVal = Math.min(
+      ...[Math.min(...chartData2), Math.min(...chartData1)]
     );
-    ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...chartData1
-    );
+    ChartController.result.options.scales.yAxes[0].ticks.min = minChartVal;
+    ChartController.result.options.scales.yAxes[1].ticks.min = minChartVal;
   } else {
     ChartController.result.options.scales.yAxes[0].ticks.min = 0;
     ChartController.result.options.scales.yAxes[1].ticks.min = 0;
