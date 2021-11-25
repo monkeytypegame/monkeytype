@@ -623,5 +623,10 @@
     "name": "tiramisu",
     "bgColor" : "#CFC6B9",
     "textColor":"#C0976F"
+  },
+  {
+    "name": "diner",
+    "bgColor" : "#537997",
+    "textColor":"#c3af5b"
   }
 ]
