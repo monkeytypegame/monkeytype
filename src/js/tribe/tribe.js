@@ -449,7 +449,9 @@ socket.on("room_progress_update", (e) => {
   room.maxWpm = e.roomMaxWpm;
   room.maxRaw = e.roomMaxRaw;
   room.users[e.userId].progress = e.progress;
+  //todo only update one
   TribeBars.update("test", e.userId);
+  TribeResults.updateBar("result", e.userId);
 });
 
 socket.on("room_user_result", (e) => {
@@ -467,6 +469,7 @@ socket.on("room_user_result", (e) => {
   } else {
     if (resolve?.failed !== true) {
       TribeBars.completeBar("test", e.userId);
+      TribeResults.updateBar("result", e.userId, 100);
     }
   }
   if (!TestLogic.active) {

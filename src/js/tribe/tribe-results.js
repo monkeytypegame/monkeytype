@@ -1,5 +1,7 @@
 import * as Tribe from "./tribe";
 import * as Misc from "./misc";
+import Config from "./config";
+import * as TestTimer from "./test-timer";
 
 let initialised = {};
 
@@ -83,6 +85,29 @@ export function init(page) {
   }
 }
 
+export function updateBar(page, userId, percentOverride) {
+  if (page === "result") {
+    let el = $(
+      `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`
+    );
+    let user = Tribe.room.users[userId];
+    let percent =
+      Config.mode === "time"
+        ? user.progress.wpmProgress + "%"
+        : user.progress.progress + "%";
+    if (percentOverride) {
+      percent = percentOverride + "%";
+    }
+    el.stop(true, false).animate(
+      {
+        width: percent,
+      },
+      TestTimer.slowTimer ? 0 : 1000,
+      "linear"
+    );
+  }
+}
+
 export function updatePositions(page, orderedList) {
   let points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
   if (page === "result") {
@@ -149,7 +174,7 @@ function updateUser(page, userId) {
         ${user.result.charStats[0]}/${user.result.charStats[1]}/${user.result.charStats[2]}/${user.result.charStats[3]}
         `
       );
-      let otherText = "";
+      let otherText = "-";
       let resolve = user.result.resolve;
       if (resolve.afk) {
         otherText = "afk";
