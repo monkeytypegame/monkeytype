@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -3000,6 +3012,66 @@
       "source": "Jane Austen",
       "length": 60,
       "id": 500
+    },
+    {
+      "text": "Achtung, Achtung! Ein bärtiger alter Mann ist heute Abend unterwegs und versucht uns allen was in die Schuhe zu schieben.",
+      "source": "Unbekannt (für Nikolaus)",
+      "length": 121,
+      "id": 501
+    },
+    {
+      "text": "Glück ist das einzige, was wir anderen geben können, ohne es selbst zu haben.",
+      "source": "Carmen Sylva",
+      "length": 77,
+      "id": 502
+    },
+    {
+      "text": "Der traurigste Aspekt derzeit ist, dass die Wissenschaft schneller Wissen sammelt, als die Gesellschaft Weisheit.",
+      "source": "Isaac Asimov",
+      "length": 113,
+      "id": 503
+    },
+    {
+      "text": "Zu wissen, was man weiß, und zu wissen, was man tut, das ist Wissen.",
+      "source": "Konfuzius",
+      "length": 68,
+      "id": 504
+    },
+    {
+      "text": "Wer einen Fehler gemacht hat und ihn nicht korrigiert, begeht einen Zweiten.",
+      "source": "Konfuzius",
+      "length": 76,
+      "id": 505
+    },
+    {
+      "text": "Ein bisschen Freundschaft ist mir mehr wert als die Bewunderung der ganzen Welt.",
+      "source": "Otto von Bismarck",
+      "length": 80,
+      "id": 506
+    },
+    {
+      "text": "Einen Fehler durch eine Lüge zu verdecken heißt, einen Flecken durch ein Loch zu ersetzen.",
+      "source": "Aristoteles",
+      "length": 90,
+      "id": 507
+    },
+    {
+      "text": "Es gibt kaum ein beglückenderes Gefühl, als zu spüren, dass man für andere Menschen etwas sein kann.",
+      "source": "Dietrich Bonhoeffer",
+      "length": 100,
+      "id": 508
+    },
+    {
+      "text": "Die Geschichte lehrt die Menschen, dass die Geschichte die Menschen nichts lehrt.",
+      "source": "Mahatma Gandhi",
+      "length": 81,
+      "id": 509
+    },
+    {
+      "text": "Wer die Wahrheit nicht weiß, der ist bloß ein Dummkopf. Aber wer sie weiß und sie eine Lüge nennt, der ist ein Verbrecher.",
+      "source": "Bertolt Brecht",
+      "length": 122,
+      "id": 510
     }
   ]
 }
