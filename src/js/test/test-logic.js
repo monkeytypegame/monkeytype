@@ -2280,6 +2280,11 @@ export async function finish(difficultyFailed = false) {
       stats.extraChars,
       stats.missedChars,
     ],
+    chartData: {
+      wpm: TestStats.wpmHistory,
+      raw: rawWpmPerSecond,
+      err: errorsArray,
+    },
     resolve: await testSavePromise,
   });
 

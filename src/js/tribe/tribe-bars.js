@@ -83,7 +83,7 @@ export function update(page, userId) {
     Math.floor(user.progress.acc) + "%"
   );
   el.find(`.player[id=${userId}] .bar`)
-    .stop(true, false)
+    .stop(true, true)
     .animate(
       {
         width:

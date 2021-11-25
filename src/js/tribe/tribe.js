@@ -19,6 +19,7 @@ import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeStartRacePopup from "./tribe-start-race-popup";
+import * as TribeChartController from "./tribe-chart-controller";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -81,6 +82,7 @@ export function updateState(newState) {
       }
     });
     TribeUserList.update("lobby");
+    TribeChartController.destroyAllCharts();
   } else if (state === 12) {
     Object.keys(room.users).forEach((userId) => {
       let u = room.users[userId];
@@ -475,6 +477,10 @@ socket.on("room_user_result", (e) => {
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
     TribeUserList.update("result");
+    TribeChartController.drawChart(e.userId);
+  }
+  if (e.everybodyCompleted) {
+    TribeChartController.drawAllCharts();
   }
 });
 
