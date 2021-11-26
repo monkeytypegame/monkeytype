@@ -1064,7 +1064,7 @@ $(document.body).on("click", "#practiseWordsButton", () => {
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.keyCode == 13) {
     if (Tribe.room) {
-      Tribe.socket.emit("room_init_race");
+      Tribe.initRace();
     } else {
       TestLogic.restart();
     }
@@ -1073,7 +1073,7 @@ $(document).on("keypress", "#nextTestButton", (event) => {
 
 $(document.body).on("click", "#nextTestButton", () => {
   if (Tribe.room) {
-    Tribe.socket.emit("room_init_race");
+    Tribe.initRace();
   } else {
     ManualRestart.set();
     TestLogic.restart();
