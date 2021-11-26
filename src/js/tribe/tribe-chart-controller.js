@@ -296,11 +296,13 @@ export async function drawChart(userId) {
 }
 
 export async function drawAllCharts() {
-  Object.keys(Tribe.room.users).forEach(async (userId) => {
+  let list = Object.keys(Tribe.room.users);
+  for (let i = 0; i < list.length; i++) {
+    let userId = list[i];
     if (!charts[userId]) {
       await drawChart(userId);
     }
-  });
+  }
 }
 
 export function destroyAllCharts() {
