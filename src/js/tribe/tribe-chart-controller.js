@@ -131,7 +131,11 @@ let settings = {
         tooltipEl.style.opacity = 1;
         tooltipEl.style.position = "absolute";
         tooltipEl.style.left =
-          position.left + window.pageXOffset + tooltipModel.caretX + "px";
+          position.left +
+          window.pageXOffset +
+          tooltipModel.caretX -
+          tooltipEl.offsetWidth +
+          "px";
         tooltipEl.style.top =
           position.top + window.pageYOffset + tooltipModel.caretY + "px";
         // tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
