@@ -277,6 +277,8 @@ export async function drawChart(userId) {
       `.pageTest #result #tribeResults table tbody tr#${userId} .chart`
     )[0];
 
+    if (!Tribe.room.users[userId].result) return;
+
     let chart = new Chart(element, settings);
 
     await fillData(chart, userId);
