@@ -477,10 +477,13 @@ socket.on("room_user_result", (e) => {
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
     TribeUserList.update("result");
-    TribeChartController.drawChart(e.userId);
-  }
-  if (e.everybodyCompleted) {
-    TribeChartController.drawAllCharts();
+    setTimeout(() => {
+      if (e.everybodyCompleted) {
+        TribeChartController.drawAllCharts();
+      } else {
+        TribeChartController.drawChart(e.userId);
+      }
+    }, 250);
   }
 });
 
