@@ -391,9 +391,14 @@ socket.on("chat_message", async (data) => {
 
 socket.on("room_config_changed", (e) => {
   room.config = e.config;
+  Object.keys(room.users).forEach((userId) => {
+    if (room.users[userId].isReady) {
+      room.users[userId].isReady = false;
+    }
+  });
   TribeConfig.apply(e.config);
   TribePageLobby.updateRoomConfig();
-  TribeButtons.enableStartButton();
+  TribeButtons.update();
   TribeConfig.setLoadingIndicator(false);
 });
 
