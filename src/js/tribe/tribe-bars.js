@@ -6,6 +6,8 @@ export function init(page) {
   let el;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
+  } else if (page === "tribe") {
+    el = $(".pageTribe .tribeBars");
   }
   let room = Tribe.room;
   el.empty();
@@ -53,29 +55,44 @@ export function init(page) {
 export function show(page) {
   if (page === "test") {
     $(".pageTest #typingTest .tribeBars").removeClass("hidden");
+  } else if (page === "tribe") {
+    $(".pageTribe .tribeBars").removeClass("hidden");
   }
 }
 
 export function hide(page) {
   if (page === undefined) {
-    $(".pageTest #typingTest .tribeBars").addClass("hidden");
+    hide("test");
+    hide("tribe");
   } else if (page === "test") {
     $(".pageTest #typingTest .tribeBars").addClass("hidden");
+  } else if (page === "tribe") {
+    $(".pageTribe .tribeBars").addClass("hidden");
   }
 }
 
 export function reset(page) {
   if (page === undefined) {
-    $(".pageTest #typingTest .tribeBars").empty();
+    reset("test");
+    reset("tribe");
   } else if (page === "test") {
     $(".pageTest #typingTest .tribeBars").empty();
+  } else if (page === "tribe") {
+    $(".pageTribe .tribeBars").empty();
   }
 }
 
 export function update(page, userId) {
+  if (page === undefined) {
+    update("test", userId);
+    update("tribe", userId);
+    return;
+  }
   let el;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
+  } else if (page === "tribe") {
+    el = $(".pageTribe .tribeBars");
   }
   let user = Tribe.room.users[userId];
   el.find(`.player[id=${userId}] .wpm`).text(Math.round(user.progress.wpm));
@@ -97,9 +114,16 @@ export function update(page, userId) {
 }
 
 export function completeBar(page, userId) {
+  if (page === undefined) {
+    completeBar("test", userId);
+    completeBar("tribe", userId);
+    return;
+  }
   let el;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
+  } else if (page === "tribe") {
+    el = $(".pageTribe .tribeBars");
   }
   el.find(`.player[id=${userId}] .bar`)
     .stop(true, false)
@@ -113,9 +137,16 @@ export function completeBar(page, userId) {
 }
 
 export function fadeUser(page, userId) {
+  if (page === undefined) {
+    fadeUser("test", userId);
+    fadeUser("tribe", userId);
+    return;
+  }
   let el;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
+  } else if (page === "tribe") {
+    el = $(".pageTribe .tribeBars");
   }
   el.find(`.player[id=${userId}]`).addClass("faded");
 }

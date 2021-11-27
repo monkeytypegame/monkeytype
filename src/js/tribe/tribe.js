@@ -400,6 +400,8 @@ socket.on("room_init_race", (e) => {
     TribeBars.show("test");
   } else {
     //TODO update lobby bars
+    TribeBars.init("tribe");
+    TribeBars.show("tribe");
     if (!$(".pageTest").hasClass("hidden")) {
       UI.changePage("tribe", undefined, true);
     }
@@ -453,6 +455,7 @@ socket.on("room_progress_update", (e) => {
   room.users[e.userId].progress = e.progress;
   //todo only update one
   TribeBars.update("test", e.userId);
+  TribeBars.update("tribe", e.userId);
   TribeResults.updateBar("result", e.userId);
 });
 
@@ -466,11 +469,15 @@ socket.on("room_user_result", (e) => {
     resolve?.valid === false ||
     resolve?.saved === false
   ) {
+    //todo only one
     TribeBars.fadeUser("test", e.userId);
+    TribeBars.fadeUser("tribe", e.userId);
     TribeResults.fadeUser("result", e.userId);
   } else {
     if (resolve?.failed !== true) {
+      //todo only one
       TribeBars.completeBar("test", e.userId);
+      TribeBars.completeBar("tribe", e.userId);
       TribeResults.updateBar("result", e.userId, 100);
     }
   }
