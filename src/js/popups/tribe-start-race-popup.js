@@ -2,8 +2,8 @@ import * as Tribe from "./tribe";
 import * as Notifications from "./notifications";
 
 export function show() {
-  if ($("#tribeStarRacePopupWrapper").hasClass("hidden")) {
-    $("#tribeStarRacePopupWrapper")
+  if ($("#tribeStartRacePopupWrapper").hasClass("hidden")) {
+    $("#tribeStartRacePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
@@ -12,8 +12,8 @@ export function show() {
 }
 
 export function hide() {
-  if (!$("#tribeStarRacePopupWrapper").hasClass("hidden")) {
-    $("#tribeStarRacePopupWrapper")
+  if (!$("#tribeStartRacePopupWrapper").hasClass("hidden")) {
+    $("#tribeStartRacePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
       .animate(
@@ -22,14 +22,14 @@ export function hide() {
         },
         100,
         (e) => {
-          $("#tribeStarRacePopupWrapper").addClass("hidden");
+          $("#tribeStartRacePopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-$("#tribeStarRacePopupWrapper").click((e) => {
-  if ($(e.target).attr("id") === "tribeStarRacePopupWrapper") {
+$("#tribeStartRacePopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "tribeStartRacePopupWrapper") {
     hide();
   }
 });
@@ -42,7 +42,7 @@ $("#tribeStartRacePopup .button").click((e) => {
 $(document).on("keypress", (e) => {
   if (
     e.key === "Enter" &&
-    !$("#tribeStarRacePopupWrapper").hasClass("hidden")
+    !$("#tribeStartRacePopupWrapper").hasClass("hidden")
   ) {
     Tribe.socket.emit("room_init_race");
     hide();
