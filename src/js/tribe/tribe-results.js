@@ -200,7 +200,8 @@ export function update(page, userId) {
     updateUser(page, userId);
   } else {
     Object.keys(Tribe.room.users).forEach((userId) => {
-      updateUser(page, userId);
+      let u = Tribe.room.users[userId];
+      if (u.isFinished) updateUser(page, userId);
     });
   }
 }
