@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import * as TribeUserSettingsPopup from "./tribe-user-settings-popup";
 
 export function reset(page) {
   if (page === undefined) {
@@ -54,10 +55,10 @@ export function update(page) {
       ${user.name}
       </div>
       ${
-        Tribe.room.isLeader && user.id !== Tribe.socket.id
-          ? `<div class='userSettings' id='` +
+        Tribe.getSelf().isLeader && user.id !== Tribe.socket.id
+          ? `<div class='userSettings' userid='` +
             user.id +
-            `' aria-label="User settings" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
+            `' ><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
           : ``
       }
     </div>
@@ -73,3 +74,12 @@ export function update(page) {
     }
   });
 }
+
+$(document).on(
+  "click",
+  ".pageTribe .lobby .userlist .list .user .userSettings, .pageTest #result #tribeResultBottom .userlist .list .user .userSettings",
+  (e) => {
+    let userId = $(e.currentTarget).attr("userid");
+    TribeUserSettingsPopup.show(userId);
+  }
+);
