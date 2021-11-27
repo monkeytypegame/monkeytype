@@ -77,8 +77,13 @@ export function updateState(newState) {
   } else if (state === 11) {
     Object.keys(room.users).forEach((userId) => {
       let u = room.users[userId];
+      delete u.result;
+      delete u.progress;
+      delete u.isFinished;
+      delete u.isTyping;
       if ((u.isReady || u.isLeader) && !u.isAfk) {
         u.isTyping = true;
+        u.isFinished = false;
       }
     });
     TribeUserList.update("lobby");
@@ -462,6 +467,7 @@ socket.on("room_progress_update", (e) => {
 socket.on("room_user_result", (e) => {
   room.users[e.userId].result = e.result;
   room.users[e.userId].isFinished = true;
+  room.users[e.userId].isTyping = false;
   let resolve = e.result.resolve;
   if (
     resolve?.afk ||
