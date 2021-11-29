@@ -283,5 +283,9 @@
   {
     "name": "macedonian",
     "languages": ["macedonian"]
+  },
+  {
+    "name": "belarusian",
+    "languages": ["belarusian_1k"]
   }
 ]
