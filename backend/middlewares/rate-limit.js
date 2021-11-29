@@ -1,5 +1,7 @@
 const rateLimit = require("express-rate-limit");
 
+const getAddress = (req) => req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.ip || "255.255.255.255";
+
 let multiplier = process.env.MODE === "dev" ? 100 : 1;
 
 exports.limit60perhour = rateLimit({
@@ -8,14 +10,7 @@ exports.limit60perhour = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
-  keyGenerator: (req) => {
-    return `${
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
-      req.ip ||
-      "255.255.255.255"
-    }`;
-  },
+  keyGenerator: getAddress
 });
 
 exports.limit120perhour = rateLimit({
@@ -24,14 +19,7 @@ exports.limit120perhour = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
-  keyGenerator: (req) => {
-    return `${
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
-      req.ip ||
-      "255.255.255.255"
-    }`;
-  },
+  keyGenerator: getAddress
 });
 
 exports.limit3perday = rateLimit({
@@ -40,14 +28,7 @@ exports.limit3perday = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
-  keyGenerator: (req) => {
-    return `${
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
-      req.ip ||
-      "255.255.255.255"
-    }`;
-  },
+  keyGenerator: getAddress
 });
 
 exports.limit1persec = rateLimit({
@@ -56,14 +37,7 @@ exports.limit1persec = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
-  keyGenerator: (req) => {
-    return `${
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
-      req.ip ||
-      "255.255.255.255"
-    }`;
-  },
+  keyGenerator: getAddress
 });
 
 exports.limit500perhour = rateLimit({
@@ -72,12 +46,5 @@ exports.limit500perhour = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
-  keyGenerator: (req) => {
-    return `${
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
-      req.ip ||
-      "255.255.255.255"
-    }`;
-  },
+  keyGenerator: getAddress
 });
