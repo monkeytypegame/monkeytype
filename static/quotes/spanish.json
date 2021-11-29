@@ -1,22 +1,10 @@
 {
   "language": "spanish",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -110,7 +98,7 @@
       "id": 15
     },
     {
-      "text": "La verdad es que, aquí como en todo, Gorgias se debate entre la exposición de una doctrina propia y la crítica, por exageración y reducción al absurdo, de doctrinas ajenas. Es este último interés el que ocupa el primer lugar, el que domina, por así decirlo,el primer nivel de la exposición.",
+      "text": "La verdad es que, aquí como en todo, Gorgias se debate entre la exposición de una doctrina propia y la crítica, por exageración y reducción al absurdo, de doctrinas ajenas. Es este último interés el que ocupa el primer lugar, el que domina, por así decirlo, el primer nivel de la exposición.",
       "source": "Nuevos estudios de lingüística general y de teoría literaria",
       "length": 291,
       "id": 16
@@ -272,7 +260,7 @@
       "id": 42
     },
     {
-      "text": "No ​me ​mires ​que ​nos ​miran. ​Nos ​miran ​que ​nos ​miramos, ​miremos ​que ​no ​nos ​miren ​y ​cuando ​no ​miren ​nos ​miraremos. ​Porque ​si ​nos ​miran ​que ​nos ​miramos ​miran ​que ​nos ​amamos.",
+      "text": "No me mires que nos miran. Nos miran que nos miramos, miremos que no nos miren y cuando no miren nos miraremos. Porque si nos miran que nos miramos miran que nos amamos.",
       "source": "Trabalenguas",
       "length": 201,
       "id": 43
@@ -356,7 +344,7 @@
       "id": 56
     },
     {
-      "text": "Me pregunto si las estrellas se iluminan con el fin de que algún día, cada uno pueda encontrar la suya”",
+      "text": "Me pregunto si las estrellas se iluminan con el fin de que algún día, cada uno pueda encontrar la suya",
       "source": "El Principito",
       "length": 103,
       "id": 57
