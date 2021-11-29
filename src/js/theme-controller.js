@@ -144,6 +144,7 @@ export function set(themeName) {
 export function clearPreview() {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
+    randomTheme = null;
     if (Config.customTheme) {
       apply("custom");
     } else {

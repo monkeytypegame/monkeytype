@@ -1285,6 +1285,7 @@ export function setCustomTheme(boolean, nosave) {
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
+  ThemeController.clearPreview();
   ThemeController.set(config.theme);
   if (!nosave) saveToLocalStorage();
 }

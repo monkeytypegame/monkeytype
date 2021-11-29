@@ -497,6 +497,7 @@ export function update() {
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
+  // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed
