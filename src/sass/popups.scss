@@ -220,6 +220,39 @@
   }
 }
 
+#mobileTestConfigPopupWrapper {
+  #mobileTestConfigPopup {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 1rem;
+    display: grid;
+    gap: 1rem;
+    width: calc(100vw - 2rem);
+    // margin-left: 1rem;
+    max-width: 400px;
+
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+
+    .inputs {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .text {
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+
+    .group {
+      display: grid;
+      gap: 0.5rem;
+    }
+  }
+}
+
 #customWordAmountPopupWrapper,
 #customTestDurationPopupWrapper,
 #practiseWordsPopupWrapper,

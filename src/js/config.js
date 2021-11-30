@@ -20,6 +20,7 @@ import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
 import * as TTS from "./tts";
+import * as MobileTestConfig from "./mobile-test-config.js";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -290,6 +291,7 @@ export function setMode(mode, nosave) {
     }
     // setPaceCaret("off", true);
   }
+  MobileTestConfig.update();
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
@@ -1285,6 +1287,7 @@ export function setCustomTheme(boolean, nosave) {
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
+  ThemeController.clearPreview();
   ThemeController.set(config.theme);
   if (!nosave) saveToLocalStorage();
 }

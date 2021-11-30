@@ -691,7 +691,7 @@ export function cleanTypographySymbols(textToClean) {
     " ": " ",
   };
   return textToClean.replace(
-    /[“”’‘—,…«»–   ]/g,
+    /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
     (char) => specials[char] || ""
   );
 }

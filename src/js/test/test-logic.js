@@ -30,6 +30,7 @@ import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
+import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
@@ -452,359 +453,6 @@ export function startTest() {
   return true;
 }
 
-export async function init() {
-  setActive(false);
-  Replay.stopReplayRecording();
-  words.reset();
-  TestUI.setCurrentWordElementIndex(0);
-  // accuracy = {
-  //   correct: 0,
-  //   incorrect: 0,
-  // };
-
-  input.resetHistory();
-  input.resetCurrent();
-
-  let language = await Misc.getLanguage(Config.language);
-  if (language && language.name !== Config.language) {
-    UpdateConfig.setLanguage("english");
-  }
-
-  if (!language) {
-    UpdateConfig.setLanguage("english");
-    language = await Misc.getLanguage(Config.language);
-  }
-
-  if (Config.lazyMode === true && language.noLazyMode) {
-    Notifications.add("This language does not support lazy mode.", 0);
-    UpdateConfig.setLazyMode(false);
-  }
-
-  let wordsBound = 100;
-  if (Config.showAllLines) {
-    if (Config.mode === "quote") {
-      wordsBound = 100;
-    } else if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        wordsBound = CustomText.word;
-      } else if (CustomText.isTimeRandom) {
-        wordsBound = 100;
-      } else {
-        wordsBound = CustomText.text.length;
-      }
-    } else if (Config.mode != "time") {
-      wordsBound = Config.words;
-    }
-  } else {
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-    if (
-      Config.mode == "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word < wordsBound
-    ) {
-      wordsBound = CustomText.word;
-    }
-    if (
-      Config.mode == "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time < wordsBound
-    ) {
-      wordsBound = 100;
-    }
-    if (
-      Config.mode == "custom" &&
-      !CustomText.isWordRandom &&
-      CustomText.text.length < wordsBound
-    ) {
-      wordsBound = CustomText.text.length;
-    }
-  }
-
-  if (
-    (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word == 0) ||
-    (Config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time == 0)
-  ) {
-    wordsBound = 100;
-  }
-
-  if (Config.mode === "words" && Config.words === 0) {
-    wordsBound = 100;
-  }
-  if (Config.funbox === "plus_one") {
-    wordsBound = 2;
-  }
-  if (Config.funbox === "plus_two") {
-    wordsBound = 3;
-  }
-
-  if (
-    Config.mode == "time" ||
-    Config.mode == "words" ||
-    Config.mode == "custom"
-  ) {
-    let wordList = language.words;
-    if (Config.mode == "custom") {
-      wordList = CustomText.text;
-    }
-    const wordset = Wordset.withWords(wordList);
-
-    if (Config.funbox == "poetry") {
-      let poem = await Poetry.getPoem();
-      poem.words.forEach((word) => {
-        words.push(word);
-      });
-    } else {
-      for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset.randomWord();
-        const previousWord = words.get(i - 1);
-        const previousWord2 = words.get(i - 2);
-        if (
-          Config.mode == "custom" &&
-          !CustomText.isWordRandom &&
-          !CustomText.isTimeRandom
-        ) {
-          randomWord = CustomText.text[i];
-        } else if (
-          Config.mode == "custom" &&
-          (wordset.length < 3 || PractiseWords.before.mode !== null)
-        ) {
-          randomWord = wordset.randomWord();
-        } else {
-          let regenarationCount = 0; //infinite loop emergency stop button
-          while (
-            regenarationCount < 100 &&
-            (randomWord == previousWord ||
-              randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I"))
-          ) {
-            regenarationCount++;
-            randomWord = wordset.randomWord();
-          }
-        }
-
-        if (randomWord === undefined) {
-          randomWord = wordset.randomWord();
-        }
-
-        if (Config.britishEnglish && /english/.test(Config.language)) {
-          let britishWord = await BritishEnglish.replace(randomWord);
-          if (britishWord) randomWord = britishWord;
-        }
-
-        if (Config.lazyMode === true && !language.noLazyMode) {
-          randomWord = LazyMode.replaceAccents(randomWord, language.accents);
-        }
-
-        randomWord = randomWord.replace(/ +/gm, " ");
-        randomWord = randomWord.replace(/^ | $/gm, "");
-
-        if (Config.funbox === "rAnDoMcAsE") {
-          let randomcaseword = "";
-          for (let i = 0; i < randomWord.length; i++) {
-            if (i % 2 != 0) {
-              randomcaseword += randomWord[i].toUpperCase();
-            } else {
-              randomcaseword += randomWord[i];
-            }
-          }
-          randomWord = randomcaseword;
-        } else if (Config.funbox === "gibberish") {
-          randomWord = Misc.getGibberish();
-        } else if (Config.funbox === "58008") {
-          // UpdateConfig.setPunctuation(false, true);
-          UpdateConfig.setNumbers(false, true);
-          randomWord = Misc.getNumbers(7);
-        } else if (Config.funbox === "specials") {
-          UpdateConfig.setPunctuation(false, true);
-          UpdateConfig.setNumbers(false, true);
-          randomWord = Misc.getSpecials();
-        } else if (Config.funbox === "ascii") {
-          UpdateConfig.setPunctuation(false, true);
-          UpdateConfig.setNumbers(false, true);
-          randomWord = Misc.getASCII();
-        } else if (Config.funbox === "weakspot") {
-          randomWord = WeakSpot.getWord(wordset);
-        }
-
-        if (Config.punctuation) {
-          randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
-        }
-        if (Config.numbers) {
-          if (
-            Math.random() < 0.1 &&
-            i !== 0 &&
-            Misc.getLastChar(previousWord) !== "."
-          ) {
-            randomWord = Misc.getNumbers(4);
-            if (i == wordsBound - 1) {
-              randomWord += ".";
-            }
-          }
-        }
-
-        if (/\t/g.test(randomWord)) {
-          setHasTab(true);
-        }
-
-        if (/ +/.test(randomWord)) {
-          let randomList = randomWord.split(" ");
-          let id = 0;
-          while (id < randomList.length) {
-            words.push(randomList[id]);
-            id++;
-
-            if (
-              words.length == wordsBound &&
-              Config.mode == "custom" &&
-              CustomText.isWordRandom
-            ) {
-              break;
-            }
-          }
-          if (
-            Config.mode == "custom" &&
-            !CustomText.isWordRandom &&
-            !CustomText.isTimeRandom
-          ) {
-            //
-          } else {
-            i = words.length - 1;
-          }
-        } else {
-          words.push(randomWord);
-        }
-      }
-    }
-  } else if (Config.mode == "quote") {
-    // setLanguage(Config.language.replace(/_\d*k$/g, ""), true);
-
-    let quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
-
-    if (quotes.length === 0) {
-      Notifications.add(
-        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
-        0
-      );
-      TestUI.setTestRestarting(false);
-      UpdateConfig.setMode("words");
-      restart();
-      return;
-    }
-
-    let rq;
-    if (Config.quoteLength != -2) {
-      let quoteLengths = Config.quoteLength;
-      let groupIndex;
-      if (quoteLengths.length > 1) {
-        groupIndex =
-          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-        while (quotes.groups[groupIndex].length === 0) {
-          groupIndex =
-            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-        }
-      } else {
-        groupIndex = quoteLengths[0];
-        if (quotes.groups[groupIndex].length === 0) {
-          Notifications.add("No quotes found for selected quote length", 0);
-          TestUI.setTestRestarting(false);
-          return;
-        }
-      }
-
-      rq =
-        quotes.groups[groupIndex][
-          Math.floor(Math.random() * quotes.groups[groupIndex].length)
-        ];
-      if (randomQuote != null && rq.id === randomQuote.id) {
-        rq =
-          quotes.groups[groupIndex][
-            Math.floor(Math.random() * quotes.groups[groupIndex].length)
-          ];
-      }
-    } else {
-      quotes.groups.forEach((group) => {
-        let filtered = group.filter(
-          (quote) => quote.id == QuoteSearchPopup.selectedId
-        );
-        if (filtered.length > 0) {
-          rq = filtered[0];
-        }
-      });
-      if (rq == undefined) {
-        rq = quotes.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0);
-      }
-    }
-    rq.text = rq.text.replace(/ +/gm, " ");
-    rq.text = rq.text.replace(/\\\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\\\n/gm, "\n");
-    rq.text = rq.text.replace(/\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\n/gm, "\n");
-    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-    rq.text = rq.text.replace(/…/g, "...");
-    rq.text = rq.text.trim();
-    rq.textSplit = rq.text.split(" ");
-    rq.language = Config.language.replace(/_\d*k$/g, "");
-
-    setRandomQuote(rq);
-
-    let w = randomQuote.textSplit;
-
-    wordsBound = Math.min(wordsBound, w.length);
-
-    for (let i = 0; i < wordsBound; i++) {
-      if (/\t/g.test(w[i])) {
-        setHasTab(true);
-      }
-      if (
-        Config.britishEnglish &&
-        Config.language.replace(/_\d*k$/g, "") === "english"
-      ) {
-        let britishWord = await BritishEnglish.replace(w[i]);
-        if (britishWord) w[i] = britishWord;
-      }
-
-      if (Config.lazyMode === true && !language.noLazyMode) {
-        w[i] = LazyMode.replaceAccents(w[i], language.accents);
-      }
-
-      words.push(w[i]);
-    }
-  }
-  //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
-  if (language.ligatures) {
-    $("#words").addClass("withLigatures");
-    $("#resultWordsHistory .words").addClass("withLigatures");
-    $("#resultReplay .words").addClass("withLigatures");
-  } else {
-    $("#words").removeClass("withLigatures");
-    $("#resultWordsHistory .words").removeClass("withLigatures");
-    $("#resultReplay .words").removeClass("withLigatures");
-  }
-  // if (Config.mode == "zen") {
-  //   // Creating an empty active word element for zen mode
-  //   $("#words").append('<div class="word active"></div>');
-  //   $("#words").css("height", "auto");
-  //   $("#wordsWrapper").css("height", "auto");
-  // } else {
-  if ($(".pageTest").hasClass("active")) {
-    await Funbox.activate();
-  }
-  TestUI.showWords();
-  // }
-}
-
 export function restart(
   withSameWordset = false,
   nosave = false,
@@ -1065,6 +713,375 @@ export function restart(
   );
 }
 
+export async function init() {
+  setActive(false);
+  Replay.stopReplayRecording();
+  words.reset();
+  TestUI.setCurrentWordElementIndex(0);
+  // accuracy = {
+  //   correct: 0,
+  //   incorrect: 0,
+  // };
+
+  input.resetHistory();
+  input.resetCurrent();
+
+  let language = await Misc.getLanguage(Config.language);
+  if (language && language.name !== Config.language) {
+    UpdateConfig.setLanguage("english");
+  }
+
+  if (!language) {
+    UpdateConfig.setLanguage("english");
+    language = await Misc.getLanguage(Config.language);
+  }
+
+  if (Config.lazyMode === true && language.noLazyMode) {
+    Notifications.add("This language does not support lazy mode.", 0);
+    UpdateConfig.setLazyMode(false);
+  }
+
+  let wordsBound = 100;
+  if (Config.showAllLines) {
+    if (Config.mode === "quote") {
+      wordsBound = 100;
+    } else if (Config.mode === "custom") {
+      if (CustomText.isWordRandom) {
+        wordsBound = CustomText.word;
+      } else if (CustomText.isTimeRandom) {
+        wordsBound = 100;
+      } else {
+        wordsBound = CustomText.text.length;
+      }
+    } else if (Config.mode != "time") {
+      wordsBound = Config.words;
+    }
+  } else {
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+    if (
+      Config.mode == "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word < wordsBound
+    ) {
+      wordsBound = CustomText.word;
+    }
+    if (Config.mode == "custom" && CustomText.isTimeRandom) {
+      wordsBound = 100;
+    }
+    if (
+      Config.mode == "custom" &&
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length < wordsBound
+    ) {
+      wordsBound = CustomText.text.length;
+    }
+  }
+
+  if (
+    (Config.mode === "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word == 0) ||
+    (Config.mode === "custom" &&
+      CustomText.isTimeRandom &&
+      CustomText.time == 0)
+  ) {
+    wordsBound = 100;
+  }
+
+  if (Config.mode === "words" && Config.words === 0) {
+    wordsBound = 100;
+  }
+  if (Config.funbox === "plus_one") {
+    wordsBound = 2;
+  }
+  if (Config.funbox === "plus_two") {
+    wordsBound = 3;
+  }
+
+  if (
+    Config.mode == "time" ||
+    Config.mode == "words" ||
+    Config.mode == "custom"
+  ) {
+    let wordList = language.words;
+    if (Config.mode == "custom") {
+      wordList = CustomText.text;
+    }
+    const wordset = Wordset.withWords(wordList);
+
+    if (
+      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
+      Config.mode != "custom"
+    ) {
+      let wordCount = 0;
+
+      // If mode is words, get as many sections as you need until the wordCount is fullfilled
+      while (
+        (Config.mode == "words" && Config.words >= wordCount) ||
+        (Config.mode === "time" && wordCount < 100)
+      ) {
+        let section =
+          Config.funbox == "wikipedia"
+            ? await Wikipedia.getSection()
+            : await Poetry.getPoem();
+        for (let word of section.words) {
+          if (wordCount >= Config.words && Config.mode == "words") {
+            wordCount++;
+            break;
+          }
+          wordCount++;
+          words.push(word);
+        }
+      }
+    } else {
+      for (let i = 0; i < wordsBound; i++) {
+        let randomWord = wordset.randomWord();
+        const previousWord = words.get(i - 1);
+        const previousWord2 = words.get(i - 2);
+        if (
+          Config.mode == "custom" &&
+          !CustomText.isWordRandom &&
+          !CustomText.isTimeRandom
+        ) {
+          randomWord = CustomText.text[i];
+        } else if (
+          Config.mode == "custom" &&
+          (wordset.length < 3 || PractiseWords.before.mode !== null)
+        ) {
+          randomWord = wordset.randomWord();
+        } else {
+          let regenarationCount = 0; //infinite loop emergency stop button
+          while (
+            regenarationCount < 100 &&
+            (randomWord == previousWord ||
+              randomWord == previousWord2 ||
+              (!Config.punctuation && randomWord == "I"))
+          ) {
+            regenarationCount++;
+            randomWord = wordset.randomWord();
+          }
+        }
+
+        if (randomWord === undefined) {
+          randomWord = wordset.randomWord();
+        }
+
+        if (Config.britishEnglish && /english/.test(Config.language)) {
+          let britishWord = await BritishEnglish.replace(randomWord);
+          if (britishWord) randomWord = britishWord;
+        }
+
+        if (Config.lazyMode === true && !language.noLazyMode) {
+          randomWord = LazyMode.replaceAccents(randomWord, language.accents);
+        }
+
+        randomWord = randomWord.replace(/ +/gm, " ");
+        randomWord = randomWord.replace(/^ | $/gm, "");
+
+        if (Config.funbox === "rAnDoMcAsE") {
+          let randomcaseword = "";
+          for (let i = 0; i < randomWord.length; i++) {
+            if (i % 2 != 0) {
+              randomcaseword += randomWord[i].toUpperCase();
+            } else {
+              randomcaseword += randomWord[i];
+            }
+          }
+          randomWord = randomcaseword;
+        } else if (Config.funbox === "gibberish") {
+          randomWord = Misc.getGibberish();
+        } else if (Config.funbox === "58008") {
+          // UpdateConfig.setPunctuation(false, true);
+          UpdateConfig.setNumbers(false, true);
+          randomWord = Misc.getNumbers(7);
+        } else if (Config.funbox === "specials") {
+          UpdateConfig.setPunctuation(false, true);
+          UpdateConfig.setNumbers(false, true);
+          randomWord = Misc.getSpecials();
+        } else if (Config.funbox === "ascii") {
+          UpdateConfig.setPunctuation(false, true);
+          UpdateConfig.setNumbers(false, true);
+          randomWord = Misc.getASCII();
+        } else if (Config.funbox === "weakspot") {
+          randomWord = WeakSpot.getWord(wordset);
+        }
+
+        if (Config.punctuation) {
+          randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
+        }
+        if (Config.numbers) {
+          if (
+            Math.random() < 0.1 &&
+            i !== 0 &&
+            Misc.getLastChar(previousWord) !== "."
+          ) {
+            randomWord = Misc.getNumbers(4);
+            if (i == wordsBound - 1) {
+              randomWord += ".";
+            }
+          }
+        }
+
+        if (/\t/g.test(randomWord)) {
+          setHasTab(true);
+        }
+
+        if (/ +/.test(randomWord)) {
+          let randomList = randomWord.split(" ");
+          let id = 0;
+          while (id < randomList.length) {
+            words.push(randomList[id]);
+            id++;
+
+            if (
+              words.length == wordsBound &&
+              Config.mode == "custom" &&
+              CustomText.isWordRandom
+            ) {
+              break;
+            }
+          }
+          if (
+            Config.mode == "custom" &&
+            !CustomText.isWordRandom &&
+            !CustomText.isTimeRandom
+          ) {
+            //
+          } else {
+            i = words.length - 1;
+          }
+        } else {
+          words.push(randomWord);
+        }
+      }
+    }
+  } else if (Config.mode == "quote") {
+    // setLanguage(Config.language.replace(/_\d*k$/g, ""), true);
+
+    let quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
+
+    if (quotes.length === 0) {
+      Notifications.add(
+        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
+        0
+      );
+      TestUI.setTestRestarting(false);
+      UpdateConfig.setMode("words");
+      restart();
+      return;
+    }
+
+    let rq;
+    if (Config.quoteLength != -2) {
+      let quoteLengths = Config.quoteLength;
+      let groupIndex;
+      if (quoteLengths.length > 1) {
+        groupIndex =
+          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        while (quotes.groups[groupIndex].length === 0) {
+          groupIndex =
+            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        }
+      } else {
+        groupIndex = quoteLengths[0];
+        if (quotes.groups[groupIndex].length === 0) {
+          Notifications.add("No quotes found for selected quote length", 0);
+          TestUI.setTestRestarting(false);
+          return;
+        }
+      }
+
+      rq =
+        quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
+        ];
+      if (randomQuote != null && rq.id === randomQuote.id) {
+        rq =
+          quotes.groups[groupIndex][
+            Math.floor(Math.random() * quotes.groups[groupIndex].length)
+          ];
+      }
+    } else {
+      quotes.groups.forEach((group) => {
+        let filtered = group.filter(
+          (quote) => quote.id == QuoteSearchPopup.selectedId
+        );
+        if (filtered.length > 0) {
+          rq = filtered[0];
+        }
+      });
+      if (rq == undefined) {
+        rq = quotes.groups[0][0];
+        Notifications.add("Quote Id Does Not Exist", 0);
+      }
+    }
+    rq.text = rq.text.replace(/ +/gm, " ");
+    rq.text = rq.text.replace(/\\\\t/gm, "\t");
+    rq.text = rq.text.replace(/\\\\n/gm, "\n");
+    rq.text = rq.text.replace(/\\t/gm, "\t");
+    rq.text = rq.text.replace(/\\n/gm, "\n");
+    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+    rq.text = rq.text.replace(/…/g, "...");
+    rq.text = rq.text.trim();
+    rq.textSplit = rq.text.split(" ");
+    rq.language = Config.language.replace(/_\d*k$/g, "");
+
+    setRandomQuote(rq);
+
+    let w = randomQuote.textSplit;
+
+    wordsBound = Math.min(wordsBound, w.length);
+
+    for (let i = 0; i < wordsBound; i++) {
+      if (/\t/g.test(w[i])) {
+        setHasTab(true);
+      }
+      if (
+        Config.britishEnglish &&
+        Config.language.replace(/_\d*k$/g, "") === "english"
+      ) {
+        let britishWord = await BritishEnglish.replace(w[i]);
+        if (britishWord) w[i] = britishWord;
+      }
+
+      if (Config.lazyMode === true && !language.noLazyMode) {
+        w[i] = LazyMode.replaceAccents(w[i], language.accents);
+      }
+
+      words.push(w[i]);
+    }
+  }
+  //handle right-to-left languages
+  if (language.leftToRight) {
+    TestUI.arrangeCharactersLeftToRight();
+  } else {
+    TestUI.arrangeCharactersRightToLeft();
+  }
+  if (language.ligatures) {
+    $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
+  } else {
+    $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
+  }
+  // if (Config.mode == "zen") {
+  //   // Creating an empty active word element for zen mode
+  //   $("#words").append('<div class="word active"></div>');
+  //   $("#words").css("height", "auto");
+  //   $("#wordsWrapper").css("height", "auto");
+  // } else {
+  if ($(".pageTest").hasClass("active")) {
+    await Funbox.activate();
+  }
+  TestUI.showWords();
+  // }
+}
+
 export function calculateWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
@@ -1102,6 +1119,26 @@ export function calculateWpmAndRaw() {
 
 export async function addWord() {
   let bound = 100;
+  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+    if (Config.mode == "time" && words.length - words.currentIndex < 20) {
+      let section =
+        Config.funbox == "wikipedia"
+          ? await Wikipedia.getSection()
+          : await Poetry.getPoem();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        words.push(word);
+        TestUI.addWord(word);
+      }
+    } else {
+      return;
+    }
+  }
+
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
   if (
@@ -1115,6 +1152,7 @@ export async function addWord() {
       CustomText.word != 0) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
       words.length >= CustomText.text.length) ||
     (Config.mode === "quote" && words.length >= randomQuote.textSplit.length)
   )
@@ -1213,8 +1251,16 @@ export async function addWord() {
     }
   }
 
-  words.push(randomWord);
-  TestUI.addWord(randomWord);
+  let split = randomWord.split(" ");
+  if (split.length > 1) {
+    split.forEach((word) => {
+      words.push(word);
+      TestUI.addWord(word);
+    });
+  } else {
+    words.push(randomWord);
+    TestUI.addWord(randomWord);
+  }
 }
 
 export async function finish(difficultyFailed = false) {
@@ -1517,16 +1563,19 @@ export async function finish(difficultyFailed = false) {
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = chartData2;
 
+  ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
+    ? "cpm"
+    : "wpm";
+
   let maxChartVal = Math.max(
     ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
   if (!Config.startGraphsAtZero) {
-    ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...chartData1
+    let minChartVal = Math.min(
+      ...[Math.min(...chartData2), Math.min(...chartData1)]
     );
-    ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...chartData1
-    );
+    ChartController.result.options.scales.yAxes[0].ticks.min = minChartVal;
+    ChartController.result.options.scales.yAxes[1].ticks.min = minChartVal;
   } else {
     ChartController.result.options.scales.yAxes[0].ticks.min = 0;
     ChartController.result.options.scales.yAxes[1].ticks.min = 0;

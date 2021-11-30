@@ -113,44 +113,65 @@
 
   .config {
     grid-area: config;
-    justify-self: right;
-    display: grid;
-    // grid-auto-flow: row;
-    grid-template-rows: 0.7rem 0.7rem 0.7rem;
-    grid-gap: 0.2rem;
-    // width: min-content;
-    // width: -moz-min-content;
-    // transition: 0.25s;
-    /*   margin-bottom: 0.1rem; */
-    justify-items: self-end;
-
-    .group {
-      transition: 0.25s;
-
-      .title {
+    .mobileConfig {
+      display: none;
+      .icon-button {
+        display: grid;
+        grid-auto-flow: column;
+        align-content: center;
+        transition: 0.25s;
+        margin-right: -1rem;
+        padding: 0.5rem 1rem;
+        font-size: 2rem;
+        border-radius: var(--roundness);
+        cursor: pointer;
         color: var(--sub-color);
-        font-size: 0.5rem;
-        line-height: 0.5rem;
-        margin-bottom: 0.15rem;
-      }
-
-      .buttons {
-        font-size: 0.7rem;
-        line-height: 0.7rem;
-        display: flex;
-      }
-      &.disabled {
-        pointer-events: none;
-        opacity: 0.25;
+        &:hover {
+          color: var(--text-color);
+        }
       }
     }
 
-    .punctuationMode {
-      margin-bottom: -0.1rem;
-    }
+    .desktopConfig {
+      justify-self: right;
+      display: grid;
+      // grid-auto-flow: row;
+      grid-template-rows: 0.7rem 0.7rem 0.7rem;
+      grid-gap: 0.2rem;
+      // width: min-content;
+      // width: -moz-min-content;
+      // transition: 0.25s;
+      /*   margin-bottom: 0.1rem; */
+      justify-items: self-end;
 
-    .numbersMode {
-      margin-bottom: -0.1rem;
+      .group {
+        transition: 0.25s;
+
+        .title {
+          color: var(--sub-color);
+          font-size: 0.5rem;
+          line-height: 0.5rem;
+          margin-bottom: 0.15rem;
+        }
+
+        .buttons {
+          font-size: 0.7rem;
+          line-height: 0.7rem;
+          display: flex;
+        }
+        &.disabled {
+          pointer-events: none;
+          opacity: 0.25;
+        }
+      }
+
+      .punctuationMode {
+        margin-bottom: -0.1rem;
+      }
+
+      .numbersMode {
+        margin-bottom: -0.1rem;
+      }
     }
   }
 

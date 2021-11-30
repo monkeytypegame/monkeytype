@@ -172,7 +172,10 @@ async function initGroups() {
   );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
-    UpdateConfig.setPlaySoundOnError
+    UpdateConfig.setPlaySoundOnError,
+    () => {
+      if (Config.playSoundOnError) Sound.playError();
+    }
   );
   groups.playSoundOnClick = new SettingsGroup(
     "playSoundOnClick",
@@ -494,6 +497,7 @@ export function update() {
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
+  // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed

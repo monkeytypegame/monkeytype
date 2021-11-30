@@ -131,6 +131,7 @@ const refactoredSrc = [
   "./src/js/elements/about-page.js",
   "./src/js/elements/psa.js",
   "./src/js/elements/new-version-notification.js",
+  "./src/js/elements/mobile-test-config.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/pb-tables-popup.js",
@@ -179,6 +180,7 @@ const refactoredSrc = [
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
   "./src/js/test/poetry.js",
+  "./src/js/test/wikipedia.js",
   "./src/js/test/today-tracker.js",
   "./src/js/test/weak-spot.js",
   "./src/js/test/wordset.js",

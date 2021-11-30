@@ -8,28 +8,28 @@ const router = Router();
 
 router.get(
   "/",
-  RateLimit.limit60perhour,
+  RateLimit.presetsGet,
   authenticateRequest,
   PresetController.getPresets
 );
 
 router.post(
   "/add",
-  RateLimit.limit60perhour,
+  RateLimit.presetsAdd,
   authenticateRequest,
   PresetController.addPreset
 );
 
 router.post(
   "/edit",
-  RateLimit.limit60perhour,
+  RateLimit.presetsEdit,
   authenticateRequest,
   PresetController.editPreset
 );
 
 router.post(
   "/remove",
-  RateLimit.limit60perhour,
+  RateLimit.presetsRemove,
   authenticateRequest,
   PresetController.removePreset
 );
