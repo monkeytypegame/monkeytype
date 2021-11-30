@@ -90,9 +90,10 @@ class LeaderboardsDAO {
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .drop();
     } catch (e) {}
-    await mongoDB()
-      .collection(`leaderboards.${language}.${mode}.${mode2}`)
-      .insertMany(lb);
+    if (lb && lb.length !== 0)
+      await mongoDB()
+        .collection(`leaderboards.${language}.${mode}.${mode2}`)
+        .insertMany(lb);
     let end3 = performance.now();
 
     let start4 = performance.now();
