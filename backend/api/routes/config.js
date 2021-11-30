@@ -7,14 +7,14 @@ const router = Router();
 
 router.get(
   "/",
-  RateLimit.limit60perhour,
+  RateLimit.configGet,
   authenticateRequest,
   ConfigController.getConfig
 );
 
 router.post(
   "/save",
-  RateLimit.limit500perhour,
+  RateLimit.configUpdate,
   authenticateRequest,
   ConfigController.saveConfig
 );
