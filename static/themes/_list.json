@@ -613,5 +613,10 @@
     "name" : "hanok",
     "bgColor" : "#d8d2c3",
     "textColor":"#513a2a"
+  },
+  {
+    "name": "cotton_candy",
+    "bgColor": "#ffa1cc",
+    "textColor": "#a1fbff"
   }
 ]
