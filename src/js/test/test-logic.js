@@ -767,16 +767,13 @@ export async function init() {
     ) {
       wordsBound = CustomText.word;
     }
-    if (
-      Config.mode == "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time < wordsBound
-    ) {
+    if (Config.mode == "custom" && CustomText.isTimeRandom) {
       wordsBound = 100;
     }
     if (
       Config.mode == "custom" &&
       !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
       CustomText.text.length < wordsBound
     ) {
       wordsBound = CustomText.text.length;
@@ -1155,6 +1152,7 @@ export async function addWord() {
       CustomText.word != 0) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
       words.length >= CustomText.text.length) ||
     (Config.mode === "quote" && words.length >= randomQuote.textSplit.length)
   )
@@ -1253,8 +1251,16 @@ export async function addWord() {
     }
   }
 
-  words.push(randomWord);
-  TestUI.addWord(randomWord);
+  let split = randomWord.split(" ");
+  if (split.length > 1) {
+    split.forEach((word) => {
+      words.push(word);
+      TestUI.addWord(word);
+    });
+  } else {
+    words.push(randomWord);
+    TestUI.addWord(randomWord);
+  }
 }
 
 export async function finish(difficultyFailed = false) {
