@@ -7,14 +7,14 @@ const router = Router();
 
 router.get(
   "/get",
-  RateLimit.limit500perhour,
+  RateLimit.quoteRatingsGet,
   authenticateRequest,
   QuoteRatingsController.getRating
 );
 
 router.post(
   "/submit",
-  RateLimit.limit500perhour,
+  RateLimit.quoteRatingsSubmit,
   authenticateRequest,
   QuoteRatingsController.submitRating
 );

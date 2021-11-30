@@ -7,41 +7,41 @@ const router = Router();
 
 router.get(
   "/",
-  RateLimit.limit60perhour,
+  RateLimit.resultsGet,
   authenticateRequest,
   ResultController.getResults
 );
 
 router.post(
   "/add",
-  RateLimit.limit500perhour,
+  RateLimit.resultsAdd,
   authenticateRequest,
   ResultController.addResult
 );
 
 router.post(
   "/updateTags",
-  RateLimit.limit500perhour,
+  RateLimit.resultsTagsUpdate,
   authenticateRequest,
   ResultController.updateTags
 );
 
 router.post(
   "/deleteAll",
-  RateLimit.limit60perhour,
+  RateLimit.resultsDeleteAll,
   authenticateRequest,
   ResultController.deleteAll
 );
 
 router.get(
   "/getLeaderboard/:type/:mode/:mode2",
-  RateLimit.limit60perhour,
+  RateLimit.resultsLeaderboardGet,
   ResultController.getLeaderboard
 );
 
 router.post(
   "/checkLeaderboardQualification",
-  RateLimit.limit60perhour,
+  RateLimit.resultsLeaderboardQualificationGet,
   authenticateRequest,
   ResultController.checkLeaderboardQualification
 );
