@@ -13,6 +13,7 @@ import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 
 export let slowTimer = false;
+let slowTimerCount = 0;
 export let time = 0;
 let timer = null;
 const interval = 1000;
@@ -27,6 +28,7 @@ function setSlowTimer() {
 
 function clearSlowTimer() {
   slowTimer = false;
+  slowTimerCount = 0;
 }
 
 let timerDebug = false;
@@ -217,12 +219,15 @@ export async function start() {
         setSlowTimer();
       }
       if (delay < interval / 10) {
-        //slow timer
-        Notifications.add(
-          "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
-          -1
-        );
-        TestLogic.fail("slow timer");
+        slowTimerCount++;
+        if (slowTimerCount > 5) {
+          //slow timer
+          Notifications.add(
+            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+            -1
+          );
+          TestLogic.fail("slow timer");
+        }
       }
     }
     timer = setTimeout(function () {
