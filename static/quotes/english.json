@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -32484,7 +32472,7 @@
       "source": "Cherry, The Outsiders"
     },
     {
-      "text": "I am a greaser. I am a JD and a hood. I blacken the name of our fair city. I beat up people. I rob gas stations. I am a manace to society. Man do I have fun!",
+      "text": "I am a greaser. I am a JD and a hood. I blacken the name of our fair city. I beat up people. I rob gas stations. I am a menace to society. Man do I have fun!",
       "source": "The Outsiders",
       "length": 157,
       "id": 5471
