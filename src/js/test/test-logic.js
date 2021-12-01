@@ -912,7 +912,7 @@ export async function init() {
         if (Config.punctuation) {
           randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
         }
-        if (Config.numbers) {
+        if (Config.numbers && Config.punctuation) {
           if (
             Math.random() < 0.1 &&
             i !== 0 &&
