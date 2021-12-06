@@ -1,0 +1,31 @@
+:root{
+  --bg-color: #ffffff;
+  --main-color: #ff360d;
+  --caret-color: #ff0000;
+  --sub-color: #ff0000;
+  --text-color: #000000;
+  --error-color: #d70000;
+  --error-extra-color: #b00000;
+  --colorful-error-color: #ff1c1c;
+  --colorful-error-extra-color: #b00000;
+}
+
+#menu .icon-button:nth-child(1) {
+  color: #ff0000;
+}
+
+#menu .icon-button:nth-child(5) {
+  color: #ff0000;
+}
+
+.word letter.incorrect {
+  -webkit-transform: scale(0.5) translate(-100%, -100%);
+}
+
+.word letter.incorrect.extra {
+  -webkit-transform: scale(0.5);
+}
+
+.word.error{
+  border-bottom: solid 2px #ff0000;
+}
