@@ -912,14 +912,14 @@ export async function init() {
         if (Config.punctuation) {
           randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
         }
-        if (Config.numbers && Config.punctuation) {
+        if (Config.numbers) {
           if (
             Math.random() < 0.1 &&
             i !== 0 &&
             Misc.getLastChar(previousWord) !== "."
           ) {
             randomWord = Misc.getNumbers(4);
-            if (i == wordsBound - 1) {
+            if (i == wordsBound - 1 && Config.punctuation) {
               randomWord += ".";
             }
           }
