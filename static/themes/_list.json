@@ -628,5 +628,10 @@
     "name": "diner",
     "bgColor" : "#537997",
     "textColor":"#c3af5b"
+  },
+  {
+    "name": "modern_ink",
+    "bgColor" : "#ffffff",
+    "textColor":"#ff360d"
   }
 ]
