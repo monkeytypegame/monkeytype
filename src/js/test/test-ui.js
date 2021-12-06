@@ -854,6 +854,9 @@ export function applyBurstHeatmap() {
 
     let burstlist = [...TestStats.burstHistory];
 
+    burstlist = burstlist.filter((x) => x !== Infinity);
+    burstlist = burstlist.filter((x) => x < 350);
+
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
         .length !== TestLogic.words.getCurrent().length
