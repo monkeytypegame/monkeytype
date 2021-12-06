@@ -1,8 +1,8 @@
-:root{
+:root {
   --bg-color: #ffffff;
   --main-color: #ff360d;
   --caret-color: #ff0000;
-  --sub-color: #ff0000;
+  --sub-color: #b7b7b7;
   --text-color: #000000;
   --error-color: #d70000;
   --error-extra-color: #b00000;
@@ -26,6 +26,6 @@
   -webkit-transform: scale(0.5);
 }
 
-.word.error{
+.word.error {
   border-bottom: solid 2px #ff0000;
 }
