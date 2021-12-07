@@ -287,5 +287,9 @@
   {
     "name": "belarusian",
     "languages": ["belarusian_1k"]
+  },
+  {
+    "name": "korean",
+    "languages": ["korean", "korean_1k"]
   }
 ]
