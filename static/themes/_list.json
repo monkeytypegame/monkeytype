@@ -633,5 +633,10 @@
     "name": "modern_ink",
     "bgColor" : "#ffffff",
     "textColor":"#ff360d"
+  },
+  {
+    "name": "mecha_01",
+    "bgColor": "#7a05ff",
+    "textColor": "#a9a9a9"
   }
 ]
