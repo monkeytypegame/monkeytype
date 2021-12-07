@@ -1,0 +1,20 @@
+:root {
+  --bg-color: #7a05ff;
+  --main-color: #2aff19;
+  --caret-color: #2aff19;
+  --sub-color: #a9a9a9;
+  --text-color: #a9a9a9;
+  --error-color: #ff7000;
+  --error-extra-color: #ff201d;
+  --colorful-error-color: #ff940b;
+  --colorful-error-extra-color: #ff8f00;
+}
+
+#menu .icon-button:nth-child(1),
+#menu .icon-button:nth-child(2),
+#menu .icon-button:nth-child(3),
+#menu .icon-button:nth-child(4),
+#menu .icon-button:nth-child(5){
+  background: #2aff19;
+  color: #ff7000;
+}
