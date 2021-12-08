@@ -633,5 +633,10 @@
     "name": "modern_ink",
     "bgColor" : "#ffffff",
     "textColor":"#ff360d"
+  },
+  {
+    "name": "lunar",
+    "bgColor" : "#161616",
+    "textColor":"#3281ea"
   }
 ]
