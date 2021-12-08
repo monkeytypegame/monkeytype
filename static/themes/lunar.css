@@ -1,0 +1,12 @@
+/*theme called Lunar based on the Lunar color scheme by sheeepdev : "https://github.com/lunar-theme".*/
+:root {
+    --bg-color: #161616;
+    --main-color: #3281ea;
+    --caret-color: #3281ea;
+    --sub-color: #D8DEE9;
+    --text-color: #ECEFF4;
+    --error-color: #B10C0C;
+    --error-extra-color: #640606;
+    --colorful-error-color: #05844A;
+    --colorful-error-extra-color: #03512d;
+}
