@@ -1263,7 +1263,7 @@ export async function addWord() {
   }
 }
 
-function retrySavingResult() {}
+//function retrySavingResult() {}
 
 export async function finish(difficultyFailed = false) {
   if (!active) return;
@@ -2046,14 +2046,13 @@ export async function finish(difficultyFailed = false) {
                 }
               })
               .catch((e) => {
-                let e = { message: "Error saving result" };
                 AccountButton.loading(false);
                 let msg = e?.response?.data?.message ?? e.message;
                 Notifications.add("Failed to save result: " + msg, -1);
-                $("#retrySavingResultButton").removeClass("hidden");
-                $(document.body).on("click", "#retrySavingResultButton", () =>
-                  retrySavingResult()
-                );
+                //$("#retrySavingResultButton").removeClass("hidden");
+                //$(document.body).on("click", "#retrySavingResultButton", () =>
+                //  retrySavingResult()
+                //);
               });
           });
         });
