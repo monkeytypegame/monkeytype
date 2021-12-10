@@ -45,12 +45,12 @@
     "submodule",
     "show",
     "difftool",
-    "rebase",
     "blame",
     "grep",
     "lfs",
     "archive",
     "bundle",
-    "build"
+    "build",
+    "cherrypick"
   ]
 }
