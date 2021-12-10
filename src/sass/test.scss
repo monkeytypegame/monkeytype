@@ -833,27 +833,6 @@
   }
 }
 
-#retrySavingResultButton {
-  position: relative;
-  border-radius: var(--roundness);
-  padding: 1rem 2rem;
-  width: min-content;
-  width: -moz-min-content;
-  color: var(--error-color);
-  transition: 0.25s;
-  cursor: pointer;
-
-  &:hover,
-  &:focus {
-    color: var(--main-color);
-    outline: none;
-  }
-
-  &:focus {
-    background: var(--sub-color);
-  }
-}
-
 #showWordHistoryButton {
   opacity: 1;
 }
