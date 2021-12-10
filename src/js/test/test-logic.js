@@ -2045,7 +2045,7 @@ export async function finish(difficultyFailed = false) {
                   }
                 }
               })
-              .catch((/*e*/) => {
+              .catch((e) => {
                 let e = { message: "Error saving result" };
                 AccountButton.loading(false);
                 let msg = e?.response?.data?.message ?? e.message;
