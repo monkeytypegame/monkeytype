@@ -1263,6 +1263,114 @@ export async function addWord() {
   }
 }
 
+function retrySavingResult(
+  completedEvent,
+  testtime,
+  afkseconds,
+  pbDiff,
+  mode2,
+  stats,
+  consistency
+) {
+  if (!completedEvent) {
+    Notifications.add(
+      "Could not retry saving the result as the result no longer exists.",
+      0,
+      -1
+    );
+  }
+
+  AccountButton.loading(true);
+
+  Notifications.add("Retrying to save...");
+
+  axiosInstance
+    .post("/results/add", {
+      result: completedEvent,
+    })
+    .then((response) => {
+      AccountButton.loading(false);
+
+      if (response.status !== 200) {
+        Notifications.add("Result not saved. " + response.data.message, -1);
+      } else {
+        completedEvent._id = response.data.insertedId;
+        if (
+          response.data.isPb &&
+          ["english"].includes(completedEvent.language)
+        ) {
+          completedEvent.isPb = true;
+        }
+        if (
+          DB.getSnapshot() !== null &&
+          DB.getSnapshot().results !== undefined
+        ) {
+          DB.getSnapshot().results.unshift(completedEvent);
+          if (DB.getSnapshot().globalStats.time == undefined) {
+            DB.getSnapshot().globalStats.time =
+              testtime + completedEvent.incompleteTestSeconds - afkseconds;
+          } else {
+            DB.getSnapshot().globalStats.time +=
+              testtime + completedEvent.incompleteTestSeconds - afkseconds;
+          }
+          if (DB.getSnapshot().globalStats.started == undefined) {
+            DB.getSnapshot().globalStats.started = TestStats.restartCount + 1;
+          } else {
+            DB.getSnapshot().globalStats.started += TestStats.restartCount + 1;
+          }
+          if (DB.getSnapshot().globalStats.completed == undefined) {
+            DB.getSnapshot().globalStats.completed = 1;
+          } else {
+            DB.getSnapshot().globalStats.completed += 1;
+          }
+        }
+        try {
+          firebase.analytics().logEvent("testCompleted", completedEvent);
+        } catch (e) {
+          console.log("Analytics unavailable");
+        }
+
+        if (response.data.isPb) {
+          //new pb
+          PbCrown.show();
+          $("#result .stats .wpm .crown").attr(
+            "aria-label",
+            "+" + Misc.roundTo2(pbDiff)
+          );
+          DB.saveLocalPB(
+            Config.mode,
+            mode2,
+            Config.punctuation,
+            Config.language,
+            Config.difficulty,
+            Config.lazyMode,
+            stats.wpm,
+            stats.acc,
+            stats.wpmRaw,
+            consistency
+          );
+        } else {
+          PbCrown.hide();
+          // if (localPb) {
+          //   Notifications.add(
+          //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+          //     15000
+          //   );
+          // }
+        }
+      }
+      $("#retrySavingResultButton").addClass("hidden");
+      $(document.body).off("click", "#retrySavingResultButton", false);
+      Notifications.add("Result successfully saved!");
+    })
+    .catch((e) => {
+      AccountButton.loading(false);
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to save result: " + msg, -1);
+      $("#retrySavingResultButton").removeClass("hidden");
+    });
+}
+
 export async function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
@@ -2047,6 +2155,18 @@ export async function finish(difficultyFailed = false) {
                 AccountButton.loading(false);
                 let msg = e?.response?.data?.message ?? e.message;
                 Notifications.add("Failed to save result: " + msg, -1);
+                $("#retrySavingResultButton").removeClass("hidden");
+                $(document.body).on("click", "#retrySavingResultButton", () => {
+                  retrySavingResult(
+                    completedEvent,
+                    testtime,
+                    afkseconds,
+                    pbDiff,
+                    mode2,
+                    stats,
+                    consistency
+                  );
+                });
               });
           });
         });
