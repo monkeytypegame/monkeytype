@@ -1263,16 +1263,19 @@ export async function addWord() {
   }
 }
 
-function retrySavingResult(
-  completedEvent,
-  testtime,
-  afkseconds,
-  pbDiff,
-  mode2,
-  stats,
-  consistency
-) {
-  if (!completedEvent) {
+var retrySaving = {
+  completedEvent: null,
+  testtime: null,
+  afkseconds: null,
+  pbDiff: null,
+  mode2: null,
+  stats: null,
+  consistency: null,
+  listenerAdded: false,
+};
+
+function retrySavingResult() {
+  if (!retrySaving.completedEvent) {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
       0,
@@ -1283,6 +1286,16 @@ function retrySavingResult(
   AccountButton.loading(true);
 
   Notifications.add("Retrying to save...");
+
+  var {
+    completedEvent,
+    testtime,
+    afkseconds,
+    pbDiff,
+    mode2,
+    stats,
+    consistency,
+  } = retrySaving;
 
   axiosInstance
     .post("/results/add", {
@@ -2150,23 +2163,32 @@ export async function finish(difficultyFailed = false) {
                     // }
                   }
                 }
+
+                $("#retrySavingResultButton").addClass("hidden");
               })
               .catch((e) => {
                 AccountButton.loading(false);
                 let msg = e?.response?.data?.message ?? e.message;
                 Notifications.add("Failed to save result: " + msg, -1);
                 $("#retrySavingResultButton").removeClass("hidden");
-                $(document.body).on("click", "#retrySavingResultButton", () => {
-                  retrySavingResult(
-                    completedEvent,
-                    testtime,
-                    afkseconds,
-                    pbDiff,
-                    mode2,
-                    stats,
-                    consistency
+
+                retrySaving.completedEvent = completedEvent;
+                retrySaving.testtime = testtime;
+                retrySaving.afkseconds = afkseconds;
+                retrySaving.pbDiff = pbDiff;
+                retrySaving.mode2 = mode2;
+                retrySaving.stats = stats;
+                retrySaving.consistency = consistency;
+
+                if (!retrySaving.listenerAdded) {
+                  $(document.body).on(
+                    "click",
+                    "#retrySavingResultButton",
+                    retrySavingResult
                   );
-                });
+
+                  retrySaving.listenerAdded = true;
+                }
               });
           });
         });

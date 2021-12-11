@@ -1036,6 +1036,10 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
+  if (!$("#retrySavingResultButton").hasClass("hidden")) {
+    $("#retrySavingResultButton").addClass("hidden");
+  }
+  $(document.body).off("click", "#retrySavingResultButton", false);
   ManualRestart.set();
   if (resultCalculating) return;
   if (
@@ -1067,6 +1071,10 @@ $(document).on("keypress", "#nextTestButton", (event) => {
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
+  if (!$("#retrySavingResultButton").hasClass("hidden")) {
+    $("#retrySavingResultButton").addClass("hidden");
+  }
+  $(document.body).off("click", "#retrySavingResultButton", false);
   ManualRestart.set();
   TestLogic.restart();
 });
