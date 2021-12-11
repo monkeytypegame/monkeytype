@@ -83,6 +83,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
 
+   1. If necessary, uncomment the lines in the `.env` file to use credentials to login to MongoDB.
+
 1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started`.
 
