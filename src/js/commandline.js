@@ -365,7 +365,7 @@ $(document).ready((e) => {
       } else if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
         event.preventDefault();
         QuoteSearchPopupWrapper.hide();
-      } else if (!$("#tribeStarRacePopupWrapper").hasClass("hidden")) {
+      } else if (!$("#tribeStartRacePopupWrapper").hasClass("hidden")) {
         event.preventDefault();
         TribeStartRacePopup.hide();
       } else if (!$("#commandLineWrapper").hasClass("hidden")) {
