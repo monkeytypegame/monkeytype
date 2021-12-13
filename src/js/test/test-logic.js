@@ -1271,10 +1271,10 @@ var retrySaving = {
   mode2: null,
   stats: null,
   consistency: null,
-  listenerAdded: false,
+  canRetry: false,
 };
 
-function retrySavingResult() {
+export function retrySavingResult() {
   if (!retrySaving.completedEvent) {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
@@ -1282,6 +1282,12 @@ function retrySavingResult() {
       -1
     );
   }
+  if (!retrySaving.canRetry) {
+    return;
+  }
+
+  retrySaving.canRetry = false;
+  $("#retrySavingResultButton").addClass("hidden");
 
   AccountButton.loading(true);
 
@@ -1373,14 +1379,14 @@ function retrySavingResult() {
         }
       }
       $("#retrySavingResultButton").addClass("hidden");
-      $(document.body).off("click", "#retrySavingResultButton", false);
-      Notifications.add("Result successfully saved!");
+      Notifications.add("Result saved", 1);
     })
     .catch((e) => {
       AccountButton.loading(false);
       let msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to save result: " + msg, -1);
       $("#retrySavingResultButton").removeClass("hidden");
+      retrySaving.canRetry = true;
     });
 }
 
@@ -2180,15 +2186,7 @@ export async function finish(difficultyFailed = false) {
                 retrySaving.stats = stats;
                 retrySaving.consistency = consistency;
 
-                if (!retrySaving.listenerAdded) {
-                  $(document.body).on(
-                    "click",
-                    "#retrySavingResultButton",
-                    retrySavingResult
-                  );
-
-                  retrySaving.listenerAdded = true;
-                }
+                retrySaving.canRetry = true;
               });
           });
         });

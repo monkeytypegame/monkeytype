@@ -1036,10 +1036,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
-  if (!$("#retrySavingResultButton").hasClass("hidden")) {
-    $("#retrySavingResultButton").addClass("hidden");
-  }
-  $(document.body).off("click", "#retrySavingResultButton", false);
+  $("#retrySavingResultButton").addClass("hidden");
   ManualRestart.set();
   if (resultCalculating) return;
   if (
@@ -1052,6 +1049,12 @@ $(document.body).on("click", "#restartTestButton", () => {
     TestLogic.restart();
   }
 });
+
+$(document.body).on(
+  "click",
+  "#retrySavingResultButton",
+  TestLogic.retrySavingResult
+);
 
 $(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
@@ -1071,10 +1074,7 @@ $(document).on("keypress", "#nextTestButton", (event) => {
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
-  if (!$("#retrySavingResultButton").hasClass("hidden")) {
-    $("#retrySavingResultButton").addClass("hidden");
-  }
-  $(document.body).off("click", "#retrySavingResultButton", false);
+  $("#retrySavingResultButton").addClass("hidden");
   ManualRestart.set();
   TestLogic.restart();
 });
