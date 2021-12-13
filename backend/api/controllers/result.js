@@ -45,6 +45,8 @@ class ResultController {
 
   static async addResult(req, res, next) {
     try {
+      //todo remove
+      return res.sendStatus(200);
       const { uid } = req.decodedToken;
       const { result } = req.body;
       result.uid = uid;
