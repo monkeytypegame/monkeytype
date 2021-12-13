@@ -8,7 +8,7 @@
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"nodemon --watch ./backend ./backend/server.js\" \"firebase serve --only hosting\"",
     "start:dev:nodb": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
     "deploy:live": "npm run build && firebase deploy -P live --only hosting",
-    "deploy:live": "npm run build && firebase --only hosting"
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "engines": {
     "node": "14.18.1",
