@@ -7,8 +7,12 @@ import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 
 export function updateActiveButton() {
+  let activeThemeName = Config.theme;
+  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+    activeThemeName = ThemeController.randomTheme;
+  }
   $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
+  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
     "active"
   );
 }

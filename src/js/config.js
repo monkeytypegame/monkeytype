@@ -22,6 +22,7 @@ import * as ChallengeContoller from "./challenge-controller";
 import * as TTS from "./tts";
 import * as TribeConfig from "./tribe-config";
 import * as Tribe from "./tribe";
+import * as MobileTestConfig from "./mobile-test-config.js";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -97,6 +98,7 @@ let defaultConfig = {
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
   singleListCommandLine: "manual",
+  capsLockWarning: true,
   playSoundOnError: false,
   playSoundOnClick: "off",
   startGraphsAtZero: true,
@@ -297,6 +299,7 @@ export function setMode(mode, nosave, tribeOverride) {
     }
     // setPaceCaret("off", true);
   }
+  MobileTestConfig.update();
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   if (!tribeOverride) TribeConfig.sync();
@@ -657,6 +660,15 @@ export function toggleAlwaysShowWordsHistory() {
 export function setSingleListCommandLine(option, nosave) {
   if (!option) option = "manual";
   config.singleListCommandLine = option;
+  if (!nosave) saveToLocalStorage();
+}
+
+//caps lock warning
+export function setCapsLockWarning(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.capsLockWarning = val;
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1319,6 +1331,7 @@ export function setCustomTheme(boolean, nosave) {
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
+  ThemeController.clearPreview();
   ThemeController.set(config.theme);
   if (!nosave) saveToLocalStorage();
 }
@@ -1692,6 +1705,7 @@ export function apply(configObj) {
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
+    setCapsLockWarning(configObj.capsLockWarning, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
     setStopOnError(configObj.stopOnError, true);

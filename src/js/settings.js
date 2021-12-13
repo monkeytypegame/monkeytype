@@ -139,6 +139,10 @@ async function initGroups() {
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine
   );
+  groups.capsLockWarning = new SettingsGroup(
+    "capsLockWarning",
+    UpdateConfig.setCapsLockWarning
+  );
   groups.flipTestColors = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors
@@ -497,6 +501,7 @@ export function update() {
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
+  // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed

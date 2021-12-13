@@ -129,10 +129,12 @@
   ,"japanese_hiragana"
   ,"japanese_katakana"
   ,"twitch_emotes"
+  ,"git"
   ,"pig_latin"
   ,"code_python"
   ,"code_c"
   ,"code_csharp"
+  ,"code_css"
   ,"code_c++"
   ,"code_dart"
   ,"code_javascript"
@@ -149,4 +151,5 @@
   ,"hindi"
   ,"hindi_1k"
   ,"macedonian"
+  ,"belarusian_1k"
 ]

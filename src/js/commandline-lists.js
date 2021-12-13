@@ -1625,6 +1625,29 @@ let commandsSingleListCommandLine = {
   ],
 };
 
+let commandsCapsLockWarning = {
+  title: "Caps lock warning...",
+  configKey: "capsLockWarning",
+  list: [
+    {
+      id: "capsLockWarningOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setCapsLockWarning(true);
+      },
+    },
+    {
+      id: "capsLockWarningOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setCapsLockWarning(false);
+      },
+    },
+  ],
+};
+
 let commandsTimerOpacity = {
   title: "Timer/progress opacity...",
   configKey: "timerOpacity",
@@ -2528,6 +2551,12 @@ export let defaultCommands = {
       display: "Single list command line...",
       icon: "fa-list",
       subgroup: commandsSingleListCommandLine,
+    },
+    {
+      id: "capsLockWarning",
+      display: "Caps lock warning...",
+      icon: "fa-exclamation-triangle",
+      subgroup: commandsCapsLockWarning,
     },
     {
       id: "changeMinWpm",

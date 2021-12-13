@@ -7,28 +7,28 @@ const router = Router();
 
 router.get(
   "/get",
-  RateLimit.limit500perhour,
+  RateLimit.newQuotesGet,
   authenticateRequest,
   NewQuotesController.getQuotes
 );
 
 router.post(
   "/add",
-  RateLimit.limit60perhour,
+  RateLimit.newQuotesAdd,
   authenticateRequest,
   NewQuotesController.addQuote
 );
 
 router.post(
   "/approve",
-  RateLimit.limit500perhour,
+  RateLimit.newQuotesAction,
   authenticateRequest,
   NewQuotesController.approve
 );
 
 router.post(
   "/refuse",
-  RateLimit.limit500perhour,
+  RateLimit.newQuotesAction,
   authenticateRequest,
   NewQuotesController.refuse
 );

@@ -1,22 +1,10 @@
 {
   "language": "indonesian",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -906,6 +894,12 @@
       "source": "Nadin Amizah",
       "length": 108,
       "id": 149
+    },
+    {
+      "text": "Kau buat aku sempurna, saat kau berkata iya. Kau izinkanku berlaga, mengarungi dunia, di sisimu 'slamanya.",
+      "source": "Rapsodi - laleilmanino for JKT48",
+      "length": 106,
+      "id": 150
     }
   ]
 }

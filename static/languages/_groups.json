@@ -272,7 +272,8 @@
       "lojban_cmavo",
       "toki_pona",
       "pig_latin",
-      "twitch_emotes"
+      "twitch_emotes",
+      "git"
     ]
   },
   {
@@ -282,5 +283,9 @@
   {
     "name": "macedonian",
     "languages": ["macedonian"]
+  },
+  {
+    "name": "belarusian",
+    "languages": ["belarusian_1k"]
   }
 ]
