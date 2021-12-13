@@ -633,5 +633,10 @@
     "name": "modern_ink",
     "bgColor" : "#ffffff",
     "textColor":"#ff360d"
+  },
+  {
+    "name": "dev",
+    "bgColor" : "#1b2028",
+    "textColor":"#23a9d5"
   }
 ]
