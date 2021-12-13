@@ -29,11 +29,11 @@ app.use((req, res, next) => {
   }
 });
 
-let startingPath = "";
+let startingPath = "/tribedev";
 
-if (process.env.API_PATH_OVERRIDE) {
-  startingPath = "/" + process.env.API_PATH_OVERRIDE;
-}
+// if (process.env.API_PATH_OVERRIDE) {
+//   startingPath = "/" + process.env.API_PATH_OVERRIDE;
+// }
 
 const userRouter = require("./api/routes/user");
 app.use(startingPath + "/user", userRouter);

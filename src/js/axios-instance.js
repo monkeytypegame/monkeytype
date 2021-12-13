@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let apiPath = "";
+let apiPath = "/tribedev";
 
 let baseURL;
 if (window.location.hostname === "localhost") {
