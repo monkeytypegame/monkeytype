@@ -1,10 +1,12 @@
 import axios from "axios";
 
+let apiPath = "";
+
 let baseURL;
 if (window.location.hostname === "localhost") {
-  baseURL = "http://localhost:5005";
+  baseURL = "http://localhost:5005" + apiPath;
 } else {
-  baseURL = "https://api.monkeytype.com";
+  baseURL = "https://api.monkeytype.com" + apiPath;
 }
 
 const axiosInstance = axios.create({
