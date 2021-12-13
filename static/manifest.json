@@ -1,0 +1,15 @@
+{
+  "short_name": "MT",
+  "name": "Monkeytype",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/images/mt-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#323437",
+  "display": "standalone",
+  "theme_color": "#323437"
+}
