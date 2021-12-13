@@ -1049,6 +1049,12 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
+$(document.body).on(
+  "click",
+  "#retrySavingResultButton",
+  TestLogic.retrySavingResult
+);
+
 $(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
     PractiseWords.showPopup(true);
