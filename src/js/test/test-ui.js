@@ -1036,7 +1036,6 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
-  $("#retrySavingResultButton").addClass("hidden");
   ManualRestart.set();
   if (resultCalculating) return;
   if (
@@ -1074,7 +1073,6 @@ $(document).on("keypress", "#nextTestButton", (event) => {
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
-  $("#retrySavingResultButton").addClass("hidden");
   ManualRestart.set();
   TestLogic.restart();
 });

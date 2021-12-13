@@ -2210,6 +2210,8 @@ export async function finish(difficultyFailed = false) {
     }
   }
 
+  $("#retrySavingResultButton").addClass("hidden");
+
   if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
