@@ -1625,24 +1625,24 @@ let commandsSingleListCommandLine = {
   ],
 };
 
-let commandsCapsLockIndicator = {
-  title: "Caps lock indicator...",
-  configKey: "capsLockIndicator",
+let commandsCapsLockWarning = {
+  title: "Caps lock warning...",
+  configKey: "capsLockWarning",
   list: [
     {
-      id: "capsLockIndicatorOn",
+      id: "capsLockWarningOn",
       display: "on",
       configValue: true,
       exec: () => {
-        UpdateConfig.setCapsLockIndicator(true);
+        UpdateConfig.setCapsLockWarning(true);
       },
     },
     {
-      id: "capsLockIndicatorOff",
+      id: "capsLockWarningOff",
       display: "off",
       configValue: false,
       exec: () => {
-        UpdateConfig.setCapsLockIndicator(false);
+        UpdateConfig.setCapsLockWarning(false);
       },
     },
   ],
@@ -2553,10 +2553,10 @@ export let defaultCommands = {
       subgroup: commandsSingleListCommandLine,
     },
     {
-      id: "capsLockIndicator",
-      display: "Caps lock indicator...",
+      id: "capsLockWarning",
+      display: "Caps lock warning...",
       icon: "fa-exclamation-triangle",
-      subgroup: commandsCapsLockIndicator,
+      subgroup: commandsCapsLockWarning,
     },
     {
       id: "changeMinWpm",

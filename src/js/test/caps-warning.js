@@ -16,7 +16,7 @@ $(document).keydown(function (event) {
   try {
     if (
       event.originalEvent.getModifierState("CapsLock") &&
-      Config.capsLockIndicator
+      Config.capsLockWarning
     ) {
       show();
     } else {

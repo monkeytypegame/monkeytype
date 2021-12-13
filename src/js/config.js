@@ -96,7 +96,7 @@ let defaultConfig = {
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
   singleListCommandLine: "manual",
-  capsLockIndicator: true,
+  capsLockWarning: true,
   playSoundOnError: false,
   playSoundOnClick: "off",
   startGraphsAtZero: true,
@@ -635,22 +635,13 @@ export function setSingleListCommandLine(option, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-//caps lock indicator
-export function setCapsLockIndicator(val, nosave) {
+//caps lock warning
+export function setCapsLockWarning(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.capsLockIndicator = val;
+  config.capsLockWarning = val;
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleCapsLockIndicator() {
-  let val = !config.capsLockIndicator;
-  if (val == "undefined") {
-    val = true;
-  }
-  config.capsLockIndicator = val;
-  saveToLocalStorage();
 }
 
 //show all lines
@@ -1676,7 +1667,7 @@ export function apply(configObj) {
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
-    setCapsLockIndicator(configObj.capsLockIndicator, true);
+    setCapsLockWarning(configObj.capsLockWarning, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
     setStopOnError(configObj.stopOnError, true);
