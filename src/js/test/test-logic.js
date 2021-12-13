@@ -796,9 +796,15 @@ export async function init() {
   }
   if (Config.funbox === "plus_one") {
     wordsBound = 2;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
   }
   if (Config.funbox === "plus_two") {
     wordsBound = 3;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
   }
 
   if (
