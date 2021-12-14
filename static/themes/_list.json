@@ -638,5 +638,10 @@
     "name": "dev",
     "bgColor" : "#1b2028",
     "textColor":"#23a9d5"
-  }
+  },
+  {
+    "name": "moonlight",
+    "bgColor" : "#1f2730",
+    "textColor":"#c69f68"
+  }  
 ]
