@@ -318,4 +318,5 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
     ManualRestart.set();
     changePage(href.replace("/", ""));
   }
+  return false;
 });
