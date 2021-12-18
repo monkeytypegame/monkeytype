@@ -17,6 +17,11 @@ let currentRank = {
   60: {},
 };
 
+let requesting = {
+  15: false,
+  60: false,
+};
+
 let leaderboardSingleLimit = 50;
 
 let updateTimer;
@@ -326,6 +331,8 @@ function update() {
 
 async function requestMore(lb, prepend = false) {
   if (prepend && currentData[lb][0].rank === 1) return;
+  if (requesting[lb]) return;
+  requesting[lb] = true;
   showLoader(lb);
   let skipVal = currentData[lb][currentData[lb].length - 1].rank;
   if (prepend) {
@@ -360,6 +367,7 @@ async function requestMore(lb, prepend = false) {
   }
   fillTable(lb, limitVal);
   hideLoader(lb);
+  requesting[lb] = false;
 }
 
 async function requestNew(lb, skip) {

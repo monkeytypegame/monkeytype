@@ -6,6 +6,6 @@ const { Router } = require("express");
 
 const router = Router();
 
-router.get("/", RateLimit.limit1persec, PsaController.get);
+router.get("/", RateLimit.psaGet, PsaController.get);
 
 module.exports = router;

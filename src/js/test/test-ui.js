@@ -854,6 +854,9 @@ export function applyBurstHeatmap() {
 
     let burstlist = [...TestStats.burstHistory];
 
+    burstlist = burstlist.filter((x) => x !== Infinity);
+    burstlist = burstlist.filter((x) => x < 350);
+
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
         .length !== TestLogic.words.getCurrent().length
@@ -1045,6 +1048,12 @@ $(document.body).on("click", "#restartTestButton", () => {
     TestLogic.restart();
   }
 });
+
+$(document.body).on(
+  "click",
+  "#retrySavingResultButton",
+  TestLogic.retrySavingResult
+);
 
 $(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {

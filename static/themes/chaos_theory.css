@@ -5,9 +5,10 @@
   --text-color: #dde5ed;
   --error-color: #fd77d7;
   --sub-color: #676e8a;
-  --error-extra-color: #8f3d78;
-  --colorful-error-color: #fd77d7;
-  --colorful-error-extra-color: #8f3d78;
+  --error-color: #FF5869;
+  --error-extra-color: #b03c47;
+  --colorful-error-color: #FF5869;
+  --colorful-error-extra-color: #b03c47;
 }
 
 #top .logo .text {

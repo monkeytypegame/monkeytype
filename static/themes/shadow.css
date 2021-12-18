@@ -10,6 +10,14 @@
   --colorful-error-extra-color: #d8d8d8;
 }
 
+#top .logo .icon{
+  color: #8C3230;
+}
+
+#top .logo .text{
+  color: #557D8D;
+}
+
 @keyframes shadow {
   to {
     color: #000;

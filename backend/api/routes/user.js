@@ -7,100 +7,100 @@ const router = Router();
 
 router.get(
   "/",
-  RateLimit.limit120perhour,
+  RateLimit.userGet,
   authenticateRequest,
   UserController.getUser
 );
 
 router.post(
   "/signup",
-  RateLimit.limit3perday,
+  RateLimit.userSignup,
   authenticateRequest,
   UserController.createNewUser
 );
 
-router.post("/checkName", RateLimit.limit1persec, UserController.checkName);
+router.post("/checkName", RateLimit.userCheckName, UserController.checkName);
 
 router.post(
   "/delete",
-  RateLimit.limit3perday,
+  RateLimit.userDelete,
   authenticateRequest,
   UserController.deleteUser
 );
 
 router.post(
   "/updateName",
-  RateLimit.limit3perday,
+  RateLimit.userUpdateName,
   authenticateRequest,
   UserController.updateName
 );
 
 router.post(
   "/updateLbMemory",
-  RateLimit.limit1persec,
+  RateLimit.userUpdateLBMemory,
   authenticateRequest,
   UserController.updateLbMemory
 );
 
 router.post(
   "/updateEmail",
-  RateLimit.limit60perhour,
+  RateLimit.userUpdateEmail,
   authenticateRequest,
   UserController.updateEmail
 );
 
 router.post(
   "/clearPb",
-  RateLimit.limit60perhour,
+  RateLimit.userClearPB,
   authenticateRequest,
   UserController.clearPb
 );
 
 router.post(
   "/tags/add",
-  RateLimit.limit60perhour,
+  RateLimit.userTagsAdd,
   authenticateRequest,
   UserController.addTag
 );
 
 router.get(
   "/tags",
-  RateLimit.limit60perhour,
+  RateLimit.userTagsGet,
   authenticateRequest,
   UserController.getTags
 );
 
 router.post(
   "/tags/clearPb",
-  RateLimit.limit60perhour,
+  RateLimit.userTagsClearPB,
   authenticateRequest,
   UserController.clearTagPb
 );
 
 router.post(
   "/tags/remove",
-  RateLimit.limit60perhour,
+  RateLimit.userTagsRemove,
   authenticateRequest,
   UserController.removeTag
 );
 
 router.post(
   "/tags/edit",
-  RateLimit.limit60perhour,
+  RateLimit.userTagsEdit,
   authenticateRequest,
   UserController.editTag
 );
 
 router.post(
   "/discord/link",
-  RateLimit.limit60perhour,
+  RateLimit.userDiscordLink,
   authenticateRequest,
   UserController.linkDiscord
 );
 
 router.post(
   "/discord/unlink",
-  RateLimit.limit60perhour,
+  RateLimit.userDiscordUnlink,
   authenticateRequest,
   UserController.unlinkDiscord
 );

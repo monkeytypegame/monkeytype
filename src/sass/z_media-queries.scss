@@ -334,7 +334,7 @@
   }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 550px) {
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr;
@@ -427,6 +427,15 @@
     }
   }
   #centerContent {
+    #top {
+      grid-template-columns: 1fr auto;
+      .desktopConfig {
+        display: none;
+      }
+      .mobileConfig {
+        display: block;
+      }
+    }
     padding: 1rem;
   }
   #middle {

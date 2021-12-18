@@ -54,8 +54,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="manifest" href="manifest.json" />
     <meta name="name" content="Monkeytype" />
-    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="image" content="https://monkeytype.com/images/mtsocial.png" />
     <meta
       name="description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
@@ -68,14 +69,14 @@
     <meta property="og:title" content="Monkeytype" />
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://monkeytype.com/images/mtsocial.png" />
     <meta
       property="og:description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
-    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
     <meta name="twitter:title" content="Monkeytype" />
-    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="twitter:image" content="https://monkeytype.com/images/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
@@ -94,6 +95,11 @@
       id="adScript"
       async
     ></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
   </head>
   <div class="customBackground"></div>
 
@@ -126,6 +132,49 @@
 
     <div id="simplePopupWrapper" class="popupWrapper hidden">
       <div id="simplePopup" popupId=""></div>
+    </div>
+
+    <div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
+      <div id="mobileTestConfigPopup">
+        <div class="group">
+          <div class="button punctuation">punctuation</div>
+          <div class="button numbers">numbers</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="group modeGroup">
+          <div class="button" mode="time">time</div>
+          <div class="button active" mode="words">words</div>
+          <div class="button" mode="quote">quote</div>
+          <div class="button" mode="zen">zen</div>
+          <div class="button" mode="custom">custom</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="group timeGroup">
+          <div class="button" time="15">15</div>
+          <div class="button active" time="30">30</div>
+          <div class="button" time="60">60</div>
+          <div class="button" time="120">120</div>
+          <div class="button" time="custom">custom</div>
+        </div>
+        <div class="group wordsGroup hidden">
+          <div class="button" words="10">10</div>
+          <div class="button" words="25">25</div>
+          <div class="button" words="50">50</div>
+          <div class="button" words="100">100</div>
+          <div class="button" words="custom">custom</div>
+        </div>
+        <div class="group quoteGroup hidden">
+          <div class="button" quote="-1">all</div>
+          <div class="button" quote="0">short</div>
+          <div class="button" quote="1">medium</div>
+          <div class="button" quote="2">long</div>
+          <div class="button" quote="3">thicc</div>
+          <div class="button" quote="-2">search</div>
+        </div>
+        <div class="group customGroup hidden">
+          <div class="button customChange">change</div>
+        </div>
+      </div>
     </div>
 
     <div id="pbTablesPopupWrapper" class="popupWrapper hidden">
@@ -794,89 +843,110 @@
           </div>
 
           <div class="config hidden">
-            <div
-              style="display: grid; grid-auto-flow: column; padding-top: 0.1rem"
-            >
-              <div class="group punctuationMode">
-                <!--           <div class="title">time</div> -->
-                <div class="buttons">
-                  <div class="text-button toggleButton" tabindex="2">
-                    punctuation
+            <div class="mobileConfig">
+              <div class="icon-button">
+                <i class="fas fa-bars"></i>
+              </div>
+            </div>
+            <div class="desktopConfig">
+              <div
+                style="
+                  display: grid;
+                  grid-auto-flow: column;
+                  padding-top: 0.1rem;
+                "
+              >
+                <div class="group punctuationMode">
+                  <!--           <div class="title">time</div> -->
+                  <div class="buttons">
+                    <div class="text-button toggleButton" tabindex="2">
+                      punctuation
+                    </div>
+                  </div>
+                </div>
+                <div class="group numbersMode">
+                  <!--           <div class="title">time</div> -->
+                  <div class="buttons">
+                    <div class="text-button toggleButton" tabindex="2">
+                      numbers
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="group numbersMode">
-                <!--           <div class="title">time</div> -->
+              <div class="group mode">
+                <!--           <div class="title">mode</div> -->
                 <div class="buttons">
-                  <div class="text-button toggleButton" tabindex="2">
-                    numbers
+                  <div class="text-button active" mode="time" tabindex="2">
+                    time
+                  </div>
+                  <div class="text-button" mode="words" tabindex="2">words</div>
+                  <div class="text-button" mode="quote" tabindex="2">quote</div>
+                  <div class="text-button" mode="zen" tabindex="2">zen</div>
+                  <div class="text-button" mode="custom" tabindex="2">
+                    custom
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="group mode">
-              <!--           <div class="title">mode</div> -->
-              <div class="buttons">
-                <div class="text-button active" mode="time" tabindex="2">
-                  time
-                </div>
-                <div class="text-button" mode="words" tabindex="2">words</div>
-                <div class="text-button" mode="quote" tabindex="2">quote</div>
-                <div class="text-button" mode="zen" tabindex="2">zen</div>
-                <div class="text-button" mode="custom" tabindex="2">custom</div>
-              </div>
-            </div>
-            <div class="group wordCount hidden">
-              <!--           <div class="title">words</div> -->
-              <div class="buttons">
-                <div class="text-button" wordCount="10" tabindex="2">10</div>
-                <div class="text-button" wordCount="25" tabindex="2">25</div>
-                <div class="text-button active" wordCount="50" tabindex="2">
-                  50
-                </div>
-                <div class="text-button" wordCount="100" tabindex="2">100</div>
-                <div class="text-button" wordCount="custom" tabindex="2">
-                  <i class="fas fa-tools"></i>
+              <div class="group wordCount hidden">
+                <!--           <div class="title">words</div> -->
+                <div class="buttons">
+                  <div class="text-button" wordCount="10" tabindex="2">10</div>
+                  <div class="text-button" wordCount="25" tabindex="2">25</div>
+                  <div class="text-button active" wordCount="50" tabindex="2">
+                    50
+                  </div>
+                  <div class="text-button" wordCount="100" tabindex="2">
+                    100
+                  </div>
+                  <div class="text-button" wordCount="custom" tabindex="2">
+                    <i class="fas fa-tools"></i>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="group time">
-              <!--           <div class="title">time</div> -->
-              <div class="buttons">
-                <div class="text-button" timeConfig="15" tabindex="2">15</div>
-                <div class="text-button active" timeConfig="30" tabindex="2">
-                  30
-                </div>
-                <div class="text-button" timeConfig="60" tabindex="2">60</div>
-                <div class="text-button" timeConfig="120" tabindex="2">120</div>
-                <div class="text-button" timeConfig="custom" tabindex="2">
-                  <i class="fas fa-tools"></i>
-                </div>
-              </div>
-            </div>
-            <div class="group quoteLength hidden">
-              <!--           <div class="title">time</div> -->
-              <div class="buttons">
-                <div class="text-button" quoteLength="-1" tabindex="2">all</div>
-                <div class="text-button" quoteLength="0" tabindex="2">
-                  short
-                </div>
-                <div class="text-button active" quoteLength="1" tabindex="2">
-                  medium
-                </div>
-                <div class="text-button" quoteLength="2" tabindex="2">long</div>
-                <div class="text-button" quoteLength="3" tabindex="2">
-                  thicc
-                </div>
-                <div class="text-button" quoteLength="-2" tabindex="2">
-                  <i class="fas fa-search"></i>
+              <div class="group time">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button" timeConfig="15" tabindex="2">15</div>
+                  <div class="text-button active" timeConfig="30" tabindex="2">
+                    30
+                  </div>
+                  <div class="text-button" timeConfig="60" tabindex="2">60</div>
+                  <div class="text-button" timeConfig="120" tabindex="2">
+                    120
+                  </div>
+                  <div class="text-button" timeConfig="custom" tabindex="2">
+                    <i class="fas fa-tools"></i>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="group customText hidden">
-              <!--           <div class="title">time</div> -->
-              <div class="buttons">
-                <div class="text-button">change</div>
+              <div class="group quoteLength hidden">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button" quoteLength="-1" tabindex="2">
+                    all
+                  </div>
+                  <div class="text-button" quoteLength="0" tabindex="2">
+                    short
+                  </div>
+                  <div class="text-button active" quoteLength="1" tabindex="2">
+                    medium
+                  </div>
+                  <div class="text-button" quoteLength="2" tabindex="2">
+                    long
+                  </div>
+                  <div class="text-button" quoteLength="3" tabindex="2">
+                    thicc
+                  </div>
+                  <div class="text-button" quoteLength="-2" tabindex="2">
+                    <i class="fas fa-search"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="group customText hidden">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button">change</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1300,6 +1370,15 @@
                   <div id="wordsWrapper">
                     <div id="replayWords" class="words"></div>
                   </div>
+                </div>
+                <div
+                  id="retrySavingResultButton"
+                  class="hidden"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-redo"></i>
+                  Retry saving result
                 </div>
                 <div class="buttons">
                   <div
@@ -3922,6 +4001,18 @@
                   </div>
                   <div class="button on" tabindex="0" onclick="this.blur();">
                     show
+                  </div>
+                </div>
+              </div>
+              <div class="section capsLockWarning">
+                <h1>caps lock warning</h1>
+                <div class="text">Displays a warning when caps lock is on.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
                   </div>
                 </div>
               </div>

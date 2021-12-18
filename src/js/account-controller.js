@@ -22,7 +22,7 @@ async function loadUser(user) {
   $(".pageAccount .content p.accountVerificatinNotice").remove();
   if (user.emailVerified === false) {
     $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
+      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a onClick="sendVerificationEmail()">Send the verification email again</a>.`
     );
   }
   UI.setPageTransition(false);

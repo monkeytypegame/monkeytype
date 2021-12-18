@@ -6,20 +6,13 @@ const { Router } = require("express");
 
 const router = Router();
 
-router.get("/", RateLimit.limit1persec, LeaderboardsController.get);
+router.get("/", RateLimit.leaderboardsGet, LeaderboardsController.get);
 
 router.get(
   "/rank",
-  RateLimit.limit1persec,
+  RateLimit.leaderboardsGet,
   authenticateRequest,
   LeaderboardsController.getRank
-);
-
-router.post(
-  "/update",
-  RateLimit.limit60perhour,
-  authenticateRequest,
-  LeaderboardsController.update
 );
 
 module.exports = router;

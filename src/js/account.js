@@ -754,7 +754,7 @@ export function update() {
     let activityChartData_amount = [];
     let activityChartData_time = [];
     let activityChartData_avgWpm = [];
-    let lastTimestamp = 0;
+    // let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
       //this was used to fill in empty days between the results before i realised chart js can do it for me
       // let datecheck;
