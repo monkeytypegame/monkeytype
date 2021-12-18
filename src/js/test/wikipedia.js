@@ -46,6 +46,11 @@ export async function getSection() {
           sectionText = sectionText.replace(/\s+/g, " ");
           sectionText = sectionText.trim();
 
+          // Add spaces
+          sectionText = sectionText.replace(/[a-zA-Z0-9]{3,}\.[a-zA-Z]/g, (x) =>
+            x.replace(/\./, ". ")
+          );
+
           sectionText.split(" ").forEach((word) => {
             words.push(word);
           });
