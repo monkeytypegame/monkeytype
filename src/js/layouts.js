@@ -866,5 +866,15 @@ const layouts = {
             " "
         ],
     },
+    octa8: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "yY", "oO", "uU", "kK", "xX", "gG", "wW", "dD", "lL", ",<", "[{", "]}", "\\|",
+            "iI", "aA", "eE", "nN", "fF", "bB", "sS", "tT", "rR", "cC", "'\"",
+            "\\|", "\/?", "zZ", "hH", "'\"", "qQ", "vV", "pP", "mM", "jJ", ".>",
+            " "
+        ]
+    },
 }
 export default layouts;
