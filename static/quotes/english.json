@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -34702,6 +34714,12 @@
       "source": "Oregairu",
       "length": 65,
       "id": 5856
+    },
+    {
+      "text": "This… is Berk. The best kept secret this side of, well, anywhere. Granted, it may not look like much, but this wet heap of rock packs more than a few surprises. Life here is amazing, just not for the faint of heart. See, where most folks enjoy hobbies like whittling or needlepoint, we Berkians prefer a little something we like to call-DRAGON RACING!",
+      "source": "Hiccup, How To Train Your Dragon 2",
+      "length": 351,
+      "id": 5857
     }
   ]
 }
