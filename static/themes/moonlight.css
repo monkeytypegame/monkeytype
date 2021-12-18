@@ -1,0 +1,52 @@
+/*inspired by GMK MOONLIGHT*/
+:root {
+    --bg-color: #1f2730;
+    --main-color: #c69f68;
+    --caret-color: #8f744b;
+    --sub-color: #4b5975;
+    --text-color: #ccccb5;
+    --error-color: #b81b2c;
+    --error-extra-color: #84131f;
+    --colorful-error-color: #b81b2c;
+    --colorful-error-extra-color: #84131f;
+  }
+  #menu {
+    gap: 0.5rem;
+  }
+  #top.focus #menu .icon-button,
+  #top.focus #menu:before,
+  #top.focus #menu:after {
+    background: var(--bg-color);
+  }
+  #menu .icon-button  {
+    border-radius: rem !important;
+    color: #1f2730 !important;
+  }
+  #menu .icon-button :hover {
+    border-radius: rem !important;
+    color: #4b5975 !important;
+    transition: .25s;
+  }
+  #menu .icon-button:nth-child(1) {
+    background: #c69f68;
+  }
+  #menu .icon-button:nth-child(2) {
+    background: #c69f68;
+  }
+  #menu .icon-button:nth-child(3) {
+    background: #c69f68;
+  }
+  #menu .icon-button:nth-child(4) {
+    background: #c69f68;
+  }
+  #menu .icon-button:nth-child(5) {
+    background: #c69f68;
+  }
+  #menu .icon-button:nth-child(6),
+  #menu .icon-button:nth-child(7) {
+    background: #c69f68;
+  }
+  #top.focus #menu .icon-button.discord::after {
+    border-color: transparent;
+  }
+  
