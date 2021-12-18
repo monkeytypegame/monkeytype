@@ -1200,7 +1200,7 @@ export function previewFontFamily(font) {
   }
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '"'
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono"'
   );
 }
 
