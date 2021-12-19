@@ -20,6 +20,7 @@ import * as TimerProgress from "./timer-progress";
 import * as ChartController from "./chart-controller";
 import * as UI from "./ui";
 import * as QuoteSearchPopup from "./quote-search-popup";
+import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
@@ -970,11 +971,14 @@ export async function init() {
     let quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
 
     if (quotes.length === 0) {
+      TestUI.setTestRestarting(false);
       Notifications.add(
         `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
         0
       );
-      TestUI.setTestRestarting(false);
+      if (firebase.auth().currentUser) {
+        QuoteSubmitPopup.show(false);
+      }
       UpdateConfig.setMode("words");
       restart();
       return;
