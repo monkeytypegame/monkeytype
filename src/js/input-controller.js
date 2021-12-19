@@ -428,7 +428,7 @@ function handleChar(char, charIndex) {
     }
   }
 
-  if (!correctShiftUsed) return;
+  if (!correctShiftUsed && Config.difficulty != "master") return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestLogic.corrected.current === "") {
