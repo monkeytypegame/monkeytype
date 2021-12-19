@@ -139,6 +139,10 @@ async function initGroups() {
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine
   );
+  groups.capsLockWarning = new SettingsGroup(
+    "capsLockWarning",
+    UpdateConfig.setCapsLockWarning
+  );
   groups.flipTestColors = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors

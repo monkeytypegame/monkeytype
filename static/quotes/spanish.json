@@ -360,6 +360,258 @@
       "source": "Cien años de soledad - Gabriel García Márquez",
       "length": 504,
       "id": 59
+    },
+    {
+      "text": "El artista debe de ser mezcla de niño, hombre y mujer.",
+      "source": "Ernesto Sábato",
+      "length": 54,
+      "id": 60
+    },
+    {
+      "text": "Lo vulgar es el ronquido, lo inverosímil, el sueño. La humanidad ronca, pero el artista está en la obligación de hacerla soñar o no es artista.",
+      "source": "Enrique Jardiel Poncela",
+      "length": 143,
+      "id": 61
+    },
+    {
+      "text": "El requisito definitivo para la grandeza de un artista es su propia muerte.",
+      "source": "Thiessen",
+      "length": 75,
+      "id": 62
+    },
+    {
+      "text": "Todo artista es tan múltiple que el crítico no puede dejar de encontrar en él lo que busca resueltamente y a priori.",
+      "source": "André Maurois",
+      "length": 116,
+      "id": 63
+    },
+    {
+      "text": "Hay millones de artistas que crean; sólo unos cuantos miles son aceptados o, siquiera, discutidos por el espectador; y de ellos, muchos menos todavía llegan a ser consagrados por la posteridad.",
+      "source": "Marcel Duchamp",
+      "length": 193,
+      "id": 64
+    },
+    {
+      "text": "Un intelectual es el que dice una cosa simple de un modo complicado. Un artista es el que dice una cosa complicada de un modo simple.",
+      "source": "Charles Bukowski",
+      "length": 133,
+      "id": 65
+    },
+    {
+      "text": "El trabajo del artista no es sucumbir a la desesperación, sino encontrar un antídoto para el vacío de la existencia.",
+      "source": "Woody Allen",
+      "length": 116,
+      "id": 66
+    },
+    {
+      "text": "El sabio generaliza; el artista individualiza.",
+      "source": "Jules Renard",
+      "length": 46,
+      "id": 67
+    },
+    {
+      "text": "La matemática es la ciencia del orden y la medida, de bellas cadenas de razonamientos, todos sencillos y fáciles.",
+      "source": "René Descartes",
+      "length": 113,
+      "id": 68
+    },
+    {
+      "text": "Las matemáticas son el alfabeto con el cual Dios ha escrito el Universo.",
+      "source": "Galileo Galilei",
+      "length": 72,
+      "id": 69
+    },
+    {
+      "text": "Cuando las leyes de la matemática se refieren a la realidad, no son ciertas; cuando son ciertas, no se refieren a la realidad.",
+      "source": "Albert Einstein",
+      "length": 126,
+      "id": 70
+    },
+    {
+      "text": "Las proposiciones matemáticas, en cuanto tienen que ver con la realidad, no son ciertas; y en cuanto que son ciertas, no tienen nada que ver con la realidad.",
+      "source": "Albert Einstein",
+      "length": 157,
+      "id": 71
+    },
+    {
+      "text": "Es completamente lícito para una católica evitar el embarazo recurriendo a las matemáticas, aunque todavía está prohibido recurrir a la física o a la química.",
+      "source": "Henry-Louis Mencken",
+      "length": 158,
+      "id": 72
+    },
+    {
+      "text": "Las matemáticas pueden ser definidas como aquel tema del cual no sabemos nunca lo que decimos ni si lo que decimos es verdadero.",
+      "source": "Bertrand Russell",
+      "length": 128,
+      "id": 73
+    },
+    {
+      "text": "Las matemáticas poseen no sólo la verdad, sino cierta belleza suprema. Una belleza fría y austera, como la de una escultura.",
+      "source": "Bertrand Russell",
+      "length": 124,
+      "id": 74
+    },
+    {
+      "text": "Las matemáticas son una gimnasia del espíritu y una preparación para la filosofía.",
+      "source": "Isócrates",
+      "length": 82,
+      "id": 75 
+    },
+    {
+      "text": "Un filósofo es un tipo que sube a una cumbre en busca del sol; encuentra niebla, desciende y explica el magnífico espectáculo que ha visto.",
+      "source": "William Somerset Maugham",
+      "length": 139,
+      "id": 76
+    },
+    {
+      "text": "Todos los hombres son aptos para perpetuar la especie; la naturaleza forma y escoge aquellos que son dignos de perpetuar la idea.",
+      "source": "José María Vargas Vila",
+      "length": 129,
+      "id": 77
+    },
+    {
+      "text": "La idea que no trata de convertirse en palabra es una mala idea, y la palabra que no trata de convertirse en acción es una mala palabra.",
+      "source": "Gilbert Keith Chesterton",
+      "length": 136,
+      "id": 78
+    },
+    {
+      "text": "El trabajo del pensamiento se parece a la perforación de un pozo: el agua es turbia al principio, mas luego se clarifica.",
+      "source": "Proverbio chino",
+      "length": 121,
+      "id": 79
+    },
+    {
+      "text": "Ciertos pensamientos son plegarias. Hay momentos en que, sea cual fuere la actividad del cuerpo, el alma está de rodillas.",
+      "source": "Victor Hugo",
+      "length": 122,
+      "id": 80
+    },
+    {
+      "text": "El hombre que escucha la razón está perdido. La razón esclaviza a todos los que no son bastante fuertes para dominarla.",
+      "source": "George Bernard Shaw",
+      "length": 119,
+      "id": 81
+    },
+    {
+      "text": "¿Dónde puedo encontrar un hombre gobernado por la razón y no por los hábitos y los deseos?",
+      "source": "Khalil Gibran",
+      "length": 90,
+      "id": 82
+    },
+    {
+      "text": "La razón obra con lentitud, y con tantas miras, sobre tantos principios, que a cada momento se adormece o extravía. La pasión obra en un instante.",
+      "source": "Blaise Pascal",
+      "length": 146,
+      "id": 83
+    },
+    {
+      "text": "Un entendimiento todo lógica es como un cuchillo de hoja sola, que hiera la mano de su dueño.",
+      "source": "Rabindranath Tagore",
+      "length": 93,
+      "id": 84
+    },
+    {
+      "text": "El amor ahuyenta el miedo y, recíprocamente el miedo ahuyenta al amor. Y no sólo al amor el miedo expulsa; también a la inteligencia, la bondad, todo pensamiento de belleza y verdad, y sólo queda la desesperación muda; y al final, el miedo llega a expulsar del hombre la humanidad misma.",
+      "source": "Aldous Huxley",
+      "length": 287,
+      "id": 85
+    },
+    {
+      "text": "No hace falta conocer el peligro para tener miedo; de hecho, los peligros desconocidos son los que inspiran más temor.",
+      "source": "Alejandro Dumas",
+      "length": 118,
+      "id": 86
+    },
+    {
+      "text": "Nada en la vida debe ser temido, solamente comprendido. Ahora es el momento de comprender más, para temer menos.",
+      "source": "Marie Curie",
+      "length": 112,
+      "id": 87
+    },
+    {
+      "text": "De aquel que opina que el dinero puede hacerlo todo, cabe sospechar con fundamento que será capaz de hacer cualquier cosa por dinero.",
+      "source": "Benjamin Franklin",
+      "length": 133,
+      "id": 88
+    },
+    {
+      "text": "No estimes el dinero en más ni en menos de lo que vale, porque es un buen siervo y un mal amo.",
+      "source": "Alejandro Dumas (hijo)",
+      "length": 94,
+      "id": 89
+    },
+    {
+      "text": "El dinero no da la felicidad, pero procura una sensación tan parecida, que necesita un especialista muy avanzado para verificar la diferencia.",
+      "source": "Woody Allen",
+      "length": 142,
+      "id": 90
+    },
+    {
+      "text": "Es bonito tener dinero y cosas que puede comprar el dinero, pero también es bonito tener las cosas que el dinero no puede comprar.",
+      "source": "George Horace Lorimer",
+      "length": 130,
+      "id": 91
+    },
+    {
+      "text": "El que no considera lo que tiene como la riqueza más grande, es desdichado, aunque sea dueño del mundo.",
+      "source": "Epicuro de Samos",
+      "length": 103,
+      "id": 92
+    },
+    {
+      "text": "Estoy absolutamente convencido que ninguna riqueza del mundo puede ayudar a que progrese la humanidad. El mundo necesita paz permanente y buena voluntad perdurable.",
+      "source": "Albert Einstein",
+      "length": 164,
+      "id": 93
+    },
+    {
+      "text": "Cuatro características corresponden al juez: Escuchar cortésmente, responder sabiamente, ponderar prudentemente y decidir imparcialmente.",
+      "source": "Sócrates",
+      "length": 137,
+      "id": 94
+    },
+    {
+      "text": "Se piensa que lo justo es lo igual, y así es; pero no para todos, sino para los iguales. Se piensa por el contrario que lo justo es lo desigual, y así es, pero no para todos, sino para los desiguales.",
+      "source": "Aristóteles",
+      "length": 200,
+      "id": 95
+    },
+    {
+      "text": "El abogado es un hábil caballero que se ocupa de cuidar nuestros bienes de nuestros enemigos para poder quedárselos él.",
+      "source": "Lord Brougham",
+      "length": 119,
+      "id": 96
+    },
+    {
+      "text": "Dadme dos líneas escritas a puño y letra por el hombre más honrado, y encontraré en ellas motivo para hacerlo encarcelar.",
+      "source": "Cardenal Richelieu",
+      "length": 121,
+      "id": 97
+    },
+    {
+      "text": "Las leyes son como las telas de araña, a través de las cuales pasan libremente las moscas grandes y quedan enredadas las pequeñas.",
+      "source": "Honoré de Balzac",
+      "length": 130,
+      "id": 98
+    },
+    {
+      "text": "El legislador no debe proponerse la felicidad de cierto orden de ciudadanos con exclusión de los demás, sino la felicidad de todos.",
+      "source": "Platón",
+      "length": 131,
+      "id": 99
+    },
+    {
+      "text": "Las cadenas de la esclavitud solamente atan las manos: es la mente lo que hace al hombre libre o esclavo.",
+      "source": "Franz Grillparzer",
+      "length": 105,
+      "id": 100
+    },
+    {
+      "text": "No pido riquezas, ni esperanzas, ni amor, ni un amigo que me comprenda; todo lo que pido es el cielo sobre mí y un camino a mis pies.",
+      "source": "Robert Louis Stevenson",
+      "length": 133,
+      "id": 101
     }
   ]
 }

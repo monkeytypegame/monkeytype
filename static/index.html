@@ -54,8 +54,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="manifest" href="manifest.json" />
     <meta name="name" content="Monkeytype" />
-    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="image" content="https://monkeytype.com/images/mtsocial.png" />
     <meta
       name="description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
@@ -68,15 +69,20 @@
     <meta property="og:title" content="Monkeytype" />
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta
+      property="og:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
     <meta
       property="og:description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
-    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
     <meta name="twitter:title" content="Monkeytype" />
-    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta
+      name="twitter:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
@@ -95,6 +101,11 @@
       id="adScript"
       async
     ></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
   </head>
   <div class="customBackground"></div>
 
@@ -762,7 +773,7 @@
             <!-- <img src="images/logo1.svg" alt="" width="200px" height="100px"> -->
           </div>
           <div id="menu">
-            <div
+            <a
               id="startTestButton"
               class="icon-button view-start"
               tabindex="2"
@@ -772,7 +783,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-keyboard"></i>
               </div>
-            </div>
+            </a>
             <div
               class="icon-button leaderboards view-leaderboards"
               tabindex="2"
@@ -782,7 +793,7 @@
                 <i class="fas fa-fw fa-crown"></i>
               </div>
             </div>
-            <div
+            <a
               class="icon-button view-about"
               tabindex="2"
               href="/about"
@@ -791,7 +802,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-info"></i>
               </div>
-            </div>
+            </a>
             <!-- <a
               class="icon-button discord"
               tabindex="2"
@@ -804,7 +815,7 @@
                 <i class="fab fa-discord"></i>
               </div>
             </a> -->
-            <div
+            <a
               class="icon-button view-settings"
               tabindex="2"
               href="/settings"
@@ -813,8 +824,8 @@
               <div class="icon">
                 <i class="fas fa-fw fa-cog"></i>
               </div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button hidden account view-account"
               tabindex="2"
               href="/account"
@@ -824,8 +835,8 @@
                 <i class="fas fa-fw fa-user"></i>
               </div>
               <div class="text"></div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button login view-login"
               tabindex="2"
               href="/login"
@@ -834,7 +845,7 @@
               <div class="icon">
                 <i class="far fa-fw fa-user"></i>
               </div>
-            </div>
+            </a>
           </div>
 
           <div class="config hidden">
@@ -1366,6 +1377,15 @@
                     <div id="replayWords" class="words"></div>
                   </div>
                 </div>
+                <div
+                  id="retrySavingResultButton"
+                  class="hidden"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-redo"></i>
+                  Retry saving result
+                </div>
                 <div class="buttons">
                   <div
                     id="nextTestButton"
@@ -1527,7 +1547,7 @@
               </p>
               <div class="supportButtons">
                 <a class="button ads">
-                  <div class="fas fas fa-ad"></div>
+                  <div class="fas fa-ad"></div>
                   Ads
                 </a>
                 <a
@@ -3987,6 +4007,18 @@
                   </div>
                   <div class="button on" tabindex="0" onclick="this.blur();">
                     show
+                  </div>
+                </div>
+              </div>
+              <div class="section capsLockWarning">
+                <h1>caps lock warning</h1>
+                <div class="text">Displays a warning when caps lock is on.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
                   </div>
                 </div>
               </div>

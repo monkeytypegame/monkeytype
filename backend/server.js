@@ -29,22 +29,28 @@ app.use((req, res, next) => {
   }
 });
 
+let startingPath = "";
+
+if (process.env.API_PATH_OVERRIDE) {
+  startingPath = "/" + process.env.API_PATH_OVERRIDE;
+}
+
 const userRouter = require("./api/routes/user");
-app.use("/user", userRouter);
+app.use(startingPath + "/user", userRouter);
 const configRouter = require("./api/routes/config");
-app.use("/config", configRouter);
+app.use(startingPath + "/config", configRouter);
 const resultRouter = require("./api/routes/result");
-app.use("/results", resultRouter);
+app.use(startingPath + "/results", resultRouter);
 const presetRouter = require("./api/routes/preset");
-app.use("/presets", presetRouter);
+app.use(startingPath + "/presets", presetRouter);
 const quoteRatings = require("./api/routes/quote-ratings");
-app.use("/quote-ratings", quoteRatings);
+app.use(startingPath + "/quote-ratings", quoteRatings);
 const psaRouter = require("./api/routes/psa");
-app.use("/psa", psaRouter);
+app.use(startingPath + "/psa", psaRouter);
 const leaderboardsRouter = require("./api/routes/leaderboards");
-app.use("/leaderboard", leaderboardsRouter);
+app.use(startingPath + "/leaderboard", leaderboardsRouter);
 const newQuotesRouter = require("./api/routes/new-quotes");
-app.use("/new-quotes", newQuotesRouter);
+app.use(startingPath + "/new-quotes", newQuotesRouter);
 
 app.use(function (e, req, res, next) {
   let monkeyError;
