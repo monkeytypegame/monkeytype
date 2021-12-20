@@ -124,6 +124,9 @@ export function showWords() {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word")).outerHeight(true);
   const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
+  console.log(
+    `Showing words. wordHeight: ${wordHeight}, wordsHeight: ${wordsHeight}`
+  );
   if (
     Config.showAllLines &&
     Config.mode != "time" &&
