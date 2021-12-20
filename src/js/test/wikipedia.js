@@ -30,7 +30,7 @@ export async function getSection() {
       rej(randomPostReq.status);
     }
 
-    const sectionURL = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&explaintext=true&origin=*`;
+    const sectionURL = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
     var sectionReq = new XMLHttpRequest();
     sectionReq.onload = () => {
@@ -42,9 +42,16 @@ export async function getSection() {
           let words = [];
 
           // Remove non-ascii characters, double whitespaces and finally trailing whitespaces.
+          sectionText = sectionText.replace(/<\/p><p>+/g, " ");
+          sectionText = $("<div/>").html(sectionText).text();
           sectionText = sectionText.replace(/[\u{0080}-\u{10FFFF}]/gu, "");
           sectionText = sectionText.replace(/\s+/g, " ");
           sectionText = sectionText.trim();
+
+          // // Add spaces
+          // sectionText = sectionText.replace(/[a-zA-Z0-9]{3,}\.[a-zA-Z]/g, (x) =>
+          //   x.replace(/\./, ". ")
+          // );
 
           sectionText.split(" ").forEach((word) => {
             words.push(word);
