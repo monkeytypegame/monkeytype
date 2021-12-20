@@ -66,6 +66,7 @@ export async function getSection() {
       rej(randomPostReq.status);
     }
 
+
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&explaintext=true&origin=*`;
 
     var sectionReq = new XMLHttpRequest();
@@ -78,13 +79,16 @@ export async function getSection() {
           let words = [];
 
           // Remove double whitespaces and finally trailing whitespaces.
+          sectionText = sectionText.replace(/<\/p><p>+/g, " ");
+          sectionText = $("<div/>").html(sectionText).text();
+
           sectionText = sectionText.replace(/\s+/g, " ");
           sectionText = sectionText.trim();
 
-          // Add spaces
-          sectionText = sectionText.replace(/[a-zA-Z0-9]{3,}\.[a-zA-Z]/g, (x) =>
-            x.replace(/\./, ". ")
-          );
+          // // Add spaces
+          // sectionText = sectionText.replace(/[a-zA-Z0-9]{3,}\.[a-zA-Z]/g, (x) =>
+          //   x.replace(/\./, ". ")
+          // );
 
           sectionText.split(" ").forEach((word) => {
             words.push(word);
