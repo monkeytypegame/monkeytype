@@ -44,7 +44,7 @@ export async function getSection() {
   Loader.show();
 
   // get TLD for wikipedia according to language group
-  var urlTLD = "en";
+  let urlTLD = "en";
   let currentLanguageGroup = await Misc.findCurrentGroup(Config.language);
   urlTLD = await getTLD(currentLanguageGroup);
 
