@@ -298,6 +298,21 @@ function isCharCorrect(char, charIndex) {
     }
   }
 
+  if (Config.funbox === "arrows") {
+    if ((char === "w" || char === "w") && originalChar == "↑") {
+      return true;
+    }
+    if ((char === "s" || char === "s") && originalChar == "↓") {
+      return true;
+    }
+    if ((char === "a" || char === "a") && originalChar == "←") {
+      return true;
+    }
+    if ((char === "d" || char === "d") && originalChar == "→") {
+      return true;
+    }
+  }
+
   if (char === "’" && originalChar == "'") {
     return true;
   }

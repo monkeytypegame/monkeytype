@@ -898,6 +898,16 @@ export async function init() {
             }
           }
           randomWord = randomcaseword;
+        } else if (Config.funbox === "arrows") {
+          let arrowWord = "";
+          let arrowArray = ["←", "↑", "→", "↓"];
+          for (let i = 0; i < randomWord.length; i++) {
+            arrowWord +=
+              arrowArray[Math.floor(Math.random() * arrowArray.length)];
+          }
+          console.log(arrowWord);
+          randomWord = arrowWord;
+          console.log("randomword" + randomWord);
         } else if (Config.funbox === "gibberish") {
           randomWord = Misc.getGibberish();
         } else if (Config.funbox === "58008") {
