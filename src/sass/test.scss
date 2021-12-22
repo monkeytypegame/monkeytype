@@ -334,6 +334,15 @@
   }
 }
 
+#words.arrows {
+  .word {
+    margin: 0.5rem 0;
+    letter {
+      margin: 0 0.25rem;
+    }
+  }
+}
+
 .word.error {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid var(--error-color);

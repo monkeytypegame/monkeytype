@@ -79,7 +79,7 @@ function backspaceToPrevious() {
   TestLogic.input.current = TestLogic.input.popHistory();
   TestLogic.corrected.popHistory();
 
-  if (Config.funbox === "nospace") {
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     TestLogic.input.current = TestLogic.input.current.slice(0, -1);
   }
 
@@ -148,12 +148,12 @@ function handleSpace() {
     Caret.updatePosition();
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
-    if (Config.funbox !== "nospace") {
+    if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
       Sound.playClick(Config.playSoundOnClick);
     }
     Replay.addReplayEvent("submitCorrectWord");
   } else {
-    if (Config.funbox !== "nospace") {
+    if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick(Config.playSoundOnClick);
       } else {
@@ -299,16 +299,16 @@ function isCharCorrect(char, charIndex) {
   }
 
   if (Config.funbox === "arrows") {
-    if ((char === "w" || char === "w") && originalChar == "↑") {
+    if ((char === "w" || char === "ArrowUp") && originalChar == "↑") {
       return true;
     }
-    if ((char === "s" || char === "s") && originalChar == "↓") {
+    if ((char === "s" || char === "ArrowDown") && originalChar == "↓") {
       return true;
     }
-    if ((char === "a" || char === "a") && originalChar == "←") {
+    if ((char === "a" || char === "ArrowLeft") && originalChar == "←") {
       return true;
     }
-    if ((char === "d" || char === "d") && originalChar == "→") {
+    if ((char === "d" || char === "ArrowRight") && originalChar == "→") {
       return true;
     }
   }
@@ -548,7 +548,7 @@ function handleChar(char, charIndex) {
 
   //simulate space press in nospace funbox
   if (
-    (Config.funbox === "nospace" &&
+    ((Config.funbox === "nospace" || Config.funbox === "arrows") &&
       TestLogic.input.current.length === TestLogic.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {
@@ -752,8 +752,19 @@ $(document).keydown((event) => {
   if (Config.oppositeShiftMode !== "off") {
     correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
   }
-
-  if (
+  if (Config.funbox === "arrows") {
+    let char = event.key;
+    if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {
+      if (char === "ArrowLeft") char = "a";
+      if (char === "ArrowRight") char = "d";
+      if (char === "ArrowDown") char = "s";
+      if (char === "ArrowUp") char = "w";
+      event.preventDefault();
+      handleChar(char, TestLogic.input.current.length);
+      updateUI();
+      setWordsInput(" " + TestLogic.input.current);
+    }
+  } else if (
     Config.layout !== "default" &&
     !(
       event.ctrlKey ||
