@@ -116,6 +116,7 @@ export async function activate(funbox) {
   }
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
+  $("#words").removeClass("arrows");
   // if (funbox === "none") {
 
   reset();
@@ -223,6 +224,15 @@ export async function activate(funbox) {
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+      UpdateConfig.setHighlightMode("letter", true);
+      TestLogic.restart(false, true);
+    } else if (funbox === "arrows") {
+      $("#words").addClass("arrows");
       rememberSetting(
         "highlightMode",
         Config.highlightMode,

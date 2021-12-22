@@ -400,7 +400,7 @@ function countChars() {
       spaces++;
     }
   }
-  if (Config.funbox === "nospace") {
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
     correctspaces = 0;
   }

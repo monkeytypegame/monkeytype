@@ -938,7 +938,8 @@ export function setHighlightMode(mode, nosave) {
       config.funbox === "read_ahead" ||
       config.funbox === "read_ahead_easy" ||
       config.funbox === "read_ahead_hard" ||
-      config.funbox === "tts")
+      config.funbox === "tts" ||
+      config.funbox === "arrows")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;

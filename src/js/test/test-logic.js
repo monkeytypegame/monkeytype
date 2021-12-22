@@ -898,6 +898,21 @@ export async function init() {
             }
           }
           randomWord = randomcaseword;
+        } else if (Config.funbox === "arrows") {
+          let arrowWord = "";
+          let arrowArray = ["←", "↑", "→", "↓"];
+          let lastchar;
+          for (let i = 0; i < 5; i++) {
+            let random =
+              arrowArray[Math.floor(Math.random() * arrowArray.length)];
+            while (random === lastchar) {
+              random =
+                arrowArray[Math.floor(Math.random() * arrowArray.length)];
+            }
+            lastchar = random;
+            arrowWord += random;
+          }
+          randomWord = arrowWord;
         } else if (Config.funbox === "gibberish") {
           randomWord = Misc.getGibberish();
         } else if (Config.funbox === "58008") {
@@ -1114,7 +1129,7 @@ export function calculateWpmAndRaw() {
   if (words.getCurrent() == input.current) {
     correctWordChars += input.current.length;
   }
-  if (Config.funbox === "nospace") {
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
   }
   chars += input.current.length;
