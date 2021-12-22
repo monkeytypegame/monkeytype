@@ -1,4 +1,6 @@
 import * as Loader from "./loader";
+import Config from "./config";
+import * as Misc from "./misc";
 
 export class Section {
   constructor(title, author, words) {
@@ -8,15 +10,49 @@ export class Section {
   }
 }
 
+export async function getTLD(languageGroup) {
+  // language group to tld
+  switch (languageGroup.name) {
+    case "english":
+      return "en";
+
+    case "spanish":
+      return "es";
+
+    case "french":
+      return "fr";
+
+    case "german":
+      return "de";
+
+    case "portuguese":
+      return "pt";
+
+    case "italian":
+      return "it";
+
+    case "dutch":
+      return "nl";
+
+    default:
+      return "en";
+  }
+}
+
 export async function getSection() {
   // console.log("Getting section");
   Loader.show();
 
-  const randomPostURL =
-    "https://en.wikipedia.org/api/rest_v1/page/random/summary";
+  // get TLD for wikipedia according to language group
+  let urlTLD = "en";
+  let currentLanguageGroup = await Misc.findCurrentGroup(Config.language);
+  urlTLD = await getTLD(currentLanguageGroup);
+
+  const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
   var sectionObj = {};
   var randomPostReq = await fetch(randomPostURL);
   var pageid = 0;
+
   if (randomPostReq.status == 200) {
     let postObj = await randomPostReq.json();
     sectionObj.title = postObj.title;
@@ -30,7 +66,8 @@ export async function getSection() {
       rej(randomPostReq.status);
     }
 
-    const sectionURL = `https://en.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
+
+    const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&explaintext=true&origin=*`;
 
     var sectionReq = new XMLHttpRequest();
     sectionReq.onload = () => {
@@ -41,10 +78,10 @@ export async function getSection() {
           ].extract;
           let words = [];
 
-          // Remove non-ascii characters, double whitespaces and finally trailing whitespaces.
+          // Remove double whitespaces and finally trailing whitespaces.
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
           sectionText = $("<div/>").html(sectionText).text();
-          sectionText = sectionText.replace(/[\u{0080}-\u{10FFFF}]/gu, "");
+
           sectionText = sectionText.replace(/\s+/g, " ");
           sectionText = sectionText.trim();
 
