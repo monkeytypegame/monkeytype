@@ -75,18 +75,16 @@ function backspaceToPrevious() {
     return;
   }
 
-  TestUI.updateWordElement();
   TestLogic.input.current = TestLogic.input.popHistory();
   TestLogic.corrected.popHistory();
-
   if (Config.funbox === "nospace") {
     TestLogic.input.current = TestLogic.input.current.slice(0, -1);
   }
-
   TestLogic.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestLogic.words.getCurrent());
+  TestUI.updateWordElement();
 
   Caret.updatePosition();
   Replay.addReplayEvent("backWord");
@@ -343,6 +341,7 @@ function handleChar(char, charIndex) {
   }
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
+    if (Config.funbox === "nospace" || Config.funbox === "arrows") return;
     handleSpace();
 
     //insert space for expert and master or strict space,
