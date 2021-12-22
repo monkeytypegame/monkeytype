@@ -1,0 +1,16 @@
+:root {
+  --bg-color: linear-gradient(
+    90deg,
+    #009344 0 calc(100% / 3),
+    #ffffff calc(100% / 3) calc(100% / 1.5),
+    #cf2734 calc(100% / 1.5) 100%
+  );
+  --main-color: #53bcec;
+  --caret-color: #3f3f3f;
+  --text-color: #53bcec;
+  --sub-color: #310073;
+  --error-color: #e9632d;
+  --error-extra-color: #e9632d;
+  --colorful-error-color: #e9632d;
+  --colorful-error-extra-color: #e9632d;
+}
