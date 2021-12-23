@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -29766,12 +29754,6 @@
       "source": "Haroun and the Sea of Stories",
       "id": 5012,
       "length": 309
-    },
-    {
-      "text": "All depression has its roots in self-pity, and all self-pity is rooted in people taking themselves too seriously. At the time Switters had disputed her assertion. Even at seventeen, he was aware that depression could have chemical causes. The key word here is roots, Maestra had countered. The roots of depression. For most people, self-awareness and self-pity blossom simultaneously in early adolescence. It's about that time that we start viewing the world as something other than a whoop-de-doo playground, we start to experience personally how threatening it can be, how cruel and unjust. At the very moment when we become, for the first time, both introspective and socially conscientious, we receive the bad news that the world, by and large, doesn't give a rat's ass. Even an old tomato like me can recall how painful, scary, and disillusioning that realization was. So, there's a tendency, then, to slip into rage and self-pity, which if indulged, can fester into bouts of depression. Yeah but Maestra-. Don't interrupt. Now, unless someone stronger and wiser - a friend, a parent, a novelist, filmmaker, teacher, or musician - can josh us out of it, can elevate us and show us how petty and pompous and monumentally useless it is to take ourselves so seriously, then depression can become a habit, which, in turn, can produce a neurological imprint. Are you with me? Gradually, our brain chemistry becomes conditioned to react to negative stimuli in a particular, predictable way. One thing'll go wrong and it'll automatically switch on its blender and mix us that black cocktail, the ol' doomsday daiquiri, and before we know it, we're soused to the gills from the inside out. Once depression has become electrochemically integrated, it can be extremely difficult to philosophically or psychologically override it; by then it's playing by physical rules, a whole different ball game. That's why, Switters my dearest, every time you've shown signs of feeling sorry for yourself, I've played my blues records really loud or read to you from The Horse's Mouth. And that's why when you've exhibited the slightest tendency toward self-importance, I've reminded you that you and me - you and I: excuse me - may be every bit as important as the President or the pope or the biggest prime-time icon in Hollywood, but none of us is much more than a pimple on the ass-end of creation, so let's not get carried away with ourselves. Preventive medicine, boy. It's preventive medicine. But what about self-esteem? Heh! Self-esteem is for sissies. Accept that you're a pimple and try to keep a lively sense of humor about it. That way lies grace-and maybe even glory.",
-      "source": "Fierce Invalids Home from Hot Climates",
-      "id": 5013,
-      "length": 2663
     },
     {
       "text": "I hope you're pleased with yourselves. We could all have been killed - or worse, expelled. Now if you don't mind, I'm going to bed.",
