@@ -66,8 +66,7 @@ export async function getSection() {
       rej(randomPostReq.status);
     }
 
-
-    const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&explaintext=true&origin=*`;
+    const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
     var sectionReq = new XMLHttpRequest();
     sectionReq.onload = () => {
