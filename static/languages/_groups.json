@@ -126,7 +126,7 @@
   },
   {
     "name": "norwegian",
-    "languages": ["norwegian"]
+    "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
   },
   {
     "name": "hebrew",
