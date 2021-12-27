@@ -128,6 +128,10 @@
     }
   }
 
+  #contactPopupWrapper #contactPopup .buttons {
+    grid-template-columns: 1fr;
+  }
+
   .pageAbout .section {
     .contributors,
     .supporters {
@@ -335,6 +339,16 @@
 }
 
 @media only screen and (max-width: 550px) {
+  #contactPopupWrapper #contactPopup .buttons .button .text {
+    font-size: 1rem;
+  }
+  #contactPopupWrapper #contactPopup .buttons .button .icon {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+  #contactPopupWrapper #contactPopup {
+    padding: 1rem;
+  }
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr;

@@ -16,6 +16,7 @@ import * as AccountController from "./account-controller";
 import { toggleGlarses } from "./test-logic";
 import "./caps-warning";
 import "./support-popup";
+import "./contact-popup";
 import "./version-popup";
 import "./input-controller";
 import "./ready";
