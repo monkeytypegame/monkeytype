@@ -99,6 +99,15 @@ class ResultController {
       delete result.hash;
       const serverhash = objecthash(result);
       if (serverhash !== resulthash) {
+        Logger.log(
+          "incorrect_result_hash",
+          {
+            serverhash,
+            resulthash,
+            result,
+          },
+          uid
+        );
         return res.status(400).json({ message: "Incorrect result hash" });
       }
 
