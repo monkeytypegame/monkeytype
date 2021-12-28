@@ -2402,7 +2402,10 @@ export async function finish(difficultyFailed = false) {
       `Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`
     );
   }
-
+  if (window.scrollY > 0)
+    $([document.documentElement, document.body])
+      .stop()
+      .animate({ scrollTop: 0 }, 250);
   UI.swapElements(
     $("#typingTest"),
     $("#result"),
@@ -2416,6 +2419,7 @@ export async function finish(difficultyFailed = false) {
         TestUI.applyBurstHeatmap();
       }
       $("#result").focus();
+      window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
     },
     () => {
