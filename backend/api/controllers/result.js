@@ -25,7 +25,7 @@ class ResultController {
     try {
       const { uid } = req.decodedToken;
       await ResultDAO.deleteAll(uid);
-      Logger.log("user_results_deleted", ``, uid);
+      Logger.log("user_results_deleted", "", uid);
       return res.sendStatus(200);
     } catch (e) {
       next(e);
