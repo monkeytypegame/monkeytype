@@ -594,6 +594,7 @@ export function restart(
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
+      if(window.scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
       if (!withSameWordset) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
