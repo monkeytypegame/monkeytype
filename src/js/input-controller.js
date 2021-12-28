@@ -667,7 +667,7 @@ $(document).keydown((event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  if (allowTyping && !wordsFocused && !$("#restartTestButton").is(":focus")) {
+  if (allowTyping && !wordsFocused && event.key !== "Enter") {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();

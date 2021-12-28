@@ -555,7 +555,7 @@ export function restart(
   setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
-  TestUI.focusWords();
+  $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
   $("#wordsInput").val(" ");
@@ -589,6 +589,7 @@ export function restart(
     },
     125,
     async () => {
+      TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
