@@ -113,17 +113,18 @@ class ResultController {
 
       result.timestamp = Math.round(result.timestamp / 1000) * 1000;
 
-      if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
-        Logger.log(
-          "time_traveler",
-          {
-            resultTimestamp: result.timestamp,
-            serverTimestamp: Math.round(Date.now() / 1000) * 1000 + 10,
-          },
-          uid
-        );
-        return res.status(400).json({ message: "Time traveler detected" });
-      }
+      //dont use - result timestamp is unreliable, can be changed by system time and stuff
+      // if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
+      //   Logger.log(
+      //     "time_traveler",
+      //     {
+      //       resultTimestamp: result.timestamp,
+      //       serverTimestamp: Math.round(Date.now() / 1000) * 1000 + 10,
+      //     },
+      //     uid
+      //   );
+      //   return res.status(400).json({ message: "Time traveler detected" });
+      // }
 
       let timestampres = await ResultDAO.getResultByTimestamp(
         uid,
