@@ -111,11 +111,11 @@ class ResultController {
         return res.status(400).json({ message: "Incorrect result hash" });
       }
 
-      // if (result.timestamp > Date.now()) {
-      //   return res.status(400).json({ message: "Time traveler detected" });
-      // }
-
       result.timestamp = Math.round(result.timestamp / 1000) * 1000;
+
+      if (result.timestamp > Math.round(Date.now() / 1000) * 1000) {
+        return res.status(400).json({ message: "Time traveler detected" });
+      }
 
       let timestampres = await ResultDAO.getResultByTimestamp(
         uid,
