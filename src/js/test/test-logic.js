@@ -1896,7 +1896,7 @@ export async function finish(difficultyFailed = false) {
     if (
       stats.wpm > 0 &&
       stats.wpm < 350 &&
-      stats.acc > 50 &&
+      stats.acc > 75 &&
       stats.acc <= 100
     ) {
       if (firebase.auth().currentUser != null) {
