@@ -945,8 +945,7 @@ export async function init() {
         }
 
         if (Config.britishEnglish && /english/.test(Config.language)) {
-          let britishWord = await BritishEnglish.replace(randomWord);
-          if (britishWord) randomWord = britishWord;
+          randomWord = await BritishEnglish.replace(randomWord);
         }
 
         if (/\t/g.test(randomWord)) {
@@ -1070,8 +1069,7 @@ export async function init() {
         Config.britishEnglish &&
         Config.language.replace(/_\d*k$/g, "") === "english"
       ) {
-        let britishWord = await BritishEnglish.replace(w[i]);
-        if (britishWord) w[i] = britishWord;
+        w[i] = await BritishEnglish.replace(w[i]);
       }
 
       if (Config.lazyMode === true && !language.noLazyMode) {
@@ -1274,8 +1272,7 @@ export async function addWord() {
     Config.britishEnglish &&
     Config.language.replace(/_\d*k$/g, "") === "english"
   ) {
-    let britishWord = await BritishEnglish.replace(randomWord);
-    if (britishWord) randomWord = britishWord;
+    randomWord = await BritishEnglish.replace(randomWord);
   }
 
   let split = randomWord.split(" ");
