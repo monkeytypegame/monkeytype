@@ -53,7 +53,7 @@ class ResultController {
       if (
         result.wpm <= 0 ||
         result.wpm > 350 ||
-        result.acc < 50 ||
+        result.acc < 75 ||
         result.acc > 100 ||
         result.consistency > 100
       ) {
