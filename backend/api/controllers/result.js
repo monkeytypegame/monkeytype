@@ -113,12 +113,12 @@ class ResultController {
 
       result.timestamp = Math.round(result.timestamp / 1000) * 1000;
 
-      if (result.timestamp > Math.round(Date.now() / 1000) * 1000) {
+      if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
         Logger.log(
           "time_traveler",
           {
             resultTimestamp: result.timestamp,
-            serverTimestamp: Math.round(Date.now() / 1000) * 1000,
+            serverTimestamp: Math.round(Date.now() / 1000) * 1000 + 10,
           },
           uid
         );
