@@ -11,7 +11,7 @@
       "text": "//a function that generates random gibberish at random length\n\nexport function getGibberish() {\n\tlet randLen = Math.floor(Math.random() * 7) + 1;\n\tlet ret = \"\";\n\tfor (let i = 0; i < randLen; i++) {\n\t\tret += String.fromCharCode(97 + Math.floor(Math.random() * 26));\n\t}\n\treturn ret;\n}",
       "source": "Monkeytype Sourcecode",
       "id": 1,
-      "length": 64
+      "length": 282
     },
     {
       "text": "export function capitalizeFirstLetter(str) {\\n\\treturn str.charAt(0).toUpperCase() + str.slice(1);\\n}",
@@ -52,20 +52,140 @@
     {
       "text": "$('button').click(function(){\\n\\t$.post('demo_test_post.asp',\\n{\\n\\t\\tname: 'Donald Duck',\\n\\t\\tcity: 'Duckburg'\\n\\t},\n\\tfunction(data, status){\\n\\t\\talert('Data: ' + data + '\nStatus: ' + status);\\n\\t});\\n});",
       "source": "W3Schools - jQuery Get/Post",
-      "length": 228,
+      "length": 208,
       "id": 8
     },
     {
       "text": "const points = [40, 100, 1, 5, 25, 10];\\n\\nfor (let i = points.length -1; i > 0; i--) {\\n\\tlet j = Math.floor(Math.random() * i)\\n\\tlet k = points[i]\\n\\tpoints[i] = points[j]\\n\\tpoints[j] = k\\n}",
       "source": "W3Schools JS Array Sort - Fisher Bates Method",
-      "length": 205,
+      "length": 194,
       "id": 9
     },
     {
       "text": "function quicksort(arr){\\n\\tvar pivot = arr[0];\\n\\n\\tvar left = [];\\n\\tvar right = [];\\n\\n\\tfor (var i = 1; i < arr.length; i++) {\\n\\t\\tarr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);\\n\\t}\\n\\n\\treturn quicksort(left).concat(pivot, quicksort(right));\\n}",
       "source": "JavaScript Quicksort Algorithm",
-      "length": 280,
+      "length": 261,
       "id": 10
+    },
+    {
+      "text": "const disableAnimations = () => {\n\tconst rule = `\n\t\t*,\n\t\t::before,\n\t\t::after {\n\t\t\tanimation: initial !important;\n\t\t\ttransition: initial !important;\n\t\t}\n\t`;\n\n\tconst style = document.createElement('style');\n\tdocument.body.append(style);\n\n\tstyle.sheet.insertRule(rule);\n};",
+      "source": "Sindre Sorhus - capture-website sourcecode",
+      "length": 269,
+      "id": 11
+    },
+    {
+      "text": "export async function fileTypeFromFile(path) {\n\tconst tokenizer = await strtok3.fromFile(path);\n\ttry {\n\t\treturn await fileTypeFromTokenizer(tokenizer);\n\t} finally {\n\t\tawait tokenizer.close();\n\t}\n}",
+      "source": "Sindre Sorhus - file-type sourcecode",
+      "length": 196,
+      "id": 12
+    },
+    {
+      "text": "export class IpNotFoundError extends Error {\n\tconstructor(options) {\n\t\tsuper('Could not get the public IP address', options);\n\t\tthis.name = 'IpNotFoundError';\n\t}\n}",
+      "source": "Sindre Sorhus - public-ip sourcecode",
+      "length": 163,
+      "id": 13
+    },
+    {
+      "text": "function keysSorter(input) {\n\tif (Array.isArray(input)) {\n\t\treturn input.sort();\n\t}\n\n\tif (typeof input === 'object') {\n\t\treturn keysSorter(Object.keys(input))\n\t\t\t.sort((a, b) => Number(a) - Number(b))\n\t\t\t.map(key => input[key]);\n\t}\n\n\treturn input;\n}",
+      "source": "Sindre Sorhus - query-string sourcecode",
+      "length": 249,
+      "id": 14
+    },
+    {
+      "text": "function getHash(url) {\n\tlet hash = '';\n\tconst hashStart = url.indexOf('#');\n\tif (hashStart !== -1) {\n\t\thash = url.slice(hashStart);\n\t}\n\n\treturn hash;\n}",
+      "source": "Sindre Sorhus - query-string sourcecode",
+      "length": 152,
+      "id": 15
+    },
+    {
+      "text": "export default function isJpg(buffer) {\n\tif (!buffer || buffer.length < 3) {\n\t\treturn false;\n\t}\n\n\treturn buffer[0] === 255\n\t\t&& buffer[1] === 216\n\t\t&& buffer[2] === 255;\n}",
+      "source": "Sindre Sorhus - is-jpg sourcecode",
+      "length": 171,
+      "id": 16
+    },
+    {
+      "text": "const UPPERCASE = /[p{Lu}]/u;\nconst LOWERCASE = /[p{Ll}]/u;\nconst LEADING_CAPITAL = /^[p{Lu}](?![p{Lu}])/gu;\nconst IDENTIFIER = /([p{Alpha}p{N}_]|$)/u;\nconst SEPARATORS = /[_.- ]+/;\n\nconst LEADING_SEPARATORS = new RegExp('^' + SEPARATORS.source);\nconst SEPARATORS_AND_IDENTIFIER = new RegExp(SEPARATORS.source + IDENTIFIER.source, 'gu');\nconst NUMBERS_AND_IDENTIFIER = new RegExp('\\d+' + IDENTIFIER.source, 'gu');",
+      "source": "Sindre Sorhus - camelcase sourcecode",
+      "length": 413,
+      "id": 17
+    },
+    {
+      "text": "navigator.serviceWorker.onmessage = function(event) {\n\tlet data = event.data.message\n\tlet text = JSON.stringify(JSON.parse(data), null, 2)\n\n\tdocument.getElementById(\"receivedNotifications\").innerHTML +=\n\t\"<pre><code>\" + text + \"</code></pre>\"\n}",
+      "source": "Zanin Andrea - web-push-tester sourcecode",
+      "length": 244,
+      "id": 18
+    },
+    {
+      "text": "if (!req.query.url) {\n\tres.send(\"you should pass a url parameter\")\n}\nconst filename = \"./cache/\" + sanitize(req.query.url) + \"-\" +req.query.width + \"-\" + req.query.height\n\nconst thumbnailResizer = sharp()\n\t.resize(req.query.width ? parseInt(req.query.width) : null, req.query.height ? parseInt(req.query.height) : null)\n\t.rotate()\n\t.png();",
+      "source": "Zanin Andrea - image_resizer sourcecode",
+      "length": 339,
+      "id": 19
+    },
+    {
+      "text": "function delay(func, wait, ...args) {\n\tif (typeof func !== \"function\") {\n\t\tthrow new TypeError(\"Expected a function\");\n\t}\n\treturn setTimeout(func, +wait || 0, ...args);\n}",
+      "source": "Lodash - delay sourcecode",
+      "length": 170,
+      "id": 20
+    },
+    {
+      "text": "function intersectionWith(...arrays) {\n\tlet comparator = last(arrays)\n\tconst mapped = map(arrays, castArrayLikeObject)\n\n\tcomparator = typeof comparator === \"function\" ? comparator : undefined\n\tif (comparator) {\n\t\tmapped.pop()\n\t}\n\treturn mapped.length && mapped[0] === arrays[0]\n\t\t? baseIntersection(mapped, undefined, comparator)\n\t\t: []\n}",
+      "source": "Lodash - intersectionWith sourcecode",
+      "length": 338,
+      "id": 21
+    },
+    {
+      "text": "function invert(object) {\n\tconst result = {}\n\tObject.keys(object).forEach((key) => {\n\t\tlet value = object[key]\n\t\tif (value != null && typeof value.toString !== \"function\") {\n\t\t\tvalue = toString.call(value)\n\t\t}\n\t\tresult[value] = key\n\t})\n\treturn result\n}",
+      "source": "Lodash - invert sourcecode",
+      "length": 252,
+      "id": 22
+    },
+    {
+      "text": "export default function memoize(func, hasher) {\n\tvar memoize = function (key) {\n\t\tvar cache = memoize.cache\n\t\tvar address = \"\" + (hasher ? hasher.apply(this, arguments) : key)\n\t\tif (!has(cache, address)) cache[address] = func.apply(this, arguments)\n\t\treturn cache[address]\n\t}\n\tmemoize.cache = {}\n\treturn memoize\n}",
+      "source": "Underscore - memoize sourcecode",
+      "length": 313,
+      "id": 23
+    },
+    {
+      "text": "export default function unzip(array) {\n  var length = array && max(array, getLength).length || 0;\n  var result = Array(length);\n\n  for (var index = 0; index < length; index++) {\n    result[index] = pluck(array, index);\n  }\n  return result;\n}",
+      "source": "Underscore - unzip sourcecode",
+      "length": 241,
+      "id": 24
+    },
+    {
+      "text": "const fibSequence = [1]\n\nlet currentValue = 1\nlet previousValue = 0\n\nif (n === 1) {\n\treturn fibSequence\n}\n\nlet iterationsCounter = n - 1\n\nwhile (iterationsCounter) {\n\tcurrentValue += previousValue\n\tpreviousValue = currentValue - previousValue\n\n\tfibSequence.push(currentValue)\n\n\titerationsCounter -= 1\n}",
+      "source": "trekhleb/javascript-algorithms - fibonacci sourcecode",
+      "length": 302,
+      "id": 25
+    },
+    {
+      "text": "class BinarySearchTree {\n\tconstructor(nodeValueCompareFunction) {\n\t\tthis.root = new BinarySearchTreeNode(null, nodeValueCompareFunction)\n\t\tthis.nodeComparator = this.root.nodeComparator\n\t}\n\n\tinsert(value) {\n\t\treturn this.root.insert(value)\n\t}\n\n\tcontains(value) {\n\t\treturn this.root.contains(value)\n\t}\n\n\tremove(value) {\n\t\treturn this.root.remove(value)\n\t}\n\n\ttoString() {\n\t\treturn this.root.toString()\n\t}\n}",
+      "source": "trekhleb/javascript-algorithms - Binary Search Tree sourcecode",
+      "length": 404,
+      "id": 26
+    },
+    {
+      "text": "const product = []\n\nfor (let indexA = 0; indexA < setA.length; indexA += 1) {\n\tfor (let indexB = 0; indexB < setB.length; indexB += 1) {\n\t\t// Add current product pair to the product set.\n\t\tproduct.push([setA[indexA], setB[indexB]])\n\t}\n}",
+      "source": "trekhleb/javascript-algorithms - Cartesian Product sourcecode",
+      "length": 236,
+      "id": 27
+    },
+    {
+      "text": "function fisherYates(originalArray) {\n\tconst array = originalArray.slice(0)\n\n\tfor (let i = array.length - 1; i > 0; i -= 1) {\n\t\tconst randomIndex = Math.floor(Math.random() * (i + 1))\n\t\t;[array[i], array[randomIndex]] = [array[randomIndex], array[i]]\n\t}\n\n\treturn array\n}",
+      "source": "trekhleb/javascript-algorithms - Fisher-Yates sourcecode",
+      "length": 270,
+      "id": 28
+    },
+    {
+      "text": "const getRandomNumber = (min, max) => Math.random() * (max - min) + min\ngetRandomNumber(2, 10)\n\nconst getRandomNumberInclusive = (min, max) => {\n\tmin = Math.ceil(min)\n\tmax = Math.floor(max)\n\treturn Math.floor(Math.random() * (max - min + 1)) + min\n}\ngetRandomNumberInclusive(2, 10)",
+      "source": "JSsnippets - random number sourcecode",
+      "length": 281,
+      "id": 29
+    },
+    {
+      "text": "const span = document.querySelector(\"span\")\nlet classes = span.classList\n\nspan.addEventListener(\"click\", function () {\n\tlet result = classes.toggle(\"active\")\n\n\tif (result) {\n\t\tconsole.log(\"active class was added\")\n\t} else {\n\t\tconsole.log(\"active class was removed\")\n\t}\n})",
+      "source": "JSsnippets - JS toggle sourcecode",
+      "length": 271,
+      "id": 30
     }
   ]
 }
