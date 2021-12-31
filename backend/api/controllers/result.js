@@ -124,17 +124,47 @@ class ResultController {
       //     uid
       //   );
       //   return res.status(400).json({ message: "Time traveler detected" });
+
+      // this probably wont work if we replace the timestamp with the server time later
+      // let timestampres = await ResultDAO.getResultByTimestamp(
+      //   uid,
+      //   result.timestamp
+      // );
+      // if (timestampres) {
+      //   return res.status(400).json({ message: "Duplicate result" });
       // }
 
-      let timestampres = await ResultDAO.getResultByTimestamp(
-        uid,
-        result.timestamp
-      );
-      if (timestampres) {
-        return res.status(400).json({ message: "Duplicate result" });
+      //convert result test duration to miliseconds
+      const testDurationMilis = result.testDuration * 1000;
+      //get latest result ordered by timestamp
+      let lastResultTimestamp;
+      try {
+        lastResultTimestamp = (await ResultDAO.getLastResult(uid)).timestamp;
+      } catch (e) {
+        lastResultTimestamp = null;
       }
 
       result.timestamp = Math.round(Date.now() / 1000) * 1000;
+
+      //check if its greater than server time - milis or result time - milis
+      if (
+        lastResultTimestamp &&
+        (lastResultTimestamp + testDurationMilis > result.timestamp ||
+          lastResultTimestamp + testDurationMilis >
+            Math.round(Date.now() / 1000) * 1000)
+      ) {
+        Logger.log(
+          "invalid_result_spacing",
+          {
+            lastTimestamp: lastResultTimestamp,
+            resultTime: result.timestamp,
+            difference:
+              lastResultTimestamp + testDurationMilis - result.timestamp,
+          },
+          uid
+        );
+        return res.status(400).json({ message: "Invalid result spacing" });
+      }
 
       try {
         result.keySpacingStats = {
