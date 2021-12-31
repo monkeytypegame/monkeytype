@@ -186,6 +186,84 @@
       "source": "JSsnippets - JS toggle sourcecode",
       "length": 271,
       "id": 30
+    },
+    {
+      "text": "function cuid() {\n\tlet letter = \"c\" // hard-coded allows for sequential access\n\n\tlet timestamp = new Date().getTime().toString(base)\n\t// Prevent same-machine collisions.\n\tlet counter = pad(safeCounter().toString(base), blockSize)\n\tlet print = fingerprint()\n\tlet random = randomBlock() + randomBlock()\n\n\treturn letter + timestamp + counter + print + random\n}",
+      "source": "Eric Elliot - cuid sourcecode",
+      "length": 357,
+      "id": 31
+    },
+    {
+      "text": "const [isEditing, setisEditing] = useState(false)\n\nconst handleNameClick = () => setisEditing(!isEditing)\n\nconst statuses = [\n\t{ name: \"accepted\", value: \"Accepted\" },\n\t{ name: \"rejected\", value: \"Rejected\" },\n\t{ name: \"unanswered\", value: \"Unanswered\" },\n]",
+      "source": "thijsgadiot - rejection sourcecode",
+      "length": 257,
+      "id": 32
+    },
+    {
+      "text": "function createSalt(keyLength, callback) {\n\tcrypto.randomBytes(keyLength, function (err, buff) {\n\t\tif (err) {\n\t\t\treturn callback(err)\n\t\t}\n\t\tcallback(null, buff.toString(\"base64\"))\n\t})\n}",
+      "source": "Eric Elliot - credential sourcecode",
+      "length": 185,
+      "id": 33
+    },
+    {
+      "text": "export function quadratic(a, b, c) {\n\tif (nearlyEquals(a, 0) && nearlyEquals(b, 0)) return []\n\tif (nearlyEquals(a, 0)) return [-c / b]\n\n\tconst p = -b / 2 / a\n\tconst q = Math.sqrt(b * b - 4 * a * c) / 2 / a\n\treturn [p + q, p - q]\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 230,
+      "id": 34
+    },
+    {
+      "text": "function binomial(n, k) {\n\tif (k < 0 || k > n) return 0\n\tif (k === 0) return 1\n\tif (2 * k > n) return binomial(n, n - k)\n\n\tlet coeff = 1\n\tfor (let i = 1; i <= k; ++i) coeff *= (n - i + 1) / i\n\treturn Math.round(coeff)\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 219,
+      "id": 35
+    },
+    {
+      "text": "if (typeof c1 === \"number\") c1 = new Complex(c1, 0)\nif (typeof c2 === \"number\") c2 = new Complex(c2, 0)\n\nconst re = c1.re * c2.re - c1.im * c2.im\nconst im = c1.im * c2.re + c1.re * c2.im\nreturn new Complex(re, im)",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 213,
+      "id": 36
+    },
+    {
+      "text": "if (typeof c1 === \"number\") c1 = new Complex(c1, 0)\nif (typeof c2 === \"number\") c2 = new Complex(c2, 0)\n\nif (Math.abs(c2.re) < Number.EPSILON || Math.abs(c2.im) < Number.EPSILON) {\n\treturn new Complex(Infinity, Infinity)\n}\n\nconst denominator = c2.re * c2.re + c2.im * c2.im\nconst re = (c1.re * c2.re + c1.im * c2.im) / denominator\nconst im = (c1.im * c2.re - c1.re * c2.im) / denominator\n\nreturn new Complex(re, im)",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 415,
+      "id": 37
+    },
+    {
+      "text": "function rotation(angle) {\n\tconst sin = Math.sin(angle)\n\tconst cos = Math.cos(angle)\n\treturn [\n\t\t[cos, -sin],\n\t\t[sin, cos],\n\t]\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 128,
+      "id": 38
+    },
+    {
+      "text": "const T = []\nfor (let j = 0; j < M[0].length; ++j) {\n\tconst row = []\n\tfor (let i = 0; i < M.length; ++i) {\n\t\trow.push(M[i][j])\n\t}\n\tT.push(row)\n}\nreturn T",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 153,
+      "id": 39
+    },
+    {
+      "text": "function poisson(l = 1) {\n\tif (l <= 0) return 0\n\tconst L = Math.exp(-l)\n\tlet p = 1\n\n\tlet k = 0\n\tfor (; p > L; ++k) p *= Math.random()\n\treturn k - 1\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 149,
+      "id": 40
+    },
+    {
+      "text": "export function normalPDF(x: number, m = 1, v = 0) {\n\treturn Math.exp(-((x - m) ** 2) / (2 * v)) / Math.sqrt(2 * Math.PI * v)\n}",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 127,
+      "id": 41
+    },
+    {
+      "text": "if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z))\n\nz -= 1\nlet x = P[0]\nfor (let i = 1; i < G + 2; i++) x += P[i] / (z + i)\nconst t = z + G + 0.5\n\nreturn Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x",
+      "source": "Mathigon - fermat.js sourcecode",
+      "length": 236,
+      "id": 42
+    },
+    {
+      "text": "const date = toDate(dirtyDate)\nconst amount = toInteger(dirtyAmount)\nif (isNaN(amount)) {\n\treturn new Date(NaN)\n}\nif (!amount) {\n\t// If 0 days, no-op to avoid changing times in the hour before end of DST\n\treturn date\n}\ndate.setDate(date.getDate() + amount)\nreturn date",
+      "source": "date-fns sourcecode",
+      "length": 268,
+      "id": 43
     }
   ]
 }
