@@ -9,10 +9,12 @@ $(document.body).on("click", ".version", () => {
   show();
 });
 
-$(document.body).on("click", "#versionHistoryWrapper", () => {
-  $("#versionHistoryWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#versionHistoryWrapper").addClass("hidden");
-    });
+$(document.body).on("click", "#versionHistoryWrapper", (e) => {
+  if ($(e.target).attr("id") === "versionHistoryWrapper") {
+    $("#versionHistoryWrapper")
+      .css("opacity", 1)
+      .animate({ opacity: 0 }, 125, () => {
+        $("#versionHistoryWrapper").addClass("hidden");
+      });
+  }
 });
