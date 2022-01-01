@@ -339,6 +339,18 @@
 }
 
 @media only screen and (max-width: 550px) {
+  .keymap {
+    .row {
+      height: 1.25rem;
+    }
+    .keymap-key {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.3rem;
+      font-size: 0.6rem;
+    }
+  }
+
   #contactPopupWrapper #contactPopup .buttons .button .text {
     font-size: 1rem;
   }
@@ -518,6 +530,12 @@
 
   #leaderboardsWrapper #leaderboards .tables .titleAndTable .titleAndButtons {
     grid-template-columns: unset;
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  .keymap {
+    display: none !important;
   }
 }
 
