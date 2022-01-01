@@ -52,7 +52,11 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
-    LoadingPage.updateBar(18);
+    if ($(".pageLoading").hasClass("active")) {
+      LoadingPage.updateBar(18);
+    } else {
+      LoadingPage.updateBar(13.3);
+    }
     LoadingPage.updateText("Downloading data...");
     let userData = await axiosInstance.get("/user");
     userData = userData.data;
@@ -77,14 +81,22 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    LoadingPage.updateBar(30);
+    if ($(".pageLoading").hasClass("active")) {
+      LoadingPage.updateBar(36);
+    } else {
+      LoadingPage.updateBar(26.6);
+    }
     LoadingPage.updateText("Downloading config...");
     let configData = await axiosInstance.get("/config");
     configData = configData.data;
     if (configData) {
       snap.config = configData.config;
     }
-    LoadingPage.updateBar(54);
+    if ($(".pageLoading").hasClass("active")) {
+      LoadingPage.updateBar(54);
+    } else {
+      LoadingPage.updateBar(39.9);
+    }
     LoadingPage.updateText("Downloading tags...");
     let tagsData = await axiosInstance.get("/user/tags");
     snap.tags = tagsData.data;
@@ -97,7 +109,11 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    LoadingPage.updateBar(72);
+    if ($(".pageLoading").hasClass("active")) {
+      LoadingPage.updateBar(72);
+    } else {
+      LoadingPage.updateBar(52.6);
+    }
     LoadingPage.updateText("Downloading presets...");
     let presetsData = await axiosInstance.get("/presets");
     snap.presets = presetsData.data;
@@ -128,6 +144,8 @@ export async function getUserResults() {
     return true;
   } else {
     try {
+      LoadingPage.updateText("Downloading results...");
+      LoadingPage.updateBar(76.7);
       let results = await axiosInstance.get("/results");
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;

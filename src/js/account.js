@@ -58,7 +58,11 @@ export async function getDataAndInit() {
     AccountController.signOut();
     return;
   }
-  LoadingPage.updateBar(90);
+  if ($(".pageLoading").hasClass("active")) {
+    LoadingPage.updateBar(90);
+  } else {
+    LoadingPage.updateBar(65.9);
+  }
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
@@ -219,8 +223,12 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  LoadingPage.updateBar(100);
-  if ($(".pageLoading").hasClass("active")) UI.changePage("");
+  if ($(".pageLoading").hasClass("active")) {
+    LoadingPage.updateBar(100);
+    UI.changePage("");
+  } else {
+    LoadingPage.updateBar(62.6);
+  }
 }
 
 let filteredResults = [];
@@ -377,6 +385,8 @@ let totalSecondsFiltered = 0;
 
 export function update() {
   function cont() {
+    LoadingPage.updateText("Displaying stats...");
+    LoadingPage.updateBar(90);
     console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
@@ -1005,7 +1015,7 @@ export function update() {
 
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
-
+    LoadingPage.updateBar(100);
     UI.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),

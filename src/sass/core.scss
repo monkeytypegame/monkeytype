@@ -176,7 +176,8 @@ key {
   line-height: 0.7rem;
 }
 
-.pageLoading {
+.pageLoading,
+.pageAccount {
   display: grid;
   justify-content: center;
   .preloader {
