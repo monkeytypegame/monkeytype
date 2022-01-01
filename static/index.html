@@ -691,6 +691,89 @@
         </div>
       </div>
     </div>
+    <div id="contactPopupWrapper" class="popupWrapper hidden">
+      <div id="contactPopup">
+        <div class="title">Contact</div>
+        <div class="text">
+          Feel free to send an email to jack@monkeytype.com (the buttons below
+          will open the default mail client).
+          <br />
+          <br />
+          Please
+          <span>do not send</span>
+          requests to delete account, update email, update name or clear
+          personal bests - you can do that in the settings page.
+        </div>
+        <div class="buttons">
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Question] "
+          >
+            <div class="icon"><i class="fas fa-question-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Question</div>
+              <!-- <div class="subtext">Confused about something?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Feedback] "
+          >
+            <div class="icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="textGroup">
+              <div class="text">Feedback</div>
+              <!-- <div class="subtext">Feel like the website could be improved?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Bug] "
+          >
+            <div class="icon"><i class="fas fa-bug"></i></div>
+            <div class="textGroup">
+              <div class="text">Bug Report</div>
+              <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Account] "
+          >
+            <div class="icon"><i class="fas fa-user-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Account Help</div>
+              <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Business] "
+          >
+            <div class="icon"><i class="fas fa-briefcase"></i></div>
+            <div class="textGroup">
+              <div class="text">Business Inquiry</div>
+              <!-- <div class="subtext">Let's work together.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Other] "
+          >
+            <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
+            <div class="textGroup">
+              <div class="text">Other</div>
+              <!-- <div class="subtext">We will try to help.</div> -->
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
     <div id="commandLineWrapper" class="hidden">
       <div id="commandLine">
         <div
@@ -4685,9 +4768,9 @@
           </div>
           <div class="leftright">
             <div class="left">
-              <a href="mailto:jack@monkeytype.com" target="_blank">
+              <a id="contactPopupButton">
                 <i class="fas fa-fw fa-envelope"></i>
-                <div class="text">Support</div>
+                <div class="text">Contact</div>
               </a>
               <a href="https://github.com/Miodec/monkeytype" target="_blank">
                 <i class="fas fa-fw fa-code"></i>

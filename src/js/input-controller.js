@@ -351,6 +351,14 @@ function handleChar(char, charIndex) {
     return;
   }
 
+  if (char === "…") {
+    for (let i = 0; i < 3; i++) {
+      handleChar(".", charIndex + i);
+    }
+
+    return;
+  }
+
   if (char === "\n" && Config.funbox === "58008") {
     char = " ";
   }
@@ -667,7 +675,7 @@ $(document).keydown((event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  if (allowTyping && !wordsFocused && !$("#restartTestButton").is(":focus")) {
+  if (allowTyping && !wordsFocused && event.key !== "Enter") {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();

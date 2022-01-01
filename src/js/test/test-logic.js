@@ -555,9 +555,10 @@ export function restart(
   setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
-  TestUI.focusWords();
+  $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
+  if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
   TestUI.reset();
@@ -589,6 +590,7 @@ export function restart(
     },
     125,
     async () => {
+      TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -1894,7 +1896,7 @@ export async function finish(difficultyFailed = false) {
     if (
       stats.wpm > 0 &&
       stats.wpm < 350 &&
-      stats.acc > 50 &&
+      stats.acc > 75 &&
       stats.acc <= 100
     ) {
       if (firebase.auth().currentUser != null) {
@@ -2400,7 +2402,10 @@ export async function finish(difficultyFailed = false) {
       `Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`
     );
   }
-
+  if (window.scrollY > 0)
+    $([document.documentElement, document.body])
+      .stop()
+      .animate({ scrollTop: 0 }, 250);
   UI.swapElements(
     $("#typingTest"),
     $("#result"),
@@ -2414,6 +2419,7 @@ export async function finish(difficultyFailed = false) {
         TestUI.applyBurstHeatmap();
       }
       $("#result").focus();
+      window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
     },
     () => {
