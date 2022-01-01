@@ -1,7 +1,15 @@
 import * as UI from "./ui";
 
-export function updateBar(percentage) {
-  $(".pageLoading .fill, .pageAccount .fill").width(percentage + "%");
+export function updateBar(percentage, fast) {
+  const speed = fast ? 100 : 1000;
+  $(".pageLoading .fill, .pageAccount .fill")
+    .stop(true, true)
+    .animate(
+      {
+        width: percentage + "%",
+      },
+      speed
+    );
 }
 
 export function updateText(text) {

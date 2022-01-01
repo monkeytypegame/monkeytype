@@ -59,9 +59,9 @@ export async function getDataAndInit() {
     return;
   }
   if (UI.getActivePage() == "pageLoading") {
-    LoadingPage.updateBar(90);
+    LoadingPage.updateBar(100);
   } else {
-    LoadingPage.updateBar(65.9);
+    LoadingPage.updateBar(74);
   }
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
@@ -222,7 +222,7 @@ export async function getDataAndInit() {
   UI.setPageTransition(false);
   console.log("account loading finished");
   if (UI.getActivePage() == "pageLoading") {
-    LoadingPage.updateBar(100);
+    LoadingPage.updateBar(100, true);
     UI.changePage("");
   }
 }
@@ -382,7 +382,7 @@ let totalSecondsFiltered = 0;
 export function update() {
   function cont() {
     LoadingPage.updateText("Displaying stats...");
-    LoadingPage.updateBar(90);
+    LoadingPage.updateBar(100);
     console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
@@ -1011,7 +1011,7 @@ export function update() {
 
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
-    LoadingPage.updateBar(100);
+    LoadingPage.updateBar(100, true);
     UI.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),

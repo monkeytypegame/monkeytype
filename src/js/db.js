@@ -54,9 +54,9 @@ export async function initSnapshot() {
   try {
     if (firebase.auth().currentUser == null) return false;
     if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(18);
+      LoadingPage.updateBar(22.5);
     } else {
-      LoadingPage.updateBar(13.3);
+      LoadingPage.updateBar(16);
     }
     LoadingPage.updateText("Downloading user...");
     let userData = await axiosInstance.get("/user");
@@ -83,9 +83,9 @@ export async function initSnapshot() {
       snap.lbMemory = userData.lbMemory;
     }
     if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(36);
+      LoadingPage.updateBar(45);
     } else {
-      LoadingPage.updateBar(26.6);
+      LoadingPage.updateBar(32);
     }
     LoadingPage.updateText("Downloading config...");
     let configData = await axiosInstance.get("/config");
@@ -94,9 +94,9 @@ export async function initSnapshot() {
       snap.config = configData.config;
     }
     if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(54);
+      LoadingPage.updateBar(67.5);
     } else {
-      LoadingPage.updateBar(39.9);
+      LoadingPage.updateBar(48);
     }
     LoadingPage.updateText("Downloading tags...");
     let tagsData = await axiosInstance.get("/user/tags");
@@ -111,9 +111,9 @@ export async function initSnapshot() {
       }
     });
     if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(72);
+      LoadingPage.updateBar(90);
     } else {
-      LoadingPage.updateBar(52.6);
+      LoadingPage.updateBar(64);
     }
     LoadingPage.updateText("Downloading presets...");
     let presetsData = await axiosInstance.get("/presets");
@@ -146,7 +146,7 @@ export async function getUserResults() {
   } else {
     try {
       LoadingPage.updateText("Downloading results...");
-      LoadingPage.updateBar(76.7);
+      LoadingPage.updateBar(90);
       let results = await axiosInstance.get("/results");
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
