@@ -466,7 +466,7 @@ export function restart(
     } catch {}
     return;
   }
-  if ($(".pageTest").hasClass("active") && !TestUI.resultVisible) {
+  if (UI.getActivePage() == "pageTest" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (hasTab) {
         try {
@@ -1089,7 +1089,7 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if ($(".pageTest").hasClass("active")) {
+  if (UI.getActivePage() == "pageTest") {
     await Funbox.activate();
   }
   TestUI.showWords();

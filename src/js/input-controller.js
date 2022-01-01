@@ -599,9 +599,9 @@ function handleTab(event) {
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
     $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
-    !$(".page.pageLogin").hasClass("active")
+    UI.getActivePage() != "pageLogin"
   ) {
-    if ($(".pageTest").hasClass("active")) {
+    if (UI.getActivePage() == "pageTest") {
       if (Config.quickTab) {
         if (
           TestUI.resultVisible ||
@@ -651,7 +651,7 @@ function handleTab(event) {
 }
 
 $(document).keydown((event) => {
-  if ($(".pageLoading").hasClass("active")) return event.preventDefault();
+  if (UI.getActivePage() == "pageLoading") return event.preventDefault();
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");

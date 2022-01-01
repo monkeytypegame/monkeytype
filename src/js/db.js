@@ -4,6 +4,7 @@ import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./today-tracker";
 import * as LoadingPage from "./loading-page";
+import * as UI from "./ui";
 
 let dbSnapshot = null;
 
@@ -52,7 +53,7 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
-    if ($(".pageLoading").hasClass("active")) {
+    if (UI.getActivePage() == "pageLoading") {
       LoadingPage.updateBar(18);
     } else {
       LoadingPage.updateBar(13.3);
@@ -81,7 +82,7 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    if ($(".pageLoading").hasClass("active")) {
+    if (UI.getActivePage() == "pageLoading") {
       LoadingPage.updateBar(36);
     } else {
       LoadingPage.updateBar(26.6);
@@ -92,7 +93,7 @@ export async function initSnapshot() {
     if (configData) {
       snap.config = configData.config;
     }
-    if ($(".pageLoading").hasClass("active")) {
+    if (UI.getActivePage() == "pageLoading") {
       LoadingPage.updateBar(54);
     } else {
       LoadingPage.updateBar(39.9);
@@ -109,7 +110,7 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    if ($(".pageLoading").hasClass("active")) {
+    if (UI.getActivePage() == "pageLoading") {
       LoadingPage.updateBar(72);
     } else {
       LoadingPage.updateBar(52.6);

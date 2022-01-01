@@ -54,11 +54,11 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    if (UI.getActivePage() == "pageLoading") UI.changePage("");
     AccountController.signOut();
     return;
   }
-  if ($(".pageLoading").hasClass("active")) {
+  if (UI.getActivePage() == "pageLoading") {
     LoadingPage.updateBar(90);
   } else {
     LoadingPage.updateBar(65.9);
@@ -139,8 +139,6 @@ export async function getDataAndInit() {
       }
     }
   }
-  // if($(".pageAccount").hasClass('active')) update();
-  // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
     if (Config.localStorageConfig === null) {
@@ -192,7 +190,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if ($(".page.pageTest").hasClass("active")) {
+        if (UI.getActivePage() == "pageTest") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -209,7 +207,7 @@ export async function getDataAndInit() {
     }
   }
   if (
-    $(".pageLogin").hasClass("active") ||
+    UI.getActivePage() == "pageLogin" ||
     window.location.pathname === "/account"
   ) {
     UI.changePage("account");
@@ -223,7 +221,7 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  if ($(".pageLoading").hasClass("active")) {
+  if (UI.getActivePage() == "pageLoading") {
     LoadingPage.updateBar(100);
     UI.changePage("");
   } else {
