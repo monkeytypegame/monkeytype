@@ -382,7 +382,7 @@ let totalSecondsFiltered = 0;
 export function update() {
   function cont() {
     LoadingPage.updateText("Displaying stats...");
-    LoadingPage.updateBar(95);
+    LoadingPage.updateBar(90);
     console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
