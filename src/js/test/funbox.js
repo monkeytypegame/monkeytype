@@ -110,7 +110,7 @@ export async function activate(funbox) {
       return;
     }
   }
-  if (Config.mode === "zen" || Config.mode == "quote") {
+  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
     if (funboxInfo?.type != "style") {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
