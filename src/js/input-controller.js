@@ -372,7 +372,7 @@ function handleChar(char, charIndex) {
     //otherwise dont do anything
     if (
       Config.difficulty !== "normal" ||
-      Config.strictSpace ||
+      (Config.strictSpace && Config.mode !== "zen") ||
       Config.stopOnError === "word"
     ) {
       if (dontInsertSpace) {
