@@ -896,20 +896,9 @@ export async function init() {
           }
           randomWord = randomcaseword;
         } else if (Config.funbox === "arrows") {
-          let arrowWord = "";
-          let arrowArray = ["←", "↑", "→", "↓"];
-          let lastchar;
-          for (let i = 0; i < 5; i++) {
-            let random =
-              arrowArray[Math.floor(Math.random() * arrowArray.length)];
-            while (random === lastchar) {
-              random =
-                arrowArray[Math.floor(Math.random() * arrowArray.length)];
-            }
-            lastchar = random;
-            arrowWord += random;
-          }
-          randomWord = arrowWord;
+          UpdateConfig.setPunctuation(false, true);
+          UpdateConfig.setNumbers(false, true);
+          randomWord = Misc.getArrows();
         } else if (Config.funbox === "gibberish") {
           randomWord = Misc.getGibberish();
         } else if (Config.funbox === "58008") {
@@ -1249,6 +1238,8 @@ export async function addWord() {
     randomWord = randomcaseword;
   } else if (Config.funbox === "gibberish") {
     randomWord = Misc.getGibberish();
+  } else if (Config.funbox === "arrows") {
+    randomWord = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     randomWord = Misc.getNumbers(7);
   } else if (Config.funbox === "specials") {

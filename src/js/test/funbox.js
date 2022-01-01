@@ -98,6 +98,8 @@ export async function activate(funbox) {
     funbox = Config.funbox;
   }
 
+  let funboxInfo = await Misc.getFunbox(funbox);
+
   if (await Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
@@ -108,11 +110,18 @@ export async function activate(funbox) {
       return;
     }
   }
-  if (Config.mode === "zen" && funbox == "layoutfluid") {
-    Notifications.add(`Zen mode does not support the ${funbox} funbox`, 0);
-    setFunbox("none", null);
-    TestLogic.restart(undefined, true);
-    return;
+  if (Config.mode === "zen" || Config.mode == "quote") {
+    if (funboxInfo?.type != "style") {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetter(
+          Config.mode
+        )} mode does not support the ${funbox} funbox`,
+        0
+      );
+      setFunbox("none", null);
+      TestLogic.restart(undefined, true);
+      return;
+    }
   }
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
