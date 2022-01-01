@@ -878,11 +878,6 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
-        if (Config.britishEnglish && /english/.test(Config.language)) {
-          let britishWord = await BritishEnglish.replace(randomWord);
-          if (britishWord) randomWord = britishWord;
-        }
-
         if (Config.lazyMode === true && !language.noLazyMode) {
           randomWord = LazyMode.replaceAccents(randomWord, language.accents);
         }
@@ -947,6 +942,10 @@ export async function init() {
               randomWord += ".";
             }
           }
+        }
+
+        if (Config.britishEnglish && /english/.test(Config.language)) {
+          randomWord = await BritishEnglish.replace(randomWord);
         }
 
         if (/\t/g.test(randomWord)) {
@@ -1070,8 +1069,7 @@ export async function init() {
         Config.britishEnglish &&
         Config.language.replace(/_\d*k$/g, "") === "english"
       ) {
-        let britishWord = await BritishEnglish.replace(w[i]);
-        if (britishWord) w[i] = britishWord;
+        w[i] = await BritishEnglish.replace(w[i]);
       }
 
       if (Config.lazyMode === true && !language.noLazyMode) {
@@ -1235,14 +1233,6 @@ export async function addWord() {
     randomWord = wordset.randomWord();
   }
 
-  if (
-    Config.britishEnglish &&
-    Config.language.replace(/_\d*k$/g, "") === "english"
-  ) {
-    let britishWord = await BritishEnglish.replace(randomWord);
-    if (britishWord) randomWord = britishWord;
-  }
-
   if (Config.lazyMode === true && !language.noLazyMode) {
     randomWord = LazyMode.replaceAccents(randomWord, language.accents);
   }
@@ -1276,6 +1266,13 @@ export async function addWord() {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
     }
+  }
+
+  if (
+    Config.britishEnglish &&
+    Config.language.replace(/_\d*k$/g, "") === "english"
+  ) {
+    randomWord = await BritishEnglish.replace(randomWord);
   }
 
   let split = randomWord.split(" ");
