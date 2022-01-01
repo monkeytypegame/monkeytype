@@ -9,6 +9,7 @@ self.addEventListener("install", (event) => {
   );
 });
 
+
 self.addEventListener("fetch", async (event) => {
   const host = new URL(event.request.url).host;
   if (
@@ -35,5 +36,6 @@ self.addEventListener("fetch", async (event) => {
       })
     );
   }
+
 });
 

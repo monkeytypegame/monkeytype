@@ -67,7 +67,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory. You will have to create the credentials folder.
+   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
 1. Enable Firebase Authentication
 
