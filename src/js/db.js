@@ -3,6 +3,7 @@ import * as AccountButton from "./account-button";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./today-tracker";
+import * as LoadingPage from "./loading-page";
 
 let dbSnapshot = null;
 
@@ -51,7 +52,8 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
-    $(".pageLoading .text").text("Downloading data...");
+    LoadingPage.updateBar(18);
+    LoadingPage.updateText("Dowloading data...");
     let userData = await axiosInstance.get("/user");
     userData = userData.data;
     snap.name = userData.name;
@@ -75,13 +77,15 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    $(".pageLoading .text").text("Downloading config...");
+    LoadingPage.updateBar(30);
+    LoadingPage.updateText("Dowloading config...");
     let configData = await axiosInstance.get("/config");
     configData = configData.data;
     if (configData) {
       snap.config = configData.config;
     }
-    $(".pageLoading .text").text("Downloading tags...");
+    LoadingPage.updateBar(54);
+    LoadingPage.updateText("Dowloading tags...");
     let tagsData = await axiosInstance.get("/user/tags");
     snap.tags = tagsData.data;
     snap.tags = snap.tags.sort((a, b) => {
@@ -93,7 +97,8 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    $(".pageLoading .text").text("Downloading presets...");
+    LoadingPage.updateBar(72);
+    LoadingPage.updateText("Dowloading presets...");
     let presetsData = await axiosInstance.get("/presets");
     snap.presets = presetsData.data;
     snap.presets = snap.presets.sort((a, b) => {

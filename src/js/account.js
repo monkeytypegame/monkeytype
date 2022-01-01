@@ -18,6 +18,7 @@ import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import * as AccountController from "./account-controller";
+import * as LoadingPage from "./loading-page";
 import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
@@ -32,6 +33,7 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
+    await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
@@ -56,7 +58,8 @@ export async function getDataAndInit() {
     AccountController.signOut();
     return;
   }
-  $(".pageLoading .text").text("Applying settings...");
+  LoadingPage.updateBar(90);
+  LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
   // if (snap === null) {
@@ -216,6 +219,7 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
+  LoadingPage.updateBar(100);
   if ($(".pageLoading").hasClass("active")) UI.changePage("");
 }
 
