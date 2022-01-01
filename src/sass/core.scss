@@ -176,10 +176,13 @@ key {
   line-height: 0.7rem;
 }
 
-.pageLoading,
-.pageAccount {
+.pageLoading {
   display: grid;
   justify-content: center;
+}
+
+.pageLoading,
+.pageAccount {
   .preloader {
     text-align: center;
     justify-self: center;
