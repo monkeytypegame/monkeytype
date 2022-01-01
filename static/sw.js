@@ -1,15 +1,41 @@
-self.addEventListener("install", function (event) {
+const staticCacheName = "sw-cache";
+
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("sw-cache").then(function (cache) {
-      return cache.add("index.html");
+    caches.open(staticCacheName).then((cache) => {
+      // Cache the base file(s)
+      return cache.add("/");
     })
   );
 });
 
-self.addEventListener("fetch", function (event) {
-  event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
-  );
+
+self.addEventListener("fetch", async (event) => {
+  const host = new URL(event.request.url).host;
+  if (
+    ["localhost:5005", "api.monkeytype.com", "api.github.com"].includes(host)
+  ) {
+    // if hostname is a non-static api, fetch request
+    event.respondWith(fetch(event.request));
+  } else {
+    // Otherwise, assume host is serving a static file, check cache and add response to cache if not found
+    event.respondWith(
+      caches.match(event.request).then(async (response) => {
+        // Check if request in cache
+        if (response) {
+          // if response was found in the cache, send from cache
+          return response;
+        } else {
+          // if response was not found in cache fetch from server, cache it and send it
+          response = await fetch(event.request);
+          return caches.open(staticCacheName).then((cache) => {
+            cache.put(event.request.url, response.clone());
+            return response;
+          });
+        }
+      })
+    );
+  }
+
 });
+
