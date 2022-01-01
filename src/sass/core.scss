@@ -180,9 +180,12 @@ key {
   display: grid;
   justify-content: center;
   .preloader {
-    font-size: 2rem;
+    text-align: center;
     justify-self: center;
-    color: var(--main-color);
+    .icon {
+      font-size: 2rem;
+      color: var(--main-color);
+    }
   }
 }
 

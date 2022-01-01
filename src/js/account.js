@@ -31,6 +31,7 @@ export function toggleFilterDebug() {
 
 export async function getDataAndInit() {
   try {
+    $(".pageLoading .text").text("Downloading user data...");
     console.log("getting account data");
     await DB.initSnapshot();
   } catch (e) {
@@ -133,6 +134,7 @@ export async function getDataAndInit() {
   }
   // if($(".pageAccount").hasClass('active')) update();
   // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
+  $(".pageLoading .text").text("Applying settings...");
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
     if (Config.localStorageConfig === null) {
