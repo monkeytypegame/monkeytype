@@ -58,7 +58,7 @@ export async function initSnapshot() {
     } else {
       LoadingPage.updateBar(13.3);
     }
-    LoadingPage.updateText("Downloading data...");
+    LoadingPage.updateText("Downloading user...");
     let userData = await axiosInstance.get("/user");
     userData = userData.data;
     snap.name = userData.name;

@@ -224,8 +224,6 @@ export async function getDataAndInit() {
   if (UI.getActivePage() == "pageLoading") {
     LoadingPage.updateBar(100);
     UI.changePage("");
-  } else {
-    LoadingPage.updateBar(62.6);
   }
 }
 
@@ -384,7 +382,7 @@ let totalSecondsFiltered = 0;
 export function update() {
   function cont() {
     LoadingPage.updateText("Displaying stats...");
-    LoadingPage.updateBar(90);
+    LoadingPage.updateBar(95);
     console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
