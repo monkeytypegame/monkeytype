@@ -51,6 +51,7 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
+    $(".pageLoading .text").text("Downloading data...");
     let userData = await axiosInstance.get("/user");
     userData = userData.data;
     snap.name = userData.name;
@@ -74,13 +75,13 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-
+    $(".pageLoading .text").text("Downloading config...");
     let configData = await axiosInstance.get("/config");
     configData = configData.data;
     if (configData) {
       snap.config = configData.config;
     }
-
+    $(".pageLoading .text").text("Downloading tags...");
     let tagsData = await axiosInstance.get("/user/tags");
     snap.tags = tagsData.data;
     snap.tags = snap.tags.sort((a, b) => {
@@ -92,7 +93,7 @@ export async function initSnapshot() {
         return 0;
       }
     });
-
+    $(".pageLoading .text").text("Downloading presets...");
     let presetsData = await axiosInstance.get("/presets");
     snap.presets = presetsData.data;
     snap.presets = snap.presets.sort((a, b) => {

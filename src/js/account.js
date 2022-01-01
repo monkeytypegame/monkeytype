@@ -31,7 +31,6 @@ export function toggleFilterDebug() {
 
 export async function getDataAndInit() {
   try {
-    $(".pageLoading .text").text("Downloading user data...");
     console.log("getting account data");
     await DB.initSnapshot();
   } catch (e) {
@@ -57,6 +56,7 @@ export async function getDataAndInit() {
     AccountController.signOut();
     return;
   }
+  $(".pageLoading .text").text("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
   // if (snap === null) {
@@ -134,7 +134,6 @@ export async function getDataAndInit() {
   }
   // if($(".pageAccount").hasClass('active')) update();
   // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
-  $(".pageLoading .text").text("Applying settings...");
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
     if (Config.localStorageConfig === null) {
