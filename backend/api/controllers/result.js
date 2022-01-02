@@ -139,7 +139,8 @@ class ResultController {
       //get latest result ordered by timestamp
       let lastResultTimestamp;
       try {
-        lastResultTimestamp = (await ResultDAO.getLastResult(uid)).timestamp;
+        lastResultTimestamp =
+          (await ResultDAO.getLastResult(uid)).timestamp - 1000;
       } catch (e) {
         lastResultTimestamp = null;
       }

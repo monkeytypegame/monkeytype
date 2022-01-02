@@ -466,7 +466,7 @@ export function restart(
     } catch {}
     return;
   }
-  if ($(".pageTest").hasClass("active") && !TestUI.resultVisible) {
+  if (UI.getActivePage() == "pageTest" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (hasTab) {
         try {
@@ -878,11 +878,6 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
-        if (Config.britishEnglish && /english/.test(Config.language)) {
-          let britishWord = await BritishEnglish.replace(randomWord);
-          if (britishWord) randomWord = britishWord;
-        }
-
         if (Config.lazyMode === true && !language.noLazyMode) {
           randomWord = LazyMode.replaceAccents(randomWord, language.accents);
         }
@@ -901,20 +896,9 @@ export async function init() {
           }
           randomWord = randomcaseword;
         } else if (Config.funbox === "arrows") {
-          let arrowWord = "";
-          let arrowArray = ["←", "↑", "→", "↓"];
-          let lastchar;
-          for (let i = 0; i < 5; i++) {
-            let random =
-              arrowArray[Math.floor(Math.random() * arrowArray.length)];
-            while (random === lastchar) {
-              random =
-                arrowArray[Math.floor(Math.random() * arrowArray.length)];
-            }
-            lastchar = random;
-            arrowWord += random;
-          }
-          randomWord = arrowWord;
+          UpdateConfig.setPunctuation(false, true);
+          UpdateConfig.setNumbers(false, true);
+          randomWord = Misc.getArrows();
         } else if (Config.funbox === "gibberish") {
           randomWord = Misc.getGibberish();
         } else if (Config.funbox === "58008") {
@@ -947,6 +931,10 @@ export async function init() {
               randomWord += ".";
             }
           }
+        }
+
+        if (Config.britishEnglish && /english/.test(Config.language)) {
+          randomWord = await BritishEnglish.replace(randomWord);
         }
 
         if (/\t/g.test(randomWord)) {
@@ -1070,8 +1058,7 @@ export async function init() {
         Config.britishEnglish &&
         Config.language.replace(/_\d*k$/g, "") === "english"
       ) {
-        let britishWord = await BritishEnglish.replace(w[i]);
-        if (britishWord) w[i] = britishWord;
+        w[i] = await BritishEnglish.replace(w[i]);
       }
 
       if (Config.lazyMode === true && !language.noLazyMode) {
@@ -1102,7 +1089,7 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if ($(".pageTest").hasClass("active")) {
+  if (UI.getActivePage() == "pageTest") {
     await Funbox.activate();
   }
   TestUI.showWords();
@@ -1235,14 +1222,6 @@ export async function addWord() {
     randomWord = wordset.randomWord();
   }
 
-  if (
-    Config.britishEnglish &&
-    Config.language.replace(/_\d*k$/g, "") === "english"
-  ) {
-    let britishWord = await BritishEnglish.replace(randomWord);
-    if (britishWord) randomWord = britishWord;
-  }
-
   if (Config.lazyMode === true && !language.noLazyMode) {
     randomWord = LazyMode.replaceAccents(randomWord, language.accents);
   }
@@ -1259,6 +1238,8 @@ export async function addWord() {
     randomWord = randomcaseword;
   } else if (Config.funbox === "gibberish") {
     randomWord = Misc.getGibberish();
+  } else if (Config.funbox === "arrows") {
+    randomWord = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     randomWord = Misc.getNumbers(7);
   } else if (Config.funbox === "specials") {
@@ -1276,6 +1257,13 @@ export async function addWord() {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
     }
+  }
+
+  if (
+    Config.britishEnglish &&
+    Config.language.replace(/_\d*k$/g, "") === "english"
+  ) {
+    randomWord = await BritishEnglish.replace(randomWord);
   }
 
   let split = randomWord.split(" ");

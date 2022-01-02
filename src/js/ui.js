@@ -14,8 +14,18 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
+import { active } from "./challenge-controller";
 
 export let pageTransition = true;
+let activePage = "pageLoading";
+
+export function getActivePage() {
+  return activePage;
+}
+
+export function setActivePage(active) {
+  activePage = active;
+}
 
 export function setPageTransition(val) {
   pageTransition = val;
@@ -113,19 +123,20 @@ export function changePage(page, norestart = false) {
     return;
   }
   console.log(`change page ${page}`);
-  let activePage = $(".page.active");
+  let activePageElement = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     setPageTransition(true);
     swapElements(
-      activePage,
+      activePageElement,
       $(".page.pageTest"),
       250,
       () => {
         setPageTransition(false);
         TestUI.focusWords();
         $(".page.pageTest").addClass("active");
+        activePage = "pageTest";
         history.pushState("/", null, "/");
       },
       () => {
@@ -142,10 +153,11 @@ export function changePage(page, norestart = false) {
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageAbout"), 250, () => {
+    swapElements(activePageElement, $(".page.pageAbout"), 250, () => {
       setPageTransition(false);
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
+      activePage = "pageAbout";
     });
     Funbox.activate("none");
     TestConfig.hide();
@@ -153,10 +165,11 @@ export function changePage(page, norestart = false) {
   } else if (page == "settings") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageSettings"), 250, () => {
+    swapElements(activePageElement, $(".page.pageSettings"), 250, () => {
       setPageTransition(false);
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
+      activePage = "pageSettings";
     });
     Funbox.activate("none");
     Settings.update();
@@ -172,13 +185,14 @@ export function changePage(page, norestart = false) {
       setPageTransition(true);
       TestLogic.restart();
       swapElements(
-        activePage,
+        activePageElement,
         $(".page.pageAccount"),
         250,
         () => {
           setPageTransition(false);
           history.pushState("account", null, "account");
           $(".page.pageAccount").addClass("active");
+          activePage = "pageAccount";
         },
         () => {
           SignOutButton.show();
@@ -194,10 +208,11 @@ export function changePage(page, norestart = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePage, $(".page.pageLogin"), 250, () => {
+      swapElements(activePageElement, $(".page.pageLogin"), 250, () => {
         setPageTransition(false);
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
+        activePage = "pageLogin";
       });
       Funbox.activate("none");
       TestConfig.hide();

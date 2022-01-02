@@ -139,7 +139,7 @@ export function verify(result) {
 
 export async function setup(challengeName) {
   challengeLoading = true;
-  if (!$(".page.pageTest").hasClass("active")) {
+  if (UI.getActivePage() !== "pageTest") {
     UI.changePage("", true);
   }
 

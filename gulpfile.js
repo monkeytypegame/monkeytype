@@ -132,6 +132,7 @@ const refactoredSrc = [
   "./src/js/elements/psa.js",
   "./src/js/elements/new-version-notification.js",
   "./src/js/elements/mobile-test-config.js",
+  "./src/js/elements/loading-page.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/pb-tables-popup.js",

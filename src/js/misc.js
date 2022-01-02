@@ -110,6 +110,13 @@ export async function getFunboxList() {
   }
 }
 
+export async function getFunbox(funbox) {
+  let list = await getFunboxList();
+  return list.find(function (element) {
+    return element.name == funbox;
+  });
+}
+
 let quotes = null;
 export async function getQuotes(language) {
   if (quotes === null || quotes.language !== language.replace(/_\d*k$/g, "")) {
@@ -579,6 +586,21 @@ export function getASCII() {
     ret += String.fromCharCode(33 + Math.floor(Math.random() * 94));
   }
   return ret;
+}
+
+export function getArrows() {
+  let arrowWord = "";
+  let arrowArray = ["←", "↑", "→", "↓"];
+  let lastchar;
+  for (let i = 0; i < 5; i++) {
+    let random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    while (random === lastchar) {
+      random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    }
+    lastchar = random;
+    arrowWord += random;
+  }
+  return arrowWord;
 }
 
 export function getPositionString(number) {

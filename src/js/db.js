@@ -3,6 +3,8 @@ import * as AccountButton from "./account-button";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./today-tracker";
+import * as LoadingPage from "./loading-page";
+import * as UI from "./ui";
 
 let dbSnapshot = null;
 
@@ -51,6 +53,12 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(22.5);
+    } else {
+      LoadingPage.updateBar(16);
+    }
+    LoadingPage.updateText("Downloading user...");
     let userData = await axiosInstance.get("/user");
     userData = userData.data;
     snap.name = userData.name;
@@ -74,13 +82,23 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(45);
+    } else {
+      LoadingPage.updateBar(32);
+    }
+    LoadingPage.updateText("Downloading config...");
     let configData = await axiosInstance.get("/config");
     configData = configData.data;
     if (configData) {
       snap.config = configData.config;
     }
-
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(67.5);
+    } else {
+      LoadingPage.updateBar(48);
+    }
+    LoadingPage.updateText("Downloading tags...");
     let tagsData = await axiosInstance.get("/user/tags");
     snap.tags = tagsData.data;
     snap.tags = snap.tags.sort((a, b) => {
@@ -92,7 +110,12 @@ export async function initSnapshot() {
         return 0;
       }
     });
-
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(90);
+    } else {
+      LoadingPage.updateBar(64);
+    }
+    LoadingPage.updateText("Downloading presets...");
     let presetsData = await axiosInstance.get("/presets");
     snap.presets = presetsData.data;
     snap.presets = snap.presets.sort((a, b) => {
@@ -122,6 +145,8 @@ export async function getUserResults() {
     return true;
   } else {
     try {
+      LoadingPage.updateText("Downloading results...");
+      LoadingPage.updateBar(90);
       let results = await axiosInstance.get("/results");
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
