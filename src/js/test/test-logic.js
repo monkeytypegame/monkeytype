@@ -1525,6 +1525,7 @@ export async function finish(difficultyFailed = false) {
 
   AccountButton.loading(true);
   completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  if (!completedEvent.challenge) delete completedEvent.challenge;
   completedEvent.hash = objecthash(completedEvent);
   axiosInstance
     .post("/results/add", {
