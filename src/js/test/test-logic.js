@@ -17,7 +17,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as ChartController from "./chart-controller";
 import * as UI from "./ui";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
@@ -26,7 +25,6 @@ import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
-import * as ThemeColors from "./theme-colors";
 import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
@@ -1367,6 +1365,155 @@ export function retrySavingResult() {
     });
 }
 
+function buildCompletedEvent(difficultyFailed) {
+  //build completed event object
+  let completedEvent = {
+    wpm: undefined,
+    rawWpm: undefined,
+    charStats: undefined,
+    acc: undefined,
+    mode: Config.mode,
+    mode2: undefined,
+    quoteLength: -1,
+    punctuation: Config.punctuation,
+    numbers: Config.numbers,
+    lazyMode: Config.lazyMode,
+    timestamp: Date.now(),
+    language: Config.language,
+    restartCount: TestStats.restartCount,
+    incompleteTestSeconds:
+      TestStats.incompleteSeconds < 0
+        ? 0
+        : Misc.roundTo2(TestStats.incompleteSeconds),
+    difficulty: Config.difficulty,
+    blindMode: Config.blindMode,
+    tags: undefined,
+    keySpacing: TestStats.keypressTimings.spacing.array,
+    keyDuration: TestStats.keypressTimings.duration.array,
+    consistency: undefined,
+    keyConsistency: undefined,
+    funbox: Config.funbox,
+    bailedOut: bailout,
+    chartData: {
+      wpm: TestStats.wpmHistory,
+      raw: undefined,
+      err: undefined,
+    },
+    customText: undefined,
+    testDuration: undefined,
+    afkDuration: undefined,
+  };
+
+  // stats
+  let stats = TestStats.calculateStats();
+  if (stats.time % 1 != 0 && Config.mode !== "time") {
+    TestStats.setLastSecondNotRound();
+  }
+  lastTestWpm = stats.wpm;
+  completedEvent.wpm = stats.wpm;
+  completedEvent.rawWpm = stats.wpmRaw;
+  completedEvent.charStats = [
+    stats.correctChars + stats.correctSpaces,
+    stats.incorrectChars,
+    stats.extraChars,
+    stats.missedChars,
+  ];
+  completedEvent.acc = stats.acc;
+
+  // if the last second was not rounded, add another data point to the history
+  if (TestStats.lastSecondNotRound && !difficultyFailed) {
+    let wpmAndRaw = calculateWpmAndRaw();
+    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
+    TestStats.pushToRawHistory(wpmAndRaw.raw);
+    TestStats.pushKeypressesToHistory();
+  }
+
+  //consistency
+  let rawPerSecond = TestStats.keypressPerSecond.map((f) =>
+    Math.round((f.count / 5) * 60)
+  );
+  let stddev = Misc.stdDev(rawPerSecond);
+  let avg = Misc.mean(rawPerSecond);
+  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+  let keyconsistencyarray = TestStats.keypressTimings.spacing.array.slice();
+  keyconsistencyarray = keyconsistencyarray.splice(
+    0,
+    keyconsistencyarray.length - 1
+  );
+  let keyConsistency = Misc.roundTo2(
+    Misc.kogasa(
+      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
+    )
+  );
+  if (isNaN(consistency)) {
+    consistency = 0;
+  }
+  completedEvent.keyConsistency = keyConsistency;
+  completedEvent.consistency = consistency;
+  completedEvent.chartData.raw = Misc.smooth(rawPerSecond, 1);
+
+  completedEvent.testDuration = parseFloat(stats.time);
+  completedEvent.afkDuration = TestStats.calculateAfkSeconds(
+    completedEvent.testDuration
+  );
+
+  completedEvent.chartData.err = [];
+  for (let i = 0; i < TestStats.keypressPerSecond.length; i++) {
+    completedEvent.chartData.err.push(TestStats.keypressPerSecond[i].errors);
+  }
+
+  if (Config.mode === "quote") {
+    completedEvent.quoteLength = randomQuote.group;
+    completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
+  }
+
+  if (Config.mode === "time") {
+    completedEvent.mode2 = Config.time;
+  } else if (Config.mode === "words") {
+    completedEvent.mode2 = Config.words;
+  } else if (Config.mode === "custom") {
+    completedEvent.mode2 = "custom";
+  } else if (Config.mode === "quote") {
+    completedEvent.mode2 = randomQuote.id;
+  } else if (Config.mode === "zen") {
+    completedEvent.mode2 = "zen";
+  }
+
+  if (completedEvent.testDuration > 122) {
+    completedEvent.chartData = "toolong";
+    TestStats.setKeypressTimingsTooLong();
+  }
+
+  if (Config.mode === "custom") {
+    completedEvent.customText = {};
+    completedEvent.customText.textLen = CustomText.text.length;
+    completedEvent.customText.isWordRandom = CustomText.isWordRandom;
+    completedEvent.customText.isTimeRandom = CustomText.isTimeRandom;
+    completedEvent.customText.word =
+      CustomText.word !== "" && !isNaN(CustomText.word)
+        ? CustomText.word
+        : null;
+    completedEvent.customText.time =
+      CustomText.time !== "" && !isNaN(CustomText.time)
+        ? CustomText.time
+        : null;
+  } else {
+    delete completedEvent.customText;
+  }
+
+  //tags
+  let activeTagsIds = [];
+  try {
+    DB.getSnapshot().tags.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagsIds.push(tag._id);
+      }
+    });
+  } catch (e) {}
+  completedEvent.tags = activeTagsIds;
+  return completedEvent;
+}
+
 export async function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
@@ -1588,155 +1735,6 @@ export async function finish(difficultyFailed = false) {
       retrySaving.completedEvent = completedEvent;
       retrySaving.canRetry = true;
     });
-}
-
-function buildCompletedEvent(difficultyFailed) {
-  //build completed event object
-  let completedEvent = {
-    wpm: undefined,
-    rawWpm: undefined,
-    charStats: undefined,
-    acc: undefined,
-    mode: Config.mode,
-    mode2: undefined,
-    quoteLength: -1,
-    punctuation: Config.punctuation,
-    numbers: Config.numbers,
-    lazyMode: Config.lazyMode,
-    timestamp: Date.now(),
-    language: Config.language,
-    restartCount: TestStats.restartCount,
-    incompleteTestSeconds:
-      TestStats.incompleteSeconds < 0
-        ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds),
-    difficulty: Config.difficulty,
-    blindMode: Config.blindMode,
-    tags: undefined,
-    keySpacing: TestStats.keypressTimings.spacing.array,
-    keyDuration: TestStats.keypressTimings.duration.array,
-    consistency: undefined,
-    keyConsistency: undefined,
-    funbox: Config.funbox,
-    bailedOut: bailout,
-    chartData: {
-      wpm: TestStats.wpmHistory,
-      raw: undefined,
-      err: undefined,
-    },
-    customText: undefined,
-    testDuration: undefined,
-    afkDuration: undefined,
-  };
-
-  // stats
-  let stats = TestStats.calculateStats();
-  if (stats.time % 1 != 0 && Config.mode !== "time") {
-    TestStats.setLastSecondNotRound();
-  }
-  lastTestWpm = stats.wpm;
-  completedEvent.wpm = stats.wpm;
-  completedEvent.rawWpm = stats.wpmRaw;
-  completedEvent.charStats = [
-    stats.correctChars + stats.correctSpaces,
-    stats.incorrectChars,
-    stats.extraChars,
-    stats.missedChars,
-  ];
-  completedEvent.acc = stats.acc;
-
-  // if the last second was not rounded, add another data point to the history
-  if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    let wpmAndRaw = calculateWpmAndRaw();
-    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-    TestStats.pushToRawHistory(wpmAndRaw.raw);
-    TestStats.pushKeypressesToHistory();
-  }
-
-  //consistency
-  let rawPerSecond = TestStats.keypressPerSecond.map((f) =>
-    Math.round((f.count / 5) * 60)
-  );
-  let stddev = Misc.stdDev(rawPerSecond);
-  let avg = Misc.mean(rawPerSecond);
-  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyconsistencyarray = TestStats.keypressTimings.spacing.array.slice();
-  keyconsistencyarray = keyconsistencyarray.splice(
-    0,
-    keyconsistencyarray.length - 1
-  );
-  let keyConsistency = Misc.roundTo2(
-    Misc.kogasa(
-      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
-    )
-  );
-  if (isNaN(consistency)) {
-    consistency = 0;
-  }
-  completedEvent.keyConsistency = keyConsistency;
-  completedEvent.consistency = consistency;
-  completedEvent.chartData.raw = Misc.smooth(rawPerSecond, 1);
-
-  completedEvent.testDuration = parseFloat(stats.time);
-  completedEvent.afkDuration = TestStats.calculateAfkSeconds(
-    completedEvent.testDuration
-  );
-
-  completedEvent.chartData.err = [];
-  for (let i = 0; i < TestStats.keypressPerSecond.length; i++) {
-    completedEvent.chartData.err.push(TestStats.keypressPerSecond[i].errors);
-  }
-
-  if (Config.mode === "quote") {
-    completedEvent.quoteLength = randomQuote.group;
-    completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
-  }
-
-  if (Config.mode === "time") {
-    completedEvent.mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    completedEvent.mode2 = Config.words;
-  } else if (Config.mode === "custom") {
-    completedEvent.mode2 = "custom";
-  } else if (Config.mode === "quote") {
-    completedEvent.mode2 = randomQuote.id;
-  } else if (Config.mode === "zen") {
-    completedEvent.mode2 = "zen";
-  }
-
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    TestStats.setKeypressTimingsTooLong();
-  }
-
-  if (Config.mode === "custom") {
-    completedEvent.customText = {};
-    completedEvent.customText.textLen = CustomText.text.length;
-    completedEvent.customText.isWordRandom = CustomText.isWordRandom;
-    completedEvent.customText.isTimeRandom = CustomText.isTimeRandom;
-    completedEvent.customText.word =
-      CustomText.word !== "" && !isNaN(CustomText.word)
-        ? CustomText.word
-        : null;
-    completedEvent.customText.time =
-      CustomText.time !== "" && !isNaN(CustomText.time)
-        ? CustomText.time
-        : null;
-  } else {
-    delete completedEvent.customText;
-  }
-
-  //tags
-  let activeTagsIds = [];
-  try {
-    DB.getSnapshot().tags.forEach((tag) => {
-      if (tag.active === true) {
-        activeTagsIds.push(tag._id);
-      }
-    });
-  } catch (e) {}
-  completedEvent.tags = activeTagsIds;
-  return completedEvent;
 }
 
 export function fail(reason) {

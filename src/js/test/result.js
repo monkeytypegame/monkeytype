@@ -15,7 +15,7 @@ import * as TestLogic from "./test-logic";
 let result;
 let maxChartVal;
 
-async function updateGraph(smoothraw) {
+async function updateGraph() {
   ChartController.result.options.annotation.annotations = [];
   let labels = [];
   for (let i = 1; i <= TestStats.wpmHistory.length; i++) {

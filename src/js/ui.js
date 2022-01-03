@@ -14,7 +14,6 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
-import { active } from "./challenge-controller";
 
 export let pageTransition = true;
 let activePage = "pageLoading";
