@@ -15,7 +15,11 @@ export async function show(version) {
     setMemory(version);
     return;
   }
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    caches.delete('sw-cache');
+  }
   if (memory === version) return;
+  caches.delete('sw-cache');
   Notifications.add(
     `Version ${version} has been released. Click to view the changelog.`,
     1,
