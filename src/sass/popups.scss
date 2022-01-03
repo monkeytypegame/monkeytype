@@ -726,7 +726,7 @@
         gap: 1rem;
         text-decoration: none;
         .text {
-          transform: 0.25s;
+          transition: 0.25s;
         }
         &:hover .text {
           color: var(--bg-color);
@@ -797,7 +797,7 @@
         .text {
           font-size: 1.5rem;
           line-height: 2rem;
-          transform: 0.25s;
+          transition: 0.25s;
         }
         &:hover .text {
           color: var(--bg-color);
