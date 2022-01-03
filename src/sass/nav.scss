@@ -114,6 +114,7 @@
 
   .config {
     grid-area: config;
+    transition: 0.25s;
     .mobileConfig {
       display: none;
       .icon-button {
