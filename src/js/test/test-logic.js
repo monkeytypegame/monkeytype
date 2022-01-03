@@ -589,6 +589,7 @@ export function restart(
     },
     125,
     async () => {
+      Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -687,7 +688,6 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
-      Focus.set(false);
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
