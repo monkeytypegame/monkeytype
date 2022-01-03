@@ -9,11 +9,16 @@ self.addEventListener("install", (event) => {
   );
 });
 
-
 self.addEventListener("fetch", async (event) => {
   const host = new URL(event.request.url).host;
   if (
-    ["localhost:5005", "api.monkeytype.com", "api.github.com", "www.google-analytics.com"].includes(host)
+    [
+      "localhost:5005",
+      "api.monkeytype.com",
+      "api.github.com",
+      "www.google-analytics.com",
+    ].includes(host) ||
+    host.endsWith("wikipedia.org")
   ) {
     // if hostname is a non-static api, fetch request
     event.respondWith(fetch(event.request));
@@ -36,6 +41,4 @@ self.addEventListener("fetch", async (event) => {
       })
     );
   }
-
 });
-
