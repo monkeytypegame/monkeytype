@@ -619,7 +619,6 @@ export function update(
         padding-bottom: 2rem;
       ">
       <i class="fas fa-check"></i>
-      <i class="fas fa-crown"></i>
       </div>
 
     `);
