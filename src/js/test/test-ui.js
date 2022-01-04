@@ -21,6 +21,7 @@ import * as ChallengeController from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as UI from "./ui";
 import * as TestTimer from "./test-timer";
+import * as WordDefinitionPopup from "./word-definition-popup";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -734,10 +735,11 @@ async function loadWordsHistory() {
       ) {
         wordEl = `<div class='word' burst="${
           TestStats.burstHistory[i]
-        }" input="${TestLogic.corrected
-          .getHistory(i)
-          .replace(/"/g, "&quot;")
-          .replace(/ /g, "_")}">`;
+        }" word="${word}" 
+          input="${TestLogic.corrected
+            .getHistory(i)
+            .replace(/"/g, "&quot;")
+            .replace(/ /g, "_")}">`;
       } else {
         wordEl = `<div class='word' burst="${
           TestStats.burstHistory[i]
@@ -1128,6 +1130,17 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
 $(document.body).on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
 });
+
+$(document.body).on(
+  "click",
+  "#result #resultWordsHistory .words .word",
+  (e) => {
+    let word = $(e.currentTarget).attr("word");
+    if (word) {
+      WordDefinitionPopup.show(word);
+    }
+  }
+);
 
 $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode == "zen") {
