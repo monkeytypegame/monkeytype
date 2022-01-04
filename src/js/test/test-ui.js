@@ -251,8 +251,8 @@ export async function screenshot() {
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
-    let paddingX = 75;
-    let paddingY = 50;
+    let paddingX = 50;
+    let paddingY = 25;
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
