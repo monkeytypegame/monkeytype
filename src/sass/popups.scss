@@ -740,38 +740,6 @@
   }
 }
 
-#wordDefinitionPopupWrapper {
-  #wordDefinitionPopup {
-    // height: 400px;
-    overflow-y: scroll;
-    max-height: 100%;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    grid-template-rows: auto auto auto;
-    gap: 1rem;
-    @extend .ffscroll;
-    margin: 0 2rem;
-    max-width: 500px;
-
-    .title {
-      font-size: 2rem;
-      line-height: 2rem;
-      color: var(--main-color);
-    }
-
-    .text {
-      color: var(--text-color);
-    }
-
-    .subtext {
-      color: var(--sub-color);
-      font-style: italic;
-    }
-  }
-}
-
 #contactPopupWrapper {
   #contactPopup {
     // height: 400px;
