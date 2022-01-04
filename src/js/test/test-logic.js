@@ -1511,6 +1511,9 @@ function buildCompletedEvent(difficultyFailed) {
     });
   } catch (e) {}
   completedEvent.tags = activeTagsIds;
+
+  if (completedEvent.mode != "custom") delete completedEvent.customText;
+
   return completedEvent;
 }
 
