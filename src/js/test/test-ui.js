@@ -247,12 +247,14 @@ export async function screenshot() {
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
+    let paddingX = 75;
+    let paddingY = 25;
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
-      height: sourceHeight + 50,
-      width: sourceWidth + 50,
-      x: sourceX - 25,
-      y: sourceY - 25,
+      width: sourceWidth + paddingX * 2,
+      height: sourceHeight + paddingY * 2,
+      x: sourceX - paddingX,
+      y: sourceY - paddingY,
     }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         try {
