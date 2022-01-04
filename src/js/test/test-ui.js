@@ -241,18 +241,24 @@ export async function screenshot() {
   let src = $("#middle");
   var sourceX = src.position().left; /*X position from div#target*/
   var sourceY = src.position().top; /*Y position from div#target*/
-  var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
+  var sourceWidth = src.outerWidth(
+    true
+  ); /*clientWidth/offsetWidth from div#target*/
+  var sourceHeight = src.outerHeight(
+    true
+  ); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
+    let paddingX = 75;
+    let paddingY = 50;
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
-      height: sourceHeight + 50,
-      width: sourceWidth + 50,
-      x: sourceX - 25,
-      y: sourceY - 25,
+      width: sourceWidth + paddingX * 2,
+      height: sourceHeight + paddingY * 2,
+      x: sourceX - paddingX,
+      y: sourceY - paddingY,
     }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         try {
