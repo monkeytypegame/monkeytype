@@ -71,7 +71,6 @@
     "string-similarity": "^4.0.4",
     "tinycolor2": "^1.4.2",
     "ua-parser-js": "^0.7.28",
-    "uuid": "^8.3.2",
-    "word-definition": "^2.1.6"
+    "uuid": "^8.3.2"
   }
 }
