@@ -269,10 +269,6 @@ $(".merchBanner .fas").click((event) => {
   // );
 });
 
-$(".scrollToTopButton").click((event) => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     UpdateConfig.toggleCustomTheme();
