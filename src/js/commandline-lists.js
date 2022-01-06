@@ -3034,6 +3034,15 @@ export let defaultCommands = {
       visible: false,
       subgroup: commandsMonkeyPowerLevel,
     },
+    {
+      id: "clearSwCache",
+      display: "Clear SW cache",
+      icon: "fa-cog",
+      exec: async () => {
+        await caches.delete("sw-cache");
+        window.location.reload(true);
+      },
+    },
   ],
 };
 

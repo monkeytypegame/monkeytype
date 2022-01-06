@@ -6,6 +6,10 @@
         if (e.key == "Escape") e.preventDefault();
       });
     </script>
+    <noscript>
+      JavaScript is not enabled. JavaScript needs to be enabled in order to use
+      this website.
+    </noscript>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
@@ -17,7 +21,6 @@
     />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/media-queries.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
@@ -69,14 +72,20 @@
     <meta property="og:title" content="Monkeytype" />
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://monkeytype.com/images/mtsocial.png" />
+    <meta
+      property="og:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
     <meta
       property="og:description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
     <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
     <meta name="twitter:title" content="Monkeytype" />
-    <meta name="twitter:image" content="https://monkeytype.com/images/mtsocial.png" />
+    <meta
+      name="twitter:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
@@ -630,7 +639,7 @@
     </div>
     <div id="versionHistoryWrapper" class="hidden">
       <div id="versionHistory">
-        <div class="tip">Click anywhere to dismiss</div>
+        <!-- <div class="tip">Click anywhere to dismiss</div> -->
         <div class="releases">
           <div class="release">
             <div class="title">v1</div>
@@ -677,6 +686,89 @@
           <a class="button" href="https://monkeytype.store" target="_blank">
             <div class="icon"><i class="fas fa-tshirt"></i></div>
             <div class="text">Buy Merch</div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div id="contactPopupWrapper" class="popupWrapper hidden">
+      <div id="contactPopup">
+        <div class="title">Contact</div>
+        <div class="text">
+          Feel free to send an email to jack@monkeytype.com (the buttons below
+          will open the default mail client).
+          <br />
+          <br />
+          Please
+          <span>do not send</span>
+          requests to delete account, update email, update name or clear
+          personal bests - you can do that in the settings page.
+        </div>
+        <div class="buttons">
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Question] "
+          >
+            <div class="icon"><i class="fas fa-question-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Question</div>
+              <!-- <div class="subtext">Confused about something?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Feedback] "
+          >
+            <div class="icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="textGroup">
+              <div class="text">Feedback</div>
+              <!-- <div class="subtext">Feel like the website could be improved?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Bug] "
+          >
+            <div class="icon"><i class="fas fa-bug"></i></div>
+            <div class="textGroup">
+              <div class="text">Bug Report</div>
+              <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Account] "
+          >
+            <div class="icon"><i class="fas fa-user-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Account Help</div>
+              <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Business] "
+          >
+            <div class="icon"><i class="fas fa-briefcase"></i></div>
+            <div class="textGroup">
+              <div class="text">Business Inquiry</div>
+              <!-- <div class="subtext">Let's work together.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Other] "
+          >
+            <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
+            <div class="textGroup">
+              <div class="text">Other</div>
+              <!-- <div class="subtext">We will try to help.</div> -->
+            </div>
           </a>
         </div>
       </div>
@@ -767,7 +859,7 @@
             <!-- <img src="images/logo1.svg" alt="" width="200px" height="100px"> -->
           </div>
           <div id="menu">
-            <div
+            <a
               id="startTestButton"
               class="icon-button view-start"
               tabindex="2"
@@ -777,7 +869,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-keyboard"></i>
               </div>
-            </div>
+            </a>
             <div
               class="icon-button leaderboards view-leaderboards"
               tabindex="2"
@@ -787,7 +879,7 @@
                 <i class="fas fa-fw fa-crown"></i>
               </div>
             </div>
-            <div
+            <a
               class="icon-button view-about"
               tabindex="2"
               href="/about"
@@ -796,7 +888,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-info"></i>
               </div>
-            </div>
+            </a>
             <!-- <a
               class="icon-button discord"
               tabindex="2"
@@ -809,7 +901,7 @@
                 <i class="fab fa-discord"></i>
               </div>
             </a> -->
-            <div
+            <a
               class="icon-button view-settings"
               tabindex="2"
               href="/settings"
@@ -818,8 +910,8 @@
               <div class="icon">
                 <i class="fas fa-fw fa-cog"></i>
               </div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button hidden account view-account"
               tabindex="2"
               href="/account"
@@ -829,8 +921,8 @@
                 <i class="fas fa-fw fa-user"></i>
               </div>
               <div class="text"></div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button login view-login"
               tabindex="2"
               href="/login"
@@ -839,7 +931,7 @@
               <div class="icon">
                 <i class="far fa-fw fa-user"></i>
               </div>
-            </div>
+            </a>
           </div>
 
           <div class="config hidden">
@@ -850,6 +942,7 @@
             </div>
             <div class="desktopConfig">
               <div
+                class="puncAndNum"
                 style="
                   display: grid;
                   grid-auto-flow: column;
@@ -962,7 +1055,15 @@
         <div id="middle">
           <div class="page pageLoading hidden">
             <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="icon">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+              <div class="barWrapper hidden">
+                <div class="bar">
+                  <div class="fill"></div>
+                </div>
+                <div class="text">‎</div>
+              </div>
             </div>
           </div>
           <div class="page pageTest hidden">
@@ -1303,11 +1404,6 @@
                   </div>
                   <div class="bottom">-</div>
                 </div>
-
-                <div class="group leaderboards">
-                  <div class="top">leaderboards</div>
-                  <div class="bottom">-</div>
-                </div>
               </div>
               <div class="chart">
                 <!-- <div class="title">wpm over time</div> -->
@@ -1441,7 +1537,7 @@
             </div>
           </div>
           <div class="page pageAbout hidden">
-            <div class="scrollToTopButton">
+            <div class="scrollToTopButton invisible">
               <i class="fas fa-angle-double-up"></i>
             </div>
             <div class="created">
@@ -1541,7 +1637,7 @@
               </p>
               <div class="supportButtons">
                 <a class="button ads">
-                  <div class="fas fas fa-ad"></div>
+                  <div class="fas fa-ad"></div>
                   Ads
                 </a>
                 <a
@@ -4252,7 +4348,15 @@
               <i class="fas fa-angle-double-up"></i>
             </div>
             <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="icon">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+              <div class="barWrapper hidden">
+                <div class="bar">
+                  <div class="fill"></div>
+                </div>
+                <div class="text">‎</div>
+              </div>
             </div>
             <div class="content hidden">
               <div class="miniResultChartWrapper">
@@ -4675,9 +4779,9 @@
           </div>
           <div class="leftright">
             <div class="left">
-              <a href="mailto:jack@monkeytype.com" target="_blank">
+              <a id="contactPopupButton">
                 <i class="fas fa-fw fa-envelope"></i>
-                <div class="text">Support</div>
+                <div class="text">Contact</div>
               </a>
               <a href="https://github.com/Miodec/monkeytype" target="_blank">
                 <i class="fas fa-fw fa-code"></i>

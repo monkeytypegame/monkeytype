@@ -126,7 +126,7 @@
   },
   {
     "name": "norwegian",
-    "languages": ["norwegian"]
+    "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
   },
   {
     "name": "hebrew",
@@ -262,7 +262,8 @@
       "code_rust",
       "code_ruby",
       "code_r",
-      "code_swift"
+      "code_swift",
+      "code_bash"
     ]
   },
   {

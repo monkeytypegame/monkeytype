@@ -10,6 +10,17 @@ const layouts = {
             " "
         ]
     },
+    spanish_qwerty: {
+        keymapShowTopRow: false,
+		iso: true,
+        keys: [
+            "ºª", "1!", "2\"", "3·", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "'?", "¡¿",
+            "qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "`^", "+*", "çÇ",
+            "aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", "ñÑ", "´¨",
+            "<>", "zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",;", ".:", "-_",
+            " "
+        ]
+    },
     dvorak: {
         keymapShowTopRow: false,
         keys: [
@@ -205,13 +216,25 @@ const layouts = {
     },
     german_dvorak: {
         keymapShowTopRow: true,
+        iso: true,
         keys: [
             "^°", "1!", "2", "3§", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "+*", "<>",
             "üÜ", ",;", ".:", "pP", "yY", "fF", "gG", "cC", "tT", "pP", "zZ", "ß?", "´`",
-            "aA", "oO", "eE", "iI", "uU", "hH", "dD", "rR", "nN", "sS", "lL", "-_",
+            "aA", "oO", "eE", "iI", "uU", "hH", "dD", "rR", "nN", "sS", "lL",
             "äÄ", "öÖ", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "#'",
             " "
         ]
+    },
+    spanish_dvorak: {
+        keymapShowTopRow: false,
+		iso: true,
+        keys: [
+            "ºª", "1!", "2\"", "3·", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "'?", "¡¿",
+            ".:", ",;", "ñÑ", "pP", "yY", "fF", "gG", "cC", "hH", "lL", "`^", "+*", "çÇ",
+            "aA", "oO", "eE", "uU", "iI", "dD", "rR", "tT", "nN", "sS", "´¨",
+            "<>", "-_", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "zZ",
+            " "
+        ],
     },
     dvorak_L: {
         keymapShowTopRow: true,
@@ -865,6 +888,16 @@ const layouts = {
             "\\|", "zZ", "bB", "mM", "gG", "wW", "xX", ",<", ".>", ";:", "qQ",
             " "
         ],
+    },
+    octa8: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "yY", "oO", "uU", "kK", "xX", "gG", "wW", "dD", "lL", ",<", "[{", "]}", "\\|",
+            "iI", "aA", "eE", "nN", "fF", "bB", "sS", "tT", "rR", "cC", "'\"",
+            "\\|", "/?", "zZ", "hH", "'\"", "qQ", "vV", "pP", "mM", "jJ", ".>",
+            " "
+        ]
     },
 }
 export default layouts;

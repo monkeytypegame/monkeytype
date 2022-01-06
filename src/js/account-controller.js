@@ -64,7 +64,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     await loadUser(user);
   } else {
     UI.setPageTransition(false);
-    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    if (UI.getActivePage() == "pageLoading") UI.changePage("");
   }
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
@@ -278,11 +278,15 @@ export function linkWithGoogle() {
 }
 
 export function unlinkGoogle() {
-  firebase.auth().currentUser.unlink("google.com").then((result) => {
-    console.log(result);
-  }).catch((error) => {
-    console.log(error);
-  });
+  firebase
+    .auth()
+    .currentUser.unlink("google.com")
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 export function linkWithEmail(email, password) {

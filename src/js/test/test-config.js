@@ -5,6 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
+import * as UI from "./ui";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);
@@ -40,6 +41,124 @@ export function hide() {
         $("#top .config").addClass("hidden");
       }
     );
+}
+
+export function update(previous, current) {
+  $("#top .config .mode .text-button").removeClass("active");
+  $("#top .config .mode .text-button[mode='" + current + "']").addClass(
+    "active"
+  );
+  if (current == "time") {
+    // $("#top .config .wordCount").addClass("hidden");
+    // $("#top .config .time").removeClass("hidden");
+    // $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
+    // $("#top .config .puncAndNum").removeClass("disabled");
+    // $("#top .config .punctuationMode").removeClass("hidden");
+    // $("#top .config .numbersMode").removeClass("hidden");
+    // $("#top .config .quoteLength").addClass("hidden");
+  } else if (current == "words") {
+    // $("#top .config .wordCount").removeClass("hidden");
+    // $("#top .config .time").addClass("hidden");
+    // $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
+    // $("#top .config .puncAndNum").removeClass("disabled");
+    // $("#top .config .punctuationMode").removeClass("hidden");
+    // $("#top .config .numbersMode").removeClass("hidden");
+    // $("#top .config .quoteLength").addClass("hidden");
+  } else if (current == "custom") {
+    // $("#top .config .wordCount").addClass("hidden");
+    // $("#top .config .time").addClass("hidden");
+    // $("#top .config .customText").removeClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
+    // $("#top .config .puncAndNum").removeClass("disabled");
+    // $("#top .config .punctuationMode").removeClass("hidden");
+    // $("#top .config .numbersMode").removeClass("hidden");
+    // $("#top .config .quoteLength").addClass("hidden");
+  } else if (current == "quote") {
+    // $("#top .config .wordCount").addClass("hidden");
+    // $("#top .config .time").addClass("hidden");
+    // $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").addClass("disabled");
+    $("#top .config .numbersMode").addClass("disabled");
+    // $("#top .config .puncAndNum").addClass("disabled");
+    // $("#top .config .punctuationMode").removeClass("hidden");
+    // $("#top .config .numbersMode").removeClass("hidden");
+    // $("#result .stats .source").removeClass("hidden");
+    // $("#top .config .quoteLength").removeClass("hidden");
+  } else if (current == "zen") {
+    // $("#top .config .wordCount").addClass("hidden");
+    // $("#top .config .time").addClass("hidden");
+    // $("#top .config .customText").addClass("hidden");
+    // $("#top .config .punctuationMode").addClass("hidden");
+    // $("#top .config .numbersMode").addClass("hidden");
+    // $("#top .config .quoteLength").addClass("hidden");
+  }
+
+  let submenu = {
+    time: "time",
+    words: "wordCount",
+    custom: "customText",
+    quote: "quoteLength",
+    zen: "",
+  };
+
+  let animTime = 250;
+
+  if (current == "zen") {
+    $(`#top .config .${submenu[previous]}`).animate(
+      {
+        opacity: 0,
+      },
+      animTime / 2,
+      () => {
+        $(`#top .config .${submenu[previous]}`).addClass("hidden");
+      }
+    );
+    $(`#top .config .puncAndNum`).animate(
+      {
+        opacity: 0,
+      },
+      animTime / 2,
+      () => {
+        $(`#top .config .puncAndNum`).addClass("invisible");
+      }
+    );
+    return;
+  }
+
+  if (previous == "zen") {
+    setTimeout(() => {
+      $(`#top .config .${submenu[current]}`).removeClass("hidden");
+      $(`#top .config .${submenu[current]}`)
+        .css({ opacity: 0 })
+        .animate(
+          {
+            opacity: 1,
+          },
+          animTime / 2
+        );
+      $(`#top .config .puncAndNum`).removeClass("invisible");
+      $(`#top .config .puncAndNum`)
+        .css({ opacity: 0 })
+        .animate(
+          {
+            opacity: 1,
+          },
+          animTime / 2
+        );
+    }, animTime / 2);
+    return;
+  }
+
+  UI.swapElements(
+    $("#top .config ." + submenu[previous]),
+    $("#top .config ." + submenu[current]),
+    animTime
+  );
 }
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {

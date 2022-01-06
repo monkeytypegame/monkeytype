@@ -26,3 +26,5 @@ global.replay = Replay.getReplayExport;
 global.enableTimerDebug = TestTimer.enableTimerDebug;
 
 global.getTimerStats = TestTimer.getTimerStats;
+
+global.objecthash = require("object-hash");

@@ -573,7 +573,7 @@ $(document).on(
   "click",
   ".pageSettings .section.paceCaret .button.save",
   (e) => {
-    UpdateConfig.setMinBurstCustomSpeed(
+    UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
         $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
       )
@@ -592,7 +592,7 @@ $(document).on(
 );
 
 $(document).on("click", ".pageSettings .section.minWpm .button.save", (e) => {
-  UpdateConfig.setMinBurstCustomSpeed(
+  UpdateConfig.setMinWpmCustomSpeed(
     parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
   );
 });
@@ -608,7 +608,7 @@ $(document).on(
 );
 
 $(document).on("click", ".pageSettings .section.minAcc .button.save", (e) => {
-  UpdateConfig.setMinBurstCustomSpeed(
+  UpdateConfig.setMinAccCustom(
     parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
   );
 });

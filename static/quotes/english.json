@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -6554,12 +6542,6 @@
       "length": 380
     },
     {
-      "text": "Yesterday is history, tomorrow is a mystery, but today is a gift. That is why it is called the present.",
-      "source": "Kung Fu Panda",
-      "id": 1099,
-      "length": 103
-    },
-    {
       "text": "Still, there are times I am bewildered by each mile I have traveled, each meal I have eaten, each person I have known, each room in which I have slept. As ordinary as it all appears, there are times when it is beyond my imagination.",
       "source": "Interpreter of Maladies",
       "id": 1100,
@@ -10749,7 +10731,7 @@
     },
     {
       "text": "Erdos knows about more problems than anybody else, and he not only knows about various problems and conjectures, but he also knows the tastes of various mathematicians. So if I get a letter from him giving me three of his conjectures and two of his problems, then it's sure that these are exactly the kind of conjectures and problems I'm interested in, and these are exactly the kind of questions I may be able to answer. Of course, this applies not only to me, but to everybody else.",
-      "source": "N Is a Number: A Portrait of Paul ErdÅ‘s",
+      "source": "N Is a Number: A Portrait of Paul Erdős",
       "id": 1808,
       "length": 484
     },
@@ -16377,7 +16359,7 @@
     },
     {
       "text": "I hate writing. I so intensely hate writing - I cannot tell you how much. The moment I am at the end of one project I have the idea that I didn't really succeed in telling what I wanted to tell, that I need a new project - it's an absolute nightmare. But my whole economy of writing is in fact based on an obsessional ritual to avoid the actual act of writing.",
-      "source": "Conversations with Å½iÅ¾ek",
+      "source": "Conversations with Žižek",
       "id": 2759,
       "length": 360
     },
@@ -25922,7 +25904,7 @@
       "length": 349
     },
     {
-      "text": "The past is history, future is a mystery, now is a gift, that's why they call it the present.",
+      "text": "Quit, don't quit. Noodles, don't noodles. You are too concerned with what was and what will be. There's a saying: Yesterday is history, tomorrow is a mystery, but today is a gift. That is why it is called the present.",
       "source": "Kung Fu Panda",
       "id": 4364,
       "length": 93
@@ -29768,12 +29750,6 @@
       "length": 309
     },
     {
-      "text": "All depression has its roots in self-pity, and all self-pity is rooted in people taking themselves too seriously. At the time Switters had disputed her assertion. Even at seventeen, he was aware that depression could have chemical causes. The key word here is roots, Maestra had countered. The roots of depression. For most people, self-awareness and self-pity blossom simultaneously in early adolescence. It's about that time that we start viewing the world as something other than a whoop-de-doo playground, we start to experience personally how threatening it can be, how cruel and unjust. At the very moment when we become, for the first time, both introspective and socially conscientious, we receive the bad news that the world, by and large, doesn't give a rat's ass. Even an old tomato like me can recall how painful, scary, and disillusioning that realization was. So, there's a tendency, then, to slip into rage and self-pity, which if indulged, can fester into bouts of depression. Yeah but Maestra-. Don't interrupt. Now, unless someone stronger and wiser - a friend, a parent, a novelist, filmmaker, teacher, or musician - can josh us out of it, can elevate us and show us how petty and pompous and monumentally useless it is to take ourselves so seriously, then depression can become a habit, which, in turn, can produce a neurological imprint. Are you with me? Gradually, our brain chemistry becomes conditioned to react to negative stimuli in a particular, predictable way. One thing'll go wrong and it'll automatically switch on its blender and mix us that black cocktail, the ol' doomsday daiquiri, and before we know it, we're soused to the gills from the inside out. Once depression has become electrochemically integrated, it can be extremely difficult to philosophically or psychologically override it; by then it's playing by physical rules, a whole different ball game. That's why, Switters my dearest, every time you've shown signs of feeling sorry for yourself, I've played my blues records really loud or read to you from The Horse's Mouth. And that's why when you've exhibited the slightest tendency toward self-importance, I've reminded you that you and me - you and I: excuse me - may be every bit as important as the President or the pope or the biggest prime-time icon in Hollywood, but none of us is much more than a pimple on the ass-end of creation, so let's not get carried away with ourselves. Preventive medicine, boy. It's preventive medicine. But what about self-esteem? Heh! Self-esteem is for sissies. Accept that you're a pimple and try to keep a lively sense of humor about it. That way lies grace-and maybe even glory.",
-      "source": "Fierce Invalids Home from Hot Climates",
-      "id": 5013,
-      "length": 2663
-    },
-    {
       "text": "I hope you're pleased with yourselves. We could all have been killed - or worse, expelled. Now if you don't mind, I'm going to bed.",
       "source": "Harry Potter and the Philosopher's Stone",
       "id": 5014,
@@ -31598,7 +31574,7 @@
       "id": 5318
     },
     {
-      "text": "Please note that I am the Standard Orientation Protocol, and that my voice has been explicitly chosen to remind you that I am not apart of your Patient Care Team. I do not care.",
+      "text": "Please note that I am the Standard Orientation Protocol, and that my voice has been explicitly chosen to remind you that I am not a part of your Patient Care Team. I do not care.",
       "source": "Superliminal",
       "length": 177,
       "id": 5319
@@ -33870,7 +33846,7 @@
       "id": 5715
     },
     {
-      "text": "Christie! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen... Listen... it doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. Their on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
+      "text": "Christie! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen... Listen... it doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
       "source": "Better Call Saul",
       "length": 1486,
       "id": 5716
@@ -34362,7 +34338,7 @@
       "id": 5797
     },
     {
-      "text": "\"There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though the have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.\"\n",
+      "text": "\"There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though they have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.\"\n",
       "source": "Death Note",
       "length": 677,
       "id": 5798
@@ -34620,12 +34596,6 @@
       "id": 5840
     },
     {
-      "text": "Yesterday is history, tomorrow is a mystery but today is a gift - that's why it's called the present.",
-      "source": "Master Oogway",
-      "length": 97,
-      "id": 5841
-    },
-    {
       "text": "If you only do what you can do, you will never be more than you are now.",
       "source": "Master Oogway",
       "length": 72,
@@ -34840,6 +34810,90 @@
       "source": "Cortana - Halo: Combat Evolved",
       "length": 123,
       "id": 5877
+    },
+    {
+      "text": "I will here give a brief sketch of the progress of opinion on the Origin of Species. Until recently the great majority of naturalists believed that species were immutable productions, and had been separately created. This view has been ably maintained by many authors. Some few naturalists, on the other hand, have believed that species undergo modification, and that the existing forms of life are the descendants by true generation of pre existing forms. Passing over allusions to the subject in the classical writers, the first author who in modern times has treated it in a scientific spirit was Buffon. But as his opinions fluctuated greatly at different periods, and as he does not enter on the causes or means of the transformation of species, I need not here enter on details.",
+      "source": "On the Origin of Species",
+      "length": 784,
+      "id": 5878
+    },
+    {
+      "text": "To the effects of intercrossing in eliminating variations of all kinds, I shall have to recur; but it may be here remarked that most animals and plants keep to their proper homes, and do not needlessly wander about; we see this even with migratory birds, which almost always return to the same spot. Consequently each newly-formed variety would generally be at first local, as seems to be the common rule with varieties in a state of nature; so that similarly modified individuals would soon exist in a small body together, and would often breed together. If the new variety were successful in its battle for life, it would slowly spread from a central district, competing with and conquering the unchanged individuals on the margins of an ever-increasing circle.",
+      "source": "On the Origin of Species",
+      "length": 763,
+      "id": 5879
+    },
+    {
+      "text": "In the first place, I have collected so large a body of facts, and made so many experiments, showing, in accordance with the almost universal belief of breeders, that with animals and plants a cross between different varieties, or between individuals of the same variety but of another strain, gives vigour and fertility to the offspring; and on the other hand, that close interbreeding diminishes vigour and fertility; that these facts alone incline me to believe that it is a general law of nature that no organic being fertilises itself for a perpetuity of generations; but that a cross with another individual is occasionally - perhaps at long intervals of time - indispensable.",
+      "source": "On the Origin of Species",
+      "length": 682,
+      "id": 5880
+    },
+    {
+      "text": "Our classifications are often plainly influenced by chains of affinities. Nothing can be easier than to define a number of characters common to all birds; but with crustaceans, any such definition has hitherto been found impossible. There are crustaceans at the opposite ends of the series, which have hardly a character in common; yet the species at both ends, from being plainly allied to others, and these to others, and so onwards, can be recognised as unequivocally belonging to this, and to no other class of the Articulata.",
+      "source": "On the Origin of Species",
+      "length": 530,
+      "id": 5881
+    },
+    {
+      "text": "These cases of close relationship in species either now or formerly inhabiting the seas on the eastern and western shores of North America, the Mediterranean and Japan, and the temperate lands of North America and Europe, are inexplicable on the theory of creation. We cannot maintain that such species have been created alike, in correspondence with the nearly similar physical conditions of the areas; for if we compare, for instance, certain parts of South America with parts of South Africa or Australia, we see countries closely similar in all their physical conditions, with their inhabitants utterly dissimilar.",
+      "source": "On the Origin of Species",
+      "length": 618,
+      "id": 5882
+    },
+    {
+      "text": "A key step in your combination skin routine, this toner purifies the skin and prepares it to receive its daily skincare. The skin is immediately clarified, pores are tightened and imperfections are reduced. Use: morning and evening, on cleansed skin, with a cotton pad. Do not rinse. Avoid the eye contour area.",
+      "source": "Caudalie Vinopure",
+      "length": 311,
+      "id": 5883
+    },
+    {
+      "text": "We have professional social workers in our service centres and smart centres throughout Australia. Social workers can offer you personal counselling and support in difficult times, such as domestic and family violence, severe financial hardship, homelessness, loss and bereavement. They can refer you to other services and programs like housing, health, emergency relief, legal and/or counselling services and support groups.",
+      "source": "ABSTUDY Schooling A",
+      "length": 425,
+      "id": 5884
+    },
+    {
+      "text": "School Fees Allowance and School Term Allowance are payable as part of ABSTUDY Schooling A. A School Fee Allowance is normally paid at the start of the year to help pay for school fees. School Term Allowance is to help pay for books, uniforms and other school costs. The first instalment of each calendar year will be an automatic payment, however further instalments will depend on satisfactory school attendance.",
+      "source": "ABSTUDY Schooling A",
+      "length": 430,
+      "id": 5885
+    },
+    {
+      "text": "I didn't sweat at the time because I had suffered what I would describe as an overdose of adrenaline in the Falklands War, when I was shot at... it was almost impossible for me to sweat.",
+      "source": "Prince Andrew, BBC Interview",
+      "length": 185,
+      "id": 5886
+    },
+    {
+      "text": "We believe climate change will ultimately be solved by 'can do' capitalism; not 'don't do' governments seeking to control people's lives and tell them what to do, with interventionist regulation and taxes that just force up your cost of living and force businesses to close.",
+      "source": "Scott Morrison",
+      "length": 274,
+      "id": 5887
+    },
+    {
+      "text": "No one's gonna take me alive. Time has come to make things right. You and I must fight for our rights. You and I must fight to survive.",
+      "source": "Knights of Cydonia",
+      "length": 135,
+      "id": 5888
+    },
+    {
+      "text": "Seven hundred and four TBIs were identified. The majority of persons involved were adult and male. The major cause of trauma was assault (98.8%). Traumata were classified to be severe in over 50% (GCS 3-8). Different neurological deficits and signs of basal skull fractures were identified. Although over half of head-injury victims had a severe initial impairment of consciousness, no case of death or permanent neurological deficit was found. The largest group of head-injured characters was constituted by Romans (63.9%), while Gauls caused nearly 90% of the TBIs. A helmet had been worn by 70.5% of victims but had been lost in the vast majority of cases (87.7%). In 83% of cases, TBIs were caused under the influence of a doping agent called \"the magic potion\".",
+      "source": "Traumatic brain injuries in illustrated literature: experience from a series of over 700 head injuries in the Asterix comic books",
+      "length": 766,
+      "id": 5889
+    },
+    {
+      "text": "That's how much we enjoy it mate - putting our lives at risk. I do it for my local community, I do it for the township of Nelligen, and the people of Australia. That's what I do it for. I don't do it for you Scott Morrison, I don't do it for any of you pricks in government.",
+      "source": "Paul Parker",
+      "length": 274,
+      "id:": 5890
+    },
+    {
+      "text": "Jonathan, you have touched my very being. I shall remember you. You taught all that knew you what courage meant and have shown us an example in death as you did in life. God give me strength in my life without you. And I shall thank her. I can only hope that our souls shall entwine again in the place where there is only love, no tears, no sadness, no injustice, no cruelty, no white, no black, no zombies, no hate, no war, only love. Only love, Alison",
+      "source": "Left 4 Dead",
+      "length": 453,
+      "id:": 5891
     }
   ]
 }
