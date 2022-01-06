@@ -40,7 +40,6 @@ function buildKeymapStrings() {
       " " +
       layout.slice(42, 48).join(" ")
     ).replace(/ /g, "");
-    console.log(keymapStrings);
     keymapStrings.keymap = Config.keymapLayout;
   }
 }
