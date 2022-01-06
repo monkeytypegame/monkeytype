@@ -25,21 +25,22 @@ function buildKeymapStrings() {
     keymapStrings.left = (
       layout.slice(0, 7).join(" ") +
       " " +
-      layout.slice(13, 18).join(" ") +
+      layout.slice(13, 19).join(" ") +
       " " +
       layout.slice(26, 31).join(" ") +
       " " +
-      layout.slice(38, 42).join(" ")
+      layout.slice(38, 43).join(" ")
     ).replace(/ /g, "");
     keymapStrings.right = (
-      layout.slice(7, 13).join(" ") +
+      layout.slice(6, 13).join(" ") +
       " " +
-      layout.slice(19, 26).join(" ") +
+      layout.slice(18, 26).join(" ") +
       " " +
       layout.slice(31, 38).join(" ") +
       " " +
-      layout.slice(43, 48).join(" ")
+      layout.slice(42, 48).join(" ")
     ).replace(/ /g, "");
+    console.log(keymapStrings);
     keymapStrings.keymap = Config.keymapLayout;
   }
 }
