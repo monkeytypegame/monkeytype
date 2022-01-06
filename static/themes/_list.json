@@ -643,5 +643,10 @@
     "name": "moonlight",
     "bgColor" : "#1f2730",
     "textColor":"#c69f68"
-  }  
+  },
+  {
+     "name": "beach",
+     "bgColor" : "#ffeead",
+     "textColor":"#88d8b0"
+   }
 ]
