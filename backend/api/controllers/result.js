@@ -2,13 +2,20 @@ const ResultDAO = require("../../dao/result");
 const UserDAO = require("../../dao/user");
 const PublicStatsDAO = require("../../dao/public-stats");
 const BotDAO = require("../../dao/bot");
-const {
-  validateObjectValues,
-  validateResult,
-} = require("../../handlers/validation");
+const { validateObjectValues } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
 const objecthash = require("object-hash");
 const Logger = require("../../handlers/logger");
+
+let validateResult;
+try {
+  validateResult = require("../../anticheat/anticheat").validateResult;
+  if (!validateResult) throw new Error("validateResult is not defined");
+} catch (e) {
+  console.error("==============================");
+  console.error("No anticheat module found, results will not be validated!");
+  console.error("==============================");
+}
 
 class ResultController {
   static async getResults(req, res, next) {
@@ -89,10 +96,18 @@ class ResultController {
       ) {
         return res.status(400).json({ message: "Test too short" });
       }
-      if (!validateResult(result)) {
-        return res
-          .status(400)
-          .json({ message: "Result data doesn't make sense" });
+      if (validateResult) {
+        if (!validateResult(result)) {
+          return res
+            .status(400)
+            .json({ message: "Result data doesn't make sense" });
+        }
+      } else {
+        console.error("==============================");
+        console.error(
+          "No anticheat module found, results will not be validated!"
+        );
+        console.error("==============================");
       }
 
       let resulthash = result.hash;
