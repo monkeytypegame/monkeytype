@@ -8,9 +8,12 @@ const objecthash = require("object-hash");
 const Logger = require("../../handlers/logger");
 
 let validateResult;
+let validateKeys;
 try {
-  validateResult = require("../../anticheat/anticheat").validateResult;
-  if (!validateResult) throw new Error("validateResult is not defined");
+  let module = require("../../anticheat/anticheat");
+  validateResult = module.validateResult;
+  validateKeys = module.validateKeys;
+  if (!validateResult || !validateKeys) throw new Error("undefined");
 } catch (e) {
   console.error("==============================");
   console.error("No anticheat module found, results will not be validated!");
@@ -220,50 +223,18 @@ class ResultController {
             result.keySpacingStats !== null &&
             result.keyDurationStats !== null
           ) {
-            if (
-              result.keySpacingStats.sd <= 15 ||
-              result.keyDurationStats.sd <= 10 ||
-              result.keyDurationStats.average < 15 ||
-              (result.wpm > 200 && result.consistency < 70)
-            ) {
-              //possible bot
-              Logger.log(
-                "anticheat_triggered",
-                {
-                  durationSD: result.keyDurationStats.sd,
-                  durationAvg: result.keyDurationStats.average,
-                  spacingSD: result.keySpacingStats.sd,
-                  spacingAvg: result.keySpacingStats.average,
-                  wpm: result.wpm,
-                  acc: result.acc,
-                  consistency: result.consistency,
-                },
-                uid
+            if (validateKeys) {
+              if (!validateKeys(result)) {
+                return res
+                  .status(400)
+                  .json({ message: "Possible bot detected" });
+              }
+            } else {
+              console.error("==============================");
+              console.error(
+                "No anticheat module found, results will not be validated!"
               );
-              return res.status(400).json({ message: "Possible bot detected" });
-            }
-            if (
-              (result.keySpacingStats.sd > 15 &&
-                result.keySpacingStats.sd <= 25) ||
-              (result.keyDurationStats.sd > 10 &&
-                result.keyDurationStats.sd <= 15) ||
-              (result.keyDurationStats.average > 15 &&
-                result.keyDurationStats.average <= 20)
-            ) {
-              //close to the bot detection threshold
-              Logger.log(
-                "anticheat_close",
-                {
-                  durationSD: result.keyDurationStats.sd,
-                  durationAvg: result.keyDurationStats.average,
-                  spacingSD: result.keySpacingStats.sd,
-                  spacingAvg: result.keySpacingStats.average,
-                  wpm: result.wpm,
-                  acc: result.acc,
-                  consistency: result.consistency,
-                },
-                uid
-              );
+              console.error("==============================");
             }
           } else {
             return res.status(400).json({ message: "Missing key data" });
@@ -273,6 +244,8 @@ class ResultController {
 
       delete result.keySpacing;
       delete result.keyDuration;
+      delete result.smoothConsistency;
+      delete result.wpmConsistency;
 
       try {
         result.keyDurationStats.average = roundTo2(
