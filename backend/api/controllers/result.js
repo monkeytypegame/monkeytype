@@ -6,6 +6,9 @@ const { validateObjectValues } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
 const objecthash = require("object-hash");
 const Logger = require("../../handlers/logger");
+const path = require("path");
+const { config } = require("dotenv");
+config({ path: path.join(__dirname, ".env") });
 
 let validateResult;
 let validateKeys;
@@ -15,9 +18,13 @@ try {
   validateKeys = module.validateKeys;
   if (!validateResult || !validateKeys) throw new Error("undefined");
 } catch (e) {
-  console.error("==============================");
-  console.error("No anticheat module found, results will not be validated!");
-  console.error("==============================");
+  if (process.env.MODE === "dev") {
+    console.error(
+      "No anticheat module found. Continuing in dev mode, results will not be validated."
+    );
+  } else {
+    throw new Error("No anticheat module found");
+  }
 }
 
 class ResultController {
@@ -123,11 +130,13 @@ class ResultController {
             .json({ message: "Result data doesn't make sense" });
         }
       } else {
-        console.error("==============================");
-        console.error(
-          "No anticheat module found, results will not be validated!"
-        );
-        console.error("==============================");
+        if (process.env.MODE === "dev") {
+          console.error(
+            "No anticheat module found. Continuing in dev mode, results will not be validated."
+          );
+        } else {
+          throw new Error("No anticheat module found");
+        }
       }
 
       result.timestamp = Math.round(result.timestamp / 1000) * 1000;
@@ -230,11 +239,13 @@ class ResultController {
                   .json({ message: "Possible bot detected" });
               }
             } else {
-              console.error("==============================");
-              console.error(
-                "No anticheat module found, results will not be validated!"
-              );
-              console.error("==============================");
+              if (process.env.MODE === "dev") {
+                console.error(
+                  "No anticheat module found. Continuing in dev mode, results will not be validated."
+                );
+              } else {
+                throw new Error("No anticheat module found");
+              }
             }
           } else {
             return res.status(400).json({ message: "Missing key data" });
