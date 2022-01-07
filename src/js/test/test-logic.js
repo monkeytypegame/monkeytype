@@ -1450,7 +1450,20 @@ function buildCompletedEvent(difficultyFailed) {
   }
   completedEvent.keyConsistency = keyConsistency;
   completedEvent.consistency = consistency;
-  completedEvent.chartData.raw = Misc.smooth(rawPerSecond, 1);
+  let smoothedraw = Misc.smooth(rawPerSecond, 1);
+  completedEvent.chartData.raw = smoothedraw;
+
+  //smoothed consistency
+  let stddev2 = Misc.stdDev(smoothedraw);
+  let avg2 = Misc.mean(smoothedraw);
+  let smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
+  completedEvent.smoothConsistency = smoothConsistency;
+
+  //wpm consistency
+  let stddev3 = Misc.stdDev(completedEvent.chartData.wpm);
+  let avg3 = Misc.mean(completedEvent.chartData.wpm);
+  let wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
+  completedEvent.wpmConsistency = wpmConsistency;
 
   completedEvent.testDuration = parseFloat(stats.time);
   completedEvent.afkDuration = TestStats.calculateAfkSeconds(
