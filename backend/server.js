@@ -52,14 +52,14 @@ app.use(startingPath + "/leaderboard", leaderboardsRouter);
 const newQuotesRouter = require("./api/routes/new-quotes");
 app.use(startingPath + "/new-quotes", newQuotesRouter);
 
-app.use(function (e, req, res) {
+app.use(function (req, res) {
   let monkeyError;
-  if (e.errorID) {
+  if (req.errorID) {
     //its a monkey error
     monkeyError = e;
   } else {
     //its a server error
-    monkeyError = new MonkeyError(e.status, e.message, e.stack);
+    monkeyError = new MonkeyError(req.status, req.message, req.stack);
   }
   if (!monkeyError.uid && req.decodedToken) {
     monkeyError.uid = req.decodedToken.uid;
@@ -78,6 +78,8 @@ app.use(function (e, req, res) {
       message: monkeyError.message,
       stack: monkeyError.stack,
     });
+  } else {
+    console.error(req.stack);
   }
   return res.status(e.status || 500).json(monkeyError);
 });
