@@ -96,19 +96,6 @@ class ResultController {
       ) {
         return res.status(400).json({ message: "Test too short" });
       }
-      if (validateResult) {
-        if (!validateResult(result)) {
-          return res
-            .status(400)
-            .json({ message: "Result data doesn't make sense" });
-        }
-      } else {
-        console.error("==============================");
-        console.error(
-          "No anticheat module found, results will not be validated!"
-        );
-        console.error("==============================");
-      }
 
       let resulthash = result.hash;
       delete result.hash;
@@ -124,6 +111,20 @@ class ResultController {
           uid
         );
         return res.status(400).json({ message: "Incorrect result hash" });
+      }
+
+      if (validateResult) {
+        if (!validateResult(result)) {
+          return res
+            .status(400)
+            .json({ message: "Result data doesn't make sense" });
+        }
+      } else {
+        console.error("==============================");
+        console.error(
+          "No anticheat module found, results will not be validated!"
+        );
+        console.error("==============================");
       }
 
       result.timestamp = Math.round(result.timestamp / 1000) * 1000;
