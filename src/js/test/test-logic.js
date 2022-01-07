@@ -1099,6 +1099,7 @@ export function calculateWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
+  //check input history
   for (let i = 0; i < input.history.length; i++) {
     let word = Config.mode == "zen" ? input.getHistory(i) : words.get(i);
     if (input.getHistory(i) == word) {
@@ -1114,8 +1115,34 @@ export function calculateWpmAndRaw() {
     }
     chars += input.getHistory(i).length;
   }
-  if (words.getCurrent() == input.current) {
-    correctWordChars += input.current.length;
+  if (input.current !== "") {
+    let word = Config.mode == "zen" ? input.current : words.getCurrent();
+    //check whats currently typed
+    let toAdd = {
+      correct: 0,
+      incorrect: 0,
+      missed: 0,
+    };
+    for (let c = 0; c < word.length; c++) {
+      if (c < input.current.length) {
+        //on char that still has a word list pair
+        if (input.current[c] == word[c]) {
+          toAdd.correct++;
+        } else {
+          toAdd.incorrect++;
+        }
+      } else {
+        //on char that is extra
+        toAdd.missed++;
+      }
+    }
+    chars += toAdd.correct;
+    chars += toAdd.incorrect;
+    chars += toAdd.missed;
+    if (toAdd.incorrect == 0) {
+      //word is correct so far, add chars
+      correctWordChars += toAdd.correct;
+    }
   }
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
