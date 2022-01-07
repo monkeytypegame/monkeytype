@@ -224,7 +224,7 @@ class ResultController {
             result.keyDurationStats !== null
           ) {
             if (validateKeys) {
-              if (!validateKeys(result)) {
+              if (!validateKeys(result, uid)) {
                 return res
                   .status(400)
                   .json({ message: "Possible bot detected" });
