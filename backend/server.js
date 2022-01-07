@@ -52,7 +52,7 @@ app.use(startingPath + "/leaderboard", leaderboardsRouter);
 const newQuotesRouter = require("./api/routes/new-quotes");
 app.use(startingPath + "/new-quotes", newQuotesRouter);
 
-app.use(function (e, req, res, next) {
+app.use(function (e, req, res) {
   let monkeyError;
   if (e.errorID) {
     //its a monkey error
@@ -66,7 +66,7 @@ app.use(function (e, req, res, next) {
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
-      `system_error`,
+      "system_error",
       `${monkeyError.status} ${monkeyError.message}`,
       monkeyError.uid
     );
