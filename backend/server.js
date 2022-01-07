@@ -56,7 +56,7 @@ app.use(function (req, res) {
   let monkeyError;
   if (req.errorID) {
     //its a monkey error
-    monkeyError = e;
+    monkeyError = req;
   } else {
     //its a server error
     monkeyError = new MonkeyError(req.status, req.message, req.stack);
