@@ -9,4 +9,14 @@ module.exports = {
       array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
     );
   },
+  mean(array) {
+    try {
+      return (
+        array.reduce((previous, current) => (current += previous)) /
+        array.length
+      );
+    } catch (e) {
+      return 0;
+    }
+  },
 };
