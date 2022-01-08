@@ -527,9 +527,9 @@ export function restart(
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    UpdateConfig.setMode(PractiseWords.before.mode);
     UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
     UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    UpdateConfig.setMode(PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
 

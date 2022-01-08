@@ -22,6 +22,7 @@ import * as ChallengeContoller from "./challenge-controller";
 import * as TTS from "./tts";
 import * as MobileTestConfig from "./mobile-test-config.js";
 import * as TestConfig from "./test-config.js";
+import * as PractiseWords from "./practise-words";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -252,6 +253,7 @@ export function setMode(mode, nosave) {
   TestConfig.update(previous, config.mode);
   MobileTestConfig.update();
   ChallengeContoller.clearActive();
+  PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
 }
 
