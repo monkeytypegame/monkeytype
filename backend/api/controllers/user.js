@@ -205,8 +205,21 @@ class UserController {
   static async unlinkDiscord(req, res, next) {
     try {
       const { uid } = req.decodedToken;
+      let userInfo;
+      try {
+        userInfo = await UsersDAO.getUser(uid);
+      } catch (e) {
+        throw new MonkeyError(400, "User not found.");
+      }
+      if (!userInfo.discordId) {
+        throw new MonkeyError(
+          400,
+          "User does not have a linked Discord account"
+        );
+      }
+      await BotDAO.unlinkDiscord(uid, userInfo.discordId);
       await UsersDAO.unlinkDiscord(uid);
-      Logger.log("user_discord_unlinked", "", uid);
+      Logger.log("user_discord_unlinked", userInfo.discordId, uid);
       return res.status(200).send();
     } catch (e) {
       return next(e);
