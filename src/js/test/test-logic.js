@@ -557,7 +557,8 @@ export function restart(
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
-  if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+  if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
+    window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
   TestUI.reset();
