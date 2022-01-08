@@ -645,6 +645,7 @@ function handleTab(event) {
         }
       }
     } else if (Config.quickTab) {
+      event.preventDefault();
       UI.changePage("test");
     }
   }
