@@ -1183,7 +1183,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleUnderline",
       display: "underline",
-      configValue: "underliner",
+      configValue: "underline",
       exec: () => {
         UpdateConfig.setCaretStyle("underline");
       },
