@@ -653,5 +653,10 @@
      "name": "creamsicle",
      "bgColor" : "#ff9869",
      "textColor":"#fcfcf8"
+   },
+   {
+     "name": "beach",
+     "bgColor" : "#ffeead",
+     "textColor":"#88d8b0"
    }
 ]
