@@ -4291,17 +4291,27 @@
             <div class="register side">
               <div class="title">register</div>
               <form action="" autocomplete="nope">
-                <input type="text" placeholder="username" autocomplete="nope" />
-                <input type="email" placeholder="email" autocomplete="nope" />
+                <input
+                  type="text"
+                  placeholder="username"
+                  autocomplete="new-username"
+                />
+                <input
+                  type="email"
+                  placeholder="email"
+                  autocomplete="new-email"
+                />
                 <input
                   type="password"
                   placeholder="password"
                   autocomplete="new-password"
+                  name="new-password"
                 />
                 <input
                   type="password"
                   placeholder="verify password"
-                  autocomplete="nopeee"
+                  autocomplete="verify-password"
+                  name="verify-password"
                 />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>
@@ -4313,8 +4323,14 @@
               <div class="title">login</div>
               <div id="forgotPasswordButton">Forgot password?</div>
               <form action="">
-                <input type="email" placeholder="email" autocomplete="email" />
                 <input
+                  name="current-email"
+                  type="email"
+                  placeholder="email"
+                  autocomplete="username"
+                />
+                <input
+                  name="current-password"
                   type="password"
                   placeholder="password"
                   autocomplete="password"
