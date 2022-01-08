@@ -64,7 +64,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.clearPb(uid);
-      Logger.log("user_cleared_pbs", ``, uid);
+      Logger.log("user_cleared_pbs", "", uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
