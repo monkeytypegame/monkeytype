@@ -719,6 +719,11 @@ $(document).keydown((event) => {
     }
   }
 
+  if (Config.funbox !== "arrows" && /Arrow/i.test(event.key)) {
+    event.preventDefault();
+    return;
+  }
+
   Monkey.type();
 
   if (event.key === "Backspace" && TestLogic.input.current.length === 0) {
