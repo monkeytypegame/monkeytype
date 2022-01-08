@@ -206,7 +206,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.unlinkDiscord(uid);
-      Logger.log("user_discord_unlinked", ``, uid);
+      Logger.log("user_discord_unlinked", "", uid);
       return res.status(200).send();
     } catch (e) {
       return next(e);
