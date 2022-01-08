@@ -100,6 +100,9 @@ export async function activate(funbox) {
 
   let funboxInfo = await Misc.getFunbox(funbox);
 
+  $("#funBoxTheme").attr("href", ``);
+  $("#words").removeClass("nospace");
+  $("#words").removeClass("arrows");
   if (await Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
@@ -123,9 +126,6 @@ export async function activate(funbox) {
       return;
     }
   }
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
-  $("#words").removeClass("arrows");
   // if (funbox === "none") {
 
   reset();
