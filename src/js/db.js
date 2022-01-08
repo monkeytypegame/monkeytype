@@ -563,6 +563,32 @@ export async function saveConfig(config) {
   }
 }
 
+export function saveLocalResult(result) {
+  if (getSnapshot() !== null && getSnapshot().results !== undefined) {
+    getSnapshot().results.unshift(result);
+  }
+}
+
+export function updateLocalStats(stats) {
+  if (getSnapshot() !== null) {
+    if (getSnapshot().globalStats.time == undefined) {
+      getSnapshot().globalStats.time = stats.time;
+    } else {
+      getSnapshot().globalStats.time += stats.time;
+    }
+    if (getSnapshot().globalStats.started == undefined) {
+      getSnapshot().globalStats.started = stats.started;
+    } else {
+      getSnapshot().globalStats.started += stats.started;
+    }
+    if (getSnapshot().globalStats.completed == undefined) {
+      getSnapshot().globalStats.completed = 1;
+    } else {
+      getSnapshot().globalStats.completed += 1;
+    }
+  }
+}
+
 // export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;

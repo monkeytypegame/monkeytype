@@ -133,6 +133,7 @@ const refactoredSrc = [
   "./src/js/elements/new-version-notification.js",
   "./src/js/elements/mobile-test-config.js",
   "./src/js/elements/loading-page.js",
+  "./src/js/elements/scroll-to-top.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/pb-tables-popup.js",
@@ -169,6 +170,7 @@ const refactoredSrc = [
   "./src/js/test/practise-words.js",
   "./src/js/test/test-ui.js",
   "./src/js/test/keymap.js",
+  "./src/js/test/result.js",
   "./src/js/test/live-wpm.js",
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",

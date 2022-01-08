@@ -75,8 +75,8 @@ function load() {
     if (
       newResultFilters != undefined &&
       newResultFilters !== "" &&
-      Misc.countAllKeys(newResultFilters) >=
-        Misc.countAllKeys(defaultResultFilters)
+      Object.keys(JSON.parse(newResultFilters)).length >=
+        Object.keys(defaultResultFilters).length
     ) {
       filters = JSON.parse(newResultFilters);
       save();

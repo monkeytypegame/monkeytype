@@ -144,7 +144,7 @@
       },
       "config": {
         "showLiveWpm": false,
-        "paceCaretMode": "off"
+        "paceCaret": "off"
       }
     }
   }

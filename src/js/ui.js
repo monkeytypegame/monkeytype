@@ -14,7 +14,6 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
-import { active } from "./challenge-controller";
 
 export let pageTransition = true;
 let activePage = "pageLoading";
@@ -268,10 +267,6 @@ $(".merchBanner .fas").click((event) => {
   //   0,
   //   5
   // );
-});
-
-$(".scrollToTopButton").click((event) => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
