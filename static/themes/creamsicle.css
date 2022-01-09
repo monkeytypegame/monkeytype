@@ -4,8 +4,8 @@
   --caret-color: #fcfcf8;
   --sub-color: #ff661f;
   --text-color: #fcfcf8;
-  --error-color: #ee4b2b;
-  --error-extra-color: #ee4b2b;
-  --colorful-error-color: #ee4b2b;
-  --colorful-error-extra-color: #ee4b2b;
+  --error-color: #abcdef;
+  --error-extra-color: #abcdef;
+  --colorful-error-color: #abcdef;
+  --colorful-error-extra-color: #abcdef;
 }
