@@ -79,6 +79,7 @@ app.use(function (e, req, res, next) {
       message: monkeyError.message,
       stack: monkeyError.stack,
     });
+    monkeyError.stack = undefined;
   } else {
     console.error(monkeyError.message);
   }
