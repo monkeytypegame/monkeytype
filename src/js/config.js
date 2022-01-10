@@ -22,6 +22,7 @@ import * as ChallengeContoller from "./challenge-controller";
 import * as TTS from "./tts";
 import * as MobileTestConfig from "./mobile-test-config.js";
 import * as TestConfig from "./test-config.js";
+import * as PractiseWords from "./practise-words";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -252,6 +253,7 @@ export function setMode(mode, nosave) {
   TestConfig.update(previous, config.mode);
   MobileTestConfig.update();
   ChallengeContoller.clearActive();
+  PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1261,6 +1263,18 @@ export function setTheme(name, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+function setThemes(theme, customState, nosave) {
+  config.theme = theme;
+  config.customTheme = customState;
+  ThemeController.clearPreview();
+  if (customState) {
+    ThemeController.set("custom");
+  } else {
+    ThemeController.set(config.theme);
+  }
+  if (!nosave) saveToLocalStorage();
+}
+
 export function setRandomTheme(val, nosave) {
   if (val === undefined || val === true || val === false) {
     val = "off";
@@ -1583,9 +1597,10 @@ export function apply(configObj) {
     }
   });
   if (configObj && configObj != null && configObj != "null") {
-    setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
-    setCustomTheme(configObj.customTheme, true, true);
+    setThemes(configObj.theme, configObj.customTheme, true);
+    // setTheme(configObj.theme, true);
+    // setCustomTheme(configObj.customTheme, true, true);
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);

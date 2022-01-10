@@ -39,7 +39,7 @@ class UsersDAO {
   static async clearPb(uid) {
     return await mongoDB()
       .collection("users")
-      .updateOne({ uid }, { $set: { personalBests: {} } });
+      .updateOne({ uid }, { $set: { personalBests: {}, lbPersonalBests: {} } });
   }
 
   static async isNameAvailable(name) {

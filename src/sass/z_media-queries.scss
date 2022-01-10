@@ -265,7 +265,7 @@
   }
   .pageLogin {
     display: grid;
-    gap: 10rem;
+    gap: 5rem;
     grid-auto-flow: unset;
   }
   #middle {
@@ -536,6 +536,9 @@
 @media only screen and (max-width: 350px) {
   .keymap {
     display: none !important;
+  }
+  .pageLogin .side input {
+    width: 90vw;
   }
 }
 

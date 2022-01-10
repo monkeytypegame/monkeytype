@@ -354,7 +354,8 @@
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
-#words.noErrorBorder {
+#words.noErrorBorder,
+#resultWordsHistory.noErrorBorder {
   .word.error {
     text-shadow: none;
   }

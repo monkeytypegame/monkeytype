@@ -645,6 +645,7 @@ function handleTab(event) {
         }
       }
     } else if (Config.quickTab) {
+      event.preventDefault();
       UI.changePage("test");
     }
   }
@@ -717,6 +718,11 @@ $(document).keydown((event) => {
       event.preventDefault();
       return;
     }
+  }
+
+  if (Config.funbox !== "arrows" && /Arrow/i.test(event.key)) {
+    event.preventDefault();
+    return;
   }
 
   Monkey.type();

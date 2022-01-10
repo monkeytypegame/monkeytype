@@ -19,6 +19,10 @@ class BotDAO {
     return await addCommand("linkDiscord", [discordId, uid]);
   }
 
+  static async unlinkDiscord(uid, discordId) {
+    return await addCommand("unlinkDiscord", [discordId, uid]);
+  }
+
   static async awardChallenge(discordId, challengeName) {
     return await addCommand("awardChallenge", [discordId, challengeName]);
   }
@@ -34,11 +38,6 @@ class BotDAO {
       con,
     ]);
   }
-
-  // this probably will be rewritten but keeping the old code just in case
-  // static async announceDailyLbResult(lbdata) {
-  //   return await addCommand("announceDailyLbResult", [lbdata]);
-  // }
 }
 
 module.exports = BotDAO;
