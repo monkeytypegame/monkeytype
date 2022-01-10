@@ -202,23 +202,26 @@ list.updateEmail = new SimplePopup(
         await user.reauthenticateWithCredential(credential);
       }
       Loader.show();
-      axiosInstance
-        .post("/user/updateEmail", {
+      let response;
+      try {
+        axiosInstance.post("/user/updateEmail", {
           uid: user.uid,
           previousEmail: user.email,
           newEmail: email,
-        })
-        .then((data) => {
-          Loader.hide();
-          if (data.status === 200) {
-            Notifications.add("Email updated", 0);
-            setTimeout(() => {
-              AccountController.signOut();
-            }, 1000);
-          } else {
-            Notifications.add(data.message);
-          }
         });
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to update email: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        return;
+      } else {
+        Notifications.add("Email updated", 1);
+      }
     } catch (e) {
       if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
