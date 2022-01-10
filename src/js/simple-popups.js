@@ -204,7 +204,7 @@ list.updateEmail = new SimplePopup(
       Loader.show();
       let response;
       try {
-        axiosInstance.post("/user/updateEmail", {
+        response = await axiosInstance.post("/user/updateEmail", {
           uid: user.uid,
           previousEmail: user.email,
           newEmail: email,
