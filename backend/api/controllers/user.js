@@ -93,7 +93,11 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       const { newEmail } = req.body;
-      await UsersDAO.updateEmail(uid, newEmail);
+      try {
+        await UsersDAO.updateEmail(uid, newEmail);
+      } catch (e) {
+        throw new MonkeyError(400, e.message, "update email", uid);
+      }
       Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
       return res.sendStatus(200);
     } catch (e) {
