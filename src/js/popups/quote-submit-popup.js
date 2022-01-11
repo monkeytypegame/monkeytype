@@ -61,22 +61,27 @@ async function submitQuote() {
 }
 
 export async function show(noAnim = false) {
-  if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
-    await initDropdown();
-    $("#quoteSubmitPopup #submitQuoteLanguage").val(
-      Config.language.replace(/_\d*k$/g, "")
-    );
-    $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
-    $("#quoteSubmitPopup input").val("");
-    $("#quoteSubmitPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
-        $("#quoteSubmitPopup textarea").focus().select();
-        //updateResults("");
-      });
-  }
+  Notifications.add(
+    "Quote submission is disabled temporarily due to a large submission queue.",
+    0,
+    5
+  );
+  return;
+  // if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+  //   await initDropdown();
+  //   $("#quoteSubmitPopup #submitQuoteLanguage").val(
+  //     Config.language.replace(/_\d*k$/g, "")
+  //   );
+  //   $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
+  //   $("#quoteSubmitPopup input").val("");
+  //   $("#quoteSubmitPopupWrapper")
+  //     .stop(true, true)
+  //     .css("opacity", 0)
+  //     .removeClass("hidden")
+  //     .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
+  //       $("#quoteSubmitPopup textarea").focus().select();
+  //     });
+  // }
 }
 
 export function hide() {
