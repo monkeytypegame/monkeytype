@@ -652,16 +652,7 @@ export function restart(
         }
       }
 
-      let mode2 = "";
-      if (Config.mode === "time") {
-        mode2 = Config.time;
-      } else if (Config.mode === "words") {
-        mode2 = Config.words;
-      } else if (Config.mode === "custom") {
-        mode2 = "custom";
-      } else if (Config.mode === "quote") {
-        mode2 = randomQuote.id;
-      }
+      let mode2 = Misc.getMode2();
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -1517,17 +1508,7 @@ function buildCompletedEvent(difficultyFailed) {
     completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
   }
 
-  if (Config.mode === "time") {
-    completedEvent.mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    completedEvent.mode2 = Config.words;
-  } else if (Config.mode === "custom") {
-    completedEvent.mode2 = "custom";
-  } else if (Config.mode === "quote") {
-    completedEvent.mode2 = randomQuote.id;
-  } else if (Config.mode === "zen") {
-    completedEvent.mode2 = "zen";
-  }
+  completedEvent.mode2 = Misc.getMode2();
 
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
