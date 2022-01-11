@@ -658,5 +658,10 @@
      "name": "beach",
      "bgColor" : "#ffeead",
      "textColor":"#88d8b0"
+   },
+   {
+     "name": "desert_oasis",
+     "bgColor" : "#fff2d5",
+     "textColor":"#332800"
    }
 ]
