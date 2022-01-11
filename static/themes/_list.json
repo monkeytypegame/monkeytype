@@ -643,5 +643,25 @@
     "name": "moonlight",
     "bgColor" : "#1f2730",
     "textColor":"#c69f68"
-  }  
+  },
+  {
+     "name": "pink_lemonade",
+     "bgColor" : "#f6d992",
+     "textColor":"#f6b092"
+   },
+   {
+     "name": "creamsicle",
+     "bgColor" : "#ff9869",
+     "textColor":"#fcfcf8"
+   },
+   {
+     "name": "beach",
+     "bgColor" : "#ffeead",
+     "textColor":"#88d8b0"
+   },
+   {
+     "name": "desert_oasis",
+     "bgColor" : "#fff2d5",
+     "textColor":"#332800"
+   }
 ]
