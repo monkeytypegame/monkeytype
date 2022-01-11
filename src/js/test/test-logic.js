@@ -1657,20 +1657,13 @@ export async function finish(difficultyFailed = false) {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-  }
-  if (
-    completedEvent.wpm < 0 ||
-    completedEvent.wpm > 350 ||
-    completedEvent.acc < 75 ||
-    completedEvent.acc > 100
-  ) {
-    Notifications.add("Test invalid", 0);
+  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+    Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
-    try {
-      firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    dontSave = true;
+  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+    Notifications.add("Test invalid - accuracy", 0);
+    TestStats.setInvalid();
     dontSave = true;
   }
 
@@ -1706,7 +1699,14 @@ export async function finish(difficultyFailed = false) {
     randomQuote
   );
 
-  if (dontSave) return;
+  if (dontSave) {
+    try {
+      firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
+    } catch (e) {
+      console.log("Analytics unavailable");
+    }
+    return;
+  }
 
   // user is logged in
 
