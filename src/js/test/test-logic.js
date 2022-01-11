@@ -596,7 +596,15 @@ export function restart(
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
-      if (!withSameWordset) {
+      let shouldQuoteRepeat = false;
+      if (
+        Config.mode === "quote" &&
+        Config.repeatQuotes === "typing" &&
+        failReason !== ""
+      ) {
+        shouldQuoteRepeat = true;
+      }
+      if (!withSameWordset && !shouldQuoteRepeat) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
         setHasTab(false);
@@ -621,6 +629,7 @@ export function restart(
         TestUI.showWords();
         PaceCaret.init();
       }
+      failReason = "";
       if (Config.mode === "quote") {
         setRepeated(false);
       }
