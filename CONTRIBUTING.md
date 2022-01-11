@@ -6,7 +6,7 @@
 - [Prerequisites](#prerequisites)
   - [Text Editor](#text-editor)
   - [Git ](#git)
-  - [NodeJS](#nodejs)
+  - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
   - [Mongo Setup](#mongo-setup)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
