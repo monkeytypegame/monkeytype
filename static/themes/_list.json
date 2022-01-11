@@ -643,5 +643,10 @@
     "name": "moonlight",
     "bgColor" : "#1f2730",
     "textColor":"#c69f68"
-  }  
+  },
+  {
+     "name": "desert_oasis",
+     "bgColor" : "#fff2d5",
+     "textColor":"#332800"
+   }
 ]
