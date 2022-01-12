@@ -41,7 +41,7 @@ At the very end of the file add this code (Keep it inside the square brackets):
 ,{
     "name": "theme_name",
     "bgColor": "#ffffff",
-    "textColor": "#ffffff"
+    "mainColor": "#ffffff"
 }
 ```
 Make sure the name you put is lowercase and has underscores for spaces. Add the text color and background color of your theme to the varibles.
