@@ -12,9 +12,14 @@ import * as NewVersionNotification from "./new-version-notification";
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
-Misc.getReleasesFromGitHub().then((v) => {
-  NewVersionNotification.show(v[0].name);
-});
+if (window.location.hostname === "localhost") {
+  $("#bottom .version .text").text("localhost");
+  $("#bottom .version").css("opacity", 1);
+} else {
+  Misc.getReleasesFromGitHub().then((v) => {
+    NewVersionNotification.show(v[0].name);
+  });
+}
 
 RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
