@@ -23,7 +23,7 @@ Create pull request:
 <img width="1552" alt="Screen Shot 2022-01-12 at 10 56 42 AM" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
 After that add some screenshots of your theme to the pull request. Click create pull request and if it gets approved 
-then your new theme is on Monkeytype 
+then your new theme is on Monkeytype.
 
 ## Creating Themes
 After you have forked the repository you can now add your theme. (If you haven't already forked the repository yet refer to [here](#forking-the-repository))
