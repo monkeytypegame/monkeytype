@@ -1,29 +1,15 @@
 ### **Table of Contents**
 
-- [GitHub](#github)
-  - [Forking the Repository](#forking-the-repository)
-  - [Commiting Themes](#commiting-themes)
+- [Forking the Repository](#forking-the-repository)
 - [Creating Themes](#creating-themes)
+- [Commiting Themes](#commiting-themes)
 - [Theme Guidelines](#theme-guidelines)
 
-## GitHub
-How to fork the repository and commit your themes to the repository.
-
 ### Forking the Repository
-Go the the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button. And that's it!
+First you will have to copy the repository also known as forking. Go the the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button. 
 
-### Commiting Themes
-Once you have created your theme(s) you now need to create a pull request on the main Monkeytype repository. Go to the branch where you created your themes on GitHub. 
-Then make sure your branch is up to date. Once it is up to date click contribute.
+<img width="1552" alt="Screen Shot 2022-01-12 at 11 51 49 AM" src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
-Update branch:
-<img width="1552" alt="Screen Shot 2022-01-12 at 10 55 19 AM" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
-
-Create pull request:
-<img width="1552" alt="Screen Shot 2022-01-12 at 10 56 42 AM" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
-
-After that add some screenshots of your theme to the pull request. Click create pull request and if it gets approved 
-then your new theme is on Monkeytype.
 
 ## Creating Themes
 After you have forked the repository you can now add your theme. (If you haven't already forked the repository yet refer to [here](#forking-the-repository))
@@ -54,7 +40,19 @@ At the very end of the file add this code (Keep it inside the square brackets):
 }
 ```
 Make sure the name you put is lowercase and has underscores for spaces. Add the text color and background color of your theme to the varibles.
-After you have commited all of these steps you can now contribute. If you don't know how to refer to [here](#commiting-themes)
+
+### Commiting Themes
+Once you have created your theme(s) you now need to create a pull request on the main Monkeytype repository. Go to the branch where you created your themes on GitHub. 
+Then make sure your branch is up to date. Once it is up to date click contribute.
+
+Update branch:
+<img width="1552" alt="Screen Shot 2022-01-12 at 10 55 19 AM" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
+
+Create pull request:
+<img width="1552" alt="Screen Shot 2022-01-12 at 10 56 42 AM" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
+
+After that add some screenshots of your theme to the pull request. Click create pull request and if it gets approved 
+then your new theme is on Monkeytype.
 
 ## Theme Guidelines
 [Theme guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#theme-guidelines)
