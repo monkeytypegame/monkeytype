@@ -30,6 +30,11 @@ Then Add this code to your file:
     --colorful-error-extra-color: #ffffff;
   }
 ```
+Here is an image showing what all the colors correspond to:
+<img width="1552" alt="Screen Shot 2022-01-12 at 12 01 11 PM" src="https://user-images.githubusercontent.com/83455454/149196967-abb69795-0d38-466b-a867-5aaa46452976.png">
+
+
+
 Now change the corresponding hex codes to match your theme. However you aren't done, you need to update one more file. Go to ```./static/themes/_list.json```.
 At the very end of the file add this code (Keep it inside the square brackets):
 ```
