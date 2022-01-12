@@ -1677,7 +1677,8 @@ export async function finish(difficultyFailed = false) {
     afkDetected,
     isRepeated,
     tooShort,
-    randomQuote
+    randomQuote,
+    dontSave
   );
 
   if (dontSave) {
