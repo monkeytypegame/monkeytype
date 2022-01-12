@@ -24,6 +24,11 @@
   /* Firefox */
 }
 
+#nocss {
+  display: none !important;
+  pointer-events: none;
+}
+
 .ffscroll {
   scrollbar-width: thin;
   scrollbar-color: var(--sub-color) transparent;

@@ -6,10 +6,6 @@
         if (e.key == "Escape") e.preventDefault();
       });
     </script>
-    <noscript>
-      JavaScript is not enabled. JavaScript needs to be enabled in order to use
-      this website.
-    </noscript>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
@@ -113,6 +109,80 @@
   <div class="customBackground"></div>
 
   <body>
+    <noscript>
+      <div
+        style="
+          background: #333;
+          width: 100vw;
+          height: 100vh;
+          left: 0;
+          top: 0;
+          position: fixed;
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          color: #646669;
+          font-size: 1rem;
+          font-family: Arial Rounded MT Bold;
+          z-index: 99999;
+          padding: 6rem;
+          box-sizing: border-box;
+        "
+      >
+        <div
+          style="
+            display: grid;
+            justify-content: center;
+            align-content: center;
+            max-width: 800px;
+            gap: 1rem;
+          "
+        >
+          <span style="font-size: 6rem; color: #e2b714">:(</span>
+          <span style="font-size: 2rem; color: #d1d0c5">
+            Looks like JavaScript is disabled. Please enable JavaScript in order
+            to use this website.
+          </span>
+        </div>
+      </div>
+    </noscript>
+    <div
+      id="nocss"
+      style="
+        background: #333;
+        width: 100vw;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        position: fixed;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        color: #646669;
+        font-size: 1rem;
+        font-family: Arial Rounded MT Bold;
+        z-index: 99999;
+        padding: 6rem;
+        box-sizing: border-box;
+      "
+    >
+      <div
+        style="
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          max-width: 800px;
+          gap: 1rem;
+        "
+      >
+        <span style="font-size: 6rem; color: #e2b714">:(</span>
+        <span style="font-size: 2rem; color: #d1d0c5">
+          It seems like the CSS failed to load. Please clear your cache to
+          redownload the styles. If that doesn\'t help contact support.
+        </span>
+        <span>(ctrl/cmd + shift + r on Chromium browsers)</span>
+      </div>
+    </div>
     <div id="ad_rich_media" class="hidden"></div>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="notificationCenter">
