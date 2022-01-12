@@ -2,666 +2,666 @@
   {
     "name": "dark",
     "bgColor": "#111",
-    "textColor": "#eee"
+    "mainColor": "#eee"
   }
   ,{
     "name": "muted",
     "bgColor": "#525252",
-    "textColor": "#B1E4E3"
+    "mainColor": "#B1E4E3"
   }
   ,{
     "name": "dark_magic_girl",
     "bgColor": "#091f2c",
-    "textColor": "#a288d9"
+    "mainColor": "#a288d9"
   }
   ,{
     "name": "8008",
     "bgColor": "#333a45",
-    "textColor": "#f44c7f"
+    "mainColor": "#f44c7f"
   }
   ,{
     "name": "carbon",
     "bgColor": "#313131",
-    "textColor": "#ed6b21"
+    "mainColor": "#ed6b21"
   }
   ,{
     "name": "our_theme",
     "bgColor": "#ce1226",
-    "textColor": "#fcd116"
+    "mainColor": "#fcd116"
   }
   ,{
     "name": "dots",
     "bgColor": "#121520",
-    "textColor": "#7f88ab"
+    "mainColor": "#7f88ab"
   }
   ,{
     "name": "nautilus",
     "bgColor": "#132237",
-    "textColor": "#eab622"
+    "mainColor": "#eab622"
   }
   ,{
     "name": "serika",
     "bgColor": "#e1e1e3",
-    "textColor": "#e2b714"
+    "mainColor": "#e2b714"
   }
   ,{
     "name": "serika_dark",
     "bgColor": "#323437",
-    "textColor": "#e2b714"
+    "mainColor": "#e2b714"
   }
   ,{
     "name": "bushido",
     "bgColor": "#242933",
-    "textColor": "#ec4c56"
+    "mainColor": "#ec4c56"
   }
   ,{
     "name": "red_samurai",
     "bgColor": "#84202c",
-    "textColor": "#c79e6e"
+    "mainColor": "#c79e6e"
   }
   ,{
     "name": "rgb",
     "bgColor": "linear-gradient(to left, #0043ff, #1bdbdb, #27c214, #e0e019, #e01313)",
-    "textColor": "#fff"
+    "mainColor": "#fff"
   }
   ,{
     "name": "oblivion",
     "bgColor": "#313231",
-    "textColor": "#a5a096"
+    "mainColor": "#a5a096"
   }
   ,{
     "name": "magic_girl",
     "bgColor": "#ffffff",
-    "textColor": "#00ac8c"
+    "mainColor": "#00ac8c"
   }
   ,{
     "name": "metropolis",
     "bgColor": "#0f1f2c",
-    "textColor": "#56c3b7"
+    "mainColor": "#56c3b7"
   }
   ,{
     "name": "mountain",
     "bgColor": "#0f0f0f",
-    "textColor": "#e7e7e7"
+    "mainColor": "#e7e7e7"
   }
   ,{
     "name": "laser",
     "bgColor": "#221b44",
-    "textColor": "#b82356"
+    "mainColor": "#b82356"
   }
   ,{
     "name": "retro",
     "bgColor": "#dad3c1",
-    "textColor": "#1d181a"
+    "mainColor": "#1d181a"
   }
   ,{
     "name": "dracula",
     "bgColor": "#282a36",
-    "textColor": "#bd93f9"
+    "mainColor": "#bd93f9"
   }
   ,{
     "name": "nord",
     "bgColor": "#242933",
-    "textColor": "#617b94"
+    "mainColor": "#617b94"
   }
   ,{
     "name": "mr_sleeves",
     "bgColor": "#d1d7da",
-    "textColor": "#000"
+    "mainColor": "#000"
   }
   ,{
     "name": "olivia",
     "bgColor": "#1c1b1d",
-    "textColor": "#deaf9d"
+    "mainColor": "#deaf9d"
   }
   ,{
     "name": "bliss",
     "bgColor": "#262727",
-    "textColor": "#665957"
+    "mainColor": "#665957"
   }
   ,{
     "name": "mizu",
     "bgColor": "#afcbdd",
-    "textColor": "#1a2633"
+    "mainColor": "#1a2633"
   }
   ,{
     "name": "metaverse",
     "bgColor": "#232323",
-    "textColor": "#d82934"
+    "mainColor": "#d82934"
   }
   ,{
     "name": "shadow",
     "bgColor": "#000",
-    "textColor": "#444"
+    "mainColor": "#444"
   }
   ,{
     "name": "mint",
     "bgColor": "#05385b",
-    "textColor": "#5cdb95"
+    "mainColor": "#5cdb95"
   }
   ,{
     "name": "miami",
     "bgColor": "#f35588",
-    "textColor": "#05dfd7"
+    "mainColor": "#05dfd7"
   }
   ,{
     "name": "miami_nights",
     "bgColor": "#18181a",
-    "textColor": "#e4609b"
+    "mainColor": "#e4609b"
   }
   ,{
     "name": "modern_dolch",
     "bgColor": "#2d2e30",
-    "textColor": "#65d2cd"
+    "mainColor": "#65d2cd"
   }
   ,{
     "name": "botanical",
     "bgColor": "#7b9c98",
-    "textColor": "#abc6c4"
+    "mainColor": "#abc6c4"
   }
   ,{
     "name": "9009",
     "bgColor": "#eeebe2",
-    "textColor": "#080909"
+    "mainColor": "#080909"
   }
   ,{
     "name": "bingsu",
     "bgColor": "#b8a7aa",
-    "textColor": "#ede8ec"
+    "mainColor": "#ede8ec"
   }
   ,{
     "name": "terminal",
     "bgColor": "#1b1c1d",
-    "textColor": "#79a617"
+    "mainColor": "#79a617"
   }
   ,{
     "name": "lavender",
     "bgColor": "#ada6c2",
-    "textColor": "#e4e3e9"
+    "mainColor": "#e4e3e9"
   }
   ,{
     "name": "taro",
     "bgColor": "#b3baff",
-    "textColor": "#130f1a"
+    "mainColor": "#130f1a"
   }
   ,{
     "name": "striker",
     "bgColor": "#124883",
-    "textColor": "#d6dbd9"
+    "mainColor": "#d6dbd9"
   }
   ,{
     "name": "gruvbox_dark",
     "bgColor": "#282828",
-    "textColor": "#ebdbb2"
+    "mainColor": "#ebdbb2"
   }
   ,{
     "name": "gruvbox_light",
     "bgColor": "#fbf1c7",
-    "textColor": "#3c3836"
+    "mainColor": "#3c3836"
   }
   ,{
     "name": "monokai",
     "bgColor": "#272822",
-    "textColor": "#E6DB74"
+    "mainColor": "#E6DB74"
   }
   ,{
     "name": "sonokai",
     "bgColor": "#2C2E34",
-    "textColor": "#E2E2E3"
+    "mainColor": "#E2E2E3"
   }
   ,{
     "name": "camping",
     "bgColor": "#faf1e4",
-    "textColor": "#618c56"
+    "mainColor": "#618c56"
   }
   ,{
     "name": "voc",
     "bgColor": "#190618",
-    "textColor": "#e0caac"
+    "mainColor": "#e0caac"
   }
   ,{
     "name": "vaporwave",
     "bgColor": "#a4a7ea",
-    "textColor": "#e368da"
+    "mainColor": "#e368da"
   }
   ,{
     "name": "pulse",
     "bgColor": "#181818",
-    "textColor": "#17b8bd"
+    "mainColor": "#17b8bd"
   }
   ,{
     "name": "matrix",
     "bgColor": "#000000",
-    "textColor": "#15ff00"
+    "mainColor": "#15ff00"
   }
   ,{
     "name": "olive",
     "bgColor": "#e9e5cc",
-    "textColor": "#92946f"
+    "mainColor": "#92946f"
   }
   ,{
     "name": "strawberry",
     "bgColor": "#f37f83",
-    "textColor": "#fcfcf8"
+    "mainColor": "#fcfcf8"
   }
   ,{
     "name": "night_runner",
     "bgColor": "#212121",
-    "textColor": "#feff04"
+    "mainColor": "#feff04"
   }
   ,{
     "name": "cyberspace",
     "bgColor": "#181c18",
-    "textColor": "#00ce7c"
+    "mainColor": "#00ce7c"
   }
   ,{
     "name": "joker",
     "bgColor": "#1a0e25",
-    "textColor": "#99de1e"
+    "mainColor": "#99de1e"
   }
   ,{
     "name": "dualshot",
     "bgColor": "#737373",
-    "textColor": "#212222"
+    "mainColor": "#212222"
   }
   ,{
     "name": "solarized_dark",
     "bgColor": "#002b36",
-    "textColor": "#859900"
+    "mainColor": "#859900"
   }
   ,{
     "name": "solarized_light",
     "bgColor": "#fdf6e3",
-    "textColor": "#859900"
+    "mainColor": "#859900"
   }
   ,{
     "name": "terra",
     "bgColor": "#0c100e",
-    "textColor": "#89c559"
+    "mainColor": "#89c559"
   }
   ,{
     "name": "red_dragon",
     "bgColor": "#1a0b0c",
-    "textColor": "#ff3a32"
+    "mainColor": "#ff3a32"
   }
   ,{
     "name": "hammerhead",
     "bgColor": "#030613",
-    "textColor": "#4fcdb9"
+    "mainColor": "#4fcdb9"
   }
   ,{
     "name": "future_funk",
     "bgColor": "#2E1A47",
-    "textColor": "#f7f2ea"
+    "mainColor": "#f7f2ea"
   }
   ,{
     "name": "milkshake",
     "bgColor": "#ffffff",
-    "textColor": "#212b43"
+    "mainColor": "#212b43"
   }
   ,{
     "name": "aether",
     "bgColor": "#101820",
-    "textColor": "#cf6bdd"
+    "mainColor": "#cf6bdd"
   }
   ,{
     "name": "froyo",
     "bgColor": "#e1dacb",
-    "textColor": "#b29c5e"
+    "mainColor": "#b29c5e"
   }
   ,{
     "name": "retrocast",
     "bgColor": "#07737a",
-    "textColor": "#88dbdf"
+    "mainColor": "#88dbdf"
   }
   ,{
     "name": "luna",
     "bgColor": "#221C35",
-    "textColor": "#f67599"
+    "mainColor": "#f67599"
   }
   ,{
     "name": "graen",
     "bgColor": "#303c36",
-    "textColor": "#a59682"
+    "mainColor": "#a59682"
   }
   ,{
     "name": "bento",
     "bgColor": "#2d394d",
-    "textColor": "#FC7374"
+    "mainColor": "#FC7374"
   }
   ,{
     "name": "watermelon",
     "bgColor": "#1F4437",
-    "textColor": "#B74B53"
+    "mainColor": "#B74B53"
   }
   ,{
     "name": "menthol",
     "bgColor": "#00c18c",
-    "textColor": "#ffffff"
+    "mainColor": "#ffffff"
   }
   ,{
     "name": "ishtar",
     "bgColor": "#202020",
-    "textColor": "#91170c"
+    "mainColor": "#91170c"
   }
   ,{
     "name": "mashu",
     "bgColor": "#2b2b2c",
-    "textColor": "#76689a"
+    "mainColor": "#76689a"
   }
   ,{
     "name": "deku",
     "bgColor": "#058B8C",
-    "textColor": "#F7F2EA"
+    "mainColor": "#F7F2EA"
   }
   ,{
     "name": "honey",
     "bgColor": "#f2aa00",
-    "textColor": "#fff546"
+    "mainColor": "#fff546"
   }
   ,{
     "name": "shoko",
     "bgColor": "#ced7e0",
-    "textColor": "#81c4dd"
+    "mainColor": "#81c4dd"
   }
   ,{
     "name": "norse",
     "bgColor": "#2b2b2c",
-    "textColor": "#ccc2b1"
+    "mainColor": "#ccc2b1"
   }
   ,{
     "name": "matcha_moccha",
     "bgColor": "#523525",
-    "textColor": "#7ec160"
+    "mainColor": "#7ec160"
   }
   ,{
     "name": "cafe",
     "bgColor": "#CEB18D",
-    "textColor": "#14120F"
+    "mainColor": "#14120F"
   }
   ,{
     "name": "alpine",
     "bgColor": "#6c687f",
-    "textColor": "#ffffff"
+    "mainColor": "#ffffff"
   }
   ,{
     "name": "superuser",
     "bgColor": "#262A33",
-    "textColor": "#43FFAF"
+    "mainColor": "#43FFAF"
   }
   ,{
     "name": "ms_cupcakes",
     "bgColor": "#ffffff",
-    "textColor": "#5ed5f3"
+    "mainColor": "#5ed5f3"
   }
   ,{
     "name": "dollar",
     "bgColor": "#e4e4d4",
-    "textColor": "#6b886b"
+    "mainColor": "#6b886b"
   }
   ,{
     "name": "lime",
     "bgColor": "#7c878e",
-    "textColor": "#93c247"
+    "mainColor": "#93c247"
   }
   ,{
     "name": "sweden",
     "bgColor": "#0058a3",
-    "textColor": "#ffcc02"
+    "mainColor": "#ffcc02"
   }
   ,{
     "name": "wavez",
     "bgColor": "#1c292f",
-    "textColor": "#6bde3b"
+    "mainColor": "#6bde3b"
   }
   ,{
     "name": "nebula",
     "bgColor": "#212135",
-    "textColor": "#be3c88"
+    "mainColor": "#be3c88"
   }
   ,{
     "name": "lil_dragon",
     "bgColor": "#ebe1ef",
-    "textColor": "#8a5bd6"
+    "mainColor": "#8a5bd6"
   }
   ,{
     "name": "pastel",
     "bgColor": "#ffd1dc",
-    "textColor": "#b39eb5"
+    "mainColor": "#b39eb5"
   }
   ,{
     "name": "alduin",
     "bgColor": "#1c1c1c",
-    "textColor": "#dfd7af"
+    "mainColor": "#dfd7af"
   }
   ,{
     "name": "paper",
     "bgColor": "#eeeeee",
-    "textColor": "#444444"
+    "mainColor": "#444444"
   }
   ,{
     "name": "fundamentals",
     "bgColor": "#727474",
-    "textColor": "#196378"
+    "mainColor": "#196378"
   }
   ,{
     "name": "drowning",
     "bgColor": "#191826",
-    "textColor": "#4a6fb5"
+    "mainColor": "#4a6fb5"
   }
   ,{
     "name": "iceberg_dark",
     "bgColor": "#161821",
-    "textColor": "#c6c8d1"
+    "mainColor": "#c6c8d1"
   }
   ,{
     "name": "iceberg_light",
     "bgColor": "#e8e9ec",
-    "textColor": "#33374c"
+    "mainColor": "#33374c"
   }
   ,{
     "name": "onedark",
     "bgColor": "#2f343f",
-    "textColor": "#98c379"
+    "mainColor": "#98c379"
   }
   ,{
     "name": "darling",
     "bgColor": "#fec8cd",
-    "textColor": "#ffffff"
+    "mainColor": "#ffffff"
   }
   ,{
     "name": "repose_dark",
     "bgColor": "#2f3338",
-    "textColor": "#d6d2bc"
+    "mainColor": "#d6d2bc"
   }
   ,{
     "name": "repose_light",
     "bgColor": "#efead0",
-    "textColor": "#333538"
+    "mainColor": "#333538"
   }
   ,{
     "name": "horizon",
     "bgColor": "#1C1E26",
-    "textColor": "#c4a88a"
+    "mainColor": "#c4a88a"
   }
   ,{
     "name": "rudy",
     "bgColor": "#1a2b3e",
-    "textColor": "#af8f5c"
+    "mainColor": "#af8f5c"
   }
   ,{
     "name": "stealth",
     "bgColor": "#010203",
-    "textColor": "#383e42"
+    "mainColor": "#383e42"
   }
   ,{
     "name": "80s_after_dark",
     "bgColor": "#1B1D36",
-    "textColor": "#FCA6D1"
+    "mainColor": "#FCA6D1"
   }
   ,{
     "name": "arch",
     "bgColor": "#0c0d11",
-    "textColor": "#f6f5f5"
+    "mainColor": "#f6f5f5"
   }
   ,  {
     "name": "rose_pine",
     "bgColor": "#1f1d27",
-    "textColor": "#e0def4"
+    "mainColor": "#e0def4"
   }
   ,  {
     "name": "rose_pine_moon",
     "bgColor": "#2a273f",
-    "textColor": "#e0def4"
+    "mainColor": "#e0def4"
   }
   ,  {
     "name": "rose_pine_dawn",
     "bgColor": "#fffaf3",
-    "textColor": "#575279"
+    "mainColor": "#575279"
   }
   ,{
     "name": "copper",
     "bgColor": "#442f29",
-    "textColor": "#e7e0de"
+    "mainColor": "#e7e0de"
   }
   ,{
     "name": "grand_prix",
     "bgColor": "#36475c",
-    "textColor": "#c0d036"
+    "mainColor": "#c0d036"
   }
   ,{
     "name": "peaches",
     "bgColor": "#d3cfc6",
-    "textColor": "#dd7a5f"
+    "mainColor": "#dd7a5f"
   }
   ,{
     "name": "bouquet",
     "bgColor": "#38564a",
-    "textColor": "#ffbdb2"
+    "mainColor": "#ffbdb2"
   }
   ,{
     "name": "midnight",
     "bgColor": "#0b0e13",
-    "textColor": "#9fadc6"
+    "mainColor": "#9fadc6"
   }
   ,{
     "name": "blueberry_light",
     "bgColor": "#dae0f5",
-    "textColor": "#df4576"
+    "mainColor": "#df4576"
   }
   ,{
     "name": "blueberry_dark",
     "bgColor": "#212b42",
-    "textColor": "#df4576"
+    "mainColor": "#df4576"
   }
   ,{
     "name": "fledgling",
     "bgColor": "#3b363f",
-    "textColor": "#fc6e83"
+    "mainColor": "#fc6e83"
   }
   ,{
     "name": "ez_mode",
     "bgColor": "#0171cd",
-    "textColor": "#fa62d5"
+    "mainColor": "#fa62d5"
   }
   ,{
     "name": "vscode",
     "bgColor": "#1E1E1E",
-    "textColor": "#007acc"
+    "mainColor": "#007acc"
   }
   ,{
     "name": "material",
     "bgColor": "#263238",
-    "textColor": "#80cbc4"
+    "mainColor": "#80cbc4"
   }
   ,{
     "name": "godspeed",
     "bgColor": "#eae4cf",
-    "textColor": "#c0bcab"
+    "mainColor": "#c0bcab"
   }
   ,{
     "name": "witch_girl",
     "bgColor": "#f3dbda",
-    "textColor": "#56786a"
+    "mainColor": "#56786a"
   }
   ,{
     "name": "terror_below",
     "bgColor": "#0b1e1a",
-    "textColor": "#66ac92"
+    "mainColor": "#66ac92"
   }
   ,{
     "name": "sewing_tin",
     "bgColor": "#241963",
-    "textColor": "#f2ce83"
+    "mainColor": "#f2ce83"
   }
   ,{
     "name": "soaring_skies",
     "bgColor": "#fdeedd",
-    "textColor": "#1e107a"
+    "mainColor": "#1e107a"
   }
   ,{
     "name": "sewing_tin_light",
     "bgColor": "#ffffff",
-    "textColor": "#2d2076"
+    "mainColor": "#2d2076"
   }
   ,{
     "name" : "chaos_theory",
     "bgColor" : "#141221",
-    "textColor":"#fd77d7"
+    "mainColor":"#fd77d7"
   }
   ,{
     "name" : "hanok",
     "bgColor" : "#d8d2c3",
-    "textColor":"#513a2a"
+    "mainColor":"#513a2a"
   }
   ,{
     "name": "comfy",
     "bgColor" : "#4A5B6E",
-    "textColor":"#F8CDC6"
+    "mainColor":"#F8CDC6"
   }
   ,{
     "name": "tiramisu",
     "bgColor" : "#CFC6B9",
-    "textColor":"#C0976F"
+    "mainColor":"#C0976F"
   }
   ,{
     "name": "diner",
     "bgColor" : "#537997",
-    "textColor":"#c3af5b"
+    "mainColor":"#c3af5b"
   }
   ,{
     "name": "modern_ink",
     "bgColor" : "#ffffff",
-    "textColor":"#ff360d"
+    "mainColor":"#ff360d"
   }
   ,{
     "name": "dev",
     "bgColor" : "#1b2028",
-    "textColor":"#23a9d5"
+    "mainColor":"#23a9d5"
   }
   ,{
     "name": "moonlight",
     "bgColor" : "#1f2730",
-    "textColor":"#c69f68"
+    "mainColor":"#c69f68"
   }
   ,{
      "name": "pink_lemonade",
      "bgColor" : "#f6d992",
-     "textColor":"#f6b092"
+     "mainColor":"#f6b092"
    }
    ,{
      "name": "creamsicle",
      "bgColor" : "#ff9869",
-     "textColor":"#fcfcf8"
+     "mainColor":"#fcfcf8"
    }
    ,{
      "name": "beach",
      "bgColor" : "#ffeead",
-     "textColor":"#88d8b0"
+     "mainColor":"#88d8b0"
    }
    ,{
      "name": "desert_oasis",
      "bgColor" : "#fff2d5",
-     "textColor":"#332800"
+     "mainColor":"#332800"
    }
 ]
