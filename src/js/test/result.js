@@ -329,7 +329,7 @@ export async function updateCrown() {
   );
 }
 
-function updateTags() {
+function updateTags(dontSave) {
   let activeTags = [];
   try {
     DB.getSnapshot().tags.forEach((tag) => {
@@ -361,7 +361,7 @@ function updateTags() {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
-    if (Config.mode != "quote") {
+    if (Config.mode != "quote" && !dontSave) {
       if (tpb < result.wpm) {
         //new pb for that tag
         DB.saveLocalTagPB(
@@ -569,7 +569,8 @@ export function update(
   afkDetected,
   isRepeated,
   tooShort,
-  randomQuote
+  randomQuote,
+  dontSave
 ) {
   result = res;
   $("#result #resultWordsHistory").addClass("hidden");
@@ -596,7 +597,7 @@ export function update(
   updateQuoteSource(randomQuote);
   updateGraph();
   updateGraphPBLine();
-  updateTags();
+  updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   if (
