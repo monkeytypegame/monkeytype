@@ -45,9 +45,9 @@ Then Add this code to your file:
   }
 ```
 Now change the corresponding hex codes to match your theme. However you aren't done, you need to update one more file. Go to ```./static/themes/_list.json```.
-At the very end of the file add this code (Keep it inside the square brackets and add a comma to the previous block of code.):
+At the very end of the file add this code (Keep it inside the square brackets):
 ```
-{
+,{
     "name": "theme_name",
     "bgColor": "#ffffff",
     "textColor": "#ffffff"
