@@ -26,7 +26,7 @@ export async function show(version) {
   Notifications.add(
     `Version ${version} has been released. Click to view the changelog.`,
     1,
-    7,
+    5,
     "Announcement",
     "code-branch",
     () => {
