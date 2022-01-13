@@ -542,21 +542,21 @@ const layouts = {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-            "qQ", "cC", "dD", "lL", "xX", "zZ", "yY", "oO", "uU", ";:", "[{", "]}", "\\|",
-            "rR", "sS", "tT", "hH", "kK", "pP", "nN", "eE", "iI", "aA", "/?",
-            "\\|", "wW", "gG", "bB", "mM", "vV", "jJ", "fF", "'\"", ",<", ".>",
+            "wW", "gG", "dD", "fF", "bB", "qQ", "lL", "uU", "oO", "yY", "[{", "]}", "\\|",
+            "rR", "sS", "tT", "hH", "kK", "jJ", "nN", "eE", "aA", "iI", ";:",
+            "\\|", "xX", "cC", "mM", "pP", "vV", "zZ", ",<", ".>", "'\"", "/?",
             " "
-        ]
+        ],
     },
-    APTx: {
+    APT_angle: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-            "qQ", "cC", "dD", "wW", "xX", "zZ", "pP", "oO", "uU", ";:", "[{", "]}", "\\|",
-            "rR", "sS", "tT", "nN", "vV", "yY", "hH", "eE", "iI", "aA", "/?",
-            "\\|", "lL", "gG", "bB", "mM", "jJ", "kK", "fF", "'\"", ",<", ".>",
+            "wW", "gG", "dD", "fF", "bB", "qQ", "lL", "uU", "oO", "yY", "[{", "]}", "\\|",
+            "rR", "sS", "tT", "hH", "kK", "jJ", "nN", "eE", "aA", "iI", ";:",
+            "\\|", "cC", "mM", "pP", "vV", "xX", "zZ", ",<", ".>", "'\"", "/?",
             " "
-        ]
+        ],
     },
     thai_kedmanee: {
         keymapShowTopRow: true,
