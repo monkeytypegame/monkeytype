@@ -667,6 +667,6 @@
   ,{
      "name": "frozen_llama",
      "bgColor" : "#9bf2ea",
-     "textColor":"#ffffff"
+     "mainColor":"#6d44a6"
    }
 ]
