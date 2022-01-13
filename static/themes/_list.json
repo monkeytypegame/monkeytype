@@ -663,5 +663,10 @@
      "name": "desert_oasis",
      "bgColor" : "#fff2d5",
      "mainColor":"#332800"
+   },
+   {
+     "name": "moriz",
+     "bgColor":   "#631970",
+     "mainColor": "#b32eca"
    }
 ]
