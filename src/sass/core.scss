@@ -73,34 +73,6 @@ body {
   display: flex;
 }
 
-.merchBanner {
-  background-color: var(--main-color);
-  /* padding: .5rem; */
-  text-align: center;
-  color: var(--bg-color);
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  grid-auto-flow: column;
-  gap: 1rem;
-  // height: 2rem;
-  padding: 0 1rem;
-  img {
-    height: 2rem;
-  }
-  a:hover {
-    color: var(--bg-color);
-  }
-  .closeButton {
-    transition: 0.25s;
-    // margin-left: 1rem;
-    &:hover {
-      color: var(--text-color);
-      cursor: pointer;
-    }
-  }
-}
-
 #backgroundLoader {
   height: 3px;
   position: fixed;
@@ -149,7 +121,10 @@ label.checkbox {
   display: grid;
   grid-auto-flow: row;
   min-height: 100vh;
-  padding: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
   gap: 2rem;
   align-items: center;
   z-index: 999;
