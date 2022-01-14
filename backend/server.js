@@ -29,23 +29,30 @@ app.use((req, res, next) => {
   }
 });
 
-const userRouter = require("./api/routes/user");
-app.use("/user", userRouter);
-const configRouter = require("./api/routes/config");
-app.use("/config", configRouter);
-const resultRouter = require("./api/routes/result");
-app.use("/results", resultRouter);
-const presetRouter = require("./api/routes/preset");
-app.use("/presets", presetRouter);
-const quoteRatings = require("./api/routes/quote-ratings");
-app.use("/quote-ratings", quoteRatings);
-const psaRouter = require("./api/routes/psa");
-app.use("/psa", psaRouter);
-const leaderboardsRouter = require("./api/routes/leaderboards");
-app.use("/leaderboard", leaderboardsRouter);
-const newQuotesRouter = require("./api/routes/new-quotes");
-app.use("/new-quotes", newQuotesRouter);
+let startingPath = "";
 
+if (process.env.API_PATH_OVERRIDE) {
+  startingPath = "/" + process.env.API_PATH_OVERRIDE;
+}
+
+const userRouter = require("./api/routes/user");
+app.use(startingPath + "/user", userRouter);
+const configRouter = require("./api/routes/config");
+app.use(startingPath + "/config", configRouter);
+const resultRouter = require("./api/routes/result");
+app.use(startingPath + "/results", resultRouter);
+const presetRouter = require("./api/routes/preset");
+app.use(startingPath + "/presets", presetRouter);
+const quoteRatings = require("./api/routes/quote-ratings");
+app.use(startingPath + "/quote-ratings", quoteRatings);
+const psaRouter = require("./api/routes/psa");
+app.use(startingPath + "/psa", psaRouter);
+const leaderboardsRouter = require("./api/routes/leaderboards");
+app.use(startingPath + "/leaderboard", leaderboardsRouter);
+const newQuotesRouter = require("./api/routes/new-quotes");
+app.use(startingPath + "/new-quotes", newQuotesRouter);
+
+//DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
 app.use(function (e, req, res, next) {
   let monkeyError;
   if (e.errorID) {
@@ -60,7 +67,7 @@ app.use(function (e, req, res, next) {
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
-      `system_error`,
+      "system_error",
       `${monkeyError.status} ${monkeyError.message}`,
       monkeyError.uid
     );
@@ -72,8 +79,11 @@ app.use(function (e, req, res, next) {
       message: monkeyError.message,
       stack: monkeyError.stack,
     });
+    monkeyError.stack = undefined;
+  } else {
+    console.error(monkeyError.message);
   }
-  return res.status(e.status || 500).json(monkeyError);
+  return res.status(monkeyError.status || 500).json(monkeyError);
 });
 
 app.get("/test", (req, res) => {
@@ -82,13 +92,14 @@ app.get("/test", (req, res) => {
 
 const LeaderboardsDAO = require("./dao/leaderboards");
 
+console.log("Starting server...");
 app.listen(PORT, async () => {
-  console.log(`listening on port ${PORT}`);
+  console.log(`Listening on port ${PORT}`);
   await connectDB();
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Database Connected");
+  console.log("Database connected");
 
   let lbjob = new CronJob("30 4/5 * * * *", async () => {
     let before15 = await mongoDB()

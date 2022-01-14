@@ -1,110 +1,3 @@
-.row {
-  height: 2rem;
-  gap: 0.25rem;
-}
-
-.keymap-key {
-  display: flex;
-  background-color: transparent;
-  color: var(--sub-color);
-  border-radius: var(--roundness);
-  border: 0.05rem solid;
-  border-color: var(--sub-color);
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  width: 2rem;
-  height: 2rem;
-  position: relative;
-
-  .bump {
-    width: 0.75rem;
-    height: 0.05rem;
-    background: var(--sub-color);
-    position: absolute;
-    border-radius: var(--roundness);
-    // margin-top: 1.5rem;
-    bottom: 0.15rem;
-  }
-
-  &.active-key {
-    color: var(--bg-color);
-    background-color: var(--main-color);
-    border-color: var(--main-color);
-
-    .bump {
-      background: var(--bg-color);
-    }
-  }
-
-  &#KeySpace {
-    &:hover {
-      cursor: pointer;
-      color: var(--main-color);
-    }
-  }
-
-  &#KeySpace,
-  &#KeySpace2 {
-    width: 100%;
-  }
-
-  &#KeySpace2 {
-    opacity: 0;
-  }
-
-  &.flash {
-    animation: flashKey 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-}
-
-.hidden-key,
-.hide-key {
-  opacity: 0;
-}
-
-.keymap {
-  .keymap-split-spacer,
-  .keymap-stagger-split-spacer,
-  .keymap-matrix-split-spacer {
-    display: none;
-  }
-}
-
-.r1 {
-  display: grid;
-  grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.r2 {
-  display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1rem;
-}
-
-.r3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.r4 {
-  display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.75fr;
-}
-
-.r5 {
-  display: grid;
-  grid-template-columns: 3.5fr 6fr 3.5fr;
-  font-size: 0.5rem;
-  // &.matrixSpace {
-  //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
-  //   grid-template-columns: 6.9fr 4.6fr 6.9fr; // wider spacebar
-  // }
-  // &.splitSpace {
-  //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
-  //   grid-template-columns: 4fr 7.5fr 4fr;
-  // }
-}
-
 .keymap {
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
@@ -114,9 +7,111 @@
   gap: 0.25rem;
   margin-top: 1rem;
   user-select: none;
-}
 
-.keymap {
+  .row {
+    height: 2rem;
+    gap: 0.25rem;
+  }
+
+  .keymap-key {
+    display: flex;
+    background-color: transparent;
+    color: var(--sub-color);
+    border-radius: var(--roundness);
+    border: 0.05rem solid;
+    border-color: var(--sub-color);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    width: 2rem;
+    height: 2rem;
+    position: relative;
+
+    .bump {
+      width: 0.75rem;
+      height: 0.05rem;
+      background: var(--sub-color);
+      position: absolute;
+      border-radius: var(--roundness);
+      // margin-top: 1.5rem;
+      bottom: 0.15rem;
+    }
+
+    &.active-key {
+      color: var(--bg-color);
+      background-color: var(--main-color);
+      border-color: var(--main-color);
+
+      .bump {
+        background: var(--bg-color);
+      }
+    }
+
+    &#KeySpace {
+      &:hover {
+        cursor: pointer;
+        color: var(--main-color);
+      }
+    }
+
+    &#KeySpace,
+    &#KeySpace2 {
+      width: 100%;
+    }
+
+    &#KeySpace2 {
+      opacity: 0;
+    }
+
+    &.flash {
+      animation: flashKey 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  }
+
+  .hidden-key,
+  .hide-key {
+    opacity: 0;
+  }
+
+  .keymap-split-spacer,
+  .keymap-stagger-split-spacer,
+  .keymap-matrix-split-spacer {
+    display: none;
+  }
+
+  .r1 {
+    display: grid;
+    grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .r2 {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1rem;
+  }
+
+  .r3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  }
+
+  .r4 {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.75fr;
+  }
+
+  .r5 {
+    display: grid;
+    grid-template-columns: 3.5fr 6fr 3.5fr;
+    font-size: 0.5rem;
+    // &.matrixSpace {
+    //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
+    //   grid-template-columns: 6.9fr 4.6fr 6.9fr; // wider spacebar
+    // }
+    // &.splitSpace {
+    //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
+    //   grid-template-columns: 4fr 7.5fr 4fr;
+    // }
+  }
   &.matrix {
     .r1,
     .r2,

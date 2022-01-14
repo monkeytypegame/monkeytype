@@ -5,10 +5,10 @@
   --text-color: #dde5ed;
   --error-color: #fd77d7;
   --sub-color: #676e8a;
-  --error-color: #d44729;
-  --error-extra-color: #8f2f19;
-  --colorful-error-color: #d44729;
-  --colorful-error-extra-color: #8f2f19;
+  --error-color: #FF5869;
+  --error-extra-color: #b03c47;
+  --colorful-error-color: #FF5869;
+  --colorful-error-extra-color: #b03c47;
 }
 
 #top .logo .text {

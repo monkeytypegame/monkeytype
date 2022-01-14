@@ -334,6 +334,15 @@
   }
 }
 
+#words.arrows {
+  .word {
+    margin: 0.5rem 0;
+    letter {
+      margin: 0 0.25rem;
+    }
+  }
+}
+
 .word.error {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid var(--error-color);
@@ -345,7 +354,8 @@
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
-#words.noErrorBorder {
+#words.noErrorBorder,
+#resultWordsHistory.noErrorBorder {
   .word.error {
     text-shadow: none;
   }
@@ -830,6 +840,33 @@
 
   &:focus {
     background: var(--sub-color);
+  }
+}
+
+#retrySavingResultButton {
+  position: relative;
+  border-radius: var(--roundness);
+  padding: 1rem 2rem;
+  color: var(--error-color);
+  transition: 0.25s;
+  cursor: pointer;
+  width: max-content;
+  width: -moz-max-content;
+  background: var(--colorful-error-color);
+  color: var(--bg-color);
+  justify-self: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  user-select: none;
+
+  &:hover,
+  &:focus {
+    background: var(--text-color);
+    outline: none;
+  }
+
+  &:focus {
+    background: var(--text-color);
   }
 }
 

@@ -9,6 +9,11 @@
     display: grid;
     gap: 0.5rem;
     justify-content: center;
+    grid-template-columns: 1fr;
+
+    input {
+      width: 15rem;
+    }
 
     &.login {
       grid-template-areas:

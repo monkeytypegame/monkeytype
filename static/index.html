@@ -17,36 +17,26 @@
     />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/media-queries.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
-    <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <!-- <link rel="shortcut icon" href="images/favicon/fav.png" /> -->
+    <link id="favicon" rel="shortcut icon" href="/images/favicon/favicon.ico" />
     <link
-      href="images/favicon/apple-touch-icon-180x180.png"
       rel="apple-touch-icon"
       sizes="180x180"
+      href="/images/favicon/apple-touch-icon.png"
     />
+    <link rel="manifest" href="/images/favicon/site.webmanifest" />
     <link
-      href="images/favicon/apple-touch-icon-152x152.png"
-      rel="apple-touch-icon"
-      sizes="152x152"
+      rel="mask-icon"
+      href="/images/favicon/safari-pinned-tab.svg"
+      color="#eee"
     />
-    <link
-      href="images/favicon/apple-touch-icon-120x120.png"
-      rel="apple-touch-icon"
-      sizes="120x120"
+    <meta name="msapplication-TileColor" content="#e2b714" />
+    <meta
+      name="msapplication-config"
+      content="/images/favicon/browserconfig.xml"
     />
-
-    <link
-      href="images/favicon/apple-touch-icon-76x76.png"
-      rel="apple-touch-icon"
-      sizes="76x76"
-    />
-    <link
-      rel="apple-touch-icon"
-      href="images/favicon/apple-touch-icon-60x60.png"
-    />
+    <meta id="metaThemeColor" name="theme-color" content="#e2b714" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -54,8 +44,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="manifest" href="manifest.json" />
     <meta name="name" content="Monkeytype" />
-    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="image" content="https://monkeytype.com/images/mtsocial.png" />
     <meta
       name="description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
@@ -69,13 +60,18 @@
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
     <meta
+      property="og:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
+    <meta
       property="og:description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
-    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
-    <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
     <meta name="twitter:title" content="Monkeytype" />
-    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta
+      name="twitter:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
@@ -94,12 +90,99 @@
       id="adScript"
       async
     ></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
   </head>
   <div class="customBackground"></div>
 
   <body>
+    <noscript>
+      <div
+        style="
+          background: #333;
+          width: 100vw;
+          height: 100vh;
+          left: 0;
+          top: 0;
+          position: fixed;
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          color: #646669;
+          font-size: 1rem;
+          font-family: Arial Rounded MT Bold;
+          z-index: 99999;
+          padding: 6rem;
+          box-sizing: border-box;
+        "
+      >
+        <div
+          style="
+            display: grid;
+            justify-content: center;
+            align-content: center;
+            max-width: 800px;
+            gap: 1rem;
+          "
+        >
+          <span style="font-size: 6rem; color: #e2b714">:(</span>
+          <span style="font-size: 2rem; color: #d1d0c5">
+            Looks like JavaScript is disabled. Please enable JavaScript in order
+            to use this website.
+          </span>
+        </div>
+      </div>
+    </noscript>
+    <div
+      id="nocss"
+      style="
+        background: #333;
+        width: 100vw;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        position: fixed;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        color: #646669;
+        font-size: 1rem;
+        font-family: Arial Rounded MT Bold;
+        z-index: 99999;
+        padding: 6rem;
+        box-sizing: border-box;
+      "
+    >
+      <div
+        style="
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          max-width: 800px;
+          gap: 1rem;
+        "
+      >
+        <span style="font-size: 6rem; color: #e2b714">:(</span>
+        <span style="font-size: 2rem; color: #d1d0c5">
+          It seems like the CSS failed to load. Please clear your cache to
+          redownload the styles. If that doesn't help contact support.
+          <br />
+          (jack@monkeytype.com or discord.gg/monkeytype)
+        </span>
+        <span>(ctrl/cmd + shift + r on Chromium browsers)</span>
+        <span>
+          If the website works for a bit but then this screen comes back, clear
+          your cache again and then on Monkeytype open the command line (esc)
+          and search for "Clear SW cache".
+        </span>
+      </div>
+    </div>
     <div id="ad_rich_media" class="hidden"></div>
     <div id="backgroundLoader" style="display: none"></div>
+    <div id="bannerCenter"></div>
     <div id="notificationCenter">
       <div class="history"></div>
     </div>
@@ -114,14 +197,6 @@
       "
     >
       Important information about your account. Please click this message.
-    </div>
-    <div class="merchBanner hidden">
-      <img src="images/merchdropwebsite2.png" alt="" />
-      <div class="text">
-        We've got brand new merch designs over at
-        <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
-      </div>
-      <i class="fas closeButton fa-times"></i>
     </div>
 
     <div id="simplePopupWrapper" class="popupWrapper hidden">
@@ -624,7 +699,7 @@
     </div>
     <div id="versionHistoryWrapper" class="hidden">
       <div id="versionHistory">
-        <div class="tip">Click anywhere to dismiss</div>
+        <!-- <div class="tip">Click anywhere to dismiss</div> -->
         <div class="releases">
           <div class="release">
             <div class="title">v1</div>
@@ -671,6 +746,89 @@
           <a class="button" href="https://monkeytype.store" target="_blank">
             <div class="icon"><i class="fas fa-tshirt"></i></div>
             <div class="text">Buy Merch</div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div id="contactPopupWrapper" class="popupWrapper hidden">
+      <div id="contactPopup">
+        <div class="title">Contact</div>
+        <div class="text">
+          Feel free to send an email to jack@monkeytype.com (the buttons below
+          will open the default mail client).
+          <br />
+          <br />
+          Please
+          <span>do not send</span>
+          requests to delete account, update email, update name or clear
+          personal bests - you can do that in the settings page.
+        </div>
+        <div class="buttons">
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Question] "
+          >
+            <div class="icon"><i class="fas fa-question-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Question</div>
+              <!-- <div class="subtext">Confused about something?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Feedback] "
+          >
+            <div class="icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="textGroup">
+              <div class="text">Feedback</div>
+              <!-- <div class="subtext">Feel like the website could be improved?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Bug] "
+          >
+            <div class="icon"><i class="fas fa-bug"></i></div>
+            <div class="textGroup">
+              <div class="text">Bug Report</div>
+              <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Account] "
+          >
+            <div class="icon"><i class="fas fa-user-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Account Help</div>
+              <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Business] "
+          >
+            <div class="icon"><i class="fas fa-briefcase"></i></div>
+            <div class="textGroup">
+              <div class="text">Business Inquiry</div>
+              <!-- <div class="subtext">Let's work together.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Other] "
+          >
+            <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
+            <div class="textGroup">
+              <div class="text">Other</div>
+              <!-- <div class="subtext">We will try to help.</div> -->
+            </div>
           </a>
         </div>
       </div>
@@ -761,7 +919,7 @@
             <!-- <img src="images/logo1.svg" alt="" width="200px" height="100px"> -->
           </div>
           <div id="menu">
-            <div
+            <a
               id="startTestButton"
               class="icon-button view-start"
               tabindex="2"
@@ -771,7 +929,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-keyboard"></i>
               </div>
-            </div>
+            </a>
             <div
               class="icon-button leaderboards view-leaderboards"
               tabindex="2"
@@ -781,7 +939,7 @@
                 <i class="fas fa-fw fa-crown"></i>
               </div>
             </div>
-            <div
+            <a
               class="icon-button view-about"
               tabindex="2"
               href="/about"
@@ -790,7 +948,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-info"></i>
               </div>
-            </div>
+            </a>
             <!-- <a
               class="icon-button discord"
               tabindex="2"
@@ -803,7 +961,7 @@
                 <i class="fab fa-discord"></i>
               </div>
             </a> -->
-            <div
+            <a
               class="icon-button view-settings"
               tabindex="2"
               href="/settings"
@@ -812,8 +970,8 @@
               <div class="icon">
                 <i class="fas fa-fw fa-cog"></i>
               </div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button hidden account view-account"
               tabindex="2"
               href="/account"
@@ -823,8 +981,8 @@
                 <i class="fas fa-fw fa-user"></i>
               </div>
               <div class="text"></div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button login view-login"
               tabindex="2"
               href="/login"
@@ -833,7 +991,7 @@
               <div class="icon">
                 <i class="far fa-fw fa-user"></i>
               </div>
-            </div>
+            </a>
           </div>
 
           <div class="config hidden">
@@ -844,6 +1002,7 @@
             </div>
             <div class="desktopConfig">
               <div
+                class="puncAndNum"
                 style="
                   display: grid;
                   grid-auto-flow: column;
@@ -956,7 +1115,15 @@
         <div id="middle">
           <div class="page pageLoading hidden">
             <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="icon">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+              <div class="barWrapper hidden">
+                <div class="bar">
+                  <div class="fill"></div>
+                </div>
+                <div class="text">‎</div>
+              </div>
             </div>
           </div>
           <div class="page pageTest hidden">
@@ -1297,11 +1464,6 @@
                   </div>
                   <div class="bottom">-</div>
                 </div>
-
-                <div class="group leaderboards">
-                  <div class="top">leaderboards</div>
-                  <div class="bottom">-</div>
-                </div>
               </div>
               <div class="chart">
                 <!-- <div class="title">wpm over time</div> -->
@@ -1365,6 +1527,15 @@
                     <div id="replayWords" class="words"></div>
                   </div>
                 </div>
+                <div
+                  id="retrySavingResultButton"
+                  class="hidden"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-redo"></i>
+                  Retry saving result
+                </div>
                 <div class="buttons">
                   <div
                     id="nextTestButton"
@@ -1426,7 +1597,7 @@
             </div>
           </div>
           <div class="page pageAbout hidden">
-            <div class="scrollToTopButton">
+            <div class="scrollToTopButton invisible">
               <i class="fas fa-angle-double-up"></i>
             </div>
             <div class="created">
@@ -1526,7 +1697,7 @@
               </p>
               <div class="supportButtons">
                 <a class="button ads">
-                  <div class="fas fas fa-ad"></div>
+                  <div class="fas fa-ad"></div>
                   Ads
                 </a>
                 <a
@@ -3989,6 +4160,18 @@
                   </div>
                 </div>
               </div>
+              <div class="section capsLockWarning">
+                <h1>caps lock warning</h1>
+                <div class="text">Displays a warning when caps lock is on.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
               <div class="sectionSpacer"></div>
             </div>
 
@@ -4168,17 +4351,27 @@
             <div class="register side">
               <div class="title">register</div>
               <form action="" autocomplete="nope">
-                <input type="text" placeholder="username" autocomplete="nope" />
-                <input type="email" placeholder="email" autocomplete="nope" />
+                <input
+                  type="text"
+                  placeholder="username"
+                  autocomplete="new-username"
+                />
+                <input
+                  type="email"
+                  placeholder="email"
+                  autocomplete="new-email"
+                />
                 <input
                   type="password"
                   placeholder="password"
                   autocomplete="new-password"
+                  name="new-password"
                 />
                 <input
                   type="password"
                   placeholder="verify password"
-                  autocomplete="nopeee"
+                  autocomplete="verify-password"
+                  name="verify-password"
                 />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>
@@ -4190,11 +4383,17 @@
               <div class="title">login</div>
               <div id="forgotPasswordButton">Forgot password?</div>
               <form action="">
-                <input type="email" placeholder="email" autocomplete="email" />
                 <input
+                  name="current-email"
+                  type="email"
+                  placeholder="email"
+                  autocomplete="current-username"
+                />
+                <input
+                  name="current-password"
                   type="password"
                   placeholder="password"
-                  autocomplete="password"
+                  autocomplete="current-password"
                 />
                 <div>
                   <label id="rememberMe" class="checkbox">
@@ -4225,7 +4424,15 @@
               <i class="fas fa-angle-double-up"></i>
             </div>
             <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="icon">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+              <div class="barWrapper hidden">
+                <div class="bar">
+                  <div class="fill"></div>
+                </div>
+                <div class="text">‎</div>
+              </div>
             </div>
             <div class="content hidden">
               <div class="miniResultChartWrapper">
@@ -4648,9 +4855,9 @@
           </div>
           <div class="leftright">
             <div class="left">
-              <a href="mailto:jack@monkeytype.com" target="_blank">
+              <a id="contactPopupButton">
                 <i class="fas fa-fw fa-envelope"></i>
-                <div class="text">Support</div>
+                <div class="text">Contact</div>
               </a>
               <a href="https://github.com/Miodec/monkeytype" target="_blank">
                 <i class="fas fa-fw fa-code"></i>
@@ -4726,7 +4933,6 @@
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="/__/firebase/8.4.2/firebase-app.js"></script>
-
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
   <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
@@ -4742,7 +4948,10 @@
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"
+    defer
+  ></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="js/monkeytype.js"></script>
 </html>

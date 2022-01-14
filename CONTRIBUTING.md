@@ -6,7 +6,7 @@
 - [Prerequisites](#prerequisites)
   - [Text Editor](#text-editor)
   - [Git ](#git)
-  - [NodeJS](#nodejs)
+  - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
   - [Mongo Setup](#mongo-setup)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
@@ -30,7 +30,7 @@ If you are not a developer and wish to contribute themes, new languages, or quot
 
 #### Git
 
-Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management system(SCM) for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. However using a Git client won't give you access to the full functionality of Git but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
+Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management system (SCM) for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. However using a Git client won't give you access to the full functionality of Git but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
 #### NodeJS and NPM
 
@@ -67,7 +67,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory. You will have to create the credentials folder.
+   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
 1. Enable Firebase Authentication
 
@@ -82,6 +82,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 1. Install [MongodDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
+
+   1. If necessary, uncomment the lines in the `.env` file to use credentials to login to MongoDB.
 
 1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started`.
@@ -109,6 +111,8 @@ Before submitting a theme make sure...
 - the text color is either black or white (or very close to these colors)
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+
+(If you want to contribute themes but don't know how check [THEMES.md](https://github.com/teddinotteddy/monkeytype/blob/Theme-Documentation/THEMES.md)
 
 #### Language Guidelines
 

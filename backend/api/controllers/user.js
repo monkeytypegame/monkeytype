@@ -64,7 +64,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.clearPb(uid);
-      Logger.log("user_cleared_pbs", ``, uid);
+      Logger.log("user_cleared_pbs", "", uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -93,7 +93,11 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       const { newEmail } = req.body;
-      await UsersDAO.updateEmail(uid, newEmail);
+      try {
+        await UsersDAO.updateEmail(uid, newEmail);
+      } catch (e) {
+        throw new MonkeyError(400, e.message, "update email", uid);
+      }
       Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
       return res.sendStatus(200);
     } catch (e) {
@@ -205,8 +209,21 @@ class UserController {
   static async unlinkDiscord(req, res, next) {
     try {
       const { uid } = req.decodedToken;
+      let userInfo;
+      try {
+        userInfo = await UsersDAO.getUser(uid);
+      } catch (e) {
+        throw new MonkeyError(400, "User not found.");
+      }
+      if (!userInfo.discordId) {
+        throw new MonkeyError(
+          400,
+          "User does not have a linked Discord account"
+        );
+      }
+      await BotDAO.unlinkDiscord(uid, userInfo.discordId);
       await UsersDAO.unlinkDiscord(uid);
-      Logger.log("user_discord_unlinked", ``, uid);
+      Logger.log("user_discord_unlinked", userInfo.discordId, uid);
       return res.status(200).send();
     } catch (e) {
       return next(e);
