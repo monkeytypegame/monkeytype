@@ -819,3 +819,8 @@ export function getMode2(mode) {
   }
   return mode2;
 }
+
+//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
+export function convertRemToPixels(rem) {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
