@@ -23,7 +23,7 @@ module.exports = {
         throw new MonkeyError(
           401,
           "Unauthorized",
-          `endpoint: ${req.baseUrl} no authrizaion header found`
+          `endpoint: ${req.baseUrl} no authorization header found`
         );
       const token = authorization.split(" ");
       if (token[0].trim() !== "Bearer")
