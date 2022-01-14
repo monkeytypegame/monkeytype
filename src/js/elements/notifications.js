@@ -1,4 +1,4 @@
-const notificationHistory = [];
+// const notificationHistory = [];
 let id = 0;
 class Notification {
   constructor(
@@ -141,14 +141,14 @@ export function add(
   customIcon,
   clickCallback
 ) {
-  notificationHistory.push(
-    new Notification(
-      message,
-      level,
-      duration,
-      customTitle,
-      customIcon,
-      clickCallback
-    ).show()
-  );
+  // notificationHistory.push(
+  new Notification(
+    message,
+    level,
+    duration,
+    customTitle,
+    customIcon,
+    clickCallback
+  ).show();
+  // );
 }
