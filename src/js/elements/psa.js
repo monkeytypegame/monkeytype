@@ -28,7 +28,7 @@ export async function show() {
   }
   let localmemory = getMemory();
   latest.forEach((psa) => {
-    if (localmemory.includes(psa._id)) return;
+    if (localmemory.includes(psa._id) && psa.sticky === false) return;
     Notifications.addBanner(
       psa.message,
       psa.level,
