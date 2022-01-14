@@ -1375,7 +1375,7 @@ export function retrySavingResult() {
             Config.lazyMode,
             completedEvent.wpm,
             completedEvent.acc,
-            completedEvent.wpmRaw,
+            completedEvent.rawWpm,
             completedEvent.consistency
           );
         }
@@ -1753,7 +1753,7 @@ export async function finish(difficultyFailed = false) {
             Config.lazyMode,
             completedEvent.wpm,
             completedEvent.acc,
-            completedEvent.wpmRaw,
+            completedEvent.rawWpm,
             completedEvent.consistency
           );
         }
