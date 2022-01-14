@@ -53,14 +53,29 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(22.5);
+    // } else {
+    //   LoadingPage.updateBar(16);
+    // }
+    // LoadingPage.updateText("Downloading user...");
     if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(22.5);
+      LoadingPage.updateBar(90);
     } else {
-      LoadingPage.updateBar(16);
+      LoadingPage.updateBar(64);
     }
-    LoadingPage.updateText("Downloading user...");
-    let userData = await axiosInstance.get("/user");
-    userData = userData.data;
+    LoadingPage.updateText("Downloading user data...");
+    let promises = await Promise.all([
+      axiosInstance.get("/user"),
+      axiosInstance.get("/config"),
+      axiosInstance.get("/user/tags"),
+      axiosInstance.get("/presets"),
+    ]);
+    let userData = promises[0].data;
+    let configData = promises[1].data;
+    let tagsData = promises[2].data;
+    let presetsData = promises[3].data;
+
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
     snap.banned = userData.banned;
@@ -82,25 +97,22 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(45);
-    } else {
-      LoadingPage.updateBar(32);
-    }
-    LoadingPage.updateText("Downloading config...");
-    let configData = await axiosInstance.get("/config");
-    configData = configData.data;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(45);
+    // } else {
+    //   LoadingPage.updateBar(32);
+    // }
+    // LoadingPage.updateText("Downloading config...");
     if (configData) {
       snap.config = configData.config;
     }
-    if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(67.5);
-    } else {
-      LoadingPage.updateBar(48);
-    }
-    LoadingPage.updateText("Downloading tags...");
-    let tagsData = await axiosInstance.get("/user/tags");
-    snap.tags = tagsData.data;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(67.5);
+    // } else {
+    //   LoadingPage.updateBar(48);
+    // }
+    // LoadingPage.updateText("Downloading tags...");
+    snap.tags = tagsData;
     snap.tags = snap.tags.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
@@ -115,9 +127,8 @@ export async function initSnapshot() {
     } else {
       LoadingPage.updateBar(64);
     }
-    LoadingPage.updateText("Downloading presets...");
-    let presetsData = await axiosInstance.get("/presets");
-    snap.presets = presetsData.data;
+    LoadingPage.updateText("Downloading user data...");
+    snap.presets = presetsData;
     snap.presets = snap.presets.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
