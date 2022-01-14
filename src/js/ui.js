@@ -254,21 +254,6 @@ window.addEventListener("keydown", function (e) {
   }
 });
 
-$(".merchBanner a").click((event) => {
-  $(".merchBanner").remove();
-  window.localStorage.setItem("merchbannerclosed", true);
-});
-
-$(".merchBanner .fas").click((event) => {
-  $(".merchBanner").remove();
-  window.localStorage.setItem("merchbannerclosed", true);
-  // Notifications.add(
-  //   "Won't remind you anymore. Thanks for continued support <3",
-  //   0,
-  //   5
-  // );
-});
-
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     UpdateConfig.toggleCustomTheme();
