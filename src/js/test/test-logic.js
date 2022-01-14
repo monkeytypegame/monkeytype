@@ -1510,11 +1510,6 @@ function buildCompletedEvent(difficultyFailed) {
 
   completedEvent.mode2 = Misc.getMode2();
 
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    TestStats.setKeypressTimingsTooLong();
-  }
-
   if (Config.mode === "custom") {
     completedEvent.customText = {};
     completedEvent.customText.textLen = CustomText.text.length;
@@ -1680,6 +1675,11 @@ export async function finish(difficultyFailed = false) {
     randomQuote,
     dontSave
   );
+
+  if (completedEvent.testDuration > 122) {
+    completedEvent.chartData = "toolong";
+    TestStats.setKeypressTimingsTooLong();
+  }
 
   if (dontSave) {
     try {
