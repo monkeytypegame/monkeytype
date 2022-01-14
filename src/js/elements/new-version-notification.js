@@ -23,15 +23,11 @@ export async function show(version) {
   }
   if (memory === version) return;
   caches.delete("sw-cache");
-  Notifications.add(
-    `Version ${version} has been released. Click to view the changelog.`,
+  Notifications.addBanner(
+    `Version ${version} has been released. Click the version number in the bottom right to view the changelog.`,
     1,
-    5,
-    "Announcement",
     "code-branch",
-    () => {
-      VersionPopup.show();
-    }
+    false
   );
   setMemory(version);
 }
