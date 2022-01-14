@@ -8,6 +8,7 @@ import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
 import * as NewVersionNotification from "./new-version-notification";
+import * as Notifications from "./notifications";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
@@ -31,9 +32,15 @@ $(document).ready(() => {
     $("#restartTestButton").addClass("hidden");
   }
   if (!window.localStorage.getItem("merchbannerclosed")) {
-    $(".merchBanner").removeClass("hidden");
-  } else {
-    $(".merchBanner").remove();
+    Notifications.addBanner(
+      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.creator-spring.com/?">monkeytype.store</a>`,
+      1,
+      "images/merchdropwebsite2.png",
+      false,
+      () => {
+        window.localStorage.setItem("merchbannerclosed", true);
+      }
+    );
   }
   $("#centerContent")
     .css("opacity", "0")
