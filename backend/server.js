@@ -92,13 +92,14 @@ app.get("/test", (req, res) => {
 
 const LeaderboardsDAO = require("./dao/leaderboards");
 
+console.log("Starting server...");
 app.listen(PORT, async () => {
-  console.log(`listening on port ${PORT}`);
+  console.log(`Listening on port ${PORT}`);
   await connectDB();
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Database Connected");
+  console.log("Database connected");
 
   let lbjob = new CronJob("30 4/5 * * * *", async () => {
     let before15 = await mongoDB()
