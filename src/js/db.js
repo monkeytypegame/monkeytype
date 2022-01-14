@@ -62,7 +62,7 @@ export async function initSnapshot() {
     if (UI.getActivePage() == "pageLoading") {
       LoadingPage.updateBar(90);
     } else {
-      LoadingPage.updateBar(64);
+      LoadingPage.updateBar(45);
     }
     LoadingPage.updateText("Downloading user data...");
     let promises = await Promise.all([
@@ -122,12 +122,12 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(64);
-    }
-    LoadingPage.updateText("Downloading user data...");
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(90);
+    // } else {
+    //   LoadingPage.updateBar(64);
+    // }
+    // LoadingPage.updateText("Downloading presets...");
     snap.presets = presetsData;
     snap.presets = snap.presets.sort((a, b) => {
       if (a.name > b.name) {
