@@ -261,11 +261,24 @@ task("clean", function () {
 });
 
 task("updateSwCacheName", function () {
+  let date = new Date();
+  let dateString =
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1) +
+    "-" +
+    date.getDate() +
+    "-" +
+    date.getHours() +
+    "-" +
+    date.getMinutes() +
+    "-" +
+    date.getSeconds();
   return src(["static/sw.js"])
     .pipe(
       replace(
         /const staticCacheName = .*;/g,
-        `const staticCacheName = "sw-cache-${Date.now()}";`
+        `const staticCacheName = "sw-cache-${dateString}";`
       )
     )
     .pipe(dest("./dist/"));
