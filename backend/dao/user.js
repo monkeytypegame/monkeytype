@@ -368,6 +368,23 @@ class UsersDAO {
       return null;
     }
   }
+
+  static async addTheme(uid, theme) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "add custom theme");
+
+    const count = await user.customThemes.countDocuments();
+    if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
+
+    let _id = ObjectID();
+    let addedTheme = await mongoDB()
+      .collection("users")
+      .insertOne({ uid }, { $push: { customThemes: { _id, ...theme } } });
+
+    return {
+      insertedId: addedTheme.insertedId,
+    };
+  }
 }
 
 module.exports = UsersDAO;
