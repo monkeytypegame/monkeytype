@@ -3,6 +3,7 @@ const BotDAO = require("../../dao/bot");
 const {
   isUsernameValid,
   isTagPresetNameValid,
+  isThemeValid,
 } = require("../../handlers/validation");
 const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
@@ -239,7 +240,7 @@ class UserController {
           message:
             "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
         });
-      let tag = await UsersDAO.addTag(uid, tagName);
+      let tag = await UsersDAO.mongoDB(uid, tagName);
       return res.status(200).json(tag);
     } catch (e) {
       return next(e);
@@ -301,6 +302,30 @@ class UserController {
       const { mode, mode2, language, rank } = req.body;
       await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
       return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  static async addCustomTheme(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      const customTheme = req.body;
+
+      if (!isThemeValid(customTheme))
+        return res.status(400).json({
+          message:
+            "Invalid Custom Theme. 1. Theme must contain a name. 2. All 10 colors for the theme must be present in the hexadecimal format"
+        })
+
+      if (!isTagPresetNameValid(customTheme.name))
+        return res.status(400).json({
+          message:
+            "Invalid Custom Theme. Theme's name cannot contain special characters or more than 16 characters. Can include: _ . -"
+        });
+
+      let addedTheme = await UsersDAO.addTheme(uid, customTheme);
+      return res.status(200).json(addedTheme);
     } catch (e) {
       return next(e);
     }
