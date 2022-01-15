@@ -111,4 +111,5 @@ module.exports = {
   isTagPresetNameValid,
   validateConfig,
   validateObjectValues,
+  isThemeValid
 };
