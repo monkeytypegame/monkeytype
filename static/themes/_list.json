@@ -669,4 +669,9 @@
      "bgColor" : "#9bf2ea",
      "mainColor":"#6d44a6"
    }
+  ,{
+    "name": "ryujinscales",
+    "bgColor": "#081426",
+    "mainColor": "#f17754"
+}
 ]
