@@ -27,7 +27,7 @@ export async function verify(user) {
     Notifications.add(response.data.message);
   } else {
     Notifications.add("Accounts linked", 1);
-    DB.getSnapshot().discordId = response.data.did;
+    DB.updateSnapshot({ discordId: response.data.did });
     Settings.updateDiscordSection();
   }
 }

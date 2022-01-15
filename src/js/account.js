@@ -148,7 +148,7 @@ export async function getDataAndInit() {
         if (response?.status == 200) {
           nameGood = true;
           Notifications.add("Name updated", 1);
-          DB.getSnapshot().name = name;
+          DB.updateSnapshot({ name: name });
           $("#menu .icon-button.account .text").text(name);
         }
       }

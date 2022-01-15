@@ -17,7 +17,7 @@ export function updateName(uid, name) {
 }
 
 export function getSnapshot() {
-  return dbSnapshot;
+  return JSON.parse(localStorage.getItem("dbSnapshot"));
 }
 
 export function setSnapshot(newSnapshot) {
@@ -27,7 +27,15 @@ export function setSnapshot(newSnapshot) {
   try {
     delete newSnapshot.verified;
   } catch {}
-  dbSnapshot = newSnapshot;
+  localStorage.setItem("dbSnapshot", JSON.stringify(newSnapshot));
+}
+
+export function updateSnapshot(updatedFields) {
+  let dbSnapshot = getSnapshot();
+  Object.keys(updatedFields).forEach((key) => {
+    dbSnapshot[key] = updatedFields[key];
+  });
+  setSnapshot(dbSnapshot);
 }
 
 export async function initSnapshot() {
@@ -140,11 +148,11 @@ export async function initSnapshot() {
       }
     });
 
-    dbSnapshot = snap;
-    loadTags(dbSnapshot.tags);
-    return dbSnapshot;
+    setSnapshot(snap);
+    loadTags(snap.tags);
+    return snap;
   } catch (e) {
-    dbSnapshot = defaultSnap;
+    setSnapshot("dbSnapshot", JSON.stringify(defaultSnap));
     throw e;
   }
 }
@@ -152,6 +160,7 @@ export async function initSnapshot() {
 export async function getUserResults() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
@@ -175,6 +184,7 @@ export async function getUserResults() {
         return a.timestamp < b.timestamp;
       });
       dbSnapshot.results = results.data;
+      setSnapshot(dbSnapshot);
       await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
@@ -232,7 +242,7 @@ export async function getUserHighestWpm(
   difficulty,
   lazyMode
 ) {
-  function cont() {
+  function cont(dbSnapshot) {
     let topWpm = 0;
     dbSnapshot.results.forEach((result) => {
       if (
@@ -253,10 +263,11 @@ export async function getUserHighestWpm(
   }
 
   let retval;
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot == null || dbSnapshot.results === undefined) {
     retval = 0;
   } else {
-    retval = cont();
+    retval = cont(dbSnapshot);
   }
   return retval;
 }
@@ -269,7 +280,7 @@ export async function getUserAverageWpm10(
   difficulty,
   lazyMode
 ) {
-  function cont() {
+  function cont(dbSnapshot) {
     let wpmSum = 0;
     let count = 0;
     let last10Wpm = 0;
@@ -318,13 +329,13 @@ export async function getUserAverageWpm10(
   }
 
   let retval = 0;
-
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot == null) return retval;
   var dbSnapshotValid = await getUserResults();
   if (dbSnapshotValid === false) {
     return retval;
   }
-  retval = cont();
+  retval = cont(dbSnapshot);
   return retval;
 }
 
@@ -341,7 +352,7 @@ export async function getLocalPB(
     return 0;
   }
 
-  function cont() {
+  function cont(dbSnapshot) {
     let ret = 0;
     try {
       dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
@@ -362,10 +373,11 @@ export async function getLocalPB(
   }
 
   let retval;
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot == null) {
     retval = 0;
   } else {
-    retval = cont();
+    retval = cont(dbSnapshot);
   }
   return retval;
 }
@@ -383,7 +395,7 @@ export async function saveLocalPB(
   consistency
 ) {
   if (mode == "quote") return;
-  function cont() {
+  function cont(dbSnapshot) {
     let found = false;
     if (dbSnapshot.personalBests === undefined) dbSnapshot.personalBests = {};
     if (dbSnapshot.personalBests[mode] === undefined)
@@ -422,10 +434,11 @@ export async function saveLocalPB(
         consistency: consistency,
       });
     }
+    setSnapshot(dbSnapshot);
   }
-
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot != null) {
-    cont();
+    cont(dbSnapshot);
   }
 }
 
@@ -438,7 +451,7 @@ export async function getLocalTagPB(
   difficulty,
   lazyMode
 ) {
-  function cont() {
+  function cont(dbSnapshot) {
     let ret = 0;
     let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
@@ -460,10 +473,11 @@ export async function getLocalTagPB(
   }
 
   let retval;
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot == null) {
     retval = 0;
   } else {
-    retval = cont();
+    retval = cont(dbSnapshot);
   }
   return retval;
 }
@@ -482,7 +496,7 @@ export async function saveLocalTagPB(
   consistency
 ) {
   if (mode == "quote") return;
-  function cont() {
+  function cont(dbSnapshot) {
     let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
       let found = false;
@@ -538,21 +552,25 @@ export async function saveLocalTagPB(
         },
       ];
     }
+    setSnapshot(dbSnapshot);
   }
 
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot != null) {
-    cont();
+    cont(dbSnapshot);
   }
 }
 
 export function updateLbMemory(mode, mode2, language, rank, api = false) {
   //could dbSnapshot just be used here instead of getSnapshot()
+  let dbSnapshot = getSnapshot();
   if (dbSnapshot.lbMemory === undefined) dbSnapshot.lbMemory = {};
   if (dbSnapshot.lbMemory[mode] === undefined) dbSnapshot.lbMemory[mode] = {};
   if (dbSnapshot.lbMemory[mode][mode2] === undefined)
     dbSnapshot.lbMemory[mode][mode2] = {};
   let current = dbSnapshot.lbMemory[mode][mode2][language];
   dbSnapshot.lbMemory[mode][mode2][language] = rank;
+  setSnapshot(dbSnapshot);
   if (api && current != rank) {
     axiosInstance.post("/user/updateLbMemory", {
       mode,
@@ -582,29 +600,33 @@ export async function saveConfig(config) {
 }
 
 export function saveLocalResult(result) {
-  if (getSnapshot() !== null && getSnapshot().results !== undefined) {
-    getSnapshot().results.unshift(result);
+  let dbSnapshot = getSnapshot();
+  if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
+    dbSnapshot.results.unshift(result);
   }
+  setSnapshot(dbSnapshot);
 }
 
 export function updateLocalStats(stats) {
-  if (getSnapshot() !== null) {
-    if (getSnapshot().globalStats.time == undefined) {
-      getSnapshot().globalStats.time = stats.time;
+  let dbSnapshot = getSnapshot();
+  if (dbSnapshot !== null) {
+    if (dbSnapshot.globalStats.time == undefined) {
+      dbSnapshot.globalStats.time = stats.time;
     } else {
-      getSnapshot().globalStats.time += stats.time;
+      dbSnapshot.globalStats.time += stats.time;
     }
-    if (getSnapshot().globalStats.started == undefined) {
-      getSnapshot().globalStats.started = stats.started;
+    if (dbSnapshot.globalStats.started == undefined) {
+      dbSnapshot.globalStats.started = stats.started;
     } else {
-      getSnapshot().globalStats.started += stats.started;
+      dbSnapshot.globalStats.started += stats.started;
     }
-    if (getSnapshot().globalStats.completed == undefined) {
-      getSnapshot().globalStats.completed = 1;
+    if (dbSnapshot.globalStats.completed == undefined) {
+      dbSnapshot.globalStats.completed = 1;
     } else {
-      getSnapshot().globalStats.completed += 1;
+      dbSnapshot.globalStats.completed += 1;
     }
   }
+  setSnapshot(dbSnapshot);
 }
 
 // export async function DB.getLocalTagPB(tagId) {

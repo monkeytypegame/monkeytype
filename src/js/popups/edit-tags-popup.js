@@ -69,6 +69,7 @@ async function apply() {
   let action = $("#tagsWrapper #tagsEdit").attr("action");
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
   let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
+  let dbSnapshot = DB.getSnapshot();
   hide();
   if (action === "add") {
     Loader.show();
@@ -88,10 +89,11 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag added", 1);
-      DB.getSnapshot().tags.push({
+      dbSnapshot.tags.push({
         name: response.data.name,
         _id: response.data._id,
       });
+      DB.setSnapshot(dbSnapshot);
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
@@ -115,11 +117,12 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot().tags.forEach((tag) => {
+      dbSnapshot.tags.forEach((tag) => {
         if (tag._id === tagid) {
           tag.name = inputVal;
         }
       });
+      DB.setSnapshot(dbSnapshot);
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
@@ -140,11 +143,12 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot().tags.forEach((tag, index) => {
+      dbSnapshot.tags.forEach((tag, index) => {
         if (tag._id === tagid) {
-          DB.getSnapshot().tags.splice(index, 1);
+          dbSnapshot.tags.splice(index, 1);
         }
       });
+      DB.setSnapshot(dbSnapshot);
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
@@ -165,11 +169,12 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags.forEach((tag, index) => {
+      dbSnapshot.tags.forEach((tag, index) => {
         if (tag._id === tagid) {
           tag.personalBests = {};
         }
       });
+      DB.setSnapshot(dbSnapshot);
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();

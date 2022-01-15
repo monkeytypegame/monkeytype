@@ -306,7 +306,7 @@ list.updateName = new SimplePopup(
         return;
       } else {
         Notifications.add("Name updated", 1);
-        DB.getSnapshot().name = newName;
+        DB.updateSnapshot({ name: newName });
         $("#menu .icon-button.account .text").text(newName);
       }
     } catch (e) {
@@ -567,7 +567,7 @@ list.resetPersonalBests = new SimplePopup(
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Personal bests have been reset", 1);
-        DB.getSnapshot().personalBests = {};
+        DB.updateSnapshot({ personalBests: {} });
       }
     } catch (e) {
       Loader.hide();
@@ -622,7 +622,7 @@ list.unlinkDiscord = new SimplePopup(
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Accounts unlinked", 1);
-      DB.getSnapshot().discordId = undefined;
+      DB.updateSnapshot({ discordId: undefined });
       Settings.updateDiscordSection();
     }
   },

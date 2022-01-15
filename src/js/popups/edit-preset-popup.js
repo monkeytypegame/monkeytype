@@ -64,6 +64,7 @@ function hide() {
 }
 
 async function apply() {
+  let dbSnapshot = DB.getSnapshot();
   let action = $("#presetWrapper #presetEdit").attr("action");
   let inputVal = $("#presetWrapper #presetEdit input").val();
   let presetid = $("#presetWrapper #presetEdit").attr("presetid");
@@ -75,7 +76,7 @@ async function apply() {
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges();
     let activeTagIds = [];
-    DB.getSnapshot().tags.forEach((tag) => {
+    dbSnapshot.tags.forEach((tag) => {
       if (tag.active) {
         activeTagIds.push(tag._id);
       }
@@ -103,11 +104,12 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset added", 1, 2);
-      DB.getSnapshot().presets.push({
+      dbSnapshot.presets.push({
         name: inputVal,
         config: configChanges,
         _id: response.data.insertedId,
       });
+      DB.setSnapshot(dbSnapshot);
       Settings.update();
     }
   } else if (action === "edit") {
@@ -130,10 +132,11 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset updated", 1);
-      let preset = DB.getSnapshot().presets.filter(
+      let preset = dbSnapshot.presets.filter(
         (preset) => preset._id == presetid
       )[0];
       preset.name = inputVal;
+      DB.setSnapshot(dbSnapshot);
       if (updateConfig === true) preset.config = configChanges;
       Settings.update();
     }
@@ -155,11 +158,12 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset removed", 1);
-      DB.getSnapshot().presets.forEach((preset, index) => {
+      dbSnapshot.presets.forEach((preset, index) => {
         if (preset._id === presetid) {
-          DB.getSnapshot().presets.splice(index, 1);
+          dbSnapshot.presets.splice(index, 1);
         }
       });
+      DB.setSnapshot(dbSnapshot);
       Settings.update();
     }
   }

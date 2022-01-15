@@ -225,7 +225,9 @@ export async function signInWithGoogle() {
             })
             .then((result) => {
               if (result.status === 200) {
-                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+                let dbSnapshot = DB.getSnapshot();
+                dbSnapshot.results.push(TestLogic.notSignedInLastResult);
+                DB.setSnapshot(dbSnapshot);
               }
             });
           // UI.changePage("account");
@@ -381,7 +383,9 @@ async function signUp() {
         })
         .then((result) => {
           if (result.status === 200) {
-            DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+            let dbSnapshot = DB.getSnapshot();
+            dbSnapshot.results.push(TestLogic.notSignedInLastResult);
+            DB.setSnapshot(dbSnapshot);
           }
         });
       UI.changePage("account");
