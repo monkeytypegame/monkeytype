@@ -240,6 +240,13 @@ exports.userTagsAdd = rateLimit({
   keyGenerator: getAddress,
 });
 
+exports.userCustomThemeAdd = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 min
+  max: 30 * multiplier,
+  message,
+  keyGenerator: getAddress,
+});
+
 exports.userDiscordLink = exports.usersTagsEdit = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 15 * multiplier,
