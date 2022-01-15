@@ -3060,7 +3060,10 @@ export let defaultCommands = {
       display: "Clear SW cache",
       icon: "fa-cog",
       exec: async () => {
-        await caches.delete("sw-cache");
+        let caches = await caches.keys();
+        for (let name of caches) {
+          caches.delete(name);
+        }
         window.location.reload(true);
       },
     },
