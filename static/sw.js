@@ -13,6 +13,7 @@ self.addEventListener("fetch", async (event) => {
   const host = new URL(event.request.url).host;
   if (
     [
+      "monkeytype.com",
       "localhost:5000",
       "localhost:5005",
       "api.monkeytype.com",

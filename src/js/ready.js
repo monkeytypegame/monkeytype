@@ -33,7 +33,7 @@ $(document).ready(() => {
   }
   if (!window.localStorage.getItem("merchbannerclosed")) {
     Notifications.addBanner(
-      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.creator-spring.com/?">monkeytype.store</a>`,
+      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
       "images/merchdropwebsite2.png",
       false,
