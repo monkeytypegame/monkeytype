@@ -1,5 +1,11 @@
 const staticCacheName = "sw-cache";
 
+caches.keys().then(function (names) {
+  for (let name of names) {
+    if (name !== staticCacheName) caches.delete(name);
+  }
+});
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(staticCacheName).then((cache) => {
