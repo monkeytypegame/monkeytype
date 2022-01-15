@@ -14,7 +14,6 @@ self.addEventListener("fetch", async (event) => {
   if (
     [
       "monkeytype.com",
-      //"localhost:5000",
       "localhost:5005",
       "api.monkeytype.com",
       "api.github.com",
