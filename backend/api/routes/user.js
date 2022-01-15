@@ -92,6 +92,13 @@ router.post(
 );
 
 router.post(
+  "/customThemes/add",
+  RateLimit.userCustomThemeAdd,
+  authenticateRequest,
+  UserController.addCustomTheme
+)
+
+router.post(
   "/discord/link",
   RateLimit.userDiscordLink,
   authenticateRequest,
