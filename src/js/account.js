@@ -61,7 +61,7 @@ export async function getDataAndInit() {
   if (UI.getActivePage() == "pageLoading") {
     LoadingPage.updateBar(100);
   } else {
-    LoadingPage.updateBar(74);
+    LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
@@ -1022,6 +1022,7 @@ export function update() {
     Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (DB.getSnapshot().results === undefined) {
+    LoadingPage.updateBar(45, true);
     DB.getUserResults().then((d) => {
       if (d) {
         ResultFilters.updateActive();

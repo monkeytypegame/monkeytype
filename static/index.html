@@ -16,7 +16,7 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="css/balloon.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css?v=1" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="/images/favicon/favicon.ico" />
@@ -25,7 +25,6 @@
       sizes="180x180"
       href="/images/favicon/apple-touch-icon.png"
     />
-    <link rel="manifest" href="/images/favicon/site.webmanifest" />
     <link
       rel="mask-icon"
       href="/images/favicon/safari-pinned-tab.svg"
@@ -168,13 +167,21 @@
         <span style="font-size: 6rem; color: #e2b714">:(</span>
         <span style="font-size: 2rem; color: #d1d0c5">
           It seems like the CSS failed to load. Please clear your cache to
-          redownload the styles. If that doesn\'t help contact support.
+          redownload the styles. If that doesn't help contact support.
+          <br />
+          (jack@monkeytype.com or discord.gg/monkeytype)
         </span>
         <span>(ctrl/cmd + shift + r on Chromium browsers)</span>
+        <span>
+          If the website works for a bit but then this screen comes back, clear
+          your cache again and then on Monkeytype open the command line (esc)
+          and search for "Clear SW cache".
+        </span>
       </div>
     </div>
     <div id="ad_rich_media" class="hidden"></div>
     <div id="backgroundLoader" style="display: none"></div>
+    <div id="bannerCenter"></div>
     <div id="notificationCenter">
       <div class="history"></div>
     </div>
@@ -189,14 +196,6 @@
       "
     >
       Important information about your account. Please click this message.
-    </div>
-    <div class="merchBanner hidden">
-      <img src="images/merchdropwebsite2.png" alt="" />
-      <div class="text">
-        We've got brand new merch designs over at
-        <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
-      </div>
-      <i class="fas closeButton fa-times"></i>
     </div>
 
     <div id="simplePopupWrapper" class="popupWrapper hidden">
@@ -4933,7 +4932,6 @@
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="/__/firebase/8.4.2/firebase-app.js"></script>
-
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
   <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>

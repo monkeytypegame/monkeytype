@@ -105,6 +105,15 @@
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
   }
+  #bannerCenter .banner .container {
+    grid-template-columns: 1fr auto;
+    .image {
+      display: none;
+    }
+    .text {
+      margin-left: 2rem;
+    }
+  }
   #centerContent {
     #top {
       grid-template-areas:
