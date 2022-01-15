@@ -88,6 +88,24 @@ function validateObjectValues(val) {
   return errCount;
 }
 
+function isThemeValid(theme) {
+  if (theme === null || theme === undefined) return false;
+  if (theme.constructor != Object) return false;
+
+  if (theme.name === null || theme.name === undefined || validateObjectValues(theme.name) != 0) return false;
+
+  if (theme.colors === null || theme.colors === undefined || validateObjectValues(theme.colors) != 0) return false;
+
+  // Make sure the theme contains all the colors
+  if (theme.colors.length != 10) return false;
+
+  // Make sure all colors contain # symbol and length is 7
+  for (let i = 0; i < 10; i++)
+    if (theme.colors[i][0] != "#" || theme.colors[i].length != 7) return false;
+
+  return true;
+}
+
 module.exports = {
   isUsernameValid,
   isTagPresetNameValid,
