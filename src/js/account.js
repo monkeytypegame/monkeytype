@@ -35,6 +35,10 @@ export async function getDataAndInit() {
     console.log("getting account data");
     await LoadingPage.showBar();
     await DB.initSnapshot();
+    // Program only makes it to this line if there is a connection
+    if (localStorage.getItem("unsyncedResults")) {
+      TestLogic.uploadUnsyncedResults();
+    }
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {
@@ -50,13 +54,24 @@ export async function getDataAndInit() {
       );
     }
     let msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to get user data: " + msg, -1);
+    Notifications.add(
+      "Failed to connect to server, running in offline mode",
+      0,
+      2
+    );
+    Misc.setOfflineMode(true);
+    //$("#top #menu .account").css("opacity", 1);
+    if (UI.getActivePage() == "pageLoading") UI.changePage("");
+    return;
 
+    /* The following is old code that can probably be deleted, unless connection there are other errors other than no connection where users shoudl sign out
+    Notifications.add("Failed to get user data: " + msg, -1);
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
     if (UI.getActivePage() == "pageLoading") UI.changePage("");
     AccountController.signOut();
     return;
+    */
   }
   if (UI.getActivePage() == "pageLoading") {
     LoadingPage.updateBar(100);

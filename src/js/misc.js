@@ -824,3 +824,13 @@ export function getMode2(mode) {
 export function convertRemToPixels(rem) {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
+
+let offlineMode = false;
+
+export function setOfflineMode(value) {
+  offlineMode = value;
+}
+
+export function getOfflineMode() {
+  return offlineMode;
+}

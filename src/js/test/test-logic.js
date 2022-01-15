@@ -1383,6 +1383,10 @@ export function retrySavingResult() {
 
       $("#retrySavingResultButton").addClass("hidden");
       Notifications.add("Result saved", 1);
+      // Remove from unsyncedResults list
+      let unsyncedResults = JSON.parse(localStorage.getItem("unsyncedResults"));
+      unsyncedResults.pop();
+      localStorage.setItem("unsyncedResults", JSON.stringify(unsyncedResults));
     })
     .catch((e) => {
       AccountButton.loading(false);
@@ -1391,6 +1395,73 @@ export function retrySavingResult() {
       $("#retrySavingResultButton").removeClass("hidden");
       retrySaving.canRetry = true;
     });
+}
+
+let uploadedUnsyncedCount = 0;
+
+async function uploadUnsyncedResult(completedEvent) {
+  try {
+    const response = await axiosInstance.post("/results/add", {
+      result: completedEvent,
+    });
+    AccountButton.loading(false);
+    Result.hideCrown();
+
+    if (response.status !== 200) {
+      Notifications.add("Result not saved. " + response.data.message, -1);
+    } else {
+      completedEvent._id = response.data.insertedId;
+      if (response.data.isPb) {
+        completedEvent.isPb = true;
+      }
+
+      DB.saveLocalResult(completedEvent);
+      DB.updateLocalStats({
+        time:
+          completedEvent.testDuration +
+          completedEvent.incompleteTestSeconds -
+          completedEvent.afkDuration,
+        started: TestStats.restartCount + 1,
+      });
+
+      try {
+        firebase.analytics().logEvent("testCompleted", completedEvent);
+      } catch (e) {
+        console.log("Analytics unavailable");
+      }
+
+      if (response.data.isPb) {
+        //new pb
+        DB.saveLocalPB(
+          Config.mode,
+          completedEvent.mode2,
+          Config.punctuation,
+          Config.language,
+          Config.difficulty,
+          Config.lazyMode,
+          completedEvent.wpm,
+          completedEvent.acc,
+          completedEvent.rawWpm,
+          completedEvent.consistency
+        );
+      }
+    }
+    uploadedUnsyncedCount += 1;
+  } catch (e) {
+    AccountButton.loading(false);
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to save result: " + msg, -1);
+  }
+}
+
+export async function uploadUnsyncedResults() {
+  uploadedUnsyncedCount = 0;
+  let unsyncedResults = JSON.parse(localStorage.getItem("unsyncedResults"));
+  Notifications.add("Uploading unsynced results", 0, 2);
+  const uploadPromises = unsyncedResults.map(uploadUnsyncedResult);
+  await Promise.all(uploadPromises);
+  Notifications.add(`${uploadedUnsyncedCount} offline result(s) uploaded`, 1);
+  localStorage.removeItem("unsyncedResults");
 }
 
 function buildCompletedEvent(difficultyFailed) {
@@ -1763,12 +1834,29 @@ export async function finish(difficultyFailed = false) {
     })
     .catch((e) => {
       AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to save result: " + msg, -1);
-      $("#retrySavingResultButton").removeClass("hidden");
-
-      retrySaving.completedEvent = completedEvent;
-      retrySaving.canRetry = true;
+      // allow retry if not in offline mode, always save to unsynced results
+      if (!Misc.getOfflineMode()) {
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to save result: " + msg, -1);
+        $("#retrySavingResultButton").removeClass("hidden");
+        retrySaving.completedEvent = completedEvent;
+        retrySaving.canRetry = true;
+      }
+      if (localStorage.getItem("unsyncedResults")) {
+        let unsyncedResults = JSON.parse(
+          localStorage.getItem("unsyncedResults")
+        );
+        unsyncedResults.push(completedEvent);
+        localStorage.setItem(
+          "unsyncedResults",
+          JSON.stringify(unsyncedResults)
+        );
+      } else {
+        localStorage.setItem(
+          "unsyncedResults",
+          JSON.stringify([completedEvent])
+        );
+      }
     });
 }
 

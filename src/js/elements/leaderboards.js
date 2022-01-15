@@ -321,10 +321,16 @@ function update() {
       $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
     })
     .catch((e) => {
-      console.log(e);
-      Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to load leaderboards: " + msg, -1);
+      if (Misc.getOfflineMode()) {
+        Notifications.add("Leaderboards unavailable in offline mode", 0, 2);
+        hideLoader(15);
+        hideLoader(60);
+      } else {
+        console.log(e);
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to load leaderboards: " + msg, -1);
+      }
       return;
     });
 }

@@ -5,6 +5,7 @@ import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./today-tracker";
 import * as LoadingPage from "./loading-page";
 import * as UI from "./ui";
+import * as Misc from "./misc";
 
 let dbSnapshot = null;
 
@@ -177,7 +178,11 @@ export async function getUserResults() {
       await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
-      Notifications.add("Error getting results", -1);
+      if (Misc.getOfflineMode()) {
+        Notifications.add("Account page unavailable in offline mode", 0, 2);
+      } else {
+        Notifications.add("Error getting results", -1);
+      }
       return false;
     }
   }
@@ -565,9 +570,11 @@ export async function saveConfig(config) {
       await axiosInstance.post("/config/save", { config });
     } catch (e) {
       AccountButton.loading(false);
-
-      let msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to save config: " + msg, -1);
+      if (!Misc.getOfflineMode()) {
+        // don't show error if in offline mode
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to save config: " + msg, -1);
+      }
       return;
     }
     AccountButton.loading(false);
