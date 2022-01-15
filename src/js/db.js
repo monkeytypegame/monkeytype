@@ -191,7 +191,11 @@ export async function getUserResults() {
       return true;
     } catch (e) {
       if (Misc.getOfflineMode()) {
-        Notifications.add("Account page unavailable in offline mode", 0, 2);
+        Notifications.add(
+          "Results are not downloaded and therefore, cannot be accessed in offline mode.",
+          0,
+          2
+        );
       } else {
         Notifications.add("Error getting results", -1);
       }

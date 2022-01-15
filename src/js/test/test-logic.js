@@ -1834,6 +1834,14 @@ export async function finish(difficultyFailed = false) {
     })
     .catch((e) => {
       AccountButton.loading(false);
+      DB.saveLocalResult(completedEvent);
+      DB.updateLocalStats({
+        time:
+          completedEvent.testDuration +
+          completedEvent.incompleteTestSeconds -
+          completedEvent.afkDuration,
+        started: TestStats.restartCount + 1,
+      });
       // allow retry if not in offline mode, always save to unsynced results
       if (!Misc.getOfflineMode()) {
         let msg = e?.response?.data?.message ?? e.message;
