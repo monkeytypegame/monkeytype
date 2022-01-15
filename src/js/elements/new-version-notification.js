@@ -16,7 +16,9 @@ export async function show(version) {
     return;
   }
   if (memory === version) return;
-  caches.delete("sw-cache");
+  caches.keys().then(function (names) {
+    for (let name of names) caches.delete(name);
+  });
   Notifications.addBanner(
     `Version ${version} has been released. Click the version number in the bottom right to view the changelog.`,
     1,
