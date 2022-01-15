@@ -1,6 +1,7 @@
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
+import * as Misc from "./misc";
 import axiosInstance from "./axios-instance";
 
 let rating = 0;
@@ -26,8 +27,12 @@ export async function getQuoteStats(quote) {
     });
   } catch (e) {
     Loader.hide();
-    let msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to get quote ratings: " + msg, -1);
+    if (Misc.getOfflineMode()) {
+      Notifications.add("Quote ratings unavailable in offline mode: ", 0, 2);
+    } else {
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to get quote ratings: " + msg, -1);
+    }
     return;
   }
   Loader.hide();
