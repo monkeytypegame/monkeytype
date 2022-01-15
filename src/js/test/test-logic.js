@@ -1457,7 +1457,6 @@ async function uploadUnsyncedResult(completedEvent) {
 export async function uploadUnsyncedResults() {
   uploadedUnsyncedCount = 0;
   let unsyncedResults = JSON.parse(localStorage.getItem("unsyncedResults"));
-  Notifications.add("Uploading unsynced results", 0, 2);
   const uploadPromises = unsyncedResults.map(uploadUnsyncedResult);
   await Promise.all(uploadPromises);
   Notifications.add(`${uploadedUnsyncedCount} offline result(s) uploaded`, 1);
