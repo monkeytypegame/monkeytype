@@ -97,7 +97,7 @@ function isThemeValid(theme) {
   if (theme.colors === null || theme.colors === undefined || validateObjectValues(theme.colors) != 0) return false;
 
   // Make sure the theme contains all the colors
-  if (theme.colors.length != 10) return false;
+  if (theme.colors.length != 9) return false;
 
   // Make sure all colors contain # symbol and length is 7
   for (let i = 0; i < 10; i++)
