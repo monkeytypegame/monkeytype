@@ -60,6 +60,9 @@ export async function getDataAndInit() {
       2
     );
     Misc.setOfflineMode(true);
+    if (DB.getSnapshot()) {
+      $("#menu .icon-button.account .text").text(DB.getSnapshot().name);
+    }
     //$("#top #menu .account").css("opacity", 1);
     if (UI.getActivePage() == "pageLoading") UI.changePage("");
     return;

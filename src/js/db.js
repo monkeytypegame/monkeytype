@@ -152,7 +152,9 @@ export async function initSnapshot() {
     loadTags(snap.tags);
     return snap;
   } catch (e) {
-    setSnapshot("dbSnapshot", JSON.stringify(defaultSnap));
+    if (!getSnapshot()) {
+      setSnapshot(defaultSnap);
+    }
     throw e;
   }
 }
