@@ -240,7 +240,7 @@ class UserController {
           message:
             "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
         });
-      let tag = await UsersDAO.mongoDB(uid, tagName);
+      let tag = await UsersDAO.addTag(uid, tagName);
       return res.status(200).json(tag);
     } catch (e) {
       return next(e);
