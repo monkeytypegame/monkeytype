@@ -527,9 +527,9 @@ export function restart(
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    UpdateConfig.setMode(PractiseWords.before.mode);
     UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
     UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    UpdateConfig.setMode(PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
 
@@ -557,7 +557,8 @@ export function restart(
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
-  if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+  if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
+    window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
   TestUI.reset();
@@ -595,7 +596,15 @@ export function restart(
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
-      if (!withSameWordset) {
+      let shouldQuoteRepeat = false;
+      if (
+        Config.mode === "quote" &&
+        Config.repeatQuotes === "typing" &&
+        failReason !== ""
+      ) {
+        shouldQuoteRepeat = true;
+      }
+      if (!withSameWordset && !shouldQuoteRepeat) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
         setHasTab(false);
@@ -620,6 +629,7 @@ export function restart(
         TestUI.showWords();
         PaceCaret.init();
       }
+      failReason = "";
       if (Config.mode === "quote") {
         setRepeated(false);
       }
@@ -642,16 +652,7 @@ export function restart(
         }
       }
 
-      let mode2 = "";
-      if (Config.mode === "time") {
-        mode2 = Config.time;
-      } else if (Config.mode === "words") {
-        mode2 = Config.words;
-      } else if (Config.mode === "custom") {
-        mode2 = "custom";
-      } else if (Config.mode === "quote") {
-        mode2 = randomQuote.id;
-      }
+      let mode2 = Misc.getMode2();
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -1374,7 +1375,7 @@ export function retrySavingResult() {
             Config.lazyMode,
             completedEvent.wpm,
             completedEvent.acc,
-            completedEvent.wpmRaw,
+            completedEvent.rawWpm,
             completedEvent.consistency
           );
         }
@@ -1507,22 +1508,7 @@ function buildCompletedEvent(difficultyFailed) {
     completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
   }
 
-  if (Config.mode === "time") {
-    completedEvent.mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    completedEvent.mode2 = Config.words;
-  } else if (Config.mode === "custom") {
-    completedEvent.mode2 = "custom";
-  } else if (Config.mode === "quote") {
-    completedEvent.mode2 = randomQuote.id;
-  } else if (Config.mode === "zen") {
-    completedEvent.mode2 = "zen";
-  }
-
-  if (completedEvent.testDuration > 122) {
-    completedEvent.chartData = "toolong";
-    TestStats.setKeypressTimingsTooLong();
-  }
+  completedEvent.mode2 = Misc.getMode2();
 
   if (Config.mode === "custom") {
     completedEvent.customText = {};
@@ -1647,20 +1633,13 @@ export async function finish(difficultyFailed = false) {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-  }
-  if (
-    completedEvent.wpm < 0 ||
-    completedEvent.wpm > 350 ||
-    completedEvent.acc < 75 ||
-    completedEvent.acc > 100
-  ) {
-    Notifications.add("Test invalid", 0);
+  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+    Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
-    try {
-      firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    dontSave = true;
+  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+    Notifications.add("Test invalid - accuracy", 0);
+    TestStats.setInvalid();
     dontSave = true;
   }
 
@@ -1693,10 +1672,23 @@ export async function finish(difficultyFailed = false) {
     afkDetected,
     isRepeated,
     tooShort,
-    randomQuote
+    randomQuote,
+    dontSave
   );
 
-  if (dontSave) return;
+  if (completedEvent.testDuration > 122) {
+    completedEvent.chartData = "toolong";
+    TestStats.setKeypressTimingsTooLong();
+  }
+
+  if (dontSave) {
+    try {
+      firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
+    } catch (e) {
+      console.log("Analytics unavailable");
+    }
+    return;
+  }
 
   // user is logged in
 
@@ -1761,7 +1753,7 @@ export async function finish(difficultyFailed = false) {
             Config.lazyMode,
             completedEvent.wpm,
             completedEvent.acc,
-            completedEvent.wpmRaw,
+            completedEvent.rawWpm,
             completedEvent.consistency
           );
         }

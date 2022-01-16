@@ -44,6 +44,7 @@ export function hide() {
 }
 
 export function update(previous, current) {
+  if (previous == current) return;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + current + "']").addClass(
     "active"

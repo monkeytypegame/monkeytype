@@ -1,4 +1,10 @@
-const staticCacheName = "sw-cache";
+const staticCacheName = "sw-cache-2022-1-15-21-00-09";
+
+caches.keys().then(function (names) {
+  for (let name of names) {
+    if (name !== staticCacheName) caches.delete(name);
+  }
+});
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -13,6 +19,8 @@ self.addEventListener("fetch", async (event) => {
   const host = new URL(event.request.url).host;
   if (
     [
+      "monkeytype.com",
+      "localhost:5000",
       "localhost:5005",
       "api.monkeytype.com",
       "api.github.com",

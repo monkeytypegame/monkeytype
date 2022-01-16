@@ -23,7 +23,11 @@ try {
       "No anticheat module found. Continuing in dev mode, results will not be validated."
     );
   } else {
-    throw new Error("No anticheat module found");
+    console.error("No anticheat module found.");
+    console.error(
+      "To continue in dev mode, add 'MODE=dev' to the .env file in the backend directory."
+    );
+    process.exit(1);
   }
 }
 

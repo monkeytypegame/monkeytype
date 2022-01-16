@@ -52,14 +52,15 @@ app.use(startingPath + "/leaderboard", leaderboardsRouter);
 const newQuotesRouter = require("./api/routes/new-quotes");
 app.use(startingPath + "/new-quotes", newQuotesRouter);
 
-app.use(function (req, res) {
+//DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
+app.use(function (e, req, res, next) {
   let monkeyError;
-  if (req.errorID) {
+  if (e.errorID) {
     //its a monkey error
-    monkeyError = req;
+    monkeyError = e;
   } else {
     //its a server error
-    monkeyError = new MonkeyError(req.status, req.message, req.stack);
+    monkeyError = new MonkeyError(e.status, e.message, e.stack);
   }
   if (!monkeyError.uid && req.decodedToken) {
     monkeyError.uid = req.decodedToken.uid;
@@ -78,10 +79,11 @@ app.use(function (req, res) {
       message: monkeyError.message,
       stack: monkeyError.stack,
     });
+    monkeyError.stack = undefined;
   } else {
-    console.error(req.stack);
+    console.error(monkeyError.message);
   }
-  return res.status(e.status || 500).json(monkeyError);
+  return res.status(monkeyError.status || 500).json(monkeyError);
 });
 
 app.get("/test", (req, res) => {
@@ -90,13 +92,14 @@ app.get("/test", (req, res) => {
 
 const LeaderboardsDAO = require("./dao/leaderboards");
 
+console.log("Starting server...");
 app.listen(PORT, async () => {
-  console.log(`listening on port ${PORT}`);
+  console.log(`Listening on port ${PORT}`);
   await connectDB();
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Database Connected");
+  console.log("Database connected");
 
   let lbjob = new CronJob("30 4/5 * * * *", async () => {
     let before15 = await mongoDB()

@@ -15,8 +15,21 @@ function hide() {
 $(document).keydown(function (event) {
   try {
     if (
-      event.originalEvent.getModifierState("CapsLock") &&
-      Config.capsLockWarning
+      Config.capsLockWarning &&
+      event.originalEvent.getModifierState("CapsLock")
+    ) {
+      show();
+    } else {
+      hide();
+    }
+  } catch {}
+});
+
+$(document).keyup(function (event) {
+  try {
+    if (
+      Config.capsLockWarning &&
+      event.originalEvent.getModifierState("CapsLock")
     ) {
       show();
     } else {

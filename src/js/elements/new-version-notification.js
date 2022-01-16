@@ -19,19 +19,19 @@ export async function show(version) {
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
   ) {
-    caches.delete("sw-cache");
+    caches.keys().then(function (names) {
+      for (let name of names) caches.delete(name);
+    });
   }
   if (memory === version) return;
-  caches.delete("sw-cache");
-  Notifications.add(
-    `Version ${version} has been released. Click to view the changelog.`,
+  caches.keys().then(function (names) {
+    for (let name of names) caches.delete(name);
+  });
+  Notifications.addBanner(
+    `Version ${version} has been released. Click the version number in the bottom right to view the changelog.`,
     1,
-    7,
-    "Announcement",
     "code-branch",
-    () => {
-      VersionPopup.show();
-    }
+    false
   );
   setMemory(version);
 }

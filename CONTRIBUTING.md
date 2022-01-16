@@ -6,7 +6,7 @@
 - [Prerequisites](#prerequisites)
   - [Text Editor](#text-editor)
   - [Git ](#git)
-  - [NodeJS](#nodejs)
+  - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
   - [Mongo Setup](#mongo-setup)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
@@ -111,6 +111,8 @@ Before submitting a theme make sure...
 - the text color is either black or white (or very close to these colors)
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+
+(If you want to contribute themes but don't know how check [THEMES.md](https://github.com/teddinotteddy/monkeytype/blob/Theme-Documentation/THEMES.md)
 
 #### Language Guidelines
 
