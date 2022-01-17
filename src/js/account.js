@@ -818,8 +818,6 @@ export function update() {
       // lastTimestamp = date;
     });
 
-    console.log(activityChartData_amount);
-
     if (Config.alwaysShowCPM) {
       ChartController.accountActivity.options.scales.yAxes[1].scaleLabel.labelString =
         "Average Cpm";
