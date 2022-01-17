@@ -36,6 +36,7 @@ export async function getDataAndInit() {
     await LoadingPage.showBar();
     await DB.initSnapshot();
     // Program only makes it to this line if there is a connection
+    sessionStorage.setItem("offlineMode", false);
     if (localStorage.getItem("unsyncedResults")) {
       TestLogic.uploadUnsyncedResults();
     }
@@ -59,7 +60,7 @@ export async function getDataAndInit() {
       0,
       2
     );
-    Misc.setOfflineMode(true);
+    sessionStorage.setItem("offlineMode", true);
     if (DB.getSnapshot()) {
       $("#menu .icon-button.account .text").text(DB.getSnapshot().name);
     }

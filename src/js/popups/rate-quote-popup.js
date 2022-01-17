@@ -1,7 +1,6 @@
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
-import * as Misc from "./misc";
 import axiosInstance from "./axios-instance";
 
 let rating = 0;
@@ -27,7 +26,7 @@ export async function getQuoteStats(quote) {
     });
   } catch (e) {
     Loader.hide();
-    if (Misc.getOfflineMode()) {
+    if (sessionStorage.getItem("offlineMode")) {
       Notifications.add("Quote ratings unavailable in offline mode: ", 0, 2);
     } else {
       let msg = e?.response?.data?.message ?? e.message;
