@@ -91,12 +91,33 @@ router.post(
   UserController.editTag
 );
 
+router.get(
+  "/customThemes",
+  RateLimit.userCustomThemeGet,
+  authenticateRequest,
+  UserController.getCustomThemes
+);
+
 router.post(
   "/customThemes/add",
   RateLimit.userCustomThemeAdd,
   authenticateRequest,
   UserController.addCustomTheme
-)
+);
+
+router.post(
+  "/customThemes/remove",
+  RateLimit.userCustomThemeRemove,
+  authenticateRequest,
+  UserController.removeCustomTheme
+);
+
+router.post(
+  "/customThemes/edit",
+  RateLimit.userCustomThemeEdit,
+  authenticateRequest,
+  UserController.editCustomTheme
+);
 
 router.post(
   "/discord/link",

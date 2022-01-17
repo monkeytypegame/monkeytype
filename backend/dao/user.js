@@ -373,17 +373,73 @@ class UsersDAO {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "add custom theme");
 
-    const count = await user.customThemes.countDocuments();
+    const count = user.customThemes.length;
+    console.log(count)
+
     if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
 
     let _id = ObjectID();
-    let addedTheme = await mongoDB()
+    await mongoDB()
       .collection("users")
-      .insertOne({ uid }, { $push: { customThemes: { _id, ...theme } } });
+      .updateOne({ uid }, { $push: { customThemes: { _id, ...theme } } });
 
     return {
-      insertedId: addedTheme.insertedId,
+      _id,
+      name: theme.name,
     };
+  }
+
+  static async removeTheme(uid, _id) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "remove theme");
+    if (
+      user.customThemes === undefined ||
+      user.customThemes.filter((t) => t._id == _id).length === 0
+    )
+      throw new MonkeyError(404, "Custom Theme not found");
+
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        {
+          uid: uid,
+          "customThemes._id": ObjectID(_id),
+        },
+        { $pull: { customThemes: { _id: ObjectID(_id) } } }
+      );
+  }
+
+
+  static async editTheme(uid, _id, theme) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "edit theme");
+    if (
+      user.customThemes === undefined ||
+      user.customThemes.filter((t) => t._id == _id).length === 0
+    )
+      throw new MonkeyError(404, "Custom Theme not found");
+
+
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        {
+          uid: uid,
+          "customThemes._id": ObjectID(_id),
+        },
+        {
+          $set: {
+            "customThemes.$.name": theme.name,
+            "customThemes.$.colors": theme.colors
+          }
+        }
+      );
+  }
+
+  static async getThemes(uid) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "get themes");
+    return user.customThemes;
   }
 }
 

@@ -247,6 +247,27 @@ exports.userCustomThemeAdd = rateLimit({
   keyGenerator: getAddress,
 });
 
+exports.userCustomThemeRemove = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 min
+  max: 30 * multiplier,
+  message,
+  keyGenerator: getAddress,
+});
+
+exports.userCustomThemeEdit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 min
+  max: 30 * multiplier,
+  message,
+  keyGenerator: getAddress,
+});
+
+exports.userCustomThemeGet = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 min
+  max: 30 * multiplier,
+  message,
+  keyGenerator: getAddress,
+});
+
 exports.userDiscordLink = exports.usersTagsEdit = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 15 * multiplier,
