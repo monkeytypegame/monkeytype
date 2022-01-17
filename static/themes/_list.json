@@ -669,4 +669,9 @@
      "bgColor" : "#9bf2ea",
      "mainColor":"#6d44a6"
    }
+  ,{
+    "name": "trackday",
+    "bgColor": "#464d66"
+    "mainColor": "#e0513e"
+   }
 ]
