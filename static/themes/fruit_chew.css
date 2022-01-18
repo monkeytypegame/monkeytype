@@ -9,3 +9,24 @@
     --colorful-error-color: #4d0463;
     --colorful-error-extra-color: #a62626;
 }
+
+#menu .icon-button:nth-child(1) {
+  color: #99de1e;
+}
+
+#menu .icon-button:nth-child(2) {
+  color: #4d0463;
+}
+
+#menu .icon-button:nth-child(3) {
+  color: #08d9a3;
+}
+
+#menu .icon-button:nth-child(4) {
+  color: #69176b;
+}
+
+#menu .icon-button:nth-child(5),
+#menu .icon-button:nth-child(6) {
+  color: #808080;
+}
