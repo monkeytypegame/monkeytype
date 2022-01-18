@@ -1,8 +1,8 @@
 :root {
-    --bg-color: #e02828;
-    --main-color: #69176b;
-    --caret-color: #fffdd0;
-    --sub-color: #99de1e;
+    --bg-color: #fffdd0;
+    --main-color: #e02828;
+    --caret-color: #99de1e;
+    --sub-color: #69176b;
     --text-color: #808080;
     --error-color: #4d0463;
     --error-extra-color: #a62626;
