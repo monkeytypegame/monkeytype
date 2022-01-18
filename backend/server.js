@@ -36,7 +36,7 @@ if (process.env.API_PATH_OVERRIDE) {
 }
 
 app.get("/", (req, res) => {
-  res.status(204).json({ message: "OK" });
+  res.status(200).json({ message: "OK" });
 });
 
 const userRouter = require("./api/routes/user");
