@@ -35,6 +35,10 @@ if (process.env.API_PATH_OVERRIDE) {
   startingPath = "/" + process.env.API_PATH_OVERRIDE;
 }
 
+app.get("/", (req, res) => {
+  res.status(204).json({ message: "OK" });
+});
+
 const userRouter = require("./api/routes/user");
 app.use(startingPath + "/user", userRouter);
 const configRouter = require("./api/routes/config");
@@ -89,10 +93,6 @@ app.use(function (e, req, res, next) {
     console.error(monkeyError.message);
   }
   return res.status(monkeyError.status || 500).json(monkeyError);
-});
-
-app.get("/test", (req, res) => {
-  res.send("Hello World!");
 });
 
 const LeaderboardsDAO = require("./dao/leaderboards");
