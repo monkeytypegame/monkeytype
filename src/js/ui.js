@@ -123,6 +123,7 @@ export function changePage(page, norestart = false) {
   }
   console.log(`change page ${page}`);
   let activePageElement = $(".page.active");
+  activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
