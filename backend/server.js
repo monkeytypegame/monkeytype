@@ -54,6 +54,11 @@ app.use(startingPath + "/new-quotes", newQuotesRouter);
 
 //DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
 app.use(function (e, req, res, next) {
+  if (/ECONNREFUSED.*27017/i.test(e.message)) {
+    e.message = "Could not connect to the database. It may have crashed.";
+    delete e.stack;
+  }
+
   let monkeyError;
   if (e.errorID) {
     //its a monkey error
@@ -95,11 +100,12 @@ const LeaderboardsDAO = require("./dao/leaderboards");
 console.log("Starting server...");
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
+  console.log("Connecting to database...");
   await connectDB();
+  console.log("Database connected");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Database connected");
 
   let lbjob = new CronJob("30 4/5 * * * *", async () => {
     let before15 = await mongoDB()
