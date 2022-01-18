@@ -189,15 +189,7 @@ export async function getUserResults() {
       await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
-      if (sessionStorage.getItem("offlineMode")) {
-        Notifications.add(
-          "Results are not downloaded and therefore, cannot be accessed in offline mode.",
-          0,
-          2
-        );
-      } else {
-        Notifications.add("Error getting results", -1);
-      }
+      Notifications.add("Error getting results", -1);
       return false;
     }
   }
@@ -593,7 +585,7 @@ export async function saveConfig(config) {
       await axiosInstance.post("/config/save", { config });
     } catch (e) {
       AccountButton.loading(false);
-      if (!sessionStorage.getItem("offlineMode")) {
+      if (!JSON.parse(sessionStorage.getItem("offlineMode"))) {
         // don't show error if in offline mode
         let msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to save config: " + msg, -1);

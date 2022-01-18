@@ -175,6 +175,17 @@ export function changePage(page, norestart = false) {
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {
+    if (
+      JSON.parse(sessionStorage.getItem("offlineMode")) &&
+      JSON.parse(localStorage.getItem("dbSnapshot")).results === undefined
+    ) {
+      Notifications.add(
+        "Results are not downloaded and therefore, cannot be accessed in offline mode.",
+        0,
+        2
+      );
+      return false;
+    }
     if (!firebase.auth().currentUser) {
       console.log(
         `current user is ${firebase.auth().currentUser}, going back to login`
@@ -205,6 +216,10 @@ export function changePage(page, norestart = false) {
     if (firebase.auth().currentUser != null) {
       changePage("account");
     } else {
+      if (JSON.parse(sessionStorage.getItem("offlineMode"))) {
+        Notifications.add("You cannot login in online mode", 0, 2);
+        return;
+      }
       setPageTransition(true);
       TestLogic.restart();
       swapElements(activePageElement, $(".page.pageLogin"), 250, () => {

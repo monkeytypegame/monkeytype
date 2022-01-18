@@ -26,7 +26,7 @@ export async function getQuoteStats(quote) {
     });
   } catch (e) {
     Loader.hide();
-    if (sessionStorage.getItem("offlineMode")) {
+    if (JSON.parse(sessionStorage.getItem("offlineMode"))) {
       Notifications.add("Quote ratings unavailable in offline mode: ", 0, 2);
     } else {
       let msg = e?.response?.data?.message ?? e.message;

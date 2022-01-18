@@ -1842,7 +1842,7 @@ export async function finish(difficultyFailed = false) {
         started: TestStats.restartCount + 1,
       });
       // allow retry if not in offline mode, always save to unsynced results
-      if (!sessionStorage.getItem("offlineMode")) {
+      if (!JSON.parse(sessionStorage.getItem("offlineMode"))) {
         let msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to save result: " + msg, -1);
         $("#retrySavingResultButton").removeClass("hidden");

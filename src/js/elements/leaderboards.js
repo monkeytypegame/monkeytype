@@ -321,7 +321,7 @@ function update() {
       $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
     })
     .catch((e) => {
-      if (sessionStorage.getItem("offlineMode")) {
+      if (JSON.parse(sessionStorage.getItem("offlineMode"))) {
         Notifications.add("Leaderboards unavailable in offline mode", 0, 2);
         hideLoader(15);
         hideLoader(60);
