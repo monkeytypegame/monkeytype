@@ -9,6 +9,7 @@ const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
 var sass = require("gulp-sass")(require("dart-sass"));
+const replace = require("gulp-replace");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = {
@@ -131,6 +132,9 @@ const refactoredSrc = [
   "./src/js/elements/about-page.js",
   "./src/js/elements/psa.js",
   "./src/js/elements/new-version-notification.js",
+  "./src/js/elements/mobile-test-config.js",
+  "./src/js/elements/loading-page.js",
+  "./src/js/elements/scroll-to-top.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/pb-tables-popup.js",
@@ -140,6 +144,7 @@ const refactoredSrc = [
   "./src/js/popups/rate-quote-popup.js",
   "./src/js/popups/version-popup.js",
   "./src/js/popups/support-popup.js",
+  "./src/js/popups/contact-popup.js",
   "./src/js/popups/custom-word-amount-popup.js",
   "./src/js/popups/custom-test-duration-popup.js",
   "./src/js/popups/word-filter-popup.js",
@@ -166,6 +171,7 @@ const refactoredSrc = [
   "./src/js/test/practise-words.js",
   "./src/js/test/test-ui.js",
   "./src/js/test/keymap.js",
+  "./src/js/test/result.js",
   "./src/js/test/live-wpm.js",
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
@@ -179,6 +185,7 @@ const refactoredSrc = [
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
   "./src/js/test/poetry.js",
+  "./src/js/test/wikipedia.js",
   "./src/js/test/today-tracker.js",
   "./src/js/test/weak-spot.js",
   "./src/js/test/wordset.js",
@@ -253,9 +260,42 @@ task("clean", function () {
   return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
+task("updateSwCacheName", function () {
+  let date = new Date();
+  let dateString =
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1) +
+    "-" +
+    date.getDate() +
+    "-" +
+    date.getHours() +
+    "-" +
+    date.getMinutes() +
+    "-" +
+    date.getSeconds();
+  return src(["static/sw.js"])
+    .pipe(
+      replace(
+        /const staticCacheName = .*;/g,
+        `const staticCacheName = "sw-cache-${dateString}";`
+      )
+    )
+    .pipe(dest("./dist/"))
+    .pipe(dest("static/"));
+});
+
 task(
   "compile",
-  series("lint", "cat", "copy-modules", "browserify", "static", "sass")
+  series(
+    "lint",
+    "cat",
+    "copy-modules",
+    "browserify",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
 );
 
 task("watch", function () {

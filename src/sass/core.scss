@@ -24,6 +24,11 @@
   /* Firefox */
 }
 
+#nocss {
+  display: none !important;
+  pointer-events: none;
+}
+
 .ffscroll {
   scrollbar-width: thin;
   scrollbar-color: var(--sub-color) transparent;
@@ -66,34 +71,6 @@ body {
   justify-content: center;
   align-items: center;
   display: flex;
-}
-
-.merchBanner {
-  background-color: var(--main-color);
-  /* padding: .5rem; */
-  text-align: center;
-  color: var(--bg-color);
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  grid-auto-flow: column;
-  gap: 1rem;
-  // height: 2rem;
-  padding: 0 1rem;
-  img {
-    height: 2rem;
-  }
-  a:hover {
-    color: var(--bg-color);
-  }
-  .closeButton {
-    transition: 0.25s;
-    // margin-left: 1rem;
-    &:hover {
-      color: var(--text-color);
-      cursor: pointer;
-    }
-  }
 }
 
 #backgroundLoader {
@@ -144,7 +121,10 @@ label.checkbox {
   display: grid;
   grid-auto-flow: row;
   min-height: 100vh;
-  padding: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
   gap: 2rem;
   align-items: center;
   z-index: 999;
@@ -179,10 +159,40 @@ key {
 .pageLoading {
   display: grid;
   justify-content: center;
+}
+
+.pageLoading,
+.pageAccount {
   .preloader {
-    font-size: 2rem;
+    text-align: center;
     justify-self: center;
-    color: var(--main-color);
+    display: grid;
+    .barWrapper {
+      display: grid;
+      gap: 1rem;
+      grid-row: 1;
+      grid-column: 1;
+      .bar {
+        width: 20rem;
+        height: 0.5rem;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: var(--roundness);
+        .fill {
+          height: 100%;
+          width: 0%;
+          background: var(--main-color);
+          border-radius: var(--roundness);
+          // transition: 1s;
+        }
+      }
+    }
+    .icon {
+      grid-row: 1;
+      grid-column: 1;
+      font-size: 2rem;
+      color: var(--main-color);
+      margin-bottom: 1rem;
+    }
   }
 }
 
@@ -224,6 +234,7 @@ key {
 
 .invisible {
   opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .button {

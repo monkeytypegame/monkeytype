@@ -139,6 +139,10 @@ async function initGroups() {
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine
   );
+  groups.capsLockWarning = new SettingsGroup(
+    "capsLockWarning",
+    UpdateConfig.setCapsLockWarning
+  );
   groups.flipTestColors = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors
@@ -172,7 +176,10 @@ async function initGroups() {
   );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
-    UpdateConfig.setPlaySoundOnError
+    UpdateConfig.setPlaySoundOnError,
+    () => {
+      if (Config.playSoundOnError) Sound.playError();
+    }
   );
   groups.playSoundOnClick = new SettingsGroup(
     "playSoundOnClick",
@@ -494,6 +501,7 @@ export function update() {
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   ThemePicker.refreshButtons();
+  // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed
@@ -565,7 +573,7 @@ $(document).on(
   "click",
   ".pageSettings .section.paceCaret .button.save",
   (e) => {
-    UpdateConfig.setMinBurstCustomSpeed(
+    UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
         $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
       )
@@ -584,7 +592,7 @@ $(document).on(
 );
 
 $(document).on("click", ".pageSettings .section.minWpm .button.save", (e) => {
-  UpdateConfig.setMinBurstCustomSpeed(
+  UpdateConfig.setMinWpmCustomSpeed(
     parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
   );
 });
@@ -600,7 +608,7 @@ $(document).on(
 );
 
 $(document).on("click", ".pageSettings .section.minAcc .button.save", (e) => {
-  UpdateConfig.setMinBurstCustomSpeed(
+  UpdateConfig.setMinAccCustom(
     parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
   );
 });

@@ -30,6 +30,11 @@
     "info": "All the letters are spinning!"
   },
   {
+    "name": "arrows",
+    "type": "script",
+    "info": "Eurobeat Intensifies..."
+  },
+  {
     "name": "rAnDoMcAsE",
     "type": "script",
     "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is."
@@ -108,6 +113,11 @@
     "name": "poetry",
     "type": "script",
     "info": "Practice typing some beautiful prose."
+  },
+  {
+    "name": "wikipedia",
+    "type": "script",
+    "info": "Practice typing wikipedia sections."
   },
   {
     "name": "weakspot",

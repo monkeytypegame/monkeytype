@@ -17,6 +17,11 @@ let currentRank = {
   60: {},
 };
 
+let requesting = {
+  15: false,
+  60: false,
+};
+
 let leaderboardSingleLimit = 50;
 
 let updateTimer;
@@ -326,6 +331,8 @@ function update() {
 
 async function requestMore(lb, prepend = false) {
   if (prepend && currentData[lb][0].rank === 1) return;
+  if (requesting[lb]) return;
+  requesting[lb] = true;
   showLoader(lb);
   let skipVal = currentData[lb][currentData[lb].length - 1].rank;
   if (prepend) {
@@ -360,6 +367,7 @@ async function requestMore(lb, prepend = false) {
   }
   fillTable(lb, limitVal);
   hideLoader(lb);
+  requesting[lb] = false;
 }
 
 async function requestNew(lb, skip) {
@@ -451,7 +459,7 @@ let leftScrollEnabled = true;
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem.scrollTop() == 0) {
+  if (Math.round(elem.scrollTop()) <= 50) {
     requestMore(15, true);
   }
 });
@@ -459,7 +467,10 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
+  if (
+    Math.round(elem[0].scrollHeight - elem.scrollTop()) <=
+    Math.round(elem.outerHeight()) + 50
+  ) {
     requestMore(15);
   }
 });
@@ -469,14 +480,17 @@ let rightScrollEnabled = true;
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   if (!rightScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem.scrollTop() == 0) {
+  if (Math.round(elem.scrollTop()) <= 50) {
     requestMore(60, true);
   }
 });
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
+  if (
+    Math.round(elem[0].scrollHeight - elem.scrollTop()) <=
+    Math.round(elem.outerHeight() + 50)
+  ) {
     requestMore(60);
   }
 });

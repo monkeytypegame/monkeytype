@@ -13,7 +13,7 @@ class ResultDAO {
     }
     if (!user) throw new MonkeyError(404, "User not found", "add result");
     if (result.uid === undefined) result.uid = uid;
-    result.ir = true;
+    // result.ir = true;
     let res = await mongoDB().collection("results").insertOne(result);
     return {
       insertedId: res.insertedId,
@@ -47,6 +47,18 @@ class ResultDAO {
       .collection("results")
       .findOne({ _id: ObjectID(id), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
+    return result;
+  }
+
+  static async getLastResult(uid) {
+    let result = await mongoDB()
+      .collection("results")
+      .find({ uid })
+      .sort({ timestamp: -1 })
+      .limit(1)
+      .toArray();
+    result = result[0];
+    if (!result) throw new MonkeyError(404, "No results found");
     return result;
   }
 

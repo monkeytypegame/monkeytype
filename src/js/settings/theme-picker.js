@@ -7,8 +7,12 @@ import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 
 export function updateActiveButton() {
+  let activeThemeName = Config.theme;
+  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+    activeThemeName = ThemeController.randomTheme;
+  }
   $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
+  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
     "active"
   );
 }
@@ -96,7 +100,7 @@ export function refreshButtons() {
           favThemesEl.append(
             `<div class="theme button ${activeTheme}" theme='${
               theme.name
-            }' style="color:${theme.textColor};background:${theme.bgColor}">
+            }' style="color:${theme.mainColor};background:${theme.bgColor}">
           <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton active"><i class="fas fa-star"></i></div></div>`
@@ -113,7 +117,7 @@ export function refreshButtons() {
         themesEl.append(
           `<div class="theme button ${activeTheme}" theme='${
             theme.name
-          }' style="color:${theme.textColor};background:${theme.bgColor}">
+          }' style="color:${theme.mainColor};background:${theme.bgColor}">
           <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton"><i class="far fa-star"></i></div></div>`

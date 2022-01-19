@@ -218,6 +218,12 @@ export function init() {
   };
 }
 
+export function previewClick(val) {
+  if (clickSounds === null) init();
+  clickSounds[val][0].sounds[0].seek(0);
+  clickSounds[val][0].sounds[0].play();
+}
+
 export function playClick() {
   if (Config.playSoundOnClick === "off") return;
   if (clickSounds === null) init();

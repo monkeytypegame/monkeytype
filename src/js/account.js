@@ -18,6 +18,7 @@ import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import * as AccountController from "./account-controller";
+import * as LoadingPage from "./loading-page";
 import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
@@ -32,6 +33,7 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
+    await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
@@ -52,10 +54,16 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    if (UI.getActivePage() == "pageLoading") UI.changePage("");
     AccountController.signOut();
     return;
   }
+  if (UI.getActivePage() == "pageLoading") {
+    LoadingPage.updateBar(100);
+  } else {
+    LoadingPage.updateBar(45);
+  }
+  LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
   // if (snap === null) {
@@ -131,8 +139,6 @@ export async function getDataAndInit() {
       }
     }
   }
-  // if($(".pageAccount").hasClass('active')) update();
-  // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
     if (Config.localStorageConfig === null) {
@@ -184,7 +190,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if ($(".page.pageTest").hasClass("active")) {
+        if (UI.getActivePage() == "pageTest") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -201,7 +207,7 @@ export async function getDataAndInit() {
     }
   }
   if (
-    $(".pageLogin").hasClass("active") ||
+    UI.getActivePage() == "pageLogin" ||
     window.location.pathname === "/account"
   ) {
     UI.changePage("account");
@@ -215,7 +221,10 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  if ($(".pageLoading").hasClass("active")) UI.changePage("");
+  if (UI.getActivePage() == "pageLoading") {
+    LoadingPage.updateBar(100, true);
+    UI.changePage("");
+  }
 }
 
 let filteredResults = [];
@@ -372,6 +381,8 @@ let totalSecondsFiltered = 0;
 
 export function update() {
   function cont() {
+    LoadingPage.updateText("Displaying stats...");
+    LoadingPage.updateBar(100);
     console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
@@ -754,32 +765,38 @@ export function update() {
     let activityChartData_amount = [];
     let activityChartData_time = [];
     let activityChartData_avgWpm = [];
-    let lastTimestamp = 0;
+    // let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
-      let datecheck;
-      if (lastTimestamp > 0) {
-        datecheck = lastTimestamp;
-      } else {
-        datecheck = thisDate;
-      }
+      //this was used to fill in empty days between the results before i realised chart js can do it for me
+      // let datecheck;
+      // if (lastTimestamp > 0) {
+      //   datecheck = lastTimestamp;
+      // } else {
+      //   datecheck = thisDate;
+      // }
 
-      let numDaysBetweenTheDays = (datecheck - date) / 86400000;
+      // let numDaysBetweenTheDays = (datecheck - date) / 86400000;
 
-      if (numDaysBetweenTheDays > 1) {
-        if (datecheck === thisDate) {
-          activityChartData_amount.push({
-            x: parseInt(thisDate),
-            y: 0,
-          });
-        }
+      // if (numDaysBetweenTheDays > 1) {
+      //   if (datecheck === thisDate) {
+      //     activityChartData_amount.push({
+      //       x: parseInt(thisDate),
+      //       y: 0,
+      //     });
+      //   }
 
-        for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
-          activityChartData_amount.push({
-            x: parseInt(datecheck) - 86400000 * (i + 1),
-            y: 0,
-          });
-        }
-      }
+      //   for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
+      //     activityChartData_amount.push({
+      //       x: parseInt(datecheck) - 86400000 * (i + 1),
+      //       y: 0,
+      //     });
+      //     activityChartData_time.push({
+      //       x: parseInt(datecheck) - 86400000 * (i + 1),
+      //       y: 0,
+      //       amount: 0,
+      //     });
+      //   }
+      // }
 
       activityChartData_amount.push({
         x: parseInt(date),
@@ -798,7 +815,7 @@ export function update() {
             : activityChartData[date].totalWpm) / activityChartData[date].amount
         ),
       });
-      lastTimestamp = date;
+      // lastTimestamp = date;
     });
 
     if (Config.alwaysShowCPM) {
@@ -992,7 +1009,7 @@ export function update() {
 
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
-
+    LoadingPage.updateBar(100, true);
     UI.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
@@ -1003,6 +1020,7 @@ export function update() {
     Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (DB.getSnapshot().results === undefined) {
+    LoadingPage.updateBar(45, true);
     DB.getUserResults().then((d) => {
       if (d) {
         ResultFilters.updateActive();

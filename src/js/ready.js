@@ -8,13 +8,19 @@ import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
 import * as NewVersionNotification from "./new-version-notification";
+import * as Notifications from "./notifications";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
-Misc.getReleasesFromGitHub().then((v) => {
-  NewVersionNotification.show(v[0].name);
-});
+if (window.location.hostname === "localhost") {
+  $("#bottom .version .text").text("localhost");
+  $("#bottom .version").css("opacity", 1);
+} else {
+  Misc.getReleasesFromGitHub().then((v) => {
+    NewVersionNotification.show(v[0].name);
+  });
+}
 
 RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
@@ -26,9 +32,15 @@ $(document).ready(() => {
     $("#restartTestButton").addClass("hidden");
   }
   if (!window.localStorage.getItem("merchbannerclosed")) {
-    $(".merchBanner").removeClass("hidden");
-  } else {
-    $(".merchBanner").remove();
+    Notifications.addBanner(
+      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      1,
+      "images/merchdropwebsite2.png",
+      false,
+      () => {
+        window.localStorage.setItem("merchbannerclosed", true);
+      }
+    );
   }
   $("#centerContent")
     .css("opacity", "0")

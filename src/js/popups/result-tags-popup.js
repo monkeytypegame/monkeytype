@@ -98,7 +98,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
       } else {
         Notifications.add("Tags updated.", 1, 2);
         DB.getSnapshot().results.forEach((result) => {
-          if (result.id === resultid) {
+          if (result._id === resultid) {
             result.tags = newtags;
           }
         });

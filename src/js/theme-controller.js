@@ -144,6 +144,7 @@ export function set(themeName) {
 export function clearPreview() {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
+    randomTheme = null;
     if (Config.customTheme) {
       apply("custom");
     } else {
@@ -207,9 +208,11 @@ export function applyCustomBackground() {
   // });
   if (Config.customBackground === "") {
     $("#words").removeClass("noErrorBorder");
+    $("#resultWordsHistory").removeClass("noErrorBorder");
     $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
+    $("#resultWordsHistory").addClass("noErrorBorder");
     let $img = $("<img>", {
       src: Config.customBackground,
     });

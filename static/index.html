@@ -16,37 +16,26 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="css/balloon.css" />
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/media-queries.css" />
+    <link rel="stylesheet" href="css/style.css?v=1" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
-    <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <!-- <link rel="shortcut icon" href="images/favicon/fav.png" /> -->
+    <link id="favicon" rel="shortcut icon" href="/images/favicon/favicon.ico" />
     <link
-      href="images/favicon/apple-touch-icon-180x180.png"
       rel="apple-touch-icon"
       sizes="180x180"
+      href="/images/favicon/apple-touch-icon.png"
     />
     <link
-      href="images/favicon/apple-touch-icon-152x152.png"
-      rel="apple-touch-icon"
-      sizes="152x152"
+      rel="mask-icon"
+      href="/images/favicon/safari-pinned-tab.svg"
+      color="#eee"
     />
-    <link
-      href="images/favicon/apple-touch-icon-120x120.png"
-      rel="apple-touch-icon"
-      sizes="120x120"
+    <meta name="msapplication-TileColor" content="#e2b714" />
+    <meta
+      name="msapplication-config"
+      content="/images/favicon/browserconfig.xml"
     />
-
-    <link
-      href="images/favicon/apple-touch-icon-76x76.png"
-      rel="apple-touch-icon"
-      sizes="76x76"
-    />
-    <link
-      rel="apple-touch-icon"
-      href="images/favicon/apple-touch-icon-60x60.png"
-    />
+    <meta id="metaThemeColor" name="theme-color" content="#e2b714" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -54,8 +43,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="manifest" href="manifest.json" />
     <meta name="name" content="Monkeytype" />
-    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="image" content="https://monkeytype.com/images/mtsocial.png" />
     <meta
       name="description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
@@ -69,13 +59,18 @@
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
     <meta
+      property="og:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
+    <meta
       property="og:description"
       content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
-    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
-    <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
     <meta name="twitter:title" content="Monkeytype" />
-    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta
+      name="twitter:image"
+      content="https://monkeytype.com/images/mtsocial.png"
+    />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
@@ -94,12 +89,99 @@
       id="adScript"
       async
     ></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
   </head>
   <div class="customBackground"></div>
 
   <body>
+    <noscript>
+      <div
+        style="
+          background: #333;
+          width: 100vw;
+          height: 100vh;
+          left: 0;
+          top: 0;
+          position: fixed;
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          color: #646669;
+          font-size: 1rem;
+          font-family: Arial Rounded MT Bold;
+          z-index: 99999;
+          padding: 6rem;
+          box-sizing: border-box;
+        "
+      >
+        <div
+          style="
+            display: grid;
+            justify-content: center;
+            align-content: center;
+            max-width: 800px;
+            gap: 1rem;
+          "
+        >
+          <span style="font-size: 6rem; color: #e2b714">:(</span>
+          <span style="font-size: 2rem; color: #d1d0c5">
+            Looks like JavaScript is disabled. Please enable JavaScript in order
+            to use this website.
+          </span>
+        </div>
+      </div>
+    </noscript>
+    <div
+      id="nocss"
+      style="
+        background: #333;
+        width: 100vw;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        position: fixed;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        color: #646669;
+        font-size: 1rem;
+        font-family: Arial Rounded MT Bold;
+        z-index: 99999;
+        padding: 6rem;
+        box-sizing: border-box;
+      "
+    >
+      <div
+        style="
+          display: grid;
+          justify-content: center;
+          align-content: center;
+          max-width: 800px;
+          gap: 1rem;
+        "
+      >
+        <span style="font-size: 6rem; color: #e2b714">:(</span>
+        <span style="font-size: 2rem; color: #d1d0c5">
+          It seems like the CSS failed to load. Please clear your cache to
+          redownload the styles. If that doesn't help contact support.
+          <br />
+          (jack@monkeytype.com or discord.gg/monkeytype)
+        </span>
+        <span>(ctrl/cmd + shift + r on Chromium browsers)</span>
+        <span>
+          If the website works for a bit but then this screen comes back, clear
+          your cache again and then on Monkeytype open the command line (esc)
+          and search for "Clear SW cache".
+        </span>
+      </div>
+    </div>
     <div id="ad_rich_media" class="hidden"></div>
     <div id="backgroundLoader" style="display: none"></div>
+    <div id="bannerCenter"></div>
     <div id="notificationCenter">
       <div class="history"></div>
     </div>
@@ -115,17 +197,52 @@
     >
       Important information about your account. Please click this message.
     </div>
-    <div class="merchBanner hidden">
-      <img src="images/merchdropwebsite2.png" alt="" />
-      <div class="text">
-        We've got brand new merch designs over at
-        <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
-      </div>
-      <i class="fas closeButton fa-times"></i>
-    </div>
 
     <div id="simplePopupWrapper" class="popupWrapper hidden">
       <div id="simplePopup" popupId=""></div>
+    </div>
+
+    <div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
+      <div id="mobileTestConfigPopup">
+        <div class="group">
+          <div class="button punctuation">punctuation</div>
+          <div class="button numbers">numbers</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="group modeGroup">
+          <div class="button" mode="time">time</div>
+          <div class="button active" mode="words">words</div>
+          <div class="button" mode="quote">quote</div>
+          <div class="button" mode="zen">zen</div>
+          <div class="button" mode="custom">custom</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="group timeGroup">
+          <div class="button" time="15">15</div>
+          <div class="button active" time="30">30</div>
+          <div class="button" time="60">60</div>
+          <div class="button" time="120">120</div>
+          <div class="button" time="custom">custom</div>
+        </div>
+        <div class="group wordsGroup hidden">
+          <div class="button" words="10">10</div>
+          <div class="button" words="25">25</div>
+          <div class="button" words="50">50</div>
+          <div class="button" words="100">100</div>
+          <div class="button" words="custom">custom</div>
+        </div>
+        <div class="group quoteGroup hidden">
+          <div class="button" quote="-1">all</div>
+          <div class="button" quote="0">short</div>
+          <div class="button" quote="1">medium</div>
+          <div class="button" quote="2">long</div>
+          <div class="button" quote="3">thicc</div>
+          <div class="button" quote="-2">search</div>
+        </div>
+        <div class="group customGroup hidden">
+          <div class="button customChange">change</div>
+        </div>
+      </div>
     </div>
 
     <div id="pbTablesPopupWrapper" class="popupWrapper hidden">
@@ -581,7 +698,7 @@
     </div>
     <div id="versionHistoryWrapper" class="hidden">
       <div id="versionHistory">
-        <div class="tip">Click anywhere to dismiss</div>
+        <!-- <div class="tip">Click anywhere to dismiss</div> -->
         <div class="releases">
           <div class="release">
             <div class="title">v1</div>
@@ -628,6 +745,89 @@
           <a class="button" href="https://monkeytype.store" target="_blank">
             <div class="icon"><i class="fas fa-tshirt"></i></div>
             <div class="text">Buy Merch</div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div id="contactPopupWrapper" class="popupWrapper hidden">
+      <div id="contactPopup">
+        <div class="title">Contact</div>
+        <div class="text">
+          Feel free to send an email to jack@monkeytype.com (the buttons below
+          will open the default mail client).
+          <br />
+          <br />
+          Please
+          <span>do not send</span>
+          requests to delete account, update email, update name or clear
+          personal bests - you can do that in the settings page.
+        </div>
+        <div class="buttons">
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Question] "
+          >
+            <div class="icon"><i class="fas fa-question-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Question</div>
+              <!-- <div class="subtext">Confused about something?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Feedback] "
+          >
+            <div class="icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="textGroup">
+              <div class="text">Feedback</div>
+              <!-- <div class="subtext">Feel like the website could be improved?</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Bug] "
+          >
+            <div class="icon"><i class="fas fa-bug"></i></div>
+            <div class="textGroup">
+              <div class="text">Bug Report</div>
+              <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Account] "
+          >
+            <div class="icon"><i class="fas fa-user-circle"></i></div>
+            <div class="textGroup">
+              <div class="text">Account Help</div>
+              <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Business] "
+          >
+            <div class="icon"><i class="fas fa-briefcase"></i></div>
+            <div class="textGroup">
+              <div class="text">Business Inquiry</div>
+              <!-- <div class="subtext">Let's work together.</div> -->
+            </div>
+          </a>
+          <a
+            class="button"
+            target="_blank"
+            href="mailto:jack@monkeytype.com?subject=[Other] "
+          >
+            <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
+            <div class="textGroup">
+              <div class="text">Other</div>
+              <!-- <div class="subtext">We will try to help.</div> -->
+            </div>
           </a>
         </div>
       </div>
@@ -718,7 +918,7 @@
             <!-- <img src="images/logo1.svg" alt="" width="200px" height="100px"> -->
           </div>
           <div id="menu">
-            <div
+            <a
               id="startTestButton"
               class="icon-button view-start"
               tabindex="2"
@@ -728,7 +928,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-keyboard"></i>
               </div>
-            </div>
+            </a>
             <div
               class="icon-button leaderboards view-leaderboards"
               tabindex="2"
@@ -738,7 +938,7 @@
                 <i class="fas fa-fw fa-crown"></i>
               </div>
             </div>
-            <div
+            <a
               class="icon-button view-about"
               tabindex="2"
               href="/about"
@@ -747,7 +947,7 @@
               <div class="icon">
                 <i class="fas fa-fw fa-info"></i>
               </div>
-            </div>
+            </a>
             <!-- <a
               class="icon-button discord"
               tabindex="2"
@@ -760,7 +960,7 @@
                 <i class="fab fa-discord"></i>
               </div>
             </a> -->
-            <div
+            <a
               class="icon-button view-settings"
               tabindex="2"
               href="/settings"
@@ -769,8 +969,8 @@
               <div class="icon">
                 <i class="fas fa-fw fa-cog"></i>
               </div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button hidden account view-account"
               tabindex="2"
               href="/account"
@@ -780,8 +980,8 @@
                 <i class="fas fa-fw fa-user"></i>
               </div>
               <div class="text"></div>
-            </div>
-            <div
+            </a>
+            <a
               class="icon-button login view-login"
               tabindex="2"
               href="/login"
@@ -790,93 +990,115 @@
               <div class="icon">
                 <i class="far fa-fw fa-user"></i>
               </div>
-            </div>
+            </a>
           </div>
 
           <div class="config hidden">
-            <div
-              style="display: grid; grid-auto-flow: column; padding-top: 0.1rem"
-            >
-              <div class="group punctuationMode">
-                <!--           <div class="title">time</div> -->
-                <div class="buttons">
-                  <div class="text-button toggleButton" tabindex="2">
-                    punctuation
+            <div class="mobileConfig">
+              <div class="icon-button">
+                <i class="fas fa-bars"></i>
+              </div>
+            </div>
+            <div class="desktopConfig">
+              <div
+                class="puncAndNum"
+                style="
+                  display: grid;
+                  grid-auto-flow: column;
+                  padding-top: 0.1rem;
+                "
+              >
+                <div class="group punctuationMode">
+                  <!--           <div class="title">time</div> -->
+                  <div class="buttons">
+                    <div class="text-button toggleButton" tabindex="2">
+                      punctuation
+                    </div>
+                  </div>
+                </div>
+                <div class="group numbersMode">
+                  <!--           <div class="title">time</div> -->
+                  <div class="buttons">
+                    <div class="text-button toggleButton" tabindex="2">
+                      numbers
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="group numbersMode">
-                <!--           <div class="title">time</div> -->
+              <div class="group mode">
+                <!--           <div class="title">mode</div> -->
                 <div class="buttons">
-                  <div class="text-button toggleButton" tabindex="2">
-                    numbers
+                  <div class="text-button active" mode="time" tabindex="2">
+                    time
+                  </div>
+                  <div class="text-button" mode="words" tabindex="2">words</div>
+                  <div class="text-button" mode="quote" tabindex="2">quote</div>
+                  <div class="text-button" mode="zen" tabindex="2">zen</div>
+                  <div class="text-button" mode="custom" tabindex="2">
+                    custom
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="group mode">
-              <!--           <div class="title">mode</div> -->
-              <div class="buttons">
-                <div class="text-button active" mode="time" tabindex="2">
-                  time
-                </div>
-                <div class="text-button" mode="words" tabindex="2">words</div>
-                <div class="text-button" mode="quote" tabindex="2">quote</div>
-                <div class="text-button" mode="zen" tabindex="2">zen</div>
-                <div class="text-button" mode="custom" tabindex="2">custom</div>
-              </div>
-            </div>
-            <div class="group wordCount hidden">
-              <!--           <div class="title">words</div> -->
-              <div class="buttons">
-                <div class="text-button" wordCount="10" tabindex="2">10</div>
-                <div class="text-button" wordCount="25" tabindex="2">25</div>
-                <div class="text-button active" wordCount="50" tabindex="2">
-                  50
-                </div>
-                <div class="text-button" wordCount="100" tabindex="2">100</div>
-                <div class="text-button" wordCount="custom" tabindex="2">
-                  <i class="fas fa-tools"></i>
+              <div class="group wordCount hidden">
+                <!--           <div class="title">words</div> -->
+                <div class="buttons">
+                  <div class="text-button" wordCount="10" tabindex="2">10</div>
+                  <div class="text-button" wordCount="25" tabindex="2">25</div>
+                  <div class="text-button active" wordCount="50" tabindex="2">
+                    50
+                  </div>
+                  <div class="text-button" wordCount="100" tabindex="2">
+                    100
+                  </div>
+                  <div class="text-button" wordCount="custom" tabindex="2">
+                    <i class="fas fa-tools"></i>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="group time">
-              <!--           <div class="title">time</div> -->
-              <div class="buttons">
-                <div class="text-button" timeConfig="15" tabindex="2">15</div>
-                <div class="text-button active" timeConfig="30" tabindex="2">
-                  30
-                </div>
-                <div class="text-button" timeConfig="60" tabindex="2">60</div>
-                <div class="text-button" timeConfig="120" tabindex="2">120</div>
-                <div class="text-button" timeConfig="custom" tabindex="2">
-                  <i class="fas fa-tools"></i>
-                </div>
-              </div>
-            </div>
-            <div class="group quoteLength hidden">
-              <!--           <div class="title">time</div> -->
-              <div class="buttons">
-                <div class="text-button" quoteLength="-1" tabindex="2">all</div>
-                <div class="text-button" quoteLength="0" tabindex="2">
-                  short
-                </div>
-                <div class="text-button active" quoteLength="1" tabindex="2">
-                  medium
-                </div>
-                <div class="text-button" quoteLength="2" tabindex="2">long</div>
-                <div class="text-button" quoteLength="3" tabindex="2">
-                  thicc
-                </div>
-                <div class="text-button" quoteLength="-2" tabindex="2">
-                  <i class="fas fa-search"></i>
+              <div class="group time">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button" timeConfig="15" tabindex="2">15</div>
+                  <div class="text-button active" timeConfig="30" tabindex="2">
+                    30
+                  </div>
+                  <div class="text-button" timeConfig="60" tabindex="2">60</div>
+                  <div class="text-button" timeConfig="120" tabindex="2">
+                    120
+                  </div>
+                  <div class="text-button" timeConfig="custom" tabindex="2">
+                    <i class="fas fa-tools"></i>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="group customText hidden">
-              <!--           <div class="title">time</div> -->
-              <div class="buttons">
-                <div class="text-button">change</div>
+              <div class="group quoteLength hidden">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button" quoteLength="-1" tabindex="2">
+                    all
+                  </div>
+                  <div class="text-button" quoteLength="0" tabindex="2">
+                    short
+                  </div>
+                  <div class="text-button active" quoteLength="1" tabindex="2">
+                    medium
+                  </div>
+                  <div class="text-button" quoteLength="2" tabindex="2">
+                    long
+                  </div>
+                  <div class="text-button" quoteLength="3" tabindex="2">
+                    thicc
+                  </div>
+                  <div class="text-button" quoteLength="-2" tabindex="2">
+                    <i class="fas fa-search"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="group customText hidden">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button">change</div>
+                </div>
               </div>
             </div>
           </div>
@@ -892,7 +1114,15 @@
         <div id="middle">
           <div class="page pageLoading hidden">
             <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="icon">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+              <div class="barWrapper hidden">
+                <div class="bar">
+                  <div class="fill"></div>
+                </div>
+                <div class="text">‎</div>
+              </div>
             </div>
           </div>
           <div class="page pageTest hidden">
@@ -1233,11 +1463,6 @@
                   </div>
                   <div class="bottom">-</div>
                 </div>
-
-                <div class="group leaderboards">
-                  <div class="top">leaderboards</div>
-                  <div class="bottom">-</div>
-                </div>
               </div>
               <div class="chart">
                 <!-- <div class="title">wpm over time</div> -->
@@ -1301,6 +1526,15 @@
                     <div id="replayWords" class="words"></div>
                   </div>
                 </div>
+                <div
+                  id="retrySavingResultButton"
+                  class="hidden"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-redo"></i>
+                  Retry saving result
+                </div>
                 <div class="buttons">
                   <div
                     id="nextTestButton"
@@ -1362,7 +1596,7 @@
             </div>
           </div>
           <div class="page pageAbout hidden">
-            <div class="scrollToTopButton">
+            <div class="scrollToTopButton invisible">
               <i class="fas fa-angle-double-up"></i>
             </div>
             <div class="created">
@@ -1462,7 +1696,7 @@
               </p>
               <div class="supportButtons">
                 <a class="button ads">
-                  <div class="fas fas fa-ad"></div>
+                  <div class="fas fa-ad"></div>
                   Ads
                 </a>
                 <a
@@ -1658,161 +1892,285 @@
             <div class="section">
               <h1 id="contributors_title">contributors</h1>
               <div class="contributors">
+                <div>UnrealApex</div>
+                <div>lukew3</div>
                 <div>typerqeo</div>
                 <div>bhomie</div>
-                <div>corey-b</div>
-                <div>UnrealApex</div>
-                <div>willerbee</div>
-                <div>dmartin-tech</div>
                 <div>SeerLite</div>
-                <div>FakeDazon</div>
-                <div>a1usha</div>
+                <div>willerbee</div>
+                <div>Estebene</div>
                 <div>Brachyurus</div>
+                <div>dmartin-tech</div>
+                <div>FakeDazon</div>
+                <div>Meimersdorfer</div>
+                <div>CrumblyLiquid</div>
+                <div>DharmarajX24</div>
+                <div>a1usha</div>
                 <div>0x8b</div>
+                <div>Saint-dev</div>
                 <div>seaerchin</div>
                 <div>ryan-harrington</div>
                 <div>Smithster</div>
                 <div>Marco-Pagani</div>
-                <div>CrumblyLiquid</div>
                 <div>Jack92829</div>
+                <div>Maclogger</div>
+                <div>dependabot[bot]</div>
+                <div>Erlkoenigs</div>
+                <div>rustom</div>
+                <div>Killer8Hyper</div>
+                <div>Mustafa-Asaad-iq</div>
                 <div>xZa-k</div>
                 <div>avi123nash</div>
+                <div>refact0r</div>
                 <div>bataak</div>
-                <div>Saint-dev</div>
                 <div>ThatOneCalculator</div>
                 <div>mwahlig</div>
+                <div>omackenzie</div>
                 <div>zachy-ho</div>
                 <div>aviegdown</div>
                 <div>ramnathk</div>
+                <div>OctahedronV2</div>
                 <div>GFruit</div>
-                <div>Killer8Hyper</div>
                 <div>MaticSulc</div>
+                <div>kemonprogrammer</div>
+                <div>raymon-zhang</div>
+                <div>Apsu</div>
+                <div>mtthwn</div>
                 <div>joshuamango</div>
+                <div>Jonny-exe</div>
                 <div>Ahmad-A0</div>
                 <div>christophersarmiento</div>
+                <div>deniscerri</div>
+                <div>Dunxter</div>
                 <div>71xn</div>
                 <div>jacekdobrowolski</div>
                 <div>leduyquang753</div>
-                <div>Maclogger</div>
+                <div>Octarine-Phaneron</div>
                 <div>iwa</div>
+                <div>pran01</div>
                 <div>TayIorRobinson</div>
                 <div>vuong-buihv</div>
                 <div>barthakstege</div>
                 <div>l4ssc</div>
+                <div>shishberg</div>
+                <div>tcbutler320</div>
                 <div>throwawaywords</div>
-                <div>Jonny-exe</div>
-                <div>OctahedronV2</div>
+                <div>MysteriousLog6</div>
                 <div>iitsalex</div>
+                <div>Odyssey346</div>
                 <div>RealCyGuy</div>
+                <div>g-thome</div>
                 <div>Inirdin</div>
                 <div>jkjrmlg</div>
                 <div>kunal-rp</div>
-                <div>KungPaoChick</div>
+                <div>Kungger-git</div>
                 <div>MakerJake01</div>
-                <div>MysteriousLog6</div>
-                <div>Octarine-Phaneron</div>
+                <div>ryurina</div>
                 <div>tawtis</div>
+                <div>tricarbonate</div>
                 <div>Vitaman02</div>
+                <div>sphhax</div>
                 <div>BarePotato</div>
                 <div>alegottu</div>
-                <div>s1mple-Lemon</div>
-                <div>Alenygam</div>
+                <div>angularorbit</div>
+                <div>iuuang</div>
+                <div>marcoferrari2409</div>
+                <div>f1sh33</div>
+                <div>t-e-r-m</div>
+                <div>ZER0-X</div>
                 <div>fuwn</div>
+                <div>narze</div>
+                <div>mintlodica</div>
+                <div>thienanbeou</div>
                 <div>minerscale</div>
                 <div>aditya1rawat</div>
                 <div>ammarptn</div>
                 <div>ariebh</div>
+                <div>BalkoBalkho</div>
+                <div>Banzobotic</div>
                 <div>bsamseth</div>
                 <div>bool3max</div>
+                <div>Cole320</div>
+                <div>corey-b</div>
+                <div>DanGonite57</div>
                 <div>dCubelic</div>
                 <div>elswenson</div>
+                <div>ericettensohn</div>
                 <div>FabianSt305</div>
                 <div>Fraserbc</div>
+                <div>FukurouMakoto</div>
                 <div>shinze</div>
                 <div>gkeep</div>
+                <div>desert3agle</div>
+                <div>Jashmeen</div>
                 <div>JosueLeovani</div>
                 <div>dtuukkanen</div>
                 <div>lucas-fern</div>
                 <div>Magical-Penguin</div>
                 <div>mendelmaleh</div>
+                <div>michelkoga</div>
                 <div>NoCrypt</div>
                 <div>nullaf</div>
-                <div>chireia</div>
+                <div>sashinexists</div>
+                <div>shanedonovan</div>
                 <div>sohamb117</div>
                 <div>stevep99</div>
-                <div>mintlodica</div>
+                <div>Otard95</div>
+                <div>samuelxyz</div>
                 <div>miyukowo</div>
+                <div>Typeacode</div>
+                <div>VNKTSH00</div>
+                <div>vilgotf</div>
+                <div>Yultax</div>
                 <div>g-harel</div>
+                <div>huzqy</div>
                 <div>kiriDevs</div>
                 <div>krsntn</div>
-                <div>baulml</div>
+                <div>paulphys</div>
                 <div>ryevertigo</div>
+                <div>yekta</div>
+                <div>favault</div>
                 <div>Fowl95</div>
+                <div>kat3samsin</div>
+                <div>ronnapatp</div>
+                <div>victorbnl</div>
                 <div>SoulNinja-dev</div>
+                <div>AdrianSkar</div>
                 <div>AfonsoVReis</div>
+                <div>alex-1121</div>
                 <div>popey456963</div>
                 <div>AlirezaTheBruh</div>
+                <div>Jeve-Stobs</div>
+                <div>yzAlvin</div>
+                <div>AndreiSergiuu</div>
+                <div>AndrejStojkovic</div>
                 <div>anhduck14</div>
+                <div>AronF</div>
+                <div>arthurnunesc</div>
                 <div>cBachoo</div>
                 <div>beckxie</div>
                 <div>thescripted</div>
+                <div>mrbrianevans</div>
                 <div>CarinaChenot</div>
+                <div>moverest</div>
+                <div>semilin</div>
                 <div>Bregoliii</div>
+                <div>coryshaw1</div>
                 <div>Cosmeeeen</div>
                 <div>danhogan</div>
+                <div>DanInSpace104</div>
+                <div>cubedhuang</div>
                 <div>danii</div>
+                <div>DarrylBrooks97</div>
                 <div>David-Mordechai</div>
+                <div>p00ya</div>
+                <div>D-T-666</div>
+                <div>soul-catcher</div>
+                <div>drambique</div>
+                <div>Eloren1</div>
                 <div>EmNudge</div>
+                <div>rendinjast</div>
+                <div>gubareve</div>
                 <div>kwfk</div>
                 <div>gavinmn</div>
                 <div>GioSDA</div>
                 <div>GuyClicking</div>
+                <div>HachemiH</div>
+                <div>DrPoppyseed</div>
+                <div>HasanTheSyrian</div>
+                <div>henriquehbr</div>
                 <div>HayataSama</div>
+                <div>Iftakharpy</div>
                 <div>zaxophone</div>
+                <div>ivolvanov</div>
                 <div>Mollerz</div>
                 <div>jeremygautama</div>
+                <div>jeroen-meijer</div>
                 <div>cincodenada</div>
                 <div>JonesSagabaen</div>
+                <div>jamartinezc</div>
+                <div>monners</div>
                 <div>kadenscott</div>
-                <div>GMKanat</div>
-                <div>lukew3</div>
-                <div>narze</div>
-                <div>Meimersdorfer</div>
+                <div>gmkanat</div>
+                <div>TKelsier</div>
+                <div>KobeCofini</div>
+                <div>kraiztmatte</div>
+                <div>Schtinguerch</div>
+                <div>punctuations</div>
+                <div>MaxiMii05</div>
                 <div>mia-cx</div>
-                <div>nikzzzz</div>
+                <div>NotGate</div>
+                <div>Miigon</div>
+                <div>setek</div>
+                <div>Moilleadoir</div>
+                <div>slpysiren</div>
+                <div>nlundee</div>
+                <div>nwk6661</div>
+                <div>nottnottloop</div>
                 <div>OldMope</div>
                 <div>Oskar283</div>
                 <div>paulhchoi</div>
                 <div>pserey</div>
                 <div>pjrelex</div>
+                <div>luehmann</div>
                 <div>18praneeth</div>
+                <div>Alenygam</div>
                 <div>RebonackAl</div>
+                <div>Hakata-jpn</div>
                 <div>rhesamu</div>
+                <div>Rishav-mngo</div>
+                <div>rockingrohit9639</div>
                 <div>samyak039</div>
+                <div>ssantichaivekin</div>
+                <div>seanho96</div>
                 <div>sergiathanzo</div>
+                <div>sondrekje</div>
                 <div>phrohdoh</div>
                 <div>BlueGone</div>
+                <div>Sixeight</div>
                 <div>tsara27</div>
                 <div>vansul</div>
                 <div>zekth</div>
                 <div>voroskoi</div>
+                <div>Xydez</div>
                 <div>andrewtran1995</div>
-                <div>angularorbit</div>
                 <div>aoaaceai</div>
+                <div>ballerboo</div>
+                <div>benjaminpotter</div>
                 <div>bilfri</div>
+                <div>bitt4</div>
+                <div>chaitriplez</div>
+                <div>cheneyni-451</div>
+                <div>driazati</div>
                 <div>gwenzek</div>
+                <div>humptyhump</div>
+                <div>iamlambda</div>
                 <div>iokiou</div>
+                <div>polygonalenippel</div>
                 <div>kikuKeii</div>
                 <div>kokaloo</div>
+                <div>lttb</div>
+                <div>lucas-fine</div>
+                <div>mTopy</div>
+                <div>minicap-cat</div>
+                <div>montydrei</div>
                 <div>nextZed</div>
+                <div>p4tpr0</div>
+                <div>pooooooooods</div>
+                <div>precondition</div>
                 <div>redarguireda</div>
                 <div>sudoerena</div>
                 <div>thuanpham2311</div>
-                <div>Rougemoot</div>
+                <div>givensuman</div>
+                <div>uShldGetCeleste</div>
+                <div>usrme</div>
+                <div>Vermoot</div>
                 <div>wRadion</div>
+                <div>whorfian</div>
                 <div>yaazkal</div>
                 <div>zigotica</div>
                 <div>cinoss</div>
+                <div>Asocia</div>
               </div>
             </div>
           </div>
@@ -3801,6 +4159,18 @@
                   </div>
                 </div>
               </div>
+              <div class="section capsLockWarning">
+                <h1>caps lock warning</h1>
+                <div class="text">Displays a warning when caps lock is on.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
               <div class="sectionSpacer"></div>
             </div>
 
@@ -3980,17 +4350,27 @@
             <div class="register side">
               <div class="title">register</div>
               <form action="" autocomplete="nope">
-                <input type="text" placeholder="username" autocomplete="nope" />
-                <input type="email" placeholder="email" autocomplete="nope" />
+                <input
+                  type="text"
+                  placeholder="username"
+                  autocomplete="new-username"
+                />
+                <input
+                  type="email"
+                  placeholder="email"
+                  autocomplete="new-email"
+                />
                 <input
                   type="password"
                   placeholder="password"
                   autocomplete="new-password"
+                  name="new-password"
                 />
                 <input
                   type="password"
                   placeholder="verify password"
-                  autocomplete="nopeee"
+                  autocomplete="verify-password"
+                  name="verify-password"
                 />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>
@@ -4002,11 +4382,17 @@
               <div class="title">login</div>
               <div id="forgotPasswordButton">Forgot password?</div>
               <form action="">
-                <input type="email" placeholder="email" autocomplete="email" />
                 <input
+                  name="current-email"
+                  type="email"
+                  placeholder="email"
+                  autocomplete="current-username"
+                />
+                <input
+                  name="current-password"
                   type="password"
                   placeholder="password"
-                  autocomplete="password"
+                  autocomplete="current-password"
                 />
                 <div>
                   <label id="rememberMe" class="checkbox">
@@ -4037,7 +4423,15 @@
               <i class="fas fa-angle-double-up"></i>
             </div>
             <div class="preloader">
-              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="icon">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div>
+              <div class="barWrapper hidden">
+                <div class="bar">
+                  <div class="fill"></div>
+                </div>
+                <div class="text">‎</div>
+              </div>
             </div>
             <div class="content hidden">
               <div class="miniResultChartWrapper">
@@ -4460,9 +4854,9 @@
           </div>
           <div class="leftright">
             <div class="left">
-              <a href="mailto:jack@monkeytype.com" target="_blank">
+              <a id="contactPopupButton">
                 <i class="fas fa-fw fa-envelope"></i>
-                <div class="text">Support</div>
+                <div class="text">Contact</div>
               </a>
               <a href="https://github.com/Miodec/monkeytype" target="_blank">
                 <i class="fas fa-fw fa-code"></i>
@@ -4538,7 +4932,6 @@
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="/__/firebase/8.4.2/firebase-app.js"></script>
-
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
   <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
@@ -4554,7 +4947,10 @@
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"
+    defer
+  ></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="js/monkeytype.js"></script>
 </html>
