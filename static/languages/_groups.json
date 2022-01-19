@@ -36,7 +36,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic", "arabic_10k"]
+    "languages": ["arabic","arabic_tashkeel_stripped", "arabic_10k","arabic_tashkeel_stripped_10k"]
   },
   {
     "name": "italian",
