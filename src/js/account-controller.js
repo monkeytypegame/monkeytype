@@ -65,9 +65,13 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     await loadUser(user);
   } else {
     UI.setPageTransition(false);
-    Focus.set(false);
-    if (UI.getActivePage() == "pageLoading") UI.changePage("");
   }
+  if (window.location.pathname != "/account") {
+    setTimeout(() => {
+      Focus.set(false);
+    }, 125 / 2);
+  }
+  UI.changePage();
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {
@@ -119,6 +123,7 @@ export function signIn() {
         .signInWithEmailAndPassword(email, password)
         .then(async (e) => {
           await loadUser(e.user);
+          UI.changePage("account");
           if (TestLogic.notSignedInLastResult !== null) {
             TestLogic.setNotSignedInUid(e.user.uid);
             let response;

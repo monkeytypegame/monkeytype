@@ -208,12 +208,12 @@ export async function getDataAndInit() {
       PaceCaret.init(true);
     }
   }
-  if (
-    UI.getActivePage() == "pageLogin" ||
-    window.location.pathname === "/account"
-  ) {
-    UI.changePage("account");
-  }
+  // if (
+  //   UI.getActivePage() == "pageLogin" ||
+  //   window.location.pathname === "/account"
+  // ) {
+  //   UI.changePage("account");
+  // }
   ThemePicker.refreshButtons();
   AccountButton.loading(false);
   ResultFilters.updateTags();
@@ -223,11 +223,11 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  if (UI.getActivePage() == "pageLoading") {
-    LoadingPage.updateBar(100, true);
-    Focus.set(false);
-    UI.changePage("");
-  }
+  // if (UI.getActivePage() == "pageLoading") {
+  //   LoadingPage.updateBar(100, true);
+  //   Focus.set(false);
+  //   UI.changePage("");
+  // }
 }
 
 let filteredResults = [];
