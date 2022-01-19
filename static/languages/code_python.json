@@ -78,7 +78,7 @@
     "from",
     "fromkeys",
     "frozenset",
-    "functools"
+    "functools",
     "get",
     "getattr",
     "global",
