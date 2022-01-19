@@ -19,6 +19,8 @@ import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import * as AccountController from "./account-controller";
 import * as LoadingPage from "./loading-page";
+import * as Focus from "./focus";
+import * as SignOutButton from "./sign-out-button";
 import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
@@ -223,6 +225,7 @@ export async function getDataAndInit() {
   console.log("account loading finished");
   if (UI.getActivePage() == "pageLoading") {
     LoadingPage.updateBar(100, true);
+    Focus.set(false);
     UI.changePage("");
   }
 }
@@ -1010,6 +1013,8 @@ export function update() {
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
     LoadingPage.updateBar(100, true);
+    SignOutButton.show();
+    Focus.set(false);
     UI.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),

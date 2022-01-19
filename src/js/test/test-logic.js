@@ -590,7 +590,7 @@ export function restart(
     },
     125,
     async () => {
-      Focus.set(false);
+      if (UI.getActivePage() == "pageTest") Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });

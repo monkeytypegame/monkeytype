@@ -1,14 +1,15 @@
 import * as Caret from "./caret";
+import * as UI from "./ui";
 
 let state = false;
 
-export function set(foc) {
+export function set(foc, withCursor = false) {
   if (foc && !state) {
     state = true;
     Caret.stopAnimation();
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
-    $("body").css("cursor", "none");
+    if (!withCursor) $("body").css("cursor", "none");
     $("#middle").addClass("focus");
   } else if (!foc && state) {
     state = false;
@@ -21,6 +22,9 @@ export function set(foc) {
 }
 
 $(document).mousemove(function (event) {
+  if (!state) return;
+  if (UI.getActivePage() == "pageLoading") return;
+  if (UI.getActivePage() == "pageAccount" && state == true) return;
   if (
     $("#top").hasClass("focus") &&
     (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)

@@ -184,20 +184,12 @@ export function changePage(page, norestart = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(
-        activePageElement,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-          activePage = "pageAccount";
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
+      swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
+        setPageTransition(false);
+        history.pushState("account", null, "account");
+        $(".page.pageAccount").addClass("active");
+        activePage = "pageAccount";
+      });
       Funbox.activate("none");
       Account.update();
       TestConfig.hide();

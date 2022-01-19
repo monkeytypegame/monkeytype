@@ -13,6 +13,7 @@ import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 import * as PSA from "./psa";
+import * as Focus from "./focus";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -64,6 +65,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     await loadUser(user);
   } else {
     UI.setPageTransition(false);
+    Focus.set(false);
     if (UI.getActivePage() == "pageLoading") UI.changePage("");
   }
   let theme = Misc.findGetParameter("customTheme");
