@@ -34,11 +34,9 @@ try {
 class ResultController {
   static async getResults(req, res, next) {
     try {
-      return setTimeout(async () => {
-        const { uid } = req.decodedToken;
-        const results = await ResultDAO.getResults(uid);
-        return res.status(200).json(results);
-      }, 3000);
+      const { uid } = req.decodedToken;
+      const results = await ResultDAO.getResults(uid);
+      return res.status(200).json(results);
     } catch (e) {
       next(e);
     }

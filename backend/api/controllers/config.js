@@ -4,11 +4,9 @@ const { validateConfig } = require("../../handlers/validation");
 class ConfigController {
   static async getConfig(req, res, next) {
     try {
-      return setTimeout(async () => {
-        const { uid } = req.decodedToken;
-        let config = await ConfigDAO.getConfig(uid);
-        return res.status(200).json(config);
-      }, 3000);
+      const { uid } = req.decodedToken;
+      let config = await ConfigDAO.getConfig(uid);
+      return res.status(200).json(config);
     } catch (e) {
       return next(e);
     }
