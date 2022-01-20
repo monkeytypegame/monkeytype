@@ -37,8 +37,11 @@
     &.quickNav .links {
       display: grid;
       grid-auto-flow: column;
+      text-align: center;
       a {
         text-decoration: none;
+        width: 100%;
+        cursor: pointer;
         // opacity: 0.5;
         &:hover {
           opacity: 1;
