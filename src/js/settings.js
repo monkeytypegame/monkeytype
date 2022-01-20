@@ -174,6 +174,11 @@ async function initGroups() {
       groups.confidenceMode.updateButton();
     }
   );
+  groups.soundVolume = new SettingsGroup(
+    "soundVolume",
+    UpdateConfig.setSoundVolume,
+    () => {}
+  );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,

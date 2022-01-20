@@ -3,7 +3,7 @@
   --main-color: #ffffff;
   --caret-color: #ffffff;
   --sub-color: rgba(255, 255, 255, 0.1);
-  --text-color: #ffffff;
+  --text-color: #ffd100;
   --error-color: #da3333;
   --error-extra-color: #791717;
   --colorful-error-color: #da3333;
@@ -11,7 +11,7 @@
 }
 
 body {
-  /* background-image: url('https://thumbs.gfycat.com/SlimyClassicAsianconstablebutterfly-size_restricted.gif'); */
+  background-image: url("https://thumbs.gfycat.com/SlimyClassicAsianconstablebutterfly-size_restricted.gif");
   background-size: cover;
   background-position: center;
 }

@@ -11,9 +11,17 @@ import * as TodayTracker from "./today-tracker";
 import * as PbCrown from "./pb-crown";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as TestLogic from "./test-logic";
+import * as Notifications from "./notifications";
 
 let result;
 let maxChartVal;
+
+let useUnsmoothedRaw = false;
+
+export function toggleUnsmoothed() {
+  useUnsmoothedRaw = !useUnsmoothedRaw;
+  Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
+}
 
 async function updateGraph() {
   ChartController.result.options.annotation.annotations = [];
@@ -33,9 +41,18 @@ async function updateGraph() {
   let chartData1 = Config.alwaysShowCPM
     ? TestStats.wpmHistory.map((a) => a * 5)
     : TestStats.wpmHistory;
-  let chartData2 = Config.alwaysShowCPM
-    ? result.chartData.raw.map((a) => a * 5)
-    : result.chartData.raw;
+
+  let chartData2;
+
+  if (useUnsmoothedRaw) {
+    chartData2 = Config.alwaysShowCPM
+      ? result.chartData.unsmoothedRaw.map((a) => a * 5)
+      : result.chartData.unsmoothedRaw;
+  } else {
+    chartData2 = Config.alwaysShowCPM
+      ? result.chartData.raw.map((a) => a * 5)
+      : result.chartData.raw;
+  }
 
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = chartData2;

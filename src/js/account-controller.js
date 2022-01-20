@@ -13,6 +13,7 @@ import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 import * as PSA from "./psa";
+import * as Focus from "./focus";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -61,11 +62,22 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
+    if (window.location.pathname == "/login") {
+      window.history.replaceState("", null, "/account");
+    }
     await loadUser(user);
   } else {
+    if (window.location.pathname == "/account") {
+      window.history.replaceState("", null, "/login");
+    }
     UI.setPageTransition(false);
-    if (UI.getActivePage() == "pageLoading") UI.changePage("");
   }
+  if (window.location.pathname != "/account") {
+    setTimeout(() => {
+      Focus.set(false);
+    }, 125 / 2);
+  }
+  UI.changePage();
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {
@@ -101,6 +113,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
 export function signIn() {
   authListener();
   $(".pageLogin .preloader").removeClass("hidden");
+  $(".pageLogin .button").addClass("disabled");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
 
@@ -117,6 +130,7 @@ export function signIn() {
         .signInWithEmailAndPassword(email, password)
         .then(async (e) => {
           await loadUser(e.user);
+          UI.changePage("account");
           if (TestLogic.notSignedInLastResult !== null) {
             TestLogic.setNotSignedInUid(e.user.uid);
             let response;
@@ -149,12 +163,14 @@ export function signIn() {
           }
           Notifications.add(message, -1);
           $(".pageLogin .preloader").addClass("hidden");
+          $(".pageLogin .button").removeClass("disabled");
         });
     });
 }
 
 export async function signInWithGoogle() {
   $(".pageLogin .preloader").removeClass("hidden");
+  $(".pageLogin .button").addClass("disabled");
   authListener();
   let signedInUser;
   try {
@@ -214,7 +230,7 @@ export async function signInWithGoogle() {
         AllTimeStats.clear();
         Notifications.add("Account created", 1, 3);
         $("#menu .icon-button.account .text").text(name);
-        $(".pageLogin .register .button").removeClass("disabled");
+        $(".pageLogin .button").removeClass("disabled");
         $(".pageLogin .preloader").addClass("hidden");
         await loadUser(signedInUser.user);
         if (TestLogic.notSignedInLastResult !== null) {
@@ -240,6 +256,7 @@ export async function signInWithGoogle() {
     console.log(e);
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .button").removeClass("disabled");
     signedInUser.user.delete();
     axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
     return;
@@ -315,6 +332,7 @@ export function signOut() {
       AccountButton.update();
       UI.changePage("login");
       DB.setSnapshot(null);
+      $(".pageLogin .button").removeClass("disabled");
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
@@ -322,7 +340,7 @@ export function signOut() {
 }
 
 async function signUp() {
-  $(".pageLogin .register .button").addClass("disabled");
+  $(".pageLogin .button").addClass("disabled");
   $(".pageLogin .preloader").removeClass("hidden");
   let nname = $(".pageLogin .register input")[0].value;
   let email = $(".pageLogin .register input")[1].value;
@@ -332,7 +350,7 @@ async function signUp() {
   if (password != passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
@@ -351,7 +369,7 @@ async function signUp() {
     }
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
@@ -372,7 +390,7 @@ async function signUp() {
     AllTimeStats.clear();
     Notifications.add("Account created", 1, 3);
     $("#menu .icon-button.account .text").text(nname);
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin .preloader").addClass("hidden");
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -406,7 +424,7 @@ async function signUp() {
     }
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
