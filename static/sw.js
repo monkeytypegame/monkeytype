@@ -1,4 +1,4 @@
-const staticCacheName = "sw-cache-2022-1-18-15-37-40";
+const staticCacheName = "sw-cache-2022-1-20-1-3-28";
 
 caches.keys().then(function (names) {
   for (let name of names) {
