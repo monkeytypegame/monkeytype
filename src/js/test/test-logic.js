@@ -1646,14 +1646,16 @@ export async function finish(difficultyFailed = false) {
 
   // test is valid
 
-  TodayTracker.addSeconds(
-    completedEvent.testDuration +
-      (TestStats.incompleteSeconds < 0
-        ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds)) -
-      completedEvent.afkDuration
-  );
-  Result.updateTodayTracker();
+  if (!dontSave) {
+    TodayTracker.addSeconds(
+      completedEvent.testDuration +
+        (TestStats.incompleteSeconds < 0
+          ? 0
+          : Misc.roundTo2(TestStats.incompleteSeconds)) -
+        completedEvent.afkDuration
+    );
+    Result.updateTodayTracker();
+  }
 
   if (firebase.auth().currentUser == null) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
