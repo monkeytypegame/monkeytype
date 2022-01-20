@@ -19,6 +19,8 @@ import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import * as AccountController from "./account-controller";
 import * as LoadingPage from "./loading-page";
+import * as Focus from "./focus";
+import * as SignOutButton from "./sign-out-button";
 import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
@@ -49,7 +51,7 @@ export async function getDataAndInit() {
         0
       );
     }
-    let msg = e?.response?.data?.message ?? e.message;
+    let msg = e?.response?.data?.message ?? e.response.data ?? e.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
@@ -206,12 +208,12 @@ export async function getDataAndInit() {
       PaceCaret.init(true);
     }
   }
-  if (
-    UI.getActivePage() == "pageLogin" ||
-    window.location.pathname === "/account"
-  ) {
-    UI.changePage("account");
-  }
+  // if (
+  //   UI.getActivePage() == "pageLogin" ||
+  //   window.location.pathname === "/account"
+  // ) {
+  //   UI.changePage("account");
+  // }
   ThemePicker.refreshButtons();
   AccountButton.loading(false);
   ResultFilters.updateTags();
@@ -221,10 +223,11 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  if (UI.getActivePage() == "pageLoading") {
-    LoadingPage.updateBar(100, true);
-    UI.changePage("");
-  }
+  // if (UI.getActivePage() == "pageLoading") {
+  //   LoadingPage.updateBar(100, true);
+  //   Focus.set(false);
+  //   UI.changePage("");
+  // }
 }
 
 let filteredResults = [];
@@ -818,8 +821,6 @@ export function update() {
       // lastTimestamp = date;
     });
 
-    console.log(activityChartData_amount);
-
     if (Config.alwaysShowCPM) {
       ChartController.accountActivity.options.scales.yAxes[1].scaleLabel.labelString =
         "Average Cpm";
@@ -1012,6 +1013,8 @@ export function update() {
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
     LoadingPage.updateBar(100, true);
+    SignOutButton.show();
+    Focus.set(false);
     UI.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),

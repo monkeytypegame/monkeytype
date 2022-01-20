@@ -590,7 +590,7 @@ export function restart(
     },
     125,
     async () => {
-      Focus.set(false);
+      if (UI.getActivePage() == "pageTest") Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -1480,6 +1480,7 @@ function buildCompletedEvent(difficultyFailed) {
   completedEvent.consistency = consistency;
   let smoothedraw = Misc.smooth(rawPerSecond, 1);
   completedEvent.chartData.raw = smoothedraw;
+  completedEvent.chartData.unsmoothedRaw = rawPerSecond;
 
   //smoothed consistency
   let stddev2 = Misc.stdDev(smoothedraw);
@@ -1645,14 +1646,16 @@ export async function finish(difficultyFailed = false) {
 
   // test is valid
 
-  TodayTracker.addSeconds(
-    completedEvent.testDuration +
-      (TestStats.incompleteSeconds < 0
-        ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds)) -
-      completedEvent.afkDuration
-  );
-  Result.updateTodayTracker();
+  if (!dontSave) {
+    TodayTracker.addSeconds(
+      completedEvent.testDuration +
+        (TestStats.incompleteSeconds < 0
+          ? 0
+          : Misc.roundTo2(TestStats.incompleteSeconds)) -
+        completedEvent.afkDuration
+    );
+    Result.updateTodayTracker();
+  }
 
   if (firebase.auth().currentUser == null) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
@@ -1675,6 +1678,8 @@ export async function finish(difficultyFailed = false) {
     randomQuote,
     dontSave
   );
+
+  delete completedEvent.chartData.unsmoothedRaw;
 
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
