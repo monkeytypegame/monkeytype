@@ -169,6 +169,10 @@ class Input {
       return this.history[i];
     }
   }
+
+  getHistoryLast() {
+    return this.history[this.history.length - 1];
+  }
 }
 
 class Corrected {
