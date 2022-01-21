@@ -14,16 +14,32 @@ import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 import * as PSA from "./psa";
 import * as Focus from "./focus";
+import * as Loader from "./loader";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
+
+export function sendVerificationEmail() {
+  Loader.show();
+  let cu = firebase.auth().currentUser;
+  cu.sendEmailVerification()
+    .then(() => {
+      Loader.hide();
+      Notifications.add("Email sent to " + cu.email, 4000);
+    })
+    .catch((e) => {
+      Loader.hide();
+      Notifications.add("Error: " + e.message, 3000);
+      console.error(e.message);
+    });
+}
 
 async function loadUser(user) {
   // User is signed in.
   $(".pageAccount .content p.accountVerificatinNotice").remove();
   if (user.emailVerified === false) {
     $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a onClick="sendVerificationEmail()">Send the verification email again</a>.`
+      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
     );
   }
   UI.setPageTransition(false);
