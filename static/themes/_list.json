@@ -679,4 +679,9 @@
     "bgColor": "#d6d3d6",
     "mainColor": "#5c1e5f"
   }
+  ,{
+    "name": "evil_eye",
+    "bgColor": "#0084c2",
+    "mainColor": "#f7f2ea"
+  }
 ]
