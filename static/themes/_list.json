@@ -689,4 +689,9 @@
     "bgColor": "linear-gradient(to right, #071d75, #e51376)",
     "mainColor": "#ffffff"
   }
+  ,{
+    "name": "fire",
+    "bgColor": "linear-gradient(to right, #b31313, #ff9000, #fdda16)",
+    "mainColor": "#ffffff"
+  }
 ]
