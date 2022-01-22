@@ -358,8 +358,16 @@ async function signUp() {
   $(".pageLogin .preloader").removeClass("hidden");
   let nname = $(".pageLogin .register input")[0].value;
   let email = $(".pageLogin .register input")[1].value;
-  let password = $(".pageLogin .register input")[2].value;
-  let passwordVerify = $(".pageLogin .register input")[3].value;
+  let emailVerify = $(".pageLogin .register input")[2].value;
+  let password = $(".pageLogin .register input")[3].value;
+  let passwordVerify = $(".pageLogin .register input")[4].value;
+
+  if (email != emailVerify) {
+    Notifications.add("Emails do not match", 0, 3);
+    $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .button").removeClass("disabled");
+    return;
+  }
 
   if (password != passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
