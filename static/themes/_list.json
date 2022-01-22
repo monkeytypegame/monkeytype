@@ -684,4 +684,9 @@
     "bgColor": "#0084c2",
     "mainColor": "#f7f2ea"
   }
+  ,{
+    "name": "trance",
+    "bgColor": "linear-gradient(to right, #071d75, #e51376)",
+    "mainColor": "#ffffff"
+  }
 ]
