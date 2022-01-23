@@ -51,7 +51,7 @@ export async function getDataAndInit() {
         0
       );
     }
-    let msg = e?.response?.data?.message ?? e.response.data ?? e.message;
+    let msg = e?.response?.data?.message ?? e?.response?.data ?? e?.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
