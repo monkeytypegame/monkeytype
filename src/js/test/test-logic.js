@@ -1687,6 +1687,8 @@ export async function finish(difficultyFailed = false) {
 
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
+    completedEvent.keySpacing = "toolong";
+    completedEvent.keyDuration = "toolong";
     TestStats.setKeypressTimingsTooLong();
   }
 
