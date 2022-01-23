@@ -34,19 +34,20 @@ self.addEventListener("fetch", async (event) => {
     event.respondWith(fetch(event.request));
   } else {
     // Otherwise, assume host is serving a static file, check cache and add response to cache if not found
-    let cache = await caches.open(staticCacheName);
     event.respondWith(
-      cache.match(event.request).then(async (response) => {
-        // Check if request in cache
-        if (response) {
-          // if response was found in the cache, send from cache
-          return response;
-        } else {
-          // if response was not found in cache fetch from server, cache it and send it
-          response = await fetch(event.request);
-          cache.put(event.request.url, response.clone());
-          return response;
-        }
+      caches.open(staticCacheName).then((cache) => {
+        return cache.match(event.request).then(async (response) => {
+          // Check if request in cache
+          if (response) {
+            // if response was found in the cache, send from cache
+            return response;
+          } else {
+            // if response was not found in cache fetch from server, cache it and send it
+            response = await fetch(event.request);
+            cache.put(event.request.url, response.clone());
+            return response;
+          }
+        });
       })
     );
   }
