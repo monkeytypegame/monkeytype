@@ -1,12 +1,16 @@
-const staticCacheName = "sw-cache-2022-1-23-15-12-8";
+const staticCacheName = "sw-cache"; // this is given a unique name on build
 
-caches.keys().then(function (names) {
-  for (let name of names) {
-    if (name !== staticCacheName) caches.delete(name);
-  }
+self.addEventListener("activate", (event) => {
+  caches.keys().then((names) => {
+    for (let name of names) {
+      if (name !== staticCacheName) event.waitUntil(caches.delete(name));
+    }
+  });
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("install", (event) => {
+  event.waitUntil(self.skipWaiting());
   event.waitUntil(
     caches.open(staticCacheName).then((cache) => {
       // Cache the base file(s)
@@ -19,8 +23,6 @@ self.addEventListener("fetch", async (event) => {
   const host = new URL(event.request.url).host;
   if (
     [
-      "monkeytype.com",
-      "localhost:5000",
       "localhost:5005",
       "api.monkeytype.com",
       "api.github.com",
@@ -33,19 +35,19 @@ self.addEventListener("fetch", async (event) => {
   } else {
     // Otherwise, assume host is serving a static file, check cache and add response to cache if not found
     event.respondWith(
-      caches.match(event.request).then(async (response) => {
-        // Check if request in cache
-        if (response) {
-          // if response was found in the cache, send from cache
-          return response;
-        } else {
-          // if response was not found in cache fetch from server, cache it and send it
-          response = await fetch(event.request);
-          return caches.open(staticCacheName).then((cache) => {
+      caches.open(staticCacheName).then((cache) => {
+        return cache.match(event.request).then(async (response) => {
+          // Check if request in cache
+          if (response) {
+            // if response was found in the cache, send from cache
+            return response;
+          } else {
+            // if response was not found in cache fetch from server, cache it and send it
+            response = await fetch(event.request);
             cache.put(event.request.url, response.clone());
             return response;
-          });
-        }
+          }
+        });
       })
     );
   }
