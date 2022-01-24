@@ -249,6 +249,7 @@ export async function signInWithGoogle() {
         $(".pageLogin .button").removeClass("disabled");
         $(".pageLogin .preloader").addClass("hidden");
         await loadUser(signedInUser.user);
+        UI.changePage("account");
         if (TestLogic.notSignedInLastResult !== null) {
           TestLogic.setNotSignedInUid(signedInUser.user.uid);
           axiosInstance
@@ -264,7 +265,8 @@ export async function signInWithGoogle() {
         }
       }
     } else {
-      loadUser(signedInUser.user);
+      await loadUser(signedInUser.user);
+      UI.changePage("account");
     }
   } catch (e) {
     console.log(e);
