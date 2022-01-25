@@ -300,40 +300,90 @@ export async function signInWithGoogle() {
 //   }
 // }
 
-export function linkWithGoogle() {
+export function addGoogleAuth() {
+  Loader.show();
   firebase
     .auth()
     .currentUser.linkWithPopup(gmailProvider)
     .then(function (result) {
-      console.log(result);
+      Loader.hide();
+      Notifications.add("Google authenication added", 1);
+      Settings.updateAuthSections();
     })
     .catch(function (error) {
-      console.log(error);
+      Loader.hide();
+      Notifications.add(
+        "Failed to add Google authenication: " + error.message,
+        -1
+      );
     });
 }
 
-export function unlinkGoogle() {
-  firebase
-    .auth()
-    .currentUser.unlink("google.com")
-    .then((result) => {
-      console.log(result);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+export async function removeGoogleAuth() {
+  let user = firebase.auth().currentUser;
+  if (
+    user.providerData.find((provider) => provider.providerId === "password")
+  ) {
+    Loader.show();
+    try {
+      await user.reauthenticateWithPopup(AccountController.gmailProvider);
+    } catch (e) {
+      Loader.hide();
+      return Notifications.add(e.message, -1);
+    }
+    firebase
+      .auth()
+      .currentUser.unlink("google.com")
+      .then((result) => {
+        Notifications.add("Google authentication removed", 1);
+        Loader.hide();
+        Settings.updateAuthSections();
+      })
+      .catch((error) => {
+        Loader.hide();
+        Notifications.add(
+          "Failed to remove Google authentication: " + error.message,
+          -1
+        );
+      });
+  } else {
+    Notifications.add(
+      "Password authentication needs to be enabled to remove Google authentication",
+      -1
+    );
+  }
 }
 
-export function linkWithEmail(email, password) {
+export async function addPasswordAuth(email, password) {
+  Loader.show();
+  let user = firebase.auth().currentUser;
+  if (
+    user.providerData.find((provider) => provider.providerId === "google.com")
+  ) {
+    try {
+      await firebase
+        .auth()
+        .currentUser.reauthenticateWithPopup(AccountController.gmailProvider);
+    } catch (e) {
+      Loader.hide();
+      return Notifications.add("Could not reauthenticate: " + e.message, -1);
+    }
+  }
   var credential = firebase.auth.EmailAuthProvider.credential(email, password);
   firebase
     .auth()
     .currentUser.linkWithCredential(credential)
     .then(function (result) {
-      console.log(result);
+      Loader.hide();
+      Notifications.add("Password authenication added", 1);
+      Settings.updateAuthSections();
     })
     .catch(function (error) {
-      console.log(error);
+      Loader.hide();
+      Notifications.add(
+        "Failed to add password authenication: " + error.message,
+        -1
+      );
     });
 }
 
