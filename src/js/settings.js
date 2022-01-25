@@ -15,6 +15,7 @@ import * as EditPresetPopup from "./edit-preset-popup";
 import * as ThemePicker from "./theme-picker";
 import * as ImportExportSettingsPopup from "./import-export-settings-popup";
 import * as CustomThemePopup from "./custom-theme-popup";
+import * as AccountController from "./account-controller";
 
 export let groups = {};
 async function initGroups() {
@@ -417,6 +418,53 @@ export function updateDiscordSection() {
   }
 }
 
+export function updateAuthSections() {
+  $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
+  $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
+
+  let user = firebase.auth().currentUser;
+  if (!user) return;
+
+  let passwordProvider = user.providerData.find(
+    (provider) => provider.providerId === "password"
+  );
+  let googleProvider = user.providerData.find(
+    (provider) => provider.providerId === "google.com"
+  );
+
+  if (passwordProvider) {
+    $(
+      ".pageSettings .section.passwordAuthSettings #emailPasswordAuth"
+    ).removeClass("hidden");
+    $(
+      ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
+    ).removeClass("hidden");
+  } else {
+    $(
+      ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
+    ).removeClass("hidden");
+  }
+
+  if (googleProvider) {
+    $(
+      ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
+    ).removeClass("hidden");
+    if (passwordProvider) {
+      $(
+        ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
+      ).removeClass("disabled");
+    } else {
+      $(".pageSettings .section.googleAuthSettings #removeGoogleAuth").addClass(
+        "disabled"
+      );
+    }
+  } else {
+    $(".pageSettings .section.googleAuthSettings #addGoogleAuth").removeClass(
+      "hidden"
+    );
+  }
+}
+
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
@@ -505,6 +553,7 @@ export function update() {
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
+  updateAuthSections();
   ThemePicker.refreshButtons();
   // ThemePicker.updateActiveButton();
 
@@ -794,16 +843,28 @@ $(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
   SimplePopups.list.resetPersonalBests.show();
 });
 
-$(".pageSettings #updateAccountEmail").on("click", (e) => {
-  SimplePopups.list.updateEmail.show();
-});
-
 $(".pageSettings #updateAccountName").on("click", (e) => {
   SimplePopups.list.updateName.show();
 });
 
-$(".pageSettings #updateAccountPassword").on("click", (e) => {
+$(".pageSettings #addPasswordAuth").on("click", (e) => {
+  SimplePopups.list.addPasswordAuth.show();
+});
+
+$(".pageSettings #emailPasswordAuth").on("click", (e) => {
+  SimplePopups.list.updateEmail.show();
+});
+
+$(".pageSettings #passPasswordAuth").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
+});
+
+$(".pageSettings #addGoogleAuth").on("click", (e) => {
+  AccountController.addGoogleAuth();
+});
+
+$(".pageSettings #removeGoogleAuth").on("click", (e) => {
+  AccountController.removeGoogleAuth();
 });
 
 $(".pageSettings #deleteAccount").on("click", (e) => {
