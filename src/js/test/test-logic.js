@@ -899,6 +899,8 @@ export async function init() {
             }
           }
           randomWord = randomcaseword;
+        } else if (Config.funbox === "capitals") {
+          randomWord = Misc.capitalizeFirstLetter(randomWord);
         } else if (Config.funbox === "arrows") {
           UpdateConfig.setPunctuation(false, true);
           UpdateConfig.setNumbers(false, true);
@@ -1267,6 +1269,8 @@ export async function addWord() {
       }
     }
     randomWord = randomcaseword;
+  } else if (Config.funbox === "capitals") {
+    randomWord = Misc.capitalizeFirstLetter(randomWord);
   } else if (Config.funbox === "gibberish") {
     randomWord = Misc.getGibberish();
   } else if (Config.funbox === "arrows") {
