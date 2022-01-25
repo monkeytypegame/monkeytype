@@ -694,4 +694,9 @@
     "bgColor": "linear-gradient(to right, #b31313, #ff9000, #fdda16)",
     "mainColor": "#ffffff"
   }
+  ,{
+    "name": "grad",
+    "bgColor": "linear-gradient(to right, #0a83d7, #2971f4)",
+    "mainColor": "#e2e4f2"
+  }
 ]
