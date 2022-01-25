@@ -258,6 +258,8 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
 
   let currentLanguage = Config.language.split("_")[0];
 
+  let lastChar = Misc.getLastChar(previousWord);
+
   if (Config.funbox === "58008") {
     if (currentWord.length > 3) {
       if (Math.random() < 0.75) {
@@ -267,10 +269,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     }
   } else {
     if (
-      (index == 0 ||
-        Misc.getLastChar(previousWord) == "." ||
-        Misc.getLastChar(previousWord) == "?" ||
-        Misc.getLastChar(previousWord) == "!") &&
+      (index == 0 || lastChar == "." || lastChar == "?" || lastChar == "!") &&
       currentLanguage != "code"
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
@@ -289,8 +288,8 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       }
     } else if (
       (Math.random() < 0.1 &&
-        Misc.getLastChar(previousWord) != "." &&
-        Misc.getLastChar(previousWord) != "," &&
+        lastChar != "." &&
+        lastChar != "," &&
         index != maxindex - 2) ||
       index == maxindex - 1
     ) {
@@ -327,24 +326,20 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       }
     } else if (
       Math.random() < 0.01 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
+      lastChar != "," &&
+      lastChar != "." &&
       currentLanguage !== "russian"
     ) {
       word = `"${word}"`;
     } else if (
       Math.random() < 0.011 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
+      lastChar != "," &&
+      lastChar != "." &&
       currentLanguage !== "russian" &&
       currentLanguage !== "ukrainian"
     ) {
       word = `'${word}'`;
-    } else if (
-      Math.random() < 0.012 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "."
-    ) {
+    } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
       if (currentLanguage == "code") {
         let r = Math.random();
         if (r < 0.25) {
@@ -361,10 +356,11 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       }
     } else if (
       Math.random() < 0.013 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
-      Misc.getLastChar(previousWord) != ";" &&
-      Misc.getLastChar(previousWord) != ":"
+      lastChar != "," &&
+      lastChar != "." &&
+      lastChar != ";" &&
+      lastChar != "؛" &&
+      lastChar != ":"
     ) {
       if (currentLanguage == "french") {
         word = ":";
@@ -375,26 +371,29 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       }
     } else if (
       Math.random() < 0.014 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
+      lastChar != "," &&
+      lastChar != "." &&
       previousWord != "-"
     ) {
       word = "-";
     } else if (
       Math.random() < 0.015 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
-      Misc.getLastChar(previousWord) != ";" &&
-      Misc.getLastChar(previousWord) != ":"
+      lastChar != "," &&
+      lastChar != "." &&
+      lastChar != ";" &&
+      lastChar != "؛" &&
+      lastChar != ":"
     ) {
       if (currentLanguage == "french") {
         word = ";";
       } else if (currentLanguage == "greek") {
         word = "·";
+      } else if (currentLanguage == "arabic") {
+        word += "؛";
       } else {
         word += ";";
       }
-    } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
+    } else if (Math.random() < 0.2 && lastChar != ",") {
       if (
         currentLanguage == "arabic" ||
         currentLanguage == "urdu" ||
