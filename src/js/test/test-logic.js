@@ -1656,23 +1656,22 @@ export async function finish(difficultyFailed = false) {
     TestStats.setKeypressTimingsTooLong();
   }
 
-  TribeResults.send({
-    wpm: completedEvent.wpm,
-    raw: completedEvent.wpmRaw,
-    acc: completedEvent.acc,
-    consistency: completedEvent.consistency,
-    testDuration: completedEvent.testDuration,
-    charStats: completedEvent.charStats,
-    chartData: completedEvent.chartData,
-    resolve: await testSavePromise,
-  });
-
   if (dontSave) {
     try {
       firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
     } catch (e) {
       console.log("Analytics unavailable");
     }
+    TribeResults.send({
+      wpm: completedEvent.wpm,
+      raw: completedEvent.wpmRaw,
+      acc: completedEvent.acc,
+      consistency: completedEvent.consistency,
+      testDuration: completedEvent.testDuration,
+      charStats: completedEvent.charStats,
+      chartData: completedEvent.chartData,
+      resolve: await testSavePromise,
+    });
     return;
   }
 
@@ -1770,6 +1769,16 @@ export async function finish(difficultyFailed = false) {
       retrySaving.completedEvent = completedEvent;
       retrySaving.canRetry = true;
     });
+  TribeResults.send({
+    wpm: completedEvent.wpm,
+    raw: completedEvent.wpmRaw,
+    acc: completedEvent.acc,
+    consistency: completedEvent.consistency,
+    testDuration: completedEvent.testDuration,
+    charStats: completedEvent.charStats,
+    chartData: completedEvent.chartData,
+    resolve: await testSavePromise,
+  });
 }
 
 export function fail(reason) {
