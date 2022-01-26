@@ -202,23 +202,26 @@ list.updateEmail = new SimplePopup(
         await user.reauthenticateWithCredential(credential);
       }
       Loader.show();
-      axiosInstance
-        .post("/user/updateEmail", {
+      let response;
+      try {
+        response = await axiosInstance.post("/user/updateEmail", {
           uid: user.uid,
           previousEmail: user.email,
           newEmail: email,
-        })
-        .then((data) => {
-          Loader.hide();
-          if (data.status === 200) {
-            Notifications.add("Email updated", 0);
-            setTimeout(() => {
-              AccountController.signOut();
-            }, 1000);
-          } else {
-            Notifications.add(data.message);
-          }
         });
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to update email: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        return;
+      } else {
+        Notifications.add("Email updated", 1);
+      }
     } catch (e) {
       if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
@@ -229,12 +232,10 @@ list.updateEmail = new SimplePopup(
   },
   () => {
     const user = firebase.auth().currentUser;
-    if (user.providerData[0].providerId === "google.com") {
+    if (!user.providerData.find((p) => p.providerId === "password")) {
       eval(`this.inputs = []`);
       eval(`this.buttonText = undefined`);
-      eval(
-        `this.text = "You can't change your email when using Google Authentication";`
-      );
+      eval(`this.text = "Password authentication is not enabled";`);
     }
   }
 );
@@ -374,14 +375,56 @@ list.updatePassword = new SimplePopup(
   },
   () => {
     const user = firebase.auth().currentUser;
-    if (user.providerData[0].providerId === "google.com") {
+    if (!user.providerData.find((p) => p.providerId === "password")) {
       eval(`this.inputs = []`);
       eval(`this.buttonText = undefined`);
-      eval(
-        `this.text = "You can't change your password when using Google Authentication";`
-      );
+      eval(`this.text = "Password authentication is not enabled";`);
     }
   }
+);
+
+list.addPasswordAuth = new SimplePopup(
+  "addPasswordAuth",
+  "text",
+  "Add Password Authentication",
+  [
+    {
+      placeholder: "email",
+      type: "email",
+      initVal: "",
+    },
+    {
+      placeholder: "confirm email",
+      type: "email",
+      initVal: "",
+    },
+    {
+      placeholder: "new password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "confirm new password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
+  "Add",
+  async (email, emailConfirm, pass, passConfirm) => {
+    if (email !== emailConfirm) {
+      Notifications.add("Emails don't match", 0);
+      return;
+    }
+
+    if (pass !== passConfirm) {
+      Notifications.add("Passwords don't match", 0);
+      return;
+    }
+
+    AccountController.addPasswordAuth(email, pass);
+  },
+  () => {}
 );
 
 list.deleteAccount = new SimplePopup(

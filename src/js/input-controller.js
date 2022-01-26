@@ -76,18 +76,16 @@ function backspaceToPrevious() {
     return;
   }
 
-  TestUI.updateWordElement();
   TestLogic.input.current = TestLogic.input.popHistory();
   TestLogic.corrected.popHistory();
-
-  if (Config.funbox === "nospace") {
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     TestLogic.input.current = TestLogic.input.current.slice(0, -1);
   }
-
   TestLogic.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestLogic.words.getCurrent());
+  TestUI.updateWordElement();
 
   Caret.updatePosition();
   Replay.addReplayEvent("backWord");
@@ -149,12 +147,12 @@ function handleSpace() {
     Caret.updatePosition();
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
-    if (Config.funbox !== "nospace") {
+    if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
       Sound.playClick(Config.playSoundOnClick);
     }
     Replay.addReplayEvent("submitCorrectWord");
   } else {
-    if (Config.funbox !== "nospace") {
+    if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick(Config.playSoundOnClick);
       } else {
@@ -299,6 +297,21 @@ function isCharCorrect(char, charIndex) {
     }
   }
 
+  if (Config.funbox === "arrows") {
+    if ((char === "w" || char === "ArrowUp") && originalChar == "↑") {
+      return true;
+    }
+    if ((char === "s" || char === "ArrowDown") && originalChar == "↓") {
+      return true;
+    }
+    if ((char === "a" || char === "ArrowLeft") && originalChar == "←") {
+      return true;
+    }
+    if ((char === "d" || char === "ArrowRight") && originalChar == "→") {
+      return true;
+    }
+  }
+
   if (char === "’" && originalChar == "'") {
     return true;
   }
@@ -339,11 +352,20 @@ function handleChar(char, charIndex) {
     return;
   }
 
+  if (char === "…") {
+    for (let i = 0; i < 3; i++) {
+      handleChar(".", charIndex + i);
+    }
+
+    return;
+  }
+
   if (char === "\n" && Config.funbox === "58008") {
     char = " ";
   }
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
+    if (Config.funbox === "nospace" || Config.funbox === "arrows") return;
     handleSpace();
 
     //insert space for expert and master or strict space,
@@ -351,7 +373,7 @@ function handleChar(char, charIndex) {
     //otherwise dont do anything
     if (
       Config.difficulty !== "normal" ||
-      Config.strictSpace ||
+      (Config.strictSpace && Config.mode !== "zen") ||
       Config.stopOnError === "word"
     ) {
       if (dontInsertSpace) {
@@ -429,7 +451,7 @@ function handleChar(char, charIndex) {
     }
   }
 
-  if (!correctShiftUsed) return;
+  if (!correctShiftUsed && Config.difficulty != "master") return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestLogic.corrected.current === "") {
@@ -534,7 +556,7 @@ function handleChar(char, charIndex) {
 
   //simulate space press in nospace funbox
   if (
-    (Config.funbox === "nospace" &&
+    ((Config.funbox === "nospace" || Config.funbox === "arrows") &&
       TestLogic.input.current.length === TestLogic.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {
@@ -578,9 +600,9 @@ function handleTab(event) {
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
     $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
-    !$(".page.pageLogin").hasClass("active")
+    UI.getActivePage() != "pageLogin"
   ) {
-    if ($(".pageTest").hasClass("active")) {
+    if (UI.getActivePage() == "pageTest") {
       if (Config.quickTab) {
         if (
           TestUI.resultVisible ||
@@ -663,7 +685,7 @@ function handleTab(event) {
       //     Tribe.socket.emit(`room_ready_update`);
       //   }
       // }
-
+      event.preventDefault();
       if (Tribe.state >= 5) {
         UI.changePage("tribe");
       } else {
@@ -674,7 +696,7 @@ function handleTab(event) {
 }
 
 $(document).keydown((event) => {
-  if ($(".pageLoading").hasClass("active")) return event.preventDefault();
+  if (UI.getActivePage() == "pageLoading") return event.preventDefault();
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
@@ -699,7 +721,7 @@ $(document).keydown((event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  if (allowTyping && !wordsFocused && !$("#restartTestButton").is(":focus")) {
+  if (allowTyping && !wordsFocused && event.key !== "Enter") {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();
@@ -752,6 +774,11 @@ $(document).keydown((event) => {
     }
   }
 
+  if (Config.funbox !== "arrows" && /Arrow/i.test(event.key)) {
+    event.preventDefault();
+    return;
+  }
+
   Monkey.type();
 
   if (event.key === "Backspace" && TestLogic.input.current.length === 0) {
@@ -792,8 +819,19 @@ $(document).keydown((event) => {
   if (Config.oppositeShiftMode !== "off") {
     correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
   }
-
-  if (
+  if (Config.funbox === "arrows") {
+    let char = event.key;
+    if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {
+      if (char === "ArrowLeft") char = "a";
+      if (char === "ArrowRight") char = "d";
+      if (char === "ArrowDown") char = "s";
+      if (char === "ArrowUp") char = "w";
+      event.preventDefault();
+      handleChar(char, TestLogic.input.current.length);
+      updateUI();
+      setWordsInput(" " + TestLogic.input.current);
+    }
+  } else if (
     Config.layout !== "default" &&
     !(
       event.ctrlKey ||

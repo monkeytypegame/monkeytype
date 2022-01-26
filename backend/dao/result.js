@@ -50,6 +50,18 @@ class ResultDAO {
     return result;
   }
 
+  static async getLastResult(uid) {
+    let result = await mongoDB()
+      .collection("results")
+      .find({ uid })
+      .sort({ timestamp: -1 })
+      .limit(1)
+      .toArray();
+    result = result[0];
+    if (!result) throw new MonkeyError(404, "No results found");
+    return result;
+  }
+
   static async getResultByTimestamp(uid, timestamp) {
     return await mongoDB().collection("results").findOne({ uid, timestamp });
   }

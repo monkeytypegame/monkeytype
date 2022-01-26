@@ -107,7 +107,11 @@ export async function updatePosition() {
       let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
       let contentHeight = document.body.scrollHeight;
 
-      if (newTop >= middlePos && contentHeight > browserHeight) {
+      if (
+        newTop >= middlePos &&
+        contentHeight > browserHeight &&
+        TestLogic.active
+      ) {
         let newscrolltop = newTop - middlePos / 2;
         // console.log('---------');
         // console.log(newTop);

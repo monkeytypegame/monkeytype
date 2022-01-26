@@ -208,9 +208,11 @@ export function applyCustomBackground() {
   // });
   if (Config.customBackground === "") {
     $("#words").removeClass("noErrorBorder");
+    $("#resultWordsHistory").removeClass("noErrorBorder");
     $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
+    $("#resultWordsHistory").addClass("noErrorBorder");
     let $img = $("<img>", {
       src: Config.customBackground,
     });

@@ -35,6 +35,10 @@ let startingPath = "/tribedev";
 //   startingPath = "/" + process.env.API_PATH_OVERRIDE;
 // }
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "OK" });
+});
+
 const userRouter = require("./api/routes/user");
 app.use(startingPath + "/user", userRouter);
 const configRouter = require("./api/routes/config");
@@ -52,7 +56,13 @@ app.use(startingPath + "/leaderboard", leaderboardsRouter);
 const newQuotesRouter = require("./api/routes/new-quotes");
 app.use(startingPath + "/new-quotes", newQuotesRouter);
 
+//DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
 app.use(function (e, req, res, next) {
+  if (/ECONNREFUSED.*27017/i.test(e.message)) {
+    e.message = "Could not connect to the database. It may have crashed.";
+    delete e.stack;
+  }
+
   let monkeyError;
   if (e.errorID) {
     //its a monkey error
@@ -66,7 +76,7 @@ app.use(function (e, req, res, next) {
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
-      `system_error`,
+      "system_error",
       `${monkeyError.status} ${monkeyError.message}`,
       monkeyError.uid
     );
@@ -78,23 +88,24 @@ app.use(function (e, req, res, next) {
       message: monkeyError.message,
       stack: monkeyError.stack,
     });
+    monkeyError.stack = undefined;
+  } else {
+    console.error(monkeyError.message);
   }
-  return res.status(e.status || 500).json(monkeyError);
-});
-
-app.get("/test", (req, res) => {
-  res.send("Hello World!");
+  return res.status(monkeyError.status || 500).json(monkeyError);
 });
 
 const LeaderboardsDAO = require("./dao/leaderboards");
 
+console.log("Starting server...");
 app.listen(PORT, async () => {
-  console.log(`listening on port ${PORT}`);
+  console.log(`Listening on port ${PORT}`);
+  console.log("Connecting to database...");
   await connectDB();
+  console.log("Database connected");
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Database Connected");
 
   let lbjob = new CronJob("30 4/5 * * * *", async () => {
     let before15 = await mongoDB()

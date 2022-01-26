@@ -18,6 +18,7 @@
     //     width: 1.25rem;
     //     height: 1.25rem;
     //   }
+    text-decoration: none;
 
     .text {
       font-size: 0.65rem;
@@ -113,6 +114,7 @@
 
   .config {
     grid-area: config;
+    transition: 0.125s;
     .mobileConfig {
       display: none;
       .icon-button {
@@ -145,7 +147,7 @@
       justify-items: self-end;
 
       .group {
-        transition: 0.25s;
+        // transition: 0.25s;
 
         .title {
           color: var(--sub-color);

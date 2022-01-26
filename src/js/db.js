@@ -3,6 +3,8 @@ import * as AccountButton from "./account-button";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./today-tracker";
+import * as LoadingPage from "./loading-page";
+import * as UI from "./ui";
 
 let dbSnapshot = null;
 
@@ -51,8 +53,29 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
-    let userData = await axiosInstance.get("/user");
-    userData = userData.data;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(22.5);
+    // } else {
+    //   LoadingPage.updateBar(16);
+    // }
+    // LoadingPage.updateText("Downloading user...");
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(90);
+    } else {
+      LoadingPage.updateBar(45);
+    }
+    LoadingPage.updateText("Downloading user data...");
+    let promises = await Promise.all([
+      axiosInstance.get("/user"),
+      axiosInstance.get("/config"),
+      axiosInstance.get("/user/tags"),
+      axiosInstance.get("/presets"),
+    ]);
+    let userData = promises[0].data;
+    let configData = promises[1].data;
+    let tagsData = promises[2].data;
+    let presetsData = promises[3].data;
+
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
     snap.banned = userData.banned;
@@ -74,15 +97,22 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-
-    let configData = await axiosInstance.get("/config");
-    configData = configData.data;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(45);
+    // } else {
+    //   LoadingPage.updateBar(32);
+    // }
+    // LoadingPage.updateText("Downloading config...");
     if (configData) {
       snap.config = configData.config;
     }
-
-    let tagsData = await axiosInstance.get("/user/tags");
-    snap.tags = tagsData.data;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(67.5);
+    // } else {
+    //   LoadingPage.updateBar(48);
+    // }
+    // LoadingPage.updateText("Downloading tags...");
+    snap.tags = tagsData;
     snap.tags = snap.tags.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
@@ -92,9 +122,13 @@ export async function initSnapshot() {
         return 0;
       }
     });
-
-    let presetsData = await axiosInstance.get("/presets");
-    snap.presets = presetsData.data;
+    // if (UI.getActivePage() == "pageLoading") {
+    //   LoadingPage.updateBar(90);
+    // } else {
+    //   LoadingPage.updateBar(64);
+    // }
+    // LoadingPage.updateText("Downloading presets...");
+    snap.presets = presetsData;
     snap.presets = snap.presets.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
@@ -122,6 +156,8 @@ export async function getUserResults() {
     return true;
   } else {
     try {
+      LoadingPage.updateText("Downloading results...");
+      LoadingPage.updateBar(90);
       let results = await axiosInstance.get("/results");
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
@@ -141,7 +177,7 @@ export async function getUserResults() {
       await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
-      Notifications.add("Error getting results", -1);
+      Notifications.add("Error getting results: " + e.message, -1);
       return false;
     }
   }
@@ -535,6 +571,32 @@ export async function saveConfig(config) {
       return;
     }
     AccountButton.loading(false);
+  }
+}
+
+export function saveLocalResult(result) {
+  if (getSnapshot() !== null && getSnapshot().results !== undefined) {
+    getSnapshot().results.unshift(result);
+  }
+}
+
+export function updateLocalStats(stats) {
+  if (getSnapshot() !== null) {
+    if (getSnapshot().globalStats.time == undefined) {
+      getSnapshot().globalStats.time = stats.time;
+    } else {
+      getSnapshot().globalStats.time += stats.time;
+    }
+    if (getSnapshot().globalStats.started == undefined) {
+      getSnapshot().globalStats.started = stats.started;
+    } else {
+      getSnapshot().globalStats.started += stats.started;
+    }
+    if (getSnapshot().globalStats.completed == undefined) {
+      getSnapshot().globalStats.completed = 1;
+    } else {
+      getSnapshot().globalStats.completed += 1;
+    }
   }
 }
 

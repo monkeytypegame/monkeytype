@@ -93,7 +93,20 @@ function getWordHTML(word) {
   let newlineafter = false;
   let retval = `<div class='word'>`;
   for (let c = 0; c < word.length; c++) {
-    if (word.charAt(c) === "\t") {
+    if (Config.funbox === "arrows") {
+      if (word.charAt(c) === "↑") {
+        retval += `<letter><i class="fas fa-arrow-up"></i></letter>`;
+      }
+      if (word.charAt(c) === "↓") {
+        retval += `<letter><i class="fas fa-arrow-down"></i></letter>`;
+      }
+      if (word.charAt(c) === "←") {
+        retval += `<letter><i class="fas fa-arrow-left"></i></letter>`;
+      }
+      if (word.charAt(c) === "→") {
+        retval += `<letter><i class="fas fa-arrow-right"></i></letter>`;
+      }
+    } else if (word.charAt(c) === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
       newlineafter = true;
@@ -125,6 +138,9 @@ export function showWords() {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word")).outerHeight(true);
   const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
+  console.log(
+    `Showing words. wordHeight: ${wordHeight}, wordsHeight: ${wordsHeight}`
+  );
   if (
     Config.showAllLines &&
     Config.mode != "time" &&
@@ -228,19 +244,25 @@ export async function screenshot() {
   let src = $("#middle");
   var sourceX = src.position().left; /*X position from div#target*/
   var sourceY = src.position().top; /*Y position from div#target*/
-  var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
+  var sourceWidth = src.outerWidth(
+    true
+  ); /*clientWidth/offsetWidth from div#target*/
+  var sourceHeight = src.outerHeight(
+    true
+  ); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   $(".pageTest #result .inviteLink").addClass("hidden");
   try {
+    let paddingX = 50;
+    let paddingY = 25;
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
-      height: sourceHeight + 50,
-      width: sourceWidth + 50,
-      x: sourceX - 25,
-      y: sourceY - 25,
+      width: sourceWidth + paddingX * 2,
+      height: sourceHeight + paddingY * 2,
+      x: sourceX - paddingX,
+      y: sourceY - paddingY,
     }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         try {
@@ -332,7 +354,20 @@ export function updateWordElement(showError = !Config.blindMode) {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      if (currentLetter === "\t") {
+      if (Config.funbox === "arrows") {
+        if (currentLetter === "↑") {
+          currentLetter = `<i class="fas fa-arrow-up"></i>`;
+        }
+        if (currentLetter === "↓") {
+          currentLetter = `<i class="fas fa-arrow-down"></i>`;
+        }
+        if (currentLetter === "←") {
+          currentLetter = `<i class="fas fa-arrow-left"></i>`;
+        }
+        if (currentLetter === "→") {
+          currentLetter = `<i class="fas fa-arrow-right"></i>`;
+        }
+      } else if (currentLetter === "\t") {
         tabChar = "tabChar";
         currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
       } else if (currentLetter === "\n") {
@@ -398,7 +433,20 @@ export function updateWordElement(showError = !Config.blindMode) {
       : input.length;
     if (inputWithSingleComposeLength < currentWord.length) {
       for (let i = inputWithSingleComposeLength; i < currentWord.length; i++) {
-        if (currentWord[i] === "\t") {
+        if (Config.funbox === "arrows") {
+          if (currentWord[i] === "↑") {
+            ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
+          }
+          if (currentWord[i] === "↓") {
+            ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
+          }
+          if (currentWord[i] === "←") {
+            ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
+          }
+          if (currentWord[i] === "→") {
+            ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
+          }
+        } else if (currentWord[i] === "\t") {
           ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
         } else if (currentWord[i] === "\n") {
           ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
@@ -863,7 +911,7 @@ export function applyBurstHeatmap() {
 
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
-        .length !== TestLogic.words.getCurrent().length
+        .length !== TestLogic.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }

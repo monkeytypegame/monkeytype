@@ -629,9 +629,13 @@ export async function updateColors(chart) {
   let bgcolor = await ThemeColors.get("bg");
   let subcolor = await ThemeColors.get("sub");
   let maincolor = await ThemeColors.get("main");
+  let errorcolor = await ThemeColors.get("error");
 
   chart.data.datasets[0].borderColor = maincolor;
   chart.data.datasets[1].borderColor = subcolor;
+  if (chart.data.datasets[2]) {
+    chart.data.datasets[2].borderColor = errorcolor;
+  }
 
   if (chart.data.datasets[0].type === undefined) {
     if (chart.config.type === "line") {

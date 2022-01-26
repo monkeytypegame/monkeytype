@@ -100,7 +100,7 @@ export function refreshButtons() {
           favThemesEl.append(
             `<div class="theme button ${activeTheme}" theme='${
               theme.name
-            }' style="color:${theme.textColor};background:${theme.bgColor}">
+            }' style="color:${theme.mainColor};background:${theme.bgColor}">
           <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton active"><i class="fas fa-star"></i></div></div>`
@@ -117,7 +117,7 @@ export function refreshButtons() {
         themesEl.append(
           `<div class="theme button ${activeTheme}" theme='${
             theme.name
-          }' style="color:${theme.textColor};background:${theme.bgColor}">
+          }' style="color:${theme.mainColor};background:${theme.bgColor}">
           <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton"><i class="far fa-star"></i></div></div>`

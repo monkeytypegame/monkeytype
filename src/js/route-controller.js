@@ -5,28 +5,22 @@ import * as Tribe from "./tribe";
 
 let mappedRoutes = {
   "/": "pageLoading",
-  "/login": "pageLogin",
-  "/settings": "pageSettings",
-  "/about": "pageAbout",
+  "/login": "pageLoading",
+  "/settings": "pageLoading",
+  "/about": "pageLoading",
   "/account": "pageAccount",
   "/verify": "pageLoading",
   "/tribe": "pageTribe",
 };
 
 export function handleInitialPageClasses(pathname) {
-  if (/tribe/.test(pathname)) {
-    let el = $(".page.pageTribe");
-    $(el).removeClass("hidden");
-    $(el).addClass("active");
-    Tribe.init();
-  } else {
-    if (!mappedRoutes[pathname]) {
-      pathname = "/";
-    }
-    let el = $(".page." + mappedRoutes[pathname]);
-    $(el).removeClass("hidden");
-    $(el).addClass("active");
+  if (!mappedRoutes[pathname]) {
+    pathname = "/";
   }
+  let el = $(".page." + mappedRoutes[pathname]);
+  $(el).removeClass("hidden");
+  $(el).addClass("active");
+  UI.setActivePage(mappedRoutes[pathname]);
 }
 
 (function (history) {

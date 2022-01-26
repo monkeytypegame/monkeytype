@@ -3,6 +3,7 @@ import * as TestUI from "./test-ui";
 import Config from "./config";
 import * as DB from "./db";
 import * as TestTimer from "./test-timer";
+import * as Misc from "./misc";
 
 export let settings = null;
 
@@ -30,16 +31,7 @@ function resetCaretPosition() {
 
 export async function init() {
   $("#paceCaret").addClass("hidden");
-  let mode2 = "";
-  if (Config.mode === "time") {
-    mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    mode2 = Config.words;
-  } else if (Config.mode === "custom") {
-    mode2 = "custom";
-  } else if (Config.mode === "quote") {
-    mode2 = TestLogic.randomQuote.id;
-  }
+  let mode2 = Misc.getMode2();
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -52,16 +44,7 @@ export async function init() {
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
-    let mode2 = "";
-    if (Config.mode === "time") {
-      mode2 = Config.time;
-    } else if (Config.mode === "words") {
-      mode2 = Config.words;
-    } else if (Config.mode === "custom") {
-      mode2 = "custom";
-    } else if (Config.mode === "quote") {
-      mode2 = TestLogic.randomQuote.id;
-    }
+    let mode2 = Misc.getMode2();
     wpm = await DB.getUserAverageWpm10(
       Config.mode,
       mode2,

@@ -14,6 +14,8 @@ import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 import * as PSA from "./psa";
 import * as Tribe from "./tribe";
+import * as Focus from "./focus";
+import * as Loader from "./loader";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -23,12 +25,27 @@ export let authPromise = new Promise((v) => {
   authFinished = v;
 });
 
+export function sendVerificationEmail() {
+  Loader.show();
+  let cu = firebase.auth().currentUser;
+  cu.sendEmailVerification()
+    .then(() => {
+      Loader.hide();
+      Notifications.add("Email sent to " + cu.email, 4000);
+    })
+    .catch((e) => {
+      Loader.hide();
+      Notifications.add("Error: " + e.message, 3000);
+      console.error(e.message);
+    });
+}
+
 async function loadUser(user) {
   // User is signed in.
   $(".pageAccount .content p.accountVerificatinNotice").remove();
   if (user.emailVerified === false) {
     $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
+      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
     );
   }
   UI.setPageTransition(false);
@@ -67,11 +84,22 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
+    if (window.location.pathname == "/login") {
+      window.history.replaceState("", null, "/account");
+    }
     await loadUser(user);
   } else {
+    if (window.location.pathname == "/account") {
+      window.history.replaceState("", null, "/login");
+    }
     UI.setPageTransition(false);
-    if ($(".pageLoading").hasClass("active")) UI.changePage("");
   }
+  if (window.location.pathname != "/account") {
+    setTimeout(() => {
+      Focus.set(false);
+    }, 125 / 2);
+  }
+  UI.changePage();
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {
@@ -115,6 +143,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
 export function signIn() {
   authListener();
   $(".pageLogin .preloader").removeClass("hidden");
+  $(".pageLogin .button").addClass("disabled");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
 
@@ -131,6 +160,7 @@ export function signIn() {
         .signInWithEmailAndPassword(email, password)
         .then(async (e) => {
           await loadUser(e.user);
+          UI.changePage("account");
           if (TestLogic.notSignedInLastResult !== null) {
             TestLogic.setNotSignedInUid(e.user.uid);
             let response;
@@ -163,12 +193,14 @@ export function signIn() {
           }
           Notifications.add(message, -1);
           $(".pageLogin .preloader").addClass("hidden");
+          $(".pageLogin .button").removeClass("disabled");
         });
     });
 }
 
 export async function signInWithGoogle() {
   $(".pageLogin .preloader").removeClass("hidden");
+  $(".pageLogin .button").addClass("disabled");
   authListener();
   let signedInUser;
   try {
@@ -228,9 +260,10 @@ export async function signInWithGoogle() {
         AllTimeStats.clear();
         Notifications.add("Account created", 1, 3);
         $("#menu .icon-button.account .text").text(name);
-        $(".pageLogin .register .button").removeClass("disabled");
+        $(".pageLogin .button").removeClass("disabled");
         $(".pageLogin .preloader").addClass("hidden");
         await loadUser(signedInUser.user);
+        UI.changePage("account");
         if (TestLogic.notSignedInLastResult !== null) {
           TestLogic.setNotSignedInUid(signedInUser.user.uid);
           axiosInstance
@@ -246,12 +279,14 @@ export async function signInWithGoogle() {
         }
       }
     } else {
-      loadUser(signedInUser.user);
+      await loadUser(signedInUser.user);
+      UI.changePage("account");
     }
   } catch (e) {
     console.log(e);
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .button").removeClass("disabled");
     signedInUser.user.delete();
     axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
     return;
@@ -279,40 +314,90 @@ export async function signInWithGoogle() {
 //   }
 // }
 
-export function linkWithGoogle() {
+export function addGoogleAuth() {
+  Loader.show();
   firebase
     .auth()
     .currentUser.linkWithPopup(gmailProvider)
     .then(function (result) {
-      console.log(result);
+      Loader.hide();
+      Notifications.add("Google authenication added", 1);
+      Settings.updateAuthSections();
     })
     .catch(function (error) {
-      console.log(error);
+      Loader.hide();
+      Notifications.add(
+        "Failed to add Google authenication: " + error.message,
+        -1
+      );
     });
 }
 
-export function unlinkGoogle() {
-  firebase
-    .auth()
-    .currentUser.unlink("google.com")
-    .then((result) => {
-      console.log(result);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+export async function removeGoogleAuth() {
+  let user = firebase.auth().currentUser;
+  if (
+    user.providerData.find((provider) => provider.providerId === "password")
+  ) {
+    Loader.show();
+    try {
+      await user.reauthenticateWithPopup(AccountController.gmailProvider);
+    } catch (e) {
+      Loader.hide();
+      return Notifications.add(e.message, -1);
+    }
+    firebase
+      .auth()
+      .currentUser.unlink("google.com")
+      .then((result) => {
+        Notifications.add("Google authentication removed", 1);
+        Loader.hide();
+        Settings.updateAuthSections();
+      })
+      .catch((error) => {
+        Loader.hide();
+        Notifications.add(
+          "Failed to remove Google authentication: " + error.message,
+          -1
+        );
+      });
+  } else {
+    Notifications.add(
+      "Password authentication needs to be enabled to remove Google authentication",
+      -1
+    );
+  }
 }
 
-export function linkWithEmail(email, password) {
+export async function addPasswordAuth(email, password) {
+  Loader.show();
+  let user = firebase.auth().currentUser;
+  if (
+    user.providerData.find((provider) => provider.providerId === "google.com")
+  ) {
+    try {
+      await firebase
+        .auth()
+        .currentUser.reauthenticateWithPopup(AccountController.gmailProvider);
+    } catch (e) {
+      Loader.hide();
+      return Notifications.add("Could not reauthenticate: " + e.message, -1);
+    }
+  }
   var credential = firebase.auth.EmailAuthProvider.credential(email, password);
   firebase
     .auth()
     .currentUser.linkWithCredential(credential)
     .then(function (result) {
-      console.log(result);
+      Loader.hide();
+      Notifications.add("Password authenication added", 1);
+      Settings.updateAuthSections();
     })
     .catch(function (error) {
-      console.log(error);
+      Loader.hide();
+      Notifications.add(
+        "Failed to add password authenication: " + error.message,
+        -1
+      );
     });
 }
 
@@ -327,6 +412,7 @@ export function signOut() {
       AccountButton.update();
       UI.changePage("login");
       DB.setSnapshot(null);
+      $(".pageLogin .button").removeClass("disabled");
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
@@ -334,17 +420,25 @@ export function signOut() {
 }
 
 async function signUp() {
-  $(".pageLogin .register .button").addClass("disabled");
+  $(".pageLogin .button").addClass("disabled");
   $(".pageLogin .preloader").removeClass("hidden");
   let nname = $(".pageLogin .register input")[0].value;
   let email = $(".pageLogin .register input")[1].value;
-  let password = $(".pageLogin .register input")[2].value;
-  let passwordVerify = $(".pageLogin .register input")[3].value;
+  let emailVerify = $(".pageLogin .register input")[2].value;
+  let password = $(".pageLogin .register input")[3].value;
+  let passwordVerify = $(".pageLogin .register input")[4].value;
+
+  if (email != emailVerify) {
+    Notifications.add("Emails do not match", 0, 3);
+    $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .button").removeClass("disabled");
+    return;
+  }
 
   if (password != passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
@@ -363,7 +457,7 @@ async function signUp() {
     }
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
@@ -384,7 +478,7 @@ async function signUp() {
     AllTimeStats.clear();
     Notifications.add("Account created", 1, 3);
     $("#menu .icon-button.account .text").text(nname);
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin .preloader").addClass("hidden");
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -416,7 +510,7 @@ async function signUp() {
     }
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .button").removeClass("disabled");
     return;
   }
 

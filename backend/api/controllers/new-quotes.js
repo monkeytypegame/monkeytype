@@ -2,7 +2,7 @@ const NewQuotesDAO = require("../../dao/new-quotes");
 const MonkeyError = require("../../handlers/error");
 const UserDAO = require("../../dao/user");
 const Logger = require("../../handlers/logger.js");
-const Captcha = require("../../handlers/captcha");
+// const Captcha = require("../../handlers/captcha");
 
 class NewQuotesController {
   static async getQuotes(req, res, next) {
@@ -21,16 +21,20 @@ class NewQuotesController {
 
   static async addQuote(req, res, next) {
     try {
-      let { uid } = req.decodedToken;
-      let { text, source, language, captcha } = req.body;
-      if (!text || !source || !language) {
-        throw new MonkeyError(400, "Please fill all the fields");
-      }
-      if (!(await Captcha.verify(captcha))) {
-        throw new MonkeyError(400, "Captcha check failed");
-      }
-      let data = await NewQuotesDAO.add(text, source, language, uid);
-      return res.status(200).json(data);
+      throw new MonkeyError(
+        500,
+        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
+      );
+      // let { uid } = req.decodedToken;
+      // let { text, source, language, captcha } = req.body;
+      // if (!text || !source || !language) {
+      //   throw new MonkeyError(400, "Please fill all the fields");
+      // }
+      // if (!(await Captcha.verify(captcha))) {
+      //   throw new MonkeyError(400, "Captcha check failed");
+      // }
+      // let data = await NewQuotesDAO.add(text, source, language, uid);
+      // return res.status(200).json(data);
     } catch (e) {
       return next(e);
     }

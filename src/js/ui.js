@@ -17,6 +17,15 @@ import * as Funbox from "./funbox";
 import * as Tribe from "./tribe";
 
 export let pageTransition = true;
+let activePage = "pageLoading";
+
+export function getActivePage() {
+  return activePage;
+}
+
+export function setActivePage(active) {
+  activePage = active;
+}
 
 export function setPageTransition(val) {
   pageTransition = val;
@@ -113,22 +122,43 @@ export function changePage(page, norestart = false, tribeOverride = false) {
     console.log(`change page ${page} stopped`);
     return;
   }
+
   if (Tribe.state >= 10 && Tribe.state <= 21 && !tribeOverride) return;
+
+  if (page == undefined) {
+    //use window loacation
+    let pages = {
+      "/": "test",
+      "/login": "login",
+      "/settings": "settings",
+      "/about": "about",
+      "/account": "account",
+      "/tribe": "tribe",
+    };
+    let path = pages[window.location.pathname];
+    if (!path) {
+      path = "test";
+    }
+    page = path;
+  }
+
   console.log(`change page ${page}`);
-  let activePage = $(".page.active");
+  let activePageElement = $(".page.active");
+  activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     if (Tribe.state === 5 && !tribeOverride) return;
     setPageTransition(true);
     swapElements(
-      activePage,
+      activePageElement,
       $(".page.pageTest"),
       250,
       () => {
         setPageTransition(false);
         TestUI.focusWords();
         $(".page.pageTest").addClass("active");
+        activePage = "pageTest";
         history.pushState("/", null, "/");
       },
       () => {
@@ -161,10 +191,11 @@ export function changePage(page, norestart = false, tribeOverride = false) {
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageAbout"), 250, () => {
+    swapElements(activePageElement, $(".page.pageAbout"), 250, () => {
       setPageTransition(false);
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
+      activePage = "pageAbout";
     });
     Funbox.activate("none");
     TestConfig.hide();
@@ -172,10 +203,11 @@ export function changePage(page, norestart = false, tribeOverride = false) {
   } else if (page == "settings") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageSettings"), 250, () => {
+    swapElements(activePageElement, $(".page.pageSettings"), 250, () => {
       setPageTransition(false);
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
+      activePage = "pageSettings";
     });
     Funbox.activate("none");
     Settings.update();
@@ -190,19 +222,12 @@ export function changePage(page, norestart = false, tribeOverride = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(
-        activePage,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
+      swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
+        setPageTransition(false);
+        history.pushState("account", null, "account");
+        $(".page.pageAccount").addClass("active");
+        activePage = "pageAccount";
+      });
       Funbox.activate("none");
       Account.update();
       TestConfig.hide();
@@ -213,10 +238,11 @@ export function changePage(page, norestart = false, tribeOverride = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePage, $(".page.pageLogin"), 250, () => {
+      swapElements(activePageElement, $(".page.pageLogin"), 250, () => {
         setPageTransition(false);
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
+        activePage = "pageLogin";
       });
       Funbox.activate("none");
       TestConfig.hide();
@@ -257,25 +283,6 @@ window.addEventListener("keydown", function (e) {
   if (e.keyCode == 32 && e.target == document.body) {
     e.preventDefault();
   }
-});
-
-$(".merchBanner a").click((event) => {
-  $(".merchBanner").remove();
-  window.localStorage.setItem("merchbannerclosed", true);
-});
-
-$(".merchBanner .fas").click((event) => {
-  $(".merchBanner").remove();
-  window.localStorage.setItem("merchbannerclosed", true);
-  // Notifications.add(
-  //   "Won't remind you anymore. Thanks for continued support <3",
-  //   0,
-  //   5
-  // );
-});
-
-$(".scrollToTopButton").click((event) => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
@@ -337,4 +344,5 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
     ManualRestart.set();
     changePage(href.replace("/", ""));
   }
+  return false;
 });

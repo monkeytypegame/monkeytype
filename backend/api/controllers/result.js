@@ -2,13 +2,34 @@ const ResultDAO = require("../../dao/result");
 const UserDAO = require("../../dao/user");
 const PublicStatsDAO = require("../../dao/public-stats");
 const BotDAO = require("../../dao/bot");
-const {
-  validateObjectValues,
-  validateResult,
-} = require("../../handlers/validation");
+const { validateObjectValues } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
 const objecthash = require("object-hash");
 const Logger = require("../../handlers/logger");
+const path = require("path");
+const { config } = require("dotenv");
+config({ path: path.join(__dirname, ".env") });
+
+let validateResult;
+let validateKeys;
+try {
+  let module = require("../../anticheat/anticheat");
+  validateResult = module.validateResult;
+  validateKeys = module.validateKeys;
+  if (!validateResult || !validateKeys) throw new Error("undefined");
+} catch (e) {
+  if (process.env.MODE === "dev") {
+    console.error(
+      "No anticheat module found. Continuing in dev mode, results will not be validated."
+    );
+  } else {
+    console.error("No anticheat module found.");
+    console.error(
+      "To continue in dev mode, add 'MODE=dev' to the .env file in the backend directory."
+    );
+    process.exit(1);
+  }
+}
 
 class ResultController {
   static async getResults(req, res, next) {
@@ -25,7 +46,7 @@ class ResultController {
     try {
       const { uid } = req.decodedToken;
       await ResultDAO.deleteAll(uid);
-      Logger.log("user_results_deleted", ``, uid);
+      Logger.log("user_results_deleted", "", uid);
       return res.sendStatus(200);
     } catch (e) {
       next(e);
@@ -55,7 +76,7 @@ class ResultController {
       if (
         result.wpm <= 0 ||
         result.wpm > 350 ||
-        result.acc < 50 ||
+        result.acc < 75 ||
         result.acc > 100 ||
         result.consistency > 100
       ) {
@@ -91,34 +112,94 @@ class ResultController {
       ) {
         return res.status(400).json({ message: "Test too short" });
       }
-      if (!validateResult(result)) {
-        return res
-          .status(400)
-          .json({ message: "Result data doesn't make sense" });
-      }
 
       let resulthash = result.hash;
       delete result.hash;
       const serverhash = objecthash(result);
       if (serverhash !== resulthash) {
+        Logger.log(
+          "incorrect_result_hash",
+          {
+            serverhash,
+            resulthash,
+            result,
+          },
+          uid
+        );
         return res.status(400).json({ message: "Incorrect result hash" });
       }
 
-      // if (result.timestamp > Date.now()) {
-      //   return res.status(400).json({ message: "Time traveler detected" });
-      // }
+      if (validateResult) {
+        if (!validateResult(result)) {
+          return res
+            .status(400)
+            .json({ message: "Result data doesn't make sense" });
+        }
+      } else {
+        if (process.env.MODE === "dev") {
+          console.error(
+            "No anticheat module found. Continuing in dev mode, results will not be validated."
+          );
+        } else {
+          throw new Error("No anticheat module found");
+        }
+      }
 
       result.timestamp = Math.round(result.timestamp / 1000) * 1000;
 
-      let timestampres = await ResultDAO.getResultByTimestamp(
-        uid,
-        result.timestamp
-      );
-      if (timestampres) {
-        return res.status(400).json({ message: "Duplicate result" });
+      //dont use - result timestamp is unreliable, can be changed by system time and stuff
+      // if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
+      //   Logger.log(
+      //     "time_traveler",
+      //     {
+      //       resultTimestamp: result.timestamp,
+      //       serverTimestamp: Math.round(Date.now() / 1000) * 1000 + 10,
+      //     },
+      //     uid
+      //   );
+      //   return res.status(400).json({ message: "Time traveler detected" });
+
+      // this probably wont work if we replace the timestamp with the server time later
+      // let timestampres = await ResultDAO.getResultByTimestamp(
+      //   uid,
+      //   result.timestamp
+      // );
+      // if (timestampres) {
+      //   return res.status(400).json({ message: "Duplicate result" });
+      // }
+
+      //convert result test duration to miliseconds
+      const testDurationMilis = result.testDuration * 1000;
+      //get latest result ordered by timestamp
+      let lastResultTimestamp;
+      try {
+        lastResultTimestamp =
+          (await ResultDAO.getLastResult(uid)).timestamp - 1000;
+      } catch (e) {
+        lastResultTimestamp = null;
       }
 
       result.timestamp = Math.round(Date.now() / 1000) * 1000;
+
+      //check if its greater than server time - milis or result time - milis
+      if (
+        lastResultTimestamp &&
+        (lastResultTimestamp + testDurationMilis > result.timestamp ||
+          lastResultTimestamp + testDurationMilis >
+            Math.round(Date.now() / 1000) * 1000)
+      ) {
+        Logger.log(
+          "invalid_result_spacing",
+          {
+            lastTimestamp: lastResultTimestamp,
+            resultTime: result.timestamp,
+            difference:
+              lastResultTimestamp + testDurationMilis - result.timestamp,
+          },
+          uid
+        );
+        return res.status(400).json({ message: "Invalid result spacing" });
+      }
 
       try {
         result.keySpacingStats = {
@@ -157,50 +238,20 @@ class ResultController {
             result.keySpacingStats !== null &&
             result.keyDurationStats !== null
           ) {
-            if (
-              result.keySpacingStats.sd <= 15 ||
-              result.keyDurationStats.sd <= 10 ||
-              result.keyDurationStats.average < 15 ||
-              (result.wpm > 200 && result.consistency < 70)
-            ) {
-              //possible bot
-              Logger.log(
-                "anticheat_triggered",
-                {
-                  durationSD: result.keyDurationStats.sd,
-                  durationAvg: result.keyDurationStats.average,
-                  spacingSD: result.keySpacingStats.sd,
-                  spacingAvg: result.keySpacingStats.average,
-                  wpm: result.wpm,
-                  acc: result.acc,
-                  consistency: result.consistency,
-                },
-                uid
-              );
-              return res.status(400).json({ message: "Possible bot detected" });
-            }
-            if (
-              (result.keySpacingStats.sd > 15 &&
-                result.keySpacingStats.sd <= 25) ||
-              (result.keyDurationStats.sd > 10 &&
-                result.keyDurationStats.sd <= 15) ||
-              (result.keyDurationStats.average > 15 &&
-                result.keyDurationStats.average <= 20)
-            ) {
-              //close to the bot detection threshold
-              Logger.log(
-                "anticheat_close",
-                {
-                  durationSD: result.keyDurationStats.sd,
-                  durationAvg: result.keyDurationStats.average,
-                  spacingSD: result.keySpacingStats.sd,
-                  spacingAvg: result.keySpacingStats.average,
-                  wpm: result.wpm,
-                  acc: result.acc,
-                  consistency: result.consistency,
-                },
-                uid
-              );
+            if (validateKeys) {
+              if (!validateKeys(result, uid)) {
+                return res
+                  .status(400)
+                  .json({ message: "Possible bot detected" });
+              }
+            } else {
+              if (process.env.MODE === "dev") {
+                console.error(
+                  "No anticheat module found. Continuing in dev mode, results will not be validated."
+                );
+              } else {
+                throw new Error("No anticheat module found");
+              }
             }
           } else {
             return res.status(400).json({ message: "Missing key data" });
@@ -210,6 +261,8 @@ class ResultController {
 
       delete result.keySpacing;
       delete result.keyDuration;
+      delete result.smoothConsistency;
+      delete result.wpmConsistency;
 
       try {
         result.keyDurationStats.average = roundTo2(

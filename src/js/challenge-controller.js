@@ -114,6 +114,13 @@ export function verify(result) {
           }
         }
         if (requirementsMet) {
+          if (active.autoRole) {
+            Notifications.add(
+              "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
+              1,
+              5
+            );
+          }
           Notifications.add(`${active.display} challenge passed!`, 1);
           return active.name;
         } else {
@@ -139,7 +146,7 @@ export function verify(result) {
 
 export async function setup(challengeName) {
   challengeLoading = true;
-  if (!$(".page.pageTest").hasClass("active")) {
+  if (UI.getActivePage() !== "pageTest") {
     UI.changePage("", true);
   }
 

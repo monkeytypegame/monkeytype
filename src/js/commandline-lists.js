@@ -642,6 +642,40 @@ let commandsSoundOnError = {
   ],
 };
 
+let commandsSoundVolume = {
+  title: "Sound volume...",
+  configKey: "soundVolume",
+  list: [
+    {
+      id: "setSoundVolume0.1",
+      display: "quiet",
+      configValue: "0.1",
+      exec: () => {
+        UpdateConfig.setSoundVolume("0.1");
+        Sound.playClick();
+      },
+    },
+    {
+      id: "setSoundVolume0.5",
+      display: "medium",
+      configValue: "0.5",
+      exec: () => {
+        UpdateConfig.setSoundVolume("0.5");
+        Sound.playClick();
+      },
+    },
+    {
+      id: "setSoundVolume1.0",
+      display: "loud",
+      configValue: "1.0",
+      exec: () => {
+        UpdateConfig.setSoundVolume("1.0");
+        Sound.playClick();
+      },
+    },
+  ],
+};
+
 let commandsFlipTestColors = {
   title: "Flip test colors...",
   configKey: "flipTestColors",
@@ -929,6 +963,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick1",
       display: "click",
       configValue: "1",
+      hover: () => {
+        Sound.previewClick("1");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("1");
         Sound.playClick(Config.playSoundOnClick);
@@ -938,6 +975,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick2",
       display: "beep",
       configValue: "2",
+      hover: () => {
+        Sound.previewClick("2");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("2");
         Sound.playClick(Config.playSoundOnClick);
@@ -947,6 +987,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick3",
       display: "pop",
       configValue: "3",
+      hover: () => {
+        Sound.previewClick("3");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("3");
         Sound.playClick(Config.playSoundOnClick);
@@ -956,6 +999,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick4",
       display: "nk creams",
       configValue: "4",
+      hover: () => {
+        Sound.previewClick("4");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("4");
         Sound.playClick(Config.playSoundOnClick);
@@ -965,6 +1011,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick5",
       display: "typewriter",
       configValue: "5",
+      hover: () => {
+        Sound.previewClick("5");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("5");
         Sound.playClick(Config.playSoundOnClick);
@@ -974,6 +1023,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick6",
       display: "osu",
       configValue: "6",
+      hover: () => {
+        Sound.previewClick("6");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("6");
         Sound.playClick(Config.playSoundOnClick);
@@ -983,6 +1035,9 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick7",
       display: "hitmarker",
       configValue: "7",
+      hover: () => {
+        Sound.previewClick("7");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("7");
         Sound.playClick(Config.playSoundOnClick);
@@ -1162,7 +1217,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleUnderline",
       display: "underline",
-      configValue: "underliner",
+      configValue: "underline",
       exec: () => {
         UpdateConfig.setCaretStyle("underline");
       },
@@ -2446,12 +2501,6 @@ export let defaultCommands = {
       subgroup: commandsStopOnError,
     },
     {
-      id: "changeSoundOnClick",
-      display: "Sound on click...",
-      icon: "fa-volume-up",
-      subgroup: commandsSoundOnClick,
-    },
-    {
       id: "changeNumbers",
       display: "Numbers...",
       icon: "15",
@@ -2586,10 +2635,22 @@ export let defaultCommands = {
       subgroup: commandsOppositeShiftMode,
     },
     {
+      id: "changeSoundOnClick",
+      display: "Sound on click...",
+      icon: "fa-volume-up",
+      subgroup: commandsSoundOnClick,
+    },
+    {
       id: "changeSoundOnError",
       display: "Sound on error...",
       icon: "fa-volume-mute",
       subgroup: commandsSoundOnError,
+    },
+    {
+      id: "changeSoundVolume",
+      display: "Sound volume...",
+      icon: "fa-volume-down",
+      subgroup: commandsSoundVolume,
     },
     {
       id: "changeFlipTestColors",
@@ -3033,6 +3094,18 @@ export let defaultCommands = {
       icon: "fa-egg",
       visible: false,
       subgroup: commandsMonkeyPowerLevel,
+    },
+    {
+      id: "clearSwCache",
+      display: "Clear SW cache",
+      icon: "fa-cog",
+      exec: async () => {
+        let clist = await caches.keys();
+        for (let name of clist) {
+          caches.delete(name);
+        }
+        window.location.reload(true);
+      },
     },
   ],
 };

@@ -98,7 +98,7 @@ const layouts = {
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "=+", "[{",
             "qQ", "wW", "cC", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "-_", "]}", "\\|",
             "aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\"",
-            "\\|", "xX", "vV", "fF", "dD", "zZ", "kK", "hH", "/?", ".>", ",<",
+            "\\|", "zZ", "xX", "fF", "dD", "kK", "vV", "hH", "/?", ".>", ",<",
             " "
         ],
     },
@@ -193,6 +193,28 @@ const layouts = {
             " "
         ],
     },
+    spanish_qwerty: {
+        keymapShowTopRow: false,
+		iso: true,
+        keys: [
+            "ºª", "1!", "2\"", "3·", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "'?", "¡¿",
+            "qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "`^", "+*", "çÇ",
+            "aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", "ñÑ", "´¨",
+            "<>", "zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",;", ".:", "-_",
+            " "
+        ]
+    },
+    latam_qwerty: {
+        keymapShowTopRow: false,
+		iso: true,
+        keys: [
+            "|°", "1!", "2\"", "3#", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "'?", "¿¡",
+            "qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "´¨", "+*", " ",
+            "aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", "ñÑ", "{[",
+            "<>", "zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",;", ".:", "-_",
+            " "
+        ]
+    },
     prog_dvorak: {
         keymapShowTopRow: true,
         keys: [
@@ -205,13 +227,25 @@ const layouts = {
     },
     german_dvorak: {
         keymapShowTopRow: true,
+        iso: true,
         keys: [
             "^°", "1!", "2", "3§", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "+*", "<>",
-            "üÜ", ",;", ".:", "pP", "yY", "fF", "gG", "cC", "tT", "pP", "zZ", "ß?", "´`",
-            "aA", "oO", "eE", "iI", "uU", "hH", "dD", "rR", "nN", "sS", "lL", "-_",
+            "üÜ", ",;", ".:", "pP", "yY", "fF", "gG", "cC", "tT", "zZ", "ß?", "-_", "\\/",
+            "aA", "oO", "eE", "iI", "uU", "hH", "dD", "rR", "nN", "sS", "lL",
             "äÄ", "öÖ", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "#'",
             " "
         ]
+    },
+    spanish_dvorak: {
+        keymapShowTopRow: false,
+		iso: true,
+        keys: [
+            "ºª", "1!", "2\"", "3·", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "'?", "¡¿",
+            ".:", ",;", "ñÑ", "pP", "yY", "fF", "gG", "cC", "hH", "lL", "`^", "+*", "çÇ",
+            "aA", "oO", "eE", "uU", "iI", "dD", "rR", "tT", "nN", "sS", "´¨",
+            "<>", "-_", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "zZ",
+            " "
+        ],
     },
     dvorak_L: {
         keymapShowTopRow: true,
@@ -519,21 +553,21 @@ const layouts = {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-            "qQ", "cC", "dD", "lL", "xX", "zZ", "yY", "oO", "uU", ";:", "[{", "]}", "\\|",
-            "rR", "sS", "tT", "hH", "kK", "pP", "nN", "eE", "iI", "aA", "/?",
-            "\\|", "wW", "gG", "bB", "mM", "vV", "jJ", "fF", "'\"", ",<", ".>",
+            "wW", "gG", "dD", "fF", "bB", "qQ", "lL", "uU", "oO", "yY", "[{", "]}", "\\|",
+            "rR", "sS", "tT", "hH", "kK", "jJ", "nN", "eE", "aA", "iI", ";:",
+            "\\|", "xX", "cC", "mM", "pP", "vV", "zZ", ",<", ".>", "'\"", "/?",
             " "
-        ]
+        ],
     },
-    APTx: {
+    APT_angle: {
         keymapShowTopRow: false,
         keys: [
             "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-            "qQ", "cC", "dD", "wW", "xX", "zZ", "pP", "oO", "uU", ";:", "[{", "]}", "\\|",
-            "rR", "sS", "tT", "nN", "vV", "yY", "hH", "eE", "iI", "aA", "/?",
-            "\\|", "lL", "gG", "bB", "mM", "jJ", "kK", "fF", "'\"", ",<", ".>",
+            "wW", "gG", "dD", "fF", "bB", "qQ", "lL", "uU", "oO", "yY", "[{", "]}", "\\|",
+            "rR", "sS", "tT", "hH", "kK", "jJ", "nN", "eE", "aA", "iI", ";:",
+            "\\|", "cC", "mM", "pP", "vV", "xX", "zZ", ",<", ".>", "'\"", "/?",
             " "
-        ]
+        ],
     },
     thai_kedmanee: {
         keymapShowTopRow: true,
@@ -865,6 +899,16 @@ const layouts = {
             "\\|", "zZ", "bB", "mM", "gG", "wW", "xX", ",<", ".>", ";:", "qQ",
             " "
         ],
+    },
+    octa8: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "yY", "oO", "uU", "kK", "xX", "gG", "wW", "dD", "lL", ",<", "[{", "]}", "\\|",
+            "iI", "aA", "eE", "nN", "fF", "bB", "sS", "tT", "rR", "cC", "'\"",
+            "\\|", "/?", "zZ", "hH", "'\"", "qQ", "vV", "pP", "mM", "jJ", ".>",
+            " "
+        ]
     },
 }
 export default layouts;

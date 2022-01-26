@@ -23,6 +23,8 @@ import * as TTS from "./tts";
 import * as TribeConfig from "./tribe-config";
 import * as Tribe from "./tribe";
 import * as MobileTestConfig from "./mobile-test-config.js";
+import * as TestConfig from "./test-config.js";
+import * as PractiseWords from "./practise-words";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -101,6 +103,7 @@ let defaultConfig = {
   capsLockWarning: true,
   playSoundOnError: false,
   playSoundOnClick: "off",
+  soundVolume: "0.5",
   startGraphsAtZero: true,
   swapEscAndTab: false,
   showOutOfFocusWarning: true,
@@ -234,29 +237,9 @@ export function setMode(mode, nosave, tribeOverride) {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
-
+  let previous = config.mode;
   config.mode = mode;
-  $("#top .config .mode .text-button").removeClass("active");
-  $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
-  if (config.mode == "time") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").removeClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "words") {
-    $("#top .config .wordCount").removeClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "custom") {
+  if (config.mode == "custom") {
     if (
       config.funbox === "58008" ||
       config.funbox === "gibberish" ||
@@ -265,42 +248,20 @@ export function setMode(mode, nosave, tribeOverride) {
       Funbox.setActive("none");
       TestUI.updateModesNotice();
     }
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
     setPunctuation(false, true, tribeOverride);
     setNumbers(false, true, tribeOverride);
   } else if (config.mode == "quote") {
     setPunctuation(false, true, tribeOverride);
     setNumbers(false, true, tribeOverride);
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("disabled");
-    $("#top .config .numbersMode").addClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#result .stats .source").removeClass("hidden");
-    $("#top .config .quoteLength").removeClass("hidden");
   } else if (config.mode == "zen") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
     if (config.paceCaret != "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
-    // setPaceCaret("off", true);
   }
+  TestConfig.update(previous, config.mode);
   MobileTestConfig.update();
   ChallengeContoller.clearActive();
+  PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
   if (!tribeOverride) TribeConfig.sync();
 }
@@ -322,11 +283,13 @@ export function setPlaySoundOnClick(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function togglePlaySoundOnError() {
-  config.playSoundOnError = !config.playSoundOnError;
-  if (config.playSoundOnError == undefined) {
-    config.playSoundOnError = false;
+export function setSoundVolume(val, nosave) {
+  if (val == undefined) {
+    val = "1.0";
   }
+  config.soundVolume = val;
+  Sound.setVolume(val);
+  if (!nosave) saveToLocalStorage();
 }
 
 //difficulty
@@ -966,7 +929,8 @@ export function setHighlightMode(mode, nosave) {
       config.funbox === "read_ahead" ||
       config.funbox === "read_ahead_easy" ||
       config.funbox === "read_ahead_hard" ||
-      config.funbox === "tts")
+      config.funbox === "tts" ||
+      config.funbox === "arrows")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
@@ -1234,7 +1198,7 @@ export function previewFontFamily(font) {
   }
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '"'
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono"'
   );
 }
 
@@ -1333,6 +1297,18 @@ export function setTheme(name, nosave) {
   setCustomTheme(false, true, true);
   ThemeController.clearPreview();
   ThemeController.set(config.theme);
+  if (!nosave) saveToLocalStorage();
+}
+
+function setThemes(theme, customState, nosave) {
+  config.theme = theme;
+  config.customTheme = customState;
+  ThemeController.clearPreview();
+  if (customState) {
+    ThemeController.set("custom");
+  } else {
+    ThemeController.set(config.theme);
+  }
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1662,9 +1638,10 @@ export function apply(configObj) {
     }
   });
   if (configObj && configObj != null && configObj != "null") {
-    setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
-    setCustomTheme(configObj.customTheme, true, true);
+    setThemes(configObj.theme, configObj.customTheme, true);
+    // setTheme(configObj.theme, true);
+    // setCustomTheme(configObj.customTheme, true, true);
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
@@ -1708,6 +1685,7 @@ export function apply(configObj) {
     setCapsLockWarning(configObj.capsLockWarning, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
+    setSoundVolume(configObj.soundVolume, true);
     setStopOnError(configObj.stopOnError, true);
     setFavThemes(configObj.favThemes, true);
     setFunbox(configObj.funbox, true);

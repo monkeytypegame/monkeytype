@@ -15,7 +15,9 @@ class MonkeyError {
     //   : "Internal Server Error " + this.errorID;
 
     if (process.env.MODE === "dev") {
-      this.message = stack ? String(stack) : String(message);
+      this.message = stack
+        ? String(message) + "\nStack: " + String(stack)
+        : String(message);
     } else {
       if (this.stack && this.status >= 500) {
         this.message = "Internal Server Error " + this.errorID;

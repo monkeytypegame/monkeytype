@@ -1,5 +1,6 @@
 import * as Loader from "./loader";
 import Config from "./config";
+import * as TestLogic from "./test-logic";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -108,6 +109,13 @@ export async function getFunboxList() {
   } else {
     return funboxList;
   }
+}
+
+export async function getFunbox(funbox) {
+  let list = await getFunboxList();
+  return list.find(function (element) {
+    return element.name == funbox;
+  });
 }
 
 let quotes = null;
@@ -311,21 +319,6 @@ export function migrateFromCookies() {
       }
     }
   );
-}
-
-export function sendVerificationEmail() {
-  Loader.show();
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
-    .then(() => {
-      Loader.hide();
-      showNotification("Email sent to " + cu.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      showNotification("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
 }
 
 export function smooth(arr, windowSize, getter = (value) => value, setter) {
@@ -581,6 +574,21 @@ export function getASCII() {
   return ret;
 }
 
+export function getArrows() {
+  let arrowWord = "";
+  let arrowArray = ["←", "↑", "→", "↓"];
+  let lastchar;
+  for (let i = 0; i < 5; i++) {
+    let random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    while (random === lastchar) {
+      random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    }
+    lastchar = random;
+    arrowWord += random;
+  }
+  return arrowWord;
+}
+
 export function getPositionString(number) {
   let numend = "th";
   let t = number % 10;
@@ -785,4 +793,25 @@ export function escapeHTML(str) {
   return String(str).replace(/[^\w. ]/gi, function (c) {
     return "&#" + c.charCodeAt(0) + ";";
   });
+
+export function getMode2(mode) {
+  if (!mode) mode = Config.mode;
+  let mode2 = "";
+  if (mode === "time") {
+    mode2 = Config.time;
+  } else if (mode === "words") {
+    mode2 = Config.words;
+  } else if (mode === "custom") {
+    mode2 = "custom";
+  } else if (mode === "zen") {
+    mode2 = "zen";
+  } else if (mode === "quote") {
+    mode2 = TestLogic.randomQuote.id;
+  }
+  return mode2;
+}
+
+//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
+export function convertRemToPixels(rem) {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
