@@ -64,7 +64,7 @@
     "howler": "^2.2.1",
     "moment-timezone": "^0.5.33",
     "mongodb": "^3.6.9",
-    "node-fetch": "^3.1.1",
+    "node-fetch": "^2.6.7",
     "nodemon": "^2.0.7",
     "object-hash": "^2.2.0",
     "path": "^0.12.7",
