@@ -20,6 +20,7 @@ import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeStartRacePopup from "./tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
+import * as TribeDelta from "./tribe-delta";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -463,6 +464,9 @@ socket.on("room_progress_update", (e) => {
   room.maxWpm = e.roomMaxWpm;
   room.maxRaw = e.roomMaxRaw;
   room.users[e.userId].progress = e.progress;
+  if (e.userId == socket.id) {
+    TribeDelta.update();
+  }
   //todo only update one
   TribeBars.update("test", e.userId);
   TribeBars.update("tribe", e.userId);

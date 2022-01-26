@@ -1000,13 +1000,22 @@
   }
   #miniTimerAndLiveWpm {
     height: 0;
-    margin-left: 0.37rem;
+    padding: 0 0.37rem;
     display: flex;
     font-size: 1rem;
     line-height: 1rem;
     margin-top: -1.5rem;
     position: absolute;
     color: black;
+    width: 100%;
+
+    .spacer {
+      width: 100%;
+    }
+
+    .tribeDelta.bad {
+      color: var(--error-color);
+    }
 
     .time {
       margin-right: 2rem;
