@@ -94,3 +94,5 @@ backend/.env
 
 static/adtest.html
 backend/migrationStats.txt
+
+backend/anticheat
