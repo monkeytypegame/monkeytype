@@ -180,17 +180,17 @@ function checkIfTimeIsUp() {
 
 function sendTribeProgress(wpm, raw, acc) {
   if (timerDebug) console.time("tribe progress");
-  let progress = 0;
-  if (Config.mode === "time") {
-    progress = 100 - ((time + 1) / Config.time) * 100;
-  } else {
-    let outof = TestLogic.words.length;
-    if (Config.mode === "words") {
-      outof = Config.words;
-    }
-    progress = Math.floor((TestLogic.words.currentIndex / (outof - 1)) * 100);
-  }
   if (Tribe.state >= 10 && Tribe.state <= 21) {
+    let progress = 0;
+    if (Config.mode === "time") {
+      progress = 100 - ((time + 1) / Config.time) * 100;
+    } else {
+      let outof = TestLogic.words.length;
+      if (Config.mode === "words") {
+        outof = Config.words;
+      }
+      progress = Math.floor((TestLogic.words.currentIndex / (outof - 1)) * 100);
+    }
     TribeBars.sendUpdate(wpm, raw, acc, progress);
     if (
       time >= 3 &&
