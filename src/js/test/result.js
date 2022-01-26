@@ -696,6 +696,29 @@ export function update(
         TestUI.toggleResultWords();
       }
       Keymap.hide();
+
+      //tribe
+      $("#result .bottom .buttons div").addClass("hidden");
+      $("#result #tribeResultBottom").addClass("hidden");
+      if (Tribe.state > 12) {
+        $("#result #tribeResultBottom").removeClass("hidden");
+        if (Tribe.getSelf().isLeader) {
+          $("#result #nextTestButton").removeClass("hidden");
+          $("#result #backToLobbyButton").removeClass("hidden");
+        } else {
+          $("#result #readyButton").removeClass("hidden");
+        }
+        TribeResults.update("result");
+        TribeUserList.update("result");
+        TribeButtons.update("result");
+      } else {
+        $("#result #nextTestButton").removeClass("hidden");
+        $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
+        $("#result #practiseWordsButton").removeClass("hidden");
+        $("#result #watchReplayButton").removeClass("hidden");
+      }
+      $("#result #showWordHistoryButton").removeClass("hidden");
+      $("#result #saveScreenshotButton").removeClass("hidden");
     }
   );
 }

@@ -793,6 +793,7 @@ export function escapeHTML(str) {
   return String(str).replace(/[^\w. ]/gi, function (c) {
     return "&#" + c.charCodeAt(0) + ";";
   });
+}
 
 export function getMode2(mode) {
   if (!mode) mode = Config.mode;
