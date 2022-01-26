@@ -736,6 +736,95 @@ export function restart(
   );
 }
 
+async function getNextWord(wordset, language, wordsBound) {
+  let randomWord = wordset.randomWord();
+  const previousWord = words.get(words.length - 1, true);
+  const previousWord2 = words.get(words.length - 2, true);
+  if (Config.mode === "quote") {
+    randomWord = randomQuote.textSplit[words.length];
+  } else if (
+    Config.mode == "custom" &&
+    !CustomText.isWordRandom &&
+    !CustomText.isTimeRandom
+  ) {
+    randomWord = CustomText.text[words.length];
+  } else if (
+    Config.mode == "custom" &&
+    (CustomText.isWordRandom || CustomText.isTimeRandom) &&
+    (wordset.length < 3 || PractiseWords.before.mode !== null)
+  ) {
+    randomWord = wordset.randomWord();
+  } else {
+    let regenarationCount = 0; //infinite loop emergency stop button
+    while (
+      regenarationCount < 100 &&
+      (previousWord == randomWord ||
+        previousWord2 == randomWord ||
+        (!Config.punctuation && randomWord == "I"))
+    ) {
+      regenarationCount++;
+      randomWord = wordset.randomWord();
+    }
+  }
+
+  if (randomWord === undefined) {
+    randomWord = wordset.randomWord();
+  }
+
+  if (Config.lazyMode === true && !language.noLazyMode) {
+    randomWord = LazyMode.replaceAccents(randomWord, language.accents);
+  }
+
+  randomWord = randomWord.replace(/ +/gm, " ");
+  randomWord = randomWord.replace(/^ | $/gm, "");
+
+  if (Config.funbox === "rAnDoMcAsE") {
+    let randomcaseword = "";
+    for (let i = 0; i < randomWord.length; i++) {
+      if (i % 2 != 0) {
+        randomcaseword += randomWord[i].toUpperCase();
+      } else {
+        randomcaseword += randomWord[i];
+      }
+    }
+    randomWord = randomcaseword;
+  } else if (Config.funbox === "capitals") {
+    randomWord = Misc.capitalizeFirstLetter(randomWord);
+  } else if (Config.funbox === "gibberish") {
+    randomWord = Misc.getGibberish();
+  } else if (Config.funbox === "arrows") {
+    randomWord = Misc.getArrows();
+  } else if (Config.funbox === "58008") {
+    randomWord = Misc.getNumbers(7);
+  } else if (Config.funbox === "specials") {
+    randomWord = Misc.getSpecials();
+  } else if (Config.funbox === "ascii") {
+    randomWord = Misc.getASCII();
+  } else if (Config.funbox === "weakspot") {
+    randomWord = WeakSpot.getWord(wordset);
+  }
+
+  if (Config.punctuation) {
+    randomWord = punctuateWord(
+      words.get(words.length - 1),
+      randomWord,
+      words.length,
+      wordsBound
+    );
+  }
+  if (Config.numbers) {
+    if (Math.random() < 0.1) {
+      randomWord = Misc.getNumbers(4);
+    }
+  }
+
+  if (Config.britishEnglish && /english/.test(Config.language)) {
+    randomWord = await BritishEnglish.replace(randomWord);
+  }
+
+  return randomWord;
+}
+
 export async function init() {
   setActive(false);
   Replay.stopReplayRecording();
@@ -867,87 +956,7 @@ export async function init() {
       }
     } else {
       for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset.randomWord();
-        const previousWord = words.get(words.length - 1, true);
-        const previousWord2 = words.get(words.length - 2, true);
-        if (
-          Config.mode == "custom" &&
-          !CustomText.isWordRandom &&
-          !CustomText.isTimeRandom
-        ) {
-          randomWord = CustomText.text[words.length];
-        } else if (
-          Config.mode == "custom" &&
-          (wordset.length < 3 || PractiseWords.before.mode !== null)
-        ) {
-          randomWord = wordset.randomWord();
-        } else {
-          let regenarationCount = 0; //infinite loop emergency stop button
-          while (
-            regenarationCount < 100 &&
-            (randomWord == previousWord ||
-              randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I"))
-          ) {
-            regenarationCount++;
-            randomWord = wordset.randomWord();
-          }
-        }
-
-        if (randomWord === undefined) {
-          randomWord = wordset.randomWord();
-        }
-
-        if (Config.lazyMode === true && !language.noLazyMode) {
-          randomWord = LazyMode.replaceAccents(randomWord, language.accents);
-        }
-
-        randomWord = randomWord.replace(/ +/gm, " ");
-        randomWord = randomWord.replace(/^ | $/gm, "");
-
-        if (Config.funbox === "rAnDoMcAsE") {
-          let randomcaseword = "";
-          for (let i = 0; i < randomWord.length; i++) {
-            if (i % 2 != 0) {
-              randomcaseword += randomWord[i].toUpperCase();
-            } else {
-              randomcaseword += randomWord[i];
-            }
-          }
-          randomWord = randomcaseword;
-        } else if (Config.funbox === "capitals") {
-          randomWord = Misc.capitalizeFirstLetter(randomWord);
-        } else if (Config.funbox === "arrows") {
-          randomWord = Misc.getArrows();
-        } else if (Config.funbox === "gibberish") {
-          randomWord = Misc.getGibberish();
-        } else if (Config.funbox === "58008") {
-          randomWord = Misc.getNumbers(7);
-        } else if (Config.funbox === "specials") {
-          randomWord = Misc.getSpecials();
-        } else if (Config.funbox === "ascii") {
-          randomWord = Misc.getASCII();
-        } else if (Config.funbox === "weakspot") {
-          randomWord = WeakSpot.getWord(wordset);
-        }
-
-        if (Config.punctuation) {
-          randomWord = punctuateWord(
-            words.get(words.length - 1),
-            randomWord,
-            words.length,
-            wordsBound
-          );
-        }
-        if (Config.numbers) {
-          if (Math.random() < 0.1) {
-            randomWord = Misc.getNumbers(4);
-          }
-        }
-
-        if (Config.britishEnglish && /english/.test(Config.language)) {
-          randomWord = await BritishEnglish.replace(randomWord);
-        }
+        let randomWord = await getNextWord(wordset, language, wordsBound);
 
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
@@ -1219,91 +1228,8 @@ export async function addWord() {
           words: CustomText.text,
         };
   const wordset = Wordset.withWords(language.words);
-  let randomWord = wordset.randomWord();
-  const previousWord = words.get(words.length - 1, true);
-  const previousWord2 = words.get(words.length - 2, true);
 
-  if (
-    Config.mode === "custom" &&
-    (CustomText.isWordRandom || CustomText.isTimeRandom) &&
-    wordset.length < 3
-  ) {
-    randomWord = wordset.randomWord();
-  } else if (
-    Config.mode == "custom" &&
-    !CustomText.isWordRandom &&
-    !CustomText.isTimeRandom
-  ) {
-    randomWord = CustomText.text[words.length];
-  } else if (Config.mode === "quote") {
-    randomWord = randomQuote.textSplit[words.length];
-  } else {
-    let regenarationCount = 0; //infinite loop emergency stop button
-    while (
-      regenarationCount < 100 &&
-      (previousWord == randomWord ||
-        previousWord2 == randomWord ||
-        (!Config.punctuation && randomWord == "I"))
-    ) {
-      regenarationCount++;
-      randomWord = wordset.randomWord();
-    }
-  }
-
-  if (randomWord === undefined) {
-    randomWord = wordset.randomWord();
-  }
-
-  if (Config.lazyMode === true && !language.noLazyMode) {
-    randomWord = LazyMode.replaceAccents(randomWord, language.accents);
-  }
-
-  randomWord = randomWord.replace(/ +/gm, " ");
-  randomWord = randomWord.replace(/^ | $/gm, "");
-
-  if (Config.funbox === "rAnDoMcAsE") {
-    let randomcaseword = "";
-    for (let i = 0; i < randomWord.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += randomWord[i].toUpperCase();
-      } else {
-        randomcaseword += randomWord[i];
-      }
-    }
-    randomWord = randomcaseword;
-  } else if (Config.funbox === "capitals") {
-    randomWord = Misc.capitalizeFirstLetter(randomWord);
-  } else if (Config.funbox === "gibberish") {
-    randomWord = Misc.getGibberish();
-  } else if (Config.funbox === "arrows") {
-    randomWord = Misc.getArrows();
-  } else if (Config.funbox === "58008") {
-    randomWord = Misc.getNumbers(7);
-  } else if (Config.funbox === "specials") {
-    randomWord = Misc.getSpecials();
-  } else if (Config.funbox === "ascii") {
-    randomWord = Misc.getASCII();
-  } else if (Config.funbox === "weakspot") {
-    randomWord = WeakSpot.getWord(wordset);
-  }
-
-  if (Config.punctuation) {
-    randomWord = punctuateWord(
-      words.get(words.length - 1),
-      randomWord,
-      words.length,
-      bound
-    );
-  }
-  if (Config.numbers) {
-    if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
-    }
-  }
-
-  if (Config.britishEnglish && /english/.test(Config.language)) {
-    randomWord = await BritishEnglish.replace(randomWord);
-  }
+  let randomWord = await getNextWord(wordset, language, bound);
 
   let split = randomWord.split(" ");
   if (split.length > 1) {
