@@ -868,14 +868,14 @@ export async function init() {
     } else {
       for (let i = 0; i < wordsBound; i++) {
         let randomWord = wordset.randomWord();
-        const previousWord = words.get(i - 1, true);
-        const previousWord2 = words.get(i - 2, true);
+        const previousWord = words.get(words.length - 1, true);
+        const previousWord2 = words.get(words.length - 2, true);
         if (
           Config.mode == "custom" &&
           !CustomText.isWordRandom &&
           !CustomText.isTimeRandom
         ) {
-          randomWord = CustomText.text[i];
+          randomWord = CustomText.text[words.length];
         } else if (
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
@@ -933,9 +933,9 @@ export async function init() {
 
         if (Config.punctuation) {
           randomWord = punctuateWord(
-            words.get(i - 1),
+            words.get(words.length - 1),
             randomWord,
-            i,
+            words.length,
             wordsBound
           );
         }
