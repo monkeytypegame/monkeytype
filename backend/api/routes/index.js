@@ -13,6 +13,10 @@ const API_ROUTE_MAP = {
 };
 
 function addApiRoutes(app) {
+  app.get("/", (req, res) => {
+    res.status(200).json({ message: "OK" });
+  });
+
   Object.keys(API_ROUTE_MAP).forEach((route) => {
     const apiRoute = `${BASE_ROUTE}${route}`;
     const router = API_ROUTE_MAP[route];

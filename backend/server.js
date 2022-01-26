@@ -30,10 +30,6 @@ app.use((req, res, next) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "OK" });
-});
-
 addApiRoutes(app);
 
 //DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
