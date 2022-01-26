@@ -1240,7 +1240,6 @@ export async function addWord() {
       regenarationCount < 100 &&
       (previousWord == randomWord ||
         previousWord2 == randomWord ||
-        randomWord.indexOf(" ") > -1 ||
         (!Config.punctuation && randomWord == "I"))
     ) {
       regenarationCount++;
@@ -1255,6 +1254,9 @@ export async function addWord() {
   if (Config.lazyMode === true && !language.noLazyMode) {
     randomWord = LazyMode.replaceAccents(randomWord, language.accents);
   }
+
+  randomWord = randomWord.replace(/ +/gm, " ");
+  randomWord = randomWord.replace(/^ | $/gm, "");
 
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
