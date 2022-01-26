@@ -12,6 +12,10 @@ import * as PbCrown from "./pb-crown";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as TestLogic from "./test-logic";
 import * as Notifications from "./notifications";
+import * as Tribe from "./tribe";
+import * as TribeResults from "./tribe-results";
+import * as TribeUserList from "./tribe-user-list";
+import * as TribeButtons from "./tribe-buttons";
 
 let result;
 let maxChartVal;

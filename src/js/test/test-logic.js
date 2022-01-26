@@ -39,8 +39,6 @@ import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Tribe from "./tribe";
 import * as TribeResults from "./tribe-results";
-import * as TribeUserList from "./tribe-user-list";
-import * as TribeButtons from "./tribe-buttons";
 import * as Result from "./result";
 
 const objecthash = require("object-hash");
@@ -1659,22 +1657,13 @@ export async function finish(difficultyFailed = false) {
   }
 
   TribeResults.send({
-    wpm: stats.wpm,
-    raw: stats.wpmRaw,
-    acc: stats.acc,
-    consistency: consistency,
-    testDuration: testtime,
-    charStats: [
-      stats.correctChars + stats.correctSpaces,
-      stats.incorrectChars,
-      stats.extraChars,
-      stats.missedChars,
-    ],
-    chartData: {
-      wpm: TestStats.wpmHistory,
-      raw: rawWpmPerSecond,
-      err: errorsArray,
-    },
+    wpm: completedEvent.wpm,
+    raw: completedEvent.wpmRaw,
+    acc: completedEvent.acc,
+    consistency: completedEvent.consistency,
+    testDuration: completedEvent.testDuration,
+    charStats: completedEvent.charStats,
+    chartData: completedEvent.chartData,
     resolve: await testSavePromise,
   });
 
@@ -1770,15 +1759,7 @@ export async function finish(difficultyFailed = false) {
       $("#retrySavingResultButton").removeClass("hidden");
       if (Tribe.state < 5) {
         $("#retrySavingResultButton").removeClass("hidden");
-
         retrySaving.completedEvent = completedEvent;
-        retrySaving.testtime = testtime;
-        retrySaving.afkseconds = afkseconds;
-        retrySaving.pbDiff = pbDiff;
-        retrySaving.mode2 = mode2;
-        retrySaving.stats = stats;
-        retrySaving.consistency = consistency;
-
         retrySaving.canRetry = true;
       }
       resolveTestSavePromise({
