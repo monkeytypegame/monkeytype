@@ -71,11 +71,15 @@ class Words {
     this.length = 0;
     this.currentIndex = 0;
   }
-  get(i) {
+  get(i, raw = false) {
     if (i === undefined) {
       return this.list;
     } else {
-      return this.list[i];
+      if (raw) {
+        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
+      } else {
+        return this.list[i];
+      }
     }
   }
   getCurrent() {
@@ -851,8 +855,8 @@ export async function init() {
     } else {
       for (let i = 0; i < wordsBound; i++) {
         let randomWord = wordset.randomWord();
-        const previousWord = words.get(i - 1);
-        const previousWord2 = words.get(i - 2);
+        const previousWord = words.get(i - 1, true);
+        const previousWord2 = words.get(i - 2, true);
         if (
           Config.mode == "custom" &&
           !CustomText.isWordRandom &&
@@ -1213,14 +1217,8 @@ export async function addWord() {
         };
   const wordset = Wordset.withWords(language.words);
   let randomWord = wordset.randomWord();
-  const previousWord = words.getLast();
-  const previousWordStripped = previousWord
-    .replace(/[.?!":\-,]/g, "")
-    .toLowerCase();
-  const previousWord2Stripped = words
-    .get(words.length - 2)
-    .replace(/[.?!":\-,]/g, "")
-    .toLowerCase();
+  const previousWord = words.get(words.length - 1, true);
+  const previousWord2 = words.get(words.length - 2, true);
 
   if (
     Config.mode === "custom" &&
@@ -1240,8 +1238,8 @@ export async function addWord() {
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      (previousWordStripped == randomWord ||
-        previousWord2Stripped == randomWord ||
+      (previousWord == randomWord ||
+        previousWord2 == randomWord ||
         randomWord.indexOf(" ") > -1 ||
         (!Config.punctuation && randomWord == "I"))
     ) {
