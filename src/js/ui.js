@@ -181,7 +181,7 @@ export function changePage(page, norestart = false, tribeOverride = false) {
     Funbox.activate(Config.funbox);
   } else if (page === "tribe") {
     setPageTransition(true);
-    swapElements(activePage, $(".page.pageTribe"), 250, () => {
+    swapElements(activePageElement, $(".page.pageTribe"), 250, () => {
       setPageTransition(false);
       $(".page.pageTribe").addClass("active");
       history.pushState("tribe", null, "tribe");
