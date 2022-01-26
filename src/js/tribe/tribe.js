@@ -113,8 +113,8 @@ export function updateState(newState) {
 
 export async function init() {
   TribePagePreloader.updateIcon("circle-notch", true);
-  TribePagePreloader.updateText("Waiting for login");
-  await AccountController.authPromise;
+  // TribePagePreloader.updateText("Waiting for login");
+  // await AccountController.authPromise;
   TribePagePreloader.updateText("Connecting to Tribe");
   TribePagePreloader.hideReconnectButton();
   setTimeout(() => {

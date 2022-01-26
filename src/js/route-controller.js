@@ -10,7 +10,7 @@ let mappedRoutes = {
   "/about": "pageLoading",
   "/account": "pageAccount",
   "/verify": "pageLoading",
-  "/tribe": "pageTribe",
+  "/tribe": "pageLoading",
 };
 
 export function handleInitialPageClasses(pathname) {
