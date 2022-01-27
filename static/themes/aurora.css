@@ -4,10 +4,10 @@
   --caret-color: #00e980;
   --sub-color: #245c69;
   --text-color: #fff;
-  --error-color: #4d54b9;
-  --error-extra-color: #3a419b;
-  --colorful-error-color: #4d54b9;
-  --colorful-error-extra-color: #3a419b;
+  --error-color: #b94da1;
+  --error-extra-color: #9b3a76;
+  --colorful-error-color: #b94da1;
+  --colorful-error-extra-color: #9b3a76;
 }
 
 @keyframes rgb {
