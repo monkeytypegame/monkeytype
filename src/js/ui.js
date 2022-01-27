@@ -135,7 +135,7 @@ export function changePage(page, norestart = false, tribeOverride = false) {
       "/account": "account",
       "/tribe": "tribe",
     };
-    let path = pages[window.location.pathname];
+    let path = pages[window.location.pathname.replace(/_.*$/gi, "")];
     if (!path) {
       path = "test";
     }

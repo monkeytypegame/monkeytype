@@ -24,7 +24,9 @@ if (window.location.hostname === "localhost") {
 }
 
 Focus.set(true, true);
-RouteController.handleInitialPageClasses(window.location.pathname);
+RouteController.handleInitialPageClasses(
+  window.location.pathname.replace(/_.*$/gi, "")
+);
 $(document).ready(() => {
   if (window.location.pathname === "/") {
     // $("#top .config").removeClass("hidden");
