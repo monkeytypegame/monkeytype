@@ -35,10 +35,12 @@ $("#tribeRoomCodePopup input").keydown((e) => {
   if (
     (e.key.length == 1 &&
       !e.ctrlKey &&
+      !e.metaKey &&
       !e.shiftKey &&
       !/[0-9a-fA-F]/.test(e.key)) ||
     (e.key.length == 1 &&
       !e.ctrlKey &&
+      !e.metaKey &&
       !e.shiftKey &&
       /[0-9a-fA-F]/.test(e.key) &&
       $("#tribeRoomCodePopup input").val().length >= 6)
