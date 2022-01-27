@@ -283,7 +283,7 @@
   },
   {
     "name": "macedonian",
-    "languages": ["macedonian", "macedonian_1k"]
+    "languages": ["macedonian", "macedonian_1k", "macedonian_10k", "macedonian_75k"]
   },
   {
     "name": "belarusian",

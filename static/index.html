@@ -2906,6 +2906,36 @@
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="settingsGroup sound">
+              <div class="section soundVolume">
+                <h1>sound volume</h1>
+                <div class="text">Change the volume of the sound effects.</div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    soundVolume="0.1"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    quiet
+                  </div>
+                  <div
+                    class="button"
+                    soundVolume="0.5"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    medium
+                  </div>
+                  <div
+                    class="button"
+                    soundVolume="1.0"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    loud
+                  </div>
+                </div>
+              </div>
               <div class="section playSoundOnClick fullWidth">
                 <h1>play sound on click</h1>
                 <div class="text">
@@ -4164,10 +4194,10 @@
                 <div class="text">Displays a warning when caps lock is on.</div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
-                    off
+                    hide
                   </div>
                   <div class="button on" tabindex="0" onclick="this.blur();">
-                    on
+                    show
                   </div>
                 </div>
               </div>
@@ -4255,7 +4285,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    reset
+                    reset settings
                   </div>
                 </div>
               </div>
@@ -4293,7 +4323,61 @@
                   </div>
                 </div>
               </div>
-              <div class="section updateAccountEmail needsAccount hidden">
+              <div class="section passwordAuthSettings needsAccount hidden">
+                <h1>password authentication settings</h1>
+                <div class="text">
+                  Add password authentication, update your password or email.
+                </div>
+                <div class="buttons vertical">
+                  <div
+                    class="button danger"
+                    id="addPasswordAuth"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    add password authentication
+                  </div>
+                  <div
+                    class="button danger"
+                    id="emailPasswordAuth"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    update email
+                  </div>
+                  <div
+                    class="button danger"
+                    id="passPasswordAuth"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    update password
+                  </div>
+                </div>
+              </div>
+              <div class="section googleAuthSettings needsAccount hidden">
+                <h1>google authentication settings</h1>
+                <div class="text">Add or remove Google authentication.</div>
+                <div class="buttons vertical">
+                  <div
+                    class="button danger"
+                    id="addGoogleAuth"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    add google authentication
+                  </div>
+                  <div
+                    class="button danger"
+                    id="removeGoogleAuth"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    remove google authentication
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="section updateAccountEmail needsAccount hidden">
                 <h1>update account email</h1>
                 <div class="text">
                   In case you misspell it or get a new address.
@@ -4322,7 +4406,7 @@
                     update password
                   </div>
                 </div>
-              </div>
+              </div> -->
               <div class="section deleteAccount needsAccount hidden">
                 <h1>delete account</h1>
                 <div class="text">
@@ -4359,6 +4443,11 @@
                   type="email"
                   placeholder="email"
                   autocomplete="new-email"
+                />
+                <input
+                  type="email"
+                  placeholder="verify email"
+                  autocomplete="verify-email"
                 />
                 <input
                   type="password"
@@ -4930,6 +5019,21 @@
       </div>
     </div>
   </body>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=UA-165993088-1"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "UA-165993088-1");
+  </script>
+
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="/__/firebase/8.4.2/firebase-app.js"></script>
   <!-- TODO: Add SDKs for Firebase products that you want to use

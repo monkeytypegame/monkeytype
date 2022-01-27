@@ -1,5 +1,5 @@
 import * as Notifications from "./notifications";
-import * as VersionPopup from "./version-popup";
+// import * as VersionPopup from "./version-popup";
 
 function setMemory(v) {
   window.localStorage.setItem("lastSeenVersion", v);
@@ -19,10 +19,14 @@ export async function show(version) {
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
   ) {
-    caches.delete("sw-cache");
+    caches.keys().then(function (names) {
+      for (let name of names) caches.delete(name);
+    });
   }
   if (memory === version) return;
-  caches.delete("sw-cache");
+  caches.keys().then(function (names) {
+    for (let name of names) caches.delete(name);
+  });
   Notifications.addBanner(
     `Version ${version} has been released. Click the version number in the bottom right to view the changelog.`,
     1,

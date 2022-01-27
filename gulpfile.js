@@ -9,6 +9,7 @@ const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
 var sass = require("gulp-sass")(require("dart-sass"));
+const replace = require("gulp-replace");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = {
@@ -259,9 +260,41 @@ task("clean", function () {
   return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
+task("updateSwCacheName", function () {
+  let date = new Date();
+  let dateString =
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1) +
+    "-" +
+    date.getDate() +
+    "-" +
+    date.getHours() +
+    "-" +
+    date.getMinutes() +
+    "-" +
+    date.getSeconds();
+  return src(["static/sw.js"])
+    .pipe(
+      replace(
+        /const staticCacheName = .*;/g,
+        `const staticCacheName = "sw-cache-${dateString}";`
+      )
+    )
+    .pipe(dest("./dist/"));
+});
+
 task(
   "compile",
-  series("lint", "cat", "copy-modules", "browserify", "static", "sass")
+  series(
+    "lint",
+    "cat",
+    "copy-modules",
+    "browserify",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
 );
 
 task("watch", function () {
