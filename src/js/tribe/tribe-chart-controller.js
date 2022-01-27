@@ -283,7 +283,7 @@ export async function drawChart(userId) {
 
     if (!Tribe.room.users[userId].result) return;
 
-    let chart = new Chart(element, settings);
+    let chart = new Chart(element, $.extend(true, {}, settings));
 
     await fillData(chart, userId);
 
