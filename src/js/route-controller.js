@@ -4,9 +4,9 @@ import Config from "./config";
 
 let mappedRoutes = {
   "/": "pageLoading",
-  "/login": "pageLogin",
-  "/settings": "pageSettings",
-  "/about": "pageAbout",
+  "/login": "pageLoading",
+  "/settings": "pageLoading",
+  "/about": "pageLoading",
   "/account": "pageAccount",
   "/verify": "pageLoading",
 };

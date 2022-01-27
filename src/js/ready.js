@@ -8,6 +8,8 @@ import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
 import * as NewVersionNotification from "./new-version-notification";
+import * as Notifications from "./notifications";
+import * as Focus from "./focus";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
@@ -21,6 +23,7 @@ if (window.location.hostname === "localhost") {
   });
 }
 
+Focus.set(true, true);
 RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
   if (window.location.pathname === "/") {
@@ -31,18 +34,21 @@ $(document).ready(() => {
     $("#restartTestButton").addClass("hidden");
   }
   if (!window.localStorage.getItem("merchbannerclosed")) {
-    $(".merchBanner").removeClass("hidden");
-  } else {
-    $(".merchBanner").remove();
+    Notifications.addBanner(
+      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      1,
+      "images/merchdropwebsite2.png",
+      false,
+      () => {
+        window.localStorage.setItem("merchbannerclosed", true);
+      }
+    );
   }
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
-      if (window.location.pathname === "/account") {
-        SignOutButton.show();
-      }
       if (window.location.pathname === "/verify") {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         if (fragment.has("access_token")) {
@@ -63,7 +69,7 @@ $(document).ready(() => {
         // }
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");
-        UI.changePage(page);
+        // UI.changePage(page);
       }
     });
   Settings.settingsFillPromise.then(Settings.update);

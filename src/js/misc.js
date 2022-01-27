@@ -321,21 +321,6 @@ export function migrateFromCookies() {
   );
 }
 
-export function sendVerificationEmail() {
-  Loader.show();
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
-    .then(() => {
-      Loader.hide();
-      showNotification("Email sent to " + cu.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      showNotification("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
-}
-
 export function smooth(arr, windowSize, getter = (value) => value, setter) {
   const get = getter;
   const result = [];
@@ -818,4 +803,9 @@ export function getMode2(mode) {
     mode2 = TestLogic.randomQuote.id;
   }
   return mode2;
+}
+
+//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
+export function convertRemToPixels(rem) {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }

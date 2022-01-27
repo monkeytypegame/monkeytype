@@ -669,4 +669,29 @@
      "bgColor" : "#9bf2ea",
      "mainColor":"#6d44a6"
    }
+  ,{
+    "name": "trackday",
+    "bgColor": "#464d66",
+    "mainColor": "#e0513e"
+   }
+  ,{
+    "name": "fruit_chew",
+    "bgColor": "#d6d3d6",
+    "mainColor": "#5c1e5f"
+  }
+  ,{
+    "name": "evil_eye",
+    "bgColor": "#0084c2",
+    "mainColor": "#f7f2ea"
+  }
+  ,{
+    "name": "trance",
+    "bgColor": "linear-gradient(to right, #071d75, #e51376)",
+    "mainColor": "#ffffff"
+  }
+  ,{
+    "name": "fire",
+    "bgColor": "linear-gradient(to right, #b31313, #ff9000, #fdda16)",
+    "mainColor": "#ffffff"
+  }
 ]
