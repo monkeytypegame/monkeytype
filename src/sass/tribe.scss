@@ -199,15 +199,16 @@
           grid-template-columns: 1fr auto;
           width: max-content;
           .icon-button {
-            color: var(--sub-color);
+            color: var(--text-color);
             padding: 0;
             margin-left: 0.25rem;
             font-size: 0.75rem;
+            opacity: 0.25;
             &:hover {
-              color: var(--text-color);
+              opacity: 1;
             }
             &.disabled {
-              opacity: 0.5;
+              opacity: 0.25;
               cursor: default;
               pointer-events: none;
             }
@@ -434,9 +435,10 @@
         display: grid;
         justify-content: center;
         align-content: center;
-        opacity: 0.1;
+        opacity: 0.25;
         padding-top: 0.1rem;
         height: 100%;
+        transition: 0.25s;
         &.active {
           opacity: 1;
         }
