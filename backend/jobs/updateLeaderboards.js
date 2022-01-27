@@ -4,9 +4,10 @@ const BotDAO = require("../dao/bot");
 const LeaderboardsDAO = require("../dao/leaderboards");
 
 const CRON_SCHEDULE = "30 4/5 * * * *";
-const RECENT_AGE = 1000 * 60 * 10;
+const RECENT_AGE_MINUTES = 10;
+const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
-async function updateLeaderboard(leaderboardTime) {
+async function updateLeaderboardAndNotifyChanges(leaderboardTime) {
   const top10BeforeUpdate = await mongoDB()
     .collection(`leaderboards.english.time.${leaderboardTime}`)
     .find()
@@ -21,29 +22,30 @@ async function updateLeaderboard(leaderboardTime) {
     .limit(10)
     .toArray();
 
-  const newRecordHolder = top10AfterUpdate.find((user, index) => {
-    const userBefore = top10BeforeUpdate[index];
-    const isRecentRecord = user.timestamp > Date.now() - RECENT_AGE;
-    return userBefore.uid !== user.uid && isRecentRecord;
+  const newRecord = top10AfterUpdate.find((record, index) => {
+    const recordBefore = top10BeforeUpdate[index];
+    const isRecentRecord =
+      record.timestamp > Date.now() - RECENT_AGE_MILLISECONDS;
+    return recordBefore.uid !== record.uid && isRecentRecord;
   });
 
-  if (newRecordHolder) {
-    const recordHolderId = newRecordHolder.discordId ?? newRecordHolder.name;
+  if (newRecord) {
+    const recordHolderId = newRecord.discordId ?? newRecord.name;
     BotDAO.announceLbUpdate(
       recordHolderId,
-      newRecordHolder.rank,
+      newRecord.rank,
       `time ${leaderboardTime} english`,
-      newRecordHolder.wpm,
-      newRecordHolder.raw,
-      newRecordHolder.acc,
-      newRecordHolder.consistency
+      newRecord.wpm,
+      newRecord.raw,
+      newRecord.acc,
+      newRecord.consistency
     );
   }
 }
 
 async function updateLeaderboards() {
-  await updateLeaderboard("15");
-  await updateLeaderboard("60");
+  await updateLeaderboardAndNotifyChanges("15");
+  await updateLeaderboardAndNotifyChanges("60");
 }
 
 module.exports = new CronJob(CRON_SCHEDULE, updateLeaderboards);

@@ -3,13 +3,12 @@ const { mongoDB } = require("../init/mongodb");
 
 const CRON_SCHEDULE = "0 0 0 * * *";
 const LOG_MAX_AGE_DAYS = 7;
+const LOG_MAX_AGE_MILLISECONDS = LOG_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
 
 async function deleteOldLogs() {
-  const maxAgeMilliseconds = LOG_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
-
   const data = await mongoDB()
     .collection("logs")
-    .deleteMany({ timestamp: { $lt: Date.now() - maxAgeMilliseconds } });
+    .deleteMany({ timestamp: { $lt: Date.now() - LOG_MAX_AGE_MILLISECONDS } });
 
   Logger.log(
     "system_logs_deleted",
