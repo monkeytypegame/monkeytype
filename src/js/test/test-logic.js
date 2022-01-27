@@ -40,6 +40,7 @@ import * as LazyMode from "./lazy-mode";
 import * as Tribe from "./tribe";
 import * as TribeResults from "./tribe-results";
 import * as Result from "./result";
+import * as TribeDelta from "./tribe-delta";
 
 const objecthash = require("object-hash");
 
@@ -442,6 +443,7 @@ export function startTest() {
   TimerProgress.show();
   $("#liveWpm").text("0");
   LiveWpm.show();
+  TribeDelta.show();
   LiveAcc.show();
   LiveBurst.show();
   TimerProgress.update(TestTimer.time);
@@ -556,6 +558,7 @@ export function restart(
   setActive(false);
   Replay.stopReplayRecording();
   LiveWpm.hide();
+  TribeDelta.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
@@ -1503,6 +1506,7 @@ export async function finish(difficultyFailed = false) {
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
+  TribeDelta.hide();
   PbCrown.hide();
   LiveAcc.hide();
   LiveBurst.hide();

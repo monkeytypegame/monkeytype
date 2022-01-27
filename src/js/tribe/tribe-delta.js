@@ -1,4 +1,6 @@
 import * as Tribe from "./tribe";
+import Config from "./config";
+import * as TestLogic from "./test-logic";
 
 let el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
 
@@ -13,7 +15,7 @@ export function update() {
   el.removeClass("bad");
   let delta = Math.round(maxWpm - Tribe.getSelf().progress.wpm);
   if (delta === 0) {
-    el.text("--");
+    el.text("-");
   } else if (delta > 0) {
     el.text("-" + delta);
     el.addClass("bad");
@@ -23,9 +25,26 @@ export function update() {
 }
 
 export function show() {
-  el.removeClass("hidden");
+  if (!TestLogic.active) return;
+  if (Tribe.state < 5) return;
+
+  if (!el.hasClass("hidden")) return;
+  el.removeClass("hidden").css("opacity", 0).animate(
+    {
+      opacity: Config.timerOpacity,
+    },
+    125
+  );
 }
 
 export function hide() {
-  el.addClass("hidden");
+  el.animate(
+    {
+      opacity: Config.timerOpacity,
+    },
+    125,
+    () => {
+      el.addClass("hidden");
+    }
+  );
 }
