@@ -11,8 +11,8 @@ async function getTop10(leaderboardTime) {
   return await LeaderboardsDAO.get({
     language: "english",
     mode: "time",
-    limit: 10,
     mode2: leaderboardTime,
+    limit: 10,
   });
 }
 
