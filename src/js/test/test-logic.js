@@ -1664,7 +1664,7 @@ export async function finish(difficultyFailed = false) {
     }
     TribeResults.send({
       wpm: completedEvent.wpm,
-      raw: completedEvent.wpmRaw,
+      raw: completedEvent.rawWpm,
       acc: completedEvent.acc,
       consistency: completedEvent.consistency,
       testDuration: completedEvent.testDuration,
