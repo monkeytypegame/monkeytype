@@ -8,19 +8,21 @@ const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function updateLeaderboardAndNotifyChanges(leaderboardTime) {
-  const top10BeforeUpdate = await mongoDB()
-    .collection(`leaderboards.english.time.${leaderboardTime}`)
-    .find()
-    .limit(10)
-    .toArray();
+  const top10BeforeUpdate = await LeaderboardsDAO.get({
+    language: "english",
+    mode: "time",
+    mode2: leaderboardTime,
+    limit: 10,
+  });
 
   await LeaderboardsDAO.update("time", leaderboardTime, "english");
 
-  const top10AfterUpdate = await mongoDB()
-    .collection(`leaderboards.english.time.${leaderboardTime}`)
-    .find()
-    .limit(10)
-    .toArray();
+  const top10AfterUpdate = await LeaderboardsDAO.get({
+    language: "english",
+    mode: "time",
+    mode2: leaderboardTime,
+    limit: 10,
+  });
 
   const newRecord = top10AfterUpdate.find((record, index) => {
     const recordBefore = top10BeforeUpdate[index];
