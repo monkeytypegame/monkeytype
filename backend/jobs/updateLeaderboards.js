@@ -4,84 +4,46 @@ const BotDAO = require("../dao/bot");
 const LeaderboardsDAO = require("../dao/leaderboards");
 
 const CRON_SCHEDULE = "30 4/5 * * * *";
+const RECENT_AGE = 1000 * 60 * 10;
+
+async function updateLeaderboard(leaderboardTime) {
+  const top10BeforeUpdate = await mongoDB()
+    .collection(`leaderboards.english.time.${leaderboardTime}`)
+    .find()
+    .limit(10)
+    .toArray();
+
+  await LeaderboardsDAO.update("time", leaderboardTime, "english");
+
+  const top10AfterUpdate = await mongoDB()
+    .collection(`leaderboards.english.time.${leaderboardTime}`)
+    .find()
+    .limit(10)
+    .toArray();
+
+  const newRecordHolder = top10AfterUpdate.find((user, index) => {
+    const userBefore = top10BeforeUpdate[index];
+    const isRecentRecord = user.timestamp > Date.now() - RECENT_AGE;
+    return userBefore.uid !== user.uid && isRecentRecord;
+  });
+
+  if (newRecordHolder) {
+    const recordHolderId = newRecordHolder.discordId ?? newRecordHolder.name;
+    BotDAO.announceLbUpdate(
+      recordHolderId,
+      newRecordHolder.rank,
+      `time ${leaderboardTime} english`,
+      newRecordHolder.wpm,
+      newRecordHolder.raw,
+      newRecordHolder.acc,
+      newRecordHolder.consistency
+    );
+  }
+}
 
 async function updateLeaderboards() {
-  let before15 = await mongoDB()
-    .collection("leaderboards.english.time.15")
-    .find()
-    .limit(10)
-    .toArray();
-  LeaderboardsDAO.update("time", "15", "english").then(async () => {
-    let after15 = await mongoDB()
-      .collection("leaderboards.english.time.15")
-      .find()
-      .limit(10)
-      .toArray();
-
-    let changed;
-    let recent = false;
-    for (let index in before15) {
-      if (before15[index].uid !== after15[index].uid) {
-        //something changed at this index
-        if (after15[index].timestamp > Date.now() - 1000 * 60 * 10) {
-          //checking if test is within 10 minutes
-          recent = true;
-        }
-        changed = after15[index];
-        break;
-      }
-    }
-    if (changed && recent) {
-      let name = changed.discordId ?? changed.name;
-      BotDAO.announceLbUpdate(
-        name,
-        changed.rank,
-        "time 15 english",
-        changed.wpm,
-        changed.raw,
-        changed.acc,
-        changed.consistency
-      );
-    }
-  });
-
-  let before60 = await mongoDB()
-    .collection("leaderboards.english.time.60")
-    .find()
-    .limit(10)
-    .toArray();
-  LeaderboardsDAO.update("time", "60", "english").then(async () => {
-    let after60 = await mongoDB()
-      .collection("leaderboards.english.time.60")
-      .find()
-      .limit(10)
-      .toArray();
-    let changed;
-    let recent = false;
-    for (let index in before60) {
-      if (before60[index].uid !== after60[index].uid) {
-        //something changed at this index
-        if (after60[index].timestamp > Date.now() - 1000 * 60 * 10) {
-          //checking if test is within 10 minutes
-          recent = true;
-        }
-        changed = after60[index];
-        break;
-      }
-    }
-    if (changed && recent) {
-      let name = changed.discordId ?? changed.name;
-      BotDAO.announceLbUpdate(
-        name,
-        changed.rank,
-        "time 60 english",
-        changed.wpm,
-        changed.raw,
-        changed.acc,
-        changed.consistency
-      );
-    }
-  });
+  await updateLeaderboard("15");
+  await updateLeaderboard("60");
 }
 
 module.exports = new CronJob(CRON_SCHEDULE, updateLeaderboards);
