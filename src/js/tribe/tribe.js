@@ -68,7 +68,9 @@ export function updateState(newState) {
   state = newState;
   $("#tribeStateDisplay").text(`${state} - ${getStateString(state)}`);
 
-  if (state === 10) {
+  if (state === 5) {
+    TribePageLobby.enableNameVisibilityButtons();
+  } else if (state === 10) {
     TribeButtons.disableStartButton("lobby");
     TribeButtons.disableReadyButton("lobby");
     TribePageLobby.disableConfigButtons();
@@ -107,6 +109,7 @@ export function updateState(newState) {
     TribeResults.hideTimer();
     TribeResults.updateTimerText("Time left for everyone to get ready");
   } else if (state === 22) {
+    TribePageLobby.enableNameVisibilityButtons();
     TribePageLobby.enableConfigButtons();
     TribeButtons.update();
   }
@@ -348,6 +351,8 @@ socket.on("room_leader_changed", (e) => {
   room.users[e.userId].isReady = false;
   TribeUserList.update();
   TribeButtons.update();
+  TribePageLobby.updateVisibility();
+  TribePageLobby.updateRoomName();
 });
 
 socket.on("room_chatting_changed", (e) => {
