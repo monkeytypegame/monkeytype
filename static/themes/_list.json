@@ -694,4 +694,9 @@
     "bgColor": "linear-gradient(to right, #b31313, #ff9000, #fdda16)",
     "mainColor": "#ffffff"
   }
+  ,{
+    "name": "aurora",
+    "bgColor": "linear-gradient(to right, #002c39, #015061, #007a7f, #00e980, #00ffbb)",
+    "mainColor": "#ffffff"
+  }
 ]
