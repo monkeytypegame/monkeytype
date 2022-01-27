@@ -7,19 +7,21 @@ const CRON_SCHEDULE = "30 4/5 * * * *";
 const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
-const TOP_10_QUERY = {
-  language: "english",
-  mode: "time",
-  mode2: leaderboardTime,
-  limit: 10,
-};
+async function getTop10(leaderboardTime) {
+  return await LeaderboardsDAO.get({
+    language: "english",
+    mode: "time",
+    limit: 10,
+    mode2: leaderboardTime,
+  });
+}
 
 async function updateLeaderboardAndNotifyChanges(leaderboardTime) {
-  const top10BeforeUpdate = await LeaderboardsDAO.get(TOP_10_QUERY);
+  const top10BeforeUpdate = await getTop10(leaderboardTime);
 
   await LeaderboardsDAO.update("time", leaderboardTime, "english");
 
-  const top10AfterUpdate = await LeaderboardsDAO.get(TOP_10_QUERY);
+  const top10AfterUpdate = await getTop10(leaderboardTime);
 
   const newRecord = top10AfterUpdate.find((record, index) => {
     const recordBefore = top10BeforeUpdate[index];
