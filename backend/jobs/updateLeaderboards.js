@@ -8,12 +8,7 @@ const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function getTop10(leaderboardTime) {
-  return await LeaderboardsDAO.get({
-    language: "english",
-    mode: "time",
-    mode2: leaderboardTime,
-    limit: 10,
-  });
+  return await LeaderboardsDAO.get("time", leaderboardTime, "english", 0, 10);
 }
 
 async function updateLeaderboardAndNotifyChanges(leaderboardTime) {
