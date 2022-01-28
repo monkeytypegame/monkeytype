@@ -200,7 +200,7 @@ export function changePage(page, norestart = false) {
       Notifications.add(
         "Results are not downloaded and therefore, cannot be accessed in offline mode.",
         0,
-        2
+        5
       );
       return false;
     }

@@ -322,7 +322,7 @@ function update() {
     })
     .catch((e) => {
       if (JSON.parse(sessionStorage.getItem("offlineMode"))) {
-        Notifications.add("Leaderboards unavailable in offline mode", 0, 2);
+        Notifications.add("Leaderboards unavailable in offline mode", 0);
         hideLoader(15);
         hideLoader(60);
       } else {

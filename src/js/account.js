@@ -63,7 +63,7 @@ export async function getDataAndInit() {
       e ??
       "Unknown Error";
     Notifications.add("Failed to get user data: " + msg, -1);
-    Notifications.add("Running in offline mode", 0, 2);
+    Notifications.add("Running in offline mode", 0);
     sessionStorage.setItem("offlineMode", true);
     if (DB.getSnapshot()) {
       $("#menu .icon-button.account .text").text(DB.getSnapshot().name);
