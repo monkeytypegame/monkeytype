@@ -10,6 +10,24 @@ async function addCommand(command, arguments) {
   });
 }
 
+async function addCommands(commands, arguments) {
+  if (commands.length === 0 || commands.length !== arguments.length) {
+    return [];
+  }
+
+  const normalizedCommands = commands.map((command, index) => {
+    return {
+      command,
+      arguments: arguments[index],
+      executed: false,
+      requestTimestamp: Date.now(),
+    };
+  });
+  return await mongoDB()
+    .collection("bot-commands")
+    .insertMany(normalizedCommands);
+}
+
 class BotDAO {
   static async updateDiscordRole(discordId, wpm) {
     return await addCommand("updateRole", [discordId, wpm]);
@@ -27,16 +45,25 @@ class BotDAO {
     return await addCommand("awardChallenge", [discordId, challengeName]);
   }
 
-  static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
-    return await addCommand("sayLbUpdate", [
-      discordId,
-      pos,
-      lb,
-      wpm,
-      raw,
-      acc,
-      con,
-    ]);
+  static async announceLbUpdate(newRecords, leaderboardId) {
+    if (newRecords.length === 0) {
+      return [];
+    }
+
+    const leaderboardCommands = Array(newRecords.length).fill("sayLbUpdate");
+    const leaderboardCommandsArguments = newRecords.map((newRecord) => {
+      return [
+        newRecord.discordId ?? newRecord.name,
+        newRecord.rank,
+        leaderboardId,
+        newRecord.wpm,
+        newRecord.raw,
+        newRecord.acc,
+        newRecord.consistency,
+      ];
+    });
+    console.log(leaderboardCommands, leaderboardCommandsArguments);
+    return await addCommands(leaderboardCommands, leaderboardCommandsArguments);
   }
 }
 

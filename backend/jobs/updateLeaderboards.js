@@ -14,27 +14,33 @@ async function getTop10(leaderboardTime) {
 async function updateLeaderboardAndNotifyChanges(leaderboardTime) {
   const top10BeforeUpdate = await getTop10(leaderboardTime);
 
+  const previousRecordsMap = Object.fromEntries(
+    top10BeforeUpdate.map((record) => {
+      return [record.uid, record];
+    })
+  );
+
   await LeaderboardsDAO.update("time", leaderboardTime, "english");
 
   const top10AfterUpdate = await getTop10(leaderboardTime);
 
-  const newRecord = top10AfterUpdate.find((record, index) => {
-    const recordBefore = top10BeforeUpdate[index];
+  const newRecords = top10AfterUpdate.filter((record) => {
+    const userId = record.uid;
+
+    const userImprovedRank =
+      userId in previousRecordsMap &&
+      previousRecordsMap[userId].rank > record.rank;
+    const newUserInTop10 = !(userId in previousRecordsMap);
     const isRecentRecord =
       record.timestamp > Date.now() - RECENT_AGE_MILLISECONDS;
-    return recordBefore.uid !== record.uid && isRecentRecord;
+
+    return (userImprovedRank || newUserInTop10) && isRecentRecord;
   });
 
-  if (newRecord) {
-    const recordHolderId = newRecord.discordId ?? newRecord.name;
-    BotDAO.announceLbUpdate(
-      recordHolderId,
-      newRecord.rank,
-      `time ${leaderboardTime} english`,
-      newRecord.wpm,
-      newRecord.raw,
-      newRecord.acc,
-      newRecord.consistency
+  if (newRecords.length > 0) {
+    await BotDAO.announceLbUpdate(
+      newRecords,
+      `time ${leaderboardTime} english`
     );
   }
 }
