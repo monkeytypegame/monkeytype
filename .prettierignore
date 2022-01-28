@@ -5,6 +5,6 @@ chartjs-plugin-*.js
 sound/*
 node_modules
 css/balloon.css
-css/fa.css
+css/fa.min.css
 css/style.min.css
 _list.json
