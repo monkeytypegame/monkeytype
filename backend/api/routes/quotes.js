@@ -13,7 +13,12 @@ quotesRouter.get(
   NewQuotesController.getQuotes
 );
 
-quotesRouter.post("/", RateLimit.newQuotesAdd, NewQuotesController.addQuote);
+quotesRouter.post(
+  "/",
+  RateLimit.newQuotesAdd,
+  authenticateRequest,
+  NewQuotesController.addQuote
+);
 
 quotesRouter.post(
   "/approve",
