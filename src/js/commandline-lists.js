@@ -3107,6 +3107,14 @@ export let defaultCommands = {
         window.location.reload(true);
       },
     },
+    {
+      id: "getSwCache",
+      display: "Get SW cache",
+      icon: "fa-cog",
+      exec: async () => {
+        alert(await caches.keys());
+      },
+    },
   ],
 };
 

@@ -679,4 +679,24 @@
     "bgColor": "#d6d3d6",
     "mainColor": "#5c1e5f"
   }
+  ,{
+    "name": "evil_eye",
+    "bgColor": "#0084c2",
+    "mainColor": "#f7f2ea"
+  }
+  ,{
+    "name": "trance",
+    "bgColor": "linear-gradient(to right, #071d75, #e51376)",
+    "mainColor": "#ffffff"
+  }
+  ,{
+    "name": "fire",
+    "bgColor": "linear-gradient(to right, #b31313, #ff9000, #fdda16)",
+    "mainColor": "#ffffff"
+  }
+  ,{
+    "name": "aurora",
+    "bgColor": "linear-gradient(to right, #002c39, #015061, #007a7f, #00e980, #00ffbb)",
+    "mainColor": "#ffffff"
+  }
 ]

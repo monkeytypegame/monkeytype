@@ -189,7 +189,7 @@ export async function getUserResults() {
       await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
-      Notifications.add("Error getting results", -1);
+      Notifications.add("Error getting results: " + e.message, -1);
       return false;
     }
   }

@@ -1176,6 +1176,10 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   );
 });
 
+$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
+  AccountController.sendVerificationEmail();
+});
+
 $(document).on("click", ".history-wpm-header", (event) => {
   sortAndRefreshHistory("wpm", ".history-wpm-header");
 });

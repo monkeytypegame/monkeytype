@@ -18,7 +18,7 @@ let maxChartVal;
 
 let useUnsmoothedRaw = false;
 
-export function toggleUnsmoothed() {
+export function toggleUnsmoothedRaw() {
   useUnsmoothedRaw = !useUnsmoothedRaw;
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
 }
