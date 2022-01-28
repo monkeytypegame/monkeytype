@@ -227,7 +227,7 @@ export function changePage(page, norestart = false) {
       changePage("account");
     } else {
       if (JSON.parse(sessionStorage.getItem("offlineMode"))) {
-        Notifications.add("You cannot login in online mode", 0, 2);
+        Notifications.add("You cannot login in offline mode", 0, 2);
         return;
       }
       setPageTransition(true);
