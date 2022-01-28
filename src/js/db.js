@@ -193,7 +193,8 @@ export async function getUserResults() {
       Notifications.addBanner(
         "Offline mode. Refresh to reconnect.",
         0,
-        "exclamation-triangle"
+        "exclamation-triangle",
+        true
       );
       sessionStorage.setItem("offlineMode", true);
       return false;
