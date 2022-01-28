@@ -50,7 +50,7 @@ async function getQuotes() {
   Loader.show();
   let response;
   try {
-    response = await axiosInstance.get("/new-quotes/get");
+    response = await axiosInstance.get("/quotes");
   } catch (e) {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;
@@ -134,7 +134,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   Loader.show();
   let response;
   try {
-    response = await axiosInstance.post("/new-quotes/approve", {
+    response = await axiosInstance.post("/quotes/approve", {
       quoteId: dbid,
     });
   } catch (e) {
@@ -167,7 +167,7 @@ $(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
   Loader.show();
   let response;
   try {
-    response = await axiosInstance.post("/new-quotes/refuse", {
+    response = await axiosInstance.post("/quotes/reject", {
       quoteId: dbid,
     });
   } catch (e) {
@@ -202,7 +202,7 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   Loader.show();
   let response;
   try {
-    response = await axiosInstance.post("/new-quotes/approve", {
+    response = await axiosInstance.post("/quotes/approve", {
       quoteId: dbid,
       editText,
       editSource,
