@@ -23,6 +23,7 @@ async function addCommands(commands, arguments) {
       requestTimestamp: Date.now(),
     };
   });
+
   return await mongoDB()
     .collection("bot-commands")
     .insertMany(normalizedCommands);
@@ -62,7 +63,7 @@ class BotDAO {
         newRecord.consistency,
       ];
     });
-    console.log(leaderboardCommands, leaderboardCommandsArguments);
+
     return await addCommands(leaderboardCommands, leaderboardCommandsArguments);
   }
 }

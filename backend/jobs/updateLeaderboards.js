@@ -30,7 +30,9 @@ async function updateLeaderboardAndNotifyChanges(leaderboardTime) {
     const userImprovedRank =
       userId in previousRecordsMap &&
       previousRecordsMap[userId].rank > record.rank;
+
     const newUserInTop10 = !(userId in previousRecordsMap);
+
     const isRecentRecord =
       record.timestamp > Date.now() - RECENT_AGE_MILLISECONDS;
 
