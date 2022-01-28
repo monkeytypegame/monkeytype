@@ -10,6 +10,7 @@ const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
 const BotDAO = require("./dao/bot");
+const addApiRoutes = require("./api/routes");
 
 const PORT = process.env.PORT || 5005;
 
@@ -29,32 +30,7 @@ app.use((req, res, next) => {
   }
 });
 
-let startingPath = "";
-
-if (process.env.API_PATH_OVERRIDE) {
-  startingPath = "/" + process.env.API_PATH_OVERRIDE;
-}
-
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "OK" });
-});
-
-const userRouter = require("./api/routes/user");
-app.use(startingPath + "/user", userRouter);
-const configRouter = require("./api/routes/config");
-app.use(startingPath + "/config", configRouter);
-const resultRouter = require("./api/routes/result");
-app.use(startingPath + "/results", resultRouter);
-const presetRouter = require("./api/routes/preset");
-app.use(startingPath + "/presets", presetRouter);
-const quoteRatings = require("./api/routes/quote-ratings");
-app.use(startingPath + "/quote-ratings", quoteRatings);
-const psaRouter = require("./api/routes/psa");
-app.use(startingPath + "/psa", psaRouter);
-const leaderboardsRouter = require("./api/routes/leaderboards");
-app.use(startingPath + "/leaderboard", leaderboardsRouter);
-const newQuotesRouter = require("./api/routes/new-quotes");
-app.use(startingPath + "/new-quotes", newQuotesRouter);
+addApiRoutes(app);
 
 //DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
 app.use(function (e, req, res, next) {

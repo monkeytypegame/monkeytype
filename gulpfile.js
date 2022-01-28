@@ -281,8 +281,7 @@ task("updateSwCacheName", function () {
         `const staticCacheName = "sw-cache-${dateString}";`
       )
     )
-    .pipe(dest("./dist/"))
-    .pipe(dest("static/"));
+    .pipe(dest("./dist/"));
 });
 
 task(
