@@ -1853,6 +1853,8 @@ export async function finish(difficultyFailed = false) {
         $("#retrySavingResultButton").removeClass("hidden");
         retrySaving.completedEvent = completedEvent;
         retrySaving.canRetry = true;
+      } else {
+        Notifications.add("Offline mode - result saved locally", 0);
       }
       if (localStorage.getItem("unsyncedResults")) {
         let unsyncedResults = JSON.parse(
