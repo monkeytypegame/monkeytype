@@ -117,7 +117,7 @@ class Notification {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
     } else if (this.type === "banner") {
-      let leftside = `<div class="icon">${icon}</div>`;
+      let leftside = `<div class="icon lefticon">${icon}</div>`;
 
       if (/^images\/.*/.test(this.customIcon)) {
         leftside = `<div class="image" style="background-image: url(${this.customIcon})"></div>`;
