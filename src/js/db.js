@@ -189,7 +189,13 @@ export async function getUserResults() {
       await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
-      Notifications.add("Error getting results: " + e.message, -1);
+      Notifications.add("Error getting results: " + e.message, -1, 5);
+      Notifications.addBanner(
+        "Offline mode. Refresh to reconnect.",
+        0,
+        "exclamation-triangle"
+      );
+      sessionStorage.setItem("offlineMode", true);
       return false;
     }
   }
