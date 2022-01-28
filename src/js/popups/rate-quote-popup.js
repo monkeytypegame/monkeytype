@@ -21,7 +21,7 @@ export async function getQuoteStats(quote) {
   if (quote) currentQuote = quote;
   let response;
   try {
-    response = await axiosInstance.get("/quote-ratings/get", {
+    response = await axiosInstance.get("/quotes/rating", {
       params: { quoteId: currentQuote.id, language: currentQuote.language },
     });
   } catch (e) {
@@ -132,7 +132,7 @@ async function submit() {
   hide();
   let response;
   try {
-    response = await axiosInstance.post("/quote-ratings/submit", {
+    response = await axiosInstance.post("/quotes/rating", {
       quoteId: currentQuote.id,
       rating: rating,
       language: currentQuote.language,
