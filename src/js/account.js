@@ -56,13 +56,14 @@ export async function getDataAndInit() {
         0
       );
     }
-    let msg = e?.response?.data?.message ?? e.response.data ?? e.message;
+    let msg =
+      e?.response?.data?.message ??
+      e?.response?.data ??
+      e?.message ??
+      e ??
+      "Unknown Error";
     Notifications.add("Failed to get user data: " + msg, -1);
-    Notifications.add(
-      "Running in offline mode",
-      0,
-      2
-    );
+    Notifications.add("Running in offline mode", 0, 2);
     sessionStorage.setItem("offlineMode", true);
     if (DB.getSnapshot()) {
       $("#menu .icon-button.account .text").text(DB.getSnapshot().name);
