@@ -165,6 +165,16 @@ export function activateAfkButton(page) {
   $(elString).addClass("active");
 }
 
+export function reset() {
+  $("#result .bottom .buttons div").addClass("hidden");
+  $("#result #nextTestButton").removeClass("hidden");
+  $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
+  $("#result #practiseWordsButton").removeClass("hidden");
+  $("#result #watchReplayButton").removeClass("hidden");
+  $("#result #showWordHistoryButton").removeClass("hidden");
+  $("#result #saveScreenshotButton").removeClass("hidden");
+}
+
 export function update(page) {
   if (!page) {
     update("lobby");

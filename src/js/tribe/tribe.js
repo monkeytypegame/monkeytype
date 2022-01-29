@@ -126,6 +126,17 @@ export async function init() {
   }, 500);
 }
 
+async function reset() {
+  $("#result #tribeResultBottom").addClass("hidden");
+  TribeUserList.reset();
+  TribeResults.reset();
+  TribeChat.reset();
+  TribeBars.hide();
+  TribePageLobby.reset();
+  TribeBars.reset();
+  TribeButtons.reset();
+}
+
 export function joinRoom(roomId, fromBrowser = false) {
   if (!/^[a-f0-9]{6}$/i.test(roomId)) {
     Notifications.add("Incorrect room code format", 0);
@@ -215,13 +226,7 @@ socket.on("disconnect", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Disconnected");
   TribePagePreloader.showReconnectButton();
-  $("#result #tribeResultBottom").addClass("hidden");
-  TribeUserList.reset();
-  TribeResults.reset();
-  TribeChat.reset();
-  TribeBars.hide();
-  TribePageLobby.reset();
-  TribeBars.reset();
+  reset();
 });
 
 socket.on("connect_failed", (e) => {
@@ -233,13 +238,7 @@ socket.on("connect_failed", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
   TribePagePreloader.showReconnectButton();
-  $("#result #tribeResultBottom").addClass("hidden");
-  TribeUserList.reset();
-  TribeResults.reset();
-  TribeChat.reset();
-  TribeBars.hide();
-  TribePageLobby.reset();
-  TribeBars.reset();
+  reset();
 });
 
 socket.on("connect_error", (e) => {
@@ -251,13 +250,7 @@ socket.on("connect_error", (e) => {
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection error");
   TribePagePreloader.showReconnectButton();
-  $("#result #tribeResultBottom").addClass("hidden");
-  TribeUserList.reset();
-  TribeResults.reset();
-  TribeChat.reset();
-  TribeBars.hide();
-  TribePageLobby.reset();
-  TribeBars.reset();
+  reset();
 });
 
 socket.on("system_message", (e) => {
@@ -295,15 +288,9 @@ socket.on("room_left", (e) => {
   if (!$(".pageTribe").hasClass("active")) {
     UI.changePage("tribe");
   }
+  TribeSound.play("leave");
   TribePages.change("menu").then(() => {
-    TribePageLobby.reset();
-    TribeSound.play("leave");
-    $("#result #tribeResultBottom").addClass("hidden");
-    TribeUserList.reset();
-    TribeResults.reset();
-    TribeChat.reset();
-    TribeBars.hide();
-    TribeBars.reset();
+    reset();
   });
 });
 
