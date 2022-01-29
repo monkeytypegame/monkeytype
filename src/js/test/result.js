@@ -706,7 +706,7 @@ export function update(
       //tribe
       $("#result .bottom .buttons div").addClass("hidden");
       $("#result #tribeResultBottom").addClass("hidden");
-      if (Tribe.state > 12) {
+      if (Tribe.state >= 12) {
         $("#result #tribeResultBottom").removeClass("hidden");
         if (Tribe.getSelf().isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
