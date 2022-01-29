@@ -6,10 +6,9 @@ const API_ROUTE_MAP = {
   "/config": require("./config"),
   "/results": require("./result"),
   "/presets": require("./preset"),
-  "/quote-ratings": require("./quote-ratings"),
   "/psa": require("./psa"),
   "/leaderboard": require("./leaderboards"),
-  "/new-quotes": require("./new-quotes"),
+  "/quotes": require("./quotes"),
 };
 
 function addApiRoutes(app) {

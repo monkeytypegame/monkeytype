@@ -1,38 +1,51 @@
 const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
 const NewQuotesController = require("../controllers/new-quotes");
+const QuoteRatingsController = require("../controllers/quote-ratings");
 const RateLimit = require("../../middlewares/rate-limit");
 
-const router = Router();
+const quotesRouter = Router();
 
-router.get(
-  "/get",
+quotesRouter.get(
+  "/",
   RateLimit.newQuotesGet,
   authenticateRequest,
   NewQuotesController.getQuotes
 );
 
-router.post(
-  "/add",
+quotesRouter.post(
+  "/",
   RateLimit.newQuotesAdd,
   authenticateRequest,
   NewQuotesController.addQuote
 );
 
-router.post(
+quotesRouter.post(
   "/approve",
   RateLimit.newQuotesAction,
   authenticateRequest,
   NewQuotesController.approve
 );
 
-router.post(
-  "/refuse",
+quotesRouter.post(
+  "/reject",
   RateLimit.newQuotesAction,
   authenticateRequest,
   NewQuotesController.refuse
 );
 
-//Add route to allow moderator to edit before submisison
+quotesRouter.get(
+  "/rating",
+  RateLimit.quoteRatingsGet,
+  authenticateRequest,
+  QuoteRatingsController.getRating
+);
 
-module.exports = router;
+quotesRouter.post(
+  "/rating",
+  RateLimit.quoteRatingsSubmit,
+  authenticateRequest,
+  QuoteRatingsController.submitRating
+);
+
+module.exports = quotesRouter;
