@@ -71,7 +71,7 @@ exports.quoteRatingsSubmit = rateLimit({
 // Quote reporting
 exports.quoteReportSubmit = rateLimit({
   windowMs: 30 * 60 * 1000, // 30 min
-  max: 250 * multiplier,
+  max: 50 * multiplier,
   message,
   keyGenerator: getAddress,
 });

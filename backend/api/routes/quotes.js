@@ -60,7 +60,11 @@ quotesRouter.post(
       quoteLanguage: joi.string().required(),
       reason: joi
         .string()
-        .valid("Grammatical error", "Inappropriate language")
+        .valid(
+          "Grammatical error",
+          "Inappropriate content",
+          "Low quality content"
+        )
         .required(),
       comment: joi.string().allow("").max(140).required(),
     },
