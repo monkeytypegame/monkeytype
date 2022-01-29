@@ -704,4 +704,9 @@
     "bgColor": "linear-gradient(to right, #002c39, #015061, #007a7f, #00e980, #00ffbb)",
     "mainColor": "#ffffff"
   }
+  ,{
+    "name": "fleuriste",
+    "bgColor": "#c6b294",
+    "mainColor": "#405a52"
+   }
 ]
