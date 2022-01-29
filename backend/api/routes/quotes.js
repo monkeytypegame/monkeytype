@@ -5,6 +5,7 @@ const NewQuotesController = require("../controllers/new-quotes");
 const QuoteRatingsController = require("../controllers/quote-ratings");
 const RateLimit = require("../../middlewares/rate-limit");
 const { requestValidation } = require("../../middlewares/apiUtils");
+const SUPPORTED_LANGUAGES = require("../../constants/languages");
 
 const quotesRouter = Router();
 
@@ -57,7 +58,10 @@ quotesRouter.post(
   requestValidation({
     body: {
       quoteId: joi.string().required(),
-      quoteLanguage: joi.string().required(),
+      quoteLanguage: joi
+        .string()
+        .valid(...SUPPORTED_LANGUAGES)
+        .required(),
       reason: joi
         .string()
         .valid(
