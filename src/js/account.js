@@ -380,6 +380,16 @@ function loadMoreLines(lineIndex) {
   }
 }
 
+export function reset() {
+  $(".pageAccount .history table tbody").empty();
+  ChartController.accountActivity.data.datasets[0].data = [];
+  ChartController.accountActivity.data.datasets[1].data = [];
+  ChartController.accountHistory.data.datasets[0].data = [];
+  ChartController.accountHistory.data.datasets[1].data = [];
+  ChartController.accountActivity.update({ duration: 0 });
+  ChartController.accountHistory.update({ duration: 0 });
+}
+
 let totalSecondsFiltered = 0;
 
 export function update() {

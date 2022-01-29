@@ -140,6 +140,13 @@ export function changePage(page, norestart = false) {
 
   console.log(`change page ${page}`);
   let activePageElement = $(".page.active");
+  let check = activePage + "";
+  setTimeout(() => {
+    if (check === "pageAccount" && page !== "account") {
+      Account.reset();
+    }
+  }, 250);
+
   activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
