@@ -16,9 +16,10 @@ let capsLockOn = false;
 
 $(document).keyup(function (event) {
   try {
-    if (!Config.capsLockWarning) return;
-
-    if (capsLockOn && event.originalEvent.which === 20) {
+    if (
+      (capsLockOn && event.originalEvent.which === 20) ||
+      !Config.capsLockWarning
+    ) {
       capsLockOn = false;
       hide();
       return;
