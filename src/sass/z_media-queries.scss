@@ -110,6 +110,9 @@
     .image {
       display: none;
     }
+    .lefticon {
+      display: none;
+    }
     .text {
       margin-left: 2rem;
     }
@@ -553,6 +556,6 @@
 
 @media (hover: none) and (pointer: coarse) {
   #commandLineMobileButton {
-    display: block;
+    display: block !important;
   }
 }

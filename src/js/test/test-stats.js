@@ -237,6 +237,9 @@ export function calculateBurst() {
   let wordLength;
   if (Config.mode === "zen") {
     wordLength = TestLogic.input.current.length;
+    if (wordLength == 0) {
+      wordLength = TestLogic.input.getHistoryLast().length;
+    }
   } else {
     wordLength = TestLogic.words.getCurrent().length;
   }

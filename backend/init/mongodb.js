@@ -7,6 +7,8 @@ module.exports = {
     let options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      connectTimeoutMS: 2000,
+      serverSelectionTimeoutMS: 2000,
     };
 
     if (process.env.DB_USERNAME && process.env.DB_PASSWORD) {
@@ -29,12 +31,12 @@ module.exports = {
         mongoClient = client;
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e.message);
+        console.error("FAILED TO CONNECT TO DATABASE. EXITING...");
         process.exit(1);
       });
   },
   mongoDB() {
-    if (!mongoClient) throw new Error("Could not connect to the database");
     return mongoClient.db(process.env.DB_NAME);
   },
 };

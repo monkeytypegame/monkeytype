@@ -642,6 +642,40 @@ let commandsSoundOnError = {
   ],
 };
 
+let commandsSoundVolume = {
+  title: "Sound volume...",
+  configKey: "soundVolume",
+  list: [
+    {
+      id: "setSoundVolume0.1",
+      display: "quiet",
+      configValue: "0.1",
+      exec: () => {
+        UpdateConfig.setSoundVolume("0.1");
+        Sound.playClick();
+      },
+    },
+    {
+      id: "setSoundVolume0.5",
+      display: "medium",
+      configValue: "0.5",
+      exec: () => {
+        UpdateConfig.setSoundVolume("0.5");
+        Sound.playClick();
+      },
+    },
+    {
+      id: "setSoundVolume1.0",
+      display: "loud",
+      configValue: "1.0",
+      exec: () => {
+        UpdateConfig.setSoundVolume("1.0");
+        Sound.playClick();
+      },
+    },
+  ],
+};
+
 let commandsFlipTestColors = {
   title: "Flip test colors...",
   configKey: "flipTestColors",
@@ -2467,12 +2501,6 @@ export let defaultCommands = {
       subgroup: commandsStopOnError,
     },
     {
-      id: "changeSoundOnClick",
-      display: "Sound on click...",
-      icon: "fa-volume-up",
-      subgroup: commandsSoundOnClick,
-    },
-    {
       id: "changeNumbers",
       display: "Numbers...",
       icon: "15",
@@ -2607,10 +2635,22 @@ export let defaultCommands = {
       subgroup: commandsOppositeShiftMode,
     },
     {
+      id: "changeSoundOnClick",
+      display: "Sound on click...",
+      icon: "fa-volume-up",
+      subgroup: commandsSoundOnClick,
+    },
+    {
       id: "changeSoundOnError",
       display: "Sound on error...",
       icon: "fa-volume-mute",
       subgroup: commandsSoundOnError,
+    },
+    {
+      id: "changeSoundVolume",
+      display: "Sound volume...",
+      icon: "fa-volume-down",
+      subgroup: commandsSoundVolume,
     },
     {
       id: "changeFlipTestColors",
@@ -3060,8 +3100,19 @@ export let defaultCommands = {
       display: "Clear SW cache",
       icon: "fa-cog",
       exec: async () => {
-        await caches.delete("sw-cache");
+        let clist = await caches.keys();
+        for (let name of clist) {
+          caches.delete(name);
+        }
         window.location.reload(true);
+      },
+    },
+    {
+      id: "getSwCache",
+      display: "Get SW cache",
+      icon: "fa-cog",
+      exec: async () => {
+        alert(await caches.keys());
       },
     },
   ],

@@ -907,7 +907,7 @@ export function applyBurstHeatmap() {
 
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
-        .length !== TestLogic.words.getCurrent().length
+        .length !== TestLogic.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }

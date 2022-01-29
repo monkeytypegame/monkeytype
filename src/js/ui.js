@@ -121,8 +121,26 @@ export function changePage(page, norestart = false) {
     console.log(`change page ${page} stopped`);
     return;
   }
+
+  if (page == undefined) {
+    //use window loacation
+    let pages = {
+      "/": "test",
+      "/login": "login",
+      "/settings": "settings",
+      "/about": "about",
+      "/account": "account",
+    };
+    let path = pages[window.location.pathname];
+    if (!path) {
+      path = "test";
+    }
+    page = path;
+  }
+
   console.log(`change page ${page}`);
   let activePageElement = $(".page.active");
+  activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
@@ -183,20 +201,12 @@ export function changePage(page, norestart = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(
-        activePageElement,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-          activePage = "pageAccount";
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
+      swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
+        setPageTransition(false);
+        history.pushState("account", null, "account");
+        $(".page.pageAccount").addClass("active");
+        activePage = "pageAccount";
+      });
       Funbox.activate("none");
       Account.update();
       TestConfig.hide();
