@@ -15,6 +15,7 @@ import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
 import * as Tribe from "./tribe";
+import * as TribeChat from "./tribe-chat";
 
 export let pageTransition = true;
 let activePage = "pageLoading";
@@ -185,7 +186,8 @@ export function changePage(page, norestart = false, tribeOverride = false) {
       setPageTransition(false);
       $(".page.pageTribe").addClass("active");
       history.pushState("tribe", null, "tribe");
-      Tribe.init();
+      if (Tribe.state === -1) Tribe.init();
+      if (Tribe.state === 5) TribeChat.scrollChat();
     });
     TestConfig.hide();
   } else if (page == "about") {

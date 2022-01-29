@@ -16,6 +16,7 @@ import * as Tribe from "./tribe";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
+import * as TribeChat from "./tribe-chat";
 
 let result;
 let maxChartVal;
@@ -687,6 +688,7 @@ export function update(
       }
       $("#result").focus();
       window.scrollTo({ top: 0 });
+      TribeChat.scrollChat();
       $("#testModesNotice").addClass("hidden");
     },
     () => {
