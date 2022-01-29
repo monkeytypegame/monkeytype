@@ -670,6 +670,11 @@
      "mainColor":"#6d44a6"
    }
   ,{
+    "name": "ryujinscales",
+    "bgColor": "#081426",
+    "mainColor": "#f17754"
+   }
+   ,{
     "name": "trackday",
     "bgColor": "#464d66",
     "mainColor": "#e0513e"
