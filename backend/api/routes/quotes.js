@@ -1,8 +1,10 @@
+const joi = require("joi");
 const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
 const NewQuotesController = require("../controllers/new-quotes");
 const QuoteRatingsController = require("../controllers/quote-ratings");
 const RateLimit = require("../../middlewares/rate-limit");
+const { requestValidation } = require("../../middlewares/apiUtils");
 
 const quotesRouter = Router();
 
@@ -46,6 +48,26 @@ quotesRouter.post(
   RateLimit.quoteRatingsSubmit,
   authenticateRequest,
   QuoteRatingsController.submitRating
+);
+
+quotesRouter.post(
+  "/report",
+  RateLimit.quoteReportSubmit,
+  authenticateRequest,
+  requestValidation({
+    body: {
+      quoteId: joi.string().required(),
+      quoteLanguage: joi.string().required(),
+      reason: joi
+        .string()
+        .valid("Grammatical error", "Inappropriate language")
+        .required(),
+      comment: joi.string().allow("").max(140).required(),
+    },
+  }),
+  (req, res) => {
+    res.sendStatus(200);
+  }
 );
 
 module.exports = quotesRouter;
