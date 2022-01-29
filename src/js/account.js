@@ -214,7 +214,7 @@ export async function getDataAndInit() {
   // ) {
   //   UI.changePage("account");
   // }
-  ThemePicker.refreshButtons();
+  // ThemePicker.refreshButtons();
   AccountButton.loading(false);
   ResultFilters.updateTags();
   CommandlineLists.updateTagCommands();

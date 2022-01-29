@@ -144,6 +144,8 @@ export function changePage(page, norestart = false) {
   setTimeout(() => {
     if (check === "pageAccount" && page !== "account") {
       Account.reset();
+    } else if (check === "pageSettings" && page !== "settings") {
+      Settings.reset();
     }
   }, 250);
 
@@ -196,7 +198,10 @@ export function changePage(page, norestart = false) {
       activePage = "pageSettings";
     });
     Funbox.activate("none");
-    Settings.update();
+    Settings.fillSettingsPage().then(() => {
+      Settings.update();
+    });
+    // Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {

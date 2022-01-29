@@ -276,7 +276,17 @@ async function initGroups() {
   // );
 }
 
-async function fillSettingsPage() {
+export function reset() {
+  $(".pageSettings .section.themes .favThemes.buttons").empty();
+  $(".pageSettings .section.themes .allThemes.buttons").empty();
+  $(".pageSettings .section.languageGroups .buttons").empty();
+  $(".pageSettings .section.layout .buttons").empty();
+  $(".pageSettings .section.keymapLayout .buttons").empty();
+  $(".pageSettings .section.funbox .buttons").empty();
+  $(".pageSettings .section.fontFamily .buttons").empty();
+}
+
+export async function fillSettingsPage() {
   await initGroups();
   await UpdateConfig.loadPromise;
   ThemePicker.refreshButtons();
@@ -385,7 +395,7 @@ async function fillSettingsPage() {
   );
 }
 
-export let settingsFillPromise = fillSettingsPage();
+// export let settingsFillPromise = fillSettingsPage();
 
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
