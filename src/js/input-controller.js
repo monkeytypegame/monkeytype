@@ -124,7 +124,7 @@ function handleSpace() {
         .toString()
         .toUpperCase()
     );
-    Settings.groups.layout.updateButton();
+    Settings.groups.layout?.updateButton();
   }
   dontInsertSpace = true;
 

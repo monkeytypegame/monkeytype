@@ -158,7 +158,7 @@ export async function activate(funbox) {
         UpdateConfig.setKeymapMode
       );
       UpdateConfig.setKeymapMode("next", true);
-      Settings.groups.keymapMode.updateButton();
+      Settings.groups.keymapMode?.updateButton();
       TestLogic.restart(undefined, true);
     }
 
@@ -185,7 +185,7 @@ export async function activate(funbox) {
       );
       UpdateConfig.setKeymapMode("off", true);
       UpdateConfig.setHighlightMode("letter", true);
-      Settings.groups.keymapMode.updateButton();
+      Settings.groups.keymapMode?.updateButton();
       TestLogic.restart(undefined, true);
     } else if (funbox === "layoutfluid") {
       rememberSetting(
@@ -194,7 +194,7 @@ export async function activate(funbox) {
         UpdateConfig.setKeymapMode
       );
       // UpdateConfig.setKeymapMode("next");
-      Settings.groups.keymapMode.updateButton();
+      Settings.groups.keymapMode?.updateButton();
       // UpdateConfig.setSavedLayout(Config.layout);
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
       UpdateConfig.setLayout(
@@ -203,7 +203,7 @@ export async function activate(funbox) {
           : "qwerty",
         true
       );
-      Settings.groups.layout.updateButton();
+      Settings.groups.layout?.updateButton();
       rememberSetting(
         "keymapLayout",
         Config.keymapLayout,
@@ -215,7 +215,7 @@ export async function activate(funbox) {
           : "qwerty",
         true
       );
-      Settings.groups.keymapLayout.updateButton();
+      Settings.groups.keymapLayout?.updateButton();
       TestLogic.restart(undefined, true);
     } else if (funbox === "memory") {
       rememberSetting("mode", Config.mode, UpdateConfig.setMode);
