@@ -12,25 +12,21 @@ function hide() {
   }
 }
 
-$(document).keydown(function (event) {
-  try {
-    if (
-      Config.capsLockWarning &&
-      event.originalEvent.getModifierState("CapsLock")
-    ) {
-      show();
-    } else {
-      hide();
-    }
-  } catch {}
-});
+let capsLockOn = false;
 
 $(document).keyup(function (event) {
   try {
-    if (
-      Config.capsLockWarning &&
-      event.originalEvent.getModifierState("CapsLock")
-    ) {
+    if (!Config.capsLockWarning) return;
+
+    if (capsLockOn && event.originalEvent.which === 20) {
+      capsLockOn = false;
+      hide();
+      return;
+    }
+
+    capsLockOn = event.originalEvent.getModifierState("CapsLock");
+
+    if (capsLockOn) {
       show();
     } else {
       hide();
