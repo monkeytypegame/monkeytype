@@ -1,4 +1,4 @@
-const SUPPORTED_LANGUAGES = [
+const SUPPORTED_QUOTE_LANGUAGES = [
   "albanian",
   "arabic",
   "code_c++",
@@ -34,4 +34,4 @@ const SUPPORTED_LANGUAGES = [
   "vietnamese",
 ];
 
-module.exports = SUPPORTED_LANGUAGES;
+module.exports = SUPPORTED_QUOTE_LANGUAGES;
