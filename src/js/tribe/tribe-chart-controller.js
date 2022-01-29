@@ -166,21 +166,27 @@ let settings = {
             fontFamily: "Roboto Mono",
             autoSkip: true,
             autoSkipPadding: 40,
+            display: false,
           },
-          display: false,
+          display: true,
           scaleLabel: {
             display: false,
             labelString: "Seconds",
             fontFamily: "Roboto Mono",
+          },
+          gridLines: {
+            display: true,
+            drawTicks: false,
+            tickMarkLength: 0,
           },
         },
       ],
       yAxes: [
         {
           id: "wpm",
-          display: false,
+          display: true,
           scaleLabel: {
-            display: true,
+            display: false,
             labelString: "Words per Minute",
             fontFamily: "Roboto Mono",
           },
@@ -190,9 +196,12 @@ let settings = {
             min: 0,
             autoSkip: true,
             autoSkipPadding: 40,
+            display: false,
           },
           gridLines: {
             display: true,
+            drawTicks: false,
+            tickMarkLength: 0,
           },
         },
         {
@@ -278,7 +287,7 @@ async function fillData(chart, userId) {
 export async function drawChart(userId) {
   try {
     let element = $(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .chart`
+      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`
     )[0];
 
     if (!Tribe.room.users[userId].result) return;
@@ -289,7 +298,7 @@ export async function drawChart(userId) {
 
     charts[userId] = chart;
     $(
-      `.pageTest #result #tribeResults table tbody tr#${userId} .chart`
+      `.pageTest #result #tribeResults table tbody tr#${userId} .minichart`
     ).removeClass("hidden");
     $(
       `.pageTest #result #tribeResults table tbody tr#${userId} .progress`

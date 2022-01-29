@@ -73,8 +73,10 @@ export function init(page) {
                 <div class="bar" style="width: 0%;"></div>
               </div>
             </div>
-            <canvas class="chart hidden">
-            </canvas>
+            <div class="minichart hidden">
+              <canvas>
+              </canvas>
+            </div>
           </td>
         </tr>
       `);
