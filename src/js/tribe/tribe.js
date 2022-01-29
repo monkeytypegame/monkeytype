@@ -406,6 +406,7 @@ socket.on("room_config_changed", (e) => {
   TribePageLobby.updateRoomConfig();
   TribeButtons.update();
   TribeConfig.setLoadingIndicator(false);
+  TribeUserList.update();
 });
 
 socket.on("room_init_race", (e) => {
