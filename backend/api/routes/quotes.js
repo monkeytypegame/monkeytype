@@ -66,7 +66,7 @@ quotesRouter.post(
           "Low quality content"
         )
         .required(),
-      comment: joi.string().allow("").max(140).required(),
+      comment: joi.string().allow("").max(250).required(),
     },
   }),
   (req, res) => {
