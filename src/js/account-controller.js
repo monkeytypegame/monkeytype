@@ -307,7 +307,7 @@ export function addGoogleAuth() {
     .currentUser.linkWithPopup(gmailProvider)
     .then(function (result) {
       Loader.hide();
-      Notifications.add("Google authenication added", 1);
+      Notifications.add("Google authentication added", 1);
       Settings.updateAuthSections();
     })
     .catch(function (error) {
