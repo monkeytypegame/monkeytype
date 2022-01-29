@@ -492,11 +492,14 @@ socket.on("room_user_result", (e) => {
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
     TribeUserList.update("result");
-    setTimeout(() => {
+    setTimeout(async () => {
       if (e.everybodyCompleted) {
-        TribeChartController.drawAllCharts();
+        await TribeChartController.drawAllCharts();
       } else {
-        TribeChartController.drawChart(e.userId);
+        await TribeChartController.drawChart(e.userId);
+      }
+      if (state === 21) {
+        TribeChartController.updateChartMaxValues();
       }
     }, 250);
   }

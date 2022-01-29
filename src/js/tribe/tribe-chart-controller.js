@@ -311,6 +311,38 @@ export async function drawAllCharts() {
   }
 }
 
+export async function updateChartMaxValues() {
+  let maxWpm = 0;
+  let maxRaw = 0;
+  Object.keys(Tribe.room.users).forEach((userId) => {
+    let result = Tribe.room.users[userId].result;
+    if (!result) return;
+    let maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
+    let maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
+    if (maxUserWpm > maxWpm) {
+      maxWpm = maxUserWpm;
+    }
+    if (maxUserRaw > maxRaw) {
+      maxRaw = maxUserRaw;
+    }
+  });
+  let chartmaxval = Math.max(maxWpm, maxRaw);
+
+  let list = Object.keys(Tribe.room.users);
+  for (let i = 0; i < list.length; i++) {
+    let userId = list[i];
+    if (charts[userId]) {
+      charts[userId].options.scales.yAxes[0].ticks.max = Math.round(
+        chartmaxval
+      );
+      charts[userId].options.scales.yAxes[1].ticks.max = Math.round(
+        chartmaxval
+      );
+      await charts[userId].update({ duration: 0 });
+    }
+  }
+}
+
 export function destroyAllCharts() {
   Object.keys(charts).forEach((userId) => {
     charts[userId].clear();
