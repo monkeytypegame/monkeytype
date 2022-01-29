@@ -14,6 +14,7 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
+import * as About from "./about-page";
 
 export let pageTransition = true;
 let activePage = "pageLoading";
@@ -146,6 +147,8 @@ export function changePage(page, norestart = false) {
       Account.reset();
     } else if (check === "pageSettings" && page !== "settings") {
       Settings.reset();
+    } else if (check === "pageAbout" && page !== "about") {
+      About.reset();
     }
   }, 250);
 
@@ -185,6 +188,7 @@ export function changePage(page, norestart = false) {
       $(".page.pageAbout").addClass("active");
       activePage = "pageAbout";
     });
+    About.fill();
     Funbox.activate("none");
     TestConfig.hide();
     SignOutButton.hide();
