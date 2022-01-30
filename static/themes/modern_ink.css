@@ -18,13 +18,14 @@
   color: #ff0000;
 }
 
-.word letter.incorrect {
+/* kinda confusing to type with this */
+/* .word letter.incorrect {
   -webkit-transform: scale(0.5) translate(-100%, -100%);
 }
 
 .word letter.incorrect.extra {
   -webkit-transform: scale(0.5);
-}
+} */
 
 .word.error {
   border-bottom: solid 2px #ff0000;

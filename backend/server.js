@@ -3,13 +3,13 @@ const { config } = require("dotenv");
 const path = require("path");
 const MonkeyError = require("./handlers/error");
 config({ path: path.join(__dirname, ".env") });
-const CronJob = require("cron").CronJob;
 const cors = require("cors");
 const admin = require("firebase-admin");
 const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
-const BotDAO = require("./dao/bot");
+const jobs = require("./jobs");
+const addApiRoutes = require("./api/routes");
 
 const PORT = process.env.PORT || 5005;
 
@@ -29,32 +29,7 @@ app.use((req, res, next) => {
   }
 });
 
-let startingPath = "/tribedev";
-
-// if (process.env.API_PATH_OVERRIDE) {
-//   startingPath = "/" + process.env.API_PATH_OVERRIDE;
-// }
-
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "OK" });
-});
-
-const userRouter = require("./api/routes/user");
-app.use(startingPath + "/user", userRouter);
-const configRouter = require("./api/routes/config");
-app.use(startingPath + "/config", configRouter);
-const resultRouter = require("./api/routes/result");
-app.use(startingPath + "/results", resultRouter);
-const presetRouter = require("./api/routes/preset");
-app.use(startingPath + "/presets", presetRouter);
-const quoteRatings = require("./api/routes/quote-ratings");
-app.use(startingPath + "/quote-ratings", quoteRatings);
-const psaRouter = require("./api/routes/psa");
-app.use(startingPath + "/psa", psaRouter);
-const leaderboardsRouter = require("./api/routes/leaderboards");
-app.use(startingPath + "/leaderboard", leaderboardsRouter);
-const newQuotesRouter = require("./api/routes/new-quotes");
-app.use(startingPath + "/new-quotes", newQuotesRouter);
+addApiRoutes(app);
 
 //DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
 app.use(function (e, req, res, next) {
@@ -95,8 +70,6 @@ app.use(function (e, req, res, next) {
   return res.status(monkeyError.status || 500).json(monkeyError);
 });
 
-const LeaderboardsDAO = require("./dao/leaderboards");
-
 console.log("Starting server...");
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
@@ -107,95 +80,6 @@ app.listen(PORT, async () => {
     credential: admin.credential.cert(serviceAccount),
   });
 
-  let lbjob = new CronJob("30 4/5 * * * *", async () => {
-    let before15 = await mongoDB()
-      .collection("leaderboards.english.time.15")
-      .find()
-      .limit(10)
-      .toArray();
-    LeaderboardsDAO.update("time", "15", "english").then(async () => {
-      let after15 = await mongoDB()
-        .collection("leaderboards.english.time.15")
-        .find()
-        .limit(10)
-        .toArray();
-
-      let changed;
-      let recent = false;
-      for (let index in before15) {
-        if (before15[index].uid !== after15[index].uid) {
-          //something changed at this index
-          if (after15[index].timestamp > Date.now() - 1000 * 60 * 10) {
-            //checking if test is within 10 minutes
-            recent = true;
-          }
-          changed = after15[index];
-          break;
-        }
-      }
-      if (changed && recent) {
-        let name = changed.discordId ?? changed.name;
-        BotDAO.announceLbUpdate(
-          name,
-          changed.rank,
-          "time 15 english",
-          changed.wpm,
-          changed.raw,
-          changed.acc,
-          changed.consistency
-        );
-      }
-    });
-
-    let before60 = await mongoDB()
-      .collection("leaderboards.english.time.60")
-      .find()
-      .limit(10)
-      .toArray();
-    LeaderboardsDAO.update("time", "60", "english").then(async () => {
-      let after60 = await mongoDB()
-        .collection("leaderboards.english.time.60")
-        .find()
-        .limit(10)
-        .toArray();
-      let changed;
-      let recent = false;
-      for (let index in before60) {
-        if (before60[index].uid !== after60[index].uid) {
-          //something changed at this index
-          if (after60[index].timestamp > Date.now() - 1000 * 60 * 10) {
-            //checking if test is within 10 minutes
-            recent = true;
-          }
-          changed = after60[index];
-          break;
-        }
-      }
-      if (changed && recent) {
-        let name = changed.discordId ?? changed.name;
-        BotDAO.announceLbUpdate(
-          name,
-          changed.rank,
-          "time 60 english",
-          changed.wpm,
-          changed.raw,
-          changed.acc,
-          changed.consistency
-        );
-      }
-    });
-  });
-  lbjob.start();
-
-  let logjob = new CronJob("0 0 0 * * *", async () => {
-    let data = await mongoDB()
-      .collection("logs")
-      .deleteMany({ timestamp: { $lt: Date.now() - 604800000 } });
-    Logger.log(
-      "system_logs_deleted",
-      `${data.deletedCount} logs deleted older than 7 days`,
-      undefined
-    );
-  });
-  logjob.start();
+  console.log("Starting cron jobs...");
+  jobs.forEach((job) => job.start());
 });

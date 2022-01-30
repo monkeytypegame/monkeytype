@@ -620,7 +620,6 @@ export function restart(
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
       } else if (Config.funbox === "58008") {
-        UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
       } else if (Config.funbox === "specials") {
         UpdateConfig.setPunctuation(false, true);

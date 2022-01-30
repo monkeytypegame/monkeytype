@@ -16,6 +16,7 @@ import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
 import * as Tribe from "./tribe";
 import * as TribeChat from "./tribe-chat";
+import * as About from "./about-page";
 
 export let pageTransition = true;
 let activePage = "pageLoading";
@@ -145,6 +146,17 @@ export function changePage(page, norestart = false, tribeOverride = false) {
 
   console.log(`change page ${page}`);
   let activePageElement = $(".page.active");
+  let check = activePage + "";
+  setTimeout(() => {
+    if (check === "pageAccount" && page !== "account") {
+      Account.reset();
+    } else if (check === "pageSettings" && page !== "settings") {
+      Settings.reset();
+    } else if (check === "pageAbout" && page !== "about") {
+      About.reset();
+    }
+  }, 250);
+
   activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
@@ -199,6 +211,7 @@ export function changePage(page, norestart = false, tribeOverride = false) {
       $(".page.pageAbout").addClass("active");
       activePage = "pageAbout";
     });
+    About.fill();
     Funbox.activate("none");
     TestConfig.hide();
     SignOutButton.hide();
@@ -212,7 +225,10 @@ export function changePage(page, norestart = false, tribeOverride = false) {
       activePage = "pageSettings";
     });
     Funbox.activate("none");
-    Settings.update();
+    Settings.fillSettingsPage().then(() => {
+      Settings.update();
+    });
+    // Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {

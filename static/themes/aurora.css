@@ -1,0 +1,78 @@
+:root {
+  --bg-color: #011926;
+  --main-color: #00e980;
+  --caret-color: #00e980;
+  --sub-color: #245c69;
+  --text-color: #fff;
+  --error-color: #b94da1;
+  --error-extra-color: #9b3a76;
+  --colorful-error-color: #b94da1;
+  --colorful-error-extra-color: #9b3a76;
+}
+
+@keyframes rgb {
+  0% {
+    color: #009fb4;
+  }
+  25% {
+    color: #00e975;
+  }
+  50% {
+    color: #00ffea;
+  }
+  75% {
+    color: #00e975;
+  }
+  100% {
+    color: #009fb4;
+  }
+}
+
+@keyframes rgb-bg {
+  0% {
+    background: #009fb4;
+  }
+  25% {
+    background: #00e975;
+  }
+  50% {
+    background: #00ffea;
+  }
+  75% {
+    background: #00e975;
+  }
+  100% {
+    background: #009fb4;
+  }
+}
+
+.button.discord::after,
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: rgb-bg 5s linear infinite;
+}
+
+#top.focus .button.discord::after,
+#top .button.discord.dotHidden::after {
+  animation-name: none !important;
+}
+
+.logo .bottom,
+#top .config .group .buttons .text-button.active,
+#result .stats .group .bottom,
+#menu .icon-button:hover,
+#top .config .group .buttons .text-button:hover,
+a:hover,
+#words.flipped .word {
+  animation: rgb 5s linear infinite;
+}
+
+#words.flipped .word letter.correct {
+  color: var(--sub-color);
+}
+
+#words:not(.flipped) .word letter.correct {
+  animation: rgb 5s linear infinite;
+}
