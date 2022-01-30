@@ -4,6 +4,8 @@ import axiosInstance from "./axios-instance";
 import Config from "./config";
 import * as Loader from "./loader";
 
+const CAPTCHA_ID = 1;
+
 const state = {
   previousPopupShowCallback: undefined,
   quoteToReport: undefined,
@@ -30,7 +32,7 @@ export async function show(options = defaultOptions) {
     $("#quoteReportReason").val("Grammatical error");
     $("#quoteReportComment").val("");
     $("#quoteReportPopupWrapper .characterCount").text("-");
-    grecaptcha.reset();
+    grecaptcha.reset(CAPTCHA_ID);
     $("#quoteReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -64,7 +66,7 @@ async function submitReport() {
     quoteLanguage: Config.language,
     reason: $("#quoteReportReason").val(),
     comment: $("#quoteReportComment").val(),
-    captcha: $("#quoteReportPopup #g-recaptcha-response").val(),
+    captcha: grecaptcha.getResponse(CAPTCHA_ID),
   };
 
   if (!requestBody.reason) {
