@@ -22,9 +22,8 @@ class QuotesController {
     const newReport = {
       id: uuidv4(),
       type: "Quote",
-      reportedAt: new Date().getTime(),
-      reporterId: uid,
-      reporterName: user.name,
+      timestamp: new Date().getTime(),
+      uid,
       details: {
         contentId: `${quoteLanguage}-${quoteId}`,
         reason,
