@@ -10,6 +10,7 @@ const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
 var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
+const uglify = require("gulp-uglify");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = {
@@ -243,6 +244,11 @@ task("browserify", function () {
     .bundle()
     .pipe(source("monkeytype.js"))
     .pipe(buffer())
+    .pipe(
+      uglify({
+        mangle: false,
+      })
+    )
     .pipe(dest("./dist/js"));
 });
 
@@ -281,8 +287,7 @@ task("updateSwCacheName", function () {
         `const staticCacheName = "sw-cache-${dateString}";`
       )
     )
-    .pipe(dest("./dist/"))
-    .pipe(dest("static/"));
+    .pipe(dest("./dist/"));
 });
 
 task(

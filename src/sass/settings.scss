@@ -164,6 +164,9 @@
       grid-auto-columns: 1fr;
       gap: 0.5rem;
       grid-area: buttons;
+      &.vertical {
+        grid-auto-flow: unset;
+      }
     }
 
     &.discordIntegration {

@@ -51,7 +51,7 @@ export async function getDataAndInit() {
         0
       );
     }
-    let msg = e?.response?.data?.message ?? e.response.data ?? e.message;
+    let msg = e?.response?.data?.message ?? e?.response?.data ?? e?.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
@@ -214,7 +214,7 @@ export async function getDataAndInit() {
   // ) {
   //   UI.changePage("account");
   // }
-  ThemePicker.refreshButtons();
+  // ThemePicker.refreshButtons();
   AccountButton.loading(false);
   ResultFilters.updateTags();
   CommandlineLists.updateTagCommands();
@@ -378,6 +378,16 @@ function loadMoreLines(lineIndex) {
   } else {
     $(".pageAccount .loadMoreButton").removeClass("hidden");
   }
+}
+
+export function reset() {
+  $(".pageAccount .history table tbody").empty();
+  ChartController.accountActivity.data.datasets[0].data = [];
+  ChartController.accountActivity.data.datasets[1].data = [];
+  ChartController.accountHistory.data.datasets[0].data = [];
+  ChartController.accountHistory.data.datasets[1].data = [];
+  ChartController.accountActivity.update({ duration: 0 });
+  ChartController.accountHistory.update({ duration: 0 });
 }
 
 let totalSecondsFiltered = 0;
@@ -1153,6 +1163,10 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
     event.pageY + 30
   );
+});
+
+$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
+  AccountController.sendVerificationEmail();
 });
 
 $(document).on("click", ".history-wpm-header", (event) => {

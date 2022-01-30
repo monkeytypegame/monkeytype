@@ -40,6 +40,11 @@
     "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is."
   },
   {
+    "name": "capitals",
+    "type": "script",
+    "info": "Capitalize Every Word."
+  },
+  {
     "name": "layoutfluid",
     "type": "script",
     "info": "Switch between layouts specified below proportionately to the length of the test."
