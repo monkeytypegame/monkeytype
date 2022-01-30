@@ -55,18 +55,27 @@ export async function hide() {
         100,
         (e) => {
           $("#quoteReportPopupWrapper").addClass("hidden");
+          if (state.previousPopupShowCallback) {
+            state.previousPopupShowCallback();
+          }
         }
       );
   }
 }
 
 async function submitReport() {
+  const captchaResponse = grecaptcha.getResponse(CAPTCHA_ID);
+  if (!captchaResponse) {
+    Notifications.add("Please complete the captcha.");
+    return;
+  }
+
   const requestBody = {
     quoteId: state.quoteToReport.id.toString(),
     quoteLanguage: Config.language,
     reason: $("#quoteReportReason").val(),
     comment: $("#quoteReportComment").val(),
-    captcha: grecaptcha.getResponse(CAPTCHA_ID),
+    captcha: captchaResponse,
   };
 
   if (!requestBody.reason) {
@@ -99,15 +108,13 @@ async function submitReport() {
     Notifications.add(response.data.message);
   } else {
     Notifications.add("Report submitted. Thank you!", 1);
+    hide();
   }
 }
 
 $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteReportPopupWrapper") {
     hide();
-    if (state.previousPopupShowCallback) {
-      state.previousPopupShowCallback();
-    }
   }
 });
 
