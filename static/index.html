@@ -302,10 +302,6 @@
             <div class="top">source</div>
             <div class="val">-</div>
           </div>
-          <div id="reportQuoteButton" class="button">
-            <i class="fas fa-flag"></i>
-            Report
-          </div>
         </div>
         <div class="spacer"></div>
         <div class="ratingStats">
@@ -1478,11 +1474,19 @@
                   <div class="top">
                     source
                     <span
+                      id="reportQuoteButton"
+                      class="icon-button hidden"
+                      aria-label="Report quote"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="icon fas fa-flag"></i>
+                    </span>
+                    <span
                       id="rateQuoteButton"
                       class="icon-button hidden"
                       aria-label="Rate quote"
                       data-balloon-pos="up"
-                      style="display: inline-block"
                     >
                       <i class="icon far fa-star"></i>
                       <span class="rating"></span>
