@@ -34,13 +34,17 @@ export async function getQuoteStats(quote) {
   if (response.status !== 200) {
     Notifications.add(response.data.message);
   } else {
-    quoteStats = response.data;
-    if (quoteStats && !quoteStats.average) {
-      quoteStats.average = (
-        Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
-      ).toFixed(1);
+    if (response.data === null) {
+      quoteStats = {};
+    } else {
+      quoteStats = response.data;
+      if (quoteStats && !quoteStats.average) {
+        quoteStats.average = (
+          Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
+        ).toFixed(1);
+      }
     }
-    return response.data;
+    return quoteStats;
   }
 }
 
@@ -53,14 +57,9 @@ function refreshStars(force) {
 }
 
 async function updateRatingStats() {
-  if (quoteStats === null) await getQuoteStats();
-  if (quoteStats === undefined) {
-    $("#rateQuotePopup .ratingCount .val").text("0");
-    $("#rateQuotePopup .ratingAverage .val").text("-");
-  } else {
-    $("#rateQuotePopup .ratingCount .val").text(quoteStats.ratings);
-    $("#rateQuotePopup .ratingAverage .val").text(quoteStats.average);
-  }
+  if (!quoteStats) await getQuoteStats();
+  $("#rateQuotePopup .ratingCount .val").text(quoteStats.ratings ?? "0");
+  $("#rateQuotePopup .ratingAverage .val").text(quoteStats.average ?? "-");
 }
 
 function updateData() {
@@ -151,24 +150,28 @@ async function submit() {
     if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
       let oldRating = quoteRatings[currentQuote.language][currentQuote.id];
       let diff = rating - oldRating;
-      quoteStats.totalRating += diff;
-
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
+      quoteStats = {
+        ratings: quoteStats.ratings + 1,
+        totalRating: isNaN(quoteStats.totalRating)
+          ? 0
+          : quoteStats.totalRating + diff,
+        quoteId: currentQuote.id,
+        language: currentQuote.language,
+      };
       Notifications.add("Rating updated", 1);
     } else {
       if (quoteRatings === undefined) quoteRatings = {};
       if (quoteRatings[currentQuote.language] === undefined)
         quoteRatings[currentQuote.language] = {};
-      if (quoteRatings[currentQuote.language][currentQuote.id] == undefined)
-        quoteRatings[currentQuote.language][currentQuote.id] = undefined;
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
-      if (quoteStats) {
+      if (quoteStats.ratings && quoteStats.totalRating) {
         quoteStats.ratings++;
-        quoteStats.totalRating += parseInt(rating);
+        quoteStats.totalRating += rating;
       } else {
         quoteStats = {
           ratings: 1,
-          totalRating: parseInt(rating),
+          totalRating: rating,
           quoteId: currentQuote.id,
           language: currentQuote.language,
         };
@@ -197,7 +200,7 @@ $("#rateQuotePopup .stars .star").hover((e) => {
 
 $("#rateQuotePopup .stars .star").click((e) => {
   let ratingHover = $(e.currentTarget).attr("rating");
-  rating = ratingHover;
+  rating = parseInt(ratingHover);
 });
 
 $("#rateQuotePopup .stars .star").mouseout((e) => {
