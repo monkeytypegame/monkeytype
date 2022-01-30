@@ -551,6 +551,30 @@
         <div id="submitQuoteButton" class="button">Submit</div>
       </div>
     </div>
+    <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
+      <div id="quoteReportPopup" mode="">
+        <div class="title">Report a Quote</div>
+        <label>Quote</label>
+        <div id="quoteBeingReported"></div>
+        <label>Reason</label>
+        <select name="report-reason" id="reportQuoteReason">
+          <option value="Grammatical error">Grammatical error</option>
+          <option value="Inappropriate content">Inappropriate content</option>
+          <option value="Low quality content">Low quality content</option>
+        </select>
+        <label>Comment</label>
+        <div style="position: relative">
+          <textarea
+            id="reportQuoteReason"
+            class=""
+            type="text"
+            autocomplete="off"
+          ></textarea>
+          <div class="characterCount">-</div>
+        </div>
+        <div id="submitQuoteReportButton" class="button">Report</div>
+      </div>
+    </div>
     <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
       <div id="quoteApprovePopup" mode="">
         <div class="top">

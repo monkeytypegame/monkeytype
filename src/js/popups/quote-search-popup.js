@@ -5,10 +5,12 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
+import * as QuoteReportPopup from "./quote-report-popup";
 import * as DB from "./db";
 import * as TestUI from "./test-ui";
 
 export let selectedId = 1;
+export let quoteIdSelectedForReport = -1;
 
 async function updateResults(searchText) {
   let quotes = await Misc.getQuotes(Config.language);
@@ -55,9 +57,13 @@ async function updateResults(searchText) {
       resultsList.append(`
       <div class="searchResult" id="${quote.id}">
         <div class="text">${quote.text}</div>
-        <div class="id"><div class="sub">id</div>${quote.id}</div>
+        <div class="id"><div class="sub">id</div><span class="quote-id">${quote.id}</span></div>
         <div class="length"><div class="sub">length</div>${lengthDesc}</div>
         <div class="source"><div class="sub">source</div>${quote.source}</div>
+        <div class="button report">
+          <i class="fas fa-flag report"></i>
+          Report
+        </div>
         <div class="resultChevron"><i class="fas fa-chevron-right"></i></div>
       </div>
       `);
@@ -73,9 +79,13 @@ async function updateResults(searchText) {
   }
 }
 
-export async function show() {
+export async function show(clearText = true) {
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
-    $("#quoteSearchPopup input").val("");
+    if (clearText) {
+      $("#quoteSearchPopup input").val("");
+    }
+
+    const quoteSearchInputValue = $("#quoteSearchPopup input").val();
 
     if (!firebase.auth().currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
@@ -94,8 +104,10 @@ export async function show() {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, (e) => {
-        $("#quoteSearchPopup input").focus().select();
-        updateResults("");
+        if (clearText) {
+          $("#quoteSearchPopup input").focus().select();
+        }
+        updateResults(quoteSearchInputValue);
       });
   }
 }
@@ -155,6 +167,9 @@ $(document).on(
   "click",
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
+    if (e.target.classList.contains("report")) {
+      return;
+    }
     selectedId = parseInt($(e.currentTarget).attr("id"));
     apply(selectedId);
   }
@@ -168,6 +183,14 @@ $(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", (e) => {
 $(document).on("click", "#quoteSearchPopup #goToApproveQuotes", (e) => {
   hide(true);
   QuoteApprovePopup.show(true);
+});
+
+$(document).on("click", ".report", async (e) => {
+  const quoteId = e.target.closest(".searchResult").id;
+  quoteIdSelectedForReport = parseInt(quoteId);
+
+  hide(true);
+  QuoteReportPopup.show(true);
 });
 
 // $("#quoteSearchPopup input").keypress((e) => {
