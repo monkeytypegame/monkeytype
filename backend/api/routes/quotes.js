@@ -75,6 +75,7 @@ quotesRouter.post(
         )
         .required(),
       comment: joi.string().allow("").max(250).required(),
+      captcha: joi.string().required(),
     },
   }),
   asyncHandlerWrapper(QuotesController.reportQuote)
