@@ -63,11 +63,11 @@ async function updateResults(searchText) {
         }</span></div>
         <div class="length"><div class="sub">length</div>${lengthDesc}</div>
         <div class="source"><div class="sub">source</div>${quote.source}</div>
-        <div class="button report ${isNotAuthed && "hidden"}">
-          <i class="fas fa-flag report"></i>
-          Report
+        <div class="icon-button report ${
+          isNotAuthed && "hidden"
+        }" aria-label="Report quote" data-balloon-pos="left">
+          <i class="fas fa-flag"></i>
         </div>
-        <div class="resultChevron"><i class="fas fa-chevron-right"></i></div>
       </div>
       `);
     }

@@ -400,6 +400,9 @@
       .searchResult {
         display: grid;
         grid-template-columns: 1fr 1fr 3fr 0fr;
+        grid-template-areas:
+          "text text text text"
+          "id len source report";
         grid-auto-rows: auto;
         width: 100%;
         gap: 0.5rem;
@@ -411,47 +414,40 @@
         height: min-content;
 
         .text {
-          grid-column-start: 1;
-          grid-column-end: 4;
-          grid-row-start: 1;
-          grid-row-end: 2;
+          grid-area: text;
           overflow: visible;
           color: var(--text-color);
         }
         .id {
-          grid-column-start: 1;
-          grid-column-end: 2;
-          grid-row-start: 2;
-          grid-row-end: 3;
+          grid-area: id;
           font-size: 0.8rem;
           color: var(--sub-color);
         }
         .length {
-          grid-column-start: 2;
-          grid-column-end: 3;
-          grid-row-start: 2;
-          grid-row-end: 3;
+          grid-area: len;
           font-size: 0.8rem;
           color: var(--sub-color);
         }
         .source {
-          grid-column-start: 3;
-          grid-column-end: 4;
-          grid-row-start: 2;
-          grid-row-end: 3;
+          grid-area: source;
           font-size: 0.8rem;
           color: var(--sub-color);
         }
         .resultChevron {
-          grid-column-start: 4;
-          grid-column-end: 5;
-          grid-row-start: 1;
-          grid-row-end: 3;
+          grid-area: chevron;
           display: flex;
           align-items: center;
           justify-items: center;
           color: var(--sub-color);
           font-size: 2rem;
+        }
+        .report {
+          grid-area: report;
+          color: var(--sub-color);
+          transition: 0.25s;
+          &:hover {
+            color: var(--text-color);
+          }
         }
         .sub {
           opacity: 0.5;
