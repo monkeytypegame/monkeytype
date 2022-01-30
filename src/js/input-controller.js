@@ -666,6 +666,7 @@ $(document).keydown((event) => {
     !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
     !$("#quoteSubmitPopupWrapper").hasClass("hidden") ||
     !$("#quoteApprovePopupWrapper").hasClass("hidden") ||
+    !$("#quoteReportPopupWrapper").hasClass("hidden") ||
     !$("#wordFilterPopupWrapper").hasClass("hidden");
 
   const allowTyping =

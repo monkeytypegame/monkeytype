@@ -302,6 +302,10 @@
             <div class="top">source</div>
             <div class="val">-</div>
           </div>
+          <div id="reportQuoteButton" class="button">
+            <i class="fas fa-flag"></i>
+            Report
+          </div>
         </div>
         <div class="spacer"></div>
         <div class="ratingStats">
@@ -554,10 +558,16 @@
     <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
       <div id="quoteReportPopup" mode="">
         <div class="title">Report a Quote</div>
+        <label>Note</label>
+        <div>
+          Please use this feature responsibly. Misuse may result in the
+          <span class="ban-warning">termination</span>
+          of your account.
+        </div>
         <label>Quote</label>
         <div id="quoteBeingReported"></div>
         <label>Reason</label>
-        <select name="report-reason" id="reportQuoteReason">
+        <select name="report-reason" id="quoteReportReason">
           <option value="Grammatical error">Grammatical error</option>
           <option value="Inappropriate content">Inappropriate content</option>
           <option value="Low quality content">Low quality content</option>
@@ -565,13 +575,17 @@
         <label>Comment</label>
         <div style="position: relative">
           <textarea
-            id="reportQuoteComment"
+            id="quoteReportComment"
             class=""
             type="text"
             autocomplete="off"
           ></textarea>
           <div class="characterCount">-</div>
         </div>
+        <div
+          class="g-recaptcha"
+          data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+        ></div>
         <div id="submitQuoteReportButton" class="button">Report</div>
       </div>
     </div>

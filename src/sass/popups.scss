@@ -630,6 +630,21 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
+
+    .ban-warning {
+      color: var(--error-color);
+    }
+
+    .characterCount {
+      position: absolute;
+      top: -1.25rem;
+      right: 0.25rem;
+      color: var(--sub-color);
+      user-select: none;
+      &.red {
+        color: var(--error-color);
+      }
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
+import * as QuoteReportPopup from "./quote-report-popup";
 import axiosInstance from "./axios-instance";
 
 let rating = 0;
@@ -80,9 +81,11 @@ function updateData() {
   updateRatingStats();
 }
 
-export function show(quote) {
+export function show(quote, shouldReset = true) {
   if ($("#rateQuotePopupWrapper").hasClass("hidden")) {
-    reset();
+    if (shouldReset) {
+      reset();
+    }
 
     currentQuote = quote;
     rating = 0;
@@ -92,6 +95,7 @@ export function show(quote) {
     if (alreadyRated) {
       rating = alreadyRated;
     }
+
     refreshStars();
     updateData();
     $("#rateQuotePopupWrapper")
@@ -210,4 +214,17 @@ $("#rateQuotePopup .stars .star").mouseout((e) => {
 
 $("#rateQuotePopup .submitButton").click((e) => {
   submit();
+});
+
+$("#rateQuotePopup #reportQuoteButton").click((e) => {
+  const quoteId = document.querySelector("#rateQuotePopup .id .val").innerText;
+  const quoteIdSelectedForReport = parseInt(quoteId);
+  hide();
+  QuoteReportPopup.show({
+    quoteId: quoteIdSelectedForReport,
+    noAnim: true,
+    previousPopupShowCallback: () => {
+      show(currentQuote, false);
+    },
+  });
 });

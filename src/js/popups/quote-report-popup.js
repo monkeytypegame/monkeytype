@@ -9,9 +9,17 @@ const state = {
   quoteToReport: undefined,
 };
 
-export async function show(quoteId, noAnim = false, previousPopup) {
+const defaultOptions = {
+  quoteId: -1,
+  previousPopupShowCallback: () => {},
+  noAnim: false,
+};
+
+export async function show(options = defaultOptions) {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
-    state.previousPopupShowCallback = previousPopup;
+    const { quoteId, previousPopupShowCallback, noAnim } = options;
+
+    state.previousPopupShowCallback = previousPopupShowCallback;
 
     const { quotes } = await Misc.getQuotes(Config.language);
     state.quoteToReport = quotes.find((quote) => {
@@ -19,7 +27,10 @@ export async function show(quoteId, noAnim = false, previousPopup) {
     });
 
     $("#quoteBeingReported").text(state.quoteToReport.text);
-    $("#quoteReportComment").text("");
+    $("#quoteReportReason").val("Grammatical error");
+    $("#quoteReportComment").val("");
+    $("#quoteReportPopupWrapper .characterCount").text("-");
+    grecaptcha.reset();
     $("#quoteReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -51,16 +62,19 @@ async function submitReport() {
   const requestBody = {
     quoteId: state.quoteToReport.id.toString(),
     quoteLanguage: Config.language,
-    reason: $("#reportQuoteReason").val(),
-    comment: $("#reportQuoteComment").val(),
+    reason: $("#quoteReportReason").val(),
+    comment: $("#quoteReportComment").val(),
+    captcha: $("#quoteReportPopup #g-recaptcha-response").val(),
   };
+
+  console.log(requestBody);
 
   if (!requestBody.reason) {
     Notifications.add("Please select a valid report reason.");
     return;
   }
 
-  const characterDifference = requestBody.comment.length > 250;
+  const characterDifference = requestBody.comment.length - 250;
   if (characterDifference > 0) {
     Notifications.add(
       `Report comment is ${characterDifference} character(s) too long.`
@@ -92,14 +106,14 @@ $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteReportPopupWrapper") {
     hide();
     if (state.previousPopupShowCallback) {
-      state.previousPopupShowCallback(false);
+      state.previousPopupShowCallback();
     }
   }
 });
 
-$("#reportQuoteComment").on("input", (e) => {
+$("#quoteReportComment").on("input", (e) => {
   setTimeout(() => {
-    const len = $("#reportQuoteComment").val().length;
+    const len = $("#quoteReportComment").val().length;
     $("#quoteReportPopup .characterCount").text(len);
     if (len > 250) {
       $("#quoteReportPopup .characterCount").addClass("red");

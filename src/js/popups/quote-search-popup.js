@@ -41,6 +41,8 @@ async function updateResults(searchText) {
   let resultsList = $("#quoteSearchResults");
   let resultListLength = 0;
 
+  const isNotAuthed = !firebase.auth().currentUser;
+
   found.forEach(async (quote) => {
     let lengthDesc;
     if (quote.length < 101) {
@@ -56,10 +58,12 @@ async function updateResults(searchText) {
       resultsList.append(`
       <div class="searchResult" id="${quote.id}">
         <div class="text">${quote.text}</div>
-        <div class="id"><div class="sub">id</div><span class="quote-id">${quote.id}</span></div>
+        <div class="id"><div class="sub">id</div><span class="quote-id">${
+          quote.id
+        }</span></div>
         <div class="length"><div class="sub">length</div>${lengthDesc}</div>
         <div class="source"><div class="sub">source</div>${quote.source}</div>
-        <div class="button report">
+        <div class="button report ${isNotAuthed && "hidden"}">
           <i class="fas fa-flag report"></i>
           Report
         </div>
@@ -186,12 +190,18 @@ $(document).on("click", "#quoteSearchPopup #goToApproveQuotes", (e) => {
   QuoteApprovePopup.show(true);
 });
 
-$(document).on("click", ".report", async (e) => {
+$(document).on("click", "#quoteSearchPopup .report", async (e) => {
   const quoteId = e.target.closest(".searchResult").id;
   const quoteIdSelectedForReport = parseInt(quoteId);
 
   hide(true, false);
-  QuoteReportPopup.show(quoteIdSelectedForReport, true, show);
+  QuoteReportPopup.show({
+    quoteId: quoteIdSelectedForReport,
+    noAnim: true,
+    previousPopupShowCallback: () => {
+      show(false);
+    },
+  });
 });
 
 // $("#quoteSearchPopup input").keypress((e) => {
