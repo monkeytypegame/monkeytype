@@ -67,8 +67,6 @@ async function submitReport() {
     captcha: $("#quoteReportPopup #g-recaptcha-response").val(),
   };
 
-  console.log(requestBody);
-
   if (!requestBody.reason) {
     Notifications.add("Please select a valid report reason.");
     return;
