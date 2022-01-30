@@ -9,7 +9,7 @@ class QuotesController {
 
     const user = await UserDAO.getUser(uid);
     if (user.cannotReport) {
-      throw new MonkeyError(403, "You don't have permission to do this");
+      throw new MonkeyError(403, "You don't have permission to do this.");
     }
 
     const { quoteId, quoteLanguage, reason, comment } = req.body;
@@ -25,7 +25,6 @@ class QuotesController {
         reason,
         comment,
       },
-      status: "pending",
     };
 
     await ReportDAO.createReport(newReport);
