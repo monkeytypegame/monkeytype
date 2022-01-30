@@ -32,7 +32,6 @@ export async function show(options = defaultOptions) {
     $("#quoteReportPopup .reason").val("Grammatical error");
     $("#quoteReportPopup .comment").val("");
     $("#quoteReportPopup .characterCount").text("-");
-    grecaptcha.reset(CAPTCHA_ID);
     $("#quoteReportPopup .reason").select2({
       minimumResultsForSearch: Infinity,
     });
@@ -57,6 +56,7 @@ export async function hide() {
         },
         100,
         (e) => {
+          grecaptcha.reset(CAPTCHA_ID);
           $("#quoteReportPopupWrapper").addClass("hidden");
         }
       );
