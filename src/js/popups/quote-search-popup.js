@@ -10,7 +10,6 @@ import * as DB from "./db";
 import * as TestUI from "./test-ui";
 
 export let selectedId = 1;
-export let quoteIdSelectedForReport = -1;
 
 async function updateResults(searchText) {
   let quotes = await Misc.getQuotes(Config.language);
@@ -112,7 +111,7 @@ export async function show(clearText = true) {
   }
 }
 
-export function hide(noAnim = false) {
+export function hide(noAnim = false, focusWords = true) {
   if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
@@ -124,7 +123,9 @@ export function hide(noAnim = false) {
         noAnim ? 0 : 100,
         (e) => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
-          TestUI.focusWords();
+          if (focusWords) {
+            TestUI.focusWords();
+          }
         }
       );
   }
@@ -187,10 +188,10 @@ $(document).on("click", "#quoteSearchPopup #goToApproveQuotes", (e) => {
 
 $(document).on("click", ".report", async (e) => {
   const quoteId = e.target.closest(".searchResult").id;
-  quoteIdSelectedForReport = parseInt(quoteId);
+  const quoteIdSelectedForReport = parseInt(quoteId);
 
-  hide(true);
-  QuoteReportPopup.show(true);
+  hide(true, false);
+  QuoteReportPopup.show(quoteIdSelectedForReport, true, show);
 });
 
 // $("#quoteSearchPopup input").keypress((e) => {
