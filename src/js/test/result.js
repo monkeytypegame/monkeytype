@@ -557,11 +557,9 @@ export function updateRateQuote(randomQuote) {
         .addClass("fas");
     }
     RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
-      if (quoteStats !== null) {
-        $(".pageTest #result #rateQuoteButton .rating").text(
-          quoteStats.average
-        );
-      }
+      $(".pageTest #result #rateQuoteButton .rating").text(
+        quoteStats.average ?? ""
+      );
       $(".pageTest #result #rateQuoteButton")
         .css({ opacity: 0 })
         .removeClass("hidden")
