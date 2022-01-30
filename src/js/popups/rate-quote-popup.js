@@ -185,7 +185,9 @@ async function submit() {
     quoteStats.average = (
       Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
     ).toFixed(1);
-    $(".pageTest #result #rateQuoteButton .rating").text(quoteStats.average);
+    $(".pageTest #result #rateQuoteButton .rating").text(
+      quoteStats.average.toFixed(1)
+    );
     $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
     $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
   }
