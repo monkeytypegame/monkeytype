@@ -217,11 +217,9 @@ $("#rateQuotePopup .submitButton").click((e) => {
 });
 
 $("#rateQuotePopup #reportQuoteButton").click((e) => {
-  const quoteId = document.querySelector("#rateQuotePopup .id .val").innerText;
-  const quoteIdSelectedForReport = parseInt(quoteId);
   hide();
   QuoteReportPopup.show({
-    quoteId: quoteIdSelectedForReport,
+    quoteId: parseInt(currentQuote.id),
     noAnim: true,
     previousPopupShowCallback: () => {
       show(currentQuote, false);
