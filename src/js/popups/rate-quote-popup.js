@@ -1,6 +1,7 @@
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
+import * as QuoteReportPopup from "./quote-report-popup";
 import axiosInstance from "./axios-instance";
 
 let rating = 0;
@@ -80,9 +81,11 @@ function updateData() {
   updateRatingStats();
 }
 
-export function show(quote) {
+export function show(quote, shouldReset = true) {
   if ($("#rateQuotePopupWrapper").hasClass("hidden")) {
-    reset();
+    if (shouldReset) {
+      reset();
+    }
 
     currentQuote = quote;
     rating = 0;
@@ -92,6 +95,7 @@ export function show(quote) {
     if (alreadyRated) {
       rating = alreadyRated;
     }
+
     refreshStars();
     updateData();
     $("#rateQuotePopupWrapper")
@@ -181,7 +185,9 @@ async function submit() {
     quoteStats.average = (
       Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
     ).toFixed(1);
-    $(".pageTest #result #rateQuoteButton .rating").text(quoteStats.average);
+    $(".pageTest #result #rateQuoteButton .rating").text(
+      quoteStats.average.toFixed(1)
+    );
     $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
     $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
   }
@@ -210,4 +216,15 @@ $("#rateQuotePopup .stars .star").mouseout((e) => {
 
 $("#rateQuotePopup .submitButton").click((e) => {
   submit();
+});
+
+$("#rateQuotePopup #reportQuoteButton").click((e) => {
+  hide();
+  QuoteReportPopup.show({
+    quoteId: parseInt(currentQuote.id),
+    noAnim: true,
+    previousPopupShowCallback: () => {
+      show(currentQuote, false);
+    },
+  });
 });

@@ -21,6 +21,7 @@ import * as ChallengeController from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as UI from "./ui";
 import * as TestTimer from "./test-timer";
+import * as ReportQuotePopup from "./quote-report-popup";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -995,6 +996,13 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 
 $(".pageTest #rateQuoteButton").click(async (event) => {
   RateQuotePopup.show(TestLogic.randomQuote);
+});
+
+$(".pageTest #reportQuoteButton").click(async (event) => {
+  ReportQuotePopup.show({
+    quoteId: parseInt(TestLogic.randomQuote.id),
+    noAnim: false,
+  });
 });
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {

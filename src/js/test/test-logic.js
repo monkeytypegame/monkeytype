@@ -1596,6 +1596,7 @@ export async function finish(difficultyFailed = false) {
 
   if (firebase.auth().currentUser == null) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
+    $(".pageTest #result #reportQuoteButton").addClass("hidden");
     try {
       firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
     } catch (e) {
@@ -1603,6 +1604,8 @@ export async function finish(difficultyFailed = false) {
     }
     notSignedInLastResult = completedEvent;
     dontSave = true;
+  } else {
+    $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
   Result.update(

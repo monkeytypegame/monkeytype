@@ -551,6 +551,33 @@
         <div id="submitQuoteButton" class="button">Submit</div>
       </div>
     </div>
+    <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
+      <div id="quoteReportPopup" mode="">
+        <div class="title">Report a Quote</div>
+        <div class="text">
+          Please report quotes responsibly. Misuse may result in you losing
+          access to this feature.
+        </div>
+        <label>quote</label>
+        <div class="quote"></div>
+        <label>reason</label>
+        <select name="report-reason" class="reason">
+          <option value="Grammatical error">Grammatical error</option>
+          <option value="Inappropriate content">Inappropriate content</option>
+          <option value="Low quality content">Low quality content</option>
+        </select>
+        <label>comment</label>
+        <div style="position: relative">
+          <textarea class="comment" type="text" autocomplete="off"></textarea>
+          <div class="characterCount">-</div>
+        </div>
+        <div
+          class="g-recaptcha"
+          data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+        ></div>
+        <div class="button submit">Report</div>
+      </div>
+    </div>
     <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
       <div id="quoteApprovePopup" mode="">
         <div class="top">
@@ -1447,11 +1474,19 @@
                   <div class="top">
                     source
                     <span
+                      id="reportQuoteButton"
+                      class="icon-button hidden"
+                      aria-label="Report quote"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="icon fas fa-flag"></i>
+                    </span>
+                    <span
                       id="rateQuoteButton"
                       class="icon-button hidden"
                       aria-label="Rate quote"
                       data-balloon-pos="up"
-                      style="display: inline-block"
                     >
                       <i class="icon far fa-star"></i>
                       <span class="rating"></span>
