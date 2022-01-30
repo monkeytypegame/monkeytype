@@ -217,14 +217,3 @@ $("#rateQuotePopup .stars .star").mouseout((e) => {
 $("#rateQuotePopup .submitButton").click((e) => {
   submit();
 });
-
-$("#rateQuotePopup #reportQuoteButton").click((e) => {
-  hide();
-  QuoteReportPopup.show({
-    quoteId: parseInt(currentQuote.id),
-    noAnim: true,
-    previousPopupShowCallback: () => {
-      show(currentQuote, false);
-    },
-  });
-});
