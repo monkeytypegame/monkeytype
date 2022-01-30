@@ -21,7 +21,7 @@ class QuotesController {
 
     const newReport = {
       id: uuidv4(),
-      type: "Quote",
+      type: "quote",
       timestamp: new Date().getTime(),
       uid,
       details: {
