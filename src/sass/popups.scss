@@ -611,7 +611,15 @@
 
     label {
       color: var(--sub-color);
-      margin-bottom: 0.2rem;
+      margin-bottom: -1rem;
+    }
+
+    .text {
+      color: var(--sub-color);
+    }
+
+    .quote {
+      font-size: 1.5rem;
     }
 
     .title {
@@ -625,10 +633,6 @@
       padding: 10px;
       line-height: 1.2rem;
       min-height: 5rem;
-    }
-
-    .ban-warning {
-      color: var(--error-color);
     }
 
     .characterCount {

@@ -28,11 +28,14 @@ export async function show(options = defaultOptions) {
       return quote.id === quoteId;
     });
 
-    $("#quoteBeingReported").text(state.quoteToReport.text);
-    $("#quoteReportReason").val("Grammatical error");
-    $("#quoteReportComment").val("");
-    $("#quoteReportPopupWrapper .characterCount").text("-");
+    $("#quoteReportPopup .quote").text(state.quoteToReport.text);
+    $("#quoteReportPopup .reason").val("Grammatical error");
+    $("#quoteReportPopup .comment").val("");
+    $("#quoteReportPopup .characterCount").text("-");
     grecaptcha.reset(CAPTCHA_ID);
+    $("#quoteReportPopup .reason").select2({
+      minimumResultsForSearch: Infinity,
+    });
     $("#quoteReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -64,8 +67,8 @@ async function submitReport() {
   const requestBody = {
     quoteId: state.quoteToReport.id.toString(),
     quoteLanguage: Config.language,
-    reason: $("#quoteReportReason").val(),
-    comment: $("#quoteReportComment").val(),
+    reason: $("#quoteReportPopup .reason").val(),
+    comment: $("#quoteReportPopup .comment").val(),
     captcha: grecaptcha.getResponse(CAPTCHA_ID),
   };
 
@@ -111,9 +114,9 @@ $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#quoteReportComment").on("input", (e) => {
+$("#quoteReportPopup .comment").on("input", (e) => {
   setTimeout(() => {
-    const len = $("#quoteReportComment").val().length;
+    const len = $("#quoteReportPopup .comment").val().length;
     $("#quoteReportPopup .characterCount").text(len);
     if (len > 250) {
       $("#quoteReportPopup .characterCount").addClass("red");
@@ -123,6 +126,6 @@ $("#quoteReportComment").on("input", (e) => {
   }, 1);
 });
 
-$("#submitQuoteReportButton").on("click", async (e) => {
+$("#quoteReportPopup .submit").on("click", async (e) => {
   await submitReport();
 });

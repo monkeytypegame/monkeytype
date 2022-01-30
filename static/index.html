@@ -558,35 +558,28 @@
     <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
       <div id="quoteReportPopup" mode="">
         <div class="title">Report a Quote</div>
-        <label>Note</label>
-        <div>
-          Please use this feature responsibly. Misuse may result in the
-          <span class="ban-warning">termination</span>
-          of your account.
+        <div class="text">
+          Please report quotes responsibly. Misuse may result in you losing
+          access to this feature.
         </div>
-        <label>Quote</label>
-        <div id="quoteBeingReported"></div>
-        <label>Reason</label>
-        <select name="report-reason" id="quoteReportReason">
+        <label>quote</label>
+        <div class="quote"></div>
+        <label>reason</label>
+        <select name="report-reason" class="reason">
           <option value="Grammatical error">Grammatical error</option>
           <option value="Inappropriate content">Inappropriate content</option>
           <option value="Low quality content">Low quality content</option>
         </select>
-        <label>Comment</label>
+        <label>comment</label>
         <div style="position: relative">
-          <textarea
-            id="quoteReportComment"
-            class=""
-            type="text"
-            autocomplete="off"
-          ></textarea>
+          <textarea class="comment" type="text" autocomplete="off"></textarea>
           <div class="characterCount">-</div>
         </div>
         <div
           class="g-recaptcha"
           data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
         ></div>
-        <div id="submitQuoteReportButton" class="button">Report</div>
+        <div class="button submit">Report</div>
       </div>
     </div>
     <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
