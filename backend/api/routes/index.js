@@ -1,4 +1,5 @@
-const pathOverride = process.env.API_PATH_OVERRIDE;
+// const pathOverride = process.env.API_PATH_OVERRIDE;
+let pathOverride = "/tribedev";
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
 
 const API_ROUTE_MAP = {
