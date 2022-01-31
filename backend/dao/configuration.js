@@ -76,11 +76,6 @@ class ConfigurationDAO {
 
     return this.configuration;
   }
-
-  /**
-   * @param {Object} configurationUpdates A full or partial object with configuration properties.
-   */
-  static async patchConfiguration(configurationUpdates) {}
 }
 
 module.exports = ConfigurationDAO;
