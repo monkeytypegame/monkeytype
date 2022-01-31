@@ -561,7 +561,7 @@ list.applyCustomFont = new SimplePopup(
   "Apply",
   (fontName) => {
     if (fontName === "") return;
-    Settings.groups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
+    Settings.groups.fontFamily?.setValue(fontName.replace(/\s/g, "_"));
   },
   () => {}
 );

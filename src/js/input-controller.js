@@ -123,7 +123,7 @@ function handleSpace() {
         .toString()
         .toUpperCase()
     );
-    Settings.groups.layout.updateButton();
+    Settings.groups.layout?.updateButton();
   }
   dontInsertSpace = true;
 
@@ -666,6 +666,7 @@ $(document).keydown((event) => {
     !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
     !$("#quoteSubmitPopupWrapper").hasClass("hidden") ||
     !$("#quoteApprovePopupWrapper").hasClass("hidden") ||
+    !$("#quoteReportPopupWrapper").hasClass("hidden") ||
     !$("#wordFilterPopupWrapper").hasClass("hidden");
 
   const allowTyping =

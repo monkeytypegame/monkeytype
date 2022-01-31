@@ -40,7 +40,7 @@ async function submitQuote() {
   Loader.show();
   let response;
   try {
-    response = await axiosInstance.post("/new-quotes/add", data);
+    response = await axiosInstance.post("/quotes", data);
   } catch (e) {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;

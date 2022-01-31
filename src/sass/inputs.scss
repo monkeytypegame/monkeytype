@@ -89,13 +89,13 @@ input[type="number"] {
 
 .select2-container--default
   .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: var(--sub-color);
-  color: var(--text-color);
+  background-color: var(--text-color);
+  color: var(--bg-color);
 }
 
 .select2-container--default .select2-results__option--selected {
-  background-color: var(--main-color);
-  color: var(--bg-color);
+  background-color: var(--bg-color);
+  color: var(--sub-color);
 }
 
 .select2-container--open .select2-dropdown--below {
@@ -144,14 +144,14 @@ input[type="number"] {
   .select2-selection--single
   .select2-selection__arrow
   b {
-  border-color: var(--main-color) transparent transparent transparent;
+  border-color: var(--sub-color) transparent transparent transparent;
 }
 
 .select2-container--default.select2-container--open
   .select2-selection--single
   .select2-selection__arrow
   b {
-  border-color: var(--main-color) transparent;
+  border-color: var(--sub-color) transparent;
 }
 
 .select2-container--default .select2-search--dropdown .select2-search__field {
