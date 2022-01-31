@@ -234,7 +234,7 @@
   },
   {
     "name": "urdu",
-    "languages": ["urdu", "urdu_1k"]
+    "languages": ["urdu", "urdu_1k", "urdu_5k"]
   },
   {
     "name": "albanian",
