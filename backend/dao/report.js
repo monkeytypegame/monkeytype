@@ -1,6 +1,5 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
-const Logger = require("../handlers/logger");
 
 const MAX_REPORTS = 1000;
 const CONTENT_REPORT_LIMIT = 5;
@@ -28,10 +27,6 @@ class ReportDAO {
     }
 
     await mongoDB().collection("reports").insertOne(report);
-    Logger.log("report_created", {
-      type: report.type,
-      details: report.details,
-    });
   }
 }
 

@@ -3,6 +3,7 @@ const ReportDAO = require("../../dao/report");
 const UserDAO = require("../../dao/user");
 const MonkeyError = require("../../handlers/error");
 const Captcha = require("../../handlers/captcha");
+const Logger = require("../../handlers/logger");
 
 class QuotesController {
   static async reportQuote(req, res) {
@@ -32,6 +33,11 @@ class QuotesController {
     };
 
     await ReportDAO.createReport(newReport);
+
+    Logger.log("report_created", {
+      type: newReport.type,
+      details: newReport.details,
+    });
 
     res.sendStatus(200);
   }
