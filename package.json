@@ -7,6 +7,7 @@
     "build": "npx gulp build",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"nodemon --watch ./backend ./backend/server.js\" \"firebase serve --only hosting\"",
     "start:dev:nodb": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
+    "start:dev:nofe": "nodemon --watch ./backend ./backend/server.js",
     "deploy:live": "npm run build && firebase deploy -P live --only hosting"
   },
   "engines": {
@@ -64,6 +65,7 @@
     "helmet": "^4.6.0",
     "howler": "^2.2.1",
     "joi": "^17.6.0",
+    "lodash": "4.17.21",
     "moment-timezone": "^0.5.33",
     "mongodb": "^3.6.9",
     "node-fetch": "^2.6.7",

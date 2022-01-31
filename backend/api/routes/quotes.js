@@ -8,8 +8,8 @@ const RateLimit = require("../../middlewares/rate-limit");
 const {
   asyncHandlerWrapper,
   requestValidation,
-} = require("../../middlewares/apiUtils");
-const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quoteLanguages");
+} = require("../../middlewares/api-utils");
+const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quote-languages");
 
 const quotesRouter = Router();
 
