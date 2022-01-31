@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { mongoDB } = require("../init/mongodb");
-const BASE_CONFIGURATION = require("../constants/configuration");
+const BASE_CONFIGURATION = require("../constants/base-configuration");
 const Logger = require("../handlers/logger.js");
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
