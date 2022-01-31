@@ -85,9 +85,9 @@ export function toggleScript(...params) {
 }
 
 export function setFunbox(funbox, mode) {
-  if (funbox === "none") loadMemory();
   modeSaved = mode;
   UpdateConfig.setFunbox(funbox, false);
+  if (funbox === "none") loadMemory();
   return true;
 }
 
@@ -148,11 +148,6 @@ export async function activate(funbox) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
 
     if (funbox === "simon_says") {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
       UpdateConfig.setKeymapMode("next", true);
       Settings.groups.keymapMode?.updateButton();
       TestLogic.restart(undefined, true);
@@ -163,36 +158,20 @@ export async function activate(funbox) {
       funbox === "read_ahead_easy" ||
       funbox === "read_ahead_hard"
     ) {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(undefined, true);
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
       UpdateConfig.setKeymapMode("off", true);
       UpdateConfig.setHighlightMode("letter", true);
       Settings.groups.keymapMode?.updateButton();
       TestLogic.restart(undefined, true);
     } else if (funbox === "layoutfluid") {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
       // UpdateConfig.setKeymapMode("next");
       Settings.groups.keymapMode?.updateButton();
       // UpdateConfig.setSavedLayout(Config.layout);
-      rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
       UpdateConfig.setLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
@@ -200,11 +179,6 @@ export async function activate(funbox) {
         true
       );
       Settings.groups.layout?.updateButton();
-      rememberSetting(
-        "keymapLayout",
-        Config.keymapLayout,
-        UpdateConfig.setKeymapLayout
-      );
       UpdateConfig.setKeymapLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
@@ -214,39 +188,18 @@ export async function activate(funbox) {
       Settings.groups.keymapLayout?.updateButton();
       TestLogic.restart(undefined, true);
     } else if (funbox === "memory") {
-      rememberSetting("mode", Config.mode, UpdateConfig.setMode);
       UpdateConfig.setMode("words", true);
-      rememberSetting(
-        "showAllLines",
-        Config.showAllLines,
-        UpdateConfig.setShowAllLines
-      );
       UpdateConfig.setShowAllLines(true, true);
       TestLogic.restart(false, true);
       if (Config.keymapMode === "next") {
-        rememberSetting(
-          "keymapMode",
-          Config.keymapMode,
-          UpdateConfig.setKeymapMode
-        );
         UpdateConfig.setKeymapMode("react", true);
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(false, true);
     } else if (funbox === "arrows") {
       $("#words").addClass("arrows");
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(false, true);
     }
@@ -260,4 +213,87 @@ export async function activate(funbox) {
   // }
   TestUI.updateModesNotice();
   return true;
+}
+
+export async function rememberSettings() {
+  let funbox = Config.funbox;
+  let mode = modeSaved;
+  if (funbox === "none" && mode === undefined) {
+    mode = null;
+  } else if (
+    (funbox !== "none" && mode === undefined) ||
+    (funbox !== "none" && mode === null)
+  ) {
+    let list = await Misc.getFunboxList();
+    mode = list.filter((f) => f.name === funbox)[0].type;
+  }
+  if (mode === "style") {
+    if (funbox === "simon_says") {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
+    }
+
+    if (
+      funbox === "read_ahead" ||
+      funbox === "read_ahead_easy" ||
+      funbox === "read_ahead_hard"
+    ) {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+    }
+  } else if (mode === "script") {
+    if (funbox === "tts") {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
+    } else if (funbox === "layoutfluid") {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
+      rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
+      rememberSetting(
+        "keymapLayout",
+        Config.keymapLayout,
+        UpdateConfig.setKeymapLayout
+      );
+    } else if (funbox === "memory") {
+      rememberSetting("mode", Config.mode, UpdateConfig.setMode);
+      rememberSetting(
+        "showAllLines",
+        Config.showAllLines,
+        UpdateConfig.setShowAllLines
+      );
+      if (Config.keymapMode === "next") {
+        rememberSetting(
+          "keymapMode",
+          Config.keymapMode,
+          UpdateConfig.setKeymapMode
+        );
+      }
+    } else if (funbox === "nospace") {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+    } else if (funbox === "arrows") {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+    } else if (funbox === "58008") {
+      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+    }
+  }
 }

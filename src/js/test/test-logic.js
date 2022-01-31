@@ -611,6 +611,9 @@ export function restart(
       ) {
         shouldQuoteRepeat = true;
       }
+
+      await Funbox.rememberSettings();
+
       if (Config.funbox === "arrows") {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
