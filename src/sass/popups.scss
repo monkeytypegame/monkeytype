@@ -395,7 +395,7 @@
       display: grid;
       gap: 0.5rem;
       height: auto;
-      overflow: scroll;
+      overflow-y: scroll;
 
       .searchResult {
         display: grid;
