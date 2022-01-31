@@ -281,14 +281,14 @@ task("updateSwCacheName", function () {
     date.getMinutes() +
     "-" +
     date.getSeconds();
-  return src(["static/js/sw.js"])
+  return src(["static/sw.js"])
     .pipe(
       replace(
         /const staticCacheName = .*;/g,
         `const staticCacheName = "sw-cache-${dateString}";`
       )
     )
-    .pipe(dest("./dist/js/"));
+    .pipe(dest("./dist/"));
 });
 
 task(
