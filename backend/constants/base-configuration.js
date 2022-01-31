@@ -5,7 +5,7 @@
  */
 const BASE_CONFIGURATION = {
   maintenance: false,
-  quoteReportFeature: {
+  quoteReport: {
     enabled: false,
   },
   quoteSubmit: {
