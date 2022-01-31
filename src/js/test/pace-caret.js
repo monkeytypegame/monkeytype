@@ -4,6 +4,7 @@ import Config from "./config";
 import * as DB from "./db";
 import * as TestTimer from "./test-timer";
 import * as Misc from "./misc";
+import * as UI from "./ui";
 
 export let settings = null;
 
@@ -16,8 +17,10 @@ function resetCaretPosition() {
 
   let caret = $("#paceCaret");
   let firstLetter = document
-    .querySelector("#words .word")
-    .querySelector("letter");
+    ?.querySelector("#words .word")
+    ?.querySelector("letter");
+
+  if (!firstLetter) return;
 
   caret.stop(true, true).animate(
     {
