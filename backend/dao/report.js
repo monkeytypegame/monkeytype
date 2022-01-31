@@ -1,7 +1,8 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 
-const MAX_REPORTS = 100;
+const MAX_REPORTS = 1000;
+const CONTENT_REPORT_LIMIT = 5;
 
 class ReportDAO {
   static async createReport(report) {
@@ -14,12 +15,15 @@ class ReportDAO {
       );
     }
 
-    const reportAlreadyExists = reports.find((existingReport) => {
+    const reportAlreadyExists = reports.filter((existingReport) => {
       return existingReport.details.contentId === report.details.contentId;
     });
 
-    if (reportAlreadyExists) {
-      throw new MonkeyError(409, "A report for this content already exists.");
+    if (reportAlreadyExists.length >= CONTENT_REPORT_LIMIT) {
+      throw new MonkeyError(
+        409,
+        "A report limit for this content has been reached."
+      );
     }
 
     await mongoDB().collection("reports").insertOne(report);
