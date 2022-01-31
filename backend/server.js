@@ -28,7 +28,7 @@ app.use(contextMiddleware);
 app.use((req, res, next) => {
   if (
     process.env.MAINTENANCE === "true" ||
-    req.context.configuration.inMaintenance
+    req.context.configuration.maintenance
   ) {
     res.status(503).json({ message: "Server is down for maintenance" });
   } else {

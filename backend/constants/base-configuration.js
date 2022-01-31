@@ -4,13 +4,11 @@
  * When changing this template, please follow the principle of "Secure by default" (https://en.wikipedia.org/wiki/Secure_by_default).
  */
 const BASE_CONFIGURATION = {
-  inMaintenance: false,
-  reportFeature: {
+  maintenance: false,
+  quoteReportFeature: {
     enabled: false,
-    maxReports: 0,
-    contentReportLimit: 0,
   },
-  quoteSubmitFeature: {
+  quoteSubmit: {
     enabled: false,
   },
 };
