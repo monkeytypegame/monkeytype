@@ -62,7 +62,7 @@ class ConfigurationDAO {
       } else {
         await mongoDB()
           .collection("configuration")
-          .insertOne(BASE_CONFIGURATION); // Seed the base configuration.
+          .insertOne(Object.assign({}, BASE_CONFIGURATION)); // Seed the base configuration.
       }
       Logger.log(
         "fetch_configuration_success",
