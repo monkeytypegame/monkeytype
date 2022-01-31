@@ -3102,7 +3102,7 @@ export let defaultCommands = {
       exec: async () => {
         let clist = await caches.keys();
         for (let name of clist) {
-          caches.delete(name);
+          await caches.delete(name);
         }
         window.location.reload(true);
       },
