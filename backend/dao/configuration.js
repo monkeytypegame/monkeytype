@@ -6,7 +6,10 @@ const Logger = require("../handlers/logger.js");
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
 function mergeConfigurations(baseConfiguration, liveConfiguration) {
-  if (!_.isObject(baseConfiguration) || !_.isObject(liveConfiguration)) {
+  if (
+    !_.isPlainObject(baseConfiguration) ||
+    !_.isPlainObject(liveConfiguration)
+  ) {
     return;
   }
 
