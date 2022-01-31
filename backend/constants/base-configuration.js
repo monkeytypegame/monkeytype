@@ -7,6 +7,8 @@ const BASE_CONFIGURATION = {
   maintenance: false,
   quoteReport: {
     enabled: false,
+    maxReports: 0,
+    contentReportLimit: 0,
   },
   quoteSubmit: {
     enabled: false,
