@@ -2,6 +2,8 @@
   "name": "bangla_letters",
   "leftToRight": true,
   "ligatures": true,
+  "noLazyMode": true,
+  "bcp47": "bn-BD",
   "words": [
     "অ",
     "আ",

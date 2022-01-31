@@ -15,7 +15,20 @@ function hide() {
 $(document).keydown(function (event) {
   try {
     if (
-      !Config.capsLockBackspace &&
+      Config.capsLockWarning &&
+      event.originalEvent.getModifierState("CapsLock")
+    ) {
+      show();
+    } else {
+      hide();
+    }
+  } catch {}
+});
+
+$(document).keyup(function (event) {
+  try {
+    if (
+      Config.capsLockWarning &&
       event.originalEvent.getModifierState("CapsLock")
     ) {
       show();

@@ -6,8 +6,6 @@ import layouts from "./layouts";
 import * as LanguagePicker from "./language-picker";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
-import * as Loader from "./loader";
-import * as CloudFunctions from "./cloud-functions";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -15,6 +13,9 @@ import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
 import * as EditPresetPopup from "./edit-preset-popup";
 import * as ThemePicker from "./theme-picker";
+import * as ImportExportSettingsPopup from "./import-export-settings-popup";
+import * as CustomThemePopup from "./custom-theme-popup";
+import * as AccountController from "./account-controller";
 
 export let groups = {};
 async function initGroups() {
@@ -131,9 +132,17 @@ async function initGroups() {
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory
   );
+  groups.britishEnglish = new SettingsGroup(
+    "britishEnglish",
+    UpdateConfig.setBritishEnglish
+  );
   groups.singleListCommandLine = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine
+  );
+  groups.capsLockWarning = new SettingsGroup(
+    "capsLockWarning",
+    UpdateConfig.setCapsLockWarning
   );
   groups.flipTestColors = new SettingsGroup(
     "flipTestColors",
@@ -166,9 +175,17 @@ async function initGroups() {
       groups.confidenceMode.updateButton();
     }
   );
+  groups.soundVolume = new SettingsGroup(
+    "soundVolume",
+    UpdateConfig.setSoundVolume,
+    () => {}
+  );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
-    UpdateConfig.setPlaySoundOnError
+    UpdateConfig.setPlaySoundOnError,
+    () => {
+      if (Config.playSoundOnError) Sound.playError();
+    }
   );
   groups.playSoundOnClick = new SettingsGroup(
     "playSoundOnClick",
@@ -194,10 +211,7 @@ async function initGroups() {
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll
   );
-  groups.capsLockBackspace = new SettingsGroup(
-    "capsLockBackspace",
-    UpdateConfig.setCapsLockBackspace
-  );
+  groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
   groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
   groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
@@ -262,7 +276,17 @@ async function initGroups() {
   // );
 }
 
-async function fillSettingsPage() {
+export function reset() {
+  $(".pageSettings .section.themes .favThemes.buttons").empty();
+  $(".pageSettings .section.themes .allThemes.buttons").empty();
+  $(".pageSettings .section.languageGroups .buttons").empty();
+  $(".pageSettings .section.layout .buttons").empty();
+  $(".pageSettings .section.keymapLayout .buttons").empty();
+  $(".pageSettings .section.funbox .buttons").empty();
+  $(".pageSettings .section.fontFamily .buttons").empty();
+}
+
+export async function fillSettingsPage() {
   await initGroups();
   await UpdateConfig.loadPromise;
   ThemePicker.refreshButtons();
@@ -284,16 +308,15 @@ async function fillSettingsPage() {
   let layoutEl = $(".pageSettings .section.layout .buttons").empty();
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
-      `<div class="layout button" layout='${layout}'>${layout.replace(
-        /_/g,
-        " "
-      )}</div>`
+      `<div class="layout button" layout='${layout}'>${
+        layout === "default" ? "off" : layout.replace(/_/g, " ")
+      }</div>`
     );
   });
 
   let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
   keymapEl.append(
-    `<div class="layout button" keymapLayout='overrideSync'>override sync</div>`
+    `<div class="layout button" keymapLayout='overrideSync'>emulator sync</div>`
   );
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
@@ -372,11 +395,12 @@ async function fillSettingsPage() {
   );
 }
 
-export let settingsFillPromise = fillSettingsPage();
+// export let settingsFillPromise = fillSettingsPage();
 
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+  $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
 export function updateDiscordSection() {
@@ -404,6 +428,53 @@ export function updateDiscordSection() {
   }
 }
 
+export function updateAuthSections() {
+  $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
+  $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
+
+  let user = firebase.auth().currentUser;
+  if (!user) return;
+
+  let passwordProvider = user.providerData.find(
+    (provider) => provider.providerId === "password"
+  );
+  let googleProvider = user.providerData.find(
+    (provider) => provider.providerId === "google.com"
+  );
+
+  if (passwordProvider) {
+    $(
+      ".pageSettings .section.passwordAuthSettings #emailPasswordAuth"
+    ).removeClass("hidden");
+    $(
+      ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
+    ).removeClass("hidden");
+  } else {
+    $(
+      ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
+    ).removeClass("hidden");
+  }
+
+  if (googleProvider) {
+    $(
+      ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
+    ).removeClass("hidden");
+    if (passwordProvider) {
+      $(
+        ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
+      ).removeClass("disabled");
+    } else {
+      $(".pageSettings .section.googleAuthSettings #removeGoogleAuth").addClass(
+        "disabled"
+      );
+    }
+  } else {
+    $(".pageSettings .section.googleAuthSettings #addGoogleAuth").removeClass(
+      "hidden"
+    );
+  }
+}
+
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
@@ -415,13 +486,13 @@ function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags.forEach((tag) => {
-      let tagPbString = "No PB found";
-      if (tag.pb != undefined && tag.pb > 0) {
-        tagPbString = `PB: ${tag.pb}`;
-      }
+      // let tagPbString = "No PB found";
+      // if (tag.pb != undefined && tag.pb > 0) {
+      //   tagPbString = `PB: ${tag.pb}`;
+      // }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag.id}">
+      <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
@@ -451,7 +522,7 @@ function refreshPresetsSettingsSection() {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset.id}">
+      <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.name}</div>
         </div>
@@ -474,6 +545,7 @@ function refreshPresetsSettingsSection() {
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
@@ -489,9 +561,11 @@ export function update() {
   LanguagePicker.setActiveGroup();
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs();
+  ThemePicker.setCustomInputs(true);
   updateDiscordSection();
+  updateAuthSections();
   ThemePicker.refreshButtons();
+  // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed
@@ -563,7 +637,7 @@ $(document).on(
   "click",
   ".pageSettings .section.paceCaret .button.save",
   (e) => {
-    UpdateConfig.setMinBurstCustomSpeed(
+    UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
         $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
       )
@@ -582,7 +656,7 @@ $(document).on(
 );
 
 $(document).on("click", ".pageSettings .section.minWpm .button.save", (e) => {
-  UpdateConfig.setMinBurstCustomSpeed(
+  UpdateConfig.setMinWpmCustomSpeed(
     parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
   );
 });
@@ -598,7 +672,7 @@ $(document).on(
 );
 
 $(document).on("click", ".pageSettings .section.minAcc .button.save", (e) => {
-  UpdateConfig.setMinBurstCustomSpeed(
+  UpdateConfig.setMinAccCustom(
     parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
   );
 });
@@ -627,33 +701,6 @@ $(document).on(
     LanguagePicker.setActiveGroup(group, true);
   }
 );
-
-//discord
-$(
-  ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
-).click((e) => {
-  Loader.show();
-  CloudFunctions.generatePairingCode({
-    uid: firebase.auth().currentUser.uid,
-  })
-    .then((ret) => {
-      Loader.hide();
-      if (ret.data.status === 1 || ret.data.status === 2) {
-        DB.getSnapshot().pairingCode = ret.data.pairingCode;
-        $(".pageSettings .section.discordIntegration .code .bottom").text(
-          ret.data.pairingCode
-        );
-        $(".pageSettings .section.discordIntegration .howtocode").text(
-          ret.data.pairingCode
-        );
-        updateDiscordSection();
-      }
-    })
-    .catch((e) => {
-      Loader.hide();
-      Notifications.add("Something went wrong. Error: " + e.message, -1);
-    });
-});
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
@@ -759,6 +806,10 @@ $("#resetSettingsButton").click((e) => {
   SimplePopups.list.resetSettings.show();
 });
 
+$("#importSettingsButton").click((e) => {
+  ImportExportSettingsPopup.show("import");
+});
+
 $("#exportSettingsButton").click((e) => {
   let configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
@@ -766,10 +817,30 @@ $("#exportSettingsButton").click((e) => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function (err) {
-      Notifications.add(
-        "Something went wrong when copying the settings JSON: " + err,
-        -1
-      );
+      ImportExportSettingsPopup.show("export");
+    }
+  );
+});
+
+$("#shareCustomThemeButton").click((e) => {
+  let share = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (index, element) => {
+      share.push($(element).attr("value"));
+    }
+  );
+
+  let url =
+    "https://monkeytype.com?" +
+    Misc.objectToQueryString({ customTheme: share });
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function (err) {
+      CustomThemePopup.show(url);
     }
   );
 });
@@ -782,50 +853,74 @@ $(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
   SimplePopups.list.resetPersonalBests.show();
 });
 
-$(".pageSettings #updateAccountEmail").on("click", (e) => {
+$(".pageSettings #updateAccountName").on("click", (e) => {
+  SimplePopups.list.updateName.show();
+});
+
+$(".pageSettings #addPasswordAuth").on("click", (e) => {
+  SimplePopups.list.addPasswordAuth.show();
+});
+
+$(".pageSettings #emailPasswordAuth").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
-$(".pageSettings #updateAccountPassword").on("click", (e) => {
+$(".pageSettings #passPasswordAuth").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
 });
 
-$(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
+$(".pageSettings #addGoogleAuth").on("click", (e) => {
+  AccountController.addGoogleAuth();
+});
+
+$(".pageSettings #removeGoogleAuth").on("click", (e) => {
+  AccountController.removeGoogleAuth();
+});
+
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  SimplePopups.list.deleteAccount.show();
+});
+
+$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomBackground(
-      $(".pageSettings .section.customBackgroundSize .inputAndSave input").val()
+      $(
+        ".pageSettings .section.customBackgroundSize .inputAndButton input"
+      ).val()
     );
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndSave input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomBackground(
         $(
-          ".pageSettings .section.customBackgroundSize .inputAndSave input"
+          ".pageSettings .section.customBackgroundSize .inputAndButton input"
         ).val()
       );
     }
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndSave .save").on(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomLayoutfluid(
-      $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+      $(".pageSettings .section.customLayoutfluid .inputAndButton input").val()
     );
     Notifications.add("Custom layoutfluid saved", 1);
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomLayoutfluid(
-        $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+        $(
+          ".pageSettings .section.customLayoutfluid .inputAndButton input"
+        ).val()
       );
       Notifications.add("Custom layoutfluid saved", 1);
     }

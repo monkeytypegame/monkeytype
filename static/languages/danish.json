@@ -1,6 +1,7 @@
 {
   "name": "danish",
   "leftToRight": true,
+  "bcp47": "da-DK",
   "words": [
     "ville",
     "ud",
@@ -132,7 +133,6 @@
     "deres",
     "med",
     "som",
-    "baumann",
     "tage",
     "først",
     "både",

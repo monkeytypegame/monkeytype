@@ -3,6 +3,9 @@
     "name": "Roboto Mono"
   },
   {
+    "name": "Noto Naskh Arabic"
+  },
+  {
     "name": "Source Code Pro"
   },
   {
@@ -13,6 +16,9 @@
   },
   {
     "name": "Fira Code"
+  },
+  {
+    "name": "JetBrains Mono"
   },
   {
     "name": "Roboto"
@@ -47,5 +53,14 @@
   },
   {
     "name": "Coming Soon"
+  },
+  {
+    "name": "Atkinson Hyperlegible"
+  },
+  {
+    "name": "Lato"
+  },
+  {
+    "name": "Lalezar"
   }
 ]

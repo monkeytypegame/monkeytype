@@ -1,6 +1,4 @@
-# monkeytype
-
-[![](https://github.com/Miodec/monkeytype/blob/master/static/images/mtsocial.png?raw=true)](https://monkeytype.com/)
+[![](https://github.com/Miodec/monkeytype/blob/master/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
 <img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
@@ -11,7 +9,7 @@
 
 # About
 
-Monkeytype is a minimalistic, customisable typing test, featuring many test modes, an account system to save your typing speed history and user-configurable features like themes, sounds, a smooth caret and more.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features like themes, sounds, a smooth caret, and more.
 
 # Features
 
@@ -30,28 +28,28 @@ Monkeytype is a minimalistic, customisable typing test, featuring many test mode
 
 # Discord bot
 
-On the [monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to autoassign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
+On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
 
 # Bug report or Feature request
 
-If you encounter a bug, or have a feature request [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
-# Contribute
+# Want to Contribute?
 
 Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
 
-# Code Of Conduct
+# Code of Conduct
 
-Before contributing to this repository please carefully read and understand the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
+Before contributing to this repository, please read the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
 
 # Credits
 
 [Montydrei](https://www.reddit.com/user/montydrei) for the name suggestion.
 
-Everyone who provided valuable feedback on the [original reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
+Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
 
-All the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
+All of the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
+If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).

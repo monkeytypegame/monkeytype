@@ -3,12 +3,11 @@ import * as Misc from "./misc";
 import layouts from "./layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "./sound";
-import * as TestStats from "./test-stats";
 import * as ThemeController from "./theme-controller";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as TestUI from "./test-ui";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
@@ -17,6 +16,7 @@ import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
 import * as Settings from "./settings";
+import * as ChallengeController from "./challenge-controller";
 
 export let current = [];
 
@@ -40,7 +40,7 @@ function canBailOut() {
 }
 
 let commandsLayouts = {
-  title: "Layout...",
+  title: "Layout emulator...",
   configKey: "layout",
   list: [
     {
@@ -55,7 +55,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
-      display: layout.replace(/_/g, " "),
+      display: layout === "default" ? "off" : layout.replace(/_/g, " "),
       configValue: layout,
       exec: () => {
         // UpdateConfig.setSavedLayout(layout);
@@ -81,7 +81,7 @@ if (Object.keys(layouts).length > 0) {
   commandsKeymapLayouts.list = [];
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
-    display: "override sync",
+    display: "emulator sync",
     configValue: "overrideSync",
     exec: () => {
       UpdateConfig.setKeymapLayout("overrideSync");
@@ -137,6 +137,7 @@ let commandsFunbox = {
       id: "changeFunboxNone",
       display: "none",
       configValue: "none",
+      alias: "off",
       exec: () => {
         if (Funbox.setFunbox("none", null)) {
           TestLogic.restart();
@@ -201,7 +202,7 @@ let commandsTags = {
 };
 
 export function updateTagCommands() {
-  if (DB.getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot()?.tags?.length > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
@@ -227,12 +228,12 @@ export function updateTagCommands() {
       }
 
       commandsTags.list.push({
-        id: "toggleTag" + tag.id,
+        id: "toggleTag" + tag._id,
         noIcon: true,
         display: dis,
         sticky: true,
         exec: () => {
-          TagController.toggle(tag.id);
+          TagController.toggle(tag._id);
           TestUI.updateModesNotice();
           let txt = tag.name;
 
@@ -243,14 +244,14 @@ export function updateTagCommands() {
           }
           if (Commandline.isSingleListCommandLineActive()) {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(
               `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
                 txt
             );
           } else {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(txt);
           }
         },
@@ -266,17 +267,17 @@ let commandsPresets = {
 };
 
 export function updatePresetCommands() {
-  if (DB.getSnapshot().presets.length > 0) {
+  if (DB.getSnapshot()?.presets?.length > 0) {
     commandsPresets.list = [];
 
     DB.getSnapshot().presets.forEach((preset) => {
       let dis = preset.name;
 
       commandsPresets.list.push({
-        id: "applyPreset" + preset.id,
+        id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
-          PresetController.apply(preset.id);
+          PresetController.apply(preset._id);
           TestUI.updateModesNotice();
         },
       });
@@ -325,29 +326,6 @@ let commandsLiveWpm = {
       configValue: true,
       exec: () => {
         UpdateConfig.setShowLiveWpm(true);
-      },
-    },
-  ],
-};
-
-let commandsCapsLockBackspace = {
-  title: "Caps lock backspace...",
-  configKey: "capsLockBackspace",
-  list: [
-    {
-      id: "setCapsLockBackspaceOff",
-      display: "off",
-      configValue: false,
-      exec: () => {
-        UpdateConfig.setShowCapsLockBackspace(false);
-      },
-    },
-    {
-      id: "setCapsLockBackspaceOn",
-      display: "on",
-      configValue: true,
-      exec: () => {
-        UpdateConfig.setShowCapsLockBackspace(true);
       },
     },
   ],
@@ -431,7 +409,7 @@ let commandsKeyTips = {
       display: "off",
       configValue: false,
       exec: () => {
-        UpdateConfig.setShowKeyTips(false);
+        UpdateConfig.setKeyTips(false);
       },
     },
     {
@@ -439,7 +417,7 @@ let commandsKeyTips = {
       display: "on",
       configValue: true,
       exec: () => {
-        UpdateConfig.setShowKeyTips(true);
+        UpdateConfig.setKeyTips(true);
       },
     },
   ],
@@ -628,6 +606,15 @@ let commandsOppositeShiftMode = {
         TestUI.updateModesNotice();
       },
     },
+    {
+      id: "setOppositeShiftModeKeymap",
+      display: "keymap",
+      configValue: "keymap",
+      exec: () => {
+        UpdateConfig.setOppositeShiftMode("keymap");
+        TestUI.updateModesNotice();
+      },
+    },
   ],
 };
 
@@ -649,6 +636,41 @@ let commandsSoundOnError = {
       configValue: true,
       exec: () => {
         UpdateConfig.setPlaySoundOnError(true);
+        Sound.playError();
+      },
+    },
+  ],
+};
+
+let commandsSoundVolume = {
+  title: "Sound volume...",
+  configKey: "soundVolume",
+  list: [
+    {
+      id: "setSoundVolume0.1",
+      display: "quiet",
+      configValue: "0.1",
+      exec: () => {
+        UpdateConfig.setSoundVolume("0.1");
+        Sound.playClick();
+      },
+    },
+    {
+      id: "setSoundVolume0.5",
+      display: "medium",
+      configValue: "0.5",
+      exec: () => {
+        UpdateConfig.setSoundVolume("0.5");
+        Sound.playClick();
+      },
+    },
+    {
+      id: "setSoundVolume1.0",
+      display: "loud",
+      configValue: "1.0",
+      exec: () => {
+        UpdateConfig.setSoundVolume("1.0");
+        Sound.playClick();
       },
     },
   ],
@@ -764,6 +786,31 @@ let commandsStartGraphsAtZero = {
       configValue: true,
       exec: () => {
         UpdateConfig.setStartGraphsAtZero(true);
+      },
+    },
+  ],
+};
+
+let commandsLazyMode = {
+  title: "Lazy mode...",
+  configKey: "lazyMode",
+  list: [
+    {
+      id: "setLazyModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setLazyMode(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setLazyModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setLazyMode(true);
+        TestLogic.restart();
       },
     },
   ],
@@ -914,8 +961,11 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick1",
-      display: "1",
+      display: "click",
       configValue: "1",
+      hover: () => {
+        Sound.previewClick("1");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("1");
         Sound.playClick(Config.playSoundOnClick);
@@ -923,8 +973,11 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick2",
-      display: "2",
+      display: "beep",
       configValue: "2",
+      hover: () => {
+        Sound.previewClick("2");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("2");
         Sound.playClick(Config.playSoundOnClick);
@@ -932,8 +985,11 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick3",
-      display: "3",
+      display: "pop",
       configValue: "3",
+      hover: () => {
+        Sound.previewClick("3");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("3");
         Sound.playClick(Config.playSoundOnClick);
@@ -941,10 +997,49 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick4",
-      display: "4",
+      display: "nk creams",
       configValue: "4",
+      hover: () => {
+        Sound.previewClick("4");
+      },
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("4");
+        Sound.playClick(Config.playSoundOnClick);
+      },
+    },
+    {
+      id: "setSoundOnClick5",
+      display: "typewriter",
+      configValue: "5",
+      hover: () => {
+        Sound.previewClick("5");
+      },
+      exec: () => {
+        UpdateConfig.setPlaySoundOnClick("5");
+        Sound.playClick(Config.playSoundOnClick);
+      },
+    },
+    {
+      id: "setSoundOnClick6",
+      display: "osu",
+      configValue: "6",
+      hover: () => {
+        Sound.previewClick("6");
+      },
+      exec: () => {
+        UpdateConfig.setPlaySoundOnClick("6");
+        Sound.playClick(Config.playSoundOnClick);
+      },
+    },
+    {
+      id: "setSoundOnClick7",
+      display: "hitmarker",
+      configValue: "7",
+      hover: () => {
+        Sound.previewClick("7");
+      },
+      exec: () => {
+        UpdateConfig.setPlaySoundOnClick("7");
         Sound.playClick(Config.playSoundOnClick);
       },
     },
@@ -1039,7 +1134,6 @@ export let commandsEnableAds = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setEnableAds("off");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1048,7 +1142,6 @@ export let commandsEnableAds = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setEnableAds("on");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1057,7 +1150,6 @@ export let commandsEnableAds = {
       configValue: "max",
       exec: () => {
         UpdateConfig.setEnableAds("max");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],
@@ -1125,7 +1217,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleUnderline",
       display: "underline",
-      configValue: "underliner",
+      configValue: "underline",
       exec: () => {
         UpdateConfig.setCaretStyle("underline");
       },
@@ -1374,6 +1466,14 @@ let commandsKeymapStyle = {
       },
     },
     {
+      id: "setKeymapStyleAlice",
+      display: "alice",
+      configValue: "alice",
+      exec: () => {
+        UpdateConfig.setKeymapStyle("alice");
+      },
+    },
+    {
       id: "setKeymapStyleMatrix",
       display: "matrix",
       configValue: "matrix",
@@ -1426,6 +1526,31 @@ let commandsKeymapLegendStyle = {
       configValue: "blank",
       exec: () => {
         UpdateConfig.setKeymapLegendStyle("blank");
+      },
+    },
+  ],
+};
+
+let commandsBritishEnglish = {
+  title: "British english...",
+  configKey: "britishEnglish",
+  list: [
+    {
+      id: "setBritishEnglishOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setBritishEnglishOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(true);
+        TestLogic.restart();
       },
     },
   ],
@@ -1555,6 +1680,29 @@ let commandsSingleListCommandLine = {
   ],
 };
 
+let commandsCapsLockWarning = {
+  title: "Caps lock warning...",
+  configKey: "capsLockWarning",
+  list: [
+    {
+      id: "capsLockWarningOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setCapsLockWarning(true);
+      },
+    },
+    {
+      id: "capsLockWarningOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setCapsLockWarning(false);
+      },
+    },
+  ],
+};
+
 let commandsTimerOpacity = {
   title: "Timer/progress opacity...",
   configKey: "timerOpacity",
@@ -1603,6 +1751,7 @@ let commandsWordCount = {
       display: "10",
       configValue: 10,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("10");
         TestLogic.restart();
       },
@@ -1612,6 +1761,7 @@ let commandsWordCount = {
       display: "25",
       configValue: 25,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("25");
         TestLogic.restart();
       },
@@ -1621,6 +1771,7 @@ let commandsWordCount = {
       display: "50",
       configValue: 50,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("50");
         TestLogic.restart();
       },
@@ -1630,6 +1781,7 @@ let commandsWordCount = {
       display: "100",
       configValue: 100,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("100");
         TestLogic.restart();
       },
@@ -1639,6 +1791,7 @@ let commandsWordCount = {
       display: "200",
       configValue: 200,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("200");
         TestLogic.restart();
       },
@@ -1648,6 +1801,7 @@ let commandsWordCount = {
       display: "custom...",
       input: true,
       exec: (input) => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount(input);
         TestLogic.restart();
       },
@@ -1664,6 +1818,7 @@ let commandsQuoteLengthConfig = {
       display: "all",
       configValue: [0, 1, 2, 3],
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength([0, 1, 2, 3]);
         TestLogic.restart();
       },
@@ -1674,6 +1829,7 @@ let commandsQuoteLengthConfig = {
       configValue: 0,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(0);
         TestLogic.restart();
       },
@@ -1684,6 +1840,7 @@ let commandsQuoteLengthConfig = {
       configValue: 1,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(1);
         TestLogic.restart();
       },
@@ -1694,6 +1851,7 @@ let commandsQuoteLengthConfig = {
       configValue: 2,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(2);
         TestLogic.restart();
       },
@@ -1704,6 +1862,7 @@ let commandsQuoteLengthConfig = {
       configValue: 3,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(3);
         TestLogic.restart();
       },
@@ -1869,6 +2028,7 @@ let commandsTimeConfig = {
       display: "15",
       configValue: 15,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("15");
         TestLogic.restart();
       },
@@ -1878,6 +2038,7 @@ let commandsTimeConfig = {
       display: "30",
       configValue: 30,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("30");
         TestLogic.restart();
       },
@@ -1887,6 +2048,7 @@ let commandsTimeConfig = {
       display: "60",
       configValue: 60,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("60");
         TestLogic.restart();
       },
@@ -1896,6 +2058,7 @@ let commandsTimeConfig = {
       display: "120",
       configValue: 120,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("120");
         TestLogic.restart();
       },
@@ -1905,6 +2068,7 @@ let commandsTimeConfig = {
       display: "custom...",
       input: true,
       exec: (input) => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig(input);
         TestLogic.restart();
       },
@@ -2082,6 +2246,36 @@ let commandsPageWidth = {
   ],
 };
 
+let commandsPractiseWords = {
+  title: "Practice words...",
+  list: [
+    {
+      id: "practiseWordsMissed",
+      display: "missed",
+      noIcon: true,
+      exec: () => {
+        PractiseWords.init(true, false);
+      },
+    },
+    {
+      id: "practiseWordsSlow",
+      display: "slow",
+      noIcon: true,
+      exec: () => {
+        PractiseWords.init(false, true);
+      },
+    },
+    {
+      id: "practiseWordsBoth",
+      display: "both",
+      noIcon: true,
+      exec: () => {
+        PractiseWords.init(true, true);
+      },
+    },
+  ],
+};
+
 export let themeCommands = {
   title: "Theme...",
   configKey: "theme",
@@ -2100,6 +2294,24 @@ Misc.getThemesList().then((themes) => {
       },
       exec: () => {
         UpdateConfig.setTheme(theme.name);
+      },
+    });
+  });
+});
+
+export let commandsChallenges = {
+  title: "Load challenge...",
+  list: [],
+};
+
+Misc.getChallengeList().then((challenges) => {
+  challenges.forEach((challenge) => {
+    commandsChallenges.list.push({
+      id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
+      noIcon: true,
+      display: challenge.display,
+      exec: () => {
+        ChallengeController.setup(challenge.name);
       },
     });
   });
@@ -2170,30 +2382,36 @@ let commandsCopyWordsToClipboard = {
 
 let commandsMonkeyPowerLevel = {
   title: "Power mode...",
+  configKey: "monkeyPowerLevel",
   list: [
     {
       id: "monkeyPowerLevelOff",
       display: "off",
+      configValue: "off",
       exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
       id: "monkeyPowerLevel1",
       display: "mellow",
+      configValue: "1",
       exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
       display: "high",
+      configValue: "2",
       exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
       display: "ultra",
+      configValue: "3",
       exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
       display: "over 9000",
+      configValue: "4",
       exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
@@ -2281,12 +2499,6 @@ export let defaultCommands = {
       display: "Stop on error...",
       icon: "fa-hand-paper",
       subgroup: commandsStopOnError,
-    },
-    {
-      id: "changeSoundOnClick",
-      display: "Sound on click...",
-      icon: "fa-volume-up",
-      subgroup: commandsSoundOnClick,
     },
     {
       id: "changeNumbers",
@@ -2390,6 +2602,12 @@ export let defaultCommands = {
       subgroup: commandsSingleListCommandLine,
     },
     {
+      id: "capsLockWarning",
+      display: "Caps lock warning...",
+      icon: "fa-exclamation-triangle",
+      subgroup: commandsCapsLockWarning,
+    },
+    {
       id: "changeMinWpm",
       display: "Minimum wpm...",
       alias: "minimum",
@@ -2417,10 +2635,22 @@ export let defaultCommands = {
       subgroup: commandsOppositeShiftMode,
     },
     {
+      id: "changeSoundOnClick",
+      display: "Sound on click...",
+      icon: "fa-volume-up",
+      subgroup: commandsSoundOnClick,
+    },
+    {
       id: "changeSoundOnError",
       display: "Sound on error...",
       icon: "fa-volume-mute",
       subgroup: commandsSoundOnError,
+    },
+    {
+      id: "changeSoundVolume",
+      display: "Sound volume...",
+      icon: "fa-volume-down",
+      subgroup: commandsSoundVolume,
     },
     {
       id: "changeFlipTestColors",
@@ -2459,6 +2689,12 @@ export let defaultCommands = {
       subgroup: commandsSwapEscAndTab,
     },
     {
+      id: "changeLazyMode",
+      display: "Lazy mode...",
+      icon: "fa-couch",
+      subgroup: commandsLazyMode,
+    },
+    {
       id: "changeShowAllLines",
       display: "Show all lines...",
       icon: "fa-align-left",
@@ -2483,10 +2719,28 @@ export let defaultCommands = {
       subgroup: commandsEnableAds,
     },
     {
+      id: "changeTheme",
+      display: "Theme...",
+      icon: "fa-palette",
+      subgroup: themeCommands,
+    },
+    {
       id: "setCustomTheme",
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: commandsCustomTheme,
+    },
+    {
+      id: "changeRandomTheme",
+      display: "Random theme...",
+      icon: "fa-random",
+      subgroup: commandsRandomTheme,
+    },
+    {
+      id: "randomizeTheme",
+      display: "Next random theme",
+      icon: "fa-random",
+      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "changeDifficulty",
@@ -2553,22 +2807,16 @@ export let defaultCommands = {
       },
     },
     {
-      id: "changeTheme",
-      display: "Theme...",
-      icon: "fa-palette",
-      subgroup: themeCommands,
-    },
-    {
-      id: "changeRandomTheme",
-      display: "Random theme...",
-      icon: "fa-random",
-      subgroup: commandsRandomTheme,
-    },
-    {
       id: "changeLanguage",
       display: "Language...",
       icon: "fa-language",
       subgroup: commandsLanguages,
+    },
+    {
+      id: "changeBritishEnglish",
+      display: "British english...",
+      icon: "fa-language",
+      subgroup: commandsBritishEnglish,
     },
     {
       id: "changeFunbox",
@@ -2578,14 +2826,8 @@ export let defaultCommands = {
       subgroup: commandsFunbox,
     },
     {
-      id: "changeCapsLockBackspace",
-      display: "Caps lock backspace...",
-      icon: "fa-backspace",
-      subgroup: commandsCapsLockBackspace,
-    },
-    {
       id: "changeLayout",
-      display: "Layout...",
+      display: "Layout emulator...",
       icon: "fa-keyboard",
       subgroup: commandsLayouts,
     },
@@ -2655,12 +2897,6 @@ export let defaultCommands = {
       display: "Page width...",
       icon: "fa-arrows-alt-h",
       subgroup: commandsPageWidth,
-    },
-    {
-      id: "randomizeTheme",
-      display: "Next random theme",
-      icon: "fa-palette",
-      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "viewTypingPage",
@@ -2739,6 +2975,12 @@ export let defaultCommands = {
       },
     },
     {
+      id: "loadChallenge",
+      display: "Load challenge...",
+      icon: "fa-award",
+      subgroup: commandsChallenges,
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       icon: "fa-users",
@@ -2758,16 +3000,12 @@ export let defaultCommands = {
       },
     },
     {
-      id: "practiceMissedWords",
-      display: "Practice missed words",
+      id: "practiseWords",
+      display: "Practice words...",
       icon: "fa-exclamation-triangle",
-      exec: () => {
-        PractiseMissed.init();
-      },
+      subgroup: commandsPractiseWords,
       available: () => {
-        return (
-          TestUI.resultVisible && Object.keys(TestStats.missedWords).length > 0
-        );
+        return TestUI.resultVisible;
       },
     },
     {
@@ -2847,7 +3085,7 @@ export let defaultCommands = {
       icon: "fa-cog",
       input: true,
       defaultValue: "",
-      exec: (input) => {},
+      exec: () => {},
     },
     {
       id: "monkeyPower",
@@ -2855,10 +3093,26 @@ export let defaultCommands = {
       alias: "powermode",
       icon: "fa-egg",
       visible: false,
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMonkeyPowerLevel);
-        Commandline.show();
+      subgroup: commandsMonkeyPowerLevel,
+    },
+    {
+      id: "clearSwCache",
+      display: "Clear SW cache",
+      icon: "fa-cog",
+      exec: async () => {
+        let clist = await caches.keys();
+        for (let name of clist) {
+          await caches.delete(name);
+        }
+        window.location.reload(true);
+      },
+    },
+    {
+      id: "getSwCache",
+      display: "Get SW cache",
+      icon: "fa-cog",
+      exec: async () => {
+        alert(await caches.keys());
       },
     },
   ],

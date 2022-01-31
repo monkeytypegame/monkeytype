@@ -5,7 +5,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as Focus from "./focus";
 import * as Funbox from "./funbox";
@@ -17,23 +17,33 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as ChartController from "./chart-controller";
 import * as UI from "./ui";
 import * as QuoteSearchPopup from "./quote-search-popup";
+import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
-import * as ThemeColors from "./theme-colors";
-import * as CloudFunctions from "./cloud-functions";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
+import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
+import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
+import * as WeakSpot from "./weak-spot";
+import * as Wordset from "./wordset";
+import * as ChallengeContoller from "./challenge-controller";
+import * as QuoteRatePopup from "./quote-rate-popup";
+import * as BritishEnglish from "./british-english";
+import * as LazyMode from "./lazy-mode";
+import * as Result from "./result";
 
-let glarsesMode = false;
+const objecthash = require("object-hash");
+
+export let glarsesMode = false;
+
+let failReason = "";
 
 export function toggleGlarses() {
   glarsesMode = true;
@@ -45,8 +55,14 @@ export function toggleGlarses() {
 
 export let notSignedInLastResult = null;
 
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
+
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
+  delete notSignedInLastResult.hash;
+  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
 }
 
 class Words {
@@ -55,11 +71,15 @@ class Words {
     this.length = 0;
     this.currentIndex = 0;
   }
-  get(i) {
+  get(i, raw = false) {
     if (i === undefined) {
       return this.list;
     } else {
-      return this.list[i];
+      if (raw) {
+        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
+      } else {
+        return this.list[i];
+      }
     }
   }
   getCurrent() {
@@ -86,21 +106,36 @@ class Words {
   increaseCurrentIndex() {
     this.currentIndex++;
   }
+  clean() {
+    for (let s of this.list) {
+      if (/ +/.test(s)) {
+        let id = this.list.indexOf(s);
+        let tempList = s.split(" ");
+        this.list.splice(id, 1);
+        for (let i = 0; i < tempList.length; i++) {
+          this.list.splice(id + i, 0, tempList[i]);
+        }
+      }
+    }
+  }
 }
 
 class Input {
   constructor() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   reset() {
     this.current = "";
     this.history = [];
+    this.length = 0;
   }
 
   resetHistory() {
     this.history = [];
+    this.length = 0;
   }
 
   setCurrent(val) {
@@ -137,6 +172,10 @@ class Input {
     } else {
       return this.history[i];
     }
+  }
+
+  getHistoryLast() {
+    return this.history[this.history.length - 1];
   }
 }
 
@@ -223,6 +262,8 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
 
   let currentLanguage = Config.language.split("_")[0];
 
+  let lastChar = Misc.getLastChar(previousWord);
+
   if (Config.funbox === "58008") {
     if (currentWord.length > 3) {
       if (Math.random() < 0.75) {
@@ -232,10 +273,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     }
   } else {
     if (
-      (index == 0 ||
-        Misc.getLastChar(previousWord) == "." ||
-        Misc.getLastChar(previousWord) == "?" ||
-        Misc.getLastChar(previousWord) == "!") &&
+      (index == 0 || lastChar == "." || lastChar == "?" || lastChar == "!") &&
       currentLanguage != "code"
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
@@ -254,8 +292,8 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       }
     } else if (
       (Math.random() < 0.1 &&
-        Misc.getLastChar(previousWord) != "." &&
-        Misc.getLastChar(previousWord) != "," &&
+        lastChar != "." &&
+        lastChar != "," &&
         index != maxindex - 2) ||
       index == maxindex - 1
     ) {
@@ -292,24 +330,20 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       }
     } else if (
       Math.random() < 0.01 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
+      lastChar != "," &&
+      lastChar != "." &&
       currentLanguage !== "russian"
     ) {
       word = `"${word}"`;
     } else if (
       Math.random() < 0.011 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
+      lastChar != "," &&
+      lastChar != "." &&
       currentLanguage !== "russian" &&
       currentLanguage !== "ukrainian"
     ) {
       word = `'${word}'`;
-    } else if (
-      Math.random() < 0.012 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "."
-    ) {
+    } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
       if (currentLanguage == "code") {
         let r = Math.random();
         if (r < 0.25) {
@@ -324,37 +358,46 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       } else {
         word = `(${word})`;
       }
-    } else if (Math.random() < 0.013) {
+    } else if (
+      Math.random() < 0.013 &&
+      lastChar != "," &&
+      lastChar != "." &&
+      lastChar != ";" &&
+      lastChar != "؛" &&
+      lastChar != ":"
+    ) {
       if (currentLanguage == "french") {
         word = ":";
-      }
-      if (currentLanguage == "greek") {
+      } else if (currentLanguage == "greek") {
         word = "·";
       } else {
         word += ":";
       }
     } else if (
       Math.random() < 0.014 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
+      lastChar != "," &&
+      lastChar != "." &&
       previousWord != "-"
     ) {
       word = "-";
     } else if (
       Math.random() < 0.015 &&
-      Misc.getLastChar(previousWord) != "," &&
-      Misc.getLastChar(previousWord) != "." &&
-      Misc.getLastChar(previousWord) != ";"
+      lastChar != "," &&
+      lastChar != "." &&
+      lastChar != ";" &&
+      lastChar != "؛" &&
+      lastChar != ":"
     ) {
       if (currentLanguage == "french") {
         word = ";";
-      }
-      if (currentLanguage == "greek") {
+      } else if (currentLanguage == "greek") {
         word = "·";
+      } else if (currentLanguage == "arabic") {
+        word += "؛";
       } else {
         word += ";";
       }
-    } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
+    } else if (Math.random() < 0.2 && lastChar != ",") {
       if (
         currentLanguage == "arabic" ||
         currentLanguage == "urdu" ||
@@ -417,292 +460,6 @@ export function startTest() {
   return true;
 }
 
-export async function init() {
-  setActive(false);
-  Replay.stopReplayRecording();
-  words.reset();
-  TestUI.setCurrentWordElementIndex(0);
-  // accuracy = {
-  //   correct: 0,
-  //   incorrect: 0,
-  // };
-
-  input.resetHistory();
-  input.resetCurrent();
-
-  let language = await Misc.getLanguage(Config.language);
-  if (language && language.name !== Config.language) {
-    UpdateConfig.setLanguage("english");
-  }
-
-  if (!language) {
-    UpdateConfig.setLanguage("english");
-    language = await Misc.getLanguage(Config.language);
-  }
-
-  if (
-    Config.mode == "time" ||
-    Config.mode == "words" ||
-    Config.mode == "custom"
-  ) {
-    let wordsBound = 100;
-    if (Config.showAllLines) {
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          wordsBound = CustomText.word;
-        } else if (CustomText.isTimeRandom) {
-          wordsBound = 100;
-        } else {
-          wordsBound = CustomText.text.length;
-        }
-      } else if (Config.mode != "time") {
-        wordsBound = Config.words;
-      }
-    } else {
-      if (Config.mode === "words" && Config.words < wordsBound) {
-        wordsBound = Config.words;
-      }
-      if (
-        Config.mode == "custom" &&
-        CustomText.isWordRandom &&
-        CustomText.word < wordsBound
-      ) {
-        wordsBound = CustomText.word;
-      }
-      if (
-        Config.mode == "custom" &&
-        CustomText.isTimeRandom &&
-        CustomText.time < wordsBound
-      ) {
-        wordsBound = 100;
-      }
-      if (
-        Config.mode == "custom" &&
-        !CustomText.isWordRandom &&
-        CustomText.text.length < wordsBound
-      ) {
-        wordsBound = CustomText.text.length;
-      }
-    }
-
-    if (
-      (Config.mode === "custom" &&
-        CustomText.isWordRandom &&
-        CustomText.word == 0) ||
-      (Config.mode === "custom" &&
-        CustomText.isTimeRandom &&
-        CustomText.time == 0)
-    ) {
-      wordsBound = 100;
-    }
-
-    if (Config.mode === "words" && Config.words === 0) {
-      wordsBound = 100;
-    }
-    if (Config.funbox === "plus_one") {
-      wordsBound = 2;
-    }
-    if (Config.funbox === "plus_two") {
-      wordsBound = 3;
-    }
-    let wordset = language.words;
-    if (Config.mode == "custom") {
-      wordset = CustomText.text;
-    }
-
-    if (Config.funbox == "poetry") {
-      let poem = await Poetry.getPoem();
-      poem.words.forEach((word) => {
-        words.push(word);
-      });
-    } else {
-      for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        const previousWord = words.get(i - 1);
-        const previousWord2 = words.get(i - 2);
-        if (
-          Config.mode == "custom" &&
-          !CustomText.isWordRandom &&
-          !CustomText.isTimeRandom
-        ) {
-          randomWord = CustomText.text[i];
-        } else if (
-          Config.mode == "custom" &&
-          (wordset.length < 3 || PractiseMissed.before.mode !== null)
-        ) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        } else {
-          let regenarationCount = 0; //infinite loop emergency stop button
-          while (
-            regenarationCount < 100 &&
-            (randomWord == previousWord ||
-              randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I") ||
-              randomWord.indexOf(" ") > -1)
-          ) {
-            regenarationCount++;
-            randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-          }
-        }
-
-        if (randomWord === undefined) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        }
-
-        if (Config.funbox === "rAnDoMcAsE") {
-          let randomcaseword = "";
-          for (let i = 0; i < randomWord.length; i++) {
-            if (i % 2 != 0) {
-              randomcaseword += randomWord[i].toUpperCase();
-            } else {
-              randomcaseword += randomWord[i];
-            }
-          }
-          randomWord = randomcaseword;
-        } else if (Config.funbox === "gibberish") {
-          randomWord = Misc.getGibberish();
-        } else if (Config.funbox === "58008") {
-          // UpdateConfig.setPunctuation(false, true);
-          UpdateConfig.setNumbers(false, true);
-          randomWord = Misc.getNumbers(7);
-        } else if (Config.funbox === "specials") {
-          UpdateConfig.setPunctuation(false, true);
-          UpdateConfig.setNumbers(false, true);
-          randomWord = Misc.getSpecials();
-        } else if (Config.funbox === "ascii") {
-          UpdateConfig.setPunctuation(false, true);
-          UpdateConfig.setNumbers(false, true);
-          randomWord = Misc.getASCII();
-        }
-
-        if (Config.punctuation) {
-          randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
-        }
-        if (Config.numbers) {
-          if (
-            Math.random() < 0.1 &&
-            i !== 0 &&
-            Misc.getLastChar(previousWord) !== "."
-          ) {
-            randomWord = Misc.getNumbers(4);
-            if (i == wordsBound - 1) {
-              randomWord += ".";
-            }
-          }
-        }
-
-        if (/\t/g.test(randomWord)) {
-          setHasTab(true);
-        }
-
-        words.push(randomWord);
-      }
-    }
-  } else if (Config.mode == "quote") {
-    // setLanguage(Config.language.replace(/_\d*k$/g, ""), true);
-
-    let quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
-
-    if (quotes.length === 0) {
-      Notifications.add(
-        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
-        0
-      );
-      TestUI.setTestRestarting(false);
-      UpdateConfig.setMode("words");
-      restart();
-      return;
-    }
-
-    let rq;
-    if (Config.quoteLength != -2) {
-      let quoteLengths = Config.quoteLength;
-      let groupIndex;
-      if (quoteLengths.length > 1) {
-        groupIndex =
-          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-        while (quotes.groups[groupIndex].length === 0) {
-          groupIndex =
-            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-        }
-      } else {
-        groupIndex = quoteLengths[0];
-        if (quotes.groups[groupIndex].length === 0) {
-          Notifications.add("No quotes found for selected quote length", 0);
-          TestUI.setTestRestarting(false);
-          return;
-        }
-      }
-
-      rq =
-        quotes.groups[groupIndex][
-          Math.floor(Math.random() * quotes.groups[groupIndex].length)
-        ];
-      if (randomQuote != null && rq.id === randomQuote.id) {
-        rq =
-          quotes.groups[groupIndex][
-            Math.floor(Math.random() * quotes.groups[groupIndex].length)
-          ];
-      }
-    } else {
-      quotes.groups.forEach((group) => {
-        let filtered = group.filter(
-          (quote) => quote.id == QuoteSearchPopup.selectedId
-        );
-        if (filtered.length > 0) {
-          rq = filtered[0];
-        }
-      });
-      if (rq == undefined) {
-        rq = quotes.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0);
-      }
-    }
-    rq.text = rq.text.replace(/ +/gm, " ");
-    rq.text = rq.text.replace(/\\\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\\\n/gm, "\n");
-    rq.text = rq.text.replace(/\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\n/gm, "\n");
-    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-
-    setRandomQuote(rq);
-
-    let w = randomQuote.text.trim().split(" ");
-    for (let i = 0; i < w.length; i++) {
-      if (/\t/g.test(w[i])) {
-        setHasTab(true);
-      }
-      words.push(w[i]);
-    }
-  }
-  //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
-  if (language.ligatures) {
-    $("#words").addClass("withLigatures");
-    $("#resultWordsHistory .words").addClass("withLigatures");
-    $("#resultReplay .words").addClass("withLigatures");
-  } else {
-    $("#words").removeClass("withLigatures");
-    $("#resultWordsHistory .words").removeClass("withLigatures");
-    $("#resultReplay .words").removeClass("withLigatures");
-  }
-  // if (Config.mode == "zen") {
-  //   // Creating an empty active word element for zen mode
-  //   $("#words").append('<div class="word active"></div>');
-  //   $("#words").css("height", "auto");
-  //   $("#wordsWrapper").css("height", "auto");
-  // } else {
-  if ($(".pageTest").hasClass("active")) {
-    await Funbox.activate();
-  }
-  TestUI.showWords();
-  // }
-}
-
 export function restart(
   withSameWordset = false,
   nosave = false,
@@ -715,7 +472,7 @@ export function restart(
     } catch {}
     return;
   }
-  if ($(".pageTest").hasClass("active") && !TestUI.resultVisible) {
+  if (UI.getActivePage() == "pageTest" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (hasTab) {
         try {
@@ -772,15 +529,15 @@ export function restart(
   }
 
   if (
-    PractiseMissed.before.mode !== null &&
+    PractiseWords.before.mode !== null &&
     !withSameWordset &&
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    UpdateConfig.setMode(PractiseMissed.before.mode);
-    UpdateConfig.setPunctuation(PractiseMissed.before.punctuation);
-    UpdateConfig.setNumbers(PractiseMissed.before.numbers);
-    PractiseMissed.resetBefore();
+    UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
+    UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    UpdateConfig.setMode(PractiseWords.before.mode);
+    PractiseWords.resetBefore();
   }
 
   let repeatWithPace = false;
@@ -793,7 +550,6 @@ export function restart(
   TestStats.restart();
   corrected.reset();
   ShiftTracker.reset();
-  Focus.set(false);
   Caret.hide();
   setActive(false);
   Replay.stopReplayRecording();
@@ -801,11 +557,16 @@ export function restart(
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
+  Replay.pauseReplay();
   setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
-  TestUI.focusWords();
+  $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
+  QuoteRatePopup.clearQuoteStats();
+  if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  $("#wordsInput").val(" ");
 
   TestUI.reset();
 
@@ -836,10 +597,33 @@ export function restart(
     },
     125,
     async () => {
+      if (UI.getActivePage() == "pageTest") Focus.set(false);
+      TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
-      if (!withSameWordset) {
+      $("#wordsInput").val(" ");
+      let shouldQuoteRepeat = false;
+      if (
+        Config.mode === "quote" &&
+        Config.repeatQuotes === "typing" &&
+        failReason !== ""
+      ) {
+        shouldQuoteRepeat = true;
+      }
+      if (Config.funbox === "arrows") {
+        UpdateConfig.setPunctuation(false, true);
+        UpdateConfig.setNumbers(false, true);
+      } else if (Config.funbox === "58008") {
+        UpdateConfig.setNumbers(false, true);
+      } else if (Config.funbox === "specials") {
+        UpdateConfig.setPunctuation(false, true);
+        UpdateConfig.setNumbers(false, true);
+      } else if (Config.funbox === "ascii") {
+        UpdateConfig.setPunctuation(false, true);
+        UpdateConfig.setNumbers(false, true);
+      }
+      if (!withSameWordset && !shouldQuoteRepeat) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
         setHasTab(false);
@@ -852,10 +636,19 @@ export function restart(
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
-        await Funbox.activate();
+        if (Config.funbox === "plus_one" || Config.funbox === "plus_two") {
+          Notifications.add(
+            "Sorry, this funbox won't work with repeated tests.",
+            0
+          );
+          await Funbox.activate("none");
+        } else {
+          await Funbox.activate();
+        }
         TestUI.showWords();
         PaceCaret.init();
       }
+      failReason = "";
       if (Config.mode === "quote") {
         setRepeated(false);
       }
@@ -878,16 +671,7 @@ export function restart(
         }
       }
 
-      let mode2 = "";
-      if (Config.mode === "time") {
-        mode2 = Config.time;
-      } else if (Config.mode === "words") {
-        mode2 = Config.words;
-      } else if (Config.mode === "custom") {
-        mode2 = "custom";
-      } else if (Config.mode === "quote") {
-        mode2 = randomQuote.id;
-      }
+      let mode2 = Misc.getMode2();
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -901,12 +685,14 @@ export function restart(
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         Keymap.highlightKey(
           words
@@ -938,7 +724,7 @@ export function restart(
             TestTimer.clear();
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
-            ChartController.result.update();
+            // ChartController.result.update();
             TestUI.updateModesNotice();
             UI.setPageTransition(false);
             // console.log(TestStats.incompleteSeconds);
@@ -949,10 +735,392 @@ export function restart(
   );
 }
 
+async function getNextWord(wordset, language, wordsBound) {
+  let randomWord = wordset.randomWord();
+  const previousWord = words.get(words.length - 1, true);
+  const previousWord2 = words.get(words.length - 2, true);
+  if (Config.mode === "quote") {
+    randomWord = randomQuote.textSplit[words.length];
+  } else if (
+    Config.mode == "custom" &&
+    !CustomText.isWordRandom &&
+    !CustomText.isTimeRandom
+  ) {
+    randomWord = CustomText.text[words.length];
+  } else if (
+    Config.mode == "custom" &&
+    (CustomText.isWordRandom || CustomText.isTimeRandom) &&
+    (wordset.length < 3 || PractiseWords.before.mode !== null)
+  ) {
+    randomWord = wordset.randomWord();
+  } else {
+    let regenarationCount = 0; //infinite loop emergency stop button
+    while (
+      regenarationCount < 100 &&
+      (previousWord == randomWord ||
+        previousWord2 == randomWord ||
+        (!Config.punctuation && randomWord == "I"))
+    ) {
+      regenarationCount++;
+      randomWord = wordset.randomWord();
+    }
+  }
+
+  if (randomWord === undefined) {
+    randomWord = wordset.randomWord();
+  }
+
+  if (Config.lazyMode === true && !language.noLazyMode) {
+    randomWord = LazyMode.replaceAccents(randomWord, language.accents);
+  }
+
+  randomWord = randomWord.replace(/ +/gm, " ");
+  randomWord = randomWord.replace(/^ | $/gm, "");
+
+  if (Config.funbox === "rAnDoMcAsE") {
+    let randomcaseword = "";
+    for (let i = 0; i < randomWord.length; i++) {
+      if (i % 2 != 0) {
+        randomcaseword += randomWord[i].toUpperCase();
+      } else {
+        randomcaseword += randomWord[i];
+      }
+    }
+    randomWord = randomcaseword;
+  } else if (Config.funbox === "capitals") {
+    randomWord = Misc.capitalizeFirstLetter(randomWord);
+  } else if (Config.funbox === "gibberish") {
+    randomWord = Misc.getGibberish();
+  } else if (Config.funbox === "arrows") {
+    randomWord = Misc.getArrows();
+  } else if (Config.funbox === "58008") {
+    randomWord = Misc.getNumbers(7);
+  } else if (Config.funbox === "specials") {
+    randomWord = Misc.getSpecials();
+  } else if (Config.funbox === "ascii") {
+    randomWord = Misc.getASCII();
+  } else if (Config.funbox === "weakspot") {
+    randomWord = WeakSpot.getWord(wordset);
+  }
+
+  if (Config.punctuation) {
+    randomWord = punctuateWord(
+      words.get(words.length - 1),
+      randomWord,
+      words.length,
+      wordsBound
+    );
+  }
+  if (Config.numbers) {
+    if (Math.random() < 0.1) {
+      randomWord = Misc.getNumbers(4);
+    }
+  }
+
+  if (Config.britishEnglish && /english/.test(Config.language)) {
+    randomWord = await BritishEnglish.replace(randomWord);
+  }
+
+  return randomWord;
+}
+
+export async function init() {
+  setActive(false);
+  Replay.stopReplayRecording();
+  words.reset();
+  TestUI.setCurrentWordElementIndex(0);
+  // accuracy = {
+  //   correct: 0,
+  //   incorrect: 0,
+  // };
+
+  input.resetHistory();
+  input.resetCurrent();
+
+  let language = await Misc.getLanguage(Config.language);
+  if (language && language.name !== Config.language) {
+    UpdateConfig.setLanguage("english");
+  }
+
+  if (!language) {
+    UpdateConfig.setLanguage("english");
+    language = await Misc.getLanguage(Config.language);
+  }
+
+  if (Config.lazyMode === true && language.noLazyMode) {
+    Notifications.add("This language does not support lazy mode.", 0);
+    UpdateConfig.setLazyMode(false);
+  }
+
+  let wordsBound = 100;
+  if (Config.showAllLines) {
+    if (Config.mode === "quote") {
+      wordsBound = 100;
+    } else if (Config.mode === "custom") {
+      if (CustomText.isWordRandom) {
+        wordsBound = CustomText.word;
+      } else if (CustomText.isTimeRandom) {
+        wordsBound = 100;
+      } else {
+        wordsBound = CustomText.text.length;
+      }
+    } else if (Config.mode != "time") {
+      wordsBound = Config.words;
+    }
+  } else {
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+    if (
+      Config.mode == "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word < wordsBound
+    ) {
+      wordsBound = CustomText.word;
+    }
+    if (Config.mode == "custom" && CustomText.isTimeRandom) {
+      wordsBound = 100;
+    }
+    if (
+      Config.mode == "custom" &&
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length < wordsBound
+    ) {
+      wordsBound = CustomText.text.length;
+    }
+  }
+
+  if (
+    (Config.mode === "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word == 0) ||
+    (Config.mode === "custom" &&
+      CustomText.isTimeRandom &&
+      CustomText.time == 0)
+  ) {
+    wordsBound = 100;
+  }
+
+  if (Config.mode === "words" && Config.words === 0) {
+    wordsBound = 100;
+  }
+  if (Config.funbox === "plus_one") {
+    wordsBound = 2;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  }
+  if (Config.funbox === "plus_two") {
+    wordsBound = 3;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  }
+
+  if (
+    Config.mode == "time" ||
+    Config.mode == "words" ||
+    Config.mode == "custom"
+  ) {
+    let wordList = language.words;
+    if (Config.mode == "custom") {
+      wordList = CustomText.text;
+    }
+    const wordset = Wordset.withWords(wordList);
+
+    if (
+      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
+      Config.mode != "custom"
+    ) {
+      let wordCount = 0;
+
+      // If mode is words, get as many sections as you need until the wordCount is fullfilled
+      while (
+        (Config.mode == "words" && Config.words >= wordCount) ||
+        (Config.mode === "time" && wordCount < 100)
+      ) {
+        let section =
+          Config.funbox == "wikipedia"
+            ? await Wikipedia.getSection()
+            : await Poetry.getPoem();
+        for (let word of section.words) {
+          if (wordCount >= Config.words && Config.mode == "words") {
+            wordCount++;
+            break;
+          }
+          wordCount++;
+          words.push(word);
+        }
+      }
+    } else {
+      for (let i = 0; i < wordsBound; i++) {
+        let randomWord = await getNextWord(wordset, language, wordsBound);
+
+        if (/\t/g.test(randomWord)) {
+          setHasTab(true);
+        }
+
+        if (/ +/.test(randomWord)) {
+          let randomList = randomWord.split(" ");
+          let id = 0;
+          while (id < randomList.length) {
+            words.push(randomList[id]);
+            id++;
+
+            if (
+              words.length == wordsBound &&
+              Config.mode == "custom" &&
+              CustomText.isWordRandom
+            ) {
+              break;
+            }
+          }
+          if (
+            Config.mode == "custom" &&
+            !CustomText.isWordRandom &&
+            !CustomText.isTimeRandom
+          ) {
+            //
+          } else {
+            i = words.length - 1;
+          }
+        } else {
+          words.push(randomWord);
+        }
+      }
+    }
+  } else if (Config.mode == "quote") {
+    // setLanguage(Config.language.replace(/_\d*k$/g, ""), true);
+
+    let quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
+
+    if (quotes.length === 0) {
+      TestUI.setTestRestarting(false);
+      Notifications.add(
+        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
+        0
+      );
+      if (firebase.auth().currentUser) {
+        QuoteSubmitPopup.show(false);
+      }
+      UpdateConfig.setMode("words");
+      restart();
+      return;
+    }
+
+    let rq;
+    if (Config.quoteLength != -2) {
+      let quoteLengths = Config.quoteLength;
+      let groupIndex;
+      if (quoteLengths.length > 1) {
+        groupIndex =
+          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        while (quotes.groups[groupIndex].length === 0) {
+          groupIndex =
+            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        }
+      } else {
+        groupIndex = quoteLengths[0];
+        if (quotes.groups[groupIndex].length === 0) {
+          Notifications.add("No quotes found for selected quote length", 0);
+          TestUI.setTestRestarting(false);
+          return;
+        }
+      }
+
+      rq =
+        quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
+        ];
+      if (randomQuote != null && rq.id === randomQuote.id) {
+        rq =
+          quotes.groups[groupIndex][
+            Math.floor(Math.random() * quotes.groups[groupIndex].length)
+          ];
+      }
+    } else {
+      quotes.groups.forEach((group) => {
+        let filtered = group.filter(
+          (quote) => quote.id == QuoteSearchPopup.selectedId
+        );
+        if (filtered.length > 0) {
+          rq = filtered[0];
+        }
+      });
+      if (rq == undefined) {
+        rq = quotes.groups[0][0];
+        Notifications.add("Quote Id Does Not Exist", 0);
+      }
+    }
+    rq.text = rq.text.replace(/ +/gm, " ");
+    rq.text = rq.text.replace(/\\\\t/gm, "\t");
+    rq.text = rq.text.replace(/\\\\n/gm, "\n");
+    rq.text = rq.text.replace(/\\t/gm, "\t");
+    rq.text = rq.text.replace(/\\n/gm, "\n");
+    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+    rq.text = rq.text.replace(/…/g, "...");
+    rq.text = rq.text.trim();
+    rq.textSplit = rq.text.split(" ");
+    rq.language = Config.language.replace(/_\d*k$/g, "");
+
+    setRandomQuote(rq);
+
+    let w = randomQuote.textSplit;
+
+    wordsBound = Math.min(wordsBound, w.length);
+
+    for (let i = 0; i < wordsBound; i++) {
+      if (/\t/g.test(w[i])) {
+        setHasTab(true);
+      }
+      if (
+        Config.britishEnglish &&
+        Config.language.replace(/_\d*k$/g, "") === "english"
+      ) {
+        w[i] = await BritishEnglish.replace(w[i]);
+      }
+
+      if (Config.lazyMode === true && !language.noLazyMode) {
+        w[i] = LazyMode.replaceAccents(w[i], language.accents);
+      }
+
+      words.push(w[i]);
+    }
+  }
+  //handle right-to-left languages
+  if (language.leftToRight) {
+    TestUI.arrangeCharactersLeftToRight();
+  } else {
+    TestUI.arrangeCharactersRightToLeft();
+  }
+  if (language.ligatures) {
+    $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
+  } else {
+    $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
+  }
+  // if (Config.mode == "zen") {
+  //   // Creating an empty active word element for zen mode
+  //   $("#words").append('<div class="word active"></div>');
+  //   $("#words").css("height", "auto");
+  //   $("#wordsWrapper").css("height", "auto");
+  // } else {
+  if (UI.getActivePage() == "pageTest") {
+    await Funbox.activate();
+  }
+  TestUI.showWords();
+  // }
+}
+
 export function calculateWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
+  //check input history
   for (let i = 0; i < input.history.length; i++) {
     let word = Config.mode == "zen" ? input.getHistory(i) : words.get(i);
     if (input.getHistory(i) == word) {
@@ -968,10 +1136,36 @@ export function calculateWpmAndRaw() {
     }
     chars += input.getHistory(i).length;
   }
-  if (words.getCurrent() == input.current) {
-    correctWordChars += input.current.length;
+  if (input.current !== "") {
+    let word = Config.mode == "zen" ? input.current : words.getCurrent();
+    //check whats currently typed
+    let toAdd = {
+      correct: 0,
+      incorrect: 0,
+      missed: 0,
+    };
+    for (let c = 0; c < word.length; c++) {
+      if (c < input.current.length) {
+        //on char that still has a word list pair
+        if (input.current[c] == word[c]) {
+          toAdd.correct++;
+        } else {
+          toAdd.incorrect++;
+        }
+      } else {
+        //on char that is extra
+        toAdd.missed++;
+      }
+    }
+    chars += toAdd.correct;
+    chars += toAdd.incorrect;
+    chars += toAdd.missed;
+    if (toAdd.incorrect == 0) {
+      //word is correct so far, add chars
+      correctWordChars += toAdd.correct;
+    }
   }
-  if (Config.funbox === "nospace") {
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
   }
   chars += input.current.length;
@@ -986,6 +1180,26 @@ export function calculateWpmAndRaw() {
 
 export async function addWord() {
   let bound = 100;
+  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+    if (Config.mode == "time" && words.length - words.currentIndex < 20) {
+      let section =
+        Config.funbox == "wikipedia"
+          ? await Wikipedia.getSection()
+          : await Poetry.getPoem();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        words.push(word);
+        TestUI.addWord(word);
+      }
+    } else {
+      return;
+    }
+  }
+
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
   if (
@@ -999,7 +1213,9 @@ export async function addWord() {
       CustomText.word != 0) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
-      words.length >= CustomText.text.length)
+      !CustomText.isTimeRandom &&
+      words.length >= CustomText.text.length) ||
+    (Config.mode === "quote" && words.length >= randomQuote.textSplit.length)
   )
     return;
   const language =
@@ -1010,78 +1226,262 @@ export async function addWord() {
           leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
-  const wordset = language.words;
-  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  const previousWord = words.getLast();
-  const previousWordStripped = previousWord
-    .replace(/[.?!":\-,]/g, "")
-    .toLowerCase();
-  const previousWord2Stripped = words
-    .get(words.length - 2)
-    .replace(/[.?!":\-,]/g, "")
-    .toLowerCase();
+  const wordset = Wordset.withWords(language.words);
 
-  if (
-    Config.mode === "custom" &&
-    (CustomText.isWordRandom || CustomText.isTimeRandom) &&
-    wordset.length < 3
-  ) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (
-    Config.mode == "custom" &&
-    !CustomText.isWordRandom &&
-    !CustomText.isTimeRandom
-  ) {
-    randomWord = CustomText.text[words.length];
+  let randomWord = await getNextWord(wordset, language, bound);
+
+  let split = randomWord.split(" ");
+  if (split.length > 1) {
+    split.forEach((word) => {
+      words.push(word);
+      TestUI.addWord(word);
+    });
   } else {
-    while (
-      previousWordStripped == randomWord ||
-      previousWord2Stripped == randomWord ||
-      randomWord.indexOf(" ") > -1 ||
-      (!Config.punctuation && randomWord == "I")
-    ) {
-      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-    }
+    words.push(randomWord);
+    TestUI.addWord(randomWord);
   }
-
-  if (randomWord === undefined) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  }
-
-  if (Config.funbox === "rAnDoMcAsE") {
-    let randomcaseword = "";
-    for (let i = 0; i < randomWord.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += randomWord[i].toUpperCase();
-      } else {
-        randomcaseword += randomWord[i];
-      }
-    }
-    randomWord = randomcaseword;
-  } else if (Config.funbox === "gibberish") {
-    randomWord = Misc.getGibberish();
-  } else if (Config.funbox === "58008") {
-    randomWord = Misc.getNumbers(7);
-  } else if (Config.funbox === "specials") {
-    randomWord = Misc.getSpecials();
-  } else if (Config.funbox === "ascii") {
-    randomWord = Misc.getASCII();
-  }
-
-  if (Config.punctuation && Config.mode != "custom") {
-    randomWord = punctuateWord(previousWord, randomWord, words.length, 0);
-  }
-  if (Config.numbers && Config.mode != "custom") {
-    if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
-    }
-  }
-
-  words.push(randomWord);
-  TestUI.addWord(randomWord);
 }
 
-export function finish(difficultyFailed = false) {
+var retrySaving = {
+  completedEvent: null,
+  canRetry: false,
+};
+
+export function retrySavingResult() {
+  if (!retrySaving.completedEvent) {
+    Notifications.add(
+      "Could not retry saving the result as the result no longer exists.",
+      0,
+      -1
+    );
+  }
+  if (!retrySaving.canRetry) {
+    return;
+  }
+
+  retrySaving.canRetry = false;
+  $("#retrySavingResultButton").addClass("hidden");
+
+  AccountButton.loading(true);
+
+  Notifications.add("Retrying to save...");
+
+  var { completedEvent } = retrySaving;
+
+  axiosInstance
+    .post("/results/add", {
+      result: completedEvent,
+    })
+    .then((response) => {
+      AccountButton.loading(false);
+      Result.hideCrown();
+
+      if (response.status !== 200) {
+        Notifications.add("Result not saved. " + response.data.message, -1);
+      } else {
+        completedEvent._id = response.data.insertedId;
+        if (response.data.isPb) {
+          completedEvent.isPb = true;
+        }
+
+        DB.saveLocalResult(completedEvent);
+        DB.updateLocalStats({
+          time:
+            completedEvent.testDuration +
+            completedEvent.incompleteTestSeconds -
+            completedEvent.afkDuration,
+          started: TestStats.restartCount + 1,
+        });
+
+        try {
+          firebase.analytics().logEvent("testCompleted", completedEvent);
+        } catch (e) {
+          console.log("Analytics unavailable");
+        }
+
+        if (response.data.isPb) {
+          //new pb
+          Result.showCrown();
+          Result.updateCrown();
+          DB.saveLocalPB(
+            Config.mode,
+            completedEvent.mode2,
+            Config.punctuation,
+            Config.language,
+            Config.difficulty,
+            Config.lazyMode,
+            completedEvent.wpm,
+            completedEvent.acc,
+            completedEvent.rawWpm,
+            completedEvent.consistency
+          );
+        }
+      }
+
+      $("#retrySavingResultButton").addClass("hidden");
+      Notifications.add("Result saved", 1);
+    })
+    .catch((e) => {
+      AccountButton.loading(false);
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to save result: " + msg, -1);
+      $("#retrySavingResultButton").removeClass("hidden");
+      retrySaving.canRetry = true;
+    });
+}
+
+function buildCompletedEvent(difficultyFailed) {
+  //build completed event object
+  let completedEvent = {
+    wpm: undefined,
+    rawWpm: undefined,
+    charStats: undefined,
+    acc: undefined,
+    mode: Config.mode,
+    mode2: undefined,
+    quoteLength: -1,
+    punctuation: Config.punctuation,
+    numbers: Config.numbers,
+    lazyMode: Config.lazyMode,
+    timestamp: Date.now(),
+    language: Config.language,
+    restartCount: TestStats.restartCount,
+    incompleteTestSeconds:
+      TestStats.incompleteSeconds < 0
+        ? 0
+        : Misc.roundTo2(TestStats.incompleteSeconds),
+    difficulty: Config.difficulty,
+    blindMode: Config.blindMode,
+    tags: undefined,
+    keySpacing: TestStats.keypressTimings.spacing.array,
+    keyDuration: TestStats.keypressTimings.duration.array,
+    consistency: undefined,
+    keyConsistency: undefined,
+    funbox: Config.funbox,
+    bailedOut: bailout,
+    chartData: {
+      wpm: TestStats.wpmHistory,
+      raw: undefined,
+      err: undefined,
+    },
+    customText: undefined,
+    testDuration: undefined,
+    afkDuration: undefined,
+  };
+
+  // stats
+  let stats = TestStats.calculateStats();
+  if (stats.time % 1 != 0 && Config.mode !== "time") {
+    TestStats.setLastSecondNotRound();
+  }
+  lastTestWpm = stats.wpm;
+  completedEvent.wpm = stats.wpm;
+  completedEvent.rawWpm = stats.wpmRaw;
+  completedEvent.charStats = [
+    stats.correctChars + stats.correctSpaces,
+    stats.incorrectChars,
+    stats.extraChars,
+    stats.missedChars,
+  ];
+  completedEvent.acc = stats.acc;
+
+  // if the last second was not rounded, add another data point to the history
+  if (TestStats.lastSecondNotRound && !difficultyFailed) {
+    let wpmAndRaw = calculateWpmAndRaw();
+    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
+    TestStats.pushToRawHistory(wpmAndRaw.raw);
+    TestStats.pushKeypressesToHistory();
+  }
+
+  //consistency
+  let rawPerSecond = TestStats.keypressPerSecond.map((f) =>
+    Math.round((f.count / 5) * 60)
+  );
+  let stddev = Misc.stdDev(rawPerSecond);
+  let avg = Misc.mean(rawPerSecond);
+  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+  let keyconsistencyarray = TestStats.keypressTimings.spacing.array.slice();
+  keyconsistencyarray = keyconsistencyarray.splice(
+    0,
+    keyconsistencyarray.length - 1
+  );
+  let keyConsistency = Misc.roundTo2(
+    Misc.kogasa(
+      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
+    )
+  );
+  if (isNaN(consistency)) {
+    consistency = 0;
+  }
+  completedEvent.keyConsistency = keyConsistency;
+  completedEvent.consistency = consistency;
+  let smoothedraw = Misc.smooth(rawPerSecond, 1);
+  completedEvent.chartData.raw = smoothedraw;
+  completedEvent.chartData.unsmoothedRaw = rawPerSecond;
+
+  //smoothed consistency
+  let stddev2 = Misc.stdDev(smoothedraw);
+  let avg2 = Misc.mean(smoothedraw);
+  let smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
+  completedEvent.smoothConsistency = smoothConsistency;
+
+  //wpm consistency
+  let stddev3 = Misc.stdDev(completedEvent.chartData.wpm);
+  let avg3 = Misc.mean(completedEvent.chartData.wpm);
+  let wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
+  completedEvent.wpmConsistency = wpmConsistency;
+
+  completedEvent.testDuration = parseFloat(stats.time);
+  completedEvent.afkDuration = TestStats.calculateAfkSeconds(
+    completedEvent.testDuration
+  );
+
+  completedEvent.chartData.err = [];
+  for (let i = 0; i < TestStats.keypressPerSecond.length; i++) {
+    completedEvent.chartData.err.push(TestStats.keypressPerSecond[i].errors);
+  }
+
+  if (Config.mode === "quote") {
+    completedEvent.quoteLength = randomQuote.group;
+    completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
+  }
+
+  completedEvent.mode2 = Misc.getMode2();
+
+  if (Config.mode === "custom") {
+    completedEvent.customText = {};
+    completedEvent.customText.textLen = CustomText.text.length;
+    completedEvent.customText.isWordRandom = CustomText.isWordRandom;
+    completedEvent.customText.isTimeRandom = CustomText.isTimeRandom;
+    completedEvent.customText.word =
+      CustomText.word !== "" && !isNaN(CustomText.word)
+        ? CustomText.word
+        : null;
+    completedEvent.customText.time =
+      CustomText.time !== "" && !isNaN(CustomText.time)
+        ? CustomText.time
+        : null;
+  } else {
+    delete completedEvent.customText;
+  }
+
+  //tags
+  let activeTagsIds = [];
+  try {
+    DB.getSnapshot().tags.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagsIds.push(tag._id);
+      }
+    });
+  } catch (e) {}
+  completedEvent.tags = activeTagsIds;
+
+  if (completedEvent.mode != "custom") delete completedEvent.customText;
+
+  return completedEvent;
+}
+
+export async function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
@@ -1089,7 +1489,7 @@ export function finish(difficultyFailed = false) {
     Replay.replayGetWordsList(input.history);
   }
 
-  TestStats.recordKeypressSpacing();
+  TestStats.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
@@ -1103,320 +1503,57 @@ export function finish(difficultyFailed = false) {
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
+  OutOfFocus.hide();
+  TestTimer.clear();
   Funbox.activate("none", null);
 
+  //need one more calculation for the last word if test auto ended
   if (TestStats.burstHistory.length !== input.getHistory().length) {
-    //auto ended test, need one more calculation for the last word
     let burst = TestStats.calculateBurst();
     TestStats.pushBurstToHistory(burst);
   }
 
-  if (
-    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
-    Config.mode !== "time"
-  ) {
-    TestStats.setLastSecondNotRound();
-  }
-
+  //remove afk from zen
   if (Config.mode == "zen" || bailout) {
     TestStats.removeAfkData();
   }
-  let stats = TestStats.calculateStats();
-  if (stats === undefined) {
-    stats = {
-      wpm: 0,
-      wpmRaw: 0,
-      acc: 0,
-      correctChars: 0,
-      incorrectChars: 0,
-      missedChars: 0,
-      extraChars: 0,
-      time: 0,
-      spaces: 0,
-      correctSpaces: 0,
-    };
-  }
-  let inf = false;
-  if (stats.wpm >= 1000) {
-    inf = true;
-  }
-  TestTimer.clear();
 
-  lastTestWpm = stats.wpm;
+  const completedEvent = buildCompletedEvent(difficultyFailed);
 
-  let testtime = stats.time;
+  //todo check if any fields are undefined
 
-  if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    let wpmAndRaw = calculateWpmAndRaw();
-    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-    TestStats.pushToRawHistory(wpmAndRaw.raw);
-    TestStats.pushKeypressesToHistory();
-    // errorsPerSecond.push(currentError);
-    // currentError = {
-    //   count: 0,
-    //   words: [],
-    // };
-  }
+  ///////// completed event ready
 
-  let afkseconds = TestStats.calculateAfkSeconds(testtime);
-  let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
-
-  ChartController.result.options.annotation.annotations = [];
-
-  $("#result #resultWordsHistory").addClass("hidden");
-
-  if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM == false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm));
-      }
-      $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw));
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(stats.wpm * 5) + " cpm"
-      );
-    } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm * 5));
-      }
-      $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw * 5));
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(stats.wpm) + " wpm"
-      );
-    }
-
-    $("#result .stats .acc .bottom").text(Misc.roundTo2(stats.acc) + "%");
-    let time = Misc.roundTo2(testtime) + "s";
-    if (testtime > 61) {
-      time = Misc.secondsToString(Misc.roundTo2(testtime));
-    }
-    $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .raw .bottom").removeAttr("aria-label");
-    $("#result .stats .acc .bottom").removeAttr("aria-label");
-    $("#result .stats .time .bottom").attr(
-      "aria-label",
-      `${afkseconds}s afk ${afkSecondsPercent}%`
-    );
-  } else {
-    //not showing decimal places
-    if (Config.alwaysShowCPM == false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        stats.wpm + ` (${Misc.roundTo2(stats.wpm * 5)} cpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
-      $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
-    } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(stats.wpm * 5) + ` (${Misc.roundTo2(stats.wpm)} wpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw * 5));
-      $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw * 5);
-    }
-
-    $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
-    $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
-    let time = Math.round(testtime) + "s";
-    if (testtime > 61) {
-      time = Misc.secondsToString(Math.round(testtime));
-    }
-    $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .time .bottom").attr(
-      "aria-label",
-      `${Misc.roundTo2(testtime)}s (${afkseconds}s afk ${afkSecondsPercent}%)`
-    );
-  }
-  $("#result .stats .time .bottom .afk").text("");
-  if (afkSecondsPercent > 0) {
-    $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
-  }
-  TodayTracker.addSeconds(
-    testtime +
-      (TestStats.incompleteSeconds < 0
-        ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds)) -
-      afkseconds
-  );
-  $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
-  $("#result .stats .key .bottom").text(testtime + "s");
-  $("#words").removeClass("blurred");
-  OutOfFocus.hide();
-  $("#result .stats .key .bottom").text(
-    stats.correctChars +
-      stats.correctSpaces +
-      "/" +
-      stats.incorrectChars +
-      "/" +
-      stats.extraChars +
-      "/" +
-      stats.missedChars
-  );
-
-  setTimeout(function () {
-    $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: 1,
-      },
-      125
-    );
-  }, 125);
-
-  $("#testModesNotice").css("opacity", 0);
-  $("#result .stats .leaderboards .bottom").text("");
-  $("#result .stats .leaderboards").addClass("hidden");
-
-  let mode2 = "";
-  if (Config.mode === "time") {
-    mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    mode2 = Config.words;
-  } else if (Config.mode === "custom") {
-    mode2 = "custom";
-  } else if (Config.mode === "quote") {
-    mode2 = randomQuote.id;
-  } else if (Config.mode === "zen") {
-    mode2 = "zen";
-  }
-
-  let labels = [];
-  for (let i = 1; i <= TestStats.wpmHistory.length; i++) {
-    if (TestStats.lastSecondNotRound && i === TestStats.wpmHistory.length) {
-      labels.push(Misc.roundTo2(testtime).toString());
-    } else {
-      labels.push(i.toString());
-    }
-  }
-
-  ChartController.result.updateColors();
-
-  ChartController.result.data.labels = labels;
-
-  let rawWpmPerSecondRaw = TestStats.keypressPerSecond.map((f) =>
-    Math.round((f.count / 5) * 60)
-  );
-
-  let rawWpmPerSecond = Misc.smooth(rawWpmPerSecondRaw, 1);
-
-  let stddev = Misc.stdDev(rawWpmPerSecondRaw);
-  let avg = Misc.mean(rawWpmPerSecondRaw);
-
-  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyConsistency = Misc.roundTo2(
-    Misc.kogasa(
-      Misc.stdDev(TestStats.keypressTimings.spacing.array) /
-        Misc.mean(TestStats.keypressTimings.spacing.array)
-    )
-  );
-
-  if (isNaN(consistency)) {
-    consistency = 0;
-  }
-
-  if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").text(
-      Misc.roundTo2(consistency) + "%"
-    );
-    $("#result .stats .consistency .bottom").attr(
-      "aria-label",
-      `${keyConsistency}% key`
-    );
-  } else {
-    $("#result .stats .consistency .bottom").text(
-      Math.round(consistency) + "%"
-    );
-    $("#result .stats .consistency .bottom").attr(
-      "aria-label",
-      `${consistency}% (${keyConsistency}% key)`
-    );
-  }
-
-  ChartController.result.data.datasets[0].data = TestStats.wpmHistory;
-  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
-
-  let maxChartVal = Math.max(
-    ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
-  );
-  if (!Config.startGraphsAtZero) {
-    ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...TestStats.wpmHistory
-    );
-    ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...TestStats.wpmHistory
-    );
-  } else {
-    ChartController.result.options.scales.yAxes[0].ticks.min = 0;
-    ChartController.result.options.scales.yAxes[1].ticks.min = 0;
-  }
-
-  // let errorsNoZero = [];
-
-  // for (let i = 0; i < errorsPerSecond.length; i++) {
-  //   errorsNoZero.push({
-  //     x: i + 1,
-  //     y: errorsPerSecond[i].count,
-  //   });
-  // }
-
-  let errorsArray = [];
-  for (let i = 0; i < TestStats.keypressPerSecond.length; i++) {
-    errorsArray.push(TestStats.keypressPerSecond[i].errors);
-  }
-
-  ChartController.result.data.datasets[2].data = errorsArray;
-
-  let kps = TestStats.keypressPerSecond.slice(
-    Math.max(TestStats.keypressPerSecond.length - 5, 0)
-  );
-
-  kps = kps.map((a) => a.count);
-
-  kps = kps.reduce((a, b) => a + b, 0);
-
-  let afkDetected = kps === 0 ? true : false;
-
+  //afk check
+  let kps = TestStats.keypressPerSecond.slice(-5);
+  let afkDetected = kps.every((second) => second.afk);
   if (bailout) afkDetected = false;
 
-  $("#result .stats .tags").addClass("hidden");
-
-  let lang = Config.language;
-
-  let quoteLength = -1;
-  if (Config.mode === "quote") {
-    quoteLength = randomQuote.group;
-    lang = Config.language.replace(/_\d*k$/g, "");
-  }
-
+  let tooShort = false;
+  let dontSave = false;
+  //fail checks
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
+    dontSave = true;
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
+    dontSave = true;
   } else if (isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
+    dontSave = true;
   } else if (
-    (Config.mode === "time" && mode2 < 15 && mode2 > 0) ||
-    (Config.mode === "time" && mode2 == 0 && testtime < 15) ||
-    (Config.mode === "words" && mode2 < 10 && mode2 > 0) ||
-    (Config.mode === "words" && mode2 == 0 && testtime < 15) ||
+    (Config.mode === "time" &&
+      completedEvent.mode2 < 15 &&
+      completedEvent.mode2 > 0) ||
+    (Config.mode === "time" &&
+      completedEvent.mode2 == 0 &&
+      completedEvent.testDuration < 15) ||
+    (Config.mode === "words" &&
+      completedEvent.mode2 < 10 &&
+      completedEvent.mode2 > 0) ||
+    (Config.mode === "words" &&
+      completedEvent.mode2 == 0 &&
+      completedEvent.testDuration < 15) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
@@ -1429,596 +1566,163 @@ export function finish(difficultyFailed = false) {
       !CustomText.isWordRandom &&
       CustomText.isTimeRandom &&
       CustomText.time < 15) ||
-    (Config.mode === "zen" && testtime < 15)
+    (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
-    Notifications.add("Test too short", 0);
-  } else {
-    let activeTags = [];
-    let activeTagsIds = [];
-    try {
-      DB.getSnapshot().tags.forEach((tag) => {
-        if (tag.active === true) {
-          activeTags.push(tag);
-          activeTagsIds.push(tag.id);
-        }
-      });
-    } catch (e) {}
+    Notifications.add("Test invalid - too short", 0);
+    tooShort = true;
+    dontSave = true;
+  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+    Notifications.add("Test invalid - wpm", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+    Notifications.add("Test invalid - accuracy", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  }
 
-    let chartData = {
-      wpm: TestStats.wpmHistory,
-      raw: rawWpmPerSecond,
-      err: errorsArray,
-    };
+  // test is valid
 
-    if (testtime > 122) {
-      chartData = "toolong";
-      TestStats.setKeypressTimingsTooLong();
-    }
-
-    let cdata = null;
-    if (Config.mode === "custom") {
-      cdata = {};
-      cdata.textLen = CustomText.text.length;
-      cdata.isWordRandom = CustomText.isWordRandom;
-      cdata.isTimeRandom = CustomText.isTimeRandom;
-      cdata.word =
-        CustomText.word !== "" && !isNaN(CustomText.word)
-          ? CustomText.word
-          : null;
-      cdata.time =
-        CustomText.time !== "" && !isNaN(CustomText.time)
-          ? CustomText.time
-          : null;
-    }
-
-    let completedEvent = {
-      wpm: stats.wpm,
-      rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.correctSpaces,
-      incorrectChars: stats.incorrectChars,
-      allChars: stats.allChars,
-      acc: stats.acc,
-      mode: Config.mode,
-      mode2: mode2,
-      quoteLength: quoteLength,
-      punctuation: Config.punctuation,
-      numbers: Config.numbers,
-      timestamp: Date.now(),
-      language: lang,
-      restartCount: TestStats.restartCount,
-      incompleteTestSeconds:
-        TestStats.incompleteSeconds < 0
+  if (!dontSave) {
+    TodayTracker.addSeconds(
+      completedEvent.testDuration +
+        (TestStats.incompleteSeconds < 0
           ? 0
-          : Misc.roundTo2(TestStats.incompleteSeconds),
-      difficulty: Config.difficulty,
-      testDuration: testtime,
-      afkDuration: afkseconds,
-      blindMode: Config.blindMode,
-      theme: Config.theme,
-      tags: activeTagsIds,
-      keySpacing: TestStats.keypressTimings.spacing.array,
-      keyDuration: TestStats.keypressTimings.duration.array,
-      consistency: consistency,
-      keyConsistency: keyConsistency,
-      funbox: Config.funbox,
-      bailedOut: bailout,
-      chartData: chartData,
-      customText: cdata,
-    };
+          : Misc.roundTo2(TestStats.incompleteSeconds)) -
+        completedEvent.afkDuration
+    );
+    Result.updateTodayTracker();
+  }
 
-    if (Config.mode !== "custom") {
-      delete completedEvent.CustomText;
+  if (firebase.auth().currentUser == null) {
+    $(".pageTest #result #rateQuoteButton").addClass("hidden");
+    $(".pageTest #result #reportQuoteButton").addClass("hidden");
+    try {
+      firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
+    } catch (e) {
+      console.log("Analytics unavailable");
     }
+    notSignedInLastResult = completedEvent;
+    dontSave = true;
+  } else {
+    $(".pageTest #result #reportQuoteButton").removeClass("hidden");
+  }
 
-    if (
-      Config.difficulty == "normal" ||
-      ((Config.difficulty == "master" || Config.difficulty == "expert") &&
-        !difficultyFailed)
-    ) {
-      // restartCount = 0;
-      // incompleteTestSeconds = 0;
-      TestStats.resetIncomplete();
+  Result.update(
+    completedEvent,
+    difficultyFailed,
+    failReason,
+    afkDetected,
+    isRepeated,
+    tooShort,
+    randomQuote,
+    dontSave
+  );
+
+  delete completedEvent.chartData.unsmoothedRaw;
+
+  if (completedEvent.testDuration > 122) {
+    completedEvent.chartData = "toolong";
+    completedEvent.keySpacing = "toolong";
+    completedEvent.keyDuration = "toolong";
+    TestStats.setKeypressTimingsTooLong();
+  }
+
+  if (dontSave) {
+    try {
+      firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
+    } catch (e) {
+      console.log("Analytics unavailable");
     }
-    if (
-      stats.wpm > 0 &&
-      stats.wpm < 350 &&
-      stats.acc > 50 &&
-      stats.acc <= 100
-    ) {
-      if (firebase.auth().currentUser != null) {
-        completedEvent.uid = firebase.auth().currentUser.uid;
-        //check local pb
-        AccountButton.loading(true);
-        let dontShowCrown = false;
-        let pbDiff = 0;
-        DB.getLocalPB(
-          Config.mode,
-          mode2,
-          Config.punctuation,
-          Config.language,
-          Config.difficulty
-        ).then((lpb) => {
-          DB.getUserHighestWpm(
-            Config.mode,
-            mode2,
-            Config.punctuation,
-            Config.language,
-            Config.difficulty
-          ).then((highestwpm) => {
-            PbCrown.hide();
-            $("#result .stats .wpm .crown").attr("aria-label", "");
-            if (lpb < stats.wpm && stats.wpm < highestwpm) {
-              dontShowCrown = true;
-            }
-            if (Config.mode == "quote") dontShowCrown = true;
-            if (lpb < stats.wpm) {
-              //new pb based on local
-              pbDiff = Math.abs(stats.wpm - lpb);
-              if (!dontShowCrown) {
-                PbCrown.show();
-                $("#result .stats .wpm .crown").attr(
-                  "aria-label",
-                  "+" + Misc.roundTo2(pbDiff)
-                );
-              }
-            }
-            if (lpb > 0) {
-              ChartController.result.options.annotation.annotations.push({
-                enabled: false,
-                type: "line",
-                mode: "horizontal",
-                scaleID: "wpm",
-                value: lpb,
-                borderColor: ThemeColors.sub,
-                borderWidth: 1,
-                borderDash: [2, 2],
-                label: {
-                  backgroundColor: ThemeColors.sub,
-                  fontFamily: Config.fontFamily.replace(/_/g, " "),
-                  fontSize: 11,
-                  fontStyle: "normal",
-                  fontColor: ThemeColors.bg,
-                  xPadding: 6,
-                  yPadding: 6,
-                  cornerRadius: 3,
-                  position: "center",
-                  enabled: true,
-                  content: `PB: ${lpb}`,
-                },
-              });
-              if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
-                maxChartVal = lpb + 15;
-              }
-              ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
-                maxChartVal
-              );
-              ChartController.result.options.scales.yAxes[1].ticks.max = Math.round(
-                maxChartVal
-              );
-              ChartController.result.update({ duration: 0 });
-            }
+    return;
+  }
 
-            if (activeTags.length == 0) {
-              $("#result .stats .tags").addClass("hidden");
-            } else {
-              $("#result .stats .tags").removeClass("hidden");
-            }
-            $("#result .stats .tags .bottom").text("");
-            let annotationSide = "left";
-            activeTags.forEach(async (tag) => {
-              let tpb = await DB.getLocalTagPB(
-                tag.id,
-                Config.mode,
-                mode2,
-                Config.punctuation,
-                Config.language,
-                Config.difficulty
-              );
-              $("#result .stats .tags .bottom").append(`
-                <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
-              `);
-              if (Config.mode != "quote") {
-                if (tpb < stats.wpm) {
-                  //new pb for that tag
-                  DB.saveLocalTagPB(
-                    tag.id,
-                    Config.mode,
-                    mode2,
-                    Config.punctuation,
-                    Config.language,
-                    Config.difficulty,
-                    stats.wpm,
-                    stats.acc,
-                    stats.wpmRaw,
-                    consistency
-                  );
-                  $(
-                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
-                  ).removeClass("hidden");
-                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                    "aria-label",
-                    "+" + Misc.roundTo2(stats.wpm - tpb)
-                  );
-                  // console.log("new pb for tag " + tag.name);
-                } else {
-                  ChartController.result.options.annotation.annotations.push({
-                    enabled: false,
-                    type: "line",
-                    mode: "horizontal",
-                    scaleID: "wpm",
-                    value: tpb,
-                    borderColor: ThemeColors.sub,
-                    borderWidth: 1,
-                    borderDash: [2, 2],
-                    label: {
-                      backgroundColor: ThemeColors.sub,
-                      fontFamily: Config.fontFamily.replace(/_/g, " "),
-                      fontSize: 11,
-                      fontStyle: "normal",
-                      fontColor: ThemeColors.bg,
-                      xPadding: 6,
-                      yPadding: 6,
-                      cornerRadius: 3,
-                      position: annotationSide,
-                      enabled: true,
-                      content: `${tag.name} PB: ${tpb}`,
-                    },
-                  });
-                  if (annotationSide === "left") {
-                    annotationSide = "right";
-                  } else {
-                    annotationSide = "left";
-                  }
-                }
-              }
-            });
-            if (
-              (completedEvent.funbox === "none" ||
-                completedEvent.funbox === "plus_one" ||
-                completedEvent.funbox === "plus_two") &&
-              completedEvent.language === "english" &&
-              completedEvent.mode === "time" &&
-              ["15", "60"].includes(String(completedEvent.mode2))
-            ) {
-              $("#result .stats .leaderboards").removeClass("hidden");
-              $("#result .stats .leaderboards .bottom").html(
-                `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-              );
-            }
-            if (!window.navigator.onLine) {
-              AccountButton.loading(false);
-              Notifications.add("You are offline. Result not saved.", -1);
-            } else {
-              CloudFunctions.testCompleted({
-                uid: firebase.auth().currentUser.uid,
-                obj: completedEvent,
-              })
-                .then((e) => {
-                  AccountButton.loading(false);
-                  if (e.data == null) {
-                    Notifications.add(
-                      "Unexpected response from the server: " + e.data,
-                      -1
-                    );
-                    return;
-                  }
-                  if (e.data.resultCode === -1) {
-                    Notifications.add("Could not save result", -1);
-                  } else if (e.data.resultCode === -2) {
-                    Notifications.add(
-                      "Possible bot detected. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -3) {
-                    Notifications.add(
-                      "Could not verify keypress stats. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -4) {
-                    Notifications.add(
-                      "Result data does not make sense. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -5) {
-                    Notifications.add("Test too short. Result not saved.", -1);
-                  } else if (e.data.resultCode === -999) {
-                    console.error("internal error: " + e.data.message);
-                    Notifications.add(
-                      "Internal error. Result might not be saved. " +
-                        e.data.message,
-                      -1
-                    );
-                  } else if (
-                    e.data.resultCode === 1 ||
-                    e.data.resultCode === 2
-                  ) {
-                    completedEvent.id = e.data.createdId;
-                    TestLeaderboards.check(completedEvent);
-                    if (e.data.resultCode === 2) {
-                      completedEvent.isPb = true;
-                    }
-                    if (
-                      DB.getSnapshot() !== null &&
-                      DB.getSnapshot().results !== undefined
-                    ) {
-                      DB.getSnapshot().results.unshift(completedEvent);
-                      if (DB.getSnapshot().globalStats.time == undefined) {
-                        DB.getSnapshot().globalStats.time =
-                          testtime +
-                          completedEvent.incompleteTestSeconds -
-                          afkseconds;
-                      } else {
-                        DB.getSnapshot().globalStats.time +=
-                          testtime +
-                          completedEvent.incompleteTestSeconds -
-                          afkseconds;
-                      }
-                      if (DB.getSnapshot().globalStats.started == undefined) {
-                        DB.getSnapshot().globalStats.started =
-                          TestStats.restartCount + 1;
-                      } else {
-                        DB.getSnapshot().globalStats.started +=
-                          TestStats.restartCount + 1;
-                      }
-                      if (DB.getSnapshot().globalStats.completed == undefined) {
-                        DB.getSnapshot().globalStats.completed = 1;
-                      } else {
-                        DB.getSnapshot().globalStats.completed += 1;
-                      }
-                    }
-                    try {
-                      firebase
-                        .analytics()
-                        .logEvent("testCompleted", completedEvent);
-                    } catch (e) {
-                      console.log("Analytics unavailable");
-                    }
+  // user is logged in
 
-                    if (e.data.resultCode === 2) {
-                      //new pb
-                      PbCrown.show();
-                      $("#result .stats .wpm .crown").attr(
-                        "aria-label",
-                        "+" + Misc.roundTo2(pbDiff)
-                      );
-                      DB.saveLocalPB(
-                        Config.mode,
-                        mode2,
-                        Config.punctuation,
-                        Config.language,
-                        Config.difficulty,
-                        stats.wpm,
-                        stats.acc,
-                        stats.wpmRaw,
-                        consistency
-                      );
-                    } else if (e.data.resultCode === 1) {
-                      PbCrown.hide();
-                      // if (localPb) {
-                      //   Notifications.add(
-                      //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                      //     15000
-                      //   );
-                      // }
-                    }
-                  }
-                })
-                .catch((e) => {
-                  AccountButton.loading(false);
-                  console.error(e);
-                  Notifications.add("Could not save result. " + e, -1);
-                });
-            }
-          });
-        });
+  if (
+    Config.difficulty == "normal" ||
+    ((Config.difficulty == "master" || Config.difficulty == "expert") &&
+      !difficultyFailed)
+  ) {
+    TestStats.resetIncomplete();
+  }
+
+  completedEvent.uid = firebase.auth().currentUser.uid;
+  Result.updateRateQuote(randomQuote);
+
+  Result.updateGraphPBLine();
+
+  AccountButton.loading(true);
+  completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  if (!completedEvent.challenge) delete completedEvent.challenge;
+  completedEvent.hash = objecthash(completedEvent);
+  axiosInstance
+    .post("/results/add", {
+      result: completedEvent,
+    })
+    .then((response) => {
+      AccountButton.loading(false);
+      Result.hideCrown();
+
+      if (response.status !== 200) {
+        Notifications.add("Result not saved. " + response.data.message, -1);
       } else {
+        completedEvent._id = response.data.insertedId;
+        if (response.data.isPb) {
+          completedEvent.isPb = true;
+        }
+
+        DB.saveLocalResult(completedEvent);
+        DB.updateLocalStats({
+          time:
+            completedEvent.testDuration +
+            completedEvent.incompleteTestSeconds -
+            completedEvent.afkDuration,
+          started: TestStats.restartCount + 1,
+        });
+
         try {
-          firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
+          firebase.analytics().logEvent("testCompleted", completedEvent);
         } catch (e) {
           console.log("Analytics unavailable");
         }
-        notSignedInLastResult = completedEvent;
+
+        if (response.data.isPb) {
+          //new pb
+          Result.showCrown();
+          Result.updateCrown();
+          DB.saveLocalPB(
+            Config.mode,
+            completedEvent.mode2,
+            Config.punctuation,
+            Config.language,
+            Config.difficulty,
+            Config.lazyMode,
+            completedEvent.wpm,
+            completedEvent.acc,
+            completedEvent.rawWpm,
+            completedEvent.consistency
+          );
+        }
       }
-    } else {
-      Notifications.add("Test invalid", 0);
-      TestStats.setInvalid();
-      try {
-        firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
-      } catch (e) {
-        console.log("Analytics unavailable");
-      }
-    }
-  }
 
-  if (firebase.auth().currentUser != null) {
-    $("#result .loginTip").addClass("hidden");
-  } else {
-    $("#result .stats .leaderboards").addClass("hidden");
-    $("#result .loginTip").removeClass("hidden");
-  }
+      $("#retrySavingResultButton").addClass("hidden");
+    })
+    .catch((e) => {
+      AccountButton.loading(false);
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to save result: " + msg, -1);
+      $("#retrySavingResultButton").removeClass("hidden");
 
-  let testType = "";
-
-  if (Config.mode === "quote") {
-    let qlen = "";
-    if (Config.quoteLength === 0) {
-      qlen = "short ";
-    } else if (Config.quoteLength === 1) {
-      qlen = "medium ";
-    } else if (Config.quoteLength === 2) {
-      qlen = "long ";
-    } else if (Config.quoteLength === 3) {
-      qlen = "thicc ";
-    }
-    testType += qlen + Config.mode;
-  } else {
-    testType += Config.mode;
-  }
-  if (Config.mode == "time") {
-    testType += " " + Config.time;
-  } else if (Config.mode == "words") {
-    testType += " " + Config.words;
-  }
-  if (
-    Config.mode != "custom" &&
-    Config.funbox !== "gibberish" &&
-    Config.funbox !== "ascii" &&
-    Config.funbox !== "58008"
-  ) {
-    testType += "<br>" + lang.replace(/_/g, " ");
-  }
-  if (Config.punctuation) {
-    testType += "<br>punctuation";
-  }
-  if (Config.numbers) {
-    testType += "<br>numbers";
-  }
-  if (Config.blindMode) {
-    testType += "<br>blind";
-  }
-  if (Config.funbox !== "none") {
-    testType += "<br>" + Config.funbox.replace(/_/g, " ");
-  }
-  if (Config.difficulty == "expert") {
-    testType += "<br>expert";
-  } else if (Config.difficulty == "master") {
-    testType += "<br>master";
-  }
-
-  $("#result .stats .testType .bottom").html(testType);
-
-  let otherText = "";
-  // if (Config.layout !== "default") {
-  //   otherText += "<br>" + Config.layout;
-  // }
-  if (difficultyFailed) {
-    otherText += `<br>failed (${failReason})`;
-  }
-  if (afkDetected) {
-    otherText += "<br>afk detected";
-  }
-  if (TestStats.invalid) {
-    otherText += "<br>invalid";
-  }
-  if (isRepeated) {
-    otherText += "<br>repeated";
-  }
-  if (bailout) {
-    otherText += "<br>bailed out";
-  }
-
-  if (otherText == "") {
-    $("#result .stats .info").addClass("hidden");
-  } else {
-    $("#result .stats .info").removeClass("hidden");
-    otherText = otherText.substring(4);
-    $("#result .stats .info .bottom").html(otherText);
-  }
-
-  if (
-    $("#result .stats .tags").hasClass("hidden") &&
-    $("#result .stats .info").hasClass("hidden")
-  ) {
-    $("#result .stats .infoAndTags").addClass("hidden");
-  } else {
-    $("#result .stats .infoAndTags").removeClass("hidden");
-  }
-
-  if (Config.mode === "quote") {
-    $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(randomQuote.source);
-  } else {
-    $("#result .stats .source").addClass("hidden");
-  }
-
-  if (Config.funbox !== "none") {
-    let content = Config.funbox;
-    if (Config.funbox === "layoutfluid") {
-      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
-    }
-    ChartController.result.options.annotation.annotations.push({
-      enabled: false,
-      type: "line",
-      mode: "horizontal",
-      scaleID: "wpm",
-      value: 0,
-      borderColor: "transparent",
-      borderWidth: 1,
-      borderDash: [2, 2],
-      label: {
-        backgroundColor: "transparent",
-        fontFamily: Config.fontFamily.replace(/_/g, " "),
-        fontSize: 11,
-        fontStyle: "normal",
-        fontColor: ThemeColors.sub,
-        xPadding: 6,
-        yPadding: 6,
-        cornerRadius: 3,
-        position: "left",
-        enabled: true,
-        content: `${content}`,
-        yAdjust: -11,
-      },
+      retrySaving.completedEvent = completedEvent;
+      retrySaving.canRetry = true;
     });
-  }
-
-  ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
-  ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
-
-  ChartController.result.update({ duration: 0 });
-  ChartController.result.resize();
-
-  if (glarsesMode) {
-    $("#middle #result .glarsesmessage").remove();
-    $("#middle #result").prepend(`
-
-      <div class='glarsesmessage' style="
-        text-align: center;
-        grid-column: 1/3;
-        font-size: 2rem;
-        padding: 2rem 0;
-      ">Test completed</div>
-    
-    `);
-    $("#middle #result .stats").remove();
-    $("#middle #result .chart").remove();
-    $("#middle #result #resultWordsHistory").remove();
-    $("#middle #result #resultReplay").remove();
-    $("#middle #result .loginTip").remove();
-
-    console.log(
-      `Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`
-    );
-  }
-
-  UI.swapElements(
-    $("#typingTest"),
-    $("#result"),
-    250,
-    () => {
-      TestUI.setResultCalculating(false);
-      $("#words").empty();
-      ChartController.result.resize();
-
-      if (TestUI.heatmapEnabled) {
-        TestUI.applyBurstHeatmap();
-      }
-      $("#testModesNotice").addClass("hidden");
-    },
-    () => {
-      if (Config.alwaysShowWordsHistory) {
-        TestUI.toggleResultWords();
-      }
-      Keymap.hide();
-    }
-  );
 }
 
-let failReason = "";
 export function fail(reason) {
   failReason = reason;
-  input.pushHistory();
-  corrected.pushHistory();
+  // input.pushHistory();
+  // corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());

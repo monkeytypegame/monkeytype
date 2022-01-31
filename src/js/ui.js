@@ -14,8 +14,18 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
+import * as About from "./about-page";
 
 export let pageTransition = true;
+let activePage = "pageLoading";
+
+export function getActivePage() {
+  return activePage;
+}
+
+export function setActivePage(active) {
+  activePage = active;
+}
 
 export function setPageTransition(val) {
   pageTransition = val;
@@ -39,7 +49,7 @@ export function updateKeytips() {
     )`);
     $("#bottom .keyTips").html(`
     <key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>esc</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
   }
 }
 
@@ -107,24 +117,55 @@ export function swapElements(
   }
 }
 
-export function changePage(page) {
-  console.log('change');
+export function changePage(page, norestart = false) {
   if (pageTransition) {
+    console.log(`change page ${page} stopped`);
     return;
   }
-  let activePage = $(".page.active");
+
+  if (page == undefined) {
+    //use window loacation
+    let pages = {
+      "/": "test",
+      "/login": "login",
+      "/settings": "settings",
+      "/about": "about",
+      "/account": "account",
+    };
+    let path = pages[window.location.pathname];
+    if (!path) {
+      path = "test";
+    }
+    page = path;
+  }
+
+  console.log(`change page ${page}`);
+  let activePageElement = $(".page.active");
+  let check = activePage + "";
+  setTimeout(() => {
+    if (check === "pageAccount" && page !== "account") {
+      Account.reset();
+    } else if (check === "pageSettings" && page !== "settings") {
+      Settings.reset();
+    } else if (check === "pageAbout" && page !== "about") {
+      About.reset();
+    }
+  }, 250);
+
+  activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     setPageTransition(true);
     swapElements(
-      activePage,
+      activePageElement,
       $(".page.pageTest"),
       250,
       () => {
         setPageTransition(false);
         TestUI.focusWords();
         $(".page.pageTest").addClass("active");
+        activePage = "pageTest";
         history.pushState("/", null, "/");
       },
       () => {
@@ -136,29 +177,35 @@ export function changePage(page) {
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
     ManualRestart.set();
-    TestLogic.restart();
+    if (!norestart) TestLogic.restart();
     Funbox.activate(Config.funbox);
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageAbout"), 250, () => {
+    swapElements(activePageElement, $(".page.pageAbout"), 250, () => {
       setPageTransition(false);
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
+      activePage = "pageAbout";
     });
+    About.fill();
     Funbox.activate("none");
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "settings") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageSettings"), 250, () => {
+    swapElements(activePageElement, $(".page.pageSettings"), 250, () => {
       setPageTransition(false);
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
+      activePage = "pageSettings";
     });
     Funbox.activate("none");
-    Settings.update();
+    Settings.fillSettingsPage().then(() => {
+      Settings.update();
+    });
+    // Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {
@@ -170,19 +217,12 @@ export function changePage(page) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(
-        activePage,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
+      swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
+        setPageTransition(false);
+        history.pushState("account", null, "account");
+        $(".page.pageAccount").addClass("active");
+        activePage = "pageAccount";
+      });
       Funbox.activate("none");
       Account.update();
       TestConfig.hide();
@@ -193,10 +233,11 @@ export function changePage(page) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePage, $(".page.pageLogin"), 250, () => {
+      swapElements(activePageElement, $(".page.pageLogin"), 250, () => {
         setPageTransition(false);
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
+        activePage = "pageLogin";
       });
       Funbox.activate("none");
       TestConfig.hide();
@@ -205,6 +246,8 @@ export function changePage(page) {
   }
 }
 
+//checking if the project is the development site
+/*
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
@@ -212,6 +255,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
     `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
   );
 }
+*/
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
@@ -219,9 +263,13 @@ if (window.location.hostname === "localhost") {
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  //firebase.functions().useFunctionsEmulator("http://localhost:5001");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+  );
+  $(".pageSettings .discordIntegration .buttons a").attr(
+    "href",
+    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fverify&response_type=token&scope=identify"
   );
 }
 
@@ -232,25 +280,6 @@ window.addEventListener("keydown", function (e) {
   }
 });
 
-$(".merchBanner a").click((event) => {
-  $(".merchBanner").remove();
-  window.localStorage.setItem("merchbannerclosed", true);
-});
-
-$(".merchBanner .fas").click((event) => {
-  $(".merchBanner").remove();
-  window.localStorage.setItem("merchbannerclosed", true);
-  Notifications.add(
-    "Won't remind you anymore. Thanks for continued support <3",
-    0,
-    5
-  );
-});
-
-$(".scrollToTopButton").click((event) => {
-  window.scrollTo(0, 0);
-});
-
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     UpdateConfig.toggleCustomTheme();
@@ -258,7 +287,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     // if (Config.customTheme) {
     //   toggleCustomTheme();
     // }
-    CommandlineLists.setCurrent([CommandlineLists.themeCommands]);
+    CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
     Commandline.show();
   }
 });
@@ -310,4 +339,5 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
     ManualRestart.set();
     changePage(href.replace("/", ""));
   }
+  return false;
 });

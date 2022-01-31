@@ -1,6 +1,7 @@
 {
   "name": "code_c",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "int",
     "char",
@@ -28,10 +29,8 @@
     "break",
     "bool",
     "static",
-    "public",
     "enum",
     "typedef",
-    "private",
     "exit",
     "<stdio.h>",
     "scanf",

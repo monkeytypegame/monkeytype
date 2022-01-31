@@ -1,6 +1,7 @@
 {
   "name": "code_go",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "break",
     "default",

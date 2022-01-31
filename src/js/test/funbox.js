@@ -5,6 +5,7 @@ import * as Misc from "./misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
+import * as TTS from "./tts";
 
 let modeSaved = null;
 let memoryTimer = null;
@@ -79,13 +80,15 @@ export function reset() {
 
 export function toggleScript(...params) {
   if (Config.funbox === "tts") {
-    var msg = new SpeechSynthesisUtterance();
-    console.log("Speaking");
-    msg.text = params[0];
-    msg.lang = "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(msg);
+    TTS.speak(params[0]);
   }
+}
+
+export function setFunbox(funbox, mode) {
+  if (funbox === "none") loadMemory();
+  modeSaved = mode;
+  UpdateConfig.setFunbox(funbox, false);
+  return true;
 }
 
 export async function activate(funbox) {
@@ -95,6 +98,11 @@ export async function activate(funbox) {
     funbox = Config.funbox;
   }
 
+  let funboxInfo = await Misc.getFunbox(funbox);
+
+  $("#funBoxTheme").attr("href", ``);
+  $("#words").removeClass("nospace");
+  $("#words").removeClass("arrows");
   if (await Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
@@ -105,17 +113,19 @@ export async function activate(funbox) {
       return;
     }
   }
-  if (Config.mode === "zen" && (funbox == "layoutfluid")) {
-    Notifications.add(
-      `Zen mode does not support the ${funbox} funbox`,
-      0
-    );
-    setFunbox("none", null);
-    TestLogic.restart();
-    return;
+  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
+    if (funboxInfo?.type != "style") {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetter(
+          Config.mode
+        )} mode does not support the ${funbox} funbox`,
+        0
+      );
+      setFunbox("none", null);
+      TestLogic.restart(undefined, true);
+      return;
+    }
   }
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
   // if (funbox === "none") {
 
   reset();
@@ -143,9 +153,9 @@ export async function activate(funbox) {
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
-      UpdateConfig.setKeymapMode("next");
-      Settings.groups.keymapMode.updateButton();
-      TestLogic.restart();
+      UpdateConfig.setKeymapMode("next", true);
+      Settings.groups.keymapMode?.updateButton();
+      TestLogic.restart(undefined, true);
     }
 
     if (
@@ -159,7 +169,7 @@ export async function activate(funbox) {
         UpdateConfig.setHighlightMode
       );
       UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart();
+      TestLogic.restart(undefined, true);
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
@@ -169,25 +179,27 @@ export async function activate(funbox) {
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
-      UpdateConfig.setKeymapMode("off");
-      Settings.groups.keymapMode.updateButton();
-      TestLogic.restart();
+      UpdateConfig.setKeymapMode("off", true);
+      UpdateConfig.setHighlightMode("letter", true);
+      Settings.groups.keymapMode?.updateButton();
+      TestLogic.restart(undefined, true);
     } else if (funbox === "layoutfluid") {
       rememberSetting(
         "keymapMode",
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
-      UpdateConfig.setKeymapMode("next");
-      Settings.groups.keymapMode.updateButton();
+      // UpdateConfig.setKeymapMode("next");
+      Settings.groups.keymapMode?.updateButton();
       // UpdateConfig.setSavedLayout(Config.layout);
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
       UpdateConfig.setLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty"
+          : "qwerty",
+        true
       );
-      Settings.groups.layout.updateButton();
+      Settings.groups.layout?.updateButton();
       rememberSetting(
         "keymapLayout",
         Config.keymapLayout,
@@ -196,13 +208,14 @@ export async function activate(funbox) {
       UpdateConfig.setKeymapLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty"
+          : "qwerty",
+        true
       );
-      Settings.groups.keymapLayout.updateButton();
-      TestLogic.restart();
+      Settings.groups.keymapLayout?.updateButton();
+      TestLogic.restart(undefined, true);
     } else if (funbox === "memory") {
       rememberSetting("mode", Config.mode, UpdateConfig.setMode);
-      UpdateConfig.setMode("words");
+      UpdateConfig.setMode("words", true);
       rememberSetting(
         "showAllLines",
         Config.showAllLines,
@@ -216,10 +229,19 @@ export async function activate(funbox) {
           Config.keymapMode,
           UpdateConfig.setKeymapMode
         );
-        UpdateConfig.setKeymapMode("react");
+        UpdateConfig.setKeymapMode("react", true);
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+      UpdateConfig.setHighlightMode("letter", true);
+      TestLogic.restart(false, true);
+    } else if (funbox === "arrows") {
+      $("#words").addClass("arrows");
       rememberSetting(
         "highlightMode",
         Config.highlightMode,
@@ -237,11 +259,5 @@ export async function activate(funbox) {
   //   }
   // }
   TestUI.updateModesNotice();
-  return true;
-}
-export function setFunbox(funbox, mode) {
-  if (funbox === "none") loadMemory();
-  modeSaved = mode;
-  UpdateConfig.setFunbox(funbox);
   return true;
 }

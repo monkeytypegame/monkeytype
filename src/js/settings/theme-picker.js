@@ -5,13 +5,78 @@ import * as Notifications from "./notifications";
 import * as CommandlineLists from "./commandline-lists";
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
-import * as UI from "./ui";
 
 export function updateActiveButton() {
+  let activeThemeName = Config.theme;
+  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+    activeThemeName = ThemeController.randomTheme;
+  }
   $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
+  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
     "active"
   );
+}
+
+function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
+  if (onlyStyle) {
+    let colorid = colorPicker.find("input[type=color]").attr("id");
+    if (!noThemeUpdate)
+      document.documentElement.style.setProperty(colorid, color);
+    let pickerButton = colorPicker.find("label");
+    pickerButton.val(color);
+    pickerButton.attr("value", color);
+    if (pickerButton.attr("for") !== "--bg-color")
+      pickerButton.css("background-color", color);
+    colorPicker.find("input[type=text]").val(color);
+    colorPicker.find("input[type=color]").attr("value", color);
+    return;
+  }
+  let colorREGEX = [
+    {
+      rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
+      start: "rgb(",
+      end: ")",
+    },
+    {
+      rule: /\b[A-Z, a-z, 0-9]{6}\b/,
+      start: "#",
+      end: "",
+    },
+    {
+      rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
+      start: "hsl(",
+      end: ")",
+    },
+  ];
+
+  color = color.replace("°", "");
+
+  for (let regex of colorREGEX) {
+    if (color.match(regex.rule)) {
+      color = regex.start + color + regex.end;
+      break;
+    }
+  }
+
+  $(".colorConverter").css("color", color);
+  color = Misc.convertRGBtoHEX($(".colorConverter").css("color"));
+  if (!color) {
+    return;
+  }
+
+  let colorid = colorPicker.find("input[type=color]").attr("id");
+
+  if (!noThemeUpdate)
+    document.documentElement.style.setProperty(colorid, color);
+
+  let pickerButton = colorPicker.find("label");
+
+  pickerButton.val(color);
+  pickerButton.attr("value", color);
+  if (pickerButton.attr("for") !== "--bg-color")
+    pickerButton.css("background-color", color);
+  colorPicker.find("input[type=text]").val(color);
+  colorPicker.find("input[type=color]").attr("value", color);
 }
 
 export function refreshButtons() {
@@ -33,10 +98,10 @@ export function refreshButtons() {
         if (Config.favThemes.includes(theme.name)) {
           let activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
-            `<div class="theme button" theme='${theme.name}' style="color:${
-              theme.textColor
-            };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+            `<div class="theme button ${activeTheme}" theme='${
+              theme.name
+            }' style="color:${theme.mainColor};background:${theme.bgColor}">
+          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton active"><i class="fas fa-star"></i></div></div>`
           );
@@ -50,10 +115,10 @@ export function refreshButtons() {
       if (!Config.favThemes.includes(theme.name)) {
         let activeTheme = activeThemeName === theme.name ? "active" : "";
         themesEl.append(
-          `<div class="theme button" theme='${theme.name}' style="color:${
-            theme.textColor
-          };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+          `<div class="theme button ${activeTheme}" theme='${
+            theme.name
+          }' style="color:${theme.mainColor};background:${theme.bgColor}">
+          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton"><i class="far fa-star"></i></div></div>`
         );
@@ -63,17 +128,22 @@ export function refreshButtons() {
   });
 }
 
-export function setCustomInputs() {
+export function setCustomInputs(noThemeUpdate) {
   $(
-    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((n, index) => {
     let currentColor =
       Config.customThemeColors[
-        ThemeController.colorVars.indexOf($(index).attr("id"))
+        ThemeController.colorVars.indexOf(
+          $(index).find("input[type=color]").attr("id")
+        )
       ];
-    $(index).val(currentColor);
-    $(index).attr("value", currentColor);
-    $(index).prev().text(currentColor);
+
+    //todo check if needed
+    // $(index).find("input[type=color]").val(currentColor);
+    // $(index).find("input[type=color]").attr("value", currentColor);
+    // $(index).find("input[type=text]").val(currentColor);
+    updateColors($(index), currentColor, false, noThemeUpdate);
   });
 }
 
@@ -106,50 +176,23 @@ export function updateActiveTab() {
       "active"
     );
 
-    UI.swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      250
-    );
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   250
+    // );
   } else {
     $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
       "active"
     );
 
-    UI.swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      250
-    );
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   250
+    // );
   }
 }
-
-$("#shareCustomThemeButton").click((e) => {
-  if (!e.shiftKey) {
-    let share = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        share.push($(element).attr("value"));
-      }
-    );
-
-    let url =
-      "https://monkeytype.com?" +
-      Misc.objectToQueryString({ customTheme: share });
-    navigator.clipboard.writeText(url).then(
-      function () {
-        Notifications.add("URL Copied to clipboard", 0);
-      },
-      function (err) {
-        Notifications.add(
-          "Something went wrong when copying the URL: " + err,
-          -1
-        );
-      }
-    );
-  }
-});
 
 $(".pageSettings .section.themes .tabs .button").click((e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
@@ -198,14 +241,76 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("input", (e) => {
-  UpdateConfig.setCustomTheme(true, true);
+  // UpdateConfig.setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();
 
-  document.documentElement.style.setProperty($colorVar, $pickedColor);
-  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
+  //todo check if needed
+  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
+  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  //   $(".colorPicker #" + $colorVar).val($pickedColor);
+  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+  // });
+
+  // $(
+  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
+  // ).on("input", (e) => {
+  //   // UpdateConfig.setCustomTheme(true, true);
+  //   let $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
+  //   let $pickedColor = $(e.currentTarget).val();
+
+  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
+  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  //   $(".colorPicker #" + $colorVar).val($pickedColor);
+  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+  updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor, true);
 });
+
+$(
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+).on("change", (e) => {
+  // UpdateConfig.setCustomTheme(true, true);
+  let $colorVar = $(e.currentTarget).attr("id");
+  let $pickedColor = $(e.currentTarget).val();
+
+  //todo check if needed
+  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
+  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  //   $(".colorPicker #" + $colorVar).val($pickedColor);
+  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+  // });
+
+  // $(
+  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
+  // ).on("input", (e) => {
+  //   // UpdateConfig.setCustomTheme(true, true);
+  //   let $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
+  //   let $pickedColor = $(e.currentTarget).val();
+
+  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
+  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  //   $(".colorPicker #" + $colorVar).val($pickedColor);
+  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+  updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
+});
+
+$(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
+  .on("blur", (e) => {
+    let $colorVar = $(e.currentTarget).attr("id");
+    let $pickedColor = $(e.currentTarget).val();
+
+    updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
+  })
+  .on("keypress", function (e) {
+    if (e.which === 13) {
+      $(this).attr("disabled", "disabled");
+      let $colorVar = $(e.currentTarget).attr("id");
+      let $pickedColor = $(e.currentTarget).val();
+
+      updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
+      $(this).removeAttr("disabled");
+    }
+  });
 
 $(".pageSettings .saveCustomThemeButton").click((e) => {
   let save = [];
@@ -228,33 +333,34 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
     document.documentElement.style.setProperty(e, "");
   });
 
-  setTimeout(() => {
+  setTimeout(async () => {
     ChartController.updateAllChartColors();
+
+    let themecolors = await ThemeColors.get();
 
     ThemeController.colorVars.forEach((colorName) => {
       let color;
       if (colorName === "--bg-color") {
-        color = ThemeColors.bg;
+        color = themecolors.bg;
       } else if (colorName === "--main-color") {
-        color = ThemeColors.main;
+        color = themecolors.main;
       } else if (colorName === "--sub-color") {
-        color = ThemeColors.sub;
+        color = themecolors.sub;
       } else if (colorName === "--caret-color") {
-        color = ThemeColors.caret;
+        color = themecolors.caret;
       } else if (colorName === "--text-color") {
-        color = ThemeColors.text;
+        color = themecolors.text;
       } else if (colorName === "--error-color") {
-        color = ThemeColors.error;
+        color = themecolors.error;
       } else if (colorName === "--error-extra-color") {
-        color = ThemeColors.errorExtra;
+        color = themecolors.errorExtra;
       } else if (colorName === "--colorful-error-color") {
-        color = ThemeColors.colorfulError;
+        color = themecolors.colorfulError;
       } else if (colorName === "--colorful-error-extra-color") {
-        color = ThemeColors.colorfulErrorExtra;
+        color = themecolors.colorfulErrorExtra;
       }
-      $(".colorPicker #" + colorName).attr("value", color);
-      $(".colorPicker #" + colorName).val(color);
-      $(".colorPicker [for=" + colorName + "]").text(color);
+
+      updateColors($(".colorPicker #" + colorName).parent(), color);
     });
   }, 250);
 });

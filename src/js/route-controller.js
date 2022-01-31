@@ -4,17 +4,21 @@ import Config from "./config";
 
 let mappedRoutes = {
   "/": "pageLoading",
-  "/login": "pageLogin",
-  "/settings": "pageSettings",
-  "/about": "pageAbout",
+  "/login": "pageLoading",
+  "/settings": "pageLoading",
+  "/about": "pageLoading",
   "/account": "pageAccount",
-  "/verify": "pageTest",
+  "/verify": "pageLoading",
 };
 
 export function handleInitialPageClasses(pathname) {
+  if (!mappedRoutes[pathname]) {
+    pathname = "/";
+  }
   let el = $(".page." + mappedRoutes[pathname]);
   $(el).removeClass("hidden");
   $(el).addClass("active");
+  UI.setActivePage(mappedRoutes[pathname]);
 }
 
 (function (history) {

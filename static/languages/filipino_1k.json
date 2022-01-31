@@ -1,6 +1,7 @@
 {
   "name": "filipino_1k",
   "leftToRight": "true",
+  "noLazyMode": true,
   "words": [
     "salita",
     "nagkaroon",
@@ -206,7 +207,7 @@
     "pamilya",
     "miyembro",
     "imungkahi",
-    "ahas", 
+    "ahas",
     "kanta",
     "kanto",
     "sukat",
@@ -546,7 +547,7 @@
     "ligtas",
     "pusa",
     "siglo",
-    "batas", 
+    "batas",
     "kopya",
     "parirala",
     "matangkad",

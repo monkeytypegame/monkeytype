@@ -1,4 +1,5 @@
 const { task, src, dest, series, watch } = require("gulp");
+const axios = require("axios");
 const browserify = require("browserify");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
@@ -8,6 +9,8 @@ const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
 var sass = require("gulp-sass")(require("dart-sass"));
+const replace = require("gulp-replace");
+const uglify = require("gulp-uglify");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = {
@@ -19,9 +22,13 @@ let eslintConfig = {
     "moment",
     "html2canvas",
     "ClipboardItem",
+    "grecaptcha",
   ],
   envs: ["es6", "browser", "node"],
+  plugins: ["json"],
+  extends: ["plugin:json/recommended"],
   rules: {
+    "json/*": ["error"],
     "constructor-super": "error",
     "for-direction": "error",
     "getter-return": "error",
@@ -52,7 +59,7 @@ let eslintConfig = {
     "no-import-assign": "error",
     "no-inner-declarations": "error",
     "no-invalid-regexp": "error",
-    "no-irregular-whitespace": "error",
+    "no-irregular-whitespace": "warn",
     "no-misleading-character-class": "error",
     "no-mixed-spaces-and-tabs": "error",
     "no-new-symbol": "error",
@@ -86,8 +93,8 @@ let eslintConfig = {
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
+  "./src/js/axios-instance.js",
   "./src/js/db.js",
-  "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
   "./src/js/sound.js",
@@ -124,11 +131,22 @@ const refactoredSrc = [
   "./src/js/elements/loader.js",
   "./src/js/elements/sign-out-button.js",
   "./src/js/elements/about-page.js",
+  "./src/js/elements/psa.js",
+  "./src/js/elements/new-version-notification.js",
+  "./src/js/elements/mobile-test-config.js",
+  "./src/js/elements/loading-page.js",
+  "./src/js/elements/scroll-to-top.js",
 
   "./src/js/popups/custom-text-popup.js",
+  "./src/js/popups/pb-tables-popup.js",
   "./src/js/popups/quote-search-popup.js",
+  "./src/js/popups/quote-submit-popup.js",
+  "./src/js/popups/quote-approve-popup.js",
+  "./src/js/popups/quote-report-popup.js",
+  "./src/js/popups/quote-rate-popup.js",
   "./src/js/popups/version-popup.js",
   "./src/js/popups/support-popup.js",
+  "./src/js/popups/contact-popup.js",
   "./src/js/popups/custom-word-amount-popup.js",
   "./src/js/popups/custom-test-duration-popup.js",
   "./src/js/popups/word-filter-popup.js",
@@ -136,7 +154,7 @@ const refactoredSrc = [
   "./src/js/popups/edit-tags-popup.js",
   "./src/js/popups/edit-preset-popup.js",
   "./src/js/popups/custom-theme-popup.js",
-  "./src/js/popups/import-settings-popup.js",
+  "./src/js/popups/import-export-settings-popup.js",
   "./src/js/popups/custom-background-filter.js",
 
   "./src/js/settings/language-picker.js",
@@ -144,20 +162,22 @@ const refactoredSrc = [
   "./src/js/settings/settings-group.js",
 
   "./src/js/test/custom-text.js",
+  "./src/js/test/british-english.js",
+  "./src/js/test/lazy-mode.js",
   "./src/js/test/shift-tracker.js",
   "./src/js/test/out-of-focus.js",
   "./src/js/test/caret.js",
   "./src/js/test/manual-restart-tracker.js",
   "./src/js/test/test-stats.js",
   "./src/js/test/focus.js",
-  "./src/js/test/practise-missed.js",
+  "./src/js/test/practise-words.js",
   "./src/js/test/test-ui.js",
   "./src/js/test/keymap.js",
+  "./src/js/test/result.js",
   "./src/js/test/live-wpm.js",
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
   "./src/js/test/live-burst.js",
-  "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
   "./src/js/test/funbox.js",
@@ -167,7 +187,11 @@ const refactoredSrc = [
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
   "./src/js/test/poetry.js",
+  "./src/js/test/wikipedia.js",
   "./src/js/test/today-tracker.js",
+  "./src/js/test/weak-spot.js",
+  "./src/js/test/wordset.js",
+  "./src/js/test/tts.js",
   "./src/js/replay.js",
 ];
 
@@ -187,6 +211,7 @@ task("cat", function () {
 
 task("sass", function () {
   return src("./src/sass/*.scss")
+    .pipe(concat("style.scss"))
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
     .pipe(dest("dist/css"));
 });
@@ -220,12 +245,19 @@ task("browserify", function () {
     .bundle()
     .pipe(source("monkeytype.js"))
     .pipe(buffer())
+    .pipe(
+      uglify({
+        mangle: false,
+      })
+    )
     .pipe(dest("./dist/js"));
 });
 
 //lints only the refactored files
 task("lint", function () {
-  return src(refactoredSrc)
+  let filelist = refactoredSrc;
+  filelist.push("./static/**/*.json");
+  return src(filelist)
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -235,9 +267,41 @@ task("clean", function () {
   return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
+task("updateSwCacheName", function () {
+  let date = new Date();
+  let dateString =
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1) +
+    "-" +
+    date.getDate() +
+    "-" +
+    date.getHours() +
+    "-" +
+    date.getMinutes() +
+    "-" +
+    date.getSeconds();
+  return src(["static/sw.js"])
+    .pipe(
+      replace(
+        /const staticCacheName = .*;/g,
+        `const staticCacheName = "sw-cache-${dateString}";`
+      )
+    )
+    .pipe(dest("./dist/"));
+});
+
 task(
   "compile",
-  series("lint", "cat", "copy-modules", "browserify", "static", "sass")
+  series(
+    "lint",
+    "cat",
+    "copy-modules",
+    "browserify",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
 );
 
 task("watch", function () {

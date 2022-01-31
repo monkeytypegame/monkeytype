@@ -1,6 +1,7 @@
 {
   "name": "italian_7k",
   "leftToRight": true,
+  "bcp47": "it-IT",
   "words": [
     "abbagliante",
     "abbaiare",
@@ -4058,7 +4059,6 @@
     "negazione",
     "negoziante",
     "negozio",
-    "negro",
     "nemico",
     "nemmeno",
     "neo",

@@ -1,5 +1,6 @@
 import * as Loader from "./loader";
 import Config from "./config";
+import * as TestLogic from "./test-logic";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -79,7 +80,8 @@ export async function getSortedThemesList() {
     if (themesList == null) {
       await getThemesList();
     }
-    const sorted = themesList.sort((a, b) => {
+    let sorted = [...themesList];
+    sorted = sorted.sort((a, b) => {
       let b1 = hexToHSL(a.bgColor);
       let b2 = hexToHSL(b.bgColor);
       return b2.lgt - b1.lgt;
@@ -107,6 +109,13 @@ export async function getFunboxList() {
   } else {
     return funboxList;
   }
+}
+
+export async function getFunbox(funbox) {
+  let list = await getFunboxList();
+  return list.find(function (element) {
+    return element.name == funbox;
+  });
 }
 
 let quotes = null;
@@ -178,6 +187,30 @@ export async function getFontsList() {
     });
   } else {
     return fontsList;
+  }
+}
+
+let supportersList = null;
+export async function getSupportersList() {
+  if (supportersList == null) {
+    return $.getJSON("about/supporters.json", function (data) {
+      supportersList = data;
+      return supportersList;
+    });
+  } else {
+    return supportersList;
+  }
+}
+
+let contributorsList = null;
+export async function getContributorsList() {
+  if (contributorsList == null) {
+    return $.getJSON("about/contributors.json", function (data) {
+      contributorsList = data;
+      return contributorsList;
+    });
+  } else {
+    return contributorsList;
   }
 }
 
@@ -264,10 +297,6 @@ export function showNotification(text, time) {
 }
 
 let currentLanguage;
-export async function getCurrentLanguage() {
-  return await getLanguage(Config.language);
-}
-
 export async function getLanguage(lang) {
   try {
     if (currentLanguage == null || currentLanguage.name !== lang) {
@@ -286,6 +315,10 @@ export async function getLanguage(lang) {
     });
     return currentLanguage;
   }
+}
+
+export async function getCurrentLanguage() {
+  return await getLanguage(Config.language);
 }
 
 export function migrateFromCookies() {
@@ -310,21 +343,6 @@ export function migrateFromCookies() {
       }
     }
   );
-}
-
-export function sendVerificationEmail() {
-  Loader.show();
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
-    .then(() => {
-      Loader.hide();
-      showNotification("Email sent to " + cu.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      showNotification("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
 }
 
 export function smooth(arr, windowSize, getter = (value) => value, setter) {
@@ -372,21 +390,22 @@ export function mean(array) {
 }
 
 //https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
-export function median (arr) {
-  try{
+export function median(arr) {
+  try {
     const mid = Math.floor(arr.length / 2),
       nums = [...arr].sort((a, b) => a - b);
     return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-  }catch(e){
+  } catch (e) {
     return 0;
   }
 }
 
-export function getReleasesFromGitHub() {
-  $.getJSON(
+export async function getReleasesFromGitHub() {
+  return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
-      $("#bottom .version").text(data[0].name).css("opacity", 1);
+      $("#bottom .version .text").text(data[0].name);
+      $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
       data.forEach((release) => {
         if (!release.draft && !release.prerelease) {
@@ -506,7 +525,7 @@ export function getGibberish() {
   return ret;
 }
 
-export function secondsToString(sec, full = false) {
+export function secondsToString(sec, fullMinutes = false, fullHours = false) {
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
   const seconds = roundTo2((sec % 3600) % 60);
@@ -515,13 +534,13 @@ export function secondsToString(sec, full = false) {
   let secondsString;
   hours < 10 ? (hoursString = "0" + hours) : (hoursString = hours);
   minutes < 10 ? (minutesString = "0" + minutes) : (minutesString = minutes);
-  seconds < 10 && (minutes > 0 || hours > 0 || full)
+  seconds < 10 && (minutes > 0 || hours > 0 || fullMinutes)
     ? (secondsString = "0" + seconds)
     : (secondsString = seconds);
 
   let ret = "";
-  if (hours > 0 || full) ret += hoursString + ":";
-  if (minutes > 0 || hours > 0 || full) ret += minutesString + ":";
+  if (hours > 0 || fullHours) ret += hoursString + ":";
+  if (minutes > 0 || hours > 0 || fullMinutes) ret += minutesString + ":";
   ret += secondsString;
   return ret;
 }
@@ -577,6 +596,21 @@ export function getASCII() {
     ret += String.fromCharCode(33 + Math.floor(Math.random() * 94));
   }
   return ret;
+}
+
+export function getArrows() {
+  let arrowWord = "";
+  let arrowArray = ["←", "↑", "→", "↓"];
+  let lastchar;
+  for (let i = 0; i < 5; i++) {
+    let random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    while (random === lastchar) {
+      random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    }
+    lastchar = random;
+    arrowWord += random;
+  }
+  return arrowWord;
 }
 
 export function getPositionString(number) {
@@ -684,8 +718,14 @@ export function cleanTypographySymbols(textToClean) {
     "«": "<<",
     "»": ">>",
     "–": "-",
+    " ": " ",
+    " ": " ",
+    " ": " ",
   };
-  return textToClean.replace(/[“”’‘—,…«»–]/g, (char) => specials[char] || "");
+  return textToClean.replace(
+    /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
+    (char) => specials[char] || ""
+  );
 }
 
 export function isUsernameValid(name) {
@@ -746,24 +786,50 @@ export function setCharAt(str, index, chr) {
   return str.substring(0, index) + chr + str.substring(index + 1);
 }
 
-//https://www.reddit.com/r/learnjavascript/comments/8ohug3/how_to_recursively_count_keys_in_an_object/e03fytn/
-function countAllKeys(obj) {
-  if (typeof obj !== "object" || obj === null) {
-    return 0;
-  }
-  const keys = Object.keys(obj);
-  let sum = keys.length;
-  keys.forEach((key) => (sum += countAllKeys(obj[key])));
-  return sum;
-}
-
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
 export function regexIndexOf(string, regex, startpos) {
   var indexOf = string.substring(startpos || 0).search(regex);
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
+export function convertRGBtoHEX(rgb) {
+  rgb = rgb.match(/^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/);
+  if (rgb === null) return;
+  if (rgb.length < 3) return;
+  function hexCode(i) {
+    // Take the last 2 characters and convert
+    // them to Hexadecimal.
+
+    return ("0" + parseInt(i).toString(16)).slice(-2);
+  }
+  return "#" + hexCode(rgb[1]) + hexCode(rgb[2]) + hexCode(rgb[3]);
+}
+
 String.prototype.lastIndexOfRegex = function (regex) {
   var match = this.match(regex);
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;
 };
+
+export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
+
+export function getMode2(mode) {
+  if (!mode) mode = Config.mode;
+  let mode2 = "";
+  if (mode === "time") {
+    mode2 = Config.time;
+  } else if (mode === "words") {
+    mode2 = Config.words;
+  } else if (mode === "custom") {
+    mode2 = "custom";
+  } else if (mode === "zen") {
+    mode2 = "zen";
+  } else if (mode === "quote") {
+    mode2 = TestLogic.randomQuote.id;
+  }
+  return mode2;
+}
+
+//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
+export function convertRemToPixels(rem) {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}

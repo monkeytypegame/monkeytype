@@ -1,4 +1,5 @@
 import * as DB from "./db";
+import * as Misc from "./misc";
 
 export function clear() {
   $(".pageAccount .globalTimeTyping .val").text(`-`);
@@ -8,15 +9,16 @@ export function clear() {
 
 export function update() {
   if (DB.getSnapshot().globalStats.time != undefined) {
-    let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
-    let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
-    let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
-    $(".pageAccount .globalTimeTyping .val").text(`
-
-      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
-      ts < 10 ? "0" + ts : ts
-    }
-  `);
+    // let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
+    // let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
+    // let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
+    $(".pageAccount .globalTimeTyping .val").text(
+      Misc.secondsToString(
+        Math.round(DB.getSnapshot().globalStats.time),
+        true,
+        true
+      )
+    );
   }
   if (DB.getSnapshot().globalStats.started != undefined) {
     $(".pageAccount .globalTestsStarted .val").text(

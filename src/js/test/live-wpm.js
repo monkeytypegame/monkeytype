@@ -1,6 +1,9 @@
 import Config from "./config";
 import * as TestLogic from "./test-logic";
 
+let liveWpmElement = document.querySelector("#liveWpm");
+let miniLiveWpmElement = document.querySelector("#miniTimerAndLiveWpm .wpm");
+
 export function update(wpm, raw) {
   // if (!TestLogic.active || !Config.showLiveWpm) {
   //   hideLiveWpm();
@@ -14,8 +17,8 @@ export function update(wpm, raw) {
   if (Config.alwaysShowCPM) {
     number = Math.round(number * 5);
   }
-  document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = number;
-  document.querySelector("#liveWpm").innerHTML = number;
+  miniLiveWpmElement.innerHTML = number;
+  liveWpmElement.innerHTML = number;
 }
 
 export function show() {

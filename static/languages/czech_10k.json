@@ -1,6 +1,7 @@
 {
   "name": "czech_10k",
   "leftToRight": true,
+  "bcp47": "cs-CZ",
   "words": [
     "být",
     "a",

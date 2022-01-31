@@ -1,22 +1,10 @@
 {
   "language": "thai",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -30,6 +18,18 @@
       "source": "Universal Declaration of Human Rights",
       "length": 459,
       "id": 2
+    },
+    {
+      "text": "ข้อ 3 ทุกคนมีสิทธิในชีวิต เสรีภาพ และความมั่นคงของบุคคล.",
+      "source": "Universal Declaration of Human Rights",
+      "length": 55,
+      "id": 3
+    },
+    {
+      "text": "ข้อ 4 ห้ามมิให้ผู้ใดถูกคุมขังเป็นทาสหรือเป็นทาส ห้ามมิให้ค้าทาสและการค้าทาสในทุกรูปแบบ.",
+      "source": "Universal Declaration of Human Rights",
+      "length": 88,
+      "id": 4
     }
   ]
 }

@@ -18,6 +18,11 @@ import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
+import * as ChallengeContoller from "./challenge-controller";
+import * as TTS from "./tts";
+import * as MobileTestConfig from "./mobile-test-config.js";
+import * as TestConfig from "./test-config.js";
+import * as PractiseWords from "./practise-words";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -73,7 +78,6 @@ let defaultConfig = {
   caretStyle: "default",
   paceCaretStyle: "default",
   flipTestColors: false,
-  capsLockBackspace: false,
   layout: "default",
   funbox: "none",
   confidenceMode: "off",
@@ -94,8 +98,10 @@ let defaultConfig = {
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
   singleListCommandLine: "manual",
+  capsLockWarning: true,
   playSoundOnError: false,
   playSoundOnClick: "off",
+  soundVolume: "0.5",
   startGraphsAtZero: true,
   swapEscAndTab: false,
   showOutOfFocusWarning: true,
@@ -115,6 +121,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  showLiveBurst: false,
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",
@@ -123,6 +130,11 @@ let defaultConfig = {
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
+  minBurst: "off",
+  minBurstCustomSpeed: 100,
+  burstHeatmap: false,
+  britishEnglish: false,
+  lazyMode: false,
 };
 
 function isConfigKeyValid(name) {
@@ -167,6 +179,7 @@ export function setNumbers(numb, nosave) {
   } else {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
+  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -194,6 +207,7 @@ export function setPunctuation(punc, nosave) {
   } else {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
+  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -216,29 +230,9 @@ export function setMode(mode, nosave) {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
-
+  let previous = config.mode;
   config.mode = mode;
-  $("#top .config .mode .text-button").removeClass("active");
-  $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
-  if (config.mode == "time") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").removeClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "words") {
-    $("#top .config .wordCount").removeClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "custom") {
+  if (config.mode == "custom") {
     if (
       config.funbox === "58008" ||
       config.funbox === "gibberish" ||
@@ -247,40 +241,20 @@ export function setMode(mode, nosave) {
       Funbox.setActive("none");
       TestUI.updateModesNotice();
     }
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode == "quote") {
-    setPunctuation(false, nosave);
-    setNumbers(false, nosave);
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("disabled");
-    $("#top .config .numbersMode").addClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#result .stats .source").removeClass("hidden");
-    $("#top .config .quoteLength").removeClass("hidden");
+    setPunctuation(false, true);
+    setNumbers(false, true);
   } else if (config.mode == "zen") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
     if (config.paceCaret != "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
-    // setPaceCaret("off", true);
   }
+  TestConfig.update(previous, config.mode);
+  MobileTestConfig.update();
+  ChallengeContoller.clearActive();
+  PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -301,11 +275,13 @@ export function setPlaySoundOnClick(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function togglePlaySoundOnError() {
-  config.playSoundOnError = !config.playSoundOnError;
-  if (config.playSoundOnError == undefined) {
-    config.playSoundOnError = false;
+export function setSoundVolume(val, nosave) {
+  if (val == undefined) {
+    val = "1.0";
   }
+  config.soundVolume = val;
+  Sound.setVolume(val);
+  if (!nosave) saveToLocalStorage();
 }
 
 //difficulty
@@ -331,7 +307,14 @@ export function setFavThemes(themes, nosave) {
 }
 
 export function setFunbox(funbox, nosave) {
-  config.funbox = funbox ? funbox : "none";
+  let val = funbox ? funbox : "none";
+  config.funbox = val;
+  ChallengeContoller.clearActive();
+  if (val === "none") {
+    TTS.clear();
+  } else if (val === "tts") {
+    TTS.init();
+  }
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -504,6 +487,7 @@ export function setPaceCaret(val, nosave) {
   //   val = "off";
   // }
   config.paceCaret = val;
+  ChallengeContoller.clearActive();
   TestUI.updateModesNotice();
   PaceCaret.init(nosave);
   if (!nosave) saveToLocalStorage();
@@ -614,6 +598,15 @@ export function setSingleListCommandLine(option, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+//caps lock warning
+export function setCapsLockWarning(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.capsLockWarning = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 //show all lines
 export function toggleShowAllLines() {
   let sal = !config.showAllLines;
@@ -630,6 +623,7 @@ export function setShowAllLines(sal, nosave) {
     sal = false;
   }
   config.showAllLines = sal;
+  ChallengeContoller.clearActive();
   if (!nosave) {
     saveToLocalStorage();
     TestLogic.restart();
@@ -659,7 +653,13 @@ export function setEnableAds(val, nosave) {
     val = "off";
   }
   config.enableAds = val;
-  if (!nosave) saveToLocalStorage();
+  if (!nosave) {
+    saveToLocalStorage();
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
+    Notifications.add("Ad settings changed. Refreshing...", 0);
+  }
 }
 
 export function setRepeatQuotes(val, nosave) {
@@ -806,7 +806,7 @@ export function setShowTimerProgress(timer, nosave) {
     timer = false;
   }
   config.showTimerProgress = timer;
-  if (config.showTimerProgress) {
+  if (config.showTimerProgress && TestLogic.active) {
     TimerProgress.show();
   } else {
     TimerProgress.hide();
@@ -834,6 +834,7 @@ export function setShowLiveWpm(live, nosave) {
   } else {
     LiveWpm.hide();
   }
+  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -899,7 +900,9 @@ export function setHighlightMode(mode, nosave) {
     (config.funbox === "nospace" ||
       config.funbox === "read_ahead" ||
       config.funbox === "read_ahead_easy" ||
-      config.funbox === "read_ahead_hard")
+      config.funbox === "read_ahead_hard" ||
+      config.funbox === "tts" ||
+      config.funbox === "arrows")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
@@ -909,6 +912,7 @@ export function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   // if(TestLogic.active){
+  ChallengeContoller.clearActive();
   try {
     if (!nosave) TestUI.updateWordElement(config.blindMode);
   } catch {}
@@ -934,6 +938,7 @@ export function setTimerStyle(style, nosave) {
     style = "mini";
   }
   config.timerStyle = style;
+  TimerProgress.updateStyle();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1013,7 +1018,7 @@ export function setTimeConfig(time, nosave) {
     time = 15;
   }
   time = parseInt(time);
-  if (!nosave) setMode("time", nosave);
+  // if (!nosave) setMode("time", nosave);
   config.time = time;
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
@@ -1022,6 +1027,7 @@ export function setTimeConfig(time, nosave) {
   $("#top .config .time .text-button[timeConfig='" + time + "']").addClass(
     "active"
   );
+  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1063,7 +1069,7 @@ export function setWordCount(wordCount, nosave) {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
-  if (!nosave) setMode("words", nosave);
+  // if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
@@ -1072,6 +1078,7 @@ export function setWordCount(wordCount, nosave) {
   $(
     "#top .config .wordCount .text-button[wordCount='" + wordCount + "']"
   ).addClass("active");
+  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1126,11 +1133,11 @@ export function setQuickTabMode(mode, nosave) {
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   if (!nosave) saveToLocalStorage();
 }
@@ -1142,11 +1149,11 @@ export function toggleQuickTabMode() {
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   saveToLocalStorage();
 }
@@ -1157,7 +1164,7 @@ export function previewFontFamily(font) {
   }
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '"'
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono"'
   );
 }
 
@@ -1184,7 +1191,7 @@ export function setFontFamily(font, nosave) {
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '"'
+    `"${font.replace(/_/g, " ")}", "Roboto Mono"`
   );
   ChartController.setDefaultFontFamily(font);
   if (!nosave) saveToLocalStorage();
@@ -1254,7 +1261,20 @@ export function setCustomTheme(boolean, nosave) {
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
+  ThemeController.clearPreview();
   ThemeController.set(config.theme);
+  if (!nosave) saveToLocalStorage();
+}
+
+function setThemes(theme, customState, nosave) {
+  config.theme = theme;
+  config.customTheme = customState;
+  ThemeController.clearPreview();
+  if (customState) {
+    ThemeController.set("custom");
+  } else {
+    ThemeController.set(config.theme);
+  }
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1266,6 +1286,22 @@ export function setRandomTheme(val, nosave) {
     ThemeController.clearRandom();
   }
   config.randomTheme = val;
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setBritishEnglish(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.britishEnglish = val;
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setLazyMode(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1294,6 +1330,9 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
+  if (config.funbox === "tts") {
+    TTS.setLanguage();
+  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,
@@ -1327,18 +1366,6 @@ export function setMonkey(monkey, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function setCapsLockBackspace(capsLockBackspace, nosave) {
-  if (capsLockBackspace === null || capsLockBackspace === undefined) {
-    capsLockBackspace = false;
-  }
-  config.capsLockBackspace = capsLockBackspace;
-  if (!nosave) saveToLocalStorage();
-}
-
-export function toggleCapsLockBackspace() {
-  setCapsLockBackspace(!config.capsLockBackspace, false);
-}
-
 export function setKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
@@ -1346,6 +1373,7 @@ export function setKeymapMode(mode, nosave) {
   $(".active-key").removeClass("active-key");
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
+  ChallengeContoller.clearActive();
   if (!nosave) TestLogic.restart(false, nosave);
   if (!nosave) saveToLocalStorage();
 }
@@ -1382,6 +1410,7 @@ export function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
+  $(".keymap").removeClass("alice");
   style = style || "staggered";
 
   $(".keymap").addClass(style);
@@ -1394,6 +1423,7 @@ export function setKeymapLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.keymapLayout = layout;
+  ChallengeContoller.clearActive();
   Keymap.refreshKeys(layout, setKeymapLayout);
   if (!nosave) saveToLocalStorage();
 }
@@ -1403,6 +1433,7 @@ export function setLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.layout = layout;
+  ChallengeContoller.clearActive();
   TestUI.updateModesNotice();
   if (config.keymapLayout === "overrideSync") {
     Keymap.refreshKeys(config.keymapLayout, setKeymapLayout);
@@ -1477,9 +1508,10 @@ export function setCustomBackground(value, nosave) {
   }
   value = value.trim();
   if (
-    /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
+    (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
       value
-    ) ||
+    ) &&
+      !/[<>]/.test(value)) ||
     value == ""
   ) {
     config.customBackground = value;
@@ -1546,6 +1578,17 @@ export function setMonkeyPowerLevel(level, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setBurstHeatmap(value, nosave) {
+  if (!value) {
+    value = false;
+  }
+  config.burstHeatmap = value;
+  if (!nosave) {
+    TestUI.applyBurstHeatmap();
+    saveToLocalStorage();
+  }
+}
+
 export function apply(configObj) {
   if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
@@ -1557,9 +1600,10 @@ export function apply(configObj) {
     }
   });
   if (configObj && configObj != null && configObj != "null") {
-    setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
-    setCustomTheme(configObj.customTheme, true, true);
+    setThemes(configObj.theme, configObj.customTheme, true);
+    // setTheme(configObj.theme, true);
+    // setCustomTheme(configObj.customTheme, true, true);
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
@@ -1570,7 +1614,6 @@ export function apply(configObj) {
     setQuoteLength(configObj.quoteLength, true);
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
-    setCapsLockBackspace(configObj.capsLockBackspace, true);
     // setSavedLayout(configObj.savedLayout, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
@@ -1601,8 +1644,10 @@ export function apply(configObj) {
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
+    setCapsLockWarning(configObj.capsLockWarning, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
+    setSoundVolume(configObj.soundVolume, true);
     setStopOnError(configObj.stopOnError, true);
     setFavThemes(configObj.favThemes, true);
     setFunbox(configObj.funbox, true);
@@ -1634,185 +1679,110 @@ export function apply(configObj) {
     setMonkey(configObj.monkey, true);
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
+    setBurstHeatmap(configObj.burstHeatmap, true);
+    setBritishEnglish(configObj.britishEnglish, true);
+    setLazyMode(configObj.lazyMode, true);
 
     LanguagePicker.setActiveGroup();
 
     try {
       setEnableAds(configObj.enableAds, true);
-      let addemo = false;
-      if (
-        firebase.app().options.projectId === "monkey-type-dev-67af4" ||
-        window.location.hostname === "localhost"
-      ) {
-        addemo = true;
-      }
+      // let addemo = false;
+      // if (
+      //   firebase.app().options.projectId === "monkey-type-dev-67af4" ||
+      //   window.location.hostname === "localhost"
+      // ) {
+      //   addemo = true;
+      // }
 
       if (config.enableAds === "max" || config.enableAds === "on") {
         if (config.enableAds === "max") {
-          window["nitroAds"].createAd("nitropay_ad_left", {
-            refreshLimit: 10,
-            refreshTime: 30,
-            renderVisibleOnly: false,
-            refreshVisibleOnly: true,
-            sizes: [["160", "600"]],
-            report: {
-              enabled: true,
-              wording: "Report Ad",
-              position: "bottom-right",
-            },
-            mediaQuery: "(min-width: 1330px)",
-            demo: addemo,
-          });
-          $("#nitropay_ad_left").removeClass("hidden");
+          //
 
-          window["nitroAds"].createAd("nitropay_ad_right", {
-            refreshLimit: 10,
-            refreshTime: 30,
-            renderVisibleOnly: false,
-            refreshVisibleOnly: true,
-            sizes: [["160", "600"]],
-            report: {
-              enabled: true,
-              wording: "Report Ad",
-              position: "bottom-right",
-            },
-            mediaQuery: "(min-width: 1330px)",
-            demo: addemo,
-          });
-          $("#nitropay_ad_right").removeClass("hidden");
+          $("#ad_rich_media").removeClass("hidden");
+          $("#ad_rich_media").html(
+            `<div class="vm-placement" data-id="60bf737ee04cb761c88aafb1" style="display:none"></div>`
+          );
         } else {
-          $("#nitropay_ad_left").remove();
-          $("#nitropay_ad_right").remove();
+          $("#ad_rich_media").remove();
         }
 
-        window["nitroAds"].createAd("nitropay_ad_footer", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          sizes: [["970", "90"]],
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          mediaQuery: "(min-width: 1025px)",
-          demo: addemo,
-        });
-        $("#nitropay_ad_footer").removeClass("hidden");
+        //<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>
 
-        window["nitroAds"].createAd("nitropay_ad_footer2", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          sizes: [["728", "90"]],
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          mediaQuery: "(min-width: 730px) and (max-width: 1024px)",
-          demo: addemo,
-        });
-        $("#nitropay_ad_footer2").removeClass("hidden");
+        $("#ad_footer").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_footer").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_footer3", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          sizes: [["320", "50"]],
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          mediaQuery: "(max-width: 730px)",
-          demo: addemo,
-        });
-        $("#nitropay_ad_footer3").removeClass("hidden");
+        // $("#ad_footer2").html(`<div class="vm-placement" data-id="60bf73e9e04cb761c88aafb7"></div>`);
+        // $("#ad_footer2").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_about", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_about").removeClass("hidden");
+        $("#ad_about1").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_about1").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_settings1", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_settings1").removeClass("hidden");
+        $("#ad_about2").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_about2").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_settings2", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_settings2").removeClass("hidden");
+        $("#ad_settings0").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings0").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_account", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_account").removeClass("hidden");
+        $("#ad_settings1").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings1").removeClass("hidden");
+
+        $("#ad_settings2").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings2").removeClass("hidden");
+
+        $("#ad_settings3").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings3").removeClass("hidden");
+
+        $("#ad_account").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_account").removeClass("hidden");
       } else {
+        $("#adScript").remove();
         $(".footerads").remove();
-        $("#nitropay_ad_left").remove();
-        $("#nitropay_ad_right").remove();
-        $("#nitropay_ad_footer").remove();
-        $("#nitropay_ad_footer2").remove();
-        $("#nitropay_ad_footer3").remove();
-        $("#nitropay_ad_settings1").remove();
-        $("#nitropay_ad_settings2").remove();
-        $("#nitropay_ad_account").remove();
-        $("#nitropay_ad_about").remove();
+        $("#ad_left").remove();
+        $("#ad_right").remove();
+        $("#ad_footer").remove();
+        $("#ad_footer2").remove();
+        $("#ad_footer3").remove();
+        $("#ad_settings0").remove();
+        $("#ad_settings1").remove();
+        $("#ad_settings2").remove();
+        $("#ad_settings3").remove();
+        $("#ad_account").remove();
+        $("#ad_about1").remove();
+        $("#ad_about2").remove();
       }
     } catch (e) {
       Notifications.add("Error initialising ads: " + e.message);
       console.log("error initialising ads " + e.message);
       $(".footerads").remove();
-      $("#nitropay_ad_left").remove();
-      $("#nitropay_ad_right").remove();
-      $("#nitropay_ad_footer").remove();
-      $("#nitropay_ad_footer2").remove();
-      $("#nitropay_ad_footer3").remove();
-      $("#nitropay_ad_settings1").remove();
-      $("#nitropay_ad_settings2").remove();
-      $("#nitropay_ad_account").remove();
-      $("#nitropay_ad_about").remove();
+      $("#ad_left").remove();
+      $("#ad_right").remove();
+      $("#ad_footer").remove();
+      $("#ad_footer2").remove();
+      $("#ad_footer3").remove();
+      $("#ad_settings0").remove();
+      $("#ad_settings1").remove();
+      $("#ad_settings2").remove();
+      $("#ad_settings3").remove();
+      $("#ad_account").remove();
+      $("#ad_about1").remove();
+      $("#ad_about2").remove();
     }
   }
   TestUI.updateModesNotice();

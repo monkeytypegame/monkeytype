@@ -1,6 +1,7 @@
 {
   "name": "esperanto_x_sistemo_36k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "la",
     "mi",
@@ -21839,7 +21840,6 @@
     "laciøas",
     "kanibala",
     "elæerpiøas",
-    "negro",
     "kriminalan",
     "krimado",
     "cinikado",
@@ -22965,7 +22965,6 @@
     "kambune",
     "sxtalspongo",
     "vivreala",
-    "negron",
     "tenajlon",
     "eckernfoerde",
     "pikmangxas",

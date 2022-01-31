@@ -1,6 +1,7 @@
 import * as Misc from "./misc";
 import Config from "./config";
 import * as TestLogic from "./test-logic";
+import * as TestTimer from "./test-timer";
 
 export let caretAnimating = true;
 
@@ -14,7 +15,7 @@ export function stopAnimation() {
 
 export function startAnimation() {
   if (caretAnimating === false) {
-    if (Config.smoothCaret) {
+    if (Config.smoothCaret && !TestTimer.slowTimer) {
       $("#caret").css("animation-name", "caretFlashSmooth");
     } else {
       $("#caret").css("animation-name", "caretFlashHard");
@@ -29,13 +30,16 @@ export function hide() {
 
 export async function updatePosition() {
   if ($("#wordsWrapper").hasClass("hidden")) return;
-  if ($("#caret").hasClass("off")) {
-    return;
-  }
+  // if ($("#caret").hasClass("off")) {
+  //   return;
+  // }
 
   let caret = $("#caret");
 
   let inputLen = TestLogic.input.current.length;
+  inputLen = Misc.trailingComposeChars.test(TestLogic.input.current)
+    ? TestLogic.input.current.search(Misc.trailingComposeChars) + 1
+    : inputLen;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;
@@ -86,7 +90,7 @@ export async function updatePosition() {
           top: newTop - smoothlinescroll,
           left: newLeft,
         },
-        100
+        TestTimer.slowTimer ? 0 : 100
       );
     } else {
       caret.stop(true, true).animate(
@@ -103,10 +107,20 @@ export async function updatePosition() {
       let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
       let contentHeight = document.body.scrollHeight;
 
-      if (newTop >= middlePos && contentHeight > browserHeight) {
+      if (
+        newTop >= middlePos &&
+        contentHeight > browserHeight &&
+        TestLogic.active
+      ) {
+        let newscrolltop = newTop - middlePos / 2;
+        // console.log('---------');
+        // console.log(newTop);
+        // console.log(middlePos);
+        // console.log(browserHeight);
+        // console.log(contentHeight);
         window.scrollTo({
           left: 0,
-          top: newTop - middlePos,
+          top: newscrolltop,
           behavior: "smooth",
         });
       }

@@ -1,11 +1,11 @@
 import * as TestLogic from "./test-logic";
 import Config from "./config";
-import * as Funbox from "./funbox";
 import * as Misc from "./misc";
 import * as TestStats from "./test-stats";
 
 export let invalid = false;
 export let start, end;
+export let start2, end2;
 export let wpmHistory = [];
 export let rawHistory = [];
 export let burstHistory = [];
@@ -13,9 +13,9 @@ export let burstHistory = [];
 export let keypressPerSecond = [];
 export let currentKeypress = {
   count: 0,
-  mod: 0,
   errors: 0,
   words: [],
+  afk: true,
 };
 export let lastKeypress;
 export let currentBurstStart = 0;
@@ -42,6 +42,49 @@ export let keypressTimings = {
   },
 };
 
+export function getStats() {
+  let ret = {
+    start,
+    end,
+    wpmHistory,
+    rawHistory,
+    burstHistory,
+    keypressPerSecond,
+    currentKeypress,
+    lastKeypress,
+    currentBurstStart,
+    lastSecondNotRound,
+    missedWords,
+    accuracy,
+    keypressTimings,
+  };
+
+  try {
+    ret.keySpacingStats = {
+      average:
+        keypressTimings.spacing.array.reduce(
+          (previous, current) => (current += previous)
+        ) / keypressTimings.spacing.array.length,
+      sd: Misc.stdDev(keypressTimings.spacing.array),
+    };
+  } catch (e) {
+    //
+  }
+  try {
+    ret.keyDurationStats = {
+      average:
+        keypressTimings.duration.array.reduce(
+          (previous, current) => (current += previous)
+        ) / keypressTimings.duration.array.length,
+      sd: Misc.stdDev(keypressTimings.duration.array),
+    };
+  } catch (e) {
+    //
+  }
+
+  return ret;
+}
+
 export function restart() {
   start = 0;
   end = 0;
@@ -52,9 +95,9 @@ export function restart() {
   keypressPerSecond = [];
   currentKeypress = {
     count: 0,
-    mod: 0,
     errors: 0,
     words: [],
+    afk: true,
   };
   currentBurstStart = 0;
   // errorsPerSecond = [];
@@ -115,10 +158,12 @@ export function calculateTestSeconds(now) {
 
 export function setEnd(e) {
   end = e;
+  end2 = Date.now();
 }
 
 export function setStart(s) {
   start = s;
+  start2 = Date.now();
 }
 
 export function updateLastKeypress() {
@@ -137,8 +182,8 @@ export function incrementKeypressCount() {
   currentKeypress.count++;
 }
 
-export function incrementKeypressMod() {
-  currentKeypress.mod++;
+export function setKeypressNotAfk() {
+  currentKeypress.afk = false;
 }
 
 export function incrementKeypressErrors() {
@@ -153,9 +198,9 @@ export function pushKeypressesToHistory() {
   keypressPerSecond.push(currentKeypress);
   currentKeypress = {
     count: 0,
-    mod: 0,
     errors: 0,
     words: [],
+    afk: true,
   };
 }
 
@@ -175,7 +220,7 @@ export function calculateAfkSeconds(testSeconds) {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  let ret = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0).length;
+  let ret = keypressPerSecond.filter((x) => x.afk).length;
   return ret + extraAfk;
 }
 
@@ -191,7 +236,10 @@ export function calculateBurst() {
   let timeToWrite = (performance.now() - currentBurstStart) / 1000;
   let wordLength;
   if (Config.mode === "zen") {
-    wordLength = TestLogic.input.getCurrent().length;
+    wordLength = TestLogic.input.current.length;
+    if (wordLength == 0) {
+      wordLength = TestLogic.input.getHistoryLast().length;
+    }
   } else {
     wordLength = TestLogic.words.getCurrent().length;
   }
@@ -209,7 +257,8 @@ export function pushBurstToHistory(speed) {
 }
 
 export function calculateAccuracy() {
-  return (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
+  let acc = (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
+  return isNaN(acc) ? 100 : acc;
 }
 
 export function incrementAccuracy(correctincorrect) {
@@ -354,7 +403,7 @@ function countChars() {
       spaces++;
     }
   }
-  if (Config.funbox === "nospace") {
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
     correctspaces = 0;
   }
@@ -372,6 +421,11 @@ function countChars() {
 
 export function calculateStats() {
   let testSeconds = TestStats.calculateTestSeconds();
+  console.log((TestStats.end2 - TestStats.start2) / 1000);
+  console.log(testSeconds);
+  if (Config.mode != "custom") {
+    testSeconds = Misc.roundTo2(testSeconds);
+  }
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5

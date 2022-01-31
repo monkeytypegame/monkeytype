@@ -1,17 +1,18 @@
-import Config, * as UpdateConfig from "./config";
-import * as Notifications from "./notifications";
-import * as ThemePicker from "./theme-picker";
+// import Config, * as UpdateConfig from "./config";
+// import * as Notifications from "./notifications";
+// import * as ThemePicker from "./theme-picker";
 
-function show() {
+export function show(value) {
   if ($("#customThemeShareWrapper").hasClass("hidden")) {
-    let save = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        save.push($(element).attr("value"));
-      }
-    );
-    $("#customThemeShareWrapper input").val(JSON.stringify(save));
+    // let save = [];
+    // $.each(
+    //   $(".pageSettings .section.customTheme [type='color']"),
+    //   (index, element) => {
+    //     save.push($(element).attr("value"));
+    //   }
+    // );
+    // $("#customThemeShareWrapper input").val(JSON.stringify(save));
+    $("#customThemeShareWrapper input").val(value);
     $("#customThemeShareWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -26,20 +27,19 @@ function show() {
 
 function hide() {
   if (!$("#customThemeShareWrapper").hasClass("hidden")) {
-    try {
-      UpdateConfig.setCustomThemeColors(
-        JSON.parse($("#customThemeShareWrapper input").val())
-      );
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0,
-        4
-      );
-      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    ThemePicker.setCustomInputs();
-    // applyCustomThemeColors();
+    // try {
+    //   UpdateConfig.setCustomThemeColors(
+    //     JSON.parse($("#customThemeShareWrapper input").val())
+    //   );
+    // } catch (e) {
+    //   Notifications.add(
+    //     "Something went wrong. Reverting to default custom colors.",
+    //     0,
+    //     4
+    //   );
+    //   UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
+    // }
+    // ThemePicker.setCustomInputs();
     $("#customThemeShareWrapper input").val("");
     $("#customThemeShareWrapper")
       .stop(true, true)
@@ -64,10 +64,4 @@ $("#customThemeShareWrapper").click((e) => {
 
 $("#customThemeShare .button").click((e) => {
   hide();
-});
-
-$("#shareCustomThemeButton").click((e) => {
-  if (e.shiftKey) {
-    show();
-  }
 });

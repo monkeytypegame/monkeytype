@@ -1,6 +1,8 @@
 {
   "name": "dutch_10k",
   "leftToRight": true,
+  "noLazyMode": true,
+  "bcp47": "nl-NL",
   "words": [
     "aambeeld",
     "achtergrondstudie",
@@ -27,7 +29,6 @@
     "batting",
     "bedienaar",
     "beenmergcel",
-    "beganegrondwoning",
     "beladingsgraad",
     "bellenblaas",
     "beroepsdomein",
@@ -9093,7 +9094,6 @@
     "zendtijd",
     "zendtoren",
     "zendvergunning",
-    "zenegroen",
     "zeng",
     "zengen",
     "zenmeditatie",
