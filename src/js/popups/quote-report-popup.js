@@ -47,6 +47,8 @@ export async function show(options = defaultOptions) {
 
 export async function hide() {
   if (!$("#quoteReportPopupWrapper").hasClass("hidden")) {
+    let noAnim = state.previousPopupShowCallback ? true : false;
+
     $("#quoteReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -54,7 +56,7 @@ export async function hide() {
         {
           opacity: 0,
         },
-        100,
+        noAnim ? 0 : 100,
         (e) => {
           grecaptcha.reset(CAPTCHA_ID);
           $("#quoteReportPopupWrapper").addClass("hidden");
