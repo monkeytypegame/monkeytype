@@ -40,9 +40,8 @@ export async function getQuoteStats(quote) {
     } else {
       quoteStats = response.data;
       if (quoteStats && !quoteStats.average) {
-        quoteStats.average = (
-          Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
-        ).toFixed(1);
+        quoteStats.average =
+          Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
       }
     }
     return quoteStats;
@@ -60,7 +59,9 @@ function refreshStars(force) {
 async function updateRatingStats() {
   if (!quoteStats) await getQuoteStats();
   $("#rateQuotePopup .ratingCount .val").text(quoteStats.ratings ?? "0");
-  $("#rateQuotePopup .ratingAverage .val").text(quoteStats.average ?? "-");
+  $("#rateQuotePopup .ratingAverage .val").text(
+    quoteStats.average?.toFixed(1) ?? "-"
+  );
 }
 
 function updateData() {
@@ -182,11 +183,10 @@ async function submit() {
       }
       Notifications.add("Rating submitted", 1);
     }
-    quoteStats.average = (
-      Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
-    ).toFixed(1);
+    quoteStats.average =
+      Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
     $(".pageTest #result #rateQuoteButton .rating").text(
-      quoteStats.average.toFixed(1)
+      quoteStats.average?.toFixed(1)
     );
     $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
     $(".pageTest #result #rateQuoteButton .icon").addClass("fas");

@@ -558,7 +558,7 @@ export function updateRateQuote(randomQuote) {
     }
     RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
       $(".pageTest #result #rateQuoteButton .rating").text(
-        quoteStats.average.toFixed(1) ?? ""
+        quoteStats.average?.toFixed(1) ?? ""
       );
       $(".pageTest #result #rateQuoteButton")
         .css({ opacity: 0 })
