@@ -34,7 +34,7 @@ import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
-import * as RateQuotePopup from "./rate-quote-popup";
+import * as QuoteRatePopup from "./quote-rate-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
@@ -563,7 +563,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
-  RateQuotePopup.clearQuoteStats();
+  QuoteRatePopup.clearQuoteStats();
   if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
     window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");

@@ -18,7 +18,7 @@ import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
 import * as ChallengeController from "./challenge-controller";
-import * as RateQuotePopup from "./rate-quote-popup";
+import * as QuoteRatePopup from "./quote-rate-popup";
 import * as UI from "./ui";
 import * as TestTimer from "./test-timer";
 import * as ReportQuotePopup from "./quote-report-popup";
@@ -995,7 +995,7 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 });
 
 $(".pageTest #rateQuoteButton").click(async (event) => {
-  RateQuotePopup.show(TestLogic.randomQuote);
+  QuoteRatePopup.show(TestLogic.randomQuote);
 });
 
 $(".pageTest #reportQuoteButton").click(async (event) => {

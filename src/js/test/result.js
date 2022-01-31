@@ -9,7 +9,7 @@ import * as ThemeColors from "./theme-colors";
 import * as DB from "./db";
 import * as TodayTracker from "./today-tracker";
 import * as PbCrown from "./pb-crown";
-import * as RateQuotePopup from "./rate-quote-popup";
+import * as QuoteRatePopup from "./quote-rate-popup";
 import * as TestLogic from "./test-logic";
 import * as Notifications from "./notifications";
 
@@ -556,7 +556,7 @@ export function updateRateQuote(randomQuote) {
         .removeClass("far")
         .addClass("fas");
     }
-    RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
+    QuoteRatePopup.getQuoteStats(randomQuote).then((quoteStats) => {
       $(".pageTest #result #rateQuoteButton .rating").text(
         quoteStats.average?.toFixed(1) ?? ""
       );
