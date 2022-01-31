@@ -17,7 +17,7 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
       const baseValue = base[key];
       const sourceValue = source[key];
 
-      if (_.isObject(baseValue) && _.isObject(sourceValue)) {
+      if (_.isPlainObject(baseValue) && _.isPlainObject(sourceValue)) {
         merge(baseValue, sourceValue);
       } else if (typeof baseValue === typeof sourceValue) {
         base[key] = sourceValue;
