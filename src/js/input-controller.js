@@ -24,6 +24,7 @@ import * as ShiftTracker from "./shift-tracker";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as WeakSpot from "./weak-spot";
+import * as Leaderboards from "./leaderboards";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -603,6 +604,9 @@ function handleTab(event) {
   ) {
     if (UI.getActivePage() == "pageTest") {
       if (Config.quickTab) {
+        if (!$("#leaderboardsWrapper").hasClass("hidden")) {
+          Leaderboards.hide();
+        }
         if (
           TestUI.resultVisible ||
           !(
