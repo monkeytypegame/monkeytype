@@ -5,6 +5,8 @@ const Logger = require("../handlers/logger.js");
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
+let databaseConfiguratoinUpdated = false;
+
 function mergeConfigurations(baseConfiguration, liveConfiguration) {
   if (
     !_.isPlainObject(baseConfiguration) ||
@@ -61,13 +63,15 @@ class ConfigurationDAO {
         this.configuration = baseConfiguration;
 
         if (
+          !databaseConfiguratoinUpdated &&
           Object.keys(baseConfiguration).length !==
-          Object.keys(liveConfiguration).length - 1
+            Object.keys(liveConfiguration).length - 1
         ) {
           // -1 for _id
           await mongoDB()
             .collection("configuration")
             .updateOne({}, { $set: Object.assign({}, this.configuration) });
+          databaseConfiguratoinUpdated = true;
         }
       } else {
         await mongoDB()
