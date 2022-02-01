@@ -17,42 +17,42 @@ quotesRouter.get(
   "/",
   RateLimit.newQuotesGet,
   authenticateRequest,
-  NewQuotesController.getQuotes
+  asyncHandlerWrapper(NewQuotesController.getQuotes)
 );
 
 quotesRouter.post(
   "/",
   RateLimit.newQuotesAdd,
   authenticateRequest,
-  NewQuotesController.addQuote
+  asyncHandlerWrapper(NewQuotesController.addQuote)
 );
 
 quotesRouter.post(
   "/approve",
   RateLimit.newQuotesAction,
   authenticateRequest,
-  NewQuotesController.approve
+  asyncHandlerWrapper(NewQuotesController.approve)
 );
 
 quotesRouter.post(
   "/reject",
   RateLimit.newQuotesAction,
   authenticateRequest,
-  NewQuotesController.refuse
+  asyncHandlerWrapper(NewQuotesController.refuse)
 );
 
 quotesRouter.get(
   "/rating",
   RateLimit.quoteRatingsGet,
   authenticateRequest,
-  QuoteRatingsController.getRating
+  asyncHandlerWrapper(QuoteRatingsController.getRating)
 );
 
 quotesRouter.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
   authenticateRequest,
-  QuoteRatingsController.submitRating
+  asyncHandlerWrapper(QuoteRatingsController.submitRating)
 );
 
 quotesRouter.post(
