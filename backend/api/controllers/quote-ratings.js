@@ -3,49 +3,32 @@ const UserDAO = require("../../dao/user");
 const MonkeyError = require("../../handlers/error");
 
 class QuoteRatingsController {
-  static async getRating(req, res) {
+  static async getRating(req, _res) {
     const { quoteId, language } = req.query;
-    let data = await QuoteRatingsDAO.get(parseInt(quoteId), language);
-    return res.status(200).json(data);
+    return await QuoteRatingsDAO.get(parseInt(quoteId), language);
   }
+
   static async submitRating(req, res) {
-    let { uid } = req.decodedToken;
+    const { uid } = req.decodedToken;
     let { quoteId, rating, language } = req.body;
+
     quoteId = parseInt(quoteId);
-    rating = parseInt(rating);
-    if (isNaN(quoteId) || isNaN(rating)) {
-      throw new MonkeyError(
-        400,
-        "Bad request. Quote id or rating is not a number."
-      );
-    }
-    if (typeof language !== "string") {
-      throw new MonkeyError(400, "Bad request. Language is not a string.");
-    }
-
-    if (rating < 1 || rating > 5) {
-      throw new MonkeyError(
-        400,
-        "Bad request. Rating must be between 1 and 5."
-      );
-    }
-
-    rating = Math.round(rating);
+    rating = Math.round(parseInt(rating));
 
     //check if user already submitted a rating
-    let user = await UserDAO.getUser(uid);
+    const user = await UserDAO.getUser(uid);
 
     if (!user) {
       throw new MonkeyError(401, "User not found.");
     }
-    let quoteRatings = user.quoteRatings;
+    const quoteRatings = user.quoteRatings;
 
     if (quoteRatings === undefined) quoteRatings = {};
     if (quoteRatings[language] === undefined) quoteRatings[language] = {};
     if (quoteRatings[language][quoteId] == undefined)
       quoteRatings[language][quoteId] = undefined;
 
-    let quoteRating = quoteRatings[language][quoteId];
+    const quoteRating = quoteRatings[language][quoteId];
 
     let newRating;
     let update;

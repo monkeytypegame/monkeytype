@@ -5,52 +5,41 @@ const Logger = require("../../handlers/logger.js");
 const Captcha = require("../../handlers/captcha");
 
 class NewQuotesController {
-  static async getQuotes(req, res) {
+  static async getQuotes(req, _res) {
     const { uid } = req.decodedToken;
     const userInfo = await UserDAO.getUser(uid);
     if (!userInfo.quoteMod) {
       throw new MonkeyError(403, "You don't have permission to do this");
     }
-    let data = await NewQuotesDAO.get();
-    return res.status(200).json(data);
+    return await NewQuotesDAO.get();
   }
 
-  static async addQuote(req, res) {
-    if (req.context.configuration.quoteSubmit.enabled === false)
-      throw new MonkeyError(
-        500,
-        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
-      );
-    let { uid } = req.decodedToken;
-    let { text, source, language, captcha } = req.body;
-    if (!text || !source || !language) {
-      throw new MonkeyError(400, "Please fill all the fields");
-    }
+  static async addQuote(req, _res) {
+    const { uid } = req.decodedToken;
+    const { text, source, language, captcha } = req.body;
     if (!(await Captcha.verify(captcha))) {
       throw new MonkeyError(400, "Captcha check failed");
     }
-    let data = await NewQuotesDAO.add(text, source, language, uid);
-    return res.status(200).json(data);
+    return await NewQuotesDAO.add(text, source, language, uid);
   }
 
-  static async approve(req, res) {
-    let { uid } = req.decodedToken;
-    let { quoteId, editText, editSource } = req.body;
+  static async approve(req, _res) {
+    const { uid } = req.decodedToken;
+    const { quoteId, editText, editSource } = req.body;
     const userInfo = await UserDAO.getUser(uid);
     if (!userInfo.quoteMod) {
       throw new MonkeyError(403, "You don't have permission to do this");
     }
-    if (editText === "" || editSource === "") {
-      throw new MonkeyError(400, "Please fill all the fields");
-    }
-    let data = await NewQuotesDAO.approve(quoteId, editText, editSource);
+    const data = await NewQuotesDAO.approve(quoteId, editText, editSource);
     Logger.log("system_quote_approved", data, uid);
-    return res.status(200).json(data);
+
+    return data;
   }
 
   static async refuse(req, res) {
-    let { uid } = req.decodedToken;
-    let { quoteId } = req.body;
+    const { uid } = req.decodedToken;
+    const { quoteId } = req.body;
+
     await NewQuotesDAO.refuse(quoteId, uid);
     return res.sendStatus(200);
   }
