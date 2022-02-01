@@ -4,7 +4,7 @@ const PublicStatsDAO = require("../../dao/public-stats");
 const BotDAO = require("../../dao/bot");
 const { validateObjectValues } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
-const objecthash = require("object-hash");
+const objecthash = require("node-object-hash")().hash;
 const Logger = require("../../handlers/logger");
 const path = require("path");
 const { config } = require("dotenv");
@@ -113,18 +113,20 @@ class ResultController {
 
       let resulthash = result.hash;
       delete result.hash;
-      const serverhash = objecthash(result);
-      if (serverhash !== resulthash) {
-        Logger.log(
-          "incorrect_result_hash",
-          {
-            serverhash,
-            resulthash,
-            result,
-          },
-          uid
-        );
-        return res.status(400).json({ message: "Incorrect result hash" });
+      if (req.context.configuration.resultObjectHashCheck.enabled) {
+        const serverhash = objecthash(result);
+        if (serverhash !== resulthash) {
+          Logger.log(
+            "incorrect_result_hash",
+            {
+              serverhash,
+              resulthash,
+              result,
+            },
+            uid
+          );
+          return res.status(400).json({ message: "Incorrect result hash" });
+        }
       }
 
       if (validateResult) {

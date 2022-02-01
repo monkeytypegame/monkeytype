@@ -13,6 +13,9 @@ const BASE_CONFIGURATION = {
   quoteSubmit: {
     enabled: false,
   },
+  resultObjectHashCheck: {
+    enabled: false,
+  },
 };
 
 module.exports = BASE_CONFIGURATION;

@@ -39,7 +39,7 @@ import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 
-const objecthash = require("object-hash");
+const objecthash = require("node-object-hash")().hash;
 
 export let glarsesMode = false;
 
