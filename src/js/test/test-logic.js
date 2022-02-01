@@ -1716,6 +1716,9 @@ export async function finish(difficultyFailed = false) {
       let msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to save result: " + msg, -1);
       $("#retrySavingResultButton").removeClass("hidden");
+      if (msg == "Incorrect result hash") {
+        console.log(completedEvent);
+      }
 
       retrySaving.completedEvent = completedEvent;
       retrySaving.canRetry = true;
