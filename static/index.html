@@ -298,6 +298,13 @@
 
     <div id="quoteRatePopupWrapper" class="popupWrapper hidden">
       <div id="quoteRatePopup" quoteId="">
+        <div class="warning">
+          If you find a grammatical error, think the quote has inappropriate
+          language or feel like it's low quality -
+          <span>don't give it a low rating!</span>
+          Please report it instead. You can do so by closing this popup and
+          clicking the "Flag" icon.
+        </div>
         <div class="quote">
           <div class="text">-</div>
           <div class="id">
@@ -314,6 +321,7 @@
           </div>
         </div>
         <div class="spacer"></div>
+        <div class="spacer2"></div>
         <div class="ratingStats">
           <div class="ratingCount">
             <div class="top">ratings</div>
@@ -359,7 +367,11 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div> -->
-        <span aria-label="Submit review" data-balloon-pos="up">
+        <span
+          aria-label="Submit review"
+          data-balloon-pos="up"
+          style="display: grid"
+        >
           <div class="icon-button submitButton">
             <i class="fas fa-chevron-right"></i>
           </div>
