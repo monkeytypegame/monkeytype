@@ -52,4 +52,4 @@ All of the [contributors](https://github.com/Miodec/monkeytype/graphs/contributo
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
+If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).

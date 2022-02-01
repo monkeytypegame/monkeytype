@@ -50,7 +50,7 @@
     />
     <meta
       name="keywords"
-      content="typing speed test, typing speedtest, typing test, speetest, speed test, typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
+      content="typing speed test, typing speedtest, typing test, speedtest, speed test, typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
     />
     <meta name="author" content="Miodec" />
     <meta property="og:title" content="Monkeytype" />
@@ -89,7 +89,17 @@
     ></script>
     <script>
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js");
+        navigator.serviceWorker
+          .getRegistrations()
+          .then(function (registrations) {
+            for (let registration of registrations) {
+              if (registration.scope !== "https://monkeytype.com/")
+                registration.unregister();
+            }
+          });
+        navigator.serviceWorker.register("sw.js").then((reg) => {
+          reg.update();
+        });
       }
     </script>
   </head>
@@ -286,8 +296,8 @@
       </div>
     </div>
 
-    <div id="rateQuotePopupWrapper" class="popupWrapper hidden">
-      <div id="rateQuotePopup" quoteId="">
+    <div id="quoteRatePopupWrapper" class="popupWrapper hidden">
+      <div id="quoteRatePopup" quoteId="">
         <div class="quote">
           <div class="text">-</div>
           <div class="id">
@@ -549,6 +559,33 @@
           data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
         ></div>
         <div id="submitQuoteButton" class="button">Submit</div>
+      </div>
+    </div>
+    <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
+      <div id="quoteReportPopup" mode="">
+        <div class="title">Report a Quote</div>
+        <div class="text">
+          Please report quotes responsibly. Misuse may result in you losing
+          access to this feature.
+        </div>
+        <label>quote</label>
+        <div class="quote"></div>
+        <label>reason</label>
+        <select name="report-reason" class="reason">
+          <option value="Grammatical error">Grammatical error</option>
+          <option value="Inappropriate content">Inappropriate content</option>
+          <option value="Low quality content">Low quality content</option>
+        </select>
+        <label>comment</label>
+        <div style="position: relative">
+          <textarea class="comment" type="text" autocomplete="off"></textarea>
+          <div class="characterCount">-</div>
+        </div>
+        <div
+          class="g-recaptcha"
+          data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+        ></div>
+        <div class="button submit">Report</div>
       </div>
     </div>
     <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
@@ -1447,11 +1484,19 @@
                   <div class="top">
                     source
                     <span
+                      id="reportQuoteButton"
+                      class="icon-button hidden"
+                      aria-label="Report quote"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="icon fas fa-flag"></i>
+                    </span>
+                    <span
                       id="rateQuoteButton"
                       class="icon-button hidden"
                       aria-label="Rate quote"
                       data-balloon-pos="up"
-                      style="display: inline-block"
                     >
                       <i class="icon far fa-star"></i>
                       <span class="rating"></span>

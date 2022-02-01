@@ -3,9 +3,13 @@ const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
 const NewQuotesController = require("../controllers/new-quotes");
 const QuoteRatingsController = require("../controllers/quote-ratings");
+const QuotesController = require("../controllers/quotes");
 const RateLimit = require("../../middlewares/rate-limit");
-const { requestValidation } = require("../../middlewares/apiUtils");
-const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quoteLanguages");
+const {
+  asyncHandlerWrapper,
+  requestValidation,
+} = require("../../middlewares/api-utils");
+const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quote-languages");
 
 const quotesRouter = Router();
 
@@ -71,11 +75,10 @@ quotesRouter.post(
         )
         .required(),
       comment: joi.string().allow("").max(250).required(),
+      captcha: joi.string().required(),
     },
   }),
-  (req, res) => {
-    res.sendStatus(200);
-  }
+  asyncHandlerWrapper(QuotesController.reportQuote)
 );
 
 module.exports = quotesRouter;

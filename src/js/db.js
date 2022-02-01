@@ -265,6 +265,13 @@ export async function getUserAverageWpm10(
   lazyMode
 ) {
   function cont() {
+    let activeTagIds = [];
+    getSnapshot()?.tags?.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagIds.push(tag._id);
+      }
+    });
+
     let wpmSum = 0;
     let count = 0;
     let last10Wpm = 0;
@@ -277,7 +284,10 @@ export async function getUserAverageWpm10(
         result.language == language &&
         result.difficulty == difficulty &&
         (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && lazyMode === false))
+          (result.lazyMode === undefined && lazyMode === false)) &&
+        ((activeTagIds.length === 0 && result.tags.length === 0) ||
+          (activeTagIds.length > 0 &&
+            result.tags.some((tag) => activeTagIds.includes(tag))))
       ) {
         // Continue if the mode2 doesn't match unless it's a quote.
         if (result.mode2 != mode2 && mode != "quote") {

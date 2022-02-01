@@ -10,6 +10,8 @@ const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
 const jobs = require("./jobs");
 const addApiRoutes = require("./api/routes");
+const contextMiddleware = require("./middlewares/context");
+const ConfigurationDAO = require("./dao/configuration");
 
 const PORT = process.env.PORT || 5005;
 
@@ -21,8 +23,13 @@ app.use(cors());
 
 app.set("trust proxy", 1);
 
+app.use(contextMiddleware);
+
 app.use((req, res, next) => {
-  if (process.env.MAINTENANCE === "true") {
+  if (
+    process.env.MAINTENANCE === "true" ||
+    req.context.configuration.maintenance
+  ) {
     res.status(503).json({ message: "Server is down for maintenance" });
   } else {
     next();
@@ -79,6 +86,7 @@ app.listen(PORT, async () => {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
+  await ConfigurationDAO.getLiveConfiguration();
 
   console.log("Starting cron jobs...");
   jobs.forEach((job) => job.start());

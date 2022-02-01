@@ -42,7 +42,7 @@
 }
 
 @media only screen and (max-width: 1000px) {
-  #rateQuotePopup {
+  #quoteRatePopup {
     width: 90vw !important;
   }
   #bottom {
@@ -213,7 +213,7 @@
 }
 
 @media only screen and (max-width: 650px) {
-  #rateQuotePopup {
+  #quoteRatePopup {
     .ratingStats {
       grid-template-columns: 1fr 1fr !important;
     }
