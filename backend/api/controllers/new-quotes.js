@@ -15,11 +15,6 @@ class NewQuotesController {
   }
 
   static async addQuote(req, _res) {
-    if (req.context.configuration.quoteSubmit.enabled === false)
-      throw new MonkeyError(
-        500,
-        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
-      );
     let { uid } = req.decodedToken;
     let { text, source, language, captcha } = req.body;
     if (!(await Captcha.verify(captcha))) {
