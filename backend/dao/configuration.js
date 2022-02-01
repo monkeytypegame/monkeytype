@@ -59,6 +59,16 @@ class ConfigurationDAO {
         mergeConfigurations(baseConfiguration, liveConfiguration);
 
         this.configuration = baseConfiguration;
+
+        if (
+          Object.keys(baseConfiguration).length !==
+          Object.keys(liveConfiguration).length - 1
+        ) {
+          // -1 for _id
+          await mongoDB()
+            .collection("configuration")
+            .updateOne({}, { $set: Object.assign({}, this.configuration) });
+        }
       } else {
         await mongoDB()
           .collection("configuration")
