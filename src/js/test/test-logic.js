@@ -1071,7 +1071,11 @@ export async function init() {
 
     let w = randomQuote.textSplit;
 
-    wordsBound = Math.min(wordsBound, w.length);
+    if (Config.showAllLines) {
+      wordsBound = w.length;
+    } else {
+      wordsBound = Math.min(wordsBound, w.length);
+    }
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
