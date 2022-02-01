@@ -1,11 +1,8 @@
 const LeaderboardsDAO = require("../../dao/leaderboards");
-const ResultDAO = require("../../dao/result");
-const UserDAO = require("../../dao/user");
-const admin = require("firebase-admin");
 const { verifyIdToken } = require("../../handlers/auth");
 
 class LeaderboardsController {
-  static async get(req, res, next) {
+  static async get(req, res) {
     const { language, mode, mode2, skip, limit } = req.query;
 
     let uid;
@@ -37,7 +34,7 @@ class LeaderboardsController {
     return res.status(200).json(retval);
   }
 
-  static async getRank(req, res, next) {
+  static async getRank(req, res) {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.decodedToken;
     if (!language || !mode || !mode2 || !uid) {
