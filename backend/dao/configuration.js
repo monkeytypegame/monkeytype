@@ -62,12 +62,7 @@ class ConfigurationDAO {
 
         this.configuration = baseConfiguration;
 
-        if (
-          !databaseConfiguratoinUpdated &&
-          Object.keys(baseConfiguration).length !==
-            Object.keys(liveConfiguration).length - 1
-        ) {
-          // -1 for _id
+        if (!databaseConfiguratoinUpdated) {
           await mongoDB()
             .collection("configuration")
             .updateOne({}, { $set: Object.assign({}, this.configuration) });
