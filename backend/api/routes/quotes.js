@@ -8,6 +8,7 @@ const RateLimit = require("../../middlewares/rate-limit");
 const {
   asyncHandlerWrapper,
   requestValidation,
+  validateConfiguration,
 } = require("../../middlewares/api-utils");
 const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quote-languages");
 
@@ -17,46 +18,59 @@ quotesRouter.get(
   "/",
   RateLimit.newQuotesGet,
   authenticateRequest,
-  NewQuotesController.getQuotes
+  asyncHandlerWrapper(NewQuotesController.getQuotes)
 );
 
 quotesRouter.post(
   "/",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.quoteSubmit.enabled;
+    },
+    invalidMessage:
+      "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
+  }),
   RateLimit.newQuotesAdd,
   authenticateRequest,
-  NewQuotesController.addQuote
+  asyncHandlerWrapper(NewQuotesController.addQuote)
 );
 
 quotesRouter.post(
   "/approve",
   RateLimit.newQuotesAction,
   authenticateRequest,
-  NewQuotesController.approve
+  asyncHandlerWrapper(NewQuotesController.approve)
 );
 
 quotesRouter.post(
   "/reject",
   RateLimit.newQuotesAction,
   authenticateRequest,
-  NewQuotesController.refuse
+  asyncHandlerWrapper(NewQuotesController.refuse)
 );
 
 quotesRouter.get(
   "/rating",
   RateLimit.quoteRatingsGet,
   authenticateRequest,
-  QuoteRatingsController.getRating
+  asyncHandlerWrapper(QuoteRatingsController.getRating)
 );
 
 quotesRouter.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
   authenticateRequest,
-  QuoteRatingsController.submitRating
+  asyncHandlerWrapper(QuoteRatingsController.submitRating)
 );
 
 quotesRouter.post(
   "/report",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.quoteReport.enabled;
+    },
+    invalidMessage: "Quote reporting is unavailable.",
+  }),
   RateLimit.quoteReportSubmit,
   authenticateRequest,
   requestValidation({

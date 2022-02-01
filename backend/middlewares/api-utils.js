@@ -2,6 +2,27 @@ const joi = require("joi");
 const MonkeyError = require("../handlers/error");
 
 /**
+ * This utility checks that the server's configuration matches
+ * the criteria.
+ */
+function validateConfiguration(options) {
+  return (req, res, next) => {
+    const configuration = req.context.configuration;
+    const { criteria, invalidMessage } = options;
+
+    const validated = criteria(configuration);
+    if (!validated) {
+      throw new MonkeyError(
+        503,
+        invalidMessage ?? "This service is currently unavailable."
+      );
+    }
+
+    next();
+  };
+}
+
+/**
  * This utility serves as an alternative to wrapping express handlers with try/catch statements.
  * Any routes that use an async handler function should wrap the handler with this function.
  * Without this, any errors thrown will not be caught by the error handling middleware, and
@@ -11,8 +32,13 @@ function asyncHandlerWrapper(handler) {
   return async (req, res, next) => {
     try {
       const handlerData = await handler(req, res);
-      if (!res.headersSent && handlerData) {
-        res.json(handlerData);
+
+      if (!res.headersSent) {
+        if (handlerData) {
+          res.json(handlerData);
+        } else {
+          res.sendStatus(204);
+        }
       }
       next();
     } catch (error) {
@@ -50,6 +76,7 @@ function requestValidation(validationSchema) {
 }
 
 module.exports = {
+  validateConfiguration,
   asyncHandlerWrapper,
   requestValidation,
 };
