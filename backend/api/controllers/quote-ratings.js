@@ -3,9 +3,8 @@ const UserDAO = require("../../dao/user");
 const MonkeyError = require("../../handlers/error");
 
 class QuoteRatingsController {
-  static async getRating(req, res) {
+  static async getRating(req, _res) {
     const { quoteId, language } = req.query;
-
     return await QuoteRatingsDAO.get(parseInt(quoteId), language);
   }
 
