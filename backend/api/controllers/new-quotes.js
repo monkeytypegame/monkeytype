@@ -20,9 +20,6 @@ class NewQuotesController {
     const { uid } = req.decodedToken;
     const { text, source, language, captcha } = req.body;
 
-    if (!text || !source || !language) {
-      throw new MonkeyError(400, "Please fill all the fields");
-    }
     if (!(await Captcha.verify(captcha))) {
       throw new MonkeyError(400, "Captcha check failed");
     }
@@ -37,9 +34,6 @@ class NewQuotesController {
 
     if (!userInfo.quoteMod) {
       throw new MonkeyError(403, "You don't have permission to do this");
-    }
-    if (editText === "" || editSource === "") {
-      throw new MonkeyError(400, "Please fill all the fields");
     }
 
     const data = await NewQuotesDAO.approve(quoteId, editText, editSource);

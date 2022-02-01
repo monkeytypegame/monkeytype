@@ -10,30 +10,11 @@ class QuoteRatingsController {
   }
 
   static async submitRating(req, res) {
-    let { uid } = req.decodedToken;
+    const { uid } = req.decodedToken;
     let { quoteId, rating, language } = req.body;
 
     quoteId = parseInt(quoteId);
-    rating = parseInt(rating);
-
-    if (isNaN(quoteId) || isNaN(rating)) {
-      throw new MonkeyError(
-        400,
-        "Bad request. Quote id or rating is not a number."
-      );
-    }
-    if (typeof language !== "string") {
-      throw new MonkeyError(400, "Bad request. Language is not a string.");
-    }
-
-    if (rating < 1 || rating > 5) {
-      throw new MonkeyError(
-        400,
-        "Bad request. Rating must be between 1 and 5."
-      );
-    }
-
-    rating = Math.round(rating);
+    rating = Math.round(parseInt(rating));
 
     //check if user already submitted a rating
     const user = await UserDAO.getUser(uid);
