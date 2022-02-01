@@ -15,8 +15,8 @@ class NewQuotesController {
   }
 
   static async addQuote(req, _res) {
-    let { uid } = req.decodedToken;
-    let { text, source, language, captcha } = req.body;
+    const { uid } = req.decodedToken;
+    const { text, source, language, captcha } = req.body;
     if (!(await Captcha.verify(captcha))) {
       throw new MonkeyError(400, "Captcha check failed");
     }
