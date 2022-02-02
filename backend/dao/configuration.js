@@ -1,11 +1,9 @@
 const _ = require("lodash");
-const { mongoDB } = require("../init/mongodb");
+const db = require("../init/db");
 const BASE_CONFIGURATION = require("../constants/base-configuration");
 const Logger = require("../handlers/logger.js");
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
-
-let databaseConfigurationUpdated = false;
 
 function mergeConfigurations(baseConfiguration, liveConfiguration) {
   if (
@@ -22,9 +20,21 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
       const baseValue = base[key];
       const sourceValue = source[key];
 
-      if (_.isPlainObject(baseValue) && _.isPlainObject(sourceValue)) {
+      const isBaseValueObject = _.isPlainObject(baseValue);
+      const isSourceValueObject = _.isPlainObject(sourceValue);
+      const isBaseValueArray = _.isArray(baseValue);
+      const isSourceValueArray = _.isArray(sourceValue);
+
+      const arrayObjectMismatch =
+        (isBaseValueObject && isSourceValueArray) ||
+        (isBaseValueArray && isSourceValueObject);
+
+      if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
-      } else if (typeof baseValue === typeof sourceValue) {
+      } else if (
+        typeof baseValue === typeof sourceValue &&
+        !arrayObjectMismatch // typeof {} = "object", typeof [] = "object"
+      ) {
         base[key] = sourceValue;
       }
     });
@@ -34,8 +44,9 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
 }
 
 class ConfigurationDAO {
-  static configuration = Object.freeze(BASE_CONFIGURATION);
+  static configuration = BASE_CONFIGURATION;
   static lastFetchTime = 0;
+  static databaseConfigurationUpdated = false;
 
   static async getCachedConfiguration(attemptCacheUpdate = false) {
     if (
@@ -51,28 +62,23 @@ class ConfigurationDAO {
   static async getLiveConfiguration() {
     this.lastFetchTime = Date.now();
 
+    const configurationCollection = db.collection("configuration");
+
     try {
-      const liveConfiguration = await mongoDB()
-        .collection("configuration")
-        .findOne();
+      const liveConfiguration = await configurationCollection.findOne();
 
       if (liveConfiguration) {
         const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
         mergeConfigurations(baseConfiguration, liveConfiguration);
 
-        this.configuration = baseConfiguration;
-
-        if (!databaseConfigurationUpdated) {
-          await mongoDB()
-            .collection("configuration")
-            .updateOne({}, { $set: Object.assign({}, this.configuration) });
-          databaseConfigurationUpdated = true;
-        }
+        this.pushConfiguration(baseConfiguration);
+        this.configuration = Object.freeze(baseConfiguration);
       } else {
-        await mongoDB()
-          .collection("configuration")
-          .insertOne(Object.assign({}, BASE_CONFIGURATION)); // Seed the base configuration.
+        await configurationCollection.insertOne(
+          Object.assign({}, BASE_CONFIGURATION)
+        ); // Seed the base configuration.
       }
+
       Logger.log(
         "fetch_configuration_success",
         "Successfully fetched live configuration."
@@ -84,9 +90,26 @@ class ConfigurationDAO {
       );
     }
 
-    this.configuration = Object.freeze(this.configuration);
-
     return this.configuration;
+  }
+
+  static async pushConfiguration(configuration) {
+    if (this.databaseConfigurationUpdated) {
+      return;
+    }
+
+    const configurationCollection = db.collection("configuration");
+
+    try {
+      await configurationCollection.replaceOne({}, configuration);
+
+      this.databaseConfigurationUpdated = true;
+    } catch (error) {
+      Logger.log(
+        "push_configuration_failure",
+        `Could not push configuration: ${error.message}`
+      );
+    }
   }
 }
 
