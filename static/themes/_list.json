@@ -708,5 +708,10 @@
     "name": "fleuriste",
     "bgColor": "#c6b294",
     "mainColor": "#405a52"
-   }
+  }
+  ,{
+    "name": "dmg",
+    "bgColor": "#dadbdc",
+    "mainColor": "#3846b1"
+	}
 ]

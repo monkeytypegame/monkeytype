@@ -32,10 +32,10 @@ export async function getQuoteStats(quote) {
     return;
   }
   Loader.hide();
-  if (response.status !== 200) {
+  if (response.status !== 200 && response.status !== 204) {
     Notifications.add(response.data.message);
   } else {
-    if (response.data === null) {
+    if (response.status === 204) {
       quoteStats = {};
     } else {
       quoteStats = response.data;

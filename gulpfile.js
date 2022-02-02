@@ -11,6 +11,7 @@ const eslint = require("gulp-eslint");
 var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
 const uglify = require("gulp-uglify");
+const through2 = require("through2");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = {
@@ -287,6 +288,14 @@ task("updateSwCacheName", function () {
         /const staticCacheName = .*;/g,
         `const staticCacheName = "sw-cache-${dateString}";`
       )
+    )
+    .pipe(
+      through2.obj(function (file, enc, cb) {
+        var date = new Date();
+        file.stat.atime = date;
+        file.stat.mtime = date;
+        cb(null, file);
+      })
     )
     .pipe(dest("./dist/"));
 });

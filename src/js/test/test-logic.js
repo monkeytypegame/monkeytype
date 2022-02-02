@@ -39,7 +39,7 @@ import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 
-const objecthash = require("object-hash");
+const objecthash = require("node-object-hash")().hash;
 
 export let glarsesMode = false;
 
@@ -1071,7 +1071,11 @@ export async function init() {
 
     let w = randomQuote.textSplit;
 
-    wordsBound = Math.min(wordsBound, w.length);
+    if (Config.showAllLines) {
+      wordsBound = w.length;
+    } else {
+      wordsBound = Math.min(wordsBound, w.length);
+    }
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
@@ -1716,6 +1720,9 @@ export async function finish(difficultyFailed = false) {
       let msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to save result: " + msg, -1);
       $("#retrySavingResultButton").removeClass("hidden");
+      if (msg == "Incorrect result hash") {
+        console.log(completedEvent);
+      }
 
       retrySaving.completedEvent = completedEvent;
       retrySaving.canRetry = true;

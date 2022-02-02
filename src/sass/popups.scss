@@ -109,19 +109,29 @@
     width: 800px;
 
     display: grid;
-    grid-template-areas: "ratingStats ratingStats submitButton" "spacer spacer spacer" "quote quote quote";
+    grid-template-areas: "warning warning warning" "spacer2 spacer2 spacer2" "ratingStats ratingStats submitButton" "spacer spacer spacer" "quote quote quote";
     grid-template-columns: auto 1fr;
 
     color: var(--text-color);
 
-    .spacer {
+    .warning {
+      grid-area: warning;
+      span {
+        color: var(--error-color);
+      }
+    }
+    .spacer,
+    .spacer2 {
       grid-area: spacer;
-      grid-column: 1/4;
       width: 100%;
       height: 0.1rem;
       border-radius: var(--roundness);
       background: var(--sub-color);
       opacity: 0.25;
+    }
+
+    .spacer2 {
+      grid-area: spacer2;
     }
 
     .submitButton {
