@@ -1,6 +1,7 @@
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
+import * as QuoteReportPopup from "./quote-report-popup";
 import axiosInstance from "./axios-instance";
 
 let rating = 0;
@@ -9,19 +10,19 @@ let currentQuote = null;
 let quoteStats = null;
 
 function reset() {
-  $(`#rateQuotePopup .quote .text`).text("-");
-  $(`#rateQuotePopup .quote .source .val`).text("-");
-  $(`#rateQuotePopup .quote .id .val`).text("-");
-  $(`#rateQuotePopup .quote .length .val`).text("-");
-  $("#rateQuotePopup .ratingCount .val").text("-");
-  $("#rateQuotePopup .ratingAverage .val").text("-");
+  $(`#quoteRatePopup .quote .text`).text("-");
+  $(`#quoteRatePopup .quote .source .val`).text("-");
+  $(`#quoteRatePopup .quote .id .val`).text("-");
+  $(`#quoteRatePopup .quote .length .val`).text("-");
+  $("#quoteRatePopup .ratingCount .val").text("-");
+  $("#quoteRatePopup .ratingAverage .val").text("-");
 }
 
 export async function getQuoteStats(quote) {
   if (quote) currentQuote = quote;
   let response;
   try {
-    response = await axiosInstance.get("/quote-ratings/get", {
+    response = await axiosInstance.get("/quotes/rating", {
       params: { quoteId: currentQuote.id, language: currentQuote.language },
     });
   } catch (e) {
@@ -31,36 +32,36 @@ export async function getQuoteStats(quote) {
     return;
   }
   Loader.hide();
-  if (response.status !== 200) {
+  if (response.status !== 200 && response.status !== 204) {
     Notifications.add(response.data.message);
   } else {
-    quoteStats = response.data;
-    if (quoteStats && !quoteStats.average) {
-      quoteStats.average = (
-        Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
-      ).toFixed(1);
+    if (response.status === 204) {
+      quoteStats = {};
+    } else {
+      quoteStats = response.data;
+      if (quoteStats && !quoteStats.average) {
+        quoteStats.average =
+          Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
+      }
     }
-    return response.data;
+    return quoteStats;
   }
 }
 
 function refreshStars(force) {
   let limit = force ? parseInt(force) : rating;
-  $(`#rateQuotePopup .star`).removeClass("active");
+  $(`#quoteRatePopup .star`).removeClass("active");
   for (let i = 1; i <= limit; i++) {
-    $(`#rateQuotePopup .star[rating=${i}]`).addClass("active");
+    $(`#quoteRatePopup .star[rating=${i}]`).addClass("active");
   }
 }
 
 async function updateRatingStats() {
-  if (quoteStats === null) await getQuoteStats();
-  if (quoteStats === undefined) {
-    $("#rateQuotePopup .ratingCount .val").text("0");
-    $("#rateQuotePopup .ratingAverage .val").text("-");
-  } else {
-    $("#rateQuotePopup .ratingCount .val").text(quoteStats.ratings);
-    $("#rateQuotePopup .ratingAverage .val").text(quoteStats.average);
-  }
+  if (!quoteStats) await getQuoteStats();
+  $("#quoteRatePopup .ratingCount .val").text(quoteStats.ratings ?? "0");
+  $("#quoteRatePopup .ratingAverage .val").text(
+    quoteStats.average?.toFixed(1) ?? "-"
+  );
 }
 
 function updateData() {
@@ -74,16 +75,18 @@ function updateData() {
   } else if (currentQuote.group == 3) {
     lengthDesc = "thicc";
   }
-  $(`#rateQuotePopup .quote .text`).text(currentQuote.text);
-  $(`#rateQuotePopup .quote .source .val`).text(currentQuote.source);
-  $(`#rateQuotePopup .quote .id .val`).text(currentQuote.id);
-  $(`#rateQuotePopup .quote .length .val`).text(lengthDesc);
+  $(`#quoteRatePopup .quote .text`).text(currentQuote.text);
+  $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
+  $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
+  $(`#quoteRatePopup .quote .length .val`).text(lengthDesc);
   updateRatingStats();
 }
 
-export function show(quote) {
-  if ($("#rateQuotePopupWrapper").hasClass("hidden")) {
-    reset();
+export function show(quote, shouldReset = true) {
+  if ($("#quoteRatePopupWrapper").hasClass("hidden")) {
+    if (shouldReset) {
+      reset();
+    }
 
     currentQuote = quote;
     rating = 0;
@@ -93,9 +96,10 @@ export function show(quote) {
     if (alreadyRated) {
       rating = alreadyRated;
     }
+
     refreshStars();
     updateData();
-    $("#rateQuotePopupWrapper")
+    $("#quoteRatePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
@@ -104,8 +108,8 @@ export function show(quote) {
 }
 
 function hide() {
-  if (!$("#rateQuotePopupWrapper").hasClass("hidden")) {
-    $("#rateQuotePopupWrapper")
+  if (!$("#quoteRatePopupWrapper").hasClass("hidden")) {
+    $("#quoteRatePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
       .animate(
@@ -114,7 +118,7 @@ function hide() {
         },
         100,
         (e) => {
-          $("#rateQuotePopupWrapper").addClass("hidden");
+          $("#quoteRatePopupWrapper").addClass("hidden");
         }
       );
   }
@@ -132,7 +136,7 @@ async function submit() {
   hide();
   let response;
   try {
-    response = await axiosInstance.post("/quote-ratings/submit", {
+    response = await axiosInstance.post("/quotes/rating", {
       quoteId: currentQuote.id,
       rating: rating,
       language: currentQuote.language,
@@ -151,60 +155,65 @@ async function submit() {
     if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
       let oldRating = quoteRatings[currentQuote.language][currentQuote.id];
       let diff = rating - oldRating;
-      quoteStats.totalRating += diff;
-
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
+      quoteStats = {
+        ratings: quoteStats.ratings + 1,
+        totalRating: isNaN(quoteStats.totalRating)
+          ? 0
+          : quoteStats.totalRating + diff,
+        quoteId: currentQuote.id,
+        language: currentQuote.language,
+      };
       Notifications.add("Rating updated", 1);
     } else {
       if (quoteRatings === undefined) quoteRatings = {};
       if (quoteRatings[currentQuote.language] === undefined)
         quoteRatings[currentQuote.language] = {};
-      if (quoteRatings[currentQuote.language][currentQuote.id] == undefined)
-        quoteRatings[currentQuote.language][currentQuote.id] = undefined;
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
-      if (quoteStats) {
+      if (quoteStats.ratings && quoteStats.totalRating) {
         quoteStats.ratings++;
-        quoteStats.totalRating += parseInt(rating);
+        quoteStats.totalRating += rating;
       } else {
         quoteStats = {
           ratings: 1,
-          totalRating: parseInt(rating),
+          totalRating: rating,
           quoteId: currentQuote.id,
           language: currentQuote.language,
         };
       }
       Notifications.add("Rating submitted", 1);
     }
-    quoteStats.average = (
-      Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
-    ).toFixed(1);
-    $(".pageTest #result #rateQuoteButton .rating").text(quoteStats.average);
+    quoteStats.average =
+      Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
+    $(".pageTest #result #rateQuoteButton .rating").text(
+      quoteStats.average?.toFixed(1)
+    );
     $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
     $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
   }
 }
 
-$("#rateQuotePopupWrapper").click((e) => {
-  if ($(e.target).attr("id") === "rateQuotePopupWrapper") {
+$("#quoteRatePopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "quoteRatePopupWrapper") {
     hide();
   }
 });
 
-$("#rateQuotePopup .stars .star").hover((e) => {
+$("#quoteRatePopup .stars .star").hover((e) => {
   let ratingHover = $(e.currentTarget).attr("rating");
   refreshStars(ratingHover);
 });
 
-$("#rateQuotePopup .stars .star").click((e) => {
+$("#quoteRatePopup .stars .star").click((e) => {
   let ratingHover = $(e.currentTarget).attr("rating");
-  rating = ratingHover;
+  rating = parseInt(ratingHover);
 });
 
-$("#rateQuotePopup .stars .star").mouseout((e) => {
-  $(`#rateQuotePopup .star`).removeClass("active");
+$("#quoteRatePopup .stars .star").mouseout((e) => {
+  $(`#quoteRatePopup .star`).removeClass("active");
   refreshStars();
 });
 
-$("#rateQuotePopup .submitButton").click((e) => {
+$("#quoteRatePopup .submitButton").click((e) => {
   submit();
 });

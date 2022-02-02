@@ -670,6 +670,11 @@
      "mainColor":"#6d44a6"
    }
   ,{
+    "name": "ryujinscales",
+    "bgColor": "#081426",
+    "mainColor": "#f17754"
+   }
+   ,{
     "name": "trackday",
     "bgColor": "#464d66",
     "mainColor": "#e0513e"
@@ -694,4 +699,19 @@
     "bgColor": "linear-gradient(to right, #b31313, #ff9000, #fdda16)",
     "mainColor": "#ffffff"
   }
+  ,{
+    "name": "aurora",
+    "bgColor": "linear-gradient(to right, #002c39, #015061, #007a7f, #00e980, #00ffbb)",
+    "mainColor": "#ffffff"
+  }
+  ,{
+    "name": "fleuriste",
+    "bgColor": "#c6b294",
+    "mainColor": "#405a52"
+  }
+  ,{
+    "name": "dmg",
+    "bgColor": "#dadbdc",
+    "mainColor": "#3846b1"
+	}
 ]

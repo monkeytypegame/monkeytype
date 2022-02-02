@@ -190,6 +190,30 @@ export async function getFontsList() {
   }
 }
 
+let supportersList = null;
+export async function getSupportersList() {
+  if (supportersList == null) {
+    return $.getJSON("about/supporters.json", function (data) {
+      supportersList = data;
+      return supportersList;
+    });
+  } else {
+    return supportersList;
+  }
+}
+
+let contributorsList = null;
+export async function getContributorsList() {
+  if (contributorsList == null) {
+    return $.getJSON("about/contributors.json", function (data) {
+      contributorsList = data;
+      return contributorsList;
+    });
+  } else {
+    return contributorsList;
+  }
+}
+
 let languageList = null;
 export async function getLanguageList() {
   if (languageList == null) {

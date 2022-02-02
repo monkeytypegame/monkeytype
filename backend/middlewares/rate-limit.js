@@ -68,6 +68,14 @@ exports.quoteRatingsSubmit = rateLimit({
   keyGenerator: getAddress,
 });
 
+// Quote reporting
+exports.quoteReportSubmit = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 min
+  max: 50 * multiplier,
+  message,
+  keyGenerator: getAddress,
+});
+
 // Presets Routing
 exports.presetsGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
