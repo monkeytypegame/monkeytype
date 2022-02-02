@@ -1,6 +1,10 @@
 const { authenticateRequest } = require("../../middlewares/auth");
 const PresetController = require("../controllers/preset");
 const RateLimit = require("../../middlewares/rate-limit");
+const {
+  asyncHandlerWrapper,
+  requestValidation,
+} = require("../../middlewares/api-utils");
 
 const { Router } = require("express");
 
@@ -10,28 +14,28 @@ router.get(
   "/",
   RateLimit.presetsGet,
   authenticateRequest,
-  PresetController.getPresets
+  asyncHandlerWrapper(PresetController.getPresets)
 );
 
 router.post(
   "/add",
   RateLimit.presetsAdd,
   authenticateRequest,
-  PresetController.addPreset
+  asyncHandlerWrapper(PresetController.addPreset)
 );
 
 router.post(
   "/edit",
   RateLimit.presetsEdit,
   authenticateRequest,
-  PresetController.editPreset
+  asyncHandlerWrapper(PresetController.editPreset)
 );
 
 router.post(
   "/remove",
   RateLimit.presetsRemove,
   authenticateRequest,
-  PresetController.removePreset
+  asyncHandlerWrapper(PresetController.removePreset)
 );
 
 module.exports = router;

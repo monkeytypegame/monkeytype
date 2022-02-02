@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 addApiRoutes(app);
 
 //DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
-app.use(function (e, req, res, next) {
+app.use(function (e, req, res, _next) {
   if (/ECONNREFUSED.*27017/i.test(e.message)) {
     e.message = "Could not connect to the database. It may have crashed.";
     delete e.stack;
