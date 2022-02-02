@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { mongoDB } = require("../init/mongodb");
+const db = require("../init/db");
 const BASE_CONFIGURATION = require("../constants/base-configuration");
 const Logger = require("../handlers/logger.js");
 
@@ -62,10 +62,10 @@ class ConfigurationDAO {
   static async getLiveConfiguration() {
     this.lastFetchTime = Date.now();
 
+    const configurationCollection = db.collection("configuration");
+
     try {
-      const liveConfiguration = await mongoDB()
-        .collection("configuration")
-        .findOne();
+      const liveConfiguration = await configurationCollection.findOne();
 
       if (liveConfiguration) {
         const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
@@ -74,9 +74,9 @@ class ConfigurationDAO {
         this.pushConfiguration(baseConfiguration);
         this.configuration = Object.freeze(baseConfiguration);
       } else {
-        await mongoDB()
-          .collection("configuration")
-          .insertOne(Object.assign({}, BASE_CONFIGURATION)); // Seed the base configuration.
+        await configurationCollection.insertOne(
+          Object.assign({}, BASE_CONFIGURATION)
+        ); // Seed the base configuration.
       }
 
       Logger.log(
@@ -98,8 +98,10 @@ class ConfigurationDAO {
       return;
     }
 
+    const configurationCollection = db.collection("configuration");
+
     try {
-      await mongoDB().collection("configuration").replaceOne({}, configuration);
+      await configurationCollection.replaceOne({}, configuration);
 
       this.databaseConfigurationUpdated = true;
     } catch (error) {
