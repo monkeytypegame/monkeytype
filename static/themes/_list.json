@@ -705,11 +705,6 @@
     "mainColor": "#ffffff"
   }
   ,{
-    "name": "greek_fire",
-    "bgColor": "#081426",
-    "mainColor": "#f17754"
-  }
-  ,{
     "name": "leather",
     "bgColor": "#250404",
     "mainColor": "#ffe4bc"
