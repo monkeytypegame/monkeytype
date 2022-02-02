@@ -157,7 +157,7 @@ async function submit() {
       let diff = rating - oldRating;
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
       quoteStats = {
-        ratings: quoteStats.ratings + 1,
+        ratings: quoteStats.ratings,
         totalRating: isNaN(quoteStats.totalRating)
           ? 0
           : quoteStats.totalRating + diff,
