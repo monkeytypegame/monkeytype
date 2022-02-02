@@ -1,19 +1,13 @@
-const express = require("express");
 const { config } = require("dotenv");
 const path = require("path");
-const MonkeyError = require("./handlers/error");
 config({ path: path.join(__dirname, ".env") });
 
-const cors = require("cors");
+const db = require("./init/db");
 const admin = require("firebase-admin");
-
 const serviceAccount = require("./credentials/serviceAccountKey.json");
-const { connectDB, mongoDB } = require("./init/mongodb");
-
-const PORT = process.env.PORT || 5005;
 
 async function main() {
-  await connectDB();
+  await db.connect();
   await admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
@@ -25,8 +19,11 @@ main();
 
 async function refactor() {
   console.log("getting all users");
-  let users = await mongoDB().collection("users").find({}).toArray();
+
+  const usersCollection = db.collection("users");
+  let users = await usersCollection.find({}).toArray();
   console.log(users.length);
+
   for (let user of users) {
     let obj = user.personalBests;
 
@@ -67,9 +64,10 @@ async function refactor() {
       });
     }
 
-    await mongoDB()
-      .collection("users")
-      .updateOne({ _id: user._id }, { $set: { lbPersonalBests: lbPb } });
+    await usersCollection.updateOne(
+      { _id: user._id },
+      { $set: { lbPersonalBests: lbPb } }
+    );
     console.log(`updated ${user.name}`);
   }
   console.log("done");
