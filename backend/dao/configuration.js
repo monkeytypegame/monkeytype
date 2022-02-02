@@ -33,7 +33,7 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
         merge(baseValue, sourceValue);
       } else if (
         typeof baseValue === typeof sourceValue &&
-        !arrayObjectMismatch
+        !arrayObjectMismatch // typeof {} = "object", typeof [] = "object"
       ) {
         base[key] = sourceValue;
       }
