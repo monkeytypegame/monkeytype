@@ -943,7 +943,7 @@ export function setTimerStyle(style, nosave) {
 }
 
 export function setTimerColor(color, nosave) {
-  if (color == null || color == undefined) {
+  if (!color || !["black", "sub", "text", "main"].includes(color)) {
     color = "black";
   }
   config.timerColor = color;
