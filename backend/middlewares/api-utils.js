@@ -76,7 +76,7 @@ function requestValidation(validationSchema) {
       if (error) {
         const errorMessage = error.details[0].message;
         throw new MonkeyError(
-          400,
+          500,
           validationErrorMessage ?? `Invalid request: ${errorMessage}`
         );
       }
