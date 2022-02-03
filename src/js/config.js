@@ -101,6 +101,7 @@ let defaultConfig = {
   capsLockWarning: true,
   playSoundOnError: false,
   playSoundOnClick: "off",
+  soundVolume: "0.5",
   startGraphsAtZero: true,
   swapEscAndTab: false,
   showOutOfFocusWarning: true,
@@ -274,11 +275,13 @@ export function setPlaySoundOnClick(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function togglePlaySoundOnError() {
-  config.playSoundOnError = !config.playSoundOnError;
-  if (config.playSoundOnError == undefined) {
-    config.playSoundOnError = false;
+export function setSoundVolume(val, nosave) {
+  if (val == undefined) {
+    val = "1.0";
   }
+  config.soundVolume = val;
+  Sound.setVolume(val);
+  if (!nosave) saveToLocalStorage();
 }
 
 //difficulty
@@ -1644,6 +1647,7 @@ export function apply(configObj) {
     setCapsLockWarning(configObj.capsLockWarning, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
+    setSoundVolume(configObj.soundVolume, true);
     setStopOnError(configObj.stopOnError, true);
     setFavThemes(configObj.favThemes, true);
     setFunbox(configObj.funbox, true);
@@ -1747,6 +1751,7 @@ export function apply(configObj) {
           `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
         );
         $("#ad_account").removeClass("hidden");
+        $(".footerads").removeClass("hidden");
       } else {
         $("#adScript").remove();
         $(".footerads").remove();

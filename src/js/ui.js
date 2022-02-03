@@ -14,6 +14,7 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
+import * as About from "./about-page";
 
 export let pageTransition = true;
 let activePage = "pageLoading";
@@ -121,8 +122,36 @@ export function changePage(page, norestart = false) {
     console.log(`change page ${page} stopped`);
     return;
   }
+
+  if (page == undefined) {
+    //use window loacation
+    let pages = {
+      "/": "test",
+      "/login": "login",
+      "/settings": "settings",
+      "/about": "about",
+      "/account": "account",
+    };
+    let path = pages[window.location.pathname];
+    if (!path) {
+      path = "test";
+    }
+    page = path;
+  }
+
   console.log(`change page ${page}`);
   let activePageElement = $(".page.active");
+  let check = activePage + "";
+  setTimeout(() => {
+    if (check === "pageAccount" && page !== "account") {
+      Account.reset();
+    } else if (check === "pageSettings" && page !== "settings") {
+      Settings.reset();
+    } else if (check === "pageAbout" && page !== "about") {
+      About.reset();
+    }
+  }, 250);
+
   activePage = undefined;
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
@@ -159,6 +188,7 @@ export function changePage(page, norestart = false) {
       $(".page.pageAbout").addClass("active");
       activePage = "pageAbout";
     });
+    About.fill();
     Funbox.activate("none");
     TestConfig.hide();
     SignOutButton.hide();
@@ -172,7 +202,10 @@ export function changePage(page, norestart = false) {
       activePage = "pageSettings";
     });
     Funbox.activate("none");
-    Settings.update();
+    Settings.fillSettingsPage().then(() => {
+      Settings.update();
+    });
+    // Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {
@@ -184,20 +217,12 @@ export function changePage(page, norestart = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(
-        activePageElement,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-          activePage = "pageAccount";
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
+      swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
+        setPageTransition(false);
+        history.pushState("account", null, "account");
+        $(".page.pageAccount").addClass("active");
+        activePage = "pageAccount";
+      });
       Funbox.activate("none");
       Account.update();
       TestConfig.hide();

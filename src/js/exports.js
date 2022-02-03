@@ -7,9 +7,6 @@ global.getuid = Misc.getuid;
 global.snapshot = DB.getSnapshot;
 global.config = Config;
 // global.addnotif = Notifications.add;
-global.linkToGoogle = AccountController.linkWithGoogle;
-global.unlinkGoogle = AccountController.unlinkGoogle;
-global.linkToEmail = AccountController.linkWithEmail;
 
 global.glarsesMode = toggleGlarses;
 

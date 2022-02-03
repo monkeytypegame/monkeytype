@@ -19,6 +19,8 @@ import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import * as AccountController from "./account-controller";
 import * as LoadingPage from "./loading-page";
+import * as Focus from "./focus";
+import * as SignOutButton from "./sign-out-button";
 import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
@@ -49,7 +51,7 @@ export async function getDataAndInit() {
         0
       );
     }
-    let msg = e?.response?.data?.message ?? e.message;
+    let msg = e?.response?.data?.message ?? e?.response?.data ?? e?.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
@@ -206,13 +208,13 @@ export async function getDataAndInit() {
       PaceCaret.init(true);
     }
   }
-  if (
-    UI.getActivePage() == "pageLogin" ||
-    window.location.pathname === "/account"
-  ) {
-    UI.changePage("account");
-  }
-  ThemePicker.refreshButtons();
+  // if (
+  //   UI.getActivePage() == "pageLogin" ||
+  //   window.location.pathname === "/account"
+  // ) {
+  //   UI.changePage("account");
+  // }
+  // ThemePicker.refreshButtons();
   AccountButton.loading(false);
   ResultFilters.updateTags();
   CommandlineLists.updateTagCommands();
@@ -221,10 +223,11 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  if (UI.getActivePage() == "pageLoading") {
-    LoadingPage.updateBar(100, true);
-    UI.changePage("");
-  }
+  // if (UI.getActivePage() == "pageLoading") {
+  //   LoadingPage.updateBar(100, true);
+  //   Focus.set(false);
+  //   UI.changePage("");
+  // }
 }
 
 let filteredResults = [];
@@ -375,6 +378,16 @@ function loadMoreLines(lineIndex) {
   } else {
     $(".pageAccount .loadMoreButton").removeClass("hidden");
   }
+}
+
+export function reset() {
+  $(".pageAccount .history table tbody").empty();
+  ChartController.accountActivity.data.datasets[0].data = [];
+  ChartController.accountActivity.data.datasets[1].data = [];
+  ChartController.accountHistory.data.datasets[0].data = [];
+  ChartController.accountHistory.data.datasets[1].data = [];
+  ChartController.accountActivity.update({ duration: 0 });
+  ChartController.accountHistory.update({ duration: 0 });
 }
 
 let totalSecondsFiltered = 0;
@@ -1010,6 +1023,8 @@ export function update() {
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
     LoadingPage.updateBar(100, true);
+    SignOutButton.show();
+    Focus.set(false);
     UI.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
@@ -1148,6 +1163,10 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
     event.pageY + 30
   );
+});
+
+$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
+  AccountController.sendVerificationEmail();
 });
 
 $(document).on("click", ".history-wpm-header", (event) => {

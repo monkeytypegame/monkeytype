@@ -1,5 +1,5 @@
 import Config from "./config";
-import { Howl } from "howler";
+import Howler, { Howl } from "howler";
 
 let errorSound = null;
 let clickSounds = null;
@@ -243,4 +243,8 @@ export function playError() {
   if (errorSound === null) initErrorSound();
   errorSound.seek(0);
   errorSound.play();
+}
+
+export function setVolume(val) {
+  Howler.Howler.volume(val);
 }

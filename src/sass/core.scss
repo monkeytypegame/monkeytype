@@ -10,6 +10,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Noto+Naskh+Arabic&display=swap");
 
 :root {
   --roundness: 0.5rem;
@@ -281,6 +282,7 @@ key {
   &.disabled {
     opacity: 0.5;
     cursor: default;
+    pointer-events: none;
     &:hover {
       color: var(--text-color);
       background: rgba(0, 0, 0, 0.1);
@@ -291,6 +293,7 @@ key {
   &.disabled.active {
     opacity: 0.5;
     cursor: default;
+    pointer-events: none;
     &:hover {
       color: var(--bg-color);
       background: var(--main-color);
@@ -360,22 +363,4 @@ key {
   &:hover {
     color: var(--text-color);
   }
-}
-
-#commandLineMobileButton {
-  display: none;
-  top: -4rem;
-  left: 0;
-  position: absolute;
-  font-size: 1rem;
-  width: 3rem;
-  height: 3rem;
-  text-align: center;
-  line-height: 3rem;
-  background: var(--main-color);
-  border-radius: 99rem;
-  z-index: 99;
-  cursor: pointer;
-  color: var(--bg-color);
-  transition: 0.25s;
 }

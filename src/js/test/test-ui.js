@@ -18,9 +18,10 @@ import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
 import * as ChallengeController from "./challenge-controller";
-import * as RateQuotePopup from "./rate-quote-popup";
+import * as QuoteRatePopup from "./quote-rate-popup";
 import * as UI from "./ui";
 import * as TestTimer from "./test-timer";
+import * as ReportQuotePopup from "./quote-report-popup";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -907,7 +908,7 @@ export function applyBurstHeatmap() {
 
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
-        .length !== TestLogic.words.getCurrent().length
+        .length !== TestLogic.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
@@ -994,7 +995,14 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 });
 
 $(".pageTest #rateQuoteButton").click(async (event) => {
-  RateQuotePopup.show(TestLogic.randomQuote);
+  QuoteRatePopup.show(TestLogic.randomQuote);
+});
+
+$(".pageTest #reportQuoteButton").click(async (event) => {
+  ReportQuotePopup.show({
+    quoteId: parseInt(TestLogic.randomQuote.id),
+    noAnim: false,
+  });
 });
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {

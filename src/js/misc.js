@@ -190,6 +190,30 @@ export async function getFontsList() {
   }
 }
 
+let supportersList = null;
+export async function getSupportersList() {
+  if (supportersList == null) {
+    return $.getJSON("about/supporters.json", function (data) {
+      supportersList = data;
+      return supportersList;
+    });
+  } else {
+    return supportersList;
+  }
+}
+
+let contributorsList = null;
+export async function getContributorsList() {
+  if (contributorsList == null) {
+    return $.getJSON("about/contributors.json", function (data) {
+      contributorsList = data;
+      return contributorsList;
+    });
+  } else {
+    return contributorsList;
+  }
+}
+
 let languageList = null;
 export async function getLanguageList() {
   if (languageList == null) {
@@ -319,21 +343,6 @@ export function migrateFromCookies() {
       }
     }
   );
-}
-
-export function sendVerificationEmail() {
-  Loader.show();
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
-    .then(() => {
-      Loader.hide();
-      showNotification("Email sent to " + cu.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      showNotification("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
 }
 
 export function smooth(arr, windowSize, getter = (value) => value, setter) {

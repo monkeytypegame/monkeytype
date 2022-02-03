@@ -26,6 +26,11 @@ function updateFavicon(size, curveSize) {
     let maincolor, bgcolor;
     bgcolor = await ThemeColors.get("bg");
     maincolor = await ThemeColors.get("main");
+    if (window.location.hostname === "localhost") {
+      let swap = maincolor;
+      maincolor = bgcolor;
+      bgcolor = swap;
+    }
     if (bgcolor == maincolor) {
       bgcolor = "#111";
       maincolor = "#eee";
