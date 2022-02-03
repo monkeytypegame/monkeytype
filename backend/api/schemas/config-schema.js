@@ -29,7 +29,7 @@ const CONFIG_SCHEMA = joi.object({
   words: joi.number().min(0),
   time: joi.number().min(0),
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
-  quoteLength: joi.array().items(joi.number().min(0).max(3)).min(1).max(4),
+  quoteLength: joi.array().items(joi.number()),
   language: joi.string(),
   fontSize: joi.number().valid(1, 125, 15, 2, 3, 4),
   freedomMode: joi.boolean(),
