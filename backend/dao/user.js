@@ -95,8 +95,8 @@ class UsersDAO {
 
   static async getTags(uid) {
     const user = await mongoDB().collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "get tags");
-    return user.tags;
+    // if (!user) throw new MonkeyError(404, "User not found", "get tags");
+    return user?.tags ?? [];
   }
 
   static async editTag(uid, _id, name) {
