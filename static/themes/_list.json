@@ -705,6 +705,11 @@
     "mainColor": "#ffffff"
   }
   ,{
+    "name": "leather",
+    "bgColor": "#a86948",
+    "mainColor": "#ffe4bc"
+  }
+  ,{
     "name": "fleuriste",
     "bgColor": "#c6b294",
     "mainColor": "#405a52"
