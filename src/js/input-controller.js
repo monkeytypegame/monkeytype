@@ -703,6 +703,14 @@ $(document).keydown((event) => {
     return;
   }
 
+  if (TestStats.spacingDebug)
+    console.log(
+      "spacing debug",
+      "keypress",
+      event.key,
+      "length",
+      TestStats.keypressTimings.spacing.array.length
+    );
   TestStats.recordKeypressSpacing();
   TestStats.setKeypressDuration(performance.now());
   TestStats.setKeypressNotAfk();

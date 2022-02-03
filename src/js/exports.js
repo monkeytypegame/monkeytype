@@ -19,3 +19,5 @@ global.enableTimerDebug = TestTimer.enableTimerDebug;
 global.getTimerStats = TestTimer.getTimerStats;
 
 global.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+
+global.enableSpacingDebug = TestStats.enableSpacingDebug;
