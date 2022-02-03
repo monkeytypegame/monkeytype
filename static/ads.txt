@@ -416,7 +416,7 @@ contextweb.com, 562258, RESELLER, 89ff185a4c4e857c
 
 
 venatusmedia.com, 60b78af12119122b8958910f, DIRECT
-#V 06.01.2021 PH
+#V 03.02.2022 PH
 
 #------------------------------------------------------------------------------------------------------
 33across.com, 0010b00001rrIFkAAM, DIRECT, bbea06d9c4d2853c                    # 33Across_0_9_6&7
@@ -471,6 +471,7 @@ themediagrid.com, JTQKMP, RESELLER, 35d5010d7789b49d                          # 
 smartadserver.com,3490,DIRECT,060d053dcf45cbf3                                # Amazon_3_6&7
 sovrn.com, 375328, DIRECT, fafdf38b16bf6b2b                                   # Amazon_3_6&7
 lijit.com, 375328, DIRECT, fafdf38b16bf6b2b                                   # Amazon_3_6&7
+beachfront.com,14804,RESELLER,e2541279e8e2ca4d                                # Amazon_3_6&7
 aniview.com, 5f2063121d82c82557194737, RESELLER, 78b21b97965ec3f8             # Aniview_5_7
 google.com, pub-5717092533913515, RESELLER, f08c47fec0942fa0                  # Aniview_5_7
 google.com, pub-3565385483761681, RESELLER, f08c47fec0942fa0                  # Aniview_5_7
@@ -500,7 +501,22 @@ pubmatic.com, 159668, RESELLER, 5d62403b186f2ace                              # 
 rubiconproject.com, 19724, RESELLER, 0bfd66d529a55807                         # BetweenX_0&4_6&7
 sovrn.com, 273644, RESELLER, fafdf38b16bf6b2b                                 # BetweenX_0&4_6&7
 lijit.com, 273644, RESELLER, fafdf38b16bf6b2b                                 # BetweenX_0&4_6&7
+blockthrough.com, 5698090870767616, DIRECT                                    # Blockthrough                       
+appnexus.com, 6979, RESELLER                                                  # Blockthrough
+indexexchange.com, 194341, RESELLER, 50b1c356f2c5c8fc                         # Blockthrough
+indexexchange.com, 194341, DIRECT                                             # Blockthrough
+pubmatic.com, 160377, RESELLER, 5d62403b186f2ace                              # Blockthrough
+sovrn.com, 328150, DIRECT, fafdf38b16bf6b2b                                   # Blockthrough
+lijit.com, 328150, DIRECT, fafdf38b16bf6b2b                                   # Blockthrough
+lijit.com, 328150-eb, DIRECT, fafdf38b16bf6b2b                                # Blockthrough
+appnexus.com, 1360, RESELLER, f5ab79cb980f11d1                                # Blockthrough
+rubiconproject.com, 17960, RESELLER, 0bfd66d529a55807                         # Blockthrough
+rubiconproject.com, 23718, RESELLER, 0bfd66d529a55807                         # Blockthrough
+pubmatic.com, 161023, RESELLER, 5d62403b186f2ace                              # Blockthrough
+rubiconproject.com, 23720, RESELLER, 0bfd66d529a55807                         # Blockthrough
+indexexchange.com, 196017, RESELLER, 50b1c356f2c5c8fc                         # Blockthrough
 criteo.com, B-062405, DIRECT, 9fac4a4a87c2a44f                                # Criteo_0_6&7
+themediagrid.com, CVQXOH, DIRECT, 35d5010d7789b49d                            # Criteo_0_6&7
 appnexus.com, 1908, RESELLER, f5ab79cb980f11d1                                # DistrictM_2_6&7
 districtm.io, 100749, DIRECT, 3fd707be9c4527c3                                # DistrictM_2_6&7
 emxdgt.com,1741, DIRECT, 1e1d41537f7cad7f                                     # EMX_2_6&7
@@ -622,6 +638,11 @@ gumgum.com, 11645, RESELLER, ffdef49475d318a9                                 # 
 openx.com, 538959099, RESELLER, 6a698e2ec38604c6                              # Sovrn_0&1&2_6&7
 spotxchange.com, 141412, RESELLER, 7842df1d2fe2db34                           # SpotX_0_7
 spotx.tv, 141412, RESELLER, 7842df1d2fe2db34                                  # SpotX_0_7
+taboola.com,1422403,DIRECT,c228e6794e811952                                   # Taboola
+spotx.tv,71451,RESELLER                                                       # Taboola
+openx.com, 539154393, RESELLER                                                # Taboola
+tremorhub.com, z87wm, RESELLER, 1a4e959a1b50034a                              # Taboola
+freewheel.tv, 799921, RESELLER                                                # Taboola
 target.my.com, 10731977, DIRECT                                               # Target_0_6
 pubmatic.com, 10731977, RESELLER                                              # Target_0_6
 admixer.com, 10731977, RESELLER                                               # Target_0_6
@@ -645,15 +666,12 @@ advertising.com, 28621, DIRECT                                                # 
 yahoo.com, 59435, DIRECT, e1a5b5b6e3255540                                    # Verizon_1_7
 aol.com, 59438, DIRECT                                                        # Verizon_4_7
 yahoo.com, 59438, DIRECT                                                      # Verizon_4_7
-freewheel.tv, 872257, RESELLER                                                # Vidoomy_8_7
-freewheel.tv, 894193, RESELLER                                                # Vidoomy_8_7
 vidoomy.com, 56924, RESELLER                                                  # Vidoomy_8_7
+yahoo.com, 56860, RESELLER, e1a5b5b6e3255540                                  # Vidoomy_8_7
 pubmatic.com, 156498, RESELLER, 5d62403b186f2ace                              # Vidoomy_8_7
 openx.com, 540804929, RESELLER, 6a698e2ec38604c6                              # Vidoomy_8_7
-appnexus.com, 12475, RESELLER, f5ab79cb980f11d1                               # Vidoomy_8_7 
-advertising.com, 22762, RESELLER                                              # Vidoomy_8_7
-spotxchange.com, 218443, RESELLER, 7842df1d2fe2db34                           # Vidoomy_8_7
-spotx.tv, 218443, RESELLER, 7842df1d2fe2db34                                  # Vidoomy_8_7
+appnexus.com, 12475, RESELLER, f5ab79cb980f11d1                               # Vidoomy_8_7
+adform.com, 2742, RESELLER                                                    # Vidoomy_8_7
 advertising.com, 12287, DIRECT                                                # Viewdeos_5_7
 indexexchange.com, 185192, DIRECT, 50b1c356f2c5c8fc                           # Viewdeos_5_7
 pubmatic.com, 157904, DIRECT, 5d62403b186f2ace                                # Viewdeos_5_7
@@ -668,3 +686,13 @@ appnexus.com, 7911, RESELLER                                                  # 
 admanmedia.com, 746, RESELLER                                                 # Yieldmo_1_6&7
 rhythmone.com, 3463482822,RESELLER,a670c89d4a324e47                           # Yieldmo_1_6&7
 video.unrulymedia.com, 3463482822, RESELLER                                   # Yieldmo_1_6&7
+gumgum.com,14302, RESELLER, ffdef49475d318a9                                  # GumGumTemp
+justpremium.com, 2773, RESELLER                                               # GumGumTemp
+appnexus.com, 2758, RESELLER, f5ab79cb980f11d1                                # GumGumTemp
+admanmedia.com, 799, RESELLER                                                 # GumGumTemp
+smartadserver.com, 4005, RESELLER                                             # GumGumTemp
+bidtellect.com, 1407, RESELLER, 1c34aa2d85d45e93                              # GumGumTemp
+contextweb.com, 558355, RESELLER                                              # GumGumTemp
+33across.com, 0013300001r0t9mAAA, RESELLER, bbea06d9c4d2853c                  # GumGumTemp
+synacor.com, 82151, RESELLER, e108f11b2cdf7d5b                                # GumGumTemp
+rhythmone.com, 78519861, RESELLER, a670c89d4a324e47                           # GumGumTemp
