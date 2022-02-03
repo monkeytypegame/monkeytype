@@ -1751,6 +1751,7 @@ export function apply(configObj) {
           `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
         );
         $("#ad_account").removeClass("hidden");
+        $(".footerads").removeClass("hidden");
       } else {
         $("#adScript").remove();
         $(".footerads").remove();

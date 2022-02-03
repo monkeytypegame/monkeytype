@@ -7,13 +7,15 @@ const cors = require("cors");
 const admin = require("firebase-admin");
 const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
-const { connectDB, mongoDB } = require("./init/mongodb");
+const db = require("./init/db");
 const jobs = require("./jobs");
 const addApiRoutes = require("./api/routes");
+const contextMiddleware = require("./middlewares/context");
+const ConfigurationDAO = require("./dao/configuration");
 
 const PORT = process.env.PORT || 5005;
 
-// MIDDLEWARE &  SETUP
+// MIDDLEWARE & SETUP
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,8 +23,13 @@ app.use(cors());
 
 app.set("trust proxy", 1);
 
+app.use(contextMiddleware);
+
 app.use((req, res, next) => {
-  if (process.env.MAINTENANCE === "true") {
+  if (
+    process.env.MAINTENANCE === "true" ||
+    req.context.configuration.maintenance
+  ) {
     res.status(503).json({ message: "Server is down for maintenance" });
   } else {
     next();
@@ -32,7 +39,7 @@ app.use((req, res, next) => {
 addApiRoutes(app);
 
 //DO NOT REMOVE NEXT, EVERYTHING WILL EXPLODE
-app.use(function (e, req, res, next) {
+app.use(function (e, req, res, _next) {
   if (/ECONNREFUSED.*27017/i.test(e.message)) {
     e.message = "Could not connect to the database. It may have crashed.";
     delete e.stack;
@@ -55,7 +62,7 @@ app.use(function (e, req, res, next) {
       `${monkeyError.status} ${monkeyError.message}`,
       monkeyError.uid
     );
-    mongoDB().collection("errors").insertOne({
+    db.collection("errors").insertOne({
       _id: monkeyError.errorID,
       timestamp: Date.now(),
       status: monkeyError.status,
@@ -73,12 +80,16 @@ app.use(function (e, req, res, next) {
 console.log("Starting server...");
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
+
   console.log("Connecting to database...");
-  await connectDB();
+  await db.connect();
   console.log("Database connected");
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
+
+  await ConfigurationDAO.getLiveConfiguration();
 
   console.log("Starting cron jobs...");
   jobs.forEach((job) => job.start());

@@ -42,7 +42,7 @@
 }
 
 @media only screen and (max-width: 1000px) {
-  #rateQuotePopup {
+  #quoteRatePopup {
     width: 90vw !important;
   }
   #bottom {
@@ -213,7 +213,7 @@
 }
 
 @media only screen and (max-width: 650px) {
-  #rateQuotePopup {
+  #quoteRatePopup {
     .ratingStats {
       grid-template-columns: 1fr 1fr !important;
     }
@@ -332,6 +332,17 @@
           padding: 0.4rem !important;
           font-size: 0.7rem !important;
         }
+      }
+    }
+    .tables table {
+      tr td:first-child {
+        padding-left: 0.25rem;
+      }
+      tr td:last-child {
+        padding-right: 0.25rem;
+      }
+      td {
+        padding: 0.25rem;
       }
     }
   }
@@ -500,6 +511,28 @@
   #commandLineInput {
     width: 400px !important;
   }
+
+  #leaderboardsWrapper #leaderboards {
+    .tables .titleAndTable .titleAndButtons {
+      grid-template-columns: unset;
+    }
+    .tables table {
+      thead,
+      tbody,
+      tfoot {
+        font-size: 0.5rem;
+      }
+      tr td:first-child {
+        padding-left: 0.25rem;
+      }
+      tr td:last-child {
+        padding-right: 0.25rem;
+      }
+      td {
+        padding: 0.25rem;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 400px) {
@@ -538,10 +571,6 @@
   #commandLine,
   #commandLineInput {
     width: 300px !important;
-  }
-
-  #leaderboardsWrapper #leaderboards .tables .titleAndTable .titleAndButtons {
-    grid-template-columns: unset;
   }
 }
 

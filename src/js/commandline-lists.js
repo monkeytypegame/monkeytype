@@ -17,6 +17,7 @@ import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
 import * as Settings from "./settings";
 import * as ChallengeController from "./challenge-controller";
+import * as PaceCaret from "./pace-caret";
 
 export let current = [];
 
@@ -235,6 +236,11 @@ export function updateTagCommands() {
         exec: () => {
           TagController.toggle(tag._id);
           TestUI.updateModesNotice();
+
+          if (Config.paceCaret === "average") {
+            PaceCaret.init();
+          }
+
           let txt = tag.name;
 
           if (tag.active === true) {
@@ -3102,7 +3108,7 @@ export let defaultCommands = {
       exec: async () => {
         let clist = await caches.keys();
         for (let name of clist) {
-          caches.delete(name);
+          await caches.delete(name);
         }
         window.location.reload(true);
       },

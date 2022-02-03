@@ -677,8 +677,15 @@
         }
       }
 
-      &.source #rateQuoteButton {
-        padding: 0 0.5rem;
+      &.source {
+        #rateQuoteButton,
+        #reportQuoteButton {
+          padding: 0 0.25rem;
+        }
+        #rateQuoteButton {
+          display: inline-grid;
+          gap: 0.25rem;
+        }
       }
     }
 

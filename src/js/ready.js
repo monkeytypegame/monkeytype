@@ -72,6 +72,6 @@ $(document).ready(() => {
         // UI.changePage(page);
       }
     });
-  Settings.settingsFillPromise.then(Settings.update);
+  // Settings.settingsFillPromise.then(Settings.update);
   MonkeyPower.init();
 });
