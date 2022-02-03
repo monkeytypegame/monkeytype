@@ -59,7 +59,7 @@ app.use(function (e, req, res, _next) {
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
       "system_error",
-      `${monkeyError.status} ${monkeyError.message}`,
+      `${monkeyError.status} ${monkeyError.message} ${monkeyError.stack}`,
       monkeyError.uid
     );
     db.collection("errors").insertOne({
