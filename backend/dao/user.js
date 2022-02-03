@@ -23,7 +23,7 @@ class UsersDAO {
     const nameDoc = await mongoDB()
       .collection("users")
       .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
-    if (nameDoc) throw new MonkeyError(409, "Username already taken");
+    if (nameDoc) throw new MonkeyError(409, "Username already taken", name);
     let user = await mongoDB().collection("users").findOne({ uid });
     if (
       Date.now() - user.lastNameChange < 2592000000 &&
