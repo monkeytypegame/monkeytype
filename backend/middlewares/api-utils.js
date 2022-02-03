@@ -77,8 +77,8 @@ function requestValidation(validationSchema) {
         const errorMessage = error.details[0].message;
         throw new MonkeyError(
           500,
-          validationErrorMessage ?? `Invalid request: ${errorMessage}`,
-          `${key}: ${JSON.stringify(req[key])}`
+          validationErrorMessage ??
+            `Invalid request: ${errorMessage} (value ${error.details[0].context.value}))`
         );
       }
     });
