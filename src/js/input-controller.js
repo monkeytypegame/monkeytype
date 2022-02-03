@@ -666,25 +666,25 @@ $(document).keydown((event) => {
   const popupsHidden =
     document
       .querySelector("#customTextPopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#customWordAmountPopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#customTestDurationPopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#quoteSearchPopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#quoteSubmitPopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#quoteApprovePopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#quoteReportPopupWrapper")
-      ?.classList.contains("hidden") === true ||
+      ?.classList.contains("hidden") === true &&
     document
       .querySelector("#wordFilterPopupWrapper")
       ?.classList.contains("hidden") === true;
