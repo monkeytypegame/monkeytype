@@ -11,60 +11,6 @@ const CARET_STYLES = [
   "banana",
 ];
 
-const RESULT_FILTERS_SCHEMA = joi.object({
-  difficulty: joi.object({
-    normal: joi.boolean(),
-    expert: joi.boolean(),
-    master: joi.boolean(),
-  }),
-  mode: joi.object({
-    words: joi.boolean(),
-    time: joi.boolean(),
-    quote: joi.boolean(),
-    zen: joi.boolean(),
-    custom: joi.boolean(),
-  }),
-  words: joi.object({
-    10: joi.boolean(),
-    25: joi.boolean(),
-    50: joi.boolean(),
-    100: joi.boolean(),
-    200: joi.boolean(),
-    custom: joi.boolean(),
-  }),
-  time: joi.object({
-    15: joi.boolean(),
-    30: joi.boolean(),
-    60: joi.boolean(),
-    120: joi.boolean(),
-    custom: joi.boolean(),
-  }),
-  quoteLength: joi.object({
-    short: joi.boolean(),
-    medium: joi.boolean(),
-    long: joi.boolean(),
-    thicc: joi.boolean(),
-  }),
-  punctuation: joi.object({
-    on: joi.boolean(),
-    off: joi.boolean(),
-  }),
-  numbers: joi.object({
-    on: joi.boolean(),
-    off: joi.boolean(),
-  }),
-  date: joi.object({
-    last_day: joi.boolean(),
-    last_week: joi.boolean(),
-    last_month: joi.boolean(),
-    last_3months: joi.boolean(),
-    all: joi.boolean(),
-  }),
-  tags: joi.object(),
-  language: joi.object(),
-  funbox: joi.object(),
-});
-
 const CONFIG_SCHEMA = joi.object({
   theme: joi.string(),
   customTheme: joi.boolean(),
@@ -87,7 +33,6 @@ const CONFIG_SCHEMA = joi.object({
   language: joi.string(),
   fontSize: joi.number().valid(1, 125, 15, 2, 3, 4),
   freedomMode: joi.boolean(),
-  resultFilters: RESULT_FILTERS_SCHEMA,
   difficulty: joi.string().valid("normal", "expert", "master"),
   blindMode: joi.boolean(),
   quickEnd: joi.boolean(),
