@@ -58,11 +58,10 @@ class UserController {
   static async checkName(req, res) {
     const { name } = req.body;
     if (!isUsernameValid(name))
-      return next({
-        status: 400,
-        message:
-          "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-      });
+      throw new MonkeyError(
+        400,
+        "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
+      );
     const available = await UsersDAO.isNameAvailable(name);
     if (!available)
       return res.status(400).json({ message: "Username unavailable" });
