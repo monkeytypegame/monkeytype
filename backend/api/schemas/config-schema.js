@@ -218,10 +218,9 @@ const CONFIG_SCHEMA = joi.object({
   customBackgroundSize: joi.string().valid("cover", "contain", "max"),
   customBackgroundFilter: joi.array().items(joi.number()),
   customLayoutfluid: joi.string().custom((layouts, helpers) => {
-    const separateLayouts = layouts.split("#");
-    const allLayoutsValid = separateLayouts.every((layout) =>
-      LAYOUTS_SET.has(layout)
-    );
+    const allLayoutsValid = layouts
+      .split("#")
+      .every((layout) => LAYOUTS_SET.has(layout) || layout === "default");
 
     if (!allLayoutsValid) {
       return helpers.error("any.invalid");
