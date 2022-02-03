@@ -22,7 +22,9 @@ router.post(
   RateLimit.configUpdate,
   authenticateRequest,
   requestValidation({
-    body: configSchema,
+    body: {
+      config: configSchema,
+    },
   }),
   asyncHandlerWrapper(ConfigController.saveConfig)
 );
