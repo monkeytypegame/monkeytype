@@ -1,6 +1,39 @@
 const MonkeyError = require("../handlers/error");
 const { verifyIdToken } = require("../handlers/auth");
 
+const DEFAULT_OPTIONS = {
+  isPublic: false,
+};
+
+function authenticateRequest(options = DEFAULT_OPTIONS) {
+  return async (req, _res, next) => {
+    try {
+      const { authorization: authHeader } = req.headers;
+      let token = null;
+
+      if (authHeader) {
+        token = await authenticateWithAuthHeader(authHeader);
+      } else if (options.isPublic) {
+        return next();
+      } else if (process.env.MODE === "dev") {
+        token = authenticateWithBody(req.body);
+      } else {
+        throw new MonkeyError(
+          401,
+          "Unauthorized",
+          `endpoint: ${req.baseUrl} no authorization header found`
+        );
+      }
+
+      req.ctx.decodedToken = token;
+    } catch (error) {
+      return next(error);
+    }
+
+    next();
+  };
+}
+
 function authenticateWithBody(body) {
   const { uid } = body;
 
@@ -31,35 +64,6 @@ async function authenticateWithAuthHeader(authHeader) {
     "Unknown authentication scheme",
     `The authentication scheme "${authScheme}" was not recognized.`
   );
-}
-
-function authenticateRequest(options = { isPublic: false }) {
-  return async (req, _res, next) => {
-    try {
-      const { authorization: authHeader } = req.headers;
-      let token = null;
-
-      if (authHeader) {
-        token = await authenticateWithAuthHeader(authHeader);
-      } else if (options.isPublic) {
-        return next();
-      } else if (process.env.MODE === "dev") {
-        token = authenticateWithBody(req.body);
-      } else {
-        throw new MonkeyError(
-          401,
-          "Unauthorized",
-          `endpoint: ${req.baseUrl} no authorization header found`
-        );
-      }
-
-      req.ctx.decodedToken = token;
-    } catch (error) {
-      return next(error);
-    }
-
-    next();
-  };
 }
 
 module.exports = {
