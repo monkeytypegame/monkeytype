@@ -1,3 +1,4 @@
+const joi = require("joi");
 const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
 const ResultController = require("../controllers/result");
@@ -6,6 +7,7 @@ const {
   asyncHandlerWrapper,
   requestValidation,
 } = require("../../middlewares/api-utils");
+const resultSchema = require("../schemas/result-schema");
 
 const router = Router();
 
@@ -20,6 +22,11 @@ router.post(
   "/add",
   RateLimit.resultsAdd,
   authenticateRequest(),
+  requestValidation({
+    body: {
+      result: resultSchema,
+    },
+  }),
   asyncHandlerWrapper(ResultController.addResult)
 );
 
@@ -27,6 +34,12 @@ router.post(
   "/updateTags",
   RateLimit.resultsTagsUpdate,
   authenticateRequest(),
+  requestValidation({
+    body: {
+      tags: joi.array().items(joi.string()).required(),
+      resultid: joi.string().required(),
+    },
+  }),
   asyncHandlerWrapper(ResultController.updateTags)
 );
 
@@ -35,19 +48,6 @@ router.post(
   RateLimit.resultsDeleteAll,
   authenticateRequest(),
   asyncHandlerWrapper(ResultController.deleteAll)
-);
-
-router.get(
-  "/getLeaderboard/:type/:mode/:mode2",
-  RateLimit.resultsLeaderboardGet,
-  asyncHandlerWrapper(ResultController.getLeaderboard)
-);
-
-router.post(
-  "/checkLeaderboardQualification",
-  RateLimit.resultsLeaderboardQualificationGet,
-  authenticateRequest(),
-  asyncHandlerWrapper(ResultController.checkLeaderboardQualification)
 );
 
 module.exports = router;
