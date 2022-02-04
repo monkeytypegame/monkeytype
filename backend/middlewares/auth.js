@@ -69,11 +69,11 @@ async function authenticateWithAuthHeader(authHeader) {
 async function authenticateWithBearerToken(token) {
   try {
     return await verifyIdToken(token);
-  } catch (err) {
-    if (err.message === "auth/id-token-expired") {
+  } catch (error) {
+    if (error.message.includes("auth/id-token-expired")) {
       throw new MonkeyError(401, "Unauthorized", "Token expired");
     } else {
-      throw err;
+      throw error;
     }
   }
 }
