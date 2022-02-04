@@ -476,19 +476,17 @@ socket.on("room_user_result", (e) => {
     resolve?.afk ||
     resolve?.repeated ||
     resolve?.valid === false ||
-    resolve?.saved === false
+    resolve?.saved === false ||
+    resolve?.failed === true
   ) {
     //todo only one
     TribeBars.fadeUser("test", e.userId);
     TribeBars.fadeUser("tribe", e.userId);
     TribeResults.fadeUser("result", e.userId);
   } else {
-    if (resolve?.failed !== true) {
-      //todo only one
-      TribeBars.completeBar("test", e.userId);
-      TribeBars.completeBar("tribe", e.userId);
-      TribeResults.updateBar("result", e.userId, 100);
-    }
+    TribeBars.completeBar("test", e.userId);
+    TribeBars.completeBar("tribe", e.userId);
+    TribeResults.updateBar("result", e.userId, 100);
   }
   if (!TestLogic.active) {
     TribeResults.update("result", e.userId);
