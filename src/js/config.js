@@ -1068,19 +1068,23 @@ export function setQuoteLength(len, nosave, multipleMode) {
 }
 
 export function setWordCount(wordCount, nosave) {
-  if (wordCount === null || isNaN(wordCount) || wordCount < 0) {
-    wordCount = 10;
-  }
   wordCount = parseInt(wordCount);
+  if (
+    wordCount === null ||
+    isNaN(wordCount) ||
+    wordCount < 0 ||
+    wordCount > 100000
+  ) {
+    wordCount = defaultConfig.wordCount;
+  }
   // if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
-    wordCount = "custom";
+    $("#top .config .wordCount .text-button[wordCount='custom']").addClass(
+      "active"
+    );
   }
-  $(
-    "#top .config .wordCount .text-button[wordCount='" + wordCount + "']"
-  ).addClass("active");
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
