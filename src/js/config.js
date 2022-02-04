@@ -1221,8 +1221,8 @@ export function toggleFreedomMode() {
 }
 
 export function setConfidenceMode(cm, nosave) {
-  if (cm == undefined) {
-    cm = "off";
+  if (cm == undefined || !["off", "on", "max"].includes(cm)) {
+    cm = defaultConfig.confidenceMode;
   }
   config.confidenceMode = cm;
   if (config.confidenceMode !== "off") {
