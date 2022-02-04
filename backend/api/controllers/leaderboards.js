@@ -16,7 +16,7 @@ class LeaderboardsController {
     );
 
     const normalizedLeaderboard = _.map(leaderboard, (entry) => {
-      return uid && entry.uid == uid
+      return uid && entry.uid === uid
         ? entry
         : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
     });
