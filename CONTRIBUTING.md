@@ -109,7 +109,7 @@ We recommend following the guidelines below to increase your chances of getting 
 
 Before submitting a theme make sure...
 
-- your theme is unique and isn't visually similar to any we already have.
+- your theme is unique and isn't visually similar to any we already have
 - the text color is either black or white (or very close to these colors)
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
