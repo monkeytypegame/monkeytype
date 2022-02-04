@@ -30,7 +30,15 @@ module.exports = {
         return next(
           new MonkeyError(400, "Invalid Token", "Incorrect token type")
         );
-      req.decodedToken = await verifyIdToken(token[1]);
+      try {
+        req.decodedToken = await verifyIdToken(token[1]);
+      } catch (err) {
+        if (err.message == "auth/id-token-expired") {
+          new MonkeyError(401, "Unauthorized", "Token expired");
+        } else {
+          throw err;
+        }
+      }
       return next();
     } catch (e) {
       return next(e);
