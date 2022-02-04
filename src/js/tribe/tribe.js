@@ -215,6 +215,13 @@ socket.on("connect", async (e) => {
   // changeActiveSubpage("prelobby");
 });
 
+$(".tribechangename").click((e) => {
+  let name = prompt("Name");
+  if (name) {
+    socket.emit("user_set_name", { name, confirm: true });
+  }
+});
+
 // socket.on("user_update_name", e => {
 //   name = e.name;
 // })
