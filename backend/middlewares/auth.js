@@ -62,7 +62,7 @@ async function authenticateWithAuthHeader(authHeader) {
   throw new MonkeyError(
     400,
     "Unknown authentication scheme",
-    `The authentication scheme "${authScheme}" was not recognized.`
+    `The authentication scheme "${authScheme}" is not implemented.`
   );
 }
 
