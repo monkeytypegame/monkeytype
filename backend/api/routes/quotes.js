@@ -120,7 +120,8 @@ quotesRouter.post(
         .valid(
           "Grammatical error",
           "Inappropriate content",
-          "Low quality content"
+          "Low quality content",
+          "Incorrect source"
         )
         .required(),
       comment: joi.string().allow("").max(250).required(),

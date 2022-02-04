@@ -56,7 +56,7 @@ async function authenticateWithAuthHeader(authHeader) {
   const credentials = token[1];
 
   if (authScheme === "Bearer") {
-    return await verifyIdToken(credentials);
+    return await authenticateWithBearerToken(credentials);
   }
 
   throw new MonkeyError(
@@ -64,6 +64,18 @@ async function authenticateWithAuthHeader(authHeader) {
     "Unknown authentication scheme",
     `The authentication scheme "${authScheme}" is not implemented.`
   );
+}
+
+async function authenticateWithBearerToken(token) {
+  try {
+    return await verifyIdToken(token);
+  } catch (err) {
+    if (err.message === "auth/id-token-expired") {
+      throw new MonkeyError(401, "Unauthorized", "Token expired");
+    } else {
+      throw err;
+    }
+  }
 }
 
 module.exports = {
