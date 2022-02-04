@@ -268,7 +268,7 @@ socket.on("room_joined", (e) => {
 socket.on("room_player_joined", (e) => {
   room.users[e.user.id] = e.user;
   room.size = Object.keys(room.users).length;
-  TribeUserList.update("lobby");
+  TribeUserList.update();
   TribeSound.play("join");
   // TribeButtons.update("lobby")
 });
