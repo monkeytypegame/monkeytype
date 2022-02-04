@@ -167,10 +167,12 @@ function updateUser(page, userId) {
     );
     let user = Tribe.room.users[userId];
     if (user.isFinished) {
-      userEl.find(`.wpm .text`).text(user.result.wpm);
-      userEl.find(`.raw .text`).text(user.result.raw);
-      userEl.find(`.acc .text`).text(user.result.acc + "%");
-      userEl.find(`.consistency .text`).text(user.result.consistency + "%");
+      userEl.find(`.wpm .text`).text(user.result.wpm.toFixed(2));
+      userEl.find(`.raw .text`).text(user.result.raw.toFixed(2));
+      userEl.find(`.acc .text`).text(user.result.acc.toFixed(2) + "%");
+      userEl
+        .find(`.consistency .text`)
+        .text(user.result.consistency.toFixed(2) + "%");
       userEl.find(`.char .text`).text(
         `
         ${user.result.charStats[0]}/${user.result.charStats[1]}/${user.result.charStats[2]}/${user.result.charStats[3]}
