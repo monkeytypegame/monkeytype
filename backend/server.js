@@ -26,10 +26,7 @@ app.set("trust proxy", 1);
 app.use(contextMiddleware);
 
 app.use((req, res, next) => {
-  if (
-    process.env.MAINTENANCE === "true" ||
-    req.context.configuration.maintenance
-  ) {
+  if (process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance) {
     res.status(503).json({ message: "Server is down for maintenance" });
   } else {
     next();
@@ -53,8 +50,8 @@ app.use(function (e, req, res, _next) {
     //its a server error
     monkeyError = new MonkeyError(e.status, e.message, e.stack);
   }
-  if (!monkeyError.uid && req.decodedToken) {
-    monkeyError.uid = req.decodedToken.uid;
+  if (!monkeyError.uid && req.ctx?.decodedToken) {
+    monkeyError.uid = req.ctx.decodedToken.uid;
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
