@@ -20,6 +20,7 @@ class MonkeyError {
         : String(message);
     } else {
       if (this.stack && this.status >= 500) {
+        this.stack = this.message + "\n" + this.stack;
         this.message = "Internal Server Error " + this.errorID;
       } else {
         this.message = String(message);

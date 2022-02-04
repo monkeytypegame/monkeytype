@@ -613,11 +613,13 @@
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 1000px;
     grid-template-rows: auto auto auto auto auto auto auto auto auto;
     height: auto;
     max-height: 40rem;
     overflow-y: scroll;
+    width: calc(100% - 4rem);
+    margin-left: 2rem;
+    max-width: 800px;
 
     label {
       color: var(--sub-color);
