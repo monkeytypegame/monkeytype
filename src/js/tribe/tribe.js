@@ -89,6 +89,7 @@ export function updateState(newState) {
         u.isFinished = false;
       }
     });
+    $("#tribeMiniChartCustomTooltip").remove();
     TribeUserList.update("lobby");
     TribeChartController.destroyAllCharts();
   } else if (state === 12) {
