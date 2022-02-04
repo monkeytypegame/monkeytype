@@ -10,7 +10,7 @@ function validateConfiguration(options) {
   const { criteria, invalidMessage } = options;
 
   return (req, res, next) => {
-    const configuration = req.context.configuration;
+    const configuration = req.ctx.configuration;
 
     const validated = criteria(configuration);
     if (!validated) {

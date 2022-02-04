@@ -33,27 +33,27 @@ try {
 
 class ResultController {
   static async getResults(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
     return res.status(200).json(results);
   }
 
   static async deleteAll(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
     return res.sendStatus(200);
   }
 
   static async updateTags(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { tags, resultid } = req.body;
     await ResultDAO.updateTags(uid, resultid, tags);
     return res.sendStatus(200);
   }
 
   static async addResult(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
     if (validateObjectValues(result) > 0)
@@ -100,7 +100,7 @@ class ResultController {
 
     let resulthash = result.hash;
     delete result.hash;
-    if (req.context.configuration.resultObjectHashCheck.enabled) {
+    if (req.ctx.configuration.resultObjectHashCheck.enabled) {
       const serverhash = objecthash(result);
       if (serverhash !== resulthash) {
         Logger.log(

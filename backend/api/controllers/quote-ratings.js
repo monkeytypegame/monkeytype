@@ -9,7 +9,7 @@ class QuoteRatingsController {
   }
 
   static async submitRating(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     let { quoteId, rating, language } = req.body;
 
     quoteId = parseInt(quoteId);
