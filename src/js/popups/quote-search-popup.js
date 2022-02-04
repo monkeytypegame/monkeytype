@@ -66,7 +66,7 @@ async function updateResults(searchText) {
         <div class="icon-button report ${
           isNotAuthed && "hidden"
         }" aria-label="Report quote" data-balloon-pos="left">
-          <i class="fas fa-flag"></i>
+          <i class="fas fa-flag report"></i>
         </div>
       </div>
       `);
