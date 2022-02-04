@@ -35,7 +35,7 @@ export const socket = io(
   }
 );
 export let state = -1;
-export let expectedVersion = "0.10.3";
+export let expectedVersion = "0.10.4";
 
 let autoJoin = undefined;
 let name = undefined;
