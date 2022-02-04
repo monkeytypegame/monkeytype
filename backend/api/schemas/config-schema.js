@@ -16,7 +16,7 @@ const CONFIG_SCHEMA = joi.object({
   customTheme: joi.boolean(),
   customThemeColors: joi
     .array()
-    .items(joi.string().pattern(/^#[A-Fa-f0-9]{6}$/))
+    .items(joi.string().pattern(/^#([\da-f]{3}){1,2}$/i))
     .length(9),
   favThemes: joi.array().items(joi.string()),
   showKeyTips: joi.boolean(),
