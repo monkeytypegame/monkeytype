@@ -34,7 +34,7 @@ import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
-import * as RateQuotePopup from "./rate-quote-popup";
+import * as QuoteRatePopup from "./quote-rate-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Tribe from "./tribe";
@@ -42,7 +42,7 @@ import * as TribeResults from "./tribe-results";
 import * as Result from "./result";
 import * as TribeDelta from "./tribe-delta";
 
-const objecthash = require("object-hash");
+const objecthash = require("node-object-hash")().hash;
 
 export let glarsesMode = false;
 
@@ -568,7 +568,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
-  RateQuotePopup.clearQuoteStats();
+  QuoteRatePopup.clearQuoteStats();
   if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
     window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
@@ -616,6 +616,9 @@ export function restart(
       ) {
         shouldQuoteRepeat = true;
       }
+
+      await Funbox.rememberSettings();
+
       if (Config.funbox === "arrows") {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
@@ -1074,7 +1077,11 @@ export async function init() {
 
     let w = randomQuote.textSplit;
 
-    wordsBound = Math.min(wordsBound, w.length);
+    if (Config.showAllLines) {
+      wordsBound = w.length;
+    } else {
+      wordsBound = Math.min(wordsBound, w.length);
+    }
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
@@ -1627,6 +1634,7 @@ export async function finish(difficultyFailed = false) {
 
   if (firebase.auth().currentUser == null) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
+    $(".pageTest #result #reportQuoteButton").addClass("hidden");
     try {
       firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
     } catch (e) {
@@ -1637,6 +1645,8 @@ export async function finish(difficultyFailed = false) {
     resolveTestSavePromise({
       login: false,
     });
+  } else {
+    $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
   Result.update(
@@ -1769,6 +1779,9 @@ export async function finish(difficultyFailed = false) {
         saved: false,
         saveFailedMessage: msg,
       });
+      if (msg == "Incorrect result hash") {
+        console.log(completedEvent);
+      }
       retrySaving.completedEvent = completedEvent;
       retrySaving.canRetry = true;
     });

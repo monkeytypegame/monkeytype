@@ -36,7 +36,7 @@ class ResultDAO {
       if (!userTagIds.includes(tagId)) validTags = false;
     });
     if (!validTags)
-      throw new MonkeyError(400, "One of the tag id's is not vaild");
+      throw new MonkeyError(400, "One of the tag id's is not valid");
     return await mongoDB()
       .collection("results")
       .updateOne({ _id: ObjectID(resultid), uid }, { $set: { tags } });

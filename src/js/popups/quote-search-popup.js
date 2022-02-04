@@ -5,6 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
+import * as QuoteReportPopup from "./quote-report-popup";
 import * as DB from "./db";
 import * as TestUI from "./test-ui";
 
@@ -40,6 +41,8 @@ async function updateResults(searchText) {
   let resultsList = $("#quoteSearchResults");
   let resultListLength = 0;
 
+  const isNotAuthed = !firebase.auth().currentUser;
+
   found.forEach(async (quote) => {
     let lengthDesc;
     if (quote.length < 101) {
@@ -55,10 +58,16 @@ async function updateResults(searchText) {
       resultsList.append(`
       <div class="searchResult" id="${quote.id}">
         <div class="text">${quote.text}</div>
-        <div class="id"><div class="sub">id</div>${quote.id}</div>
+        <div class="id"><div class="sub">id</div><span class="quote-id">${
+          quote.id
+        }</span></div>
         <div class="length"><div class="sub">length</div>${lengthDesc}</div>
         <div class="source"><div class="sub">source</div>${quote.source}</div>
-        <div class="resultChevron"><i class="fas fa-chevron-right"></i></div>
+        <div class="icon-button report ${
+          isNotAuthed && "hidden"
+        }" aria-label="Report quote" data-balloon-pos="left">
+          <i class="fas fa-flag"></i>
+        </div>
       </div>
       `);
     }
@@ -73,9 +82,13 @@ async function updateResults(searchText) {
   }
 }
 
-export async function show() {
+export async function show(clearText = true) {
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
-    $("#quoteSearchPopup input").val("");
+    if (clearText) {
+      $("#quoteSearchPopup input").val("");
+    }
+
+    const quoteSearchInputValue = $("#quoteSearchPopup input").val();
 
     if (!firebase.auth().currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
@@ -94,13 +107,15 @@ export async function show() {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, (e) => {
-        $("#quoteSearchPopup input").focus().select();
-        updateResults("");
+        if (clearText) {
+          $("#quoteSearchPopup input").focus().select();
+        }
+        updateResults(quoteSearchInputValue);
       });
   }
 }
 
-export function hide(noAnim = false) {
+export function hide(noAnim = false, focusWords = true) {
   if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
@@ -112,7 +127,9 @@ export function hide(noAnim = false) {
         noAnim ? 0 : 100,
         (e) => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
-          TestUI.focusWords();
+          if (focusWords) {
+            TestUI.focusWords();
+          }
         }
       );
   }
@@ -155,6 +172,9 @@ $(document).on(
   "click",
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
+    if (e.target.classList.contains("report")) {
+      return;
+    }
     selectedId = parseInt($(e.currentTarget).attr("id"));
     apply(selectedId);
   }
@@ -168,6 +188,20 @@ $(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", (e) => {
 $(document).on("click", "#quoteSearchPopup #goToApproveQuotes", (e) => {
   hide(true);
   QuoteApprovePopup.show(true);
+});
+
+$(document).on("click", "#quoteSearchPopup .report", async (e) => {
+  const quoteId = e.target.closest(".searchResult").id;
+  const quoteIdSelectedForReport = parseInt(quoteId);
+
+  hide(true, false);
+  QuoteReportPopup.show({
+    quoteId: quoteIdSelectedForReport,
+    noAnim: true,
+    previousPopupShowCallback: () => {
+      show(false);
+    },
+  });
 });
 
 // $("#quoteSearchPopup input").keypress((e) => {

@@ -1023,7 +1023,9 @@ export function update() {
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
     LoadingPage.updateBar(100, true);
-    SignOutButton.show();
+    setTimeout(() => {
+      SignOutButton.show();
+    }, 125);
     Focus.set(false);
     UI.swapElements(
       $(".pageAccount .preloader"),

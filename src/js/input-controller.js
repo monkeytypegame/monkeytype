@@ -25,6 +25,7 @@ import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as WeakSpot from "./weak-spot";
 import * as Tribe from "./tribe";
+import * as Leaderboards from "./leaderboards";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -604,6 +605,9 @@ function handleTab(event) {
   ) {
     if (UI.getActivePage() == "pageTest") {
       if (Config.quickTab) {
+        if (!$("#leaderboardsWrapper").hasClass("hidden")) {
+          Leaderboards.hide();
+        }
         if (
           TestUI.resultVisible ||
           !(
@@ -700,24 +704,40 @@ $(document).keydown((event) => {
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = !$(".pageTest").hasClass("hidden");
+  const pageTestActive = UI.getActivePage() === "pageTest";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
-  const modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
-    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSubmitPopupWrapper").hasClass("hidden") ||
-    !$("#quoteApprovePopupWrapper").hasClass("hidden") ||
-    !$("#wordFilterPopupWrapper").hasClass("hidden") ||
-    !$(".popupWrapper").hasClass("hidden");
+  const popupsHidden =
+    document
+      .querySelector("#customTextPopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#customWordAmountPopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#customTestDurationPopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#quoteSearchPopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#quoteSubmitPopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#quoteApprovePopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#quoteReportPopupWrapper")
+      ?.classList.contains("hidden") === true &&
+    document
+      .querySelector("#wordFilterPopupWrapper")
+      ?.classList.contains("hidden") === true;
 
   const allowTyping =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
-    !modePopupVisible &&
+    popupsHidden &&
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
@@ -752,6 +772,14 @@ $(document).keydown((event) => {
     return;
   }
 
+  if (TestStats.spacingDebug)
+    console.log(
+      "spacing debug",
+      "keypress",
+      event.key,
+      "length",
+      TestStats.keypressTimings.spacing.array.length
+    );
   TestStats.recordKeypressSpacing();
   TestStats.setKeypressDuration(performance.now());
   TestStats.setKeypressNotAfk();

@@ -2,102 +2,115 @@ const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
 const UserController = require("../controllers/user");
 const RateLimit = require("../../middlewares/rate-limit");
+const {
+  asyncHandlerWrapper,
+  requestValidation,
+} = require("../../middlewares/api-utils");
 
 const router = Router();
 
-router.get("/", RateLimit.userGet, authenticateRequest, UserController.getUser);
+router.get(
+  "/",
+  RateLimit.userGet,
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.getUser)
+);
 
 router.post(
   "/signup",
   RateLimit.userSignup,
-  authenticateRequest,
-  UserController.createNewUser
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.createNewUser)
 );
 
-router.post("/checkName", RateLimit.userCheckName, UserController.checkName);
+router.post(
+  "/checkName",
+  RateLimit.userCheckName,
+  asyncHandlerWrapper(UserController.checkName)
+);
 
 router.post(
   "/delete",
   RateLimit.userDelete,
-  authenticateRequest,
-  UserController.deleteUser
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.deleteUser)
 );
 
 router.post(
   "/updateName",
   RateLimit.userUpdateName,
-  authenticateRequest,
-  UserController.updateName
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.updateName)
 );
 
 router.post(
   "/updateLbMemory",
   RateLimit.userUpdateLBMemory,
-  authenticateRequest,
-  UserController.updateLbMemory
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.updateLbMemory)
 );
 
 router.post(
   "/updateEmail",
   RateLimit.userUpdateEmail,
-  authenticateRequest,
-  UserController.updateEmail
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.updateEmail)
 );
 
 router.post(
   "/clearPb",
   RateLimit.userClearPB,
-  authenticateRequest,
-  UserController.clearPb
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.clearPb)
 );
 
 router.post(
   "/tags/add",
   RateLimit.userTagsAdd,
-  authenticateRequest,
-  UserController.addTag
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.addTag)
 );
 
 router.get(
   "/tags",
   RateLimit.userTagsGet,
-  authenticateRequest,
-  UserController.getTags
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.getTags)
 );
 
 router.post(
   "/tags/clearPb",
   RateLimit.userTagsClearPB,
-  authenticateRequest,
-  UserController.clearTagPb
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.clearTagPb)
 );
 
 router.post(
   "/tags/remove",
   RateLimit.userTagsRemove,
-  authenticateRequest,
-  UserController.removeTag
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.removeTag)
 );
 
 router.post(
   "/tags/edit",
   RateLimit.userTagsEdit,
-  authenticateRequest,
-  UserController.editTag
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.editTag)
 );
 
 router.post(
   "/discord/link",
   RateLimit.userDiscordLink,
-  authenticateRequest,
-  UserController.linkDiscord
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.linkDiscord)
 );
 
 router.post(
   "/discord/unlink",
   RateLimit.userDiscordUnlink,
-  authenticateRequest,
-  UserController.unlinkDiscord
+  authenticateRequest(),
+  asyncHandlerWrapper(UserController.unlinkDiscord)
 );
 
 module.exports = router;

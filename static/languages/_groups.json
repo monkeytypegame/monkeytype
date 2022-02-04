@@ -234,7 +234,7 @@
   },
   {
     "name": "urdu",
-    "languages": ["urdu", "urdu_1k"]
+    "languages": ["urdu", "urdu_1k", "urdu_5k"]
   },
   {
     "name": "albanian",
@@ -293,5 +293,9 @@
   {
     "name": "belarusian",
     "languages": ["belarusian_1k"]
+  },
+  {
+    "name": "malayalam",
+    "languages": ["malayalam"]
   }
 ]

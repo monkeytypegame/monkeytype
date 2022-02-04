@@ -506,7 +506,8 @@ export function setPaceCaret(val, nosave) {
 }
 
 export function setPaceCaretCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
@@ -545,7 +546,8 @@ export function setMinWpm(minwpm, nosave, tribeOverride) {
 
 export function setMinWpmCustomSpeed(val, nosave, tribeOverride) {
   if (!TribeConfig.canChange(tribeOverride)) return;
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
@@ -593,7 +595,8 @@ export function setMinBurst(min, nosave, tribeOverride) {
 
 export function setMinBurstCustomSpeed(val, nosave, tribeOverride) {
   if (!TribeConfig.canChange(tribeOverride)) return;
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
@@ -971,7 +974,7 @@ export function setTimerStyle(style, nosave) {
 }
 
 export function setTimerColor(color, nosave) {
-  if (color == null || color == undefined) {
+  if (!color || !["black", "sub", "text", "main"].includes(color)) {
     color = "black";
   }
   config.timerColor = color;
@@ -1098,19 +1101,24 @@ export function setQuoteLength(len, nosave, multipleMode, tribeOverride) {
 
 export function setWordCount(wordCount, nosave, tribeOverride) {
   if (!TribeConfig.canChange(tribeOverride)) return;
-  if (wordCount === null || isNaN(wordCount) || wordCount < 0) {
-    wordCount = 10;
-  }
   wordCount = parseInt(wordCount);
+  if (
+    wordCount === null ||
+    isNaN(wordCount) ||
+    wordCount < 0 ||
+    wordCount > 100000
+  ) {
+    wordCount = defaultConfig.wordCount;
+  }
   // if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
     wordCount = "custom";
   }
-  $(
-    "#top .config .wordCount .text-button[wordCount='" + wordCount + "']"
-  ).addClass("active");
+  $(`#top .config .wordCount .text-button[wordCount='${wordCount}']`).addClass(
+    "active"
+  );
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   if (!tribeOverride) TribeConfig.sync();
@@ -1252,8 +1260,8 @@ export function toggleFreedomMode() {
 }
 
 export function setConfidenceMode(cm, nosave) {
-  if (cm == undefined) {
-    cm = "off";
+  if (cm == undefined || !["off", "on", "max"].includes(cm)) {
+    cm = defaultConfig.confidenceMode;
   }
   config.confidenceMode = cm;
   if (config.confidenceMode !== "off") {
@@ -1789,6 +1797,7 @@ export function apply(configObj) {
           `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
         );
         $("#ad_account").removeClass("hidden");
+        $(".footerads").removeClass("hidden");
       } else {
         $("#adScript").remove();
         $(".footerads").remove();

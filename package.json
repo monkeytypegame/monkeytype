@@ -8,6 +8,7 @@
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"nodemon --watch ./backend ./backend/server.js\" \"firebase serve --only hosting\"",
     "start:dev:nodb": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
     "deploy:live": "npm run build && firebase deploy -P live --only hosting",
+    "start:dev:nofe": "nodemon --watch ./backend ./backend/server.js",
     "deploy": "npm run build && firebase deploy --only hosting"
   },
   "engines": {
@@ -39,6 +40,7 @@
     "husky": "^4.3.0",
     "prettier": "2.1.2",
     "pretty-quick": "^3.1.0",
+    "through2": "^4.0.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-paths": "^3.0.1",
     "vinyl-source-stream": "^2.0.0"
@@ -65,11 +67,12 @@
     "helmet": "^4.6.0",
     "howler": "^2.2.1",
     "joi": "^17.6.0",
+    "lodash": "4.17.21",
     "moment-timezone": "^0.5.33",
     "mongodb": "^3.6.9",
     "node-fetch": "^2.6.7",
+    "node-object-hash": "^2.3.10",
     "nodemon": "^2.0.7",
-    "object-hash": "^2.2.0",
     "path": "^0.12.7",
     "seedrandom": "^3.0.5",
     "simple-git": "^2.45.1",

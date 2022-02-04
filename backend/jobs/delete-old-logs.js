@@ -1,5 +1,6 @@
 const { CronJob } = require("cron");
 const { mongoDB } = require("../init/mongodb");
+const Logger = require("../handlers/logger");
 
 const CRON_SCHEDULE = "0 0 0 * * *";
 const LOG_MAX_AGE_DAYS = 7;
