@@ -494,7 +494,8 @@ export function setPaceCaret(val, nosave) {
 }
 
 export function setPaceCaretCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
@@ -530,7 +531,8 @@ export function setMinWpm(minwpm, nosave) {
 }
 
 export function setMinWpmCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
@@ -566,7 +568,8 @@ export function setMinBurst(min, nosave) {
 }
 
 export function setMinBurstCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
