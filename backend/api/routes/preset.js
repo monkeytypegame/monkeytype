@@ -18,8 +18,8 @@ const presetNameSchema = joi
   .regex(/^[0-9a-zA-Z_.-]+$/)
   .max(16)
   .messages({
-    "string.pattern.base": "Invalid preset name.",
-    "string.max": "Preset name exceeds maximum of 16 characters.",
+    "string.pattern.base": "Invalid preset name",
+    "string.max": "Preset name exceeds maximum of 16 characters",
   });
 
 router.get(
