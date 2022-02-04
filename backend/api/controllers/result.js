@@ -100,7 +100,11 @@ class ResultController {
 
     let resulthash = result.hash;
     delete result.hash;
-    if (req.ctx.configuration.resultObjectHashCheck.enabled) {
+    if (
+      req.ctx.configuration.resultObjectHashCheck.enabled &&
+      resulthash.length === 64
+    ) {
+      //if its not 64 that means client is still using old hashing package
       const serverhash = objecthash(result);
       if (serverhash !== resulthash) {
         Logger.log(
