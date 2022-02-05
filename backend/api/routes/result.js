@@ -12,28 +12,28 @@ const router = Router();
 router.get(
   "/",
   RateLimit.resultsGet,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(ResultController.getResults)
 );
 
 router.post(
   "/add",
   RateLimit.resultsAdd,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(ResultController.addResult)
 );
 
 router.post(
   "/updateTags",
   RateLimit.resultsTagsUpdate,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(ResultController.updateTags)
 );
 
 router.post(
   "/deleteAll",
   RateLimit.resultsDeleteAll,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(ResultController.deleteAll)
 );
 
@@ -46,7 +46,7 @@ router.get(
 router.post(
   "/checkLeaderboardQualification",
   RateLimit.resultsLeaderboardQualificationGet,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(ResultController.checkLeaderboardQualification)
 );
 

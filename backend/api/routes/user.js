@@ -12,14 +12,14 @@ const router = Router();
 router.get(
   "/",
   RateLimit.userGet,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.getUser)
 );
 
 router.post(
   "/signup",
   RateLimit.userSignup,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.createNewUser)
 );
 
@@ -32,84 +32,84 @@ router.post(
 router.post(
   "/delete",
   RateLimit.userDelete,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.deleteUser)
 );
 
 router.post(
   "/updateName",
   RateLimit.userUpdateName,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.updateName)
 );
 
 router.post(
   "/updateLbMemory",
   RateLimit.userUpdateLBMemory,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.updateLbMemory)
 );
 
 router.post(
   "/updateEmail",
   RateLimit.userUpdateEmail,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.updateEmail)
 );
 
 router.post(
   "/clearPb",
   RateLimit.userClearPB,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.clearPb)
 );
 
 router.post(
   "/tags/add",
   RateLimit.userTagsAdd,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.addTag)
 );
 
 router.get(
   "/tags",
   RateLimit.userTagsGet,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.getTags)
 );
 
 router.post(
   "/tags/clearPb",
   RateLimit.userTagsClearPB,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.clearTagPb)
 );
 
 router.post(
   "/tags/remove",
   RateLimit.userTagsRemove,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.removeTag)
 );
 
 router.post(
   "/tags/edit",
   RateLimit.userTagsEdit,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.editTag)
 );
 
 router.post(
   "/discord/link",
   RateLimit.userDiscordLink,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.linkDiscord)
 );
 
 router.post(
   "/discord/unlink",
   RateLimit.userDiscordUnlink,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(UserController.unlinkDiscord)
 );
 

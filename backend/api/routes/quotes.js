@@ -17,7 +17,7 @@ const quotesRouter = Router();
 quotesRouter.get(
   "/",
   RateLimit.newQuotesGet,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(NewQuotesController.getQuotes)
 );
 
@@ -31,7 +31,7 @@ quotesRouter.post(
       "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
   }),
   RateLimit.newQuotesAdd,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     body: {
       text: joi.string().min(60).required(),
@@ -47,7 +47,7 @@ quotesRouter.post(
 quotesRouter.post(
   "/approve",
   RateLimit.newQuotesAction,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     body: {
       quoteId: joi.string().required(),
@@ -62,7 +62,7 @@ quotesRouter.post(
 quotesRouter.post(
   "/reject",
   RateLimit.newQuotesAction,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     body: {
       quoteId: joi.string().required(),
@@ -74,7 +74,7 @@ quotesRouter.post(
 quotesRouter.get(
   "/rating",
   RateLimit.quoteRatingsGet,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     query: {
       quoteId: joi.string().regex(/^\d+$/).required(),
@@ -87,7 +87,7 @@ quotesRouter.get(
 quotesRouter.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     body: {
       quoteId: joi.number().required(),
@@ -107,7 +107,7 @@ quotesRouter.post(
     invalidMessage: "Quote reporting is unavailable.",
   }),
   RateLimit.quoteReportSubmit,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     body: {
       quoteId: joi.string().required(),

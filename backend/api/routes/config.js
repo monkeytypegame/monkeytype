@@ -13,14 +13,14 @@ const router = Router();
 router.get(
   "/",
   RateLimit.configGet,
-  authenticateRequest,
+  authenticateRequest(),
   asyncHandlerWrapper(ConfigController.getConfig)
 );
 
 router.post(
   "/save",
   RateLimit.configUpdate,
-  authenticateRequest,
+  authenticateRequest(),
   requestValidation({
     body: {
       config: configSchema,

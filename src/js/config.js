@@ -1081,10 +1081,11 @@ export function setWordCount(wordCount, nosave) {
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
-    $("#top .config .wordCount .text-button[wordCount='custom']").addClass(
-      "active"
-    );
+    wordCount = "custom";
   }
+  $(`#top .config .wordCount .text-button[wordCount='${wordCount}']`).addClass(
+    "active"
+  );
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }

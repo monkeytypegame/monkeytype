@@ -3,8 +3,11 @@ const ConfigurationDAO = require("../dao/configuration");
 async function contextMiddleware(req, res, next) {
   const configuration = await ConfigurationDAO.getCachedConfiguration(true);
 
-  req.context = {
+  req.ctx = {
     configuration,
+    decodedToken: {
+      uid: null,
+    },
   };
 
   next();
