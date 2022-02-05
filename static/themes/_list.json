@@ -719,4 +719,9 @@
     "bgColor": "#dadbdc",
     "mainColor": "#3846b1"
 	}
+  ,{
+    "name": "catppuccin",
+    "bgColor": "#1e1e2e",
+    "mainColor": "#abe9b3"
+	}
 ]
