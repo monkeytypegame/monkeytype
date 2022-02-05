@@ -663,37 +663,22 @@ $(document).keydown((event) => {
   const pageTestActive = UI.getActivePage() === "pageTest";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
-  const popupsHidden =
-    document
-      .querySelector("#customTextPopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#customWordAmountPopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#customTestDurationPopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#quoteSearchPopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#quoteSubmitPopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#quoteApprovePopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#quoteReportPopupWrapper")
-      ?.classList.contains("hidden") === true &&
-    document
-      .querySelector("#wordFilterPopupWrapper")
-      ?.classList.contains("hidden") === true;
+
+  const popups = document.querySelectorAll(".popupWrapper");
+
+  let popupVisible = false;
+  for (const popup of popups) {
+    if (!popup.classList.contains("hidden") === true) {
+      popupVisible = true;
+      break;
+    }
+  }
 
   const allowTyping =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
-    popupsHidden &&
+    !popupVisible &&
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
