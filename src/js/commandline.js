@@ -131,7 +131,8 @@ function updateSuggested() {
           obj.alias !== undefined ? obj.alias.toLowerCase().match(re) : null;
         if (
           (res != null && res.length > 0) ||
-          (res2 != null && res2.length > 0)
+          (res2 != null && res2.length > 0) ) || 
+          obj.display.toLowerCase().includes(obj2)
         ) {
           foundcount++;
         } else {
