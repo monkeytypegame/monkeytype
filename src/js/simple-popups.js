@@ -458,7 +458,7 @@ list.deleteAccount = new SimplePopup(
       Notifications.add("Deleting stats...", 0);
       let response;
       try {
-        response = await axiosInstance.post("/user/delete");
+        response = await axiosInstance.delete("/user");
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;

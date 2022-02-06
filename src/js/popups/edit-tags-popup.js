@@ -74,7 +74,7 @@ async function apply() {
     Loader.show();
     let response;
     try {
-      response = await axiosInstance.post("/user/tags/add", {
+      response = await axiosInstance.post("/user/tags", {
         tagName: inputVal,
       });
     } catch (e) {
@@ -100,7 +100,7 @@ async function apply() {
     Loader.show();
     let response;
     try {
-      response = await axiosInstance.post("/user/tags/edit", {
+      response = await axiosInstance.patch("/user/tags", {
         tagid,
         newname: inputVal,
       });
@@ -128,7 +128,8 @@ async function apply() {
     Loader.show();
     let response;
     try {
-      response = await axiosInstance.post("/user/tags/remove", { tagid });
+      console.log(tagid);
+      response = await axiosInstance.delete(`/user/tags/${tagid}`);
     } catch (e) {
       Loader.hide();
       let msg = e?.response?.data?.message ?? e.message;

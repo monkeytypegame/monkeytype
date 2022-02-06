@@ -273,10 +273,8 @@ export async function signInWithGoogle() {
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
-    if (signedInUser?.user) {
-      signedInUser.user.delete();
-      axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
-    }
+    signedInUser.user.delete();
+    axiosInstance.delete("/user/delete");
     return;
   }
 }
@@ -487,7 +485,7 @@ async function signUp() {
     //make sure to do clean up here
     if (createdAuthUser) {
       await createdAuthUser.user.delete();
-      axiosInstance.post("/user/delete");
+      axiosInstance.delete("/user");
     }
     let txt;
     if (e.response) {
