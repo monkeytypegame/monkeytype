@@ -1,49 +1,40 @@
+const _ = require("lodash");
 const LeaderboardsDAO = require("../../dao/leaderboards");
 const { verifyIdToken } = require("../../handlers/auth");
 
 class LeaderboardsController {
-  static async get(req, res) {
+  static async get(req, _res) {
     const { language, mode, mode2, skip, limit } = req.query;
+    const { uid } = req.ctx.decodedToken;
 
-    let uid;
+    const leaderboard = await LeaderboardsDAO.get(
+      mode,
+      mode2,
+      language,
+      skip,
+      limit
+    );
 
-    const { authorization } = req.headers;
-    if (authorization) {
-      const token = authorization.split(" ");
-      if (token[0].trim() == "Bearer")
-        req.decodedToken = await verifyIdToken(token[1]);
-      uid = req.decodedToken.uid;
-    }
-
-    if (!language || !mode || !mode2 || !skip) {
-      return res.status(400).json({
-        message: "Missing parameters",
-      });
-    }
-    let retval = await LeaderboardsDAO.get(mode, mode2, language, skip, limit);
-    retval.forEach((item) => {
-      if (uid && item.uid == uid) {
-        //
-      } else {
-        delete item.discordId;
-        delete item.uid;
-        delete item.difficulty;
-        delete item.language;
-      }
+    const normalizedLeaderboard = _.map(leaderboard, (entry) => {
+      return uid && entry.uid === uid
+        ? entry
+        : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
     });
-    return res.status(200).json(retval);
+
+    return normalizedLeaderboard;
   }
 
   static async getRank(req, res) {
     const { language, mode, mode2 } = req.query;
-    const { uid } = req.decodedToken;
-    if (!language || !mode || !mode2 || !uid) {
+    const { uid } = req.ctx.decodedToken;
+
+    if (!uid) {
       return res.status(400).json({
-        message: "Missing parameters",
+        message: "Missing user id.",
       });
     }
-    let retval = await LeaderboardsDAO.getRank(mode, mode2, language, uid);
-    return res.status(200).json(retval);
+
+    return await LeaderboardsDAO.getRank(mode, mode2, language, uid);
   }
 }
 

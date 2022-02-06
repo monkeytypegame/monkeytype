@@ -621,6 +621,10 @@ $(document).keydown((e) => {
 });
 
 $(document).on("click", "#commandLineMobileButton", () => {
-  CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+  if (Config.singleListCommandLine == "on") {
+    useSingleListCommandLine(false);
+  } else {
+    CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+  }
   show();
 });

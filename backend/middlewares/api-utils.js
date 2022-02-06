@@ -10,7 +10,7 @@ function validateConfiguration(options) {
   const { criteria, invalidMessage } = options;
 
   return (req, res, next) => {
-    const configuration = req.context.configuration;
+    const configuration = req.ctx.configuration;
 
     const validated = criteria(configuration);
     if (!validated) {
@@ -76,8 +76,9 @@ function requestValidation(validationSchema) {
       if (error) {
         const errorMessage = error.details[0].message;
         throw new MonkeyError(
-          400,
-          validationErrorMessage ?? `Invalid request: ${errorMessage}`
+          500,
+          validationErrorMessage ??
+            `${errorMessage} (${error.details[0].context.value})`
         );
       }
     });

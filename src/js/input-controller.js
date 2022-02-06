@@ -660,24 +660,25 @@ $(document).keydown((event) => {
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = !$(".pageTest").hasClass("hidden");
+  const pageTestActive = UI.getActivePage() === "pageTest";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
-  const modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
-    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSubmitPopupWrapper").hasClass("hidden") ||
-    !$("#quoteApprovePopupWrapper").hasClass("hidden") ||
-    !$("#quoteReportPopupWrapper").hasClass("hidden") ||
-    !$("#wordFilterPopupWrapper").hasClass("hidden");
+
+  const popups = document.querySelectorAll(".popupWrapper");
+
+  let popupVisible = false;
+  for (const popup of popups) {
+    if (!popup.classList.contains("hidden") === true) {
+      popupVisible = true;
+      break;
+    }
+  }
 
   const allowTyping =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
-    !modePopupVisible &&
+    !popupVisible &&
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
@@ -703,6 +704,14 @@ $(document).keydown((event) => {
     return;
   }
 
+  if (TestStats.spacingDebug)
+    console.log(
+      "spacing debug",
+      "keypress",
+      event.key,
+      "length",
+      TestStats.keypressTimings.spacing.array.length
+    );
   TestStats.recordKeypressSpacing();
   TestStats.setKeypressDuration(performance.now());
   TestStats.setKeypressNotAfk();

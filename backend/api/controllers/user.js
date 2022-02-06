@@ -16,14 +16,14 @@ const uaparser = require("ua-parser-js");
 class UserController {
   static async createNewUser(req, res) {
     const { name } = req.body;
-    const { email, uid } = req.decodedToken;
+    const { email, uid } = req.ctx.decodedToken;
     await UsersDAO.addUser(name, email, uid);
     Logger.log("user_created", `${name} ${email}`, uid);
     return res.sendStatus(200);
   }
 
   static async deleteUser(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const userInfo = await UsersDAO.getUser(uid);
     await UsersDAO.deleteUser(uid);
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
@@ -31,7 +31,7 @@ class UserController {
   }
 
   static async updateName(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { name } = req.body;
     if (!isUsernameValid(name))
       return res.status(400).json({
@@ -49,7 +49,7 @@ class UserController {
   }
 
   static async clearPb(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     await UsersDAO.clearPb(uid);
     Logger.log("user_cleared_pbs", "", uid);
     return res.sendStatus(200);
@@ -58,11 +58,10 @@ class UserController {
   static async checkName(req, res) {
     const { name } = req.body;
     if (!isUsernameValid(name))
-      return next({
-        status: 400,
-        message:
-          "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-      });
+      throw new MonkeyError(
+        400,
+        "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
+      );
     const available = await UsersDAO.isNameAvailable(name);
     if (!available)
       return res.status(400).json({ message: "Username unavailable" });
@@ -70,7 +69,7 @@ class UserController {
   }
 
   static async updateEmail(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { newEmail } = req.body;
     try {
       await UsersDAO.updateEmail(uid, newEmail);
@@ -82,7 +81,7 @@ class UserController {
   }
 
   static async getUser(req, res) {
-    const { email, uid } = req.decodedToken;
+    const { email, uid } = req.ctx.decodedToken;
     let userInfo;
     try {
       userInfo = await UsersDAO.getUser(uid);
@@ -127,7 +126,7 @@ class UserController {
   }
 
   static async linkDiscord(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
 
     let requser;
     try {
@@ -175,7 +174,7 @@ class UserController {
   }
 
   static async unlinkDiscord(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     let userInfo;
     try {
       userInfo = await UsersDAO.getUser(uid);
@@ -192,7 +191,7 @@ class UserController {
   }
 
   static async addTag(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { tagName } = req.body;
     if (!isTagPresetNameValid(tagName))
       return res.status(400).json({
@@ -204,14 +203,14 @@ class UserController {
   }
 
   static async clearTagPb(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { tagid } = req.body;
     await UsersDAO.removeTagPb(uid, tagid);
     return res.sendStatus(200);
   }
 
   static async editTag(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { tagid, newname } = req.body;
     if (!isTagPresetNameValid(newname))
       return res.status(400).json({
@@ -223,21 +222,21 @@ class UserController {
   }
 
   static async removeTag(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { tagid } = req.body;
     await UsersDAO.removeTag(uid, tagid);
     return res.sendStatus(200);
   }
 
   static async getTags(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     let tags = await UsersDAO.getTags(uid);
     if (tags == undefined) tags = [];
     return res.status(200).json(tags);
   }
 
   static async updateLbMemory(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
     return res.sendStatus(200);

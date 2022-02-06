@@ -24,6 +24,12 @@ input[type="range"] {
     height: 1rem;
     border-radius: var(--roundness);
     background-color: var(--main-color);
+    &:hover{
+      cursor:grab;
+    }
+    &:active{
+      cursor:grabbing;
+    }
   }
 
   &::-moz-range-thumb {
@@ -34,6 +40,12 @@ input[type="range"] {
     height: 1rem;
     border-radius: var(--roundness);
     background-color: var(--main-color);
+    &:hover{
+      cursor:grab;
+    }
+    &:active{
+      cursor:grabbing;
+    }
   }
 }
 

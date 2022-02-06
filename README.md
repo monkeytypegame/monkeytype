@@ -13,7 +13,7 @@ Monkeytype is a minimalistic and customizable typing test. It features many test
 
 # Features
 
-- minimalistic design with no ads
+- minimalistic design with optional ads
 - look at what you are typing
 - focus mode
 - different test modes

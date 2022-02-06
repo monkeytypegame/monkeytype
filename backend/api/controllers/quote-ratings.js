@@ -9,7 +9,7 @@ class QuoteRatingsController {
   }
 
   static async submitRating(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     let { quoteId, rating, language } = req.body;
 
     quoteId = parseInt(quoteId);
@@ -21,7 +21,7 @@ class QuoteRatingsController {
     if (!user) {
       throw new MonkeyError(401, "User not found.");
     }
-    const quoteRatings = user.quoteRatings;
+    let quoteRatings = user.quoteRatings;
 
     if (quoteRatings === undefined) quoteRatings = {};
     if (quoteRatings[language] === undefined) quoteRatings[language] = {};
