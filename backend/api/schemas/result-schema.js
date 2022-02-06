@@ -58,7 +58,7 @@ const RESULT_SCHEMA = joi
     testDuration: joi.number().required(),
     timestamp: joi.date().timestamp().required(),
     uid: joi.string().required(),
-    wpm: joi.number().min(1).max(350).required(),
+    wpm: joi.number().min(0).max(350).required(),
     wpmConsistency: joi.number().required(),
   })
   .required();
