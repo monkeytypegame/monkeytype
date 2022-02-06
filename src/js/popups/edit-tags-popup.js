@@ -128,7 +128,6 @@ async function apply() {
     Loader.show();
     let response;
     try {
-      console.log(tagid);
       response = await axiosInstance.delete(`/user/tags/${tagid}`);
     } catch (e) {
       Loader.hide();
