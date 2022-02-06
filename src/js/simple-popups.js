@@ -79,19 +79,25 @@ class SimplePopup {
         this.inputs.forEach((input) => {
           if (input.type) {
             el.find(".inputs").append(`
-            <input type="${input.type}" val="${input.initVal}" placeholder="${
-              input.placeholder
-            }" class="${input.hidden ? "hidden" : ""}" ${
-              input.hidden ? "" : "required"
-            } autocomplete="off">
+              <input
+                type="${input.type}"
+                val="${input.initVal}"
+                placeholder="${input.placeholder}"
+                class="${input.hidden ? "hidden" : ""}"
+                ${input.hidden ? "" : "required"}
+                autocomplete="off"
+              >
             `);
           } else {
             el.find(".inputs").append(`
-            <input type="text" val="${input.initVal}" placeholder="${
-              input.placeholder
-            }" class="${input.hidden ? "hidden" : ""}" ${
-              input.hidden ? "" : "required"
-            } autocomplete="off">
+              <input
+                type="text"
+                val="${input.initVal}"
+                placeholder="${input.placeholder}"
+                class="${input.hidden ? "hidden" : ""}"
+                ${input.hidden ? "" : "required"}
+                autocomplete="off"
+              >
             `);
           }
         });
