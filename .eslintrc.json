@@ -25,7 +25,7 @@
   },
   "rules": {
     "json/*": ["error"],
-    "indent": ["error", 2],
+    "indent": ["error", 2, { "SwitchCase": 1 }],
     "linebreak-style": ["error", "unix"],
     "quotes": [
       "error",
@@ -34,6 +34,7 @@
     ],
     "semi": ["error", "always"],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
+    "no-empty": ["error", { "allowEmptyCatch": true }],
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
     "require-path-exists/exists": [
