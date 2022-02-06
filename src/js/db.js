@@ -1,9 +1,9 @@
-import { loadTags } from "./result-filters";
-import * as AccountButton from "./account-button";
-import * as Notifications from "./notifications";
+import { loadTags } from "./account/result-filters";
+import * as AccountButton from "./elements/account-button";
+import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
-import * as TodayTracker from "./today-tracker";
-import * as LoadingPage from "./loading-page";
+import * as TodayTracker from "./test/today-tracker";
+import * as LoadingPage from "./elements/loading-page";
 import * as UI from "./ui";
 
 let dbSnapshot = null;

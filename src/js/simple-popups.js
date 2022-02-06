@@ -1,5 +1,5 @@
-import * as Loader from "./loader";
-import * as Notifications from "./notifications";
+import * as Loader from "./elements/loader";
+import * as Notifications from "./elements/notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
@@ -64,12 +64,14 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-        <input type="number" min="1" val="${input.initVal}" placeholder="${
+            <input type="number" min="1" val="${input.initVal}" placeholder="${
             input.placeholder
-          }" class="${input.hidden ? "hidden" : ""}" ${
+          }"
+            class="${input.hidden ? "hidden" : ""}" ${
             input.hidden ? "" : "required"
-          } autocomplete="off">
-        `);
+          }
+            autocomplete="off">
+          `);
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {

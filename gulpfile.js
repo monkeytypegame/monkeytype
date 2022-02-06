@@ -1,5 +1,5 @@
 const { task, src, dest, series, watch } = require("gulp");
-const axios = require("axios");
+// const axios = require("axios");
 const browserify = require("browserify");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
@@ -7,89 +7,104 @@ const del = require("del");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
-const eslint = require("gulp-eslint");
+const eslint = require("gulp-eslint-new");
 var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
 const uglify = require("gulp-uglify");
 const through2 = require("through2");
 // sass.compiler = require("dart-sass");
 
-let eslintConfig = {
-  parser: "babel-eslint",
-  globals: [
-    "jQuery",
-    "$",
-    "firebase",
-    "moment",
-    "html2canvas",
-    "ClipboardItem",
-    "grecaptcha",
-  ],
-  envs: ["es6", "browser", "node"],
-  plugins: ["json"],
-  extends: ["plugin:json/recommended"],
-  rules: {
-    "json/*": ["error"],
-    "constructor-super": "error",
-    "for-direction": "error",
-    "getter-return": "error",
-    "no-async-promise-executor": "error",
-    "no-case-declarations": "error",
-    "no-class-assign": "error",
-    "no-compare-neg-zero": "error",
-    "no-cond-assign": "error",
-    "no-const-assign": "error",
-    "no-constant-condition": "error",
-    "no-control-regex": "error",
-    "no-debugger": "error",
-    "no-delete-var": "error",
-    "no-dupe-args": "error",
-    "no-dupe-class-members": "error",
-    "no-dupe-else-if": "warn",
-    "no-dupe-keys": "error",
-    "no-duplicate-case": "error",
-    "no-empty": ["warn", { allowEmptyCatch: true }],
-    "no-empty-character-class": "error",
-    "no-empty-pattern": "error",
-    "no-ex-assign": "error",
-    "no-extra-boolean-cast": "error",
-    "no-extra-semi": "error",
-    "no-fallthrough": "error",
-    "no-func-assign": "error",
-    "no-global-assign": "error",
-    "no-import-assign": "error",
-    "no-inner-declarations": "error",
-    "no-invalid-regexp": "error",
-    "no-irregular-whitespace": "warn",
-    "no-misleading-character-class": "error",
-    "no-mixed-spaces-and-tabs": "error",
-    "no-new-symbol": "error",
-    "no-obj-calls": "error",
-    "no-octal": "error",
-    "no-prototype-builtins": "error",
-    "no-redeclare": "error",
-    "no-regex-spaces": "error",
-    "no-self-assign": "error",
-    "no-setter-return": "error",
-    "no-shadow-restricted-names": "error",
-    "no-sparse-arrays": "error",
-    "no-this-before-super": "error",
-    "no-undef": "error",
-    "no-unexpected-multiline": "warn",
-    "no-unreachable": "error",
-    "no-unsafe-finally": "error",
-    "no-unsafe-negation": "error",
-    "no-unused-labels": "error",
-    "no-unused-vars": ["warn", { argsIgnorePattern: "e|event" }],
-    "no-use-before-define": "warn",
-    "no-useless-catch": "error",
-    "no-useless-escape": "error",
-    "no-with": "error",
-    "require-yield": "error",
-    "use-isnan": "error",
-    "valid-typeof": "error",
-  },
-};
+let eslintConfig = ".eslintrc.json";
+// let eslintConfig = {
+//   parser: "babel-eslint",
+//   globals: [
+//     "jQuery",
+//     "$",
+//     "firebase",
+//     "moment",
+//     "html2canvas",
+//     "ClipboardItem",
+//     "grecaptcha",
+//   ],
+//   envs: ["es6", "browser", "node"],
+//   plugins: ["json","require-path-exists"],
+//   extends: ["plugin:json/recommended","plugin:require-path-exists/recommended"],
+//   rules: {
+//     "require-path-exists/notEmpty": 2,
+//     "require-path-exists/tooManyArguments": 2,
+//     "require-path-exists/exists": [ 2, {
+//       "extensions": [
+//         "",
+//         ".jsx",
+//         ".es.js",
+//         ".jsx",
+//         ".json5",
+//         ".es",
+//         ".es6",
+//         ".coffee"
+//       ]
+//     }],
+//     "json/*": ["error"],
+//     "constructor-super": "error",
+//     "for-direction": "error",
+//     "getter-return": "error",
+//     "no-async-promise-executor": "error",
+//     "no-case-declarations": "error",
+//     "no-class-assign": "error",
+//     "no-compare-neg-zero": "error",
+//     "no-cond-assign": "error",
+//     "no-const-assign": "error",
+//     "no-constant-condition": "error",
+//     "no-control-regex": "error",
+//     "no-debugger": "error",
+//     "no-delete-var": "error",
+//     "no-dupe-args": "error",
+//     "no-dupe-class-members": "error",
+//     "no-dupe-else-if": "warn",
+//     "no-dupe-keys": "error",
+//     "no-duplicate-case": "error",
+//     "no-empty": ["warn", { allowEmptyCatch: true }],
+//     "no-empty-character-class": "error",
+//     "no-empty-pattern": "error",
+//     "no-ex-assign": "error",
+//     "no-extra-boolean-cast": "error",
+//     "no-extra-semi": "error",
+//     "no-fallthrough": "error",
+//     "no-func-assign": "error",
+//     "no-global-assign": "error",
+//     "no-import-assign": "error",
+//     "no-inner-declarations": "error",
+//     "no-invalid-regexp": "error",
+//     "no-irregular-whitespace": "warn",
+//     "no-misleading-character-class": "error",
+//     "no-mixed-spaces-and-tabs": "error",
+//     "no-new-symbol": "error",
+//     "no-obj-calls": "error",
+//     "no-octal": "error",
+//     "no-prototype-builtins": "error",
+//     "no-redeclare": "error",
+//     "no-regex-spaces": "error",
+//     "no-self-assign": "error",
+//     "no-setter-return": "error",
+//     "no-shadow-restricted-names": "error",
+//     "no-sparse-arrays": "error",
+//     "no-this-before-super": "error",
+//     "no-undef": "error",
+//     "no-unexpected-multiline": "warn",
+//     "no-unreachable": "error",
+//     "no-unsafe-finally": "error",
+//     "no-unsafe-negation": "error",
+//     "no-unused-labels": "error",
+//     "no-unused-vars": ["warn", { argsIgnorePattern: "e|event" }],
+//     "no-use-before-define": "warn",
+//     "no-useless-catch": "error",
+//     "no-useless-escape": "error",
+//     "no-with": "error",
+//     "require-yield": "error",
+//     "use-isnan": "error",
+//     "valid-typeof": "error",
+//   },
+// };
 
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
@@ -223,7 +238,9 @@ task("static", function () {
 
 //copies refactored js files to dist/gen so that they can be required by dist/gen/index.js
 task("copy-modules", function () {
-  return src(refactoredSrc, { allowEmpty: true }).pipe(dest("./dist/gen"));
+  return src(refactoredSrc, { allowEmpty: true, base: "./src/js" }).pipe(
+    dest("./dist/gen")
+  );
 });
 
 //bundles the refactored js files together with index.js (the concatenated legacy js files)

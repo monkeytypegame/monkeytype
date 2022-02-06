@@ -1,6 +1,6 @@
 import * as Loader from "./loader";
 import Config from "./config";
-import * as TestLogic from "./test-logic";
+import * as TestLogic from "./test/test-logic";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");

@@ -1,20 +1,20 @@
-import * as Notifications from "./notifications";
+import * as Notifications from "./elements/notifications";
 import Config, * as UpdateConfig from "./config";
-import * as AccountButton from "./account-button";
+import * as AccountButton from "./elements/account-button";
 import * as Account from "./account";
 import * as AccountController from "./account-controller";
 import * as CommandlineLists from "./commandline-lists";
-import * as VerificationController from "./verification-controller";
+import * as VerificationController from "./account/verification-controller";
 import * as Misc from "./misc";
 import * as Settings from "./settings";
-import * as AllTimeStats from "./all-time-stats";
+import * as AllTimeStats from "./account/all-time-stats";
 import * as DB from "./db";
-import * as TestLogic from "./test-logic";
+import * as TestLogic from "./test/test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
-import * as PSA from "./psa";
-import * as Focus from "./focus";
-import * as Loader from "./loader";
+import * as PSA from "./elements/psa";
+import * as Focus from "./test/focus";
+import * as Loader from "./elements/loader";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -307,7 +307,7 @@ export function addGoogleAuth() {
   firebase
     .auth()
     .currentUser.linkWithPopup(gmailProvider)
-    .then(function (result) {
+    .then(function () {
       Loader.hide();
       Notifications.add("Google authentication added", 1);
       Settings.updateAuthSections();
@@ -336,7 +336,7 @@ export async function removeGoogleAuth() {
     firebase
       .auth()
       .currentUser.unlink("google.com")
-      .then((result) => {
+      .then(() => {
         Notifications.add("Google authentication removed", 1);
         Loader.hide();
         Settings.updateAuthSections();
@@ -375,7 +375,7 @@ export async function addPasswordAuth(email, password) {
   firebase
     .auth()
     .currentUser.linkWithCredential(credential)
-    .then(function (result) {
+    .then(function () {
       Loader.hide();
       Notifications.add("Password authenication added", 1);
       Settings.updateAuthSections();
