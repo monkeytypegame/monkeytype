@@ -64,13 +64,15 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-            <input type="number" min="1" val="${input.initVal}" placeholder="${
-            input.placeholder
-          }"
-            class="${input.hidden ? "hidden" : ""}" ${
-            input.hidden ? "" : "required"
-          }
-            autocomplete="off">
+            <input
+              type="number"
+              min="1"
+              val="${input.initVal}"
+              placeholder="${input.placeholder}"
+              class="${input.hidden ? "hidden" : ""}"
+              ${input.hidden ? "" : "required"}
+              autocomplete="off"
+            >
           `);
         });
       } else if (this.type === "text") {
