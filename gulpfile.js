@@ -20,9 +20,15 @@ task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
-task("lint", function () {
-  let filelist = ["./src/js/**/*.js", "./static/**/*.json"];
-  return src(filelist)
+task("lint-js", function () {
+  return src("./src/js/**/*.js")
+    .pipe(eslint(eslintConfig))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
+task("lint-json", function () {
+  return src("./static/**/*.json")
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -98,11 +104,20 @@ task("updateSwCacheName", function () {
 
 task(
   "compile",
-  series("lint", "browserify", "static", "sass", "updateSwCacheName")
+  series(
+    "lint-js",
+    "lint-json",
+    "browserify",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
 );
 
 task("watch", function () {
-  watch(["./static/**/*", "./src/**/*", "gulpfile.js"], series("compile"));
+  watch("./src/sass/**/*.scss", series("sass"));
+  watch("./src/js/**/*.js", series("lint-js", "browserify"));
+  watch("./static/**/*.*", series("lint-json", "static"));
 });
 
 task("build", series("clean", "compile"));
