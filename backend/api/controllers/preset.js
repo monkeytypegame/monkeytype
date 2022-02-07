@@ -1,17 +1,12 @@
 const PresetDAO = require("../../dao/preset");
-const {
-  isTagPresetNameValid,
-  validateConfig,
-} = require("../../handlers/validation");
-const MonkeyError = require("../../handlers/error");
-const { MonkeyResponse } = require("../../middlewares/api-utils");
+const { MonkeyResponse } = require("../../handlers/response");
 
 class PresetController {
   static async getPresets(req, res) {
     const { uid } = req.ctx.decodedToken;
 
     const data = await PresetDAO.getPresets(uid);
-    return new MonkeyResponse(200, "Get present successfully", data);
+    return new MonkeyResponse(200, "Preset retrieved", data);
   }
 
   static async addPreset(req, res) {
@@ -19,7 +14,7 @@ class PresetController {
     const { uid } = req.ctx.decodedToken;
 
     await PresetDAO.addPreset(uid, name, config);
-    return new MonkeyResponse(200, "Present added successfully");
+    return new MonkeyResponse(200, "Preset updated");
   }
 
   static async editPreset(req, res) {
@@ -28,7 +23,7 @@ class PresetController {
 
     await PresetDAO.editPreset(uid, _id, name, config);
 
-    return new MonkeyResponse(200, "Present edited successfully");
+    return new MonkeyResponse(200, "Preset updated");
   }
 
   static async removePreset(req, res) {
@@ -37,7 +32,7 @@ class PresetController {
 
     await PresetDAO.removePreset(uid, _id);
 
-    return new MonkeyResponse(200, "Present removed successfully");
+    return new MonkeyResponse(200, "Preset deleted");
   }
 }
 

@@ -1,6 +1,6 @@
 const ConfigDAO = require("../../dao/config");
 const { validateConfig } = require("../../handlers/validation");
-const { MonkeyResponse } = require("../../middlewares/api-utils");
+const { MonkeyResponse } = require("../../handlers/response");
 
 class ConfigController {
   static async getConfig(req, _res) {
@@ -17,7 +17,7 @@ class ConfigController {
     validateConfig(config);
     await ConfigDAO.saveConfig(uid, config);
 
-    return new MonkeyResponse(200, "Configuration updated successfully");
+    return new MonkeyResponse(200, "Config updated");
   }
 }
 

@@ -1,10 +1,10 @@
 const PsaDAO = require("../../dao/psa");
-const { MonkeyResponse } = require("../../middlewares/api-utils");
+const { MonkeyResponse } = require("../../handlers/response");
 
 class PsaController {
   static async get(req, res) {
     let data = await PsaDAO.get();
-    return new MonkeyResponse(200, "PSA fetch successfully", data);
+    return new MonkeyResponse(200, "PSA retrieved", data);
   }
 }
 

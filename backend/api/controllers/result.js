@@ -10,7 +10,7 @@ const path = require("path");
 const { config } = require("dotenv");
 config({ path: path.join(__dirname, ".env") });
 const MonkeyError = require("../../handlers/error");
-const { MonkeyResponse } = require("../../middlewares/api-utils");
+const { MonkeyResponse } = require("../../handlers/response");
 
 let validateResult;
 let validateKeys;
@@ -37,7 +37,7 @@ class ResultController {
   static async getResults(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
-    return new MonkeyResponse(200, "Result fetch successfully", results);
+    return new MonkeyResponse(200, "Result retrieved", results);
   }
 
   static async deleteAll(req, res) {
@@ -45,7 +45,7 @@ class ResultController {
 
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
-    return new MonkeyResponse(200, "All results deleted successfully");
+    return new MonkeyResponse(200, "All results deleted");
   }
 
   static async updateTags(req, res) {
@@ -53,7 +53,7 @@ class ResultController {
     const { tags, resultid } = req.body;
 
     await ResultDAO.updateTags(uid, resultid, tags);
-    return new MonkeyResponse(200, "Result tag updated successfully");
+    return new MonkeyResponse(200, "Result tags updated");
   }
 
   static async addResult(req, res) {
@@ -322,7 +322,7 @@ class ResultController {
       insertedId: addedResult.insertedId,
     };
 
-    return new MonkeyResponse(200, "Result saved successfully", data);
+    return new MonkeyResponse(200, "Result updated", data);
   }
 }
 

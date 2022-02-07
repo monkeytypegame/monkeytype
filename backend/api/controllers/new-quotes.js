@@ -3,7 +3,7 @@ const MonkeyError = require("../../handlers/error");
 const UserDAO = require("../../dao/user");
 const Logger = require("../../handlers/logger.js");
 const Captcha = require("../../handlers/captcha");
-const { MonkeyResponse } = require("../../middlewares/api-utils");
+const { MonkeyResponse } = require("../../handlers/response");
 
 class NewQuotesController {
   static async getQuotes(req, _res) {
@@ -23,7 +23,7 @@ class NewQuotesController {
       throw new MonkeyError(400, "Captcha check failed");
     }
     await NewQuotesDAO.add(text, source, language, uid);
-    return new MonkeyResponse(200, "New quotes added successfully");
+    return new MonkeyResponse(200, "New quote added successfully");
   }
 
   static async approve(req, _res) {

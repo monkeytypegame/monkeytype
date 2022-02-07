@@ -8,7 +8,7 @@ const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
 const Logger = require("./../../handlers/logger.js");
 const uaparser = require("ua-parser-js");
-const { MonkeyResponse } = require("../../middlewares/api-utils");
+const { MonkeyResponse } = require("../../handlers/response");
 
 class UserController {
   static async createNewUser(req, res) {
@@ -16,7 +16,7 @@ class UserController {
     const { email, uid } = req.ctx.decodedToken;
     await UsersDAO.addUser(name, email, uid);
     Logger.log("user_created", `${name} ${email}`, uid);
-    return new MonkeyResponse(200, "User created successfully");
+    return new MonkeyResponse(200, "User created");
   }
 
   static async deleteUser(req, res) {
@@ -24,7 +24,7 @@ class UserController {
     const userInfo = await UsersDAO.getUser(uid);
     await UsersDAO.deleteUser(uid);
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
-    return new MonkeyResponse(200, "User deleted successfully");
+    return new MonkeyResponse(200, "User deleted");
   }
 
   static async updateName(req, res) {
@@ -42,14 +42,14 @@ class UserController {
       `changed name from ${olduser.name} to ${name}`,
       uid
     );
-    return new MonkeyResponse(200, "User's name updated successfully");
+    return new MonkeyResponse(200, "User's name updated");
   }
 
   static async clearPb(req, res) {
     const { uid } = req.ctx.decodedToken;
     await UsersDAO.clearPb(uid);
     Logger.log("user_cleared_pbs", "", uid);
-    return new MonkeyResponse(200, "User's PB cleared successfully");
+    return new MonkeyResponse(200, "User's PB cleared");
   }
 
   static async checkName(req, res) {
@@ -61,7 +61,7 @@ class UserController {
       );
     const available = await UsersDAO.isNameAvailable(name);
     if (!available) throw new MonkeyError(400, "Username unavailable");
-    return new MonkeyResponse(200, "Name validated successfully");
+    return new MonkeyResponse(200, "Name validated");
   }
 
   static async updateEmail(req, res) {
@@ -73,7 +73,7 @@ class UserController {
       throw new MonkeyError(400, e.message, "update email", uid);
     }
     Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
-    return new MonkeyResponse(200, "Email updated successfully");
+    return new MonkeyResponse(200, "Email updated");
   }
 
   static async getUser(req, res) {
@@ -118,7 +118,7 @@ class UserController {
         agent.device.type;
     }
     Logger.log("user_data_requested", logobj, uid);
-    return new MonkeyResponse(200, "Get user successfully", userInfo);
+    return new MonkeyResponse(200, "User retrieved", userInfo);
   }
 
   static async linkDiscord(req, res) {
@@ -163,7 +163,7 @@ class UserController {
     await UsersDAO.linkDiscord(uid, did);
     await BotDAO.linkDiscord(uid, did);
     Logger.log("user_discord_link", `linked to ${did}`, uid);
-    return new MonkeyResponse(200, "Discord account linked successfully ", did);
+    return new MonkeyResponse(200, "Discord account linked ", did);
   }
 
   static async unlinkDiscord(req, res) {
@@ -180,7 +180,7 @@ class UserController {
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
     await UsersDAO.unlinkDiscord(uid);
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);
-    return new MonkeyResponse(200, "Discord account dilinked successfully");
+    return new MonkeyResponse(200, "Discord account dilinked ");
   }
 
   static async addTag(req, res) {
@@ -192,14 +192,14 @@ class UserController {
         "PTag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -"
       );
     let tag = await UsersDAO.addTag(uid, tagName);
-    return new MonkeyResponse(200, "Tag added successfully", tag);
+    return new MonkeyResponse(200, "Tag updated", tag);
   }
 
   static async clearTagPb(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tagid } = req.body;
     await UsersDAO.removeTagPb(uid, tagid);
-    return new MonkeyResponse(200, "Tag PB cleared successfully");
+    return new MonkeyResponse(200, "Tag PB cleared");
   }
 
   static async editTag(req, res) {
@@ -211,28 +211,28 @@ class UserController {
         "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -"
       );
     await UsersDAO.editTag(uid, tagid, newname);
-    return new MonkeyResponse(200, "Edit tag successfully");
+    return new MonkeyResponse(200, "Tag updated");
   }
 
   static async removeTag(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tagid } = req.body;
     await UsersDAO.removeTag(uid, tagid);
-    return new MonkeyResponse(200, "Remove tag successfully");
+    return new MonkeyResponse(200, "Tag deleted");
   }
 
   static async getTags(req, res) {
     const { uid } = req.ctx.decodedToken;
     let tags = await UsersDAO.getTags(uid);
     if (tags == undefined) tags = [];
-    return new MonkeyResponse(200, "Fetch tags successfully", tags);
+    return new MonkeyResponse(200, "Tags retrieved", tags);
   }
 
   static async updateLbMemory(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
-    return new MonkeyResponse(200, "Memory updated successfully");
+    return new MonkeyResponse(200, "Memory updated");
   }
 }
 
