@@ -5,6 +5,8 @@ const MonkeyError = require("../../handlers/error");
 const Captcha = require("../../handlers/captcha");
 const Logger = require("../../handlers/logger");
 
+const { MonkeyResponse } = require("../../middlewares/api-utils");
+
 class QuotesController {
   static async reportQuote(req, res) {
     const { uid } = req.ctx.decodedToken;
@@ -39,7 +41,7 @@ class QuotesController {
       details: newReport.details,
     });
 
-    res.sendStatus(200);
+    return new MonkeyResponse(200, "Quote reported successfully");
   }
 }
 

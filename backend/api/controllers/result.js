@@ -9,6 +9,8 @@ const Logger = require("../../handlers/logger");
 const path = require("path");
 const { config } = require("dotenv");
 config({ path: path.join(__dirname, ".env") });
+const MonkeyError = require("../../handlers/error");
+const { MonkeyResponse } = require("../../middlewares/api-utils");
 
 let validateResult;
 let validateKeys;
@@ -35,21 +37,21 @@ class ResultController {
   static async getResults(req, res) {
     const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
-    return res.status(200).json(results);
+    return new MonkeyResponse(200, "Result fetch successfully", results);
   }
 
   static async deleteAll(req, res) {
     const { uid } = req.ctx.decodedToken;
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
-    return res.sendStatus(200);
+    return new MonkeyResponse(200, "All results deleted successfully");
   }
 
   static async updateTags(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tags, resultid } = req.body;
     await ResultDAO.updateTags(uid, resultid, tags);
-    return res.sendStatus(200);
+    return new MonkeyResponse(200, "Result tag updated successfully");
   }
 
   static async addResult(req, res) {
@@ -57,7 +59,7 @@ class ResultController {
     const { result } = req.body;
     result.uid = uid;
     if (validateObjectValues(result) > 0)
-      return res.status(400).json({ message: "Bad input" });
+      throw new MonkeyError(400, "Bad input");
     if (
       result.wpm <= 0 ||
       result.wpm > 350 ||
@@ -65,10 +67,10 @@ class ResultController {
       result.acc > 100 ||
       result.consistency > 100
     ) {
-      return res.status(400).json({ message: "Bad input" });
+      throw new MonkeyError(400, "Bad input");
     }
     if (result.wpm == result.raw && result.acc != 100) {
-      return res.status(400).json({ message: "Bad input" });
+      throw new MonkeyError(400, "Bad input");
     }
     if (
       (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
@@ -95,7 +97,7 @@ class ResultController {
         result.customText.isTimeRandom &&
         result.customText.time < 15)
     ) {
-      return res.status(400).json({ message: "Test too short" });
+      throw new MonkeyError(400, "Test too short");
     }
 
     let resulthash = result.hash;
@@ -116,15 +118,13 @@ class ResultController {
           },
           uid
         );
-        return res.status(400).json({ message: "Incorrect result hash" });
+        throw new MonkeyError(400, "Incorrect result hash");
       }
     }
 
     if (validateResult) {
       if (!validateResult(result)) {
-        return res
-          .status(400)
-          .json({ message: "Result data doesn't make sense" });
+        throw new MonkeyError(400, "Result data doesn't make sense");
       }
     } else {
       if (process.env.MODE === "dev") {
@@ -189,7 +189,7 @@ class ResultController {
         },
         uid
       );
-      return res.status(400).json({ message: "Invalid result spacing" });
+      throw new MonkeyError(400, "Invalid result spacing");
     }
 
     try {
@@ -230,7 +230,7 @@ class ResultController {
         ) {
           if (validateKeys) {
             if (!validateKeys(result, uid)) {
-              return res.status(400).json({ message: "Possible bot detected" });
+              throw new MonkeyError(400, "Possible bot detected");
             }
           } else {
             if (process.env.MODE === "dev") {
@@ -242,7 +242,7 @@ class ResultController {
             }
           }
         } else {
-          return res.status(400).json({ message: "Missing key data" });
+          throw new MonkeyError(400, "Missing key data");
         }
       }
     }
@@ -322,13 +322,14 @@ class ResultController {
       );
     }
 
-    return res.status(200).json({
-      message: "Result saved",
+    const data = {
       isPb,
       name: result.name,
       tagPbs,
       insertedId: addedResult.insertedId,
-    });
+    };
+
+    return new MonkeyResponse(200, "Result saved successfully", data);
   }
 }
 

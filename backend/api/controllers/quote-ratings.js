@@ -1,11 +1,13 @@
 const QuoteRatingsDAO = require("../../dao/quote-ratings");
 const UserDAO = require("../../dao/user");
 const MonkeyError = require("../../handlers/error");
+const { MonkeyResponse } = require("../../middlewares/api-utils");
 
 class QuoteRatingsController {
   static async getRating(req, _res) {
     const { quoteId, language } = req.query;
-    return await QuoteRatingsDAO.get(parseInt(quoteId), language);
+    const data = await QuoteRatingsDAO.get(parseInt(quoteId), language);
+    return new MonkeyResponse(200, "Get rating successfully", data);
   }
 
   static async submitRating(req, res) {
@@ -45,8 +47,7 @@ class QuoteRatingsController {
     await QuoteRatingsDAO.submit(quoteId, language, newRating, update);
     quoteRatings[language][quoteId] = rating;
     await UserDAO.updateQuoteRatings(uid, quoteRatings);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse(200, "Rating updated successfully");
   }
 }
 

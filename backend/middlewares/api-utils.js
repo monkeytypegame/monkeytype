@@ -2,6 +2,14 @@ const _ = require("lodash");
 const joi = require("joi");
 const MonkeyError = require("../handlers/error");
 
+class MonkeyResponse {
+  constructor(status, message, data) {
+    this.status = status;
+    this.message = message;
+    this.data = data;
+  }
+}
+
 /**
  * This utility checks that the server's configuration matches
  * the criteria.
@@ -34,15 +42,9 @@ function asyncHandlerWrapper(handler) {
   return async (req, res, next) => {
     try {
       const handlerData = await handler(req, res);
+      res.body = handlerData;
 
-      if (!res.headersSent) {
-        if (handlerData) {
-          res.json(handlerData);
-        } else {
-          res.sendStatus(204);
-        }
-      }
-      next();
+      return handleResponse(req, res, next);
     } catch (error) {
       next(error);
     }
@@ -87,7 +89,33 @@ function requestValidation(validationSchema) {
   };
 }
 
+function handleResponse(request, response, next) {
+  var resBody = response.encryptedBody || response.body || {};
+  var { status } = resBody;
+  var handler =
+    [301, 302].indexOf(status) > -1 ? _redirectResponse : _sendResponse;
+  handler(request, response, next);
+}
+
+function _sendResponse(request, response) {
+  var resBody = response.encryptedBody || response.body || {};
+  var { status, message, data } = resBody;
+
+  if (!resBody || !status) {
+    resBody = new MonkeyResponse(500, "Response Data Not Found!");
+  }
+
+  return response.status(resBody.status).json({ message, data });
+}
+
+function _redirectResponse(request, response) {
+  var resBody = response.encryptedBody || response.body || {};
+  var { status, data } = resBody;
+  return response.status(status).redirect(data);
+}
+
 module.exports = {
+  MonkeyResponse,
   validateConfiguration,
   asyncHandlerWrapper,
   requestValidation,

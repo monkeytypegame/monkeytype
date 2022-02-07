@@ -4,19 +4,22 @@ const {
   validateConfig,
 } = require("../../handlers/validation");
 const MonkeyError = require("../../handlers/error");
+const { MonkeyResponse } = require("../../middlewares/api-utils");
 
 class PresetController {
   static async getPresets(req, res) {
     const { uid } = req.ctx.decodedToken;
 
-    return await PresetDAO.getPresets(uid);
+    const data = await PresetDAO.getPresets(uid);
+    return new MonkeyResponse(200, "Get present successfully", data);
   }
 
   static async addPreset(req, res) {
     const { name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
-    return await PresetDAO.addPreset(uid, name, config);
+    await PresetDAO.addPreset(uid, name, config);
+    return new MonkeyResponse(200, "Present added successfully");
   }
 
   static async editPreset(req, res) {
@@ -25,7 +28,7 @@ class PresetController {
 
     await PresetDAO.editPreset(uid, _id, name, config);
 
-    return res.sendStatus(200);
+    return new MonkeyResponse(200, "Present edited successfully");
   }
 
   static async removePreset(req, res) {
@@ -34,7 +37,7 @@ class PresetController {
 
     await PresetDAO.removePreset(uid, _id);
 
-    return res.sendStatus(200);
+    return new MonkeyResponse(200, "Present removed successfully");
   }
 }
 
