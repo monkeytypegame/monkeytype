@@ -1,5 +1,5 @@
-import { mapRange } from "./misc";
-import Config from "./config";
+import { mapRange } from "../misc";
+import Config from "../config";
 
 let left = false;
 let right = false;

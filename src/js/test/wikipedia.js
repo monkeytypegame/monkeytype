@@ -1,6 +1,6 @@
-import * as Loader from "./loader";
-import Config from "./config";
-import * as Misc from "./misc";
+import * as Loader from "../elements/loader";
+import Config from "../config";
+import * as Misc from "../misc";
 
 export class Section {
   constructor(title, author, words) {

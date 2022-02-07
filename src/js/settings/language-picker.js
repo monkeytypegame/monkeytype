@@ -1,5 +1,5 @@
-import * as Misc from "./misc";
-import Config, * as UpdateConfig from "./config";
+import * as Misc from "../misc";
+import Config, * as UpdateConfig from "../config";
 
 export async function setActiveGroup(groupName, clicked = false) {
   let currentGroup;

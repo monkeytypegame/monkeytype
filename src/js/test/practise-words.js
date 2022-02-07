@@ -1,6 +1,6 @@
 import * as TestStats from "./test-stats";
-import * as Notifications from "./notifications";
-import Config, * as UpdateConfig from "./config";
+import * as Notifications from "../elements/notifications";
+import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";
 
@@ -58,7 +58,7 @@ export function init(missed, slow) {
   }
 
   let newCustomText = [];
-  sortableMissedWords.forEach((missed, index) => {
+  sortableMissedWords.forEach((missed) => {
     for (let i = 0; i < missed[1]; i++) {
       newCustomText.push(missed[0]);
     }

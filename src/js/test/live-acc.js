@@ -1,4 +1,4 @@
-import Config from "./config";
+import Config from "../config";
 import * as TestLogic from "./test-logic";
 
 export function update(acc) {

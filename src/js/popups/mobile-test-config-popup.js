@@ -1,9 +1,9 @@
-import Config from "./config";
+import Config from "../config";
 import * as CustomWordAmountPopup from "./custom-word-amount-popup";
 import * as CustomTestDurationPopup from "./custom-test-duration-popup";
-import * as UpdateConfig from "./config";
-import * as ManualRestart from "./manual-restart-tracker";
-import * as TestLogic from "./test-logic";
+import * as UpdateConfig from "../config";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as TestLogic from "../test/test-logic";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 

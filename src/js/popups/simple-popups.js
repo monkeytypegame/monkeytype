@@ -1,10 +1,10 @@
-import * as Loader from "./loader";
-import * as Notifications from "./notifications";
-import * as AccountController from "./account-controller";
-import * as DB from "./db";
-import * as Settings from "./settings";
-import axiosInstance from "./axios-instance";
-import * as UpdateConfig from "./config";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as AccountController from "../controllers/account-controller";
+import * as DB from "../db";
+import * as Settings from "../pages/settings";
+import axiosInstance from "../axios-instance";
+import * as UpdateConfig from "../config";
 
 export let list = {};
 class SimplePopup {
@@ -64,30 +64,40 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-        <input type="number" min="1" val="${input.initVal}" placeholder="${
-            input.placeholder
-          }" class="${input.hidden ? "hidden" : ""}" ${
-            input.hidden ? "" : "required"
-          } autocomplete="off">
-        `);
+            <input
+              type="number"
+              min="1"
+              val="${input.initVal}"
+              placeholder="${input.placeholder}"
+              class="${input.hidden ? "hidden" : ""}"
+              ${input.hidden ? "" : "required"}
+              autocomplete="off"
+            >
+          `);
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
           if (input.type) {
             el.find(".inputs").append(`
-            <input type="${input.type}" val="${input.initVal}" placeholder="${
-              input.placeholder
-            }" class="${input.hidden ? "hidden" : ""}" ${
-              input.hidden ? "" : "required"
-            } autocomplete="off">
+              <input
+                type="${input.type}"
+                val="${input.initVal}"
+                placeholder="${input.placeholder}"
+                class="${input.hidden ? "hidden" : ""}"
+                ${input.hidden ? "" : "required"}
+                autocomplete="off"
+              >
             `);
           } else {
             el.find(".inputs").append(`
-            <input type="text" val="${input.initVal}" placeholder="${
-              input.placeholder
-            }" class="${input.hidden ? "hidden" : ""}" ${
-              input.hidden ? "" : "required"
-            } autocomplete="off">
+              <input
+                type="text"
+                val="${input.initVal}"
+                placeholder="${input.placeholder}"
+                class="${input.hidden ? "hidden" : ""}"
+                ${input.hidden ? "" : "required"}
+                autocomplete="off"
+              >
             `);
           }
         });
