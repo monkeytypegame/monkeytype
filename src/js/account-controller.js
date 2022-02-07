@@ -273,8 +273,10 @@ export async function signInWithGoogle() {
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
-    signedInUser.user.delete();
-    axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
+    if (signedInUser?.user) {
+      signedInUser.user.delete();
+      axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
+    }
     return;
   }
 }
@@ -463,28 +465,29 @@ async function signUp() {
     await createdAuthUser.user.sendEmailVerification();
     AllTimeStats.clear();
     Notifications.add("Account created", 1, 3);
-    $("#menu .icon-button.account .text").text(nname);
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin .preloader").addClass("hidden");
-    await loadUser(createdAuthUser.user);
-    if (TestLogic.notSignedInLastResult !== null) {
-      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
-      axiosInstance
-        .post("/results/add", {
-          result: TestLogic.notSignedInLastResult,
-        })
-        .then((result) => {
-          if (result.status === 200) {
-            DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
-          }
-        });
-      UI.changePage("account");
-    }
+    throw "test";
+    // $("#menu .icon-button.account .text").text(nname);
+    // $(".pageLogin .button").removeClass("disabled");
+    // $(".pageLogin .preloader").addClass("hidden");
+    // await loadUser(createdAuthUser.user);
+    // if (TestLogic.notSignedInLastResult !== null) {
+    //   TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
+    //   axiosInstance
+    //     .post("/results/add", {
+    //       result: TestLogic.notSignedInLastResult,
+    //     })
+    //     .then((result) => {
+    //       if (result.status === 200) {
+    //         DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+    //       }
+    //     });
+    //   UI.changePage("account");
+    // }
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
       await createdAuthUser.user.delete();
-      axiosInstance.post("/user/delete", { uid: createdAuthUser.user.uid });
+      axiosInstance.post("/user/delete");
     }
     let txt;
     if (e.response) {
@@ -500,7 +503,7 @@ async function signUp() {
     return;
   }
 
-  return;
+  // return;
 
   // axiosInstance.get(`/nameCheck/${nname}`).then((d) => {
   //   console.log(d.data);
