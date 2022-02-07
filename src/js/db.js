@@ -10,7 +10,9 @@ let dbSnapshot = null;
 
 export function updateName(uid, name) {
   //TODO update
-  axiosInstance.patch(`/user/name/${name}`);
+  axiosInstance.patch("/user/name", {
+    name,
+  });
 }
 
 export function getSnapshot() {
