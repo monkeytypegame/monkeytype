@@ -1,10 +1,10 @@
 import * as TestLogic from "./test-logic";
-import * as Notifications from "./notifications";
+import * as Notifications from "../elements/notifications";
 import * as TestUI from "./test-ui";
-import * as Misc from "./misc";
+import * as Misc from "../misc";
 import * as ManualRestart from "./manual-restart-tracker";
-import Config, * as UpdateConfig from "./config";
-import * as Settings from "./settings";
+import Config, * as UpdateConfig from "../config";
+import * as Settings from "../settings";
 import * as TTS from "./tts";
 
 let modeSaved = null;

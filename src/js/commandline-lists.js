@@ -1,23 +1,23 @@
 import * as DB from "./db";
 import * as Misc from "./misc";
 import layouts from "./layouts";
-import * as Notifications from "./notifications";
+import * as Notifications from "./elements/notifications";
 import * as Sound from "./sound";
 import * as ThemeController from "./theme-controller";
-import * as CustomTextPopup from "./custom-text-popup";
-import * as ManualRestart from "./manual-restart-tracker";
+import * as CustomTextPopup from "./popups/custom-text-popup";
+import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
-import * as PractiseWords from "./practise-words";
-import * as TestUI from "./test-ui";
-import * as TestLogic from "./test-logic";
-import * as Funbox from "./funbox";
+import * as PractiseWords from "./test/practise-words";
+import * as TestUI from "./test/test-ui";
+import * as TestLogic from "./test/test-logic";
+import * as Funbox from "./test/funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
-import * as CustomText from "./custom-text";
+import * as CustomText from "./test/custom-text";
 import * as Settings from "./settings";
 import * as ChallengeController from "./challenge-controller";
-import * as PaceCaret from "./pace-caret";
+import * as PaceCaret from "./test/pace-caret";
 
 export let current = [];
 

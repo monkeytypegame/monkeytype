@@ -1,8 +1,8 @@
-import * as Misc from "./misc";
-import * as DB from "./db";
-import Config from "./config";
-import * as Notifications from "./notifications";
-import * as Account from "./account";
+import * as Misc from "../misc";
+import * as DB from "../db";
+import Config from "../config";
+import * as Notifications from "../elements/notifications";
+import * as Account from "../account";
 
 let defaultResultFilters = {
   difficulty: {

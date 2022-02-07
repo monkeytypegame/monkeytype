@@ -1,12 +1,12 @@
 import * as Misc from "./misc";
-import * as Notifications from "./notifications";
-import * as ManualRestart from "./manual-restart-tracker";
-import * as CustomText from "./custom-text";
-import * as TestLogic from "./test-logic";
-import * as Funbox from "./funbox";
+import * as Notifications from "./elements/notifications";
+import * as ManualRestart from "./test/manual-restart-tracker";
+import * as CustomText from "./test/custom-text";
+import * as TestLogic from "./test/test-logic";
+import * as Funbox from "./test/funbox";
 import Config, * as UpdateConfig from "./config";
 import * as UI from "./ui";
-import * as TestUI from "./test-ui";
+import * as TestUI from "./test/test-ui";
 
 export let active = null;
 let challengeLoading = false;

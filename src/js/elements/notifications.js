@@ -1,4 +1,4 @@
-import * as Misc from "./misc";
+import * as Misc from "../misc";
 // const notificationHistory = [];
 let id = 0;
 class Notification {

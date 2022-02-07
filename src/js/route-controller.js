@@ -1,4 +1,4 @@
-import * as Funbox from "./funbox";
+import * as Funbox from "./test/funbox";
 import * as UI from "./ui";
 import Config from "./config";
 

@@ -1,6 +1,6 @@
-import * as TestLogic from "./test-logic";
+import * as TestLogic from "./test/test-logic";
 import * as ThemeColors from "./theme-colors";
-import * as TestTimer from "./test-timer";
+import * as TestTimer from "./test/test-timer";
 import * as UI from "./ui";
 import Config from "./config";
 

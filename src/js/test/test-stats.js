@@ -1,6 +1,6 @@
 import * as TestLogic from "./test-logic";
-import Config from "./config";
-import * as Misc from "./misc";
+import Config from "../config";
+import * as Misc from "../misc";
 import * as TestStats from "./test-stats";
 
 export let invalid = false;

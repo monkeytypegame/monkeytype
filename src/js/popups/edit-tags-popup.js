@@ -1,10 +1,10 @@
 import * as ResultTagsPopup from "./result-tags-popup";
-import * as ResultFilters from "./result-filters";
-import * as Loader from "./loader";
-import * as DB from "./db";
-import * as Notifications from "./notifications";
-import * as Settings from "./settings";
-import axiosInstance from "./axios-instance";
+import * as ResultFilters from "../account/result-filters";
+import * as Loader from "../elements/loader";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
+import * as Settings from "../settings";
+import axiosInstance from "../axios-instance";
 
 export function show(action, id, name) {
   if (action === "add") {
@@ -165,7 +165,7 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags.forEach((tag, index) => {
+      DB.getSnapshot().tags.forEach((tag) => {
         if (tag._id === tagid) {
           tag.personalBests = {};
         }

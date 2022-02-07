@@ -1,4 +1,4 @@
-import * as Loader from "./loader";
+import * as Loader from "./elements/loader";
 import Config from "./config";
 import * as TestLogic from "./test/test-logic";
 

@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter } from "./misc";
+import { capitalizeFirstLetter } from "../misc";
 
 let list = null;
 

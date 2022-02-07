@@ -1,17 +1,17 @@
 import * as TestUI from "./test-ui";
-import Config from "./config";
-import * as Misc from "./misc";
+import Config from "../config";
+import * as Misc from "../misc";
 import * as TestStats from "./test-stats";
 import * as Keymap from "./keymap";
-import * as ChartController from "./chart-controller";
-import * as UI from "./ui";
-import * as ThemeColors from "./theme-colors";
-import * as DB from "./db";
+import * as ChartController from "../chart-controller";
+import * as UI from "../ui";
+import * as ThemeColors from "../theme-colors";
+import * as DB from "../db";
 import * as TodayTracker from "./today-tracker";
 import * as PbCrown from "./pb-crown";
-import * as QuoteRatePopup from "./quote-rate-popup";
+import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as TestLogic from "./test-logic";
-import * as Notifications from "./notifications";
+import * as Notifications from "../elements/notifications";
 
 let result;
 let maxChartVal;

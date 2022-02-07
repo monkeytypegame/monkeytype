@@ -1,15 +1,13 @@
-import * as ManualRestart from "./manual-restart-tracker";
+import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./misc";
-import * as VerificationController from "./verification-controller";
-import * as Settings from "./settings";
+import * as VerificationController from "./account/verification-controller";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
-import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
-import * as NewVersionNotification from "./new-version-notification";
-import * as Notifications from "./notifications";
-import * as Focus from "./focus";
+import * as NewVersionNotification from "./elements/new-version-notification";
+import * as Notifications from "./elements/notifications";
+import * as Focus from "./test/focus";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
@@ -68,7 +66,7 @@ $(document).ready(() => {
         //do nothing
         // }
       } else if (window.location.pathname !== "/") {
-        let page = window.location.pathname.replace("/", "");
+        // let page = window.location.pathname.replace("/", "");
         // UI.changePage(page);
       }
     });

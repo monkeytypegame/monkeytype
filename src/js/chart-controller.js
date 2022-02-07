@@ -1,5 +1,5 @@
 import Chart from "chart.js";
-import * as TestStats from "./test-stats";
+import * as TestStats from "./test/test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as Misc from "./misc";
 import * as Account from "./account";

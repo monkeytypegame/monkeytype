@@ -1,14 +1,14 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, * as UpdateConfig from "./config";
+import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
-import * as Monkey from "./monkey";
-import * as Misc from "./misc";
-import * as Notifications from "./notifications";
+import * as Monkey from "../elements/monkey";
+import * as Misc from "../misc";
+import * as Notifications from "../elements/notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 

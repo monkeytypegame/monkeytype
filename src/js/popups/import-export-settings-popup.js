@@ -1,6 +1,6 @@
-import * as UpdateConfig from "./config";
-import * as Settings from "./settings";
-import * as Notifications from "./notifications";
+import * as UpdateConfig from "../config";
+import * as Settings from "../settings";
+import * as Notifications from "../elements/notifications";
 
 export function show(mode, config) {
   if ($("#settingsImportWrapper").hasClass("hidden")) {

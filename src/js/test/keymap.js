@@ -1,8 +1,8 @@
-import Config, * as UpdateConfig from "./config";
-import * as ThemeColors from "./theme-colors";
-import layouts from "./layouts";
-import * as CommandlineLists from "./commandline-lists";
-import * as Commandline from "./commandline";
+import Config, * as UpdateConfig from "../config";
+import * as ThemeColors from "../theme-colors";
+import layouts from "../layouts";
+import * as CommandlineLists from "../commandline-lists";
+import * as Commandline from "../commandline";
 import * as TestTimer from "./test-timer";
 
 export function highlightKey(currentKey) {

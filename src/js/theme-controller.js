@@ -68,7 +68,7 @@ function clearCustomTheme() {
 }
 
 let loadStyle = function (name) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";

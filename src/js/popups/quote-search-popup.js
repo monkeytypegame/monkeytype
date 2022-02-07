@@ -1,13 +1,13 @@
-import * as Misc from "./misc";
-import * as Notifications from "./notifications";
-import Config, * as UpdateConfig from "./config";
-import * as ManualRestart from "./manual-restart-tracker";
-import * as TestLogic from "./test-logic";
+import * as Misc from "../misc";
+import * as Notifications from "../elements/notifications";
+import Config, * as UpdateConfig from "../config";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as TestLogic from "../test/test-logic";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
-import * as DB from "./db";
-import * as TestUI from "./test-ui";
+import * as DB from "../db";
+import * as TestUI from "../test/test-ui";
 
 export let selectedId = 1;
 

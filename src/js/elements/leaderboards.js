@@ -1,9 +1,9 @@
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
-import * as DB from "./db";
-import axiosInstance from "./axios-instance";
-import * as Misc from "./misc";
-import Config from "./config";
+import * as DB from "../db";
+import axiosInstance from "../axios-instance";
+import * as Misc from "../misc";
+import Config from "../config";
 
 let currentLeaderboard = "time_15";
 

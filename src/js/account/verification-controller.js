@@ -1,8 +1,8 @@
-import * as Notifications from "./notifications";
-import * as Settings from "./settings";
-import * as DB from "./db";
-import axiosInstance from "./axios-instance";
-import * as Loader from "./loader";
+import * as Notifications from "../elements/notifications";
+import * as Settings from "../settings";
+import * as DB from "../db";
+import axiosInstance from "../axios-instance";
+import * as Loader from "../elements/loader";
 
 export let data = null;
 export function set(val) {

@@ -1,9 +1,9 @@
-import * as Loader from "./loader";
-import * as DB from "./db";
-import * as Notifications from "./notifications";
-import * as Settings from "./settings";
-import * as Config from "./config";
-import axiosInstance from "./axios-instance";
+import * as Loader from "../elements/loader";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
+import * as Settings from "../settings";
+import * as Config from "../config";
+import axiosInstance from "../axios-instance";
 
 export function show(action, id, name) {
   if (action === "add") {

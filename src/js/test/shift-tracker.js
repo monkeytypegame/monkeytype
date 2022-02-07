@@ -1,5 +1,5 @@
-import Config from "./config";
-import Layouts from "./layouts";
+import Config from "../config";
+import Layouts from "../layouts";
 
 export let leftState = false;
 export let rightState = false;

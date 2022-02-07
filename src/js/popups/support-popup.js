@@ -1,5 +1,5 @@
-import * as Commandline from "./commandline";
-import * as CommandlineLists from "./commandline-lists";
+import * as Commandline from "../commandline";
+import * as CommandlineLists from "../commandline-lists";
 
 $(document.body).on("click", "#supportMeButton", () => {
   $("#supportMeWrapper")
