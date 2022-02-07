@@ -4,8 +4,8 @@ const { Router } = require("express");
 const UserController = require("../controllers/user");
 const RateLimit = require("../../middlewares/rate-limit");
 const {
-  validateRequester,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 } = require("../../middlewares/api-utils");
 
 const router = Router();
@@ -32,7 +32,7 @@ router.post(
   "/signup",
   RateLimit.userSignup,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       email: joi.string().email(),
       name: joi.string().required(),
@@ -45,7 +45,7 @@ router.post(
 router.get(
   "/checkName/:name",
   RateLimit.userCheckName,
-  requestValidation({
+  validateRequest({
     params: {
       name: joi.string().required(),
     },
@@ -64,7 +64,7 @@ router.patch(
   "/name",
   RateLimit.userUpdateName,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       name: joi.string().required(),
     },
@@ -76,7 +76,7 @@ router.patch(
   "/leaderboardMemory",
   RateLimit.userUpdateLBMemory,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       mode: joi
         .string()
@@ -94,7 +94,7 @@ router.patch(
   "/email",
   RateLimit.userUpdateEmail,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       uid: joi.string().required(),
       newEmail: joi.string().email().required(),
@@ -122,7 +122,7 @@ router.post(
   "/tags",
   RateLimit.userTagsAdd,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       tagName: tagNameValidation,
     },
@@ -134,7 +134,7 @@ router.patch(
   "/tags",
   RateLimit.userTagsEdit,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       tagId: joi.string().required(),
       newName: tagNameValidation,
@@ -147,7 +147,7 @@ router.delete(
   "/tags/:tagId",
   RateLimit.userTagsRemove,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     params: {
       tagId: joi.string().required(),
     },
@@ -159,7 +159,7 @@ router.delete(
   "/tags/:tagId/personalBest",
   RateLimit.userTagsClearPB,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     params: {
       tagId: joi.string().required(),
     },
@@ -171,7 +171,7 @@ router.post(
   "/discord/link",
   RateLimit.userDiscordLink,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       data: joi.object({
         tokenType: joi.string().required(),
