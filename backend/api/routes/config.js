@@ -1,8 +1,8 @@
 const { Router } = require("express");
 const { authenticateRequest } = require("../../middlewares/auth");
 const {
-  asyncHandlerWrapper,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 } = require("../../middlewares/api-utils");
 const configSchema = require("../schemas/config-schema");
 const ConfigController = require("../controllers/config");
@@ -14,19 +14,19 @@ router.get(
   "/",
   RateLimit.configGet,
   authenticateRequest(),
-  asyncHandlerWrapper(ConfigController.getConfig)
+  asyncHandler(ConfigController.getConfig)
 );
 
 router.post(
   "/save",
   RateLimit.configUpdate,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       config: configSchema,
     },
   }),
-  asyncHandlerWrapper(ConfigController.saveConfig)
+  asyncHandler(ConfigController.saveConfig)
 );
 
 module.exports = router;

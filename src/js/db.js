@@ -10,8 +10,8 @@ let dbSnapshot = null;
 
 export function updateName(uid, name) {
   //TODO update
-  axiosInstance.post("/updateName", {
-    name: name,
+  axiosInstance.patch("/user/name", {
+    name,
   });
 }
 
@@ -559,7 +559,7 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
   let current = dbSnapshot.lbMemory[mode][mode2][language];
   dbSnapshot.lbMemory[mode][mode2][language] = rank;
   if (api && current != rank) {
-    axiosInstance.post("/user/updateLbMemory", {
+    axiosInstance.patch("/user/leaderboardMemory", {
       mode,
       mode2,
       language,

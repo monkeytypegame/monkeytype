@@ -121,7 +121,7 @@ export async function getDataAndInit() {
 
         let response;
         try {
-          response = await axiosInstance.post("/user/updateName", { name });
+          response = await axiosInstance.patch("/user/name", { name });
         } catch (e) {
           let msg = e?.response?.data?.message ?? e.message;
           if (e.response.status >= 500) {

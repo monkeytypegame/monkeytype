@@ -4,8 +4,8 @@ const { Router } = require("express");
 const ResultController = require("../controllers/result");
 const RateLimit = require("../../middlewares/rate-limit");
 const {
-  asyncHandlerWrapper,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 } = require("../../middlewares/api-utils");
 const resultSchema = require("../schemas/result-schema");
 
@@ -15,39 +15,39 @@ router.get(
   "/",
   RateLimit.resultsGet,
   authenticateRequest(),
-  asyncHandlerWrapper(ResultController.getResults)
+  asyncHandler(ResultController.getResults)
 );
 
 router.post(
   "/add",
   RateLimit.resultsAdd,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       result: resultSchema,
     },
   }),
-  asyncHandlerWrapper(ResultController.addResult)
+  asyncHandler(ResultController.addResult)
 );
 
 router.post(
   "/updateTags",
   RateLimit.resultsTagsUpdate,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       tags: joi.array().items(joi.string()).required(),
       resultid: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(ResultController.updateTags)
+  asyncHandler(ResultController.updateTags)
 );
 
 router.post(
   "/deleteAll",
   RateLimit.resultsDeleteAll,
   authenticateRequest(),
-  asyncHandlerWrapper(ResultController.deleteAll)
+  asyncHandler(ResultController.deleteAll)
 );
 
 module.exports = router;

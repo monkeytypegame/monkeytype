@@ -215,7 +215,7 @@ export async function signInWithGoogle() {
 
         let response;
         try {
-          response = await axiosInstance.post("/user/checkName", { name });
+          response = await axiosInstance.get(`/user/checkName/${name}`);
         } catch (e) {
           let msg = e?.response?.data?.message ?? e.message;
           if (e.response.status >= 500) {
@@ -275,7 +275,7 @@ export async function signInWithGoogle() {
     $(".pageLogin .button").removeClass("disabled");
     if (signedInUser?.user) {
       signedInUser.user.delete();
-      axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
+      await axiosInstance.delete("/user");
     }
     return;
   }
@@ -431,9 +431,7 @@ async function signUp() {
   }
 
   try {
-    await axiosInstance.post("/user/checkName", {
-      name: nname,
-    });
+    await axiosInstance.get(`/user/checkName/${nname}`);
   } catch (e) {
     let txt;
     if (e.response) {
@@ -465,29 +463,28 @@ async function signUp() {
     await createdAuthUser.user.sendEmailVerification();
     AllTimeStats.clear();
     Notifications.add("Account created", 1, 3);
-    throw "test";
-    // $("#menu .icon-button.account .text").text(nname);
-    // $(".pageLogin .button").removeClass("disabled");
-    // $(".pageLogin .preloader").addClass("hidden");
-    // await loadUser(createdAuthUser.user);
-    // if (TestLogic.notSignedInLastResult !== null) {
-    //   TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
-    //   axiosInstance
-    //     .post("/results/add", {
-    //       result: TestLogic.notSignedInLastResult,
-    //     })
-    //     .then((result) => {
-    //       if (result.status === 200) {
-    //         DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
-    //       }
-    //     });
-    //   UI.changePage("account");
-    // }
+    $("#menu .icon-button.account .text").text(nname);
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin .preloader").addClass("hidden");
+    await loadUser(createdAuthUser.user);
+    if (TestLogic.notSignedInLastResult !== null) {
+      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
+      axiosInstance
+        .post("/results/add", {
+          result: TestLogic.notSignedInLastResult,
+        })
+        .then((result) => {
+          if (result.status === 200) {
+            DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+          }
+        });
+      UI.changePage("account");
+    }
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
       await createdAuthUser.user.delete();
-      axiosInstance.post("/user/delete");
+      axiosInstance.delete("/user");
     }
     let txt;
     if (e.response) {
@@ -502,119 +499,6 @@ async function signUp() {
     $(".pageLogin .button").removeClass("disabled");
     return;
   }
-
-  // return;
-
-  // axiosInstance.get(`/nameCheck/${nname}`).then((d) => {
-  //   console.log(d.data);
-  //   if (d.data.resultCode === -1) {
-  //     Notifications.add("Name unavailable", -1);
-  //     $(".pageLogin .preloader").addClass("hidden");
-  //     $(".pageLogin .register .button").removeClass("disabled");
-  //     return;
-  //   } else if (d.data.resultCode === -2) {
-  //     Notifications.add(
-  //       "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-  //       -1
-  //     );
-  //     $(".pageLogin .preloader").addClass("hidden");
-  //     $(".pageLogin .register .button").removeClass("disabled");
-  //     return;
-  //   } else if (d.data.resultCode === 1) {
-  //     firebase
-  //       .auth()
-  //       .createUserWithEmailAndPassword(email, password)
-  //       .then((user) => {
-  //         // Account has been created here.
-  //         // dontCheckUserName = true;
-  //         let usr = user.user;
-  //         //maybe there's a better place for the api call
-  //         axiosInstance.post("/signUp", {
-  //           name: nname,
-  //           uid: usr.uid,
-  //           email: email,
-  //         });
-  //         usr
-  //           .updateProfile({
-  //             displayName: nname,
-  //           })
-  //           .then(async function () {
-  //             // Update successful.
-  //             usr.sendEmailVerification();
-  //             AllTimeStats.clear();
-  //             Notifications.add("Account created", 1, 3);
-  //             $("#menu .icon-button.account .text").text(nname);
-  //             try {
-  //               firebase.analytics().logEvent("accountCreated", usr.uid);
-  //             } catch (e) {
-  //               console.log("Analytics unavailable");
-  //             }
-  //             $(".pageLogin .preloader").addClass("hidden");
-  //             DB.setSnapshot({
-  //               results: [],
-  //               personalBests: {},
-  //               tags: [],
-  //               globalStats: {
-  //                 time: undefined,
-  //                 started: undefined,
-  //                 completed: undefined,
-  //               },
-  //             });
-  //             if (TestLogic.notSignedInLastResult !== null) {
-  //               TestLogic.setNotSignedInUid(usr.uid);
-  //               axiosInstance
-  //                 .post("/testCompleted", {
-  //                   obj: TestLogic.notSignedInLastResult,
-  //                 })
-  //                 .then(() => {
-  //                   DB.getSnapshot().results.push(
-  //                     TestLogic.notSignedInLastResult
-  //                   );
-  //                 });
-  //             }
-  //             UI.changePage("account");
-  //             usr.sendEmailVerification();
-  //             $(".pageLogin .register .button").removeClass("disabled");
-  //           })
-  //           .catch(function (error) {
-  //             // An error happened.
-  //             $(".pageLogin .register .button").removeClass("disabled");
-  //             console.error(error);
-  //             usr
-  //               .delete()
-  //               .then(function () {
-  //                 // User deleted.
-  //                 Notifications.add(
-  //                   "Account not created. " + error.message,
-  //                   -1
-  //                 );
-  //                 $(".pageLogin .preloader").addClass("hidden");
-  //               })
-  //               .catch(function (error) {
-  //                 // An error happened.
-  //                 $(".pageLogin .preloader").addClass("hidden");
-  //                 Notifications.add(
-  //                   "Something went wrong. " + error.message,
-  //                   -1
-  //                 );
-  //                 console.error(error);
-  //               });
-  //           });
-  //       })
-  //       .catch(function (error) {
-  //         // Handle Errors here.
-  //         $(".pageLogin .register .button").removeClass("disabled");
-  //         Notifications.add(error.message, -1);
-  //         $(".pageLogin .preloader").addClass("hidden");
-  //       });
-  //   } else {
-  //     $(".pageLogin .preloader").addClass("hidden");
-  //     Notifications.add(
-  //       "Something went wrong when checking name: " + d.data.message,
-  //       -1
-  //     );
-  //   }
-  // });
 }
 
 $(".pageLogin #forgotPasswordButton").click((e) => {

@@ -9,79 +9,93 @@ const fetch = require("node-fetch");
 const Logger = require("./../../handlers/logger.js");
 const uaparser = require("ua-parser-js");
 
-// import UsersDAO from "../../dao/user";
-// import BotDAO from "../../dao/bot";
-// import { isUsernameValid } from "../../handlers/validation";
-
 class UserController {
   static async createNewUser(req, res) {
     const { name } = req.body;
     const { email, uid } = req.ctx.decodedToken;
+
     await UsersDAO.addUser(name, email, uid);
     Logger.log("user_created", `${name} ${email}`, uid);
+
     return res.sendStatus(200);
   }
 
   static async deleteUser(req, res) {
     const { uid } = req.ctx.decodedToken;
     const userInfo = await UsersDAO.getUser(uid);
+
     await UsersDAO.deleteUser(uid);
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+
     return res.sendStatus(200);
   }
 
   static async updateName(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { name } = req.body;
-    if (!isUsernameValid(name))
+
+    if (!isUsernameValid(name)) {
       return res.status(400).json({
         message:
           "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
       });
-    let olduser = await UsersDAO.getUser(uid);
+    }
+
+    const olduser = await UsersDAO.getUser(uid);
     await UsersDAO.updateName(uid, name);
     Logger.log(
       "user_name_updated",
       `changed name from ${olduser.name} to ${name}`,
       uid
     );
+
     return res.sendStatus(200);
   }
 
   static async clearPb(req, res) {
     const { uid } = req.ctx.decodedToken;
+
     await UsersDAO.clearPb(uid);
     Logger.log("user_cleared_pbs", "", uid);
+
     return res.sendStatus(200);
   }
 
   static async checkName(req, res) {
-    const { name } = req.body;
-    if (!isUsernameValid(name))
+    const { name } = req.params;
+
+    if (!isUsernameValid(name)) {
       throw new MonkeyError(
         400,
         "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
       );
+    }
+
     const available = await UsersDAO.isNameAvailable(name);
-    if (!available)
+    if (!available) {
       return res.status(400).json({ message: "Username unavailable" });
+    }
+
     return res.sendStatus(200);
   }
 
   static async updateEmail(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { newEmail } = req.body;
+
     try {
       await UsersDAO.updateEmail(uid, newEmail);
     } catch (e) {
       throw new MonkeyError(400, e.message, "update email", uid);
     }
     Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
+
     return res.sendStatus(200);
   }
 
-  static async getUser(req, res) {
+  static async getUser(req, _res) {
     const { email, uid } = req.ctx.decodedToken;
+
     let userInfo;
     try {
       userInfo = await UsersDAO.getUser(uid);
@@ -122,10 +136,11 @@ class UserController {
         agent.device.type;
     }
     Logger.log("user_data_requested", logobj, uid);
-    return res.status(200).json(userInfo);
+
+    return userInfo;
   }
 
-  static async linkDiscord(req, res) {
+  static async linkDiscord(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     let requser;
@@ -167,14 +182,16 @@ class UserController {
     await UsersDAO.linkDiscord(uid, did);
     await BotDAO.linkDiscord(uid, did);
     Logger.log("user_discord_link", `linked to ${did}`, uid);
-    return res.status(200).json({
+
+    return {
       message: "Discord account linked",
       did,
-    });
+    };
   }
 
   static async unlinkDiscord(req, res) {
     const { uid } = req.ctx.decodedToken;
+
     let userInfo;
     try {
       userInfo = await UsersDAO.getUser(uid);
@@ -187,58 +204,56 @@ class UserController {
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
     await UsersDAO.unlinkDiscord(uid);
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);
-    return res.status(200).send();
+
+    return res.sendStatus(200);
   }
 
-  static async addTag(req, res) {
+  static async addTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagName } = req.body;
-    if (!isTagPresetNameValid(tagName))
-      return res.status(400).json({
-        message:
-          "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
-      });
-    let tag = await UsersDAO.addTag(uid, tagName);
-    return res.status(200).json(tag);
+
+    return await UsersDAO.addTag(uid, tagName);
   }
 
   static async clearTagPb(req, res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid } = req.body;
-    await UsersDAO.removeTagPb(uid, tagid);
+    const { tagId } = req.params;
+
+    await UsersDAO.removeTagPb(uid, tagId);
+
     return res.sendStatus(200);
   }
 
   static async editTag(req, res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid, newname } = req.body;
-    if (!isTagPresetNameValid(newname))
-      return res.status(400).json({
-        message:
-          "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
-      });
-    await UsersDAO.editTag(uid, tagid, newname);
+    const { tagId, newName } = req.body;
+
+    await UsersDAO.editTag(uid, tagId, newName);
+
     return res.sendStatus(200);
   }
 
   static async removeTag(req, res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid } = req.body;
-    await UsersDAO.removeTag(uid, tagid);
+    const { tagId } = req.params;
+
+    await UsersDAO.removeTag(uid, tagId);
+
     return res.sendStatus(200);
   }
 
-  static async getTags(req, res) {
+  static async getTags(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    let tags = await UsersDAO.getTags(uid);
-    if (tags == undefined) tags = [];
-    return res.status(200).json(tags);
+
+    return await UsersDAO.getTags(uid);
   }
 
   static async updateLbMemory(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
+
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
+
     return res.sendStatus(200);
   }
 }
