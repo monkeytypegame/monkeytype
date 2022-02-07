@@ -1,6 +1,6 @@
-import * as Funbox from "./test/funbox";
-import * as UI from "./ui";
-import Config from "./config";
+import * as Funbox from "../test/funbox";
+import * as UI from "../ui";
+import Config from "../config";
 
 let mappedRoutes = {
   "/": "pageLoading",

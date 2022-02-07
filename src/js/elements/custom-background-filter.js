@@ -1,5 +1,5 @@
-import * as UpdateConfig from "./config";
-import * as Notifications from "./elements/notifications";
+import * as UpdateConfig from "../config";
+import * as Notifications from "./notifications";
 
 let filters = {
   blur: {

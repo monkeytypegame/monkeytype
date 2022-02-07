@@ -1,8 +1,8 @@
-import * as Config from "./config";
-import * as DB from "./db";
-import * as Notifications from "./elements/notifications";
-import * as Settings from "./settings";
-import * as TestLogic from "./test/test-logic";
+import * as Config from "../config";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
+import * as Settings from "../pages/settings";
+import * as TestLogic from "../test/test-logic";
 import * as TagController from "./tag-controller";
 
 export function apply(_id) {

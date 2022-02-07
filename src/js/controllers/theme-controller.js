@@ -1,10 +1,10 @@
-import * as ThemeColors from "./theme-colors";
+import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
-import * as Misc from "./misc";
-import Config from "./config";
-import * as UI from "./ui";
+import * as Misc from "../misc";
+import Config from "../config";
+import * as UI from "../ui";
 import tinycolor from "tinycolor2";
-import * as BackgroundFilter from "./custom-background-filter";
+import * as BackgroundFilter from "../elements/custom-background-filter";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;

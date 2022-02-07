@@ -1,6 +1,6 @@
 import Config from "../config";
 import * as Misc from "../misc";
-import Layouts from "../layouts";
+import Layouts from "./layouts";
 
 export function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {

@@ -4,7 +4,7 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
 import * as WordFilterPopup from "./word-filter-popup";
-import * as ChallengeController from "../challenge-controller";
+import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
 
 let wrapper = "#customTextPopupWrapper";

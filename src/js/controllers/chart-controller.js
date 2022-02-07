@@ -1,9 +1,9 @@
 import Chart from "chart.js";
-import * as TestStats from "./test/test-stats";
-import * as ThemeColors from "./theme-colors";
-import * as Misc from "./misc";
-import * as Account from "./account";
-import Config from "./config";
+import * as TestStats from "../test/test-stats";
+import * as ThemeColors from "../elements/theme-colors";
+import * as Misc from "../misc";
+import * as Account from "../pages/account";
+import Config from "../config";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",

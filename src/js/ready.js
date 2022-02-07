@@ -1,11 +1,11 @@
 import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./misc";
-import * as VerificationController from "./account/verification-controller";
-import * as RouteController from "./route-controller";
+import * as VerificationController from "./controllers/verification-controller";
+import * as RouteController from "./controllers/route-controller";
 import * as UI from "./ui";
-import * as MonkeyPower from "./monkey-power";
-import * as NewVersionNotification from "./elements/new-version-notification";
+import * as MonkeyPower from "./elements/monkey-power";
+import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 

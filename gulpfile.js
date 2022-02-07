@@ -238,9 +238,14 @@ task("static", function () {
 
 //copies refactored js files to dist/gen so that they can be required by dist/gen/index.js
 task("copy-modules", function () {
-  return src(refactoredSrc, { allowEmpty: true, base: "./src/js" }).pipe(
-    dest("./dist/gen")
-  );
+  return src(
+    [
+      "./src/js/**/*.js",
+      "!./src/js/global-dependencies.js",
+      "!./src/js/exports.js",
+    ],
+    { allowEmpty: true, base: "./src/js" }
+  ).pipe(dest("./dist/gen"));
 });
 
 //bundles the refactored js files together with index.js (the concatenated legacy js files)
@@ -273,7 +278,11 @@ task("browserify", function () {
 
 //lints only the refactored files
 task("lint", function () {
-  let filelist = refactoredSrc;
+  let filelist = [
+    "./src/js/**/*.js",
+    "!./src/js/global-dependencies.js",
+    "!./src/js/exports.js",
+  ];
   filelist.push("./static/**/*.json");
   return src(filelist)
     .pipe(eslint(eslintConfig))

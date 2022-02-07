@@ -1,8 +1,8 @@
-import * as TestLogic from "./test/test-logic";
+import * as TestLogic from "../test/test-logic";
 import * as ThemeColors from "./theme-colors";
-import * as TestTimer from "./test/test-timer";
-import * as UI from "./ui";
-import Config from "./config";
+import * as TestTimer from "../test/test-timer";
+import * as UI from "../ui";
+import Config from "../config";
 
 /**
  * @typedef {{ x: number, y: number }} vec2

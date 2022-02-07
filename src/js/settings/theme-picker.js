@@ -1,10 +1,10 @@
 import Config, * as UpdateConfig from "../config";
-import * as ThemeController from "../theme-controller";
+import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
-import * as CommandlineLists from "../commandline-lists";
-import * as ThemeColors from "../theme-colors";
-import * as ChartController from "../chart-controller";
+import * as CommandlineLists from "../elements/commandline-lists";
+import * as ThemeColors from "../elements/theme-colors";
+import * as ChartController from "../controllers/chart-controller";
 
 export function updateActiveButton() {
   let activeThemeName = Config.theme;

@@ -1,9 +1,9 @@
 import Config, * as UpdateConfig from "../config";
-import * as ThemeColors from "../theme-colors";
-import layouts from "../layouts";
-import * as CommandlineLists from "../commandline-lists";
-import * as Commandline from "../commandline";
-import * as TestTimer from "./test-timer";
+import * as ThemeColors from "./theme-colors";
+import layouts from "../test/layouts";
+import * as CommandlineLists from "./commandline-lists";
+import * as Commandline from "./commandline";
+import * as TestTimer from "../test/test-timer";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;

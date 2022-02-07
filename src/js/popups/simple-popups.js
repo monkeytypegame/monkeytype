@@ -1,10 +1,10 @@
-import * as Loader from "./elements/loader";
-import * as Notifications from "./elements/notifications";
-import * as AccountController from "./account-controller";
-import * as DB from "./db";
-import * as Settings from "./settings";
-import axiosInstance from "./axios-instance";
-import * as UpdateConfig from "./config";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as AccountController from "../controllers/account-controller";
+import * as DB from "../db";
+import * as Settings from "../pages/settings";
+import axiosInstance from "../axios-instance";
+import * as UpdateConfig from "../config";
 
 export let list = {};
 class SimplePopup {

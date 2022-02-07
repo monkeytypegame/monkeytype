@@ -3,7 +3,7 @@ import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./test/today-tracker";
-import * as LoadingPage from "./elements/loading-page";
+import * as LoadingPage from "./pages/loading";
 import * as UI from "./ui";
 
 let dbSnapshot = null;

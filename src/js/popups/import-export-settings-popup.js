@@ -1,5 +1,5 @@
 import * as UpdateConfig from "../config";
-import * as Settings from "../settings";
+import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 
 export function show(mode, config) {

@@ -1,5 +1,5 @@
-import * as CommandlineLists from "../commandline-lists.js";
-import * as Commandline from "../commandline.js";
+import * as CommandlineLists from "../elements/commandline-lists.js";
+import * as Commandline from "../elements/commandline.js";
 import * as Misc from "../misc";
 
 export function reset() {

@@ -1,5 +1,5 @@
 import * as Notifications from "../elements/notifications";
-import * as Settings from "../settings";
+import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import axiosInstance from "../axios-instance";
 import * as Loader from "../elements/loader";

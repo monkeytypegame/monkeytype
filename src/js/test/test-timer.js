@@ -6,7 +6,7 @@ import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
-import * as Monkey from "../elements/monkey";
+import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "./test-logic";
