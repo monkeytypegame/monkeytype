@@ -8,7 +8,12 @@
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"nodemon --watch ./backend ./backend/server.js\" \"firebase serve --only hosting\"",
     "start:dev:nodb": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
     "start:dev:nofe": "nodemon --watch ./backend ./backend/server.js",
-    "deploy:live": "npm run build && firebase deploy -P live --only hosting"
+    "deploy:live": "npm run build && firebase deploy -P live --only hosting",
+    "build-ts": "npx gulp build-ts",
+    "start:dev-ts": "npm run build-ts && concurrently --kill-others \"npx gulp watch-ts\" \"nodemon --watch ./backend ./backend/server.js\" \"firebase serve --only hosting\"",
+    "start:dev:nodb-ts": "npm run build-ts && concurrently --kill-others \"npx gulp watch-ts\" \"firebase serve --only hosting\"",
+    "start:dev:nofe-ts": "nodemon --watch ./backend ./backend/server.js",
+    "deploy:live-ts": "npm run build-ts && firebase deploy -P live --only hosting"
   },
   "engines": {
     "node": "14.18.1",
@@ -18,6 +23,8 @@
     "@babel/core": "^7.12.3",
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
+    "@types/chart.js": "^2.9.35",
+    "@types/chartjs-plugin-annotation": "^0.5.2",
     "babel-eslint": "^10.1.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
@@ -42,6 +49,8 @@
     "prettier": "2.1.2",
     "pretty-quick": "^3.1.0",
     "through2": "^4.0.2",
+    "tsify": "^5.0.4",
+    "typescript": "^4.5.5",
     "vinyl-buffer": "^1.0.1",
     "vinyl-paths": "^3.0.1",
     "vinyl-source-stream": "^2.0.0"
