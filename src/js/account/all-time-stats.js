@@ -1,5 +1,5 @@
-import * as DB from "./db";
-import * as Misc from "./misc";
+import * as DB from "../db";
+import * as Misc from "../misc";
 
 export function clear() {
   $(".pageAccount .globalTimeTyping .val").text(`-`);

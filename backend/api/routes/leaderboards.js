@@ -3,8 +3,8 @@ const { authenticateRequest } = require("../../middlewares/auth");
 const LeaderboardsController = require("../controllers/leaderboards");
 const RateLimit = require("../../middlewares/rate-limit");
 const {
-  asyncHandlerWrapper,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 } = require("../../middlewares/api-utils");
 
 const { Router } = require("express");
@@ -15,7 +15,7 @@ router.get(
   "/",
   RateLimit.leaderboardsGet,
   authenticateRequest({ isPublic: true }),
-  requestValidation({
+  validateRequest({
     query: {
       language: joi.string().required(),
       mode: joi.string().required(),
@@ -25,14 +25,14 @@ router.get(
     },
     validationErrorMessage: "Missing parameters",
   }),
-  asyncHandlerWrapper(LeaderboardsController.get)
+  asyncHandler(LeaderboardsController.get)
 );
 
 router.get(
   "/rank",
   RateLimit.leaderboardsGet,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     query: {
       language: joi.string().required(),
       mode: joi.string().required(),
@@ -40,7 +40,7 @@ router.get(
     },
     validationErrorMessage: "Missing parameters",
   }),
-  asyncHandlerWrapper(LeaderboardsController.getRank)
+  asyncHandler(LeaderboardsController.getRank)
 );
 
 module.exports = router;

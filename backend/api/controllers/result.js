@@ -32,23 +32,27 @@ try {
 }
 
 class ResultController {
-  static async getResults(req, res) {
+  static async getResults(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const results = await ResultDAO.getResults(uid);
-    return res.status(200).json(results);
+
+    return await ResultDAO.getResults(uid);
   }
 
   static async deleteAll(req, res) {
     const { uid } = req.ctx.decodedToken;
+
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
+
     return res.sendStatus(200);
   }
 
   static async updateTags(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tags, resultid } = req.body;
+
     await ResultDAO.updateTags(uid, resultid, tags);
+
     return res.sendStatus(200);
   }
 
@@ -58,16 +62,7 @@ class ResultController {
     result.uid = uid;
     if (validateObjectValues(result) > 0)
       return res.status(400).json({ message: "Bad input" });
-    if (
-      result.wpm <= 0 ||
-      result.wpm > 350 ||
-      result.acc < 75 ||
-      result.acc > 100 ||
-      result.consistency > 100
-    ) {
-      return res.status(400).json({ message: "Bad input" });
-    }
-    if (result.wpm == result.raw && result.acc != 100) {
+    if (result.wpm === result.raw && result.acc !== 100) {
       return res.status(400).json({ message: "Bad input" });
     }
     if (
