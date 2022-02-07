@@ -62,7 +62,7 @@ class UserController {
   }
 
   static async checkName(req, res) {
-    const { name } = req.body;
+    const { name } = req.params;
 
     if (!isUsernameValid(name)) {
       throw new MonkeyError(
@@ -217,18 +217,18 @@ class UserController {
 
   static async clearTagPb(req, res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid } = req.body;
+    const { tagId } = req.params;
 
-    await UsersDAO.removeTagPb(uid, tagid);
+    await UsersDAO.removeTagPb(uid, tagId);
 
     return res.sendStatus(200);
   }
 
   static async editTag(req, res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid, newname } = req.body;
+    const { tagId, newName } = req.body;
 
-    await UsersDAO.editTag(uid, tagid, newname);
+    await UsersDAO.editTag(uid, tagId, newName);
 
     return res.sendStatus(200);
   }

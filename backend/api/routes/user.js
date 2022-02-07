@@ -42,11 +42,11 @@ router.post(
   asyncHandlerWrapper(UserController.createNewUser)
 );
 
-router.post(
-  "/checkName",
+router.get(
+  "/checkName/:name",
   RateLimit.userCheckName,
   requestValidation({
-    body: {
+    params: {
       name: joi.string().required(),
     },
   }),
@@ -60,8 +60,8 @@ router.delete(
   asyncHandlerWrapper(UserController.deleteUser)
 );
 
-router.post(
-  "/updateName",
+router.patch(
+  "/name",
   RateLimit.userUpdateName,
   authenticateRequest(),
   requestValidation({
@@ -72,14 +72,17 @@ router.post(
   asyncHandlerWrapper(UserController.updateName)
 );
 
-router.post(
-  "/updateLbMemory",
+router.patch(
+  "/leaderboardMemory",
   RateLimit.userUpdateLBMemory,
   authenticateRequest(),
   requestValidation({
     body: {
-      mode: joi.string().required(),
-      mode2: joi.string().required(),
+      mode: joi
+        .string()
+        .valid("time", "words", "quote", "zen", "custom")
+        .required(),
+      mode2: joi.alternatives().try(joi.number(), joi.string()).required(),
       language: joi.string().required(),
       rank: joi.number().required(),
     },
@@ -87,22 +90,22 @@ router.post(
   asyncHandlerWrapper(UserController.updateLbMemory)
 );
 
-router.post(
-  "/updateEmail",
+router.patch(
+  "/email",
   RateLimit.userUpdateEmail,
   authenticateRequest(),
   requestValidation({
     body: {
       uid: joi.string().required(),
-      email: joi.string().email().required(),
+      newEmail: joi.string().email().required(),
       previousEmail: joi.string().email().required(),
     },
   }),
   asyncHandlerWrapper(UserController.updateEmail)
 );
 
-router.post(
-  "/clearPb",
+router.delete(
+  "/personalBests",
   RateLimit.userClearPB,
   authenticateRequest(),
   asyncHandlerWrapper(UserController.clearPb)
@@ -133,8 +136,8 @@ router.patch(
   authenticateRequest(),
   requestValidation({
     body: {
-      tagid: joi.string().required(),
-      newname: tagNameValidation,
+      tagId: joi.string().required(),
+      newName: tagNameValidation,
     },
   }),
   asyncHandlerWrapper(UserController.editTag)
@@ -152,13 +155,13 @@ router.delete(
   asyncHandlerWrapper(UserController.removeTag)
 );
 
-router.post(
-  "/tags/clearPb",
+router.delete(
+  "/tags/:tagId/personalBest",
   RateLimit.userTagsClearPB,
   authenticateRequest(),
   requestValidation({
-    body: {
-      tagid: joi.string().required(),
+    params: {
+      tagId: joi.string().required(),
     },
   }),
   asyncHandlerWrapper(UserController.clearTagPb)

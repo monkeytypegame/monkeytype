@@ -215,7 +215,7 @@ export async function signInWithGoogle() {
 
         let response;
         try {
-          response = await axiosInstance.post("/user/checkName", { name });
+          response = await axiosInstance.get(`/user/checkName/${name}`);
         } catch (e) {
           let msg = e?.response?.data?.message ?? e.message;
           if (e.response.status >= 500) {
@@ -274,7 +274,7 @@ export async function signInWithGoogle() {
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     signedInUser.user.delete();
-    axiosInstance.delete("/user/delete");
+    axiosInstance.delete("/user");
     return;
   }
 }
@@ -429,9 +429,7 @@ async function signUp() {
   }
 
   try {
-    await axiosInstance.post("/user/checkName", {
-      name: nname,
-    });
+    await axiosInstance.get(`/user/checkName/${nname}`);
   } catch (e) {
     let txt;
     if (e.response) {

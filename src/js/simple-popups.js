@@ -204,7 +204,7 @@ list.updateEmail = new SimplePopup(
       Loader.show();
       let response;
       try {
-        response = await axiosInstance.post("/user/updateEmail", {
+        response = await axiosInstance.patch("/user/email", {
           uid: user.uid,
           previousEmail: user.email,
           newEmail: email,
@@ -274,9 +274,7 @@ list.updateName = new SimplePopup(
 
       let response;
       try {
-        response = await axiosInstance.post("/user/checkName", {
-          name: newName,
-        });
+        response = await axiosInstance.get(`/user/checkName/${newName}`);
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;
@@ -289,7 +287,7 @@ list.updateName = new SimplePopup(
         return;
       }
       try {
-        response = await axiosInstance.post("/user/updateName", {
+        response = await axiosInstance.patch("/user/name", {
           name: newName,
         });
       } catch (e) {
@@ -519,9 +517,7 @@ list.clearTagPb = new SimplePopup(
     let tagid = eval("this.parameters[0]");
     Loader.show();
     axiosInstance
-      .post("/user/tags/clearPb", {
-        tagid: tagid,
-      })
+      .delete(`/user/tags/${tagid}/clearPb`)
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
@@ -595,7 +591,7 @@ list.resetPersonalBests = new SimplePopup(
 
       let response;
       try {
-        response = await axiosInstance.post("/user/clearPb");
+        response = await axiosInstance.delete("/user/personalBests");
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;

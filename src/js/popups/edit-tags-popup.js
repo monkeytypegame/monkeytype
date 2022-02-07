@@ -101,8 +101,8 @@ async function apply() {
     let response;
     try {
       response = await axiosInstance.patch("/user/tags", {
-        tagid,
-        newname: inputVal,
+        tagId: tagid,
+        newName: inputVal,
       });
     } catch (e) {
       Loader.hide();
@@ -153,7 +153,7 @@ async function apply() {
     Loader.show();
     let response;
     try {
-      response = await axiosInstance.post("/user/tags/clearPb", { tagid });
+      response = await axiosInstance.delete(`/user/tags/${tagid}/personalBest`);
     } catch (e) {
       Loader.hide();
       let msg = e?.response?.data?.message ?? e.message;
