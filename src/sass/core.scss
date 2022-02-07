@@ -246,6 +246,7 @@ key {
   border-radius: var(--roundness);
   background: rgba(0, 0, 0, 0.1);
   text-align: center;
+  user-select: none;
   -webkit-user-select: none;
   // display: grid;
   align-content: center;

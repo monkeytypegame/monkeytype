@@ -1,17 +1,17 @@
-import { loadTags } from "./result-filters";
-import * as AccountButton from "./account-button";
-import * as Notifications from "./notifications";
+import { loadTags } from "./account/result-filters";
+import * as AccountButton from "./elements/account-button";
+import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
-import * as TodayTracker from "./today-tracker";
-import * as LoadingPage from "./loading-page";
+import * as TodayTracker from "./test/today-tracker";
+import * as LoadingPage from "./pages/loading";
 import * as UI from "./ui";
 
 let dbSnapshot = null;
 
 export function updateName(uid, name) {
   //TODO update
-  axiosInstance.post("/updateName", {
-    name: name,
+  axiosInstance.patch("/user/name", {
+    name,
   });
 }
 
@@ -559,7 +559,7 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
   let current = dbSnapshot.lbMemory[mode][mode2][language];
   dbSnapshot.lbMemory[mode][mode2][language] = rank;
   if (api && current != rank) {
-    axiosInstance.post("/user/updateLbMemory", {
+    axiosInstance.patch("/user/leaderboardMemory", {
       mode,
       mode2,
       language,

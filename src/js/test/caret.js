@@ -1,5 +1,5 @@
-import * as Misc from "./misc";
-import Config from "./config";
+import * as Misc from "../misc";
+import Config from "../config";
 import * as TestLogic from "./test-logic";
 import * as TestTimer from "./test-timer";
 

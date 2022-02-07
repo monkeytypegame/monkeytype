@@ -1,10 +1,9 @@
 import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
-import Config from "./config";
-import * as DB from "./db";
+import Config from "../config";
+import * as DB from "../db";
 import * as TestTimer from "./test-timer";
-import * as Misc from "./misc";
-import * as UI from "./ui";
+import * as Misc from "../misc";
 
 export let settings = null;
 

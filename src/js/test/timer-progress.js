@@ -1,6 +1,6 @@
-import Config from "./config";
+import Config from "../config";
 import * as CustomText from "./custom-text";
-import * as Misc from "./misc";
+import * as Misc from "../misc";
 import * as TestLogic from "./test-logic";
 import * as TestTimer from "./test-timer";
 

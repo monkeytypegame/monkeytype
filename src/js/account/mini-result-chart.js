@@ -1,5 +1,5 @@
-import * as ChartController from "./chart-controller";
-import Config from "./config";
+import * as ChartController from "../controllers/chart-controller";
+import Config from "../config";
 
 export function updatePosition(x, y) {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });

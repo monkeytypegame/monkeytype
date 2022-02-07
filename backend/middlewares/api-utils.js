@@ -30,7 +30,7 @@ function validateConfiguration(options) {
  * Without this, any errors thrown will not be caught by the error handling middleware, and
  * the app will hang!
  */
-function asyncHandlerWrapper(handler) {
+function asyncHandler(handler) {
   return async (req, res, next) => {
     try {
       const handlerData = await handler(req, res);
@@ -49,7 +49,7 @@ function asyncHandlerWrapper(handler) {
   };
 }
 
-function requestValidation(validationSchema) {
+function validateRequest(validationSchema) {
   /**
    * In dev environments, as an alternative to token authentication,
    * you can pass the authentication middleware by having a user id in the body.
@@ -89,6 +89,6 @@ function requestValidation(validationSchema) {
 
 module.exports = {
   validateConfiguration,
-  asyncHandlerWrapper,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 };

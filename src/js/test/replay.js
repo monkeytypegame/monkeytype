@@ -1,5 +1,5 @@
-import config from "./config";
-import * as Sound from "./sound";
+import config from "../config";
+import * as Sound from "../controllers/sound-controller";
 
 let wordsList = [];
 let replayData = [];
