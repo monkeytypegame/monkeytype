@@ -35,8 +35,8 @@ router.post(
   requestValidation({
     body: {
       email: joi.string().email(),
-      name: joi.string(),
-      uid: joi.string().required(),
+      name: joi.string().required(),
+      uid: joi.string(),
     },
   }),
   asyncHandlerWrapper(UserController.createNewUser)

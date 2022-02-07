@@ -275,7 +275,7 @@ export async function signInWithGoogle() {
     $(".pageLogin .button").removeClass("disabled");
     if (signedInUser?.user) {
       signedInUser.user.delete();
-      axiosInstance.delete("/user");
+      await axiosInstance.delete("/user");
     }
     return;
   }
@@ -463,24 +463,23 @@ async function signUp() {
     await createdAuthUser.user.sendEmailVerification();
     AllTimeStats.clear();
     Notifications.add("Account created", 1, 3);
-    throw "test";
-    // $("#menu .icon-button.account .text").text(nname);
-    // $(".pageLogin .button").removeClass("disabled");
-    // $(".pageLogin .preloader").addClass("hidden");
-    // await loadUser(createdAuthUser.user);
-    // if (TestLogic.notSignedInLastResult !== null) {
-    //   TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
-    //   axiosInstance
-    //     .post("/results/add", {
-    //       result: TestLogic.notSignedInLastResult,
-    //     })
-    //     .then((result) => {
-    //       if (result.status === 200) {
-    //         DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
-    //       }
-    //     });
-    //   UI.changePage("account");
-    // }
+    $("#menu .icon-button.account .text").text(nname);
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin .preloader").addClass("hidden");
+    await loadUser(createdAuthUser.user);
+    if (TestLogic.notSignedInLastResult !== null) {
+      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
+      axiosInstance
+        .post("/results/add", {
+          result: TestLogic.notSignedInLastResult,
+        })
+        .then((result) => {
+          if (result.status === 200) {
+            DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+          }
+        });
+      UI.changePage("account");
+    }
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
