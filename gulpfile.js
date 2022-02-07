@@ -16,6 +16,23 @@ const through2 = require("through2");
 
 let eslintConfig = ".eslintrc.json";
 
+task("clean", function () {
+  return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
+});
+
+task("lint", function () {
+  let filelist = [
+    "./src/js/**/*.js",
+    "!./src/js/global-dependencies.js",
+    "!./src/js/exports.js",
+  ];
+  filelist.push("./static/**/*.json");
+  return src(filelist)
+    .pipe(eslint(eslintConfig))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
 //concatenates and lints legacy js files and writes the output to dist/gen/index.js
 task("cat", function () {
   return src(["./src/js/global-dependencies.js", "./src/js/exports.js"])
@@ -26,18 +43,6 @@ task("cat", function () {
     .pipe(dest("./dist/gen"));
 });
 
-task("sass", function () {
-  return src("./src/sass/*.scss")
-    .pipe(concat("style.scss"))
-    .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
-    .pipe(dest("dist/css"));
-});
-
-task("static", function () {
-  return src("./static/**/*", { dot: true }).pipe(dest("./dist/"));
-});
-
-//copies refactored js files to dist/gen so that they can be required by dist/gen/index.js
 task("copy-modules", function () {
   return src(
     [
@@ -77,22 +82,15 @@ task("browserify", function () {
     .pipe(dest("./dist/js"));
 });
 
-//lints only the refactored files
-task("lint", function () {
-  let filelist = [
-    "./src/js/**/*.js",
-    "!./src/js/global-dependencies.js",
-    "!./src/js/exports.js",
-  ];
-  filelist.push("./static/**/*.json");
-  return src(filelist)
-    .pipe(eslint(eslintConfig))
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
+task("static", function () {
+  return src("./static/**/*", { dot: true }).pipe(dest("./dist/"));
 });
 
-task("clean", function () {
-  return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
+task("sass", function () {
+  return src("./src/sass/*.scss")
+    .pipe(concat("style.scss"))
+    .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
+    .pipe(dest("dist/css"));
 });
 
 task("updateSwCacheName", function () {
