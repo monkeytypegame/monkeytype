@@ -34,7 +34,7 @@ try {
 }
 
 class ResultController {
-  static async getResults(req, res) {
+  static async getResults(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
     return new MonkeyResponse(200, "Result fetch successfully", results);
@@ -42,6 +42,7 @@ class ResultController {
 
   static async deleteAll(req, res) {
     const { uid } = req.ctx.decodedToken;
+
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
     return new MonkeyResponse(200, "All results deleted successfully");
@@ -50,6 +51,7 @@ class ResultController {
   static async updateTags(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tags, resultid } = req.body;
+
     await ResultDAO.updateTags(uid, resultid, tags);
     return new MonkeyResponse(200, "Result tag updated successfully");
   }
@@ -60,16 +62,7 @@ class ResultController {
     result.uid = uid;
     if (validateObjectValues(result) > 0)
       throw new MonkeyError(400, "Bad input");
-    if (
-      result.wpm <= 0 ||
-      result.wpm > 350 ||
-      result.acc < 75 ||
-      result.acc > 100 ||
-      result.consistency > 100
-    ) {
-      throw new MonkeyError(400, "Bad input");
-    }
-    if (result.wpm == result.raw && result.acc != 100) {
+    if (result.wpm === result.raw && result.acc !== 100) {
       throw new MonkeyError(400, "Bad input");
     }
     if (
