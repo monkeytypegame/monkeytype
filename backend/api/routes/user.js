@@ -4,7 +4,7 @@ const { Router } = require("express");
 const UserController = require("../controllers/user");
 const RateLimit = require("../../middlewares/rate-limit");
 const {
-  asyncHandlerWrapper,
+  validateRequester,
   requestValidation,
 } = require("../../middlewares/api-utils");
 
@@ -25,7 +25,7 @@ router.get(
   "/",
   RateLimit.userGet,
   authenticateRequest(),
-  asyncHandlerWrapper(UserController.getUser)
+  asyncHandler(UserController.getUser)
 );
 
 router.post(
@@ -39,7 +39,7 @@ router.post(
       uid: joi.string(),
     },
   }),
-  asyncHandlerWrapper(UserController.createNewUser)
+  asyncHandler(UserController.createNewUser)
 );
 
 router.get(
@@ -50,14 +50,14 @@ router.get(
       name: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(UserController.checkName)
+  asyncHandler(UserController.checkName)
 );
 
 router.delete(
   "/",
   RateLimit.userDelete,
   authenticateRequest(),
-  asyncHandlerWrapper(UserController.deleteUser)
+  asyncHandler(UserController.deleteUser)
 );
 
 router.patch(
@@ -69,7 +69,7 @@ router.patch(
       name: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(UserController.updateName)
+  asyncHandler(UserController.updateName)
 );
 
 router.patch(
@@ -87,7 +87,7 @@ router.patch(
       rank: joi.number().required(),
     },
   }),
-  asyncHandlerWrapper(UserController.updateLbMemory)
+  asyncHandler(UserController.updateLbMemory)
 );
 
 router.patch(
@@ -101,21 +101,21 @@ router.patch(
       previousEmail: joi.string().email().required(),
     },
   }),
-  asyncHandlerWrapper(UserController.updateEmail)
+  asyncHandler(UserController.updateEmail)
 );
 
 router.delete(
   "/personalBests",
   RateLimit.userClearPB,
   authenticateRequest(),
-  asyncHandlerWrapper(UserController.clearPb)
+  asyncHandler(UserController.clearPb)
 );
 
 router.get(
   "/tags",
   RateLimit.userTagsGet,
   authenticateRequest(),
-  asyncHandlerWrapper(UserController.getTags)
+  asyncHandler(UserController.getTags)
 );
 
 router.post(
@@ -127,7 +127,7 @@ router.post(
       tagName: tagNameValidation,
     },
   }),
-  asyncHandlerWrapper(UserController.addTag)
+  asyncHandler(UserController.addTag)
 );
 
 router.patch(
@@ -140,7 +140,7 @@ router.patch(
       newName: tagNameValidation,
     },
   }),
-  asyncHandlerWrapper(UserController.editTag)
+  asyncHandler(UserController.editTag)
 );
 
 router.delete(
@@ -152,7 +152,7 @@ router.delete(
       tagId: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(UserController.removeTag)
+  asyncHandler(UserController.removeTag)
 );
 
 router.delete(
@@ -164,7 +164,7 @@ router.delete(
       tagId: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(UserController.clearTagPb)
+  asyncHandler(UserController.clearTagPb)
 );
 
 router.post(
@@ -180,14 +180,14 @@ router.post(
       }),
     },
   }),
-  asyncHandlerWrapper(UserController.linkDiscord)
+  asyncHandler(UserController.linkDiscord)
 );
 
 router.post(
   "/discord/unlink",
   RateLimit.userDiscordUnlink,
   authenticateRequest(),
-  asyncHandlerWrapper(UserController.unlinkDiscord)
+  asyncHandler(UserController.unlinkDiscord)
 );
 
 module.exports = router;

@@ -4,8 +4,8 @@ const PresetController = require("../controllers/preset");
 const RateLimit = require("../../middlewares/rate-limit");
 const configSchema = require("../schemas/config-schema");
 const {
-  asyncHandlerWrapper,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 } = require("../../middlewares/api-utils");
 
 const { Router } = require("express");
@@ -26,14 +26,14 @@ router.get(
   "/",
   RateLimit.presetsGet,
   authenticateRequest(),
-  asyncHandlerWrapper(PresetController.getPresets)
+  asyncHandler(PresetController.getPresets)
 );
 
 router.post(
   "/add",
   RateLimit.presetsAdd,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       name: presetNameSchema,
       config: configSchema.keys({
@@ -41,14 +41,14 @@ router.post(
       }),
     },
   }),
-  asyncHandlerWrapper(PresetController.addPreset)
+  asyncHandler(PresetController.addPreset)
 );
 
 router.post(
   "/edit",
   RateLimit.presetsEdit,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       _id: joi.string().required(),
       name: presetNameSchema,
@@ -59,19 +59,19 @@ router.post(
         .allow(null),
     },
   }),
-  asyncHandlerWrapper(PresetController.editPreset)
+  asyncHandler(PresetController.editPreset)
 );
 
 router.post(
   "/remove",
   RateLimit.presetsRemove,
   authenticateRequest(),
-  requestValidation({
+  validateRequest({
     body: {
       _id: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(PresetController.removePreset)
+  asyncHandler(PresetController.removePreset)
 );
 
 module.exports = router;
