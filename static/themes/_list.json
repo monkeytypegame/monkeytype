@@ -724,4 +724,9 @@
     "bgColor": "#000000",
     "mainColor": "#ffea00"
   }
+  ,{
+    "name": "wasp",
+    "bgColor": "#fffa61",
+    "mainColor": "#000000"
+  }
 ]
