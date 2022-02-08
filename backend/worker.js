@@ -4,6 +4,7 @@ config({ path: path.join(__dirname, ".env") });
 
 const db = require("./init/db");
 const admin = require("firebase-admin");
+// eslint-disable-next-line
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 
 async function main() {
@@ -27,7 +28,7 @@ async function refactor() {
   for (let user of users) {
     let obj = user.personalBests;
 
-    lbPb = {
+    let lbPb = {
       time: {
         15: {},
         60: {},

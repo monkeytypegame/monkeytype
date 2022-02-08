@@ -1,4 +1,3 @@
-const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 
 class ConfigDAO {
