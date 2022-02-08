@@ -14,7 +14,7 @@ const uglify = require("gulp-uglify");
 const through2 = require("through2");
 // sass.compiler = require("dart-sass");
 
-let eslintConfig = ".eslintrc.json";
+let eslintConfig = "../.eslintrc.json";
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
