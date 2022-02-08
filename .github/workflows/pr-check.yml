@@ -17,4 +17,3 @@ jobs:
           node-version: "16.13.2"
       - run: npm run install:all
       - run: npm run lint
-      - run: npm run pretty
