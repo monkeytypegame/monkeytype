@@ -27,7 +27,7 @@ async function refactor() {
   for (let user of users) {
     let obj = user.personalBests;
 
-    lbPb = {
+    let lbPb = {
       time: {
         15: {},
         60: {},

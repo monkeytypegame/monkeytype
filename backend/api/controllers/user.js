@@ -1,9 +1,6 @@
 const UsersDAO = require("../../dao/user");
 const BotDAO = require("../../dao/bot");
-const {
-  isUsernameValid,
-  isTagPresetNameValid,
-} = require("../../handlers/validation");
+const { isUsernameValid } = require("../../handlers/validation");
 const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
 const Logger = require("./../../handlers/logger.js");

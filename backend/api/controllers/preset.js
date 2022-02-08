@@ -1,18 +1,13 @@
 const PresetDAO = require("../../dao/preset");
-const {
-  isTagPresetNameValid,
-  validateConfig,
-} = require("../../handlers/validation");
-const MonkeyError = require("../../handlers/error");
 
 class PresetController {
-  static async getPresets(req, res) {
+  static async getPresets(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     return await PresetDAO.getPresets(uid);
   }
 
-  static async addPreset(req, res) {
+  static async addPreset(req, _res) {
     const { name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 

@@ -7,14 +7,16 @@
     "start:dev": "concurrently --kill-others \"cd ./frontend && npm run start:dev\" \"cd ./backend && npm run start:dev\"",
     "start:dev:be": "cd backend && npm run start:dev",
     "start:dev:fe": "cd frontend && npm run start:dev",
-    "deploy:live": "cd frontend && npm run deploy:live"
+    "deploy:live": "cd frontend && npm run deploy:live",
+    "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/js/**/*.js'",
+    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'"
   },
   "engines": {
     "npm": "8.1.2"
   },
   "devDependencies": {
     "concurrently": "5.3.0",
-    "eslint": "7.28.0",
+    "eslint": "8.8.0",
     "eslint-config-standard": "16.0.3",
     "eslint-formatter-github": "1.0.11",
     "eslint-plugin-import": "2.23.4",
