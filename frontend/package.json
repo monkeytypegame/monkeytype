@@ -8,6 +8,9 @@
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
     "deploy:live": "npm run build && firebase deploy -P live --only hosting"
   },
+  "engines": {
+    "npm": "8.1.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-transform-runtime": "^7.12.1",
