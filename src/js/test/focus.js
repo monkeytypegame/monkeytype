@@ -1,5 +1,5 @@
 import * as Caret from "./caret";
-import * as UI from "./ui";
+import * as UI from "../ui";
 
 let state = false;
 

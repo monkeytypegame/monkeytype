@@ -1,4 +1,4 @@
-import * as UI from "./ui";
+import * as UI from "../ui";
 
 export function updateBar(percentage, fast) {
   const speed = fast ? 100 : 1000;
@@ -17,7 +17,7 @@ export function updateText(text) {
 }
 
 export function showBar() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     UI.swapElements(
       $(".pageLoading .icon"),
       $(".pageLoading .barWrapper"),

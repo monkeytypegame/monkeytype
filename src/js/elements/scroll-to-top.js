@@ -1,4 +1,4 @@
-import * as UI from "./ui";
+import * as UI from "../ui";
 
 let visible = false;
 

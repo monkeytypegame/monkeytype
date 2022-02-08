@@ -1,4 +1,4 @@
-import Config from "./config";
+import Config from "../config";
 import Howler, { Howl } from "howler";
 
 let errorSound = null;

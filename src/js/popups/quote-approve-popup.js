@@ -1,6 +1,6 @@
-import * as Notifications from "./notifications";
-import axiosInstance from "./axios-instance";
-import * as Loader from "./loader";
+import * as Notifications from "../elements/notifications";
+import axiosInstance from "../axios-instance";
+import * as Loader from "../elements/loader";
 
 let quotes = [];
 

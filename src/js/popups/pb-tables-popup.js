@@ -1,4 +1,4 @@
-import * as DB from "./db";
+import * as DB from "../db";
 
 function update(mode) {
   $("#pbTablesPopup table tbody").empty();
