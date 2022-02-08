@@ -6,7 +6,10 @@
   "scripts": {
     "build": "npx gulp build",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
-    "deploy:live": "npm run build && firebase deploy -P live --only hosting"
+    "deploy:live": "npm run build && firebase deploy -P live --only hosting",
+    "build-ts": "npx gulp build-ts",
+    "start:dev-ts": "npm run build-ts && concurrently --kill-others \"npx gulp watch-ts\" \"firebase serve --only hosting\"",
+    "deploy:live-ts": "npm run build-ts && firebase deploy -P live --only hosting"
   },
   "engines": {
     "npm": "8.1.2"
