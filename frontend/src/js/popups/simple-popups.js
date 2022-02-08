@@ -231,6 +231,9 @@ list.updateEmail = new SimplePopup(
         return;
       } else {
         Notifications.add("Email updated", 1);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     } catch (e) {
       if (e.code == "auth/wrong-password") {
@@ -372,6 +375,9 @@ list.updatePassword = new SimplePopup(
       await user.updatePassword(newPass);
       Loader.hide();
       Notifications.add("Password updated", 1);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (e) {
       Loader.hide();
       if (e.code == "auth/wrong-password") {
@@ -430,7 +436,10 @@ list.addPasswordAuth = new SimplePopup(
       return;
     }
 
-    AccountController.addPasswordAuth(email, pass);
+    await AccountController.addPasswordAuth(email, pass);
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   },
   () => {}
 );
