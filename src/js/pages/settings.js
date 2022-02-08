@@ -869,8 +869,11 @@ $(".pageSettings #passPasswordAuth").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
 });
 
-$(".pageSettings #addGoogleAuth").on("click", (e) => {
-  AccountController.addGoogleAuth();
+$(".pageSettings #addGoogleAuth").on("click", async (e) => {
+  await AccountController.addGoogleAuth();
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
 });
 
 $(".pageSettings #removeGoogleAuth").on("click", (e) => {
