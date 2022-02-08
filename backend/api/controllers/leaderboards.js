@@ -33,7 +33,7 @@ class LeaderboardsController {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.ctx.decodedToken;
     const data = LeaderboardsDAO.getRank(mode, mode2, language, uid);
-    return new MonkeyResponse(200, "Rank retrieved", data);
+    return new MonkeyResponse("Rank retrieved", data);
   }
 }
 

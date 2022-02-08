@@ -7,7 +7,7 @@ class QuoteRatingsController {
   static async getRating(req, _res) {
     const { quoteId, language } = req.query;
     const data = await QuoteRatingsDAO.get(parseInt(quoteId), language);
-    return new MonkeyResponse(200, "Rating retrieved", data);
+    return new MonkeyResponse("Rating retrieved", data);
   }
 
   static async submitRating(req, res) {
@@ -47,7 +47,7 @@ class QuoteRatingsController {
     await QuoteRatingsDAO.submit(quoteId, language, newRating, update);
     quoteRatings[language][quoteId] = rating;
     await UserDAO.updateQuoteRatings(uid, quoteRatings);
-    return new MonkeyResponse(200, "Rating updated");
+    return new MonkeyResponse("Rating updated");
   }
 }
 

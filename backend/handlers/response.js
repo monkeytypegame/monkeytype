@@ -1,5 +1,5 @@
 class MonkeyResponse {
-  constructor(status, message, data) {
+  constructor(message, data, status = 200) {
     this.status = status;
     this.message = message;
     this.data = data;
@@ -7,16 +7,16 @@ class MonkeyResponse {
 }
 
 function handleResponse(request, response, next) {
-  var resBody = response.encryptedBody || response.body || {};
-  var { status } = resBody;
-  var handler =
+  const resBody = response.encryptedBody || response.body || {};
+  const { status } = resBody;
+  const handler =
     [301, 302].indexOf(status) > -1 ? _redirectResponse : _sendResponse;
   handler(request, response, next);
 }
 
 function _sendResponse(request, response) {
-  var resBody = response.encryptedBody || response.body || {};
-  var { status, message, data } = resBody;
+  let resBody = response.encryptedBody || response.body || {};
+  const { status, message, data } = resBody;
 
   if (!resBody || !status) {
     resBody = new MonkeyResponse(500, "Response Data Not Found!");
@@ -26,8 +26,8 @@ function _sendResponse(request, response) {
 }
 
 function _redirectResponse(request, response) {
-  var resBody = response.encryptedBody || response.body || {};
-  var { status, data } = resBody;
+  const resBody = response.encryptedBody || response.body || {};
+  const { status, data } = resBody;
   return response.status(status).redirect(data);
 }
 

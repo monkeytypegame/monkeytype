@@ -41,7 +41,7 @@ class QuotesController {
       details: newReport.details,
     });
 
-    return new MonkeyResponse(200, "Quote reported successfully");
+    return new MonkeyResponse("Quote reported successfully");
   }
 }
 

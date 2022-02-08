@@ -7,7 +7,7 @@ class ConfigController {
     const { uid } = req.ctx.decodedToken;
 
     const data = await ConfigDAO.getConfig(uid);
-    return new MonkeyResponse(200, "Get configuration successfully", data);
+    return new MonkeyResponse("Get configuration successfully", data);
   }
 
   static async saveConfig(req, res) {
@@ -17,7 +17,7 @@ class ConfigController {
     validateConfig(config);
     await ConfigDAO.saveConfig(uid, config);
 
-    return new MonkeyResponse(200, "Config updated");
+    return new MonkeyResponse("Config updated");
   }
 }
 

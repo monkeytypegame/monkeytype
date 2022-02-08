@@ -37,7 +37,7 @@ class ResultController {
   static async getResults(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
-    return new MonkeyResponse(200, "Result retrieved", results);
+    return new MonkeyResponse("Result retrieved", results);
   }
 
   static async deleteAll(req, res) {
@@ -45,7 +45,7 @@ class ResultController {
 
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
-    return new MonkeyResponse(200, "All results deleted");
+    return new MonkeyResponse("All results deleted");
   }
 
   static async updateTags(req, res) {
@@ -53,7 +53,7 @@ class ResultController {
     const { tags, resultid } = req.body;
 
     await ResultDAO.updateTags(uid, resultid, tags);
-    return new MonkeyResponse(200, "Result tags updated");
+    return new MonkeyResponse("Result tags updated");
   }
 
   static async addResult(req, res) {
@@ -322,7 +322,7 @@ class ResultController {
       insertedId: addedResult.insertedId,
     };
 
-    return new MonkeyResponse(200, "Result updated", data);
+    return new MonkeyResponse("Result saved", data);
   }
 }
 
