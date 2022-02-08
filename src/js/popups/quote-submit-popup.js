@@ -1,8 +1,8 @@
-import * as Misc from "./misc";
-import * as Notifications from "./notifications";
-import axiosInstance from "./axios-instance";
-import * as Loader from "./loader";
-import Config from "./config";
+import * as Misc from "../misc";
+import * as Notifications from "../elements/notifications";
+import axiosInstance from "../axios-instance";
+import * as Loader from "../elements/loader";
+import * as Config from "../config";
 
 let dropdownReady = false;
 async function initDropdown() {
@@ -67,21 +67,22 @@ export async function show(noAnim = false) {
     5
   );
   return;
-  // if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
-  //   await initDropdown();
-  //   $("#quoteSubmitPopup #submitQuoteLanguage").val(
-  //     Config.language.replace(/_\d*k$/g, "")
-  //   );
-  //   $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
-  //   $("#quoteSubmitPopup input").val("");
-  //   $("#quoteSubmitPopupWrapper")
-  //     .stop(true, true)
-  //     .css("opacity", 0)
-  //     .removeClass("hidden")
-  //     .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
-  //       $("#quoteSubmitPopup textarea").focus().select();
-  //     });
-  // }
+  // eslint-disable-next-line no-unreachable
+  if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+    await initDropdown();
+    $("#quoteSubmitPopup #submitQuoteLanguage").val(
+      Config.language.replace(/_\d*k$/g, "")
+    );
+    $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
+    $("#quoteSubmitPopup input").val("");
+    $("#quoteSubmitPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
+        $("#quoteSubmitPopup textarea").focus().select();
+      });
+  }
 }
 
 export function hide() {

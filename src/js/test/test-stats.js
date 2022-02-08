@@ -1,6 +1,6 @@
 import * as TestLogic from "./test-logic";
-import Config from "./config";
-import * as Misc from "./misc";
+import Config from "../config";
+import * as Misc from "../misc";
 import * as TestStats from "./test-stats";
 
 export let invalid = false;
@@ -41,6 +41,12 @@ export let keypressTimings = {
     array: [],
   },
 };
+
+export let spacingDebug = false;
+export function enableSpacingDebug() {
+  spacingDebug = true;
+  console.clear();
+}
 
 export function getStats() {
   let ret = {
@@ -295,8 +301,31 @@ export function recordKeypressSpacing() {
   let diff = Math.abs(keypressTimings.spacing.current - now);
   if (keypressTimings.spacing.current !== -1) {
     pushKeypressSpacing(diff);
+    if (spacingDebug)
+      console.log(
+        "spacing debug",
+        "push",
+        diff,
+        "length",
+        keypressTimings.spacing.array.length
+      );
   }
   setKeypressSpacing(now);
+  if (spacingDebug)
+    console.log(
+      "spacing debug",
+      "set",
+      now,
+      "length",
+      keypressTimings.spacing.array.length
+    );
+  if (spacingDebug)
+    console.log(
+      "spacing debug",
+      "recorded",
+      "length",
+      keypressTimings.spacing.array.length
+    );
 }
 
 export function resetKeypressTimings() {
@@ -310,6 +339,7 @@ export function resetKeypressTimings() {
       array: [],
     },
   };
+  if (spacingDebug) console.clear();
 }
 
 export function pushMissedWord(word) {

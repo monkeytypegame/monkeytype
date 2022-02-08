@@ -114,7 +114,7 @@ Before submitting a theme make sure...
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
-(If you want to contribute themes but don't know how to, check [THEMES.md](https://github.com/teddinotteddy/monkeytype/blob/Theme-Documentation/THEMES.md))
+(If you want to contribute themes but don't know how to, check [THEMES.md](https://github.com/Miodec/monkeytype/blob/master/THEMES.md))
 
 #### Language Guidelines
 

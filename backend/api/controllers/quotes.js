@@ -7,7 +7,7 @@ const Logger = require("../../handlers/logger");
 
 class QuotesController {
   static async reportQuote(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
 
     const user = await UserDAO.getUser(uid);
     if (user.cannotReport) {

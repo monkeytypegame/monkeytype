@@ -1,28 +1,28 @@
 import * as DB from "./db";
-import * as Sound from "./sound";
-import * as TestUI from "./test-ui";
-import * as ChartController from "./chart-controller";
-import * as OutOfFocus from "./out-of-focus";
-import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-wpm";
-import * as LiveAcc from "./live-acc";
-import * as LiveBurst from "./live-burst";
-import * as Funbox from "./funbox";
-import * as Notifications from "./notifications";
-import * as ThemeController from "./theme-controller";
-import * as Keymap from "./keymap";
-import * as LanguagePicker from "./language-picker";
-import * as TestLogic from "./test-logic";
-import * as PaceCaret from "./pace-caret";
+import * as Sound from "./controllers/sound-controller";
+import * as TestUI from "./test/test-ui";
+import * as ChartController from "./controllers/chart-controller";
+import * as OutOfFocus from "./test/out-of-focus";
+import * as TimerProgress from "./test/timer-progress";
+import * as LiveWpm from "./test/live-wpm";
+import * as LiveAcc from "./test/live-acc";
+import * as LiveBurst from "./test/live-burst";
+import * as Funbox from "./test/funbox";
+import * as Notifications from "./elements/notifications";
+import * as ThemeController from "./controllers/theme-controller";
+import * as Keymap from "./elements/keymap";
+import * as LanguagePicker from "./settings/language-picker";
+import * as TestLogic from "./test/test-logic";
+import * as PaceCaret from "./test/pace-caret";
 import * as UI from "./ui";
-import * as CommandlineLists from "./commandline-lists";
-import * as BackgroundFilter from "./custom-background-filter";
-import LayoutList from "./layouts";
-import * as ChallengeContoller from "./challenge-controller";
-import * as TTS from "./tts";
-import * as MobileTestConfig from "./mobile-test-config.js";
-import * as TestConfig from "./test-config.js";
-import * as PractiseWords from "./practise-words";
+import * as CommandlineLists from "./elements/commandline-lists";
+import * as BackgroundFilter from "./elements/custom-background-filter";
+import LayoutList from "./test/layouts";
+import * as ChallengeContoller from "./controllers/challenge-controller";
+import * as TTS from "./test/tts";
+import * as MobileTestConfig from "./popups/mobile-test-config-popup.js";
+import * as TestConfig from "./test/test-config.js";
+import * as PractiseWords from "./test/practise-words";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -494,7 +494,8 @@ export function setPaceCaret(val, nosave) {
 }
 
 export function setPaceCaretCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
@@ -530,7 +531,8 @@ export function setMinWpm(minwpm, nosave) {
 }
 
 export function setMinWpmCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
@@ -566,7 +568,8 @@ export function setMinBurst(min, nosave) {
 }
 
 export function setMinBurstCustomSpeed(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+  val = parseInt(val);
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
@@ -943,7 +946,7 @@ export function setTimerStyle(style, nosave) {
 }
 
 export function setTimerColor(color, nosave) {
-  if (color == null || color == undefined) {
+  if (!color || !["black", "sub", "text", "main"].includes(color)) {
     color = "black";
   }
   config.timerColor = color;
@@ -1065,19 +1068,24 @@ export function setQuoteLength(len, nosave, multipleMode) {
 }
 
 export function setWordCount(wordCount, nosave) {
-  if (wordCount === null || isNaN(wordCount) || wordCount < 0) {
-    wordCount = 10;
-  }
   wordCount = parseInt(wordCount);
+  if (
+    wordCount === null ||
+    isNaN(wordCount) ||
+    wordCount < 0 ||
+    wordCount > 100000
+  ) {
+    wordCount = defaultConfig.wordCount;
+  }
   // if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
     wordCount = "custom";
   }
-  $(
-    "#top .config .wordCount .text-button[wordCount='" + wordCount + "']"
-  ).addClass("active");
+  $(`#top .config .wordCount .text-button[wordCount='${wordCount}']`).addClass(
+    "active"
+  );
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
@@ -1218,8 +1226,8 @@ export function toggleFreedomMode() {
 }
 
 export function setConfidenceMode(cm, nosave) {
-  if (cm == undefined) {
-    cm = "off";
+  if (cm == undefined || !["off", "on", "max"].includes(cm)) {
+    cm = defaultConfig.confidenceMode;
   }
   config.confidenceMode = cm;
   if (config.confidenceMode !== "off") {
