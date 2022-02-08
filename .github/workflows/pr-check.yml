@@ -15,6 +15,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "16.13.2"
-      - run: npm ci
-      - run: npm run pretty
+      - run: npm run install:all
       - run: npm run lint
+      - run: npm run pretty
