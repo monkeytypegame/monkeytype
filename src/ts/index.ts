@@ -1,7 +1,8 @@
+/* eslint-disable no-var */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 //this file should be concatenated at the top of the legacy js files
 
 declare global {
-  //add types for these
   var snapshot: any;
   var config: any;
   var glarsesMode: any;
