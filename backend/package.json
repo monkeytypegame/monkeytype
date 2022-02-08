@@ -4,7 +4,8 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "start:dev": "nodemon --watch ./ ./server.js"
+    "start:dev": "nodemon --watch ./ ./server.js",
+    "start:dev-ts": "nodemon --watch ./ ./server.js"
   },
   "engines": {
     "node": "16.13.2",
