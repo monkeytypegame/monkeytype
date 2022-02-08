@@ -87,7 +87,7 @@ public/
 .cloudflareKey_copy.txt
 purgeCfCache.sh
 
-static/adtest.html
+frontend/static/adtest.html
 backend/lastId.txt
 backend/log_success.txt
 backend/credentials/*.json
