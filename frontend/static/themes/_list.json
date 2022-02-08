@@ -729,4 +729,9 @@
     "bgColor": "#bfbec2",
     "mainColor": "#553d94"
   }
+  ,{
+    "name": "passion_fruit",
+    "bgColor": "#7c2142",
+    "mainColor": "#deb80b"
+  }
 ]
