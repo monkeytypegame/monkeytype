@@ -6,6 +6,7 @@ config({ path: path.join(__dirname, ".env") });
 const cors = require("cors");
 const admin = require("firebase-admin");
 const Logger = require("./handlers/logger.js");
+// eslint-disable-next-line
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const db = require("./init/db");
 const jobs = require("./jobs");
