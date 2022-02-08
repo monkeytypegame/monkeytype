@@ -1,0 +1,52 @@
+:root {
+  --bg-color: #000;
+  --main-color: #eee;
+  --caret-color: #eee;
+  --sub-color: #444;
+  --text-color: #eee;
+  --error-color: #fff;
+  --error-extra-color: #d8d8d8;
+  --colorful-error-color: #fff;
+  --colorful-error-extra-color: #d8d8d8;
+}
+
+#top .logo .icon {
+  color: #8c3230;
+}
+
+#top .logo .text {
+  color: #557d8d;
+}
+
+@keyframes shadow {
+  to {
+    color: #000;
+  }
+}
+
+@keyframes shadow-repeat {
+  50% {
+    color: #000;
+  }
+  100% {
+    color: #eee;
+  }
+}
+
+#liveWpm,
+#timerNumber {
+  color: white;
+}
+
+#top .config .group .buttons .text-button.active,
+#result .stats .group,
+#menu .icon-button:hover,
+#top .config .group .buttons .text-button:hover,
+a:hover {
+  animation: shadow-repeat 3s linear infinite forwards;
+}
+
+#logo,
+#typingTest .word letter.correct {
+  animation: shadow 5s linear 1 forwards;
+}

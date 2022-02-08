@@ -34,7 +34,7 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 #### NodeJS and NPM
 
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `16.13.2 LTS`.
 
 Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
 
@@ -49,7 +49,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
-1. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -92,8 +92,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
-1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` (`npm run start:dev:nodb` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+1. Run `npm install` in the project root/backend/frontend directories to install all dependencies.
+2. Run `npm run start:dev` (`npm run start:dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 **Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
 
