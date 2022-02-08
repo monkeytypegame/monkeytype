@@ -4,7 +4,10 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "start:dev": "concurrently --kill-others \"cd ./frontend && npm run start:dev\" \"cd ./backend && npm run start:dev\""
+    "start:dev": "concurrently --kill-others \"cd ./frontend && npm run start:dev\" \"cd ./backend && npm run start:dev\"",
+    "start:dev:be": "cd backend && npm run start:dev",
+    "start:dev:fe": "cd frontend && npm run start:dev",
+    "deploy:live": "cd frontend && npm run deploy:live"
   },
   "devDependencies": {
     "concurrently": "5.3.0",
