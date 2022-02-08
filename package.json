@@ -8,6 +8,7 @@
     "start:dev:be": "cd backend && npm run start:dev",
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
+    "install:all": "npm install && `cd ./frontend && npm install` && `cd ./backend && npm install`",
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/js/**/*.js'",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'"
   },
