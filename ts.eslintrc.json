@@ -38,7 +38,7 @@
     "semi": ["error", "always"],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
-    "no-var": 1,
+    "no-var": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
     "require-path-exists/exists": [
