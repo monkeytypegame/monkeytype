@@ -1,26 +1,32 @@
-const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
+const { authenticateRequest } = require("../../middlewares/auth");
+const {
+  asyncHandler,
+  validateRequest,
+} = require("../../middlewares/api-utils");
+const configSchema = require("../schemas/config-schema");
 const ConfigController = require("../controllers/config");
 const RateLimit = require("../../middlewares/rate-limit");
-const {
-  asyncHandlerWrapper,
-  requestValidation,
-} = require("../../middlewares/api-utils");
 
 const router = Router();
 
 router.get(
   "/",
   RateLimit.configGet,
-  authenticateRequest,
-  asyncHandlerWrapper(ConfigController.getConfig)
+  authenticateRequest(),
+  asyncHandler(ConfigController.getConfig)
 );
 
 router.post(
   "/save",
   RateLimit.configUpdate,
-  authenticateRequest,
-  asyncHandlerWrapper(ConfigController.saveConfig)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      config: configSchema,
+    },
+  }),
+  asyncHandler(ConfigController.saveConfig)
 );
 
 module.exports = router;

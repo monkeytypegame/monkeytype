@@ -1,6 +1,6 @@
-import * as DB from "./db";
-import Config from "./config";
-import * as Misc from "./misc";
+import * as DB from "../db";
+import Config from "../config";
+import * as Misc from "../misc";
 
 export function update() {
   $(".pageAccount .timePbTable tbody").html(`

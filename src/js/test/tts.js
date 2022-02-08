@@ -1,5 +1,5 @@
-import Config from "./config";
-import * as Misc from "./misc";
+import Config from "../config";
+import * as Misc from "../misc";
 
 let voice;
 

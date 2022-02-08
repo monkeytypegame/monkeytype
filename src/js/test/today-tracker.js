@@ -1,5 +1,5 @@
-import * as Misc from "./misc";
-import * as DB from "./db";
+import * as Misc from "../misc";
+import * as DB from "../db";
 
 let seconds = 0;
 let addedAllToday = false;

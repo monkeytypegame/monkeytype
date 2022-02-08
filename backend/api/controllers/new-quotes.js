@@ -6,7 +6,7 @@ const Captcha = require("../../handlers/captcha");
 
 class NewQuotesController {
   static async getQuotes(req, _res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const userInfo = await UserDAO.getUser(uid);
     if (!userInfo.quoteMod) {
       throw new MonkeyError(403, "You don't have permission to do this");
@@ -15,7 +15,7 @@ class NewQuotesController {
   }
 
   static async addQuote(req, _res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { text, source, language, captcha } = req.body;
     if (!(await Captcha.verify(captcha))) {
       throw new MonkeyError(400, "Captcha check failed");
@@ -24,7 +24,7 @@ class NewQuotesController {
   }
 
   static async approve(req, _res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { quoteId, editText, editSource } = req.body;
     const userInfo = await UserDAO.getUser(uid);
     if (!userInfo.quoteMod) {
@@ -37,7 +37,7 @@ class NewQuotesController {
   }
 
   static async refuse(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { quoteId } = req.body;
 
     await NewQuotesDAO.refuse(quoteId, uid);

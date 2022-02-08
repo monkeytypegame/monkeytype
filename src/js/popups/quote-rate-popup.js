@@ -1,8 +1,7 @@
-import * as DB from "./db";
-import * as Loader from "./loader";
-import * as Notifications from "./notifications";
-import * as QuoteReportPopup from "./quote-report-popup";
-import axiosInstance from "./axios-instance";
+import * as DB from "../db";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import axiosInstance from "../axios-instance";
 
 let rating = 0;
 

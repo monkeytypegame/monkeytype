@@ -728,5 +728,14 @@
     "name": "wasp",
     "bgColor": "#fffa61",
     "mainColor": "#000000"
+  ,{
+    "name": "catppuccin",
+    "bgColor": "#1e1e2e",
+    "mainColor": "#abe9b3"
+	}
+  ,{
+    "name": "snes",
+    "bgColor": "#bfbec2",
+    "mainColor": "#553d94"
   }
 ]

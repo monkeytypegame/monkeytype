@@ -1,4 +1,4 @@
-import Config from "./config";
+import Config from "../config";
 
 function show() {
   if ($("#capsWarning").hasClass("hidden")) {

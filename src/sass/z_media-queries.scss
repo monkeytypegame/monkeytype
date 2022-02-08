@@ -70,6 +70,18 @@
   //     line-height: 1.5rem !important;
   //   }
   // }
+  #bannerCenter .banner .container {
+    grid-template-columns: 1fr auto;
+    .image {
+      display: none;
+    }
+    .lefticon {
+      display: none;
+    }
+    .text {
+      margin-left: 2rem;
+    }
+  }
   .merchBanner {
     img {
       display: none;
@@ -104,18 +116,6 @@
     grid-auto-flow: unset;
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
-  }
-  #bannerCenter .banner .container {
-    grid-template-columns: 1fr auto;
-    .image {
-      display: none;
-    }
-    .lefticon {
-      display: none;
-    }
-    .text {
-      margin-left: 2rem;
-    }
   }
   #centerContent {
     #top {
@@ -391,6 +391,13 @@
 
   #simplePopupWrapper #simplePopup {
     width: 90vw;
+  }
+
+  #quoteReportPopup {
+    width: calc(100% - 2rem);
+    margin-left: 1rem;
+    max-width: 800px;
+    padding: 1rem;
   }
 
   .pageSettings {

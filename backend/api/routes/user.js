@@ -1,116 +1,193 @@
+const joi = require("joi");
 const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
 const UserController = require("../controllers/user");
 const RateLimit = require("../../middlewares/rate-limit");
 const {
-  asyncHandlerWrapper,
-  requestValidation,
+  asyncHandler,
+  validateRequest,
 } = require("../../middlewares/api-utils");
 
 const router = Router();
 
+const tagNameValidation = joi
+  .string()
+  .required()
+  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .max(16)
+  .messages({
+    "string.pattern.base":
+      "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
+    "string.max": "Tag name exceeds maximum of 16 characters",
+  });
+
 router.get(
   "/",
   RateLimit.userGet,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.getUser)
+  authenticateRequest(),
+  asyncHandler(UserController.getUser)
 );
 
 router.post(
   "/signup",
   RateLimit.userSignup,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.createNewUser)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      email: joi.string().email(),
+      name: joi.string().required(),
+      uid: joi.string(),
+    },
+  }),
+  asyncHandler(UserController.createNewUser)
 );
 
-router.post(
-  "/checkName",
+router.get(
+  "/checkName/:name",
   RateLimit.userCheckName,
-  asyncHandlerWrapper(UserController.checkName)
+  validateRequest({
+    params: {
+      name: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.checkName)
 );
 
-router.post(
-  "/delete",
+router.delete(
+  "/",
   RateLimit.userDelete,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.deleteUser)
+  authenticateRequest(),
+  asyncHandler(UserController.deleteUser)
 );
 
-router.post(
-  "/updateName",
+router.patch(
+  "/name",
   RateLimit.userUpdateName,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.updateName)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      name: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.updateName)
 );
 
-router.post(
-  "/updateLbMemory",
+router.patch(
+  "/leaderboardMemory",
   RateLimit.userUpdateLBMemory,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.updateLbMemory)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      mode: joi
+        .string()
+        .valid("time", "words", "quote", "zen", "custom")
+        .required(),
+      mode2: joi.alternatives().try(joi.number(), joi.string()).required(),
+      language: joi.string().required(),
+      rank: joi.number().required(),
+    },
+  }),
+  asyncHandler(UserController.updateLbMemory)
 );
 
-router.post(
-  "/updateEmail",
+router.patch(
+  "/email",
   RateLimit.userUpdateEmail,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.updateEmail)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      uid: joi.string().required(),
+      newEmail: joi.string().email().required(),
+      previousEmail: joi.string().email().required(),
+    },
+  }),
+  asyncHandler(UserController.updateEmail)
 );
 
-router.post(
-  "/clearPb",
+router.delete(
+  "/personalBests",
   RateLimit.userClearPB,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.clearPb)
-);
-
-router.post(
-  "/tags/add",
-  RateLimit.userTagsAdd,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.addTag)
+  authenticateRequest(),
+  asyncHandler(UserController.clearPb)
 );
 
 router.get(
   "/tags",
   RateLimit.userTagsGet,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.getTags)
+  authenticateRequest(),
+  asyncHandler(UserController.getTags)
 );
 
 router.post(
-  "/tags/clearPb",
-  RateLimit.userTagsClearPB,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.clearTagPb)
+  "/tags",
+  RateLimit.userTagsAdd,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      tagName: tagNameValidation,
+    },
+  }),
+  asyncHandler(UserController.addTag)
 );
 
-router.post(
-  "/tags/remove",
-  RateLimit.userTagsRemove,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.removeTag)
-);
-
-router.post(
-  "/tags/edit",
+router.patch(
+  "/tags",
   RateLimit.userTagsEdit,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.editTag)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      tagId: joi.string().required(),
+      newName: tagNameValidation,
+    },
+  }),
+  asyncHandler(UserController.editTag)
+);
+
+router.delete(
+  "/tags/:tagId",
+  RateLimit.userTagsRemove,
+  authenticateRequest(),
+  validateRequest({
+    params: {
+      tagId: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.removeTag)
+);
+
+router.delete(
+  "/tags/:tagId/personalBest",
+  RateLimit.userTagsClearPB,
+  authenticateRequest(),
+  validateRequest({
+    params: {
+      tagId: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.clearTagPb)
 );
 
 router.post(
   "/discord/link",
   RateLimit.userDiscordLink,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.linkDiscord)
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      data: joi.object({
+        tokenType: joi.string().required(),
+        accessToken: joi.string().required(),
+        uid: joi.string().required(),
+      }),
+    },
+  }),
+  asyncHandler(UserController.linkDiscord)
 );
 
 router.post(
   "/discord/unlink",
   RateLimit.userDiscordUnlink,
-  authenticateRequest,
-  asyncHandlerWrapper(UserController.unlinkDiscord)
+  authenticateRequest(),
+  asyncHandler(UserController.unlinkDiscord)
 );
 
 module.exports = router;
