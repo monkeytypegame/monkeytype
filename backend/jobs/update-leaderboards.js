@@ -1,5 +1,4 @@
 const { CronJob } = require("cron");
-const { mongoDB } = require("../init/mongodb");
 const BotDAO = require("../dao/bot");
 const LeaderboardsDAO = require("../dao/leaderboards");
 

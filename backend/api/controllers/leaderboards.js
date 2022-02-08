@@ -1,6 +1,5 @@
 const _ = require("lodash");
 const LeaderboardsDAO = require("../../dao/leaderboards");
-const { verifyIdToken } = require("../../handlers/auth");
 
 class LeaderboardsController {
   static async get(req, _res) {

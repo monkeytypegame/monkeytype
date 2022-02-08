@@ -1,10 +1,11 @@
 const uuid = require("uuid");
 
 class MonkeyError {
-  constructor(status, message, stack = null, uid) {
+  constructor(status, message, stack = null, uid = null) {
     this.status = status ?? 500;
     this.errorID = uuid.v4();
     this.stack = stack;
+    this.uid = uid;
     // this.message =
     // process.env.MODE === "dev"
     //   ? stack
