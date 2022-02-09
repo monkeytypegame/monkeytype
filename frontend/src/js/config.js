@@ -81,7 +81,7 @@ let defaultConfig = {
   layout: "default",
   funbox: "none",
   confidenceMode: "off",
-  indicateTypos: false,
+  indicateTypos: "off",
   timerStyle: "mini",
   colorfulMode: false,
   randomTheme: "off",
@@ -1239,20 +1239,11 @@ export function setConfidenceMode(cm, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleIndicateTypos() {
-  let it = !config.indicateTypos;
-  if (it == undefined) {
-    it = false;
+export function setIndicateTypos(value, nosave) {
+  if (!["off", "below", "replace"].includes(value)) {
+    value = defaultConfig.indicateTypos;
   }
-  config.indicateTypos = it;
-  saveToLocalStorage();
-}
-
-export function setIndicateTypos(it, nosave) {
-  if (it == undefined) {
-    it = false;
-  }
-  config.indicateTypos = it;
+  config.indicateTypos = value;
   if (!nosave) saveToLocalStorage();
 }
 

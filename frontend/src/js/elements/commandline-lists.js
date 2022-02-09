@@ -528,17 +528,25 @@ let commandsIndicateTypos = {
     {
       id: "setIndicateTyposOff",
       display: "off",
-      configValue: false,
+      configValue: "off",
       exec: () => {
-        UpdateConfig.setIndicateTypos(false);
+        UpdateConfig.setIndicateTypos("off");
       },
     },
     {
-      id: "setIndicateTyposOn",
-      display: "on",
-      configValue: true,
+      id: "setIndicateTyposBelow",
+      display: "below",
+      configValue: "below",
       exec: () => {
-        UpdateConfig.setIndicateTypos(true);
+        UpdateConfig.setIndicateTypos("below");
+      },
+    },
+    {
+      id: "setIndicateTyposReplace",
+      display: "replace",
+      configValue: "replace",
+      exec: () => {
+        UpdateConfig.setIndicateTypos("replace");
       },
     },
   ],
