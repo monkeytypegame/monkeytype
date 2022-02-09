@@ -1,0 +1,15 @@
+:root {
+  --bg-color: #79b791;
+  --main-color: #420c14;
+  --caret-color: #abd1b5;
+  --sub-color: #732c2c;
+  --text-color: #edf4ed;
+  --error-color: #301014;
+  --error-extra-color: #301014;
+  --colorful-error-color: #301014;
+  --colorful-error-extra-color: #301014;
+}
+
+#top .logo .bottom {
+  color: #abd1b5;
+}
