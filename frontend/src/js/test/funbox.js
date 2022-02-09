@@ -114,7 +114,7 @@ export async function activate(funbox) {
     }
   }
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    if (funboxInfo?.type != "style") {
+    if (funboxInfo?.affectsWordGeneration === true) {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
           Config.mode
@@ -122,7 +122,13 @@ export async function activate(funbox) {
         0
       );
       setFunbox("none", null);
-      TestLogic.restart(undefined, true);
+      if (TestUI.testRestartingPromise) {
+        TestUI.testRestartingPromise.then(() => {
+          TestLogic.restart(undefined, true);
+        });
+      } else {
+        TestLogic.restart(undefined, true);
+      }
       return;
     }
   }

@@ -27,6 +27,7 @@ export let currentWordElementIndex = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
+export let testRestartingPromise = null;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
@@ -43,8 +44,17 @@ export function setActiveWordTop(val) {
   activeWordTop = val;
 }
 
+let restartingResolve;
 export function setTestRestarting(val) {
   testRestarting = val;
+  if (val === true) {
+    testRestartingPromise = new Promise((resolve) => {
+      restartingResolve = resolve;
+    });
+  } else {
+    if (restartingResolve) restartingResolve();
+    restartingResolve = null;
+  }
 }
 
 export function setResultCalculating(val) {
