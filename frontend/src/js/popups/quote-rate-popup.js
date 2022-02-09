@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import ApiClient from "../api-client";
+import MonkeyClient from "../monkey-client";
 import axiosInstance from "../axios-instance";
 
 let rating = 0;
@@ -23,7 +23,7 @@ export async function getQuoteStats(quote) {
   let response;
   try {
     const { id, language } = currentQuote;
-    response = await ApiClient.getQuoteRating(id, language);
+    response = await MonkeyClient.getQuoteRating(id, language);
   } catch (e) {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;

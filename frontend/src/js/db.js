@@ -5,7 +5,7 @@ import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./test/today-tracker";
 import * as LoadingPage from "./pages/loading";
 import * as UI from "./ui";
-import ApiClient from "./api-client";
+import MonkeyClient from "./monkey-client";
 
 let dbSnapshot = null;
 
@@ -69,10 +69,10 @@ export async function initSnapshot() {
 
     const [userData, configData, tagsData, presetsData] = (
       await Promise.all([
-        ApiClient.getUserData(),
-        ApiClient.getConfig(),
-        ApiClient.getUserTags(),
-        ApiClient.getPresets(),
+        MonkeyClient.getUserData(),
+        MonkeyClient.getConfig(),
+        MonkeyClient.getUserTags(),
+        MonkeyClient.getPresets(),
       ])
     ).map((response) => response.data);
 
@@ -158,7 +158,7 @@ export async function getUserResults() {
     try {
       LoadingPage.updateText("Downloading results...");
       LoadingPage.updateBar(90);
-      let results = await ApiClient.getResults();
+      let results = await MonkeyClient.getResults();
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
         if (result.blindMode === undefined) result.blindMode = false;

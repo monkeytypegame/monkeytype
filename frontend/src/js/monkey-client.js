@@ -3,7 +3,7 @@ import axios from "axios";
 const DEV_SERVER_HOST = "http://localhost:5005";
 const PROD_SERVER_HOST = "https://api.monkeytype.com";
 
-class ApiClient {
+class MonkeyClient {
   constructor(clientConfig) {
     this.apiUrl = `${clientConfig.baseUrl}${clientConfig.apiPath}`;
     this.axiosClient = axios.create({
@@ -93,7 +93,7 @@ class ApiClient {
   }
 }
 
-const sharedApiClient = new ApiClient({
+const sharedMonkeyClient = new MonkeyClient({
   baseUrl:
     window.location.hostname === "localhost"
       ? DEV_SERVER_HOST
@@ -102,4 +102,4 @@ const sharedApiClient = new ApiClient({
   timeout: 10000,
 });
 
-export default sharedApiClient;
+export default sharedMonkeyClient;
