@@ -13,7 +13,7 @@ First you will have to copy the repository also known as forking. Go the the [Mo
 
 ## Creating Themes
 After you have forked the repository you can now add your theme. (If you haven't already forked the repository yet refer to [here](#forking-the-repository))
-Create a file in ```./static/themes/```. Call it whatever you want but make sure that it is all lowercase and underscores for spaces. It should look something like this:
+Create a file in ```./frontend/static/themes/```. Call it whatever you want but make sure that it is all lowercase and underscores for spaces. It should look something like this:
 ```theme_name.css```.
 
 Then Add this code to your file:
@@ -35,7 +35,7 @@ Here is an image showing what all the colors correspond to:
 
 
 
-Now change the corresponding hex codes to match your theme. However you aren't done, you need to update one more file. Go to ```./static/themes/_list.json```.
+Now change the corresponding hex codes to match your theme. However you aren't done, you need to update one more file. Go to ```./frontend/static/themes/_list.json```.
 At the very end of the file add this code (Keep it inside the square brackets):
 ```
 ,{
@@ -53,7 +53,7 @@ Then make sure your branch is up to date. Once it is up to date click contribute
 Update branch:
 <img width="1552" alt="Screen Shot 2022-01-12 at 10 55 19 AM" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
 
-Create pull request:
+Create a pull request:
 <img width="1552" alt="Screen Shot 2022-01-12 at 10 56 42 AM" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
 After that add some screenshots of your theme to the pull request. Click create pull request and if it gets approved 
