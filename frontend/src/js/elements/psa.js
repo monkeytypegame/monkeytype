@@ -1,4 +1,4 @@
-import MonkeyClient from "../monkey-client";
+import Ape from "../ape";
 import * as Notifications from "./notifications";
 
 function clearMemory() {
@@ -16,7 +16,7 @@ function setMemory(id) {
 }
 
 async function getLatest() {
-  const psa = await MonkeyClient.getPsa();
+  const psa = await Ape.getPsa();
   return psa.data;
 }
 

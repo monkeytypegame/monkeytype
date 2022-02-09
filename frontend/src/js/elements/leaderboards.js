@@ -1,7 +1,7 @@
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
 import * as DB from "../db";
-import MonkeyClient from "../monkey-client";
+import Ape from "../ape";
 import * as Misc from "../misc";
 import Config from "../config";
 
@@ -260,14 +260,14 @@ function update() {
   showLoader(60);
 
   let requestsToAwait = [
-    MonkeyClient.getLeaderboard("english", "time", "15"),
-    MonkeyClient.getLeaderboard("english", "time", "60"),
+    Ape.getLeaderboard("english", "time", "15"),
+    Ape.getLeaderboard("english", "time", "60"),
   ];
 
   if (firebase.auth().currentUser) {
     requestsToAwait.push(
-      MonkeyClient.getLeaderboardRank("english", "time", "15"),
-      MonkeyClient.getLeaderboardRank("english", "time", "60")
+      Ape.getLeaderboardRank("english", "time", "15"),
+      Ape.getLeaderboardRank("english", "time", "60")
     );
   }
 
@@ -316,13 +316,7 @@ async function requestMore(lb, prepend = false) {
     skipVal = 0;
   }
 
-  let data = await MonkeyClient.getLeaderboard(
-    "english",
-    "time",
-    lb,
-    skipVal,
-    limitVal
-  );
+  let data = await Ape.getLeaderboard("english", "time", lb, skipVal, limitVal);
   data = data.data;
   if (data.length === 0) {
     hideLoader(lb);
@@ -343,7 +337,7 @@ async function requestMore(lb, prepend = false) {
 
 async function requestNew(lb, skip) {
   showLoader(lb);
-  let data = await MonkeyClient.getLeaderboard("english", "time", lb, skip);
+  let data = await Ape.getLeaderboard("english", "time", lb, skip);
   clearTable(lb);
   if (lb === 15) {
     currentData = {

@@ -1,6 +1,6 @@
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
-import MonkeyClient from "../monkey-client";
+import Ape from "../ape";
 import * as Loader from "../elements/loader";
 
 let quotes = [];
@@ -51,7 +51,7 @@ async function getQuotes() {
   Loader.show();
   let response;
   try {
-    response = await MonkeyClient.getQuotes();
+    response = await Ape.getQuotes();
   } catch (e) {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;
