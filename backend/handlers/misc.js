@@ -19,4 +19,9 @@ module.exports = {
       return 0;
     }
   },
+  kogasa(cov) {
+    return (
+      100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
+    );
+  },
 };
