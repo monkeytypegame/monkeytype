@@ -6,15 +6,17 @@ import * as Account from "../pages/account";
 import {
   Difficulty,
   Filter,
-  FunboxJSON,
   Group,
-  Language,
   Mode,
   ResultFilters,
   Tag,
   TimeModes,
   WordsModes,
 } from "../declarations/interfaces";
+
+import { Language } from "../declarations/Language";
+
+import { FunboxJSON } from "../declarations/Funbox";
 
 const defaultResultFilters: ResultFilters = {
   difficulty: {
