@@ -3,15 +3,15 @@
 //this file should be concatenated at the top of the legacy js files
 
 declare global {
-  var snapshot: any;
-  var config: any;
-  var glarsesMode: any;
-  var stats: any;
-  var replay: any;
-  var enableTimerDebug: any;
-  var getTimerStats: any;
-  var toggleUnsmoothedRaw: any;
-  var enableSpacingDebug: any;
+  var snapshot: () => Snapshot;
+  var config: IConfig;
+  var glarsesMode: () => boolean;
+  var stats: () => Stats;
+  var replay: () => string;
+  var enableTimerDebug: () => void;
+  var getTimerStats: () => TimerStats;
+  var toggleUnsmoothedRaw: () => void;
+  var enableSpacingDebug: () => void;
 }
 
 import Chart from "chart.js";
@@ -38,6 +38,12 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/test-timer";
+import {
+  Config as IConfig,
+  Snapshot,
+  Stats,
+  TimerStats,
+} from "./declarations/interfaces";
 
 //these exports are just for debugging in the browser
 
