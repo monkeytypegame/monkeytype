@@ -161,6 +161,11 @@ export declare interface ChartData {
   err: number[];
 }
 
+export declare interface KeyStats {
+  average: number;
+  sd: number;
+};
+
 export declare interface Result {
   _id: string;
   wpm: number;
@@ -180,14 +185,8 @@ export declare interface Result {
   keyConsistency: number;
   chartData: ChartData;
   uid: string;
-  keySpacingStats: {
-    average: number;
-    sd: number;
-  };
-  keyDurationStats: {
-    average: number;
-    sd: number;
-  };
+  keySpacingStats: KeyStats;
+  keyDurationStats: KeyStats;
   isPb: boolean;
   bailedOut?: boolean;
   blindMode?: boolean;
