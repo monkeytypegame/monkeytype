@@ -1,14 +1,12 @@
-const joi = require("joi");
-const { authenticateRequest } = require("../../middlewares/auth");
-const PresetController = require("../controllers/preset");
-const RateLimit = require("../../middlewares/rate-limit");
-const configSchema = require("../schemas/config-schema");
-const {
-  asyncHandler,
-  validateRequest,
-} = require("../../middlewares/api-utils");
+import joi from "joi";
+import { authenticateRequest } from "../../middlewares/auth";
 
-const { Router } = require("express");
+import PresetController from "../controllers/preset";
+import * as RateLimit from "../../middlewares/rate-limit";
+import configSchema from "../schemas/config-schema";
+import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+
+import { Router } from "express";
 
 const router = Router();
 
@@ -74,4 +72,4 @@ router.delete(
   asyncHandler(PresetController.removePreset)
 );
 
-module.exports = router;
+export default router;

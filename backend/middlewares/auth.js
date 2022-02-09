@@ -1,9 +1,9 @@
-const MonkeyError = require("../handlers/error");
-const { verifyIdToken } = require("../handlers/auth");
+import MonkeyError from "../handlers/error";
+import { verifyIdToken } from "../handlers/auth";
 
 const DEFAULT_OPTIONS = {
   isPublic: false,
-  acceptMonkeyTokens: false,
+  acceptMonkeyTokens: false
 };
 
 function authenticateRequest(options = DEFAULT_OPTIONS) {
@@ -104,6 +104,4 @@ async function authenticateWithMonkeyToken(token, options) {
   throw new MonkeyError(401, "MonkeyTokens are not implemented.");
 }
 
-module.exports = {
-  authenticateRequest,
-};
+export { authenticateRequest };

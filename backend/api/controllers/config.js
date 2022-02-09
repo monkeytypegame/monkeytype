@@ -1,6 +1,6 @@
-const ConfigDAO = require("../../dao/config");
-const { validateConfig } = require("../../handlers/validation");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import ConfigDAO from "../../dao/config";
+import { validateConfig } from "../../handlers/validation";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class ConfigController {
   static async getConfig(req, _res) {
@@ -21,4 +21,4 @@ class ConfigController {
   }
 }
 
-module.exports = ConfigController;
+export default ConfigController;

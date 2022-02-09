@@ -1,17 +1,20 @@
 import simpleGit from "simple-git";
 
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const fs = require("fs");
-const path = require("path");
+import Mongo from "mongodb";
+
+const { ObjectID } = Mongo;
+import stringSimilarity from "string-similarity";
+import path from "path";
+import fs from "fs";
+import { mongoDB } from "../init/mongodb";
+import MonkeyError from "../handlers/error";
+
 let git;
 try {
   git = simpleGit(path.join(__dirname, "../../../monkeytype-new-quotes"));
 } catch (e) {
   git = undefined;
 }
-const stringSimilarity = require("string-similarity");
-const { ObjectID } = require("mongodb");
 
 class NewQuotesDAO {
   static async add(text, source, language, uid) {

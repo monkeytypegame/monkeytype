@@ -1,23 +1,23 @@
-const { v4: uuidv4 } = require("uuid");
-const ReportDAO = require("../../dao/report");
-const UserDAO = require("../../dao/user");
-const MonkeyError = require("../../handlers/error");
-const Captcha = require("../../handlers/captcha");
-const Logger = require("../../handlers/logger");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import { v4 as uuidv4 } from "uuid";
+import ReportDAO from "../../dao/report";
+import UsersDAO from "../../dao/user";
+import MonkeyError from "../../handlers/error";
+import { verify } from "../../handlers/captcha";
+import Logger from "../../handlers/logger";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class QuotesController {
   static async reportQuote(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
-    const user = await UserDAO.getUser(uid);
+    const user = await UsersDAO.getUser(uid);
     if (user.cannotReport) {
       throw new MonkeyError(403, "You don't have permission to do this.");
     }
 
     const { quoteId, quoteLanguage, reason, comment, captcha } = req.body;
 
-    if (!(await Captcha.verify(captcha))) {
+    if (!(await verify(captcha))) {
       throw new MonkeyError(400, "Captcha check failed.");
     }
 
@@ -44,4 +44,4 @@ class QuotesController {
   }
 }
 
-module.exports = QuotesController;
+export default QuotesController;

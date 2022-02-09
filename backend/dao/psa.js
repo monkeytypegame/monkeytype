@@ -1,4 +1,4 @@
-const { mongoDB } = require("../init/mongodb");
+import { mongoDB } from "../init/mongodb";
 
 class PsaDAO {
   static async get(_uid, _config) {
@@ -6,4 +6,4 @@ class PsaDAO {
   }
 }
 
-module.exports = PsaDAO;
+export default PsaDAO;

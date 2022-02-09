@@ -1,5 +1,5 @@
-const PresetDAO = require("../../dao/preset");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import PresetDAO from "../../dao/preset";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class PresetController {
   static async getPresets(req, _res) {
@@ -36,4 +36,4 @@ class PresetController {
   }
 }
 
-module.exports = PresetController;
+export default PresetController;

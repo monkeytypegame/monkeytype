@@ -1,13 +1,11 @@
-const joi = require("joi");
-const { authenticateRequest } = require("../../middlewares/auth");
-const LeaderboardsController = require("../controllers/leaderboards");
-const RateLimit = require("../../middlewares/rate-limit");
-const {
-  asyncHandler,
-  validateRequest,
-} = require("../../middlewares/api-utils");
+import joi from "joi";
+import { authenticateRequest } from "../../middlewares/auth";
 
-const { Router } = require("express");
+import LeaderboardsController from "../controllers/leaderboards";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+
+import { Router } from "express";
 
 const router = Router();
 
@@ -43,4 +41,4 @@ router.get(
   asyncHandler(LeaderboardsController.getRank)
 );
 
-module.exports = router;
+export default router;

@@ -1,5 +1,5 @@
-const PsaDAO = require("../../dao/psa");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import PsaDAO from "../../dao/psa";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class PsaController {
   static async get(_req, _res) {
@@ -8,4 +8,4 @@ class PsaController {
   }
 }
 
-module.exports = PsaController;
+export default PsaController;

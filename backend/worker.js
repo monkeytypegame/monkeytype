@@ -1,11 +1,11 @@
-const { config } = require("dotenv");
-const path = require("path");
-config({ path: path.join(__dirname, ".env") });
+import path from "path";
 
-const db = require("./init/db");
-const admin = require("firebase-admin");
-// eslint-disable-next-line
-const serviceAccount = require("./credentials/serviceAccountKey.json");
+import serviceAccount from "./credentials/serviceAccountKey.json";
+import admin from "firebase-admin";
+import db from "./init/db";
+import { config } from "dotenv";
+
+config({ path: path.join(__dirname, ".env") });
 
 async function main() {
   await db.connect();

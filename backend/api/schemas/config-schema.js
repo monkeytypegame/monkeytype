@@ -1,5 +1,5 @@
-const _ = require("lodash");
-const joi = require("joi");
+import _ from "lodash";
+import joi from "joi";
 
 const CARET_STYLES = [
   "off",
@@ -103,4 +103,4 @@ const CONFIG_SCHEMA = joi.object({
   lazyMode: joi.boolean(),
 });
 
-module.exports = CONFIG_SCHEMA;
+export default CONFIG_SCHEMA;
