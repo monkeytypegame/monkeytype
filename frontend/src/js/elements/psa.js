@@ -1,4 +1,4 @@
-import axiosInstance from "../axios-instance";
+import ApiClient from "../api-client";
 import * as Notifications from "./notifications";
 
 function clearMemory() {
@@ -16,7 +16,7 @@ function setMemory(id) {
 }
 
 async function getLatest() {
-  let psa = await axiosInstance.get("/psa");
+  const psa = await ApiClient.getPsa();
   return psa.data;
 }
 

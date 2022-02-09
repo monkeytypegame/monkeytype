@@ -1,6 +1,7 @@
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import ApiClient from "../api-client";
 import axiosInstance from "../axios-instance";
 
 let rating = 0;
@@ -21,9 +22,8 @@ export async function getQuoteStats(quote) {
   if (quote) currentQuote = quote;
   let response;
   try {
-    response = await axiosInstance.get("/quotes/rating", {
-      params: { quoteId: currentQuote.id, language: currentQuote.language },
-    });
+    const { id, language } = currentQuote;
+    response = await ApiClient.getQuoteRating(id, language);
   } catch (e) {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;

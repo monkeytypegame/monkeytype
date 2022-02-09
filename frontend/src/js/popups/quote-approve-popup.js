@@ -1,5 +1,6 @@
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
+import ApiClient from "../api-client";
 import * as Loader from "../elements/loader";
 
 let quotes = [];
@@ -50,7 +51,7 @@ async function getQuotes() {
   Loader.show();
   let response;
   try {
-    response = await axiosInstance.get("/quotes");
+    response = await ApiClient.getQuotes();
   } catch (e) {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;

@@ -5,6 +5,7 @@ import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./test/today-tracker";
 import * as LoadingPage from "./pages/loading";
 import * as UI from "./ui";
+import ApiClient from "./api-client";
 
 let dbSnapshot = null;
 
@@ -65,16 +66,15 @@ export async function initSnapshot() {
       LoadingPage.updateBar(45);
     }
     LoadingPage.updateText("Downloading user data...");
-    let promises = await Promise.all([
-      axiosInstance.get("/user"),
-      axiosInstance.get("/config"),
-      axiosInstance.get("/user/tags"),
-      axiosInstance.get("/presets"),
-    ]);
-    let userData = promises[0].data;
-    let configData = promises[1].data;
-    let tagsData = promises[2].data;
-    let presetsData = promises[3].data;
+
+    const [userData, configData, tagsData, presetsData] = (
+      await Promise.all([
+        ApiClient.getUserData(),
+        ApiClient.getConfig(),
+        ApiClient.getUserTags(),
+        ApiClient.getPresets(),
+      ])
+    ).map((response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -158,7 +158,7 @@ export async function getUserResults() {
     try {
       LoadingPage.updateText("Downloading results...");
       LoadingPage.updateBar(90);
-      let results = await axiosInstance.get("/results");
+      let results = await ApiClient.getResults();
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
         if (result.blindMode === undefined) result.blindMode = false;

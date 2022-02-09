@@ -1,7 +1,7 @@
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
 import * as DB from "../db";
-import axiosInstance from "../axios-instance";
+import ApiClient from "../api-client";
 import * as Misc from "../misc";
 import Config from "../config";
 
@@ -260,42 +260,14 @@ function update() {
   showLoader(60);
 
   let requestsToAwait = [
-    axiosInstance.get(`/leaderboard`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "15",
-        skip: 0,
-      },
-    }),
-    axiosInstance.get(`/leaderboard`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "60",
-        skip: 0,
-      },
-    }),
+    ApiClient.getLeaderboard("english", "time", "15"),
+    ApiClient.getLeaderboard("english", "time", "60"),
   ];
 
   if (firebase.auth().currentUser) {
     requestsToAwait.push(
-      axiosInstance.get(`/leaderboard/rank`, {
-        params: {
-          language: "english",
-          mode: "time",
-          mode2: "15",
-        },
-      })
-    );
-    requestsToAwait.push(
-      axiosInstance.get(`/leaderboard/rank`, {
-        params: {
-          language: "english",
-          mode: "time",
-          mode2: "60",
-        },
-      })
+      ApiClient.getLeaderboardRank("english", "time", "15"),
+      ApiClient.getLeaderboardRank("english", "time", "60")
     );
   }
 
@@ -343,15 +315,14 @@ async function requestMore(lb, prepend = false) {
     limitVal = Math.abs(skipVal) - 1;
     skipVal = 0;
   }
-  let data = await axiosInstance.get(`/leaderboard`, {
-    params: {
-      language: "english",
-      mode: "time",
-      mode2: lb,
-      skip: skipVal,
-      limit: limitVal,
-    },
-  });
+
+  let data = await ApiClient.getLeaderboard(
+    "english",
+    "time",
+    lb,
+    skipVal,
+    limitVal
+  );
   data = data.data;
   if (data.length === 0) {
     hideLoader(lb);
@@ -372,14 +343,7 @@ async function requestMore(lb, prepend = false) {
 
 async function requestNew(lb, skip) {
   showLoader(lb);
-  let data = await axiosInstance.get(`/leaderboard`, {
-    params: {
-      language: "english",
-      mode: "time",
-      mode2: lb,
-      skip: skip,
-    },
-  });
+  let data = await ApiClient.getLeaderboard("english", "time", lb, skip);
   clearTable(lb);
   if (lb === 15) {
     currentData = {
