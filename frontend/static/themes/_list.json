@@ -734,4 +734,9 @@
     "bgColor": "#7c2142",
     "mainColor": "#deb80b"
   }
+  ,{
+    "name": "seafoam",
+    "bgColor": "#79b791",
+    "mainColor": "#420c14"
+  }
 ]
