@@ -70,8 +70,22 @@ async function authenticateWithBearerToken(token) {
   try {
     return await verifyIdToken(token);
   } catch (error) {
-    if (error.message.includes("auth/id-token-expired")) {
-      throw new MonkeyError(401, "Unauthorized", "Token expired");
+    console.log("-----------");
+    console.log(error.errorInfo.code);
+    console.log("-----------");
+
+    if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
+      throw new MonkeyError(
+        401,
+        "Token expired. Please login again.",
+        "authenticateWithBearerToken"
+      );
+    } else if (error?.errorInfo?.code?.includes("auth/id-token-revoked")) {
+      throw new MonkeyError(
+        401,
+        "Token revoked. Please login again.",
+        "authenticateWithBearerToken"
+      );
     } else {
       throw error;
     }
