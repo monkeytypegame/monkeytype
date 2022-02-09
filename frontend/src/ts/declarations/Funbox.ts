@@ -1,4 +1,3 @@
-
 export declare type Funbox =
 | "none"
 | "nausea"

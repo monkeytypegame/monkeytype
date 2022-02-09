@@ -1,5 +1,3 @@
-
-
 export declare type Layout =
 | "default"
 | "qwerty"
@@ -92,5 +90,3 @@ export declare type Layout =
 | "ctgap"
 | "ctgap_3"
 | "octa8";
-
-export declare type LayoutFluidLayoutConfig = `${Layout}#${Layout}#${Layout}`;

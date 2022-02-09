@@ -1,6 +1,6 @@
 import { Language, LanguageGroup } from "./Language";
 
-import { Layout, LayoutFluidLayoutConfig } from "./Layout";
+import { Layout } from "./Layout";
 
 import { Theme } from "./Theme";
 
@@ -273,8 +273,7 @@ export declare interface Config {
   customBackground: string;
   customBackgroundSize: CustomBackgroundSize;
   customBackgroundFilter: CustomBackgroundFilter;
-  // @ts-ignore
-  customLayoutfluid: LayoutFluidLayoutConfig;
+  customLayoutfluid: string;
   monkeyPowerLevel: MonkeyPowerLevel;
   minBurst: MinBurst;
   minBurstCustomSpeed: number;
