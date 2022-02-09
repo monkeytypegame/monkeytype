@@ -656,14 +656,14 @@ export declare interface Result {
     sd: number;
   };
   isPb: boolean;
-  bailedOut?: boolean | undefined;
-  blindMode?: boolean | undefined;
-  lazyMode?: boolean | undefined;
-  difficulty?: Difficulty | undefined;
-  funbox?: Funbox | undefined;
-  language?: Language | null | undefined;
-  numbers?: boolean | undefined;
-  punctuation?: boolean | undefined;
+  bailedOut?: boolean;
+  blindMode?: boolean;
+  lazyMode?: boolean;
+  difficulty?: Difficulty;
+  funbox?: Funbox;
+  language?: Language | null;
+  numbers?: boolean;
+  punctuation?: boolean;
 }
 
 export declare interface Config {
@@ -756,21 +756,21 @@ export declare interface Leaderboard {
 }
 
 export declare interface Snapshot {
-  banned?: boolean | undefined;
-  emailVerified?: boolean | undefined;
-  quoteRatings?: object | undefined; // TODO find structure of quoteRatings
-  results?: Result[] | undefined;
-  verified?: boolean | undefined;
+  banned?: boolean;
+  emailVerified?: boolean;
+  quoteRatings?: object; // TODO find structure of quoteRatings
+  results?: Result[];
+  verified?: boolean;
   personalBests: PersonalBests;
-  name?: string | undefined;
+  name?: string;
   presets: Preset[];
   tags: Tag[];
   favouriteThemes: Theme[];
-  lbMemory?: Leaderboard | undefined;
+  lbMemory?: Leaderboard;
   globalStats: Stats;
   quoteMod: boolean;
-  discordId?: string | undefined;
-  config?: Config | undefined;
+  discordId?: string;
+  config?: Config;
 }
 
 export declare interface ResultFilters {
