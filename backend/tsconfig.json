@@ -7,7 +7,8 @@
     "checkJs": true,
     "outDir": "build",
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "build"]
 }

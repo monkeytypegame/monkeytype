@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "license": "GPL-3.0",
   "private": true,
+  "type": "commonjs",
   "scripts": {
-    "start:dev": "nodemon --watch ./ ./server.js",
-    "start:dev-ts": "nodemon --watch ./ ./server.js",
-    "build": "tsc --build"
+    "start:dev": "ts-node-dev ./server",
+    "start:dev-ts": "nodemon --loader ts-node/esm --watch ./ ./server.js",
+    "build": "tsc --build",
+    "start": "node ./build/server.js"
   },
   "engines": {
     "node": "16.13.2",
@@ -31,5 +33,9 @@
     "string-similarity": "4.0.4",
     "ua-parser-js": "0.7.28",
     "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.16",
+    "ts-node-dev": "^1.1.8"
   }
 }

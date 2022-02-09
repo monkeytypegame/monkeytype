@@ -13,6 +13,7 @@ config({ path: path.join(__dirname, ".env") });
 let validateResult;
 let validateKeys;
 try {
+  // @ts-ignore
   // eslint-disable-next-line
   let module = require("../../anticheat/anticheat");
   validateResult = module.validateResult;

@@ -11,7 +11,7 @@ class LeaderboardsDAO {
       .find()
       .sort({ rank: 1 })
       .skip(parseInt(skip))
-      .limit(parseInt(limit))
+      .limit(parseInt(limit.toString()))
       .toArray();
     return preset;
   }

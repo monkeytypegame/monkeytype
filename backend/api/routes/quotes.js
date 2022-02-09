@@ -1,7 +1,7 @@
 const joi = require("joi");
 const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
-const NewQuotesController = require("../controllers/new-quotes");
+const NewQuotesController = require("../controllers/new-quotes").default;
 const QuoteRatingsController = require("../controllers/quote-ratings");
 const QuotesController = require("../controllers/quotes");
 const RateLimit = require("../../middlewares/rate-limit");

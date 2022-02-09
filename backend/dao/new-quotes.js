@@ -1,7 +1,8 @@
+import simpleGit from "simple-git";
+
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 const fs = require("fs");
-const simpleGit = require("simple-git");
 const path = require("path");
 let git;
 try {
@@ -86,21 +87,21 @@ class NewQuotesDAO {
     await git.pull("upstream", "master");
     if (fs.existsSync(fileDir)) {
       let quoteFile = fs.readFileSync(fileDir);
-      quoteFile = JSON.parse(quoteFile.toString());
-      quoteFile.quotes.every((old) => {
+      const quoteObject = JSON.parse(quoteFile.toString());
+      quoteObject.quotes.every((old) => {
         if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.8) {
           throw new MonkeyError(409, "Duplicate quote");
         }
       });
       let maxid = 0;
-      quoteFile.quotes.map(function (q) {
+      quoteObject.quotes.map(function (q) {
         if (q.id > maxid) {
           maxid = q.id;
         }
       });
       quote.id = maxid + 1;
-      quoteFile.quotes.push(quote);
-      fs.writeFileSync(fileDir, JSON.stringify(quoteFile, null, 2));
+      quoteObject.quotes.push(quote);
+      fs.writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
       message = `Added quote to ${language}.json.`;
     } else {
       //file doesnt exist, create it
@@ -137,4 +138,4 @@ class NewQuotesDAO {
   }
 }
 
-module.exports = NewQuotesDAO;
+export default NewQuotesDAO;
