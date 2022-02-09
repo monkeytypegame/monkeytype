@@ -28,6 +28,7 @@
   "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
+    "eqeqeq": 1,
     "indent": ["off"], //handled by prettier
     "linebreak-style": ["error", "unix"],
     "quotes": [
@@ -46,6 +47,7 @@
       {
         "extensions": [
           "",
+          ".d.ts",
           ".ts",
           ".tsx",
           ".es.ts",

@@ -3,7 +3,7 @@ import Config from "../config";
 import * as Misc from "../misc";
 import { PersonalBest, PersonalBests } from "../declarations/interfaces";
 
-export function update(): void {
+export function update() {
   $(".pageAccount .timePbTable tbody").html(`
   <tr>
     <td>15</td>

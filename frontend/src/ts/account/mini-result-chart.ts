@@ -2,22 +2,22 @@ import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";
 import { ChartData } from "../declarations/interfaces";
 
-export function updatePosition(x: number, y: number): void {
+export function updatePosition(x: number, y: number) {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
 }
 
-export function show(): void {
+export function show() {
   $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeIn(125);
   $(".pageAccount .miniResultChartBg").stop(true, true).fadeIn(125);
 }
 
-function hide(): void {
+function hide() {
   $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeOut(125);
   $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
 }
 
 // TODO change
-export function updateData(data: ChartData): void {
+export function updateData(data: ChartData) {
   // let data = filteredResults[filteredId].chartData;
   const labels = [];
   for (let i = 1; i <= data.wpm.length; i++) {
@@ -36,20 +36,16 @@ export function updateData(data: ChartData): void {
   const minChartVal = Math.min(
     ...[Math.min(...data.wpm), Math.min(...data.raw)]
   );
-  ChartController.miniResult.options.scales.yAxes[0].ticks.max = Math.round(
-    maxChartVal
-  );
-  ChartController.miniResult.options.scales.yAxes[1].ticks.max = Math.round(
-    maxChartVal
-  );
+  ChartController.miniResult.options.scales.yAxes[0].ticks.max =
+    Math.round(maxChartVal);
+  ChartController.miniResult.options.scales.yAxes[1].ticks.max =
+    Math.round(maxChartVal);
 
   if (!Config.startGraphsAtZero) {
-    ChartController.miniResult.options.scales.yAxes[0].ticks.min = Math.round(
-      minChartVal
-    );
-    ChartController.miniResult.options.scales.yAxes[1].ticks.min = Math.round(
-      minChartVal
-    );
+    ChartController.miniResult.options.scales.yAxes[0].ticks.min =
+      Math.round(minChartVal);
+    ChartController.miniResult.options.scales.yAxes[1].ticks.min =
+      Math.round(minChartVal);
   } else {
     ChartController.miniResult.options.scales.yAxes[0].ticks.min = 0;
     ChartController.miniResult.options.scales.yAxes[1].ticks.min = 0;

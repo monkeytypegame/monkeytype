@@ -60,7 +60,7 @@ $(document).ready(() => {
           });
           history.replaceState("/", "", "/");
         }
-        let page = window.location.pathname.replace("/", "");
+        const page = window.location.pathname.replace("/", "");
         UI.changePage(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");

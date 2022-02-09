@@ -1,28 +1,34 @@
-import { Language, LanguageGroup } from "./Language";
+import { Language } from "./Language";
 
-import { Layout } from "./Layout";
+import { Layout, KeymapLayout, CustomLayoutFluid } from "./Layout";
 
 import { Theme } from "./Theme";
 
-import { Funbox, FunboxJSON, FunboxJSONType } from "./Funbox";
+import { Funbox } from "./Funbox";
 
 import { FontFamily } from "./Font";
 
 export declare type Difficulty = "normal" | "expert" | "master";
 
-export declare type Mode = "time" | "words" | "quote" | "custom";
-
-export declare type WordsModes = 10 | 25 | 50 | 100;
-
-export declare type TimeModes = 15 | 30 | 60 | 120;
-
 export declare type CustomModes = "custom";
+
+export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
+
+export declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
+
+export declare type WordsModes = NoncustomWordsModes | CustomModes;
+
+export declare type NoncustomTimeModes = 15 | 30 | 60 | 120;
+
+export declare type TimeModes = NoncustomTimeModes | CustomModes;
 
 export declare type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-export declare type QuoteLength = (0 | 1 | 2 | 3)[];
+export declare type QuoteLength = -1 | 0 | 1 | 2 | 3;
 
-export declare type FontSize = 1 | 1.25 | 1.5 | 2 | 3 | 4;
+export declare type QuoteLengthArray = QuoteLength[];
+
+export declare type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
 
 export declare type CaretStyle =
   | "off"
@@ -105,7 +111,7 @@ export declare type MonkeyPowerLevel =
   | "ultra"
   | "over_9000";
 
-export declare type MinBurst = "off" | "fixed" | "flex";
+export declare type MinimumBurst = "off" | "fixed" | "flex";
 
 export declare interface Preset {
   _id: string;
@@ -164,7 +170,7 @@ export declare interface ChartData {
 export declare interface KeyStats {
   average: number;
   sd: number;
-};
+}
 
 export declare interface Result {
   _id: string;
@@ -213,10 +219,11 @@ export declare interface Config {
   words: WordsModes;
   time: TimeModes;
   mode: Mode;
-  quoteLength: QuoteLength;
+  quoteLength: QuoteLengthArray;
   language: Language;
   fontSize: FontSize;
   freedomMode: boolean;
+  resultFilters?: ResultFilters | null;
   difficulty: Difficulty;
   blindMode: boolean;
   quickEnd: boolean;
@@ -237,7 +244,7 @@ export declare interface Config {
   keymapMode: KeymapMode;
   keymapStyle: KeymapStyle;
   keymapLegendStyle: KeymapLegendStyle;
-  keymapLayout: Layout;
+  keymapLayout: KeymapLayout;
   fontFamily: FontFamily;
   smoothLineScroll: boolean;
   alwaysShowDecimalPlaces: boolean;
@@ -273,13 +280,17 @@ export declare interface Config {
   customBackground: string;
   customBackgroundSize: CustomBackgroundSize;
   customBackgroundFilter: CustomBackgroundFilter;
-  customLayoutfluid: string;
+  customLayoutfluid: CustomLayoutFluid;
   monkeyPowerLevel: MonkeyPowerLevel;
-  minBurst: MinBurst;
+  minBurst: MinimumBurst;
   minBurstCustomSpeed: number;
   burstHeatmap: boolean;
   britishEnglish: boolean;
   lazyMode: boolean;
+}
+
+export declare interface DefaultConfig extends Config {
+  wordCount: WordsModes;
 }
 
 // TODO find structure of Leaderboard
@@ -401,46 +412,72 @@ export declare interface TimerStats {
 }
 
 export declare interface GithubRelease {
-  url: string,
-  assets_url: string,
-  upload_url: string,
-  html_url: string,
-  id: number,
+  url: string;
+  assets_url: string;
+  upload_url: string;
+  html_url: string;
+  id: number;
   author: {
-    login: string,
-    id: number,
-    node_id: string,
-    avatar_url: string,
-    gravatar_id: string,
-    url: string,
-    html_url: string,
-    followers_url: string,
-    following_url: string,
-    gists_url: string,
-    starred_url: string,
-    subscriptions_url: string,
-    organizations_url: string,
-    repos_url: string,
-    events_url: string,
-    received_events_url: string,
-    type: string,
-    site_admin: boolean
-  },
-  node_id: string,
-  tag_name: string,
-  target_commitish: string,
-  name: string,
-  draft: boolean,
-  prerelease: boolean,
-  created_at: string,
-  published_at: string,
-  assets: any[],
-  tarball_url: string,
-  zipball_url: string,
-  body: string,
+    login: string;
+    id: number;
+    node_id: string;
+    avatar_url: string;
+    gravatar_id: string;
+    url: string;
+    html_url: string;
+    followers_url: string;
+    following_url: string;
+    gists_url: string;
+    starred_url: string;
+    subscriptions_url: string;
+    organizations_url: string;
+    repos_url: string;
+    events_url: string;
+    received_events_url: string;
+    type: string;
+    site_admin: boolean;
+  };
+  node_id: string;
+  tag_name: string;
+  target_commitish: string;
+  name: string;
+  draft: boolean;
+  prerelease: boolean;
+  created_at: string;
+  published_at: string;
+  assets: any[];
+  tarball_url: string;
+  zipball_url: string;
+  body: string;
   reactions: {
-    url: string,
-    total_count: number,
-    [reaction: string]: number | string
-  }
+    url: string;
+    total_count: number;
+    [reaction: string]: number | string;
+  };
+}
+
+// eslint-disable-next-line no-unused-vars
+export type ExecFunction = (input?: any) => any;
+
+export interface Command {
+  id: string;
+  display: string;
+  subgroup: CommandsObject;
+  icon: string;
+  alias?: string;
+  input?: boolean;
+  visible?: boolean;
+  defaultValue?: boolean;
+  shift?: {
+    display: string;
+    exec: ExecFunction;
+  };
+  exec?: ExecFunction;
+  available?: () => void;
+}
+
+export interface CommandsObject {
+  title: string;
+  configKey?: keyof Config;
+  list: Command[];
 }

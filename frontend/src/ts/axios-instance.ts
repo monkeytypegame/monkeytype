@@ -1,6 +1,7 @@
 import axios from "axios";
+import { firebase } from "./declarations/imports";
 
-let apiPath = "";
+const apiPath = "";
 
 let baseURL;
 if (window.location.hostname === "localhost") {
@@ -18,8 +19,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     let idToken;
-    if (firebase.auth().currentUser != null) {
-      idToken = await firebase.auth().currentUser.getIdToken();
+    if (firebase.auth().currentUser !== null) {
+      idToken = await firebase.auth().currentUser?.getIdToken();
     } else {
       idToken = null;
     }

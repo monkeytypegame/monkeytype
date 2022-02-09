@@ -1,13 +1,13 @@
 import * as DB from "../db";
 import * as Misc from "../misc";
 
-export function clear(): void {
+export function clear() {
   $(".pageAccount .globalTimeTyping .val").text(`-`);
   $(".pageAccount .globalTestsStarted .val").text(`-`);
   $(".pageAccount .globalTestsCompleted .val").text(`-`);
 }
 
-export function update(): void {
+export function update() {
   if (DB.getSnapshot().globalStats.time !== undefined) {
     // let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
     // let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
