@@ -15,6 +15,7 @@ const { MonkeyResponse } = require("../../handlers/monkey-response");
 let validateResult;
 let validateKeys;
 try {
+  // @ts-ignore
   // eslint-disable-next-line
   let module = require("../../anticheat/anticheat");
   validateResult = module.validateResult;
