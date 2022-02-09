@@ -16,8 +16,8 @@ async function bootServer(port) {
     admin.initializeApp({
       credential: admin.credential.cert(
         serviceAccount as unknown as ServiceAccount
-    )
-  });
+      )
+    });
     console.log("Firebase app initialized");
 
     console.log("Fetching live configuration...");
