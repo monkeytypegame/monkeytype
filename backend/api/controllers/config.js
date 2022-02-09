@@ -1,5 +1,5 @@
-const ConfigDAO = require("../../dao/config");
-const { validateConfig } = require("../../handlers/validation");
+import ConfigDAO from "../../dao/config";
+import { validateConfig } from "../../handlers/validation";
 
 class ConfigController {
   static async getConfig(req, _res) {
@@ -7,6 +7,7 @@ class ConfigController {
 
     return await ConfigDAO.getConfig(uid);
   }
+
   static async saveConfig(req, res) {
     const { config } = req.body;
     const { uid } = req.ctx.decodedToken;
@@ -18,4 +19,4 @@ class ConfigController {
   }
 }
 
-module.exports = ConfigController;
+export default ConfigController;

@@ -9,7 +9,7 @@
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
-    "lint": "./node_modules/.bin/eslint './backend/**/*.{js,ts}' './frontend/src/**/*.{js,ts}'",
+    "lint": "./node_modules/.bin/eslint './backend/**/*.{js}' './frontend/src/**/*.{js,ts}'",
     "pretty": "prettier --check './backend/**/*.{js,ts}' './frontend/src/**/*.{js,ts,scss}' './frontend/static/**/*.{json,html}'",
     "start:dev-ts": "concurrently --kill-others \"cd ./frontend && npm run start:dev-ts\" \"cd ./backend && npm run start:dev-ts\"",
     "start:dev:be-ts": "cd backend && npm run start:dev-ts",

@@ -1,18 +1,15 @@
-const express = require("express");
-const { config } = require("dotenv");
-const path = require("path");
-const MonkeyError = require("./handlers/error");
-config({ path: path.join(__dirname, ".env") });
-const cors = require("cors");
-const admin = require("firebase-admin");
-const Logger = require("./handlers/logger.js");
-// eslint-disable-next-line
-const serviceAccount = require("./credentials/serviceAccountKey.json");
-const db = require("./init/db");
-const jobs = require("./jobs");
-const addApiRoutes = require("./api/routes");
-const contextMiddleware = require("./middlewares/context");
-const ConfigurationDAO = require("./dao/configuration");
+import express from "express";
+import "dotenv/config";
+import MonkeyError from "./handlers/error.js";
+import cors from "cors";
+import admin from "firebase-admin";
+import Logger from "./handlers/logger.js";
+import serviceAccount from "./credentials/serviceAccountKey.json";
+import db from "./init/db.js";
+import jobs from "./jobs/index.js";
+import addApiRoutes from "./api/routes/index.js";
+import contextMiddleware from "./middlewares/context.js";
+import ConfigurationDAO from "./dao/configuration.js";
 
 const PORT = process.env.PORT || 5005;
 

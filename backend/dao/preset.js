@@ -1,6 +1,9 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const { ObjectID } = require("mongodb");
+import MonkeyError from "../handlers/error";
+import { mongoDB } from "../init/mongodb";
+
+import Mongo from "mongodb";
+
+const { ObjectID } = Mongo;
 
 class PresetDAO {
   static async getPresets(uid) {
@@ -51,4 +54,4 @@ class PresetDAO {
   }
 }
 
-module.exports = PresetDAO;
+export default PresetDAO;

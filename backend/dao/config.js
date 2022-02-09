@@ -1,4 +1,4 @@
-const { mongoDB } = require("../init/mongodb");
+import { mongoDB } from "../init/mongodb";
 
 class ConfigDAO {
   static async saveConfig(uid, config) {
@@ -14,4 +14,4 @@ class ConfigDAO {
   }
 }
 
-module.exports = ConfigDAO;
+export default ConfigDAO;

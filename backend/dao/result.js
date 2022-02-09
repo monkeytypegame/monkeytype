@@ -1,7 +1,11 @@
-const { ObjectID } = require("mongodb");
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const UserDAO = require("./user");
+import Mongo from "mongodb";
+
+const { ObjectID } = Mongo;
+
+import MonkeyError from "../handlers/error";
+import { mongoDB } from "../init/mongodb";
+
+import UserDAO from "./user";
 
 class ResultDAO {
   static async addResult(uid, result) {
@@ -81,4 +85,4 @@ class ResultDAO {
   }
 }
 
-module.exports = ResultDAO;
+export default ResultDAO;

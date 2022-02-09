@@ -1,4 +1,4 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
 class MonkeyError {
   constructor(status, message, stack = null, uid = null) {
@@ -30,4 +30,4 @@ class MonkeyError {
   }
 }
 
-module.exports = MonkeyError;
+export default MonkeyError;

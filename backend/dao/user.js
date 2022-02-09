@@ -1,9 +1,13 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const { ObjectID } = require("mongodb");
-const { checkAndUpdatePb } = require("../handlers/pb");
-const { updateAuthEmail } = require("../handlers/auth");
-const { isUsernameValid } = require("../handlers/validation");
+import { isUsernameValid } from "../handlers/validation";
+
+import { updateAuthEmail } from "../handlers/auth";
+import { checkAndUpdatePb } from "../handlers/pb";
+
+import { mongoDB } from "../init/mongodb";
+import MonkeyError from "../handlers/error";
+import Mongo from "mongodb";
+
+const { ObjectID } = Mongo;
 
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -370,4 +374,4 @@ class UsersDAO {
   }
 }
 
-module.exports = UsersDAO;
+export default UsersDAO;

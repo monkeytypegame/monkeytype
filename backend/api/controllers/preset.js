@@ -1,4 +1,4 @@
-const PresetDAO = require("../../dao/preset");
+import PresetDAO from "../../dao/preset";
 
 class PresetController {
   static async getPresets(req, _res) {
@@ -33,4 +33,4 @@ class PresetController {
   }
 }
 
-module.exports = PresetController;
+export default PresetController;

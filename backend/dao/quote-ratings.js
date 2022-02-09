@@ -1,4 +1,4 @@
-const { mongoDB } = require("../init/mongodb");
+import { mongoDB } from "../init/mongodb";
 
 class QuoteRatingsDAO {
   static async submit(quoteId, language, rating, update) {
@@ -39,4 +39,4 @@ class QuoteRatingsDAO {
   }
 }
 
-module.exports = QuoteRatingsDAO;
+export default QuoteRatingsDAO;

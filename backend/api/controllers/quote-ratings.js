@@ -1,6 +1,7 @@
-const QuoteRatingsDAO = require("../../dao/quote-ratings");
-const UserDAO = require("../../dao/user");
-const MonkeyError = require("../../handlers/error");
+import MonkeyError from "../../handlers/error";
+
+import UserDAO from "../../dao/user";
+import QuoteRatingsDAO from "../../dao/quote-ratings";
 
 class QuoteRatingsController {
   static async getRating(req, _res) {
@@ -50,4 +51,4 @@ class QuoteRatingsController {
   }
 }
 
-module.exports = QuoteRatingsController;
+export default QuoteRatingsController;

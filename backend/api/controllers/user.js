@@ -1,10 +1,11 @@
-const UsersDAO = require("../../dao/user");
-const BotDAO = require("../../dao/bot");
-const { isUsernameValid } = require("../../handlers/validation");
-const MonkeyError = require("../../handlers/error");
-const fetch = require("node-fetch");
-const Logger = require("./../../handlers/logger.js");
-const uaparser = require("ua-parser-js");
+import UsersDAO from "../../dao/user";
+import BotDAO from "../../dao/bot";
+import { isUsernameValid } from "../../handlers/validation";
+
+import MonkeyError from "../../handlers/error";
+import fetch from "node-fetch";
+import Logger from "./../../handlers/logger.js";
+import uaparser from "ua-parser-js";
 
 class UserController {
   static async createNewUser(req, res) {
@@ -255,4 +256,4 @@ class UserController {
   }
 }
 
-module.exports = UserController;
+export default UserController;

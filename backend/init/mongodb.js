@@ -1,7 +1,5 @@
-const db = require("./db");
+import db from "./db";
 
-module.exports = {
-  mongoDB() {
-    return db;
-  },
-};
+export function mongoDB() {
+  return db;
+}

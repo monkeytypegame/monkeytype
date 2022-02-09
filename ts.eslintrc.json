@@ -46,6 +46,7 @@
       {
         "extensions": [
           "",
+          ".js",
           ".ts",
           ".tsx",
           ".es.ts",

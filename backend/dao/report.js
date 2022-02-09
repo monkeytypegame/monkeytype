@@ -1,5 +1,5 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
+import MonkeyError from "../handlers/error";
+import { mongoDB } from "../init/mongodb";
 
 const MAX_REPORTS = 1000;
 const CONTENT_REPORT_LIMIT = 5;
@@ -30,4 +30,4 @@ class ReportDAO {
   }
 }
 
-module.exports = ReportDAO;
+export default ReportDAO;

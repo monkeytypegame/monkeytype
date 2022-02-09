@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "license": "GPL-3.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start:dev": "ts-node-dev ./server",
     "start:dev-ts": "nodemon --loader ts-node/esm --watch ./ ./server.js",
     "build": "tsc --build",
-    "start": "node ./build/server.js"
+    "start": "node --experimental-specifier-resolution=node ./build/server.js",
+    "watch": "tsc --build --watch"
   },
   "engines": {
     "node": "16.13.2",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^17.0.16",
+    "@types/uuid": "^8.3.4",
     "ts-node-dev": "^1.1.8"
   }
 }

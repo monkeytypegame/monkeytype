@@ -1,4 +1,4 @@
-const PsaDAO = require("../../dao/psa");
+import PsaDAO from "../../dao/psa";
 
 class PsaController {
   static async get(req, res) {
@@ -7,4 +7,4 @@ class PsaController {
   }
 }
 
-module.exports = PsaController;
+export default PsaController;

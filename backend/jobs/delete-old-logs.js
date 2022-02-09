@@ -1,6 +1,8 @@
-const { CronJob } = require("cron");
-const { mongoDB } = require("../init/mongodb");
-const Logger = require("../handlers/logger");
+import { CronJob } from "cron";
+
+import { mongoDB } from "../init/mongodb";
+
+import Logger from "../handlers/logger";
 
 const CRON_SCHEDULE = "0 0 0 * * *";
 const LOG_MAX_AGE_DAYS = 7;
@@ -18,4 +20,4 @@ async function deleteOldLogs() {
   );
 }
 
-module.exports = new CronJob(CRON_SCHEDULE, deleteOldLogs);
+export default new CronJob(CRON_SCHEDULE, deleteOldLogs);

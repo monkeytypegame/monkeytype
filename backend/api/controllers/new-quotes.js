@@ -3,7 +3,7 @@ import NewQuotesDao from "../../dao/new-quotes";
 const { get, add, approve: _approve, refuse: _refuse } = NewQuotesDao;
 import MonkeyError from "../../handlers/error";
 import UsersDAO from "../../dao/user";
-import { log } from "../../handlers/logger.js";
+import Logger from "../../handlers/logger.js";
 import { verify } from "../../handlers/captcha";
 
 class NewQuotesController {
@@ -33,7 +33,7 @@ class NewQuotesController {
       throw new MonkeyError(403, "You don't have permission to do this");
     }
     const data = await _approve(quoteId, editText, editSource);
-    log("system_quote_approved", data, uid);
+    Logger.log("system_quote_approved", data, uid);
 
     return data;
   }

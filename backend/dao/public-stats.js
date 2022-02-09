@@ -1,6 +1,7 @@
 // const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const { roundTo2 } = require("../handlers/misc");
+import { mongoDB } from "../init/mongodb";
+
+import { roundTo2 } from "../handlers/misc";
 
 class PublicStatsDAO {
   //needs to be rewritten, this is public stats not user stats
@@ -23,4 +24,4 @@ class PublicStatsDAO {
   }
 }
 
-module.exports = PublicStatsDAO;
+export default PublicStatsDAO;

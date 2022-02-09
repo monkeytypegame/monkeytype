@@ -1,4 +1,4 @@
-const { mongoDB } = require("../init/mongodb");
+import { mongoDB } from "../init/mongodb";
 
 async function addCommand(command, commandArguments) {
   return await mongoDB().collection("bot-commands").insertOne({
@@ -67,4 +67,4 @@ class BotDAO {
   }
 }
 
-module.exports = BotDAO;
+export default BotDAO;

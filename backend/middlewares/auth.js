@@ -1,5 +1,5 @@
-const MonkeyError = require("../handlers/error");
-const { verifyIdToken } = require("../handlers/auth");
+import MonkeyError from "../handlers/error";
+import { verifyIdToken } from "../handlers/auth";
 
 const DEFAULT_OPTIONS = {
   isPublic: false,
@@ -78,6 +78,4 @@ async function authenticateWithBearerToken(token) {
   }
 }
 
-module.exports = {
-  authenticateRequest,
-};
+export { authenticateRequest };
