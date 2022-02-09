@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start:dev": "nodemon --watch ./ ./server.js",
-    "start:dev-ts": "nodemon --watch ./ ./server.js"
+    "start:dev-ts": "nodemon --watch ./ ./server.js",
+    "build": "tsc --build"
   },
   "engines": {
     "node": "16.13.2",
