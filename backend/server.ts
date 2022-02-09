@@ -2,7 +2,7 @@ import express from "express";
 import "dotenv/config";
 import MonkeyError from "./handlers/error.js";
 import cors from "cors";
-import admin from "firebase-admin";
+import admin, { ServiceAccount } from "firebase-admin";
 import Logger from "./handlers/logger.js";
 import serviceAccount from "./credentials/serviceAccountKey.json";
 import db from "./init/db.js";
@@ -81,7 +81,9 @@ app.listen(PORT, async () => {
   console.log("Database connected");
 
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(
+      (serviceAccount as unknown) as ServiceAccount
+    ),
   });
 
   await ConfigurationDAO.getLiveConfiguration();

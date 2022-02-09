@@ -1,7 +1,7 @@
 import path from "path";
 
 import serviceAccount from "./credentials/serviceAccountKey.json";
-import admin from "firebase-admin";
+import admin, { ServiceAccount } from "firebase-admin";
 import db from "./init/db";
 import { config } from "dotenv";
 
@@ -10,7 +10,9 @@ config({ path: path.join(__dirname, ".env") });
 async function main() {
   await db.connect();
   await admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(
+      (serviceAccount as unknown) as ServiceAccount
+    ),
   });
   console.log("Database Connected");
   refactor();

@@ -5,11 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start:dev": "ts-node-dev ./server",
-    "start:dev-ts": "nodemon --loader ts-node/esm --watch ./ ./server.js",
     "build": "tsc --build",
     "start": "node --experimental-specifier-resolution=node ./build/server.js",
-    "watch": "tsc --build --watch"
+    "watch": "tsc --build --watch",
+    "clean": "tsc --build --clean"
   },
   "engines": {
     "node": "16.13.2",
@@ -38,6 +37,6 @@
   "devDependencies": {
     "@types/node": "^17.0.16",
     "@types/uuid": "^8.3.4",
-    "ts-node-dev": "^1.1.8"
+    "ts-node": "^10.5.0"
   }
 }
