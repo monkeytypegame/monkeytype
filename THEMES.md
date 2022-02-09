@@ -53,7 +53,7 @@ Then make sure your branch is up to date. Once it is up to date click contribute
 Update branch:
 <img width="1552" alt="Screen Shot 2022-01-12 at 10 55 19 AM" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
 
-Create pull request:
+Create a pull request:
 <img width="1552" alt="Screen Shot 2022-01-12 at 10 56 42 AM" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
 After that add some screenshots of your theme to the pull request. Click create pull request and if it gets approved 
