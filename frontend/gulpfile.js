@@ -115,9 +115,9 @@ task(
 );
 
 task("watch", function () {
-  watch("./frontend/src/sass/**/*.scss", series("sass"));
-  watch("./frontend/src/js/**/*.js", series("lint-js", "browserify"));
-  watch("./frontend/static/**/*.*", series("lint-json", "static"));
+  watch("./src/sass/**/*.scss", series("sass"));
+  watch("./src/js/**/*.js", series("lint-js", "browserify"));
+  watch("./static/**/*.*", series("lint-json", "static"));
 });
 
 task("build", series("clean", "compile"));
