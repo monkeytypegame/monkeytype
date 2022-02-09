@@ -13,7 +13,7 @@ First you will have to copy the repository also known as forking. Go the the [Mo
 
 ## Creating Themes
 After you have forked the repository you can now add your theme. (If you haven't already forked the repository yet refer to [here](#forking-the-repository))
-Create a file in ```./static/themes/```. Call it whatever you want but make sure that it is all lowercase and underscores for spaces. It should look something like this:
+Create a file in ```./frontend/static/themes/```. Call it whatever you want but make sure that it is all lowercase and underscores for spaces. It should look something like this:
 ```theme_name.css```.
 
 Then Add this code to your file:
@@ -35,7 +35,7 @@ Here is an image showing what all the colors correspond to:
 
 
 
-Now change the corresponding hex codes to match your theme. However you aren't done, you need to update one more file. Go to ```./static/themes/_list.json```.
+Now change the corresponding hex codes to match your theme. However you aren't done, you need to update one more file. Go to ```./frontend/static/themes/_list.json```.
 At the very end of the file add this code (Keep it inside the square brackets):
 ```
 ,{
