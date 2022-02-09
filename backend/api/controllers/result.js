@@ -15,9 +15,8 @@ const objecthash = node_object_hash().hash;
 let validateResult;
 let validateKeys;
 try {
-  // @ts-ignore
   // eslint-disable-next-line
-  let module = require("../../anticheat/anticheat");
+  let module = require("anticheat");
   validateResult = module.validateResult;
   validateKeys = module.validateKeys;
   if (!validateResult || !validateKeys) throw new Error("undefined");
