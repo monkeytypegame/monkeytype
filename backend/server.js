@@ -6,8 +6,9 @@ config({ path: path.join(__dirname, ".env") });
 const cors = require("cors");
 const admin = require("firebase-admin");
 const Logger = require("./handlers/logger.js");
+// eslint-disable-next-line
 const serviceAccount = require("./credentials/serviceAccountKey.json");
-const { connectDB, mongoDB } = require("./init/mongodb");
+const db = require("./init/db");
 const jobs = require("./jobs");
 const addApiRoutes = require("./api/routes");
 const contextMiddleware = require("./middlewares/context");
@@ -15,7 +16,7 @@ const ConfigurationDAO = require("./dao/configuration");
 
 const PORT = process.env.PORT || 5005;
 
-// MIDDLEWARE &  SETUP
+// MIDDLEWARE & SETUP
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,10 +27,7 @@ app.set("trust proxy", 1);
 app.use(contextMiddleware);
 
 app.use((req, res, next) => {
-  if (
-    process.env.MAINTENANCE === "true" ||
-    req.context.configuration.maintenance
-  ) {
+  if (process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance) {
     res.status(503).json({ message: "Server is down for maintenance" });
   } else {
     next();
@@ -53,16 +51,16 @@ app.use(function (e, req, res, _next) {
     //its a server error
     monkeyError = new MonkeyError(e.status, e.message, e.stack);
   }
-  if (!monkeyError.uid && req.decodedToken) {
-    monkeyError.uid = req.decodedToken.uid;
+  if (!monkeyError.uid && req.ctx?.decodedToken) {
+    monkeyError.uid = req.ctx.decodedToken.uid;
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
       "system_error",
-      `${monkeyError.status} ${monkeyError.message}`,
+      `${monkeyError.status} ${monkeyError.message} ${monkeyError.stack}`,
       monkeyError.uid
     );
-    mongoDB().collection("errors").insertOne({
+    db.collection("errors").insertOne({
       _id: monkeyError.errorID,
       timestamp: Date.now(),
       status: monkeyError.status,
@@ -80,12 +78,15 @@ app.use(function (e, req, res, _next) {
 console.log("Starting server...");
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT}`);
+
   console.log("Connecting to database...");
-  await connectDB();
+  await db.connect();
   console.log("Database connected");
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
+
   await ConfigurationDAO.getLiveConfiguration();
 
   console.log("Starting cron jobs...");

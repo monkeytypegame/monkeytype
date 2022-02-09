@@ -80,13 +80,14 @@ serviceAccountKey*.json
 
 #generated files
 dist/
+frontend/public/
 
 #cloudflare y
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 purgeCfCache.sh
 
-static/adtest.html
+frontend/static/adtest.html
 backend/lastId.txt
 backend/log_success.txt
 backend/credentials/*.json

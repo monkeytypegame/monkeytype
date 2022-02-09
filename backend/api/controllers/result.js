@@ -13,6 +13,7 @@ config({ path: path.join(__dirname, ".env") });
 let validateResult;
 let validateKeys;
 try {
+  // eslint-disable-next-line
   let module = require("../../anticheat/anticheat");
   validateResult = module.validateResult;
   validateKeys = module.validateKeys;
@@ -32,42 +33,37 @@ try {
 }
 
 class ResultController {
-  static async getResults(req, res) {
-    const { uid } = req.decodedToken;
-    const results = await ResultDAO.getResults(uid);
-    return res.status(200).json(results);
+  static async getResults(req, _res) {
+    const { uid } = req.ctx.decodedToken;
+
+    return await ResultDAO.getResults(uid);
   }
 
   static async deleteAll(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
+
     await ResultDAO.deleteAll(uid);
     Logger.log("user_results_deleted", "", uid);
+
     return res.sendStatus(200);
   }
 
   static async updateTags(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { tags, resultid } = req.body;
+
     await ResultDAO.updateTags(uid, resultid, tags);
+
     return res.sendStatus(200);
   }
 
   static async addResult(req, res) {
-    const { uid } = req.decodedToken;
+    const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
     if (validateObjectValues(result) > 0)
       return res.status(400).json({ message: "Bad input" });
-    if (
-      result.wpm <= 0 ||
-      result.wpm > 350 ||
-      result.acc < 75 ||
-      result.acc > 100 ||
-      result.consistency > 100
-    ) {
-      return res.status(400).json({ message: "Bad input" });
-    }
-    if (result.wpm == result.raw && result.acc != 100) {
+    if (result.wpm === result.raw && result.acc !== 100) {
       return res.status(400).json({ message: "Bad input" });
     }
     if (
@@ -100,7 +96,11 @@ class ResultController {
 
     let resulthash = result.hash;
     delete result.hash;
-    if (req.context.configuration.resultObjectHashCheck.enabled) {
+    if (
+      req.ctx.configuration.resultObjectHashCheck.enabled &&
+      resulthash.length === 64
+    ) {
+      //if its not 64 that means client is still using old hashing package
       const serverhash = objecthash(result);
       if (serverhash !== resulthash) {
         Logger.log(
