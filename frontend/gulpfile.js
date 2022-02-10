@@ -38,33 +38,9 @@ task("lint-json", function () {
 });
 
 task("webpack", async function () {
-  src("./src/js/index.js")
+  return src("./src/js/index.js")
     .pipe(webpackStream(webpackConfig), webpack)
     .pipe(dest("./public/js"));
-  // return true;
-
-  //   const b = webpack({
-  //     entries: "./src/js/index.js",
-  //     //a source map isn't very useful right now because
-  //     //the source files are concatenated together
-  //     debug: false,
-  //   });
-  //   return b
-  //     .transform(
-  //       babelify.configure({
-  //         presets: ["@babel/preset-env"],
-  //         plugins: ["@babel/transform-runtime"],
-  //       })
-  //     )
-  //     .bundle()
-  //     .pipe(source("monkeytype.js"))
-  //     .pipe(buffer())
-  //     .pipe(
-  //       uglify({
-  //         mangle: false,
-  //       })
-  //     )
-  //     .pipe(dest("./public/js"));
 });
 
 task("static", function () {

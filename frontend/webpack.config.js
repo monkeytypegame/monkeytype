@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  mode: "production", // Change to 'production' for production
+  mode: "development", // Change to 'production' for production
   entry: "./src/js/index.js",
   resolve: {
     fallback: { crypto: false },
