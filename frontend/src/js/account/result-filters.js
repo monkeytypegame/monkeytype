@@ -4,7 +4,7 @@ import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import * as Account from "../pages/account";
 
-let defaultResultFilters = {
+export let defaultResultFilters = {
   difficulty: {
     normal: true,
     expert: true,
@@ -68,8 +68,9 @@ function save() {
   window.localStorage.setItem("resultFilters", JSON.stringify(filters));
 }
 
-function load() {
+export function load() {
   // let newTags = $.cookie("activeTags");
+  console.log("loading filters");
   try {
     let newResultFilters = window.localStorage.getItem("resultFilters");
     if (
@@ -79,30 +80,31 @@ function load() {
         Object.keys(defaultResultFilters).length
     ) {
       filters = JSON.parse(newResultFilters);
-      save();
+      // save();
     } else {
       filters = defaultResultFilters;
-      save();
+      // save();
     }
+
+    let newTags = {};
+
+    Object.keys(defaultResultFilters.tags).forEach((tag) => {
+      if (filters.tags[tag] !== undefined) {
+        newTags[tag] = filters.tags[tag];
+      } else {
+        newTags[tag] = true;
+      }
+    });
+
+    filters.tags = newTags;
+
+    save();
   } catch {
     console.log("error in loading result filters");
     filters = defaultResultFilters;
     save();
   }
 }
-
-Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-  let languages = values[0];
-  let funboxModes = values[1];
-  languages.forEach((language) => {
-    defaultResultFilters.language[language] = true;
-  });
-  funboxModes.forEach((funbox) => {
-    defaultResultFilters.funbox[funbox.name] = true;
-  });
-  // filters = defaultResultFilters;
-  load();
-});
 
 export function getFilters() {
   return filters;
@@ -125,6 +127,7 @@ export function getFilter(group, filter) {
 // }
 
 export function loadTags(tags) {
+  console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });

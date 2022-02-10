@@ -67,9 +67,20 @@ export async function getDataAndInit() {
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
-  // if (snap === null) {
-  //   throw "Missing db snapshot. Client likely could not connect to the backend.";
-  // }
+
+  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
+    let languages = values[0];
+    let funboxModes = values[1];
+    languages.forEach((language) => {
+      ResultFilters.defaultResultFilters.language[language] = true;
+    });
+    funboxModes.forEach((funbox) => {
+      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+    });
+    // filters = defaultResultFilters;
+    ResultFilters.load();
+  });
+
   let user = firebase.auth().currentUser;
   if (snap.name == undefined) {
     //verify username
