@@ -13,7 +13,7 @@ class NewQuotesController {
       throw new MonkeyError(403, "You don't have permission to do this");
     }
     const data = await NewQuotesDAO.get();
-    return new MonkeyResponse("Get quotes successfully", data);
+    return new MonkeyResponse("Quote submissions retrieved", data);
   }
 
   static async addQuote(req, _res) {
@@ -23,7 +23,7 @@ class NewQuotesController {
       throw new MonkeyError(400, "Captcha check failed");
     }
     await NewQuotesDAO.add(text, source, language, uid);
-    return new MonkeyResponse("New quote added successfully");
+    return new MonkeyResponse("Quote submission added");
   }
 
   static async approve(req, _res) {
@@ -36,7 +36,7 @@ class NewQuotesController {
     const data = await NewQuotesDAO.approve(quoteId, editText, editSource);
     Logger.log("system_quote_approved", data, uid);
 
-    return new MonkeyResponse("Quotes approved successfully");
+    return new MonkeyResponse("Quote approved");
   }
 
   static async refuse(req, res) {
@@ -44,7 +44,7 @@ class NewQuotesController {
     const { quoteId } = req.body;
 
     await NewQuotesDAO.refuse(quoteId, uid);
-    return new MonkeyResponse("Quotes refused successfully");
+    return new MonkeyResponse("Quote refused");
   }
 }
 

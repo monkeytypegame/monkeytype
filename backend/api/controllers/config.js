@@ -7,7 +7,7 @@ class ConfigController {
     const { uid } = req.ctx.decodedToken;
 
     const data = await ConfigDAO.getConfig(uid);
-    return new MonkeyResponse("Get configuration successfully", data);
+    return new MonkeyResponse("Configuration retrieved", data);
   }
 
   static async saveConfig(req, res) {

@@ -64,7 +64,7 @@ class UserController {
 
     const available = await UsersDAO.isNameAvailable(name);
     if (!available) throw new MonkeyError(400, "Username unavailable");
-    return new MonkeyResponse("Name validated");
+    return new MonkeyResponse("Username available");
   }
 
   static async updateEmail(req, res) {
@@ -123,7 +123,7 @@ class UserController {
         agent.device.type;
     }
     Logger.log("user_data_requested", logobj, uid);
-    return new MonkeyResponse("User retrieved", userInfo);
+    return new MonkeyResponse("User data retrieved", userInfo);
   }
 
   static async linkDiscord(req, _res) {
@@ -229,7 +229,7 @@ class UserController {
     const { mode, mode2, language, rank } = req.body;
 
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
-    return new MonkeyResponse("Memory updated");
+    return new MonkeyResponse("Leaderboard memory updated");
   }
 }
 
