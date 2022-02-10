@@ -15,7 +15,11 @@
     "@babel/core": "^7.12.3",
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
+    "@types/node": "^17.0.16",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.3",
+    "babel-preset-latest": "^6.24.1",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "dart-sass": "^1.25.0",
@@ -29,7 +33,9 @@
     "through2": "^4.0.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-paths": "^3.0.1",
-    "vinyl-source-stream": "^2.0.0"
+    "vinyl-source-stream": "^2.0.0",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
@@ -42,6 +48,7 @@
     "howler": "^2.2.1",
     "moment-timezone": "^0.5.33",
     "node-object-hash": "2.3.10",
-    "tinycolor2": "^1.4.2"
+    "tinycolor2": "^1.4.2",
+    "webpack-stream": "^7.0.0"
   }
 }

@@ -57,21 +57,17 @@ function hexToHSL(H) {
 
 let themesList = null;
 export async function getThemesList() {
-  if (themesList == null) {
-    return $.getJSON("themes/_list.json", function (data) {
-      const list = data.sort(function (a, b) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      themesList = list;
-      return themesList;
+  return $.getJSON("themes/_list.json", function (data) {
+    const list = data.sort(function (a, b) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
     });
-  } else {
+    themesList = list;
     return themesList;
-  }
+  });
 }
 
 let sortedThemesList = null;
@@ -93,22 +89,17 @@ export async function getSortedThemesList() {
   }
 }
 
-let funboxList = null;
 export async function getFunboxList() {
-  if (funboxList == null) {
-    return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (a, b) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return funboxList;
+  return $.getJSON("funbox/_list.json", function (data) {
+    const funboxList = data.sort(function (a, b) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
     });
-  } else {
     return funboxList;
-  }
+  });
 }
 
 export async function getFunbox(funbox) {
@@ -174,20 +165,16 @@ export async function getQuotes(language) {
 
 let fontsList = null;
 export async function getFontsList() {
-  if (fontsList == null) {
-    return $.getJSON("fonts/_list.json", function (data) {
-      fontsList = data.sort(function (a, b) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return fontsList;
+  return $.getJSON("fonts/_list.json", function (data) {
+    fontsList = data.sort(function (a, b) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
     });
-  } else {
     return fontsList;
-  }
+  });
 }
 
 let supportersList = null;
@@ -216,14 +203,10 @@ export async function getContributorsList() {
 
 let languageList = null;
 export async function getLanguageList() {
-  if (languageList == null) {
-    return $.getJSON("languages/_list.json", function (data) {
-      languageList = data;
-      return languageList;
-    });
-  } else {
+  return $.getJSON("languages/_list.json", function (data) {
+    languageList = data;
     return languageList;
-  }
+  });
 }
 
 let languageGroupList = null;
@@ -253,14 +236,10 @@ export async function findCurrentGroup(language) {
 
 let challengeList = null;
 export async function getChallengeList() {
-  if (challengeList == null) {
-    return $.getJSON("challenges/_list.json", function (data) {
-      challengeList = data;
-      return challengeList;
-    });
-  } else {
+  return $.getJSON("challenges/_list.json", function (data) {
+    challengeList = data;
     return challengeList;
-  }
+  });
 }
 
 export function showNotification(text, time) {

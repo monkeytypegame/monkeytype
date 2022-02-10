@@ -1,6 +1,5 @@
 const { task, src, dest, series, watch } = require("gulp");
 // const axios = require("axios");
-const browserify = require("browserify");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
 const del = require("del");
@@ -12,6 +11,10 @@ var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
 const uglify = require("gulp-uglify");
 const through2 = require("through2");
+const { webpack } = require("webpack");
+const webpackStream = require("webpack-stream");
+const path = require("path");
+const webpackConfig = require("./webpack.config.js");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = "../.eslintrc.json";
@@ -34,29 +37,34 @@ task("lint-json", function () {
     .pipe(eslint.failAfterError());
 });
 
-task("browserify", function () {
-  const b = browserify({
-    entries: "./src/js/index.js",
-    //a source map isn't very useful right now because
-    //the source files are concatenated together
-    debug: false,
-  });
-  return b
-    .transform(
-      babelify.configure({
-        presets: ["@babel/preset-env"],
-        plugins: ["@babel/transform-runtime"],
-      })
-    )
-    .bundle()
-    .pipe(source("monkeytype.js"))
-    .pipe(buffer())
-    .pipe(
-      uglify({
-        mangle: false,
-      })
-    )
+task("webpack", async function () {
+  src("./src/js/index.js")
+    .pipe(webpackStream(webpackConfig), webpack)
     .pipe(dest("./public/js"));
+  // return true;
+
+  //   const b = webpack({
+  //     entries: "./src/js/index.js",
+  //     //a source map isn't very useful right now because
+  //     //the source files are concatenated together
+  //     debug: false,
+  //   });
+  //   return b
+  //     .transform(
+  //       babelify.configure({
+  //         presets: ["@babel/preset-env"],
+  //         plugins: ["@babel/transform-runtime"],
+  //       })
+  //     )
+  //     .bundle()
+  //     .pipe(source("monkeytype.js"))
+  //     .pipe(buffer())
+  //     .pipe(
+  //       uglify({
+  //         mangle: false,
+  //       })
+  //     )
+  //     .pipe(dest("./public/js"));
 });
 
 task("static", function () {
@@ -107,7 +115,7 @@ task(
   series(
     "lint-js",
     "lint-json",
-    "browserify",
+    "webpack",
     "static",
     "sass",
     "updateSwCacheName"
@@ -116,7 +124,7 @@ task(
 
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
-  watch("./src/js/**/*.js", series("lint-js", "browserify"));
+  watch("./src/js/**/*.js", series("lint-js", "webpack"));
   watch("./static/**/*.*", series("lint-json", "static"));
 });
 
