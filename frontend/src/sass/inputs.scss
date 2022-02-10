@@ -110,7 +110,8 @@ input[type="number"] {
   color: var(--sub-color);
 }
 
-.select2-container--open .select2-dropdown--below {
+.select2-container--open .select2-dropdown--below,
+.select2-container--open .select2-dropdown--above {
   border-color: rgba(0, 0, 0, 0.1);
   background: var(--bg-color);
   color: var(--sub-color);
@@ -157,14 +158,14 @@ input[type="number"] {
   .select2-selection--single
   .select2-selection__arrow
   b {
-  border-color: var(--sub-color) transparent transparent transparent;
+  border-color: var(--text-color) transparent transparent transparent;
 }
 
 .select2-container--default.select2-container--open
   .select2-selection--single
   .select2-selection__arrow
   b {
-  border-color: var(--sub-color) transparent;
+  border-color: var(--text-color) transparent;
 }
 
 .select2-container--default .select2-search--dropdown .select2-search__field {
@@ -172,4 +173,8 @@ input[type="number"] {
   background: var(--bg-color);
   color: var(--text-color);
   border-radius: var(--roundness);
+}
+
+.select2-container--default .select2-results__group {
+  color: var(--text-color);
 }
