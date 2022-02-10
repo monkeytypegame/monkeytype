@@ -1,4 +1,3 @@
-import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
 import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
 import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -164,9 +163,7 @@ export function update(previous, current) {
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
-    CustomWordAmountPopup.show();
-  } else {
+  if (wrd != "custom") {
     UpdateConfig.setWordCount(wrd);
     ManualRestart.set();
     TestLogic.restart();

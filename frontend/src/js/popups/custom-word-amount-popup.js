@@ -70,3 +70,10 @@ $("#customWordAmountPopup input").keypress((e) => {
 $("#customWordAmountPopup .button").click(() => {
   apply();
 });
+
+$(document).on("click", "#top .config .wordCount .text-button", (e) => {
+  const wrd = $(e.currentTarget).attr("wordCount");
+  if (wrd == "custom") {
+    show();
+  }
+});
