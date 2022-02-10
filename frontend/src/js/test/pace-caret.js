@@ -3,7 +3,6 @@ import * as TestUI from "./test-ui";
 import Config from "../config";
 import * as DB from "../db";
 import * as TestTimer from "./test-timer";
-import * as Misc from "../misc";
 
 export let settings = null;
 
@@ -33,7 +32,7 @@ function resetCaretPosition() {
 
 export async function init() {
   $("#paceCaret").addClass("hidden");
-  let mode2 = Misc.getMode2();
+  let mode2 = Config.getMode2();
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -46,7 +45,7 @@ export async function init() {
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
-    let mode2 = Misc.getMode2();
+    let mode2 = Config.getMode2();
     wpm = await DB.getUserAverageWpm10(
       Config.mode,
       mode2,

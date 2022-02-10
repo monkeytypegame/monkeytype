@@ -1,6 +1,4 @@
 import * as Loader from "./elements/loader";
-import Config from "./config";
-import * as TestLogic from "./test/test-logic";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -57,17 +55,21 @@ function hexToHSL(H) {
 
 let themesList = null;
 export async function getThemesList() {
-  return $.getJSON("themes/_list.json", function (data) {
-    const list = data.sort(function (a, b) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
+  if (themesList == null) {
+    return $.getJSON("themes/_list.json", function (data) {
+      const list = data.sort(function (a, b) {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+      themesList = list;
+      return themesList;
     });
-    themesList = list;
+  } else {
     return themesList;
-  });
+  }
 }
 
 let sortedThemesList = null;
@@ -89,17 +91,22 @@ export async function getSortedThemesList() {
   }
 }
 
+let funboxList = null;
 export async function getFunboxList() {
-  return $.getJSON("funbox/_list.json", function (data) {
-    const funboxList = data.sort(function (a, b) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
+  if (funboxList == null) {
+    return $.getJSON("funbox/_list.json", function (data) {
+      funboxList = data.sort(function (a, b) {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+      return funboxList;
     });
+  } else {
     return funboxList;
-  });
+  }
 }
 
 export async function getFunbox(funbox) {
@@ -165,16 +172,20 @@ export async function getQuotes(language) {
 
 let fontsList = null;
 export async function getFontsList() {
-  return $.getJSON("fonts/_list.json", function (data) {
-    fontsList = data.sort(function (a, b) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
+  if (fontsList == null) {
+    return $.getJSON("fonts/_list.json", function (data) {
+      fontsList = data.sort(function (a, b) {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+      return fontsList;
     });
+  } else {
     return fontsList;
-  });
+  }
 }
 
 let supportersList = null;
@@ -203,10 +214,14 @@ export async function getContributorsList() {
 
 let languageList = null;
 export async function getLanguageList() {
-  return $.getJSON("languages/_list.json", function (data) {
-    languageList = data;
+  if (languageList == null) {
+    return $.getJSON("languages/_list.json", function (data) {
+      languageList = data;
+      return languageList;
+    });
+  } else {
     return languageList;
-  });
+  }
 }
 
 let languageGroupList = null;
@@ -236,10 +251,14 @@ export async function findCurrentGroup(language) {
 
 let challengeList = null;
 export async function getChallengeList() {
-  return $.getJSON("challenges/_list.json", function (data) {
-    challengeList = data;
+  if (challengeList == null) {
+    return $.getJSON("challenges/_list.json", function (data) {
+      challengeList = data;
+      return challengeList;
+    });
+  } else {
     return challengeList;
-  });
+  }
 }
 
 export function showNotification(text, time) {
@@ -296,8 +315,8 @@ export async function getLanguage(lang) {
   }
 }
 
-export async function getCurrentLanguage() {
-  return await getLanguage(Config.language);
+export async function getCurrentLanguage(languageName) {
+  return await getLanguage(languageName);
 }
 
 export function migrateFromCookies() {
@@ -790,23 +809,6 @@ String.prototype.lastIndexOfRegex = function (regex) {
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
-
-export function getMode2(mode) {
-  if (!mode) mode = Config.mode;
-  let mode2 = "";
-  if (mode === "time") {
-    mode2 = Config.time;
-  } else if (mode === "words") {
-    mode2 = Config.words;
-  } else if (mode === "custom") {
-    mode2 = "custom";
-  } else if (mode === "zen") {
-    mode2 = "zen";
-  } else if (mode === "quote") {
-    mode2 = TestLogic.randomQuote.id;
-  }
-  return mode2;
-}
 
 //https://stackoverflow.com/questions/36532307/rem-px-in-javascript
 export function convertRemToPixels(rem) {
