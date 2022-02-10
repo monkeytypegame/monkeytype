@@ -43,6 +43,12 @@ task("webpack", async function () {
     .pipe(dest("./public/js"));
 });
 
+task("webpack-production", async function () {
+  return src("./src/js/index.js")
+    .pipe(webpackStream({ ...webpackConfig, mode: "production" }), webpack)
+    .pipe(dest("./public/js"));
+});
+
 task("static", function () {
   return src("./static/**/*", { dot: true }).pipe(dest("./public/"));
 });
@@ -98,6 +104,18 @@ task(
   )
 );
 
+task(
+  "compile-production",
+  series(
+    "lint-js",
+    "lint-json",
+    "webpack-production",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
+);
+
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
   watch("./src/js/**/*.js", series("lint-js", "webpack"));
@@ -105,3 +123,4 @@ task("watch", function () {
 });
 
 task("build", series("clean", "compile"));
+task("build-production", series("clean", "compile-production"));

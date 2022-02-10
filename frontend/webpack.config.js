@@ -2,7 +2,8 @@ const path = require("path");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 module.exports = {
-  mode: "production", // Change to 'production' for production
+  mode: "development", // Change to 'production' for production
+  devtool: false, // no SourceMap
   entry: "./src/js/index.js",
   resolve: {
     fallback: {
