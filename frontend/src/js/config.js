@@ -6,7 +6,6 @@ import * as LanguagePicker from "./settings/language-picker";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
 import * as TTS from "./test/tts";
-import * as MobileTestConfig from "./popups/mobile-test-config-popup.js";
 import * as TestConfig from "./test/test-config.js";
 import * as PractiseWords from "./test/practise-words";
 
@@ -211,7 +210,6 @@ export function setMode(mode, nosave) {
     }
   }
   TestConfig.update(previous, config.mode);
-  MobileTestConfig.update();
   PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("mode", config.mode);

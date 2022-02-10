@@ -161,3 +161,9 @@ $("#mobileTestConfigPopup .button").click((e) => {
   // hidePopup();
   update();
 });
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey) => {
+    if (eventKey === "mode") update();
+  });
+});
