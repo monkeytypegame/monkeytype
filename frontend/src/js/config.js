@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
-import * as TestUI from "./test/test-ui";
 import * as ChartController from "./controllers/chart-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as TimerProgress from "./test/timer-progress";
@@ -224,7 +223,6 @@ export function setMode(mode, nosave) {
       config.funbox === "ascii"
     ) {
       Funbox.setFunbox("none");
-      TestUI.updateModesNotice();
     }
     setPunctuation(false, true);
     setNumbers(false, true);
@@ -283,7 +281,6 @@ export function setDifficulty(diff, nosave) {
   }
   config.difficulty = diff;
   if (!nosave) TestLogic.restart(false, nosave);
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("difficulty", config.difficulty);
 }
@@ -313,7 +310,6 @@ export function setBlindMode(blind, nosave) {
     blind = false;
   }
   config.blindMode = blind;
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("blindMode", config.blindMode);
 }
@@ -364,7 +360,6 @@ export function setStopOnError(soe, nosave) {
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
   }
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("stopOnError", config.stopOnError);
 }
@@ -426,7 +421,6 @@ export function setPaceCaret(val, nosave) {
   // }
   config.paceCaret = val;
   ChallengeContoller.clearActive();
-  TestUI.updateModesNotice();
   PaceCaret.init(nosave);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("paceCaret", config.paceCaret);
@@ -457,7 +451,6 @@ export function setMinWpm(minwpm, nosave) {
     minwpm = "off";
   }
   config.minWpm = minwpm;
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("minWpm", config.minWpm);
 }
@@ -478,7 +471,6 @@ export function setMinAcc(min, nosave) {
     min = "off";
   }
   config.minAcc = min;
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("minAcc", config.minAcc);
 }
@@ -498,7 +490,6 @@ export function setMinBurst(min, nosave) {
     min = "off";
   }
   config.minBurst = min;
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("minBurst", config.minBurst);
 }
@@ -592,7 +583,6 @@ export function setFlipTestColors(flip, nosave) {
     flip = false;
   }
   config.flipTestColors = flip;
-  TestUI.flipColors(flip);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("flipTestColors", config.flipTestColors);
 }
@@ -603,7 +593,6 @@ export function setColorfulMode(extra, nosave) {
     extra = false;
   }
   config.colorfulMode = extra;
-  TestUI.colorful(extra);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("colorfulMode", config.colorfulMode);
 }
@@ -783,9 +772,6 @@ export function setHighlightMode(mode, nosave) {
   config.highlightMode = mode;
   // if(TestLogic.active){
   ChallengeContoller.clearActive();
-  try {
-    if (!nosave) TestUI.updateWordElement(config.blindMode);
-  } catch {}
   // }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("highlightMode", config.highlightMode);
@@ -1056,8 +1042,6 @@ export function setConfidenceMode(cm, nosave) {
     config.freedomMode = false;
     config.stopOnError = "off";
   }
-
-  TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("confidenceMode", config.confidenceMode);
 }
@@ -1248,7 +1232,6 @@ export function setLayout(layout, nosave) {
   }
   config.layout = layout;
   ChallengeContoller.clearActive();
-  TestUI.updateModesNotice();
   if (config.keymapLayout === "overrideSync") {
     Keymap.refreshKeys(config.keymapLayout, setKeymapLayout);
   }
@@ -1401,7 +1384,6 @@ export function setBurstHeatmap(value, nosave) {
   }
   config.burstHeatmap = value;
   if (!nosave) {
-    TestUI.applyBurstHeatmap();
     saveToLocalStorage();
   }
   dispatchEvent("burstHeatmap", config.burstHeatmap);
@@ -1615,7 +1597,6 @@ export function apply(configObj) {
       $("#ad_about2").remove();
     }
   }
-  TestUI.updateModesNotice();
 }
 
 export function reset() {
