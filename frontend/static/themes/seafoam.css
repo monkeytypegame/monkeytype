@@ -1,15 +1,15 @@
 :root {
-  --bg-color: #79b791;
-  --main-color: #420c14;
-  --caret-color: #abd1b5;
-  --sub-color: #732c2c;
+  --bg-color: #6aebb4;
+  --main-color: #00cbb7;
+  --caret-color: #68dac7;
+  --sub-color: #b2ffde;
   --text-color: #edf4ed;
-  --error-color: #301014;
-  --error-extra-color: #301014;
-  --colorful-error-color: #301014;
-  --colorful-error-extra-color: #301014;
+  --error-color: #ff2600;
+  --error-extra-color: #ff2600;
+  --colorful-error-color: #ff2600;
+  --colorful-error-extra-color: #ff2600;
 }
 
 #top .logo .bottom {
-  color: #abd1b5;
+  color: #00cbb7;
 }
