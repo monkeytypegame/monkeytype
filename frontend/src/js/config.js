@@ -183,19 +183,6 @@ export function setNumbers(numb, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleNumbers() {
-  config.numbers = !config.numbers;
-  if (config.mode === "quote") {
-    config.numbers = false;
-  }
-  if (config.numbers) {
-    $("#top .config .numbersMode .text-button").addClass("active");
-  } else {
-    $("#top .config .numbersMode .text-button").removeClass("active");
-  }
-  saveToLocalStorage();
-}
-
 //punctuation
 export function setPunctuation(punc, nosave) {
   if (config.mode === "quote") {
@@ -209,19 +196,6 @@ export function setPunctuation(punc, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
-}
-
-export function togglePunctuation() {
-  config.punctuation = !config.punctuation;
-  if (config.mode === "quote") {
-    config.punctuation = false;
-  }
-  if (config.punctuation) {
-    $("#top .config .punctuationMode .text-button").addClass("active");
-  } else {
-    $("#top .config .punctuationMode .text-button").removeClass("active");
-  }
-  saveToLocalStorage();
 }
 
 export function setMode(mode, nosave) {
@@ -320,17 +294,6 @@ export function setFunbox(funbox, nosave) {
   }
 }
 
-//blind mode
-export function toggleBlindMode() {
-  let blind = !config.blindMode;
-  if (blind == undefined) {
-    blind = false;
-  }
-  config.blindMode = blind;
-  TestUI.updateModesNotice();
-  saveToLocalStorage();
-}
-
 export function setBlindMode(blind, nosave) {
   if (blind == undefined) {
     blind = false;
@@ -358,16 +321,6 @@ export function updateChartStyle() {
   ChartController.accountHistory.update();
 }
 
-export function toggleChartAccuracy() {
-  if (config.chartAccuracy) {
-    config.chartAccuracy = false;
-  } else {
-    config.chartAccuracy = true;
-  }
-  updateChartAccuracy();
-  saveToLocalStorage();
-}
-
 export function setChartAccuracy(chartAccuracy, nosave) {
   if (chartAccuracy == undefined) {
     chartAccuracy = true;
@@ -375,16 +328,6 @@ export function setChartAccuracy(chartAccuracy, nosave) {
   config.chartAccuracy = chartAccuracy;
   updateChartAccuracy();
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleChartStyle() {
-  if (config.chartStyle == "scatter") {
-    config.chartStyle = "line";
-  } else {
-    config.chartStyle = "scatter";
-  }
-  updateChartStyle();
-  saveToLocalStorage();
 }
 
 export function setChartStyle(chartStyle, nosave) {
@@ -408,12 +351,6 @@ export function setStopOnError(soe, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-//alwaysshowdecimal
-export function toggleAlwaysShowDecimalPlaces() {
-  config.alwaysShowDecimalPlaces = !config.alwaysShowDecimalPlaces;
-  saveToLocalStorage();
-}
-
 export function setAlwaysShowDecimalPlaces(val, nosave) {
   if (val == undefined) {
     val = false;
@@ -422,26 +359,12 @@ export function setAlwaysShowDecimalPlaces(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleAlwaysShowCPM() {
-  config.alwaysShowCPM = !config.alwaysShowCPM;
-  saveToLocalStorage();
-}
-
 export function setAlwaysShowCPM(val, nosave) {
   if (val == undefined) {
     val = false;
   }
   config.alwaysShowCPM = val;
   if (!nosave) saveToLocalStorage();
-}
-
-//show out of focus warning
-export function toggleShowOutOfFocusWarning() {
-  config.showOutOfFocusWarning = !config.showOutOfFocusWarning;
-  if (!config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
-  }
-  saveToLocalStorage();
 }
 
 export function setShowOutOfFocusWarning(val, nosave) {
@@ -453,13 +376,6 @@ export function setShowOutOfFocusWarning(val, nosave) {
     OutOfFocus.hide();
   }
   if (!nosave) saveToLocalStorage();
-}
-
-//swap esc and tab
-export function toggleSwapEscAndTab() {
-  config.swapEscAndTab = !config.swapEscAndTab;
-  saveToLocalStorage();
-  UI.updateKeytips();
 }
 
 export function setSwapEscAndTab(val, nosave) {
@@ -500,16 +416,6 @@ export function setPaceCaretCustomSpeed(val, nosave) {
   }
   config.paceCaretCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
-}
-
-//repeated pace
-export function toggleRepeatedPace() {
-  let pace = !config.repeatedPace;
-  if (pace == undefined) {
-    pace = true;
-  }
-  config.repeatedPace = pace;
-  saveToLocalStorage();
 }
 
 export function setRepeatedPace(pace, nosave) {
@@ -585,15 +491,6 @@ export function setAlwaysShowWordsHistory(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleAlwaysShowWordsHistory() {
-  let val = !config.alwaysShowWordsHistory;
-  if (val == undefined) {
-    val = false;
-  }
-  config.alwaysShowWordsHistory = val;
-  saveToLocalStorage();
-}
-
 //single list command line
 export function setSingleListCommandLine(option, nosave) {
   if (!option) option = "manual";
@@ -610,17 +507,6 @@ export function setCapsLockWarning(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-//show all lines
-export function toggleShowAllLines() {
-  let sal = !config.showAllLines;
-  if (sal == undefined) {
-    sal = false;
-  }
-  config.showAllLines = sal;
-  TestLogic.restart();
-  saveToLocalStorage();
-}
-
 export function setShowAllLines(sal, nosave) {
   if (sal == undefined) {
     sal = false;
@@ -631,16 +517,6 @@ export function setShowAllLines(sal, nosave) {
     saveToLocalStorage();
     TestLogic.restart();
   }
-}
-
-//quickend
-export function toggleQuickEnd() {
-  let qe = !config.quickEnd;
-  if (qe == undefined) {
-    qe = false;
-  }
-  config.quickEnd = qe;
-  saveToLocalStorage();
 }
 
 export function setQuickEnd(qe, nosave) {
@@ -683,12 +559,6 @@ export function setFlipTestColors(flip, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleFlipTestColors() {
-  config.flipTestColors = !config.flipTestColors;
-  TestUI.flipColors(config.flipTestColors);
-  saveToLocalStorage();
-}
-
 //extra color
 export function setColorfulMode(extra, nosave) {
   if (extra == undefined) {
@@ -699,12 +569,6 @@ export function setColorfulMode(extra, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleColorfulMode() {
-  config.colorfulMode = !config.colorfulMode;
-  TestUI.colorful(config.colorfulMode);
-  saveToLocalStorage();
-}
-
 //strict space
 export function setStrictSpace(val, nosave) {
   if (val == undefined) {
@@ -712,11 +576,6 @@ export function setStrictSpace(val, nosave) {
   }
   config.strictSpace = val;
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleStrictSpace() {
-  config.strictSpace = !config.strictSpace;
-  saveToLocalStorage();
 }
 
 //opposite shift space
@@ -817,16 +676,6 @@ export function setShowTimerProgress(timer, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleShowTimerProgress() {
-  config.showTimerProgress = !config.showTimerProgress;
-  if (config.showTimerProgress) {
-    TimerProgress.show();
-  } else {
-    TimerProgress.hide();
-  }
-  saveToLocalStorage();
-}
-
 export function setShowLiveWpm(live, nosave) {
   if (live == null || live == undefined) {
     live = false;
@@ -839,16 +688,6 @@ export function setShowLiveWpm(live, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleShowLiveWpm() {
-  config.showLiveWpm = !config.showLiveWpm;
-  if (config.showLiveWpm) {
-    LiveWpm.show();
-  } else {
-    LiveWpm.hide();
-  }
-  saveToLocalStorage();
 }
 
 export function setShowLiveAcc(live, nosave) {
@@ -864,16 +703,6 @@ export function setShowLiveAcc(live, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleLiveAcc() {
-  config.showLiveAcc = !config.showLiveAcc;
-  if (config.showLiveAcc) {
-    LiveAcc.show();
-  } else {
-    LiveAcc.hide();
-  }
-  saveToLocalStorage();
-}
-
 export function setShowLiveBurst(live, nosave) {
   if (live == null || live == undefined) {
     live = false;
@@ -885,16 +714,6 @@ export function setShowLiveBurst(live, nosave) {
     LiveAcc.hide();
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleShowLiveBurst() {
-  config.showLiveBurst = !config.showLiveBurst;
-  if (config.showLiveBurst) {
-    LiveBurst.show();
-  } else {
-    LiveBurst.hide();
-  }
-  saveToLocalStorage();
 }
 
 export function setHighlightMode(mode, nosave) {
@@ -929,11 +748,6 @@ export function setHideExtraLetters(val, nosave) {
   }
   config.hideExtraLetters = val;
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleHideExtraLetters() {
-  config.hideExtraLetters = !config.hideExtraLetters;
-  saveToLocalStorage();
 }
 
 export function setTimerStyle(style, nosave) {
@@ -1003,16 +817,6 @@ export function setKeyTips(keyTips, nosave) {
     $("#bottom .keyTips").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleKeyTips() {
-  config.showKeyTips = !config.showKeyTips;
-  if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
-  } else {
-    $("#bottom .keyTips").addClass("hidden");
-  }
-  saveToLocalStorage();
 }
 
 //mode
@@ -1101,22 +905,6 @@ export function setSmoothCaret(mode, nosave) {
   }
 }
 
-export function toggleSmoothCaret() {
-  config.smoothCaret = !config.smoothCaret;
-  saveToLocalStorage();
-  if (config.smoothCaret) {
-    $("#caret").css("animation-name", "caretFlashSmooth");
-  } else {
-    $("#caret").css("animation-name", "caretFlashHard");
-  }
-}
-
-//startgraphsatzero
-export function toggleStartGraphsAtZero() {
-  config.startGraphsAtZero = !config.startGraphsAtZero;
-  saveToLocalStorage();
-}
-
 export function setStartGraphsAtZero(mode, nosave) {
   config.startGraphsAtZero = mode;
   if (!nosave) saveToLocalStorage();
@@ -1126,11 +914,6 @@ export function setStartGraphsAtZero(mode, nosave) {
 export function setSmoothLineScroll(mode, nosave) {
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleSmoothLineScroll() {
-  config.smoothLineScroll = !config.smoothLineScroll;
-  saveToLocalStorage();
 }
 
 //quick tab
@@ -1148,22 +931,6 @@ export function setQuickTabMode(mode, nosave) {
     <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleQuickTabMode() {
-  config.quickTab = !config.quickTab;
-  if (!config.quickTab) {
-    $("#restartTestButton").removeClass("hidden");
-    $("#restartTestButton").css("opacity", 1);
-    $("#bottom .keyTips")
-      .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
-  } else {
-    $("#restartTestButton").addClass("hidden");
-    $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
-  }
-  saveToLocalStorage();
 }
 
 export function previewFontFamily(font) {
@@ -1215,14 +982,6 @@ export function setFreedomMode(freedom, nosave) {
     config.confidenceMode = "off";
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function toggleFreedomMode() {
-  config.freedomMode = !config.freedomMode;
-  if (config.freedomMode && config.confidenceMode !== "off") {
-    config.confidenceMode = false;
-  }
-  saveToLocalStorage();
 }
 
 export function setConfidenceMode(cm, nosave) {
@@ -1304,17 +1063,6 @@ export function setLazyMode(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function toggleCustomTheme(nosave) {
-  if (config.customTheme) {
-    setCustomTheme(false);
-    ThemeController.set(config.theme);
-  } else {
-    setCustomTheme(true);
-    ThemeController.set("custom");
-  }
-  if (!nosave) saveToLocalStorage();
-}
-
 export function setCustomThemeColors(colors, nosave) {
   if (colors !== undefined) {
     config.customThemeColors = colors;
@@ -1338,16 +1086,6 @@ export function setLanguage(language, nosave) {
     });
   } catch (e) {
     console.log("Analytics unavailable");
-  }
-  if (!nosave) saveToLocalStorage();
-}
-
-export function toggleMonkey(nosave) {
-  config.monkey = !config.monkey;
-  if (config.monkey) {
-    $("#monkey").removeClass("hidden");
-  } else {
-    $("#monkey").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
 }

@@ -1124,11 +1124,15 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
-  UpdateConfig.toggleChartAccuracy();
+  UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  UpdateConfig.toggleChartStyle();
+  if (Config.chartStyle == "line") {
+    UpdateConfig.setChartStyle("scatter");
+  } else {
+    UpdateConfig.setChartStyle("line");
+  }
 });
 
 $(".pageAccount .loadMoreButton").click((e) => {

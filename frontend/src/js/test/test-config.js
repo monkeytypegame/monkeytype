@@ -1,6 +1,6 @@
 import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
 import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
-import * as UpdateConfig from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
@@ -204,13 +204,13 @@ $(document).on("click", "#top .config .customText .text-button", () => {
 });
 
 $(document).on("click", "#top .config .punctuationMode .text-button", () => {
-  UpdateConfig.togglePunctuation();
+  UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   TestLogic.restart();
 });
 
 $(document).on("click", "#top .config .numbersMode .text-button", () => {
-  UpdateConfig.toggleNumbers();
+  UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   TestLogic.restart();
 });

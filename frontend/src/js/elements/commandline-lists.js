@@ -3055,7 +3055,7 @@ export let defaultCommands = {
       icon: "fa-egg",
       visible: false,
       exec: () => {
-        UpdateConfig.toggleMonkey();
+        UpdateConfig.setMonkey(!Config.monkey);
       },
     },
     {
