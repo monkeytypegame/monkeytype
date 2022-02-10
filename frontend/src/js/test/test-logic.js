@@ -38,6 +38,7 @@ import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "./../elements/monkey-power";
+import * as ActivePage from "./../elements/active-page";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -471,7 +472,7 @@ export function restart(
     } catch {}
     return;
   }
-  if (UI.getActivePage() == "pageTest" && !TestUI.resultVisible) {
+  if (ActivePage.get() == "pageTest" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (hasTab) {
         try {
@@ -563,7 +564,7 @@ export function restart(
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   QuoteRatePopup.clearQuoteStats();
-  if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
+  if (ActivePage.get() == "pageTest" && window.scrollY > 0)
     window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
@@ -596,7 +597,7 @@ export function restart(
     },
     125,
     async () => {
-      if (UI.getActivePage() == "pageTest") Focus.set(false);
+      if (ActivePage.get() == "pageTest") Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -1122,7 +1123,7 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if (UI.getActivePage() == "pageTest") {
+  if (ActivePage.get() == "pageTest") {
     await Funbox.activate();
   }
   TestUI.showWords();

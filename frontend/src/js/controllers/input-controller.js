@@ -25,6 +25,7 @@ import * as Replay from "../test/replay.js";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as Leaderboards from "../elements/leaderboards";
+import * as ActivePage from "./../elements/active-page";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -600,9 +601,9 @@ function handleTab(event) {
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
     $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
-    UI.getActivePage() != "pageLogin"
+    ActivePage.get() != "pageLogin"
   ) {
-    if (UI.getActivePage() == "pageTest") {
+    if (ActivePage.get() == "pageTest") {
       if (Config.quickTab) {
         if (!$("#leaderboardsWrapper").hasClass("hidden")) {
           Leaderboards.hide();
@@ -656,11 +657,11 @@ function handleTab(event) {
 }
 
 $(document).keydown((event) => {
-  if (UI.getActivePage() == "pageLoading") return event.preventDefault();
+  if (ActivePage.get() == "pageLoading") return event.preventDefault();
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = UI.getActivePage() === "pageTest";
+  const pageTestActive = ActivePage.get() === "pageTest";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 

@@ -22,6 +22,7 @@ import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
 import axiosInstance from "../axios-instance";
 import * as TodayTracker from "./../test/today-tracker";
+import * as ActivePage from "./../elements/active-page";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -35,7 +36,7 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
-    if (UI.getActivePage() == "pageLoading") {
+    if (ActivePage.get() == "pageLoading") {
       LoadingPage.updateBar(90);
     } else {
       LoadingPage.updateBar(45);
@@ -62,11 +63,11 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if (UI.getActivePage() == "pageLoading") UI.changePage("");
+    if (ActivePage.get() == "pageLoading") UI.changePage("");
     AccountController.signOut();
     return;
   }
-  if (UI.getActivePage() == "pageLoading") {
+  if (ActivePage.get() == "pageLoading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -211,7 +212,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if (UI.getActivePage() == "pageTest") {
+        if (ActivePage.get() == "pageTest") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -228,7 +229,7 @@ export async function getDataAndInit() {
     }
   }
   // if (
-  //   UI.getActivePage() == "pageLogin" ||
+  //   ActivePage.get() == "pageLogin" ||
   //   window.location.pathname === "/account"
   // ) {
   //   UI.changePage("account");
@@ -242,7 +243,7 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  // if (UI.getActivePage() == "pageLoading") {
+  // if (ActivePage.get() == "pageLoading") {
   //   LoadingPage.updateBar(100, true);
   //   Focus.set(false);
   //   UI.changePage("");

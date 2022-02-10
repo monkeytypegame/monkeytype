@@ -50,7 +50,7 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
     //   LoadingPage.updateBar(16);
@@ -88,7 +88,7 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(45);
     // } else {
     //   LoadingPage.updateBar(32);
@@ -97,7 +97,7 @@ export async function initSnapshot() {
     if (configData) {
       snap.config = configData.config;
     }
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(67.5);
     // } else {
     //   LoadingPage.updateBar(48);
@@ -113,7 +113,7 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(90);
     // } else {
     //   LoadingPage.updateBar(64);

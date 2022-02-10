@@ -1,6 +1,7 @@
 import * as Funbox from "../test/funbox";
 import * as UI from "../ui";
 import Config from "../config";
+import * as ActivePage from "./../elements/active-page";
 
 let mappedRoutes = {
   "/": "pageLoading",
@@ -18,7 +19,7 @@ export function handleInitialPageClasses(pathname) {
   let el = $(".page." + mappedRoutes[pathname]);
   $(el).removeClass("hidden");
   $(el).addClass("active");
-  UI.setActivePage(mappedRoutes[pathname]);
+  ActivePage.set(mappedRoutes[pathname]);
 }
 
 (function (history) {
