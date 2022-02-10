@@ -34,6 +34,12 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(90);
+    } else {
+      LoadingPage.updateBar(45);
+    }
+    LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (e) {
