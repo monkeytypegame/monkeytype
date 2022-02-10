@@ -339,6 +339,8 @@ export function updateWordElement(showError = !Config.blindMode) {
   let currentWord;
   wordAtIndex = document.querySelector("#words .word.active");
   currentWord = TestLogic.words.getCurrent();
+  if (!currentWord) return;
+
   let ret = "";
 
   let newlineafter = false;
