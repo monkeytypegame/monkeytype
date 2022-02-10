@@ -1,6 +1,6 @@
 import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";
-import { ChartData } from "../declarations/interfaces";
+import { ChartData } from ".../../../Typings/interfaces";
 
 export function updatePosition(x: number, y: number) {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });

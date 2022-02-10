@@ -1,5 +1,5 @@
 import axios from "axios";
-import { firebase } from "./declarations/imports";
+import { firebase } from "../../../Typings/imports";
 
 const apiPath = "";
 

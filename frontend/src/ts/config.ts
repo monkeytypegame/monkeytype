@@ -61,12 +61,16 @@ import {
   TimerOpacity,
   TimerStyle,
   WordsModes,
-} from "./declarations/interfaces";
-import { Theme } from "./declarations/Theme";
-import { firebase } from "./declarations/imports";
-import { FontFamily } from "./declarations/Font";
-import { Language } from "./declarations/Language";
-import { CustomLayoutFluid, KeymapLayout, Layout } from "./declarations/Layout";
+} from "../../../Typings/interfaces";
+import { Theme } from "../../../Typings/Theme";
+import { firebase } from "../../../Typings/imports";
+import { FontFamily } from "../../../Typings/Font";
+import { Language } from "../../../Typings/Language";
+import {
+  CustomLayoutFluid,
+  KeymapLayout,
+  Layout,
+} from "../../../Typings/Layout";
 
 export let localStorageConfig: Config;
 export let dbConfigLoaded = false;

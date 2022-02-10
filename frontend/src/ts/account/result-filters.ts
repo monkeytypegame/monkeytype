@@ -12,11 +12,11 @@ import {
   Tag,
   TimeModes,
   WordsModes,
-} from "../declarations/interfaces";
+} from ".../../../Typings/interfaces";
 
-import { Language } from "../declarations/Language";
+import { Language } from ".../../../Typings/Language";
 
-import { FunboxJSON } from "../declarations/Funbox";
+import { FunboxJSON } from ".../../../Typings/Funbox";
 
 const defaultResultFilters: ResultFilters = {
   difficulty: {

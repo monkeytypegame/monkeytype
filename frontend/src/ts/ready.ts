@@ -8,7 +8,7 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
-import { GithubRelease } from "./declarations/interfaces";
+import { GithubRelease } from "../../../Typings/interfaces";
 
 ManualRestart.set();
 Misc.migrateFromCookies();

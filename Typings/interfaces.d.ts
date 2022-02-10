@@ -468,10 +468,6 @@ export interface Command {
   input?: boolean;
   visible?: boolean;
   defaultValue?: boolean;
-  shift?: {
-    display: string;
-    exec: ExecFunction;
-  };
   exec?: ExecFunction;
   available?: () => void;
 }
@@ -481,3 +477,7 @@ export interface CommandsObject {
   configKey?: keyof Config;
   list: Command[];
 }
+
+export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
+
+export type ActivePage = `page${Pages}` | undefined;
