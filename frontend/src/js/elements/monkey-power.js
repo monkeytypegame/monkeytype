@@ -1,4 +1,3 @@
-import * as TestLogic from "../test/test-logic";
 import * as ThemeColors from "./theme-colors";
 import * as TestTimer from "../test/test-timer";
 import * as UI from "../ui";
@@ -177,12 +176,7 @@ function randomColor() {
  * @param {boolean} good Good power or not?
  */
 export async function addPower(good = true, extra = false) {
-  if (
-    !TestLogic.active ||
-    Config.monkeyPowerLevel === "off" ||
-    TestTimer.slowTimer
-  )
-    return;
+  if (Config.monkeyPowerLevel === "off" || TestTimer.slowTimer) return;
 
   // Shake
   if (["3", "4"].includes(Config.monkeyPowerLevel)) {
