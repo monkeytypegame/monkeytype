@@ -1,7 +1,6 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
-import * as LiveBurst from "./test/live-burst";
 import * as Funbox from "./test/funbox";
 import * as Notifications from "./elements/notifications";
 import * as ThemeController from "./controllers/theme-controller";
@@ -705,11 +704,6 @@ export function setShowLiveBurst(live, nosave) {
     live = false;
   }
   config.showLiveBurst = live;
-  if (live) {
-    LiveBurst.show();
-  } else {
-    LiveBurst.hide();
-  }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("showLiveBurst", config.showLiveBurst);
 }

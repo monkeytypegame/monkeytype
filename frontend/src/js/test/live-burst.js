@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as TestLogic from "./test-logic";
 
 export function update(burst) {
@@ -55,3 +55,9 @@ export function hide() {
     }
   );
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "showLiveBurst") eventValue ? show() : hide();
+  });
+});
