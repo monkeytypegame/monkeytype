@@ -1433,6 +1433,17 @@ export function apply(configObj) {
       // }
 
       if (config.enableAds === "max" || config.enableAds === "on") {
+        $("head").append(`
+          <script
+          src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
+          type="text/javascript"
+          data-site-id="60b78af12119122b8958910f"
+          data-mode="scan"
+          id="adScript"
+          async
+          ></script>
+        `);
+
         if (config.enableAds === "max") {
           //
 
