@@ -23,26 +23,28 @@ import * as UI from "../ui";
 import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
 
-UpdateConfig.subscribe((key, value) => {
-  if (
-    [
-      "difficulty",
-      "blindMode",
-      "stopOnError",
-      "paceCaret",
-      "minWpm",
-      "minAcc",
-      "minBurst",
-      "confidenceMode",
-      "layout",
-    ].includes(key)
-  ) {
-    updateModesNotice();
-  }
-  if (key === "flipTestColors") flipColors(value);
-  if (key === "colorfulMode") colorful(value);
-  if (key === "highlightMode") updateWordElement(value);
-  if (key === "burstHeatmap") applyBurstHeatmap();
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (
+      [
+        "difficulty",
+        "blindMode",
+        "stopOnError",
+        "paceCaret",
+        "minWpm",
+        "minAcc",
+        "minBurst",
+        "confidenceMode",
+        "layout",
+      ].includes(eventKey)
+    ) {
+      updateModesNotice();
+    }
+    if (eventKey === "flipTestColors") flipColors(eventValue);
+    if (eventKey === "colorfulMode") colorful(eventValue);
+    if (eventKey === "highlightMode") updateWordElement(eventValue);
+    if (eventKey === "burstHeatmap") applyBurstHeatmap();
+  });
 });
 
 export let currentWordElementIndex = 0;

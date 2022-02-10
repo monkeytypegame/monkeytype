@@ -27,9 +27,9 @@ export let localStorageConfig = null;
 export let dbConfigLoaded = false;
 export let changedBeforeDb = false;
 
-let eventSubscribers = [];
+const eventSubscribers = [];
 
-export function subscribe(fn) {
+export function subscribeToEvent(fn) {
   eventSubscribers.push(fn);
 }
 
@@ -321,7 +321,7 @@ function updateChartAccuracy() {
   ChartController.accountHistory.update();
 }
 
-export function updateChartStyle() {
+function updateChartStyle() {
   if (config.chartStyle == "scatter") {
     ChartController.accountHistory.data.datasets[0].showLine = false;
     ChartController.accountHistory.data.datasets[1].showLine = false;
