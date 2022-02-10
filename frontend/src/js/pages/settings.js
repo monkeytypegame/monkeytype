@@ -10,7 +10,6 @@ import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as SimplePopups from "../popups/simple-popups";
-import * as EditTagsPopup from "../popups/edit-tags-popup";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
@@ -812,10 +811,6 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
-  EditTagsPopup.show("add");
-});
-
 $(document).on(
   "click",
   ".pageSettings .section.presets .addPresetButton",
@@ -844,45 +839,6 @@ $(document).on(
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
     PresetController.apply(presetid);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("edit", tagid, name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("clearPb", tagid, name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .removeButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("remove", tagid, name);
   }
 );
 
