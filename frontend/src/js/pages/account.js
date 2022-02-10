@@ -34,6 +34,12 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
+    if (UI.getActivePage() == "pageLoading") {
+      LoadingPage.updateBar(90);
+    } else {
+      LoadingPage.updateBar(45);
+    }
+    LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (e) {
@@ -67,9 +73,22 @@ export async function getDataAndInit() {
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
-  // if (snap === null) {
-  //   throw "Missing db snapshot. Client likely could not connect to the backend.";
-  // }
+
+  ResultFilters.loadTags(DB.getSnapshot().tags);
+
+  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
+    let languages = values[0];
+    let funboxModes = values[1];
+    languages.forEach((language) => {
+      ResultFilters.defaultResultFilters.language[language] = true;
+    });
+    funboxModes.forEach((funbox) => {
+      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+    });
+    // filters = defaultResultFilters;
+    ResultFilters.load();
+  });
+
   let user = firebase.auth().currentUser;
   if (snap.name == undefined) {
     //verify username
@@ -417,6 +436,7 @@ export function update() {
     let last10 = 0;
     let wpmLast10total = 0;
 
+    let topAcc = 0;
     let totalAcc = 0;
     let totalAcc10 = 0;
 
@@ -431,6 +451,7 @@ export function update() {
     // let totalSeconds = 0;
     totalSecondsFiltered = 0;
 
+    let topCons = 0;
     let totalCons = 0;
     let totalCons10 = 0;
     let consCount = 0;
@@ -697,6 +718,9 @@ export function update() {
       if (result.consistency !== undefined) {
         consCount++;
         totalCons += result.consistency;
+        if (result.consistency > topCons) {
+          topCons = result.consistency;
+        }
       }
 
       if (result.rawWpm != null) {
@@ -709,6 +733,10 @@ export function update() {
         if (result.rawWpm > rawWpm.max) {
           rawWpm.max = result.rawWpm;
         }
+      }
+
+      if (result.acc > topAcc) {
+        topAcc = result.acc;
       }
 
       totalAcc += result.acc;
@@ -959,6 +987,7 @@ export function update() {
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
+    $(".pageAccount .highestAcc .val").text(topAcc + "%");
     $(".pageAccount .avgAcc .val").text(Math.round(totalAcc / testCount) + "%");
     $(".pageAccount .avgAcc10 .val").text(
       Math.round(totalAcc10 / last10) + "%"
@@ -968,6 +997,7 @@ export function update() {
       $(".pageAccount .avgCons .val").text("-");
       $(".pageAccount .avgCons10 .val").text("-");
     } else {
+      $(".pageAccount .highestCons .val").text(topCons + "%");
       $(".pageAccount .avgCons .val").text(
         Math.round(totalCons / consCount) + "%"
       );
@@ -976,8 +1006,6 @@ export function update() {
       );
     }
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-    console.log("Test count: " + testCount);
-    console.log("Test restarts: " + testRestarts);
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100
@@ -1026,7 +1054,7 @@ export function update() {
       SignOutButton.show();
     }, 125);
     Focus.set(false);
-    UI.swapElements(
+    Misc.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
       250
@@ -1124,11 +1152,15 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
-  UpdateConfig.toggleChartAccuracy();
+  UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  UpdateConfig.toggleChartStyle();
+  if (Config.chartStyle == "line") {
+    UpdateConfig.setChartStyle("scatter");
+  } else {
+    UpdateConfig.setChartStyle("line");
+  }
 });
 
 $(".pageAccount .loadMoreButton").click((e) => {

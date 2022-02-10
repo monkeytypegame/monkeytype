@@ -32,6 +32,7 @@
   {
     "name": "arrows",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Eurobeat Intensifies..."
   },
   {
@@ -62,21 +63,25 @@
   {
     "name": "gibberish",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Anvbuefl dizzs eoos alsb?"
   },
   {
     "name": "58008",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "A special mode for accountants."
   },
   {
     "name": "ascii",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Where was the ampersand again?. Only ASCII characters."
   },
   {
     "name": "specials",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "!@#$%^&*. Only special characters."
   },
   {
@@ -117,21 +122,25 @@
   {
     "name": "poetry",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Practice typing some beautiful prose."
   },
   {
     "name": "wikipedia",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Practice typing wikipedia sections."
   },
   {
     "name": "weakspot",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Focus on slow and mistyped letters."
   },
   {
     "name": "pseudolang",
     "type": "script",
+    "affectsWordGeneration": true,
     "info": "Nonsense words that look like the current language."
   }
 ]

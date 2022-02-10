@@ -1,10 +1,9 @@
-import { loadTags } from "./account/result-filters";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./test/today-tracker";
 import * as LoadingPage from "./pages/loading";
-import * as UI from "./ui";
+// import * as UI from "./ui";
 import Ape from "./ape";
 
 let dbSnapshot = null;
@@ -60,12 +59,6 @@ export async function initSnapshot() {
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Downloading user data...");
 
     const [userData, configData, tagsData, presetsData] = (
       await Promise.all([
@@ -140,7 +133,6 @@ export async function initSnapshot() {
     });
 
     dbSnapshot = snap;
-    loadTags(dbSnapshot.tags);
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = defaultSnap;

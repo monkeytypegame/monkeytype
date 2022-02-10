@@ -62,7 +62,7 @@ export async function updatePosition() {
   }
 
   if (Config.mode != "zen" && $(currentLetter).length == 0) return;
-  const currentLanguage = await Misc.getCurrentLanguage();
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageLeftToRight = currentLanguage.leftToRight;
   let currentLetterPosLeft = isLanguageLeftToRight
     ? currentLetter.offsetLeft
