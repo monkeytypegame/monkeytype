@@ -1,6 +1,6 @@
 import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "./../misc";
@@ -237,3 +237,9 @@ export function handleSpace(correct, currentWord) {
 export function start() {
   update(performance.now() + settings.spc * 1000);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
+    if (eventKey === "paceCaret") init(nosave);
+  });
+});
