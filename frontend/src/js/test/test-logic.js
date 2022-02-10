@@ -674,7 +674,7 @@ export function restart(
         }
       }
 
-      let mode2 = UpdateConfig.getMode2();
+      let mode2 = Misc.getMode2(Config, randomQuote);
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -1461,7 +1461,7 @@ function buildCompletedEvent(difficultyFailed) {
     completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
   }
 
-  completedEvent.mode2 = UpdateConfig.getMode2();
+  completedEvent.mode2 = Misc.getMode2(Config, randomQuote);
 
   if (Config.mode === "custom") {
     completedEvent.customText = {};
@@ -1750,3 +1750,11 @@ export function fail(reason) {
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
+    if (eventKey === "difficulty" && !nosave) restart(false, nosave);
+    if (eventKey === "showAllLines" && !nosave) restart();
+    if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+  });
+});
