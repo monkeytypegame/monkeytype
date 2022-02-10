@@ -1,4 +1,5 @@
 import * as TestLogic from "./test-logic";
+import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import * as TestUI from "./test-ui";
 import * as Misc from "../misc";
@@ -60,7 +61,7 @@ function updateMemoryTimer(sec) {
 
 export function startMemoryTimer() {
   resetMemoryTimer();
-  memoryTimer = Math.round(Math.pow(TestLogic.words.length, 1.2));
+  memoryTimer = Math.round(Math.pow(TestWords.words.length, 1.2));
   updateMemoryTimer(memoryTimer);
   showMemoryTimer();
   memoryInterval = setInterval(() => {

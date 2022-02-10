@@ -1,6 +1,6 @@
 import * as Misc from "../misc";
 import Config from "../config";
-import * as TestLogic from "./test-logic";
+import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "./../states/test-active";
 
@@ -37,9 +37,9 @@ export async function updatePosition() {
 
   let caret = $("#caret");
 
-  let inputLen = TestLogic.input.current.length;
-  inputLen = Misc.trailingComposeChars.test(TestLogic.input.current)
-    ? TestLogic.input.current.search(Misc.trailingComposeChars) + 1
+  let inputLen = TestInput.input.current.length;
+  inputLen = Misc.trailingComposeChars.test(TestInput.input.current)
+    ? TestInput.input.current.search(Misc.trailingComposeChars) + 1
     : inputLen;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {

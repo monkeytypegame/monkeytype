@@ -3,6 +3,8 @@ import * as ThemeColors from "../elements/theme-colors";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as TestLogic from "./test-logic";
+import * as TestWords from "./test-words";
+import * as TestInput from "./test-input";
 import * as Funbox from "./funbox";
 import * as PaceCaret from "./pace-caret";
 import * as CustomText from "./custom-text";
@@ -159,8 +161,8 @@ export function showWords() {
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
-    for (let i = 0; i < TestLogic.words.length; i++) {
-      wordsHTML += getWordHTML(TestLogic.words.get(i));
+    for (let i = 0; i < TestWords.words.length; i++) {
+      wordsHTML += getWordHTML(TestWords.words.get(i));
     }
   } else {
     wordsHTML =
@@ -204,11 +206,11 @@ export function showWords() {
   } else {
     if (Config.keymapMode === "next") {
       Keymap.highlightKey(
-        TestLogic.words
+        TestWords.words
           .getCurrent()
           .substring(
-            TestLogic.input.current.length,
-            TestLogic.input.current.length + 1
+            TestInput.input.current.length,
+            TestInput.input.current.length + 1
           )
           .toString()
           .toUpperCase()
@@ -217,7 +219,7 @@ export function showWords() {
   }
 
   updateActiveElement();
-  Funbox.toggleScript(TestLogic.words.getCurrent());
+  Funbox.toggleScript(TestWords.words.getCurrent());
 
   Caret.updatePosition();
 }
@@ -334,11 +336,11 @@ export async function screenshot() {
 }
 
 export function updateWordElement(showError = !Config.blindMode) {
-  let input = TestLogic.input.current;
+  let input = TestInput.input.current;
   let wordAtIndex;
   let currentWord;
   wordAtIndex = document.querySelector("#words .word.active");
-  currentWord = TestLogic.words.getCurrent();
+  currentWord = TestWords.words.getCurrent();
   if (!currentWord) return;
 
   let ret = "";
@@ -346,14 +348,14 @@ export function updateWordElement(showError = !Config.blindMode) {
   let newlineafter = false;
 
   if (Config.mode === "zen") {
-    for (let i = 0; i < TestLogic.input.current.length; i++) {
-      if (TestLogic.input.current[i] === "\t") {
+    for (let i = 0; i < TestInput.input.current.length; i++) {
+      if (TestInput.input.current[i] === "\t") {
         ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-      } else if (TestLogic.input.current[i] === "\n") {
+      } else if (TestInput.input.current[i] === "\n") {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
-        ret += `<letter class="correct">${TestLogic.input.current[i]}</letter>`;
+        ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
       }
     }
   } else {
@@ -578,7 +580,7 @@ export function updateModesNotice() {
     );
   }
 
-  if (TestLogic.hasTab) {
+  if (TestWords.hasTab) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
     );
@@ -765,19 +767,19 @@ export function arrangeCharactersLeftToRight() {
 async function loadWordsHistory() {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
-  for (let i = 0; i < TestLogic.input.history.length + 2; i++) {
-    let input = TestLogic.input.getHistory(i);
-    let word = TestLogic.words.get(i);
+  for (let i = 0; i < TestInput.input.history.length + 2; i++) {
+    let input = TestInput.input.getHistory(i);
+    let word = TestWords.words.get(i);
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
       if (
-        TestLogic.corrected.getHistory(i) !== undefined &&
-        TestLogic.corrected.getHistory(i) !== ""
+        TestInput.corrected.getHistory(i) !== undefined &&
+        TestInput.corrected.getHistory(i) !== ""
       ) {
         wordEl = `<div class='word' burst="${
           TestStats.burstHistory[i]
-        }" input="${TestLogic.corrected
+        }" input="${TestInput.corrected
           .getHistory(i)
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
@@ -786,7 +788,7 @@ async function loadWordsHistory() {
           TestStats.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
-      if (i === TestLogic.input.history.length - 1) {
+      if (i === TestInput.input.history.length - 1) {
         //last word
         let wordstats = {
           correct: 0,
@@ -834,15 +836,15 @@ async function loadWordsHistory() {
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
-          correctedChar = TestLogic.corrected.getHistory(i)[c];
+          correctedChar = TestInput.corrected.getHistory(i)[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
         if (
           c + 1 === loop &&
-          TestLogic.corrected.getHistory(i) !== undefined &&
-          TestLogic.corrected.getHistory(i).length > input.length
+          TestInput.corrected.getHistory(i) !== undefined &&
+          TestInput.corrected.getHistory(i).length > input.length
         ) {
           extraCorrected = "extraCorrected";
         }
@@ -857,7 +859,7 @@ async function loadWordsHistory() {
                 "</letter>";
             }
           } else {
-            if (input[c] === TestLogic.input.current) {
+            if (input[c] === TestInput.input.current) {
               wordEl +=
                 `<letter class='correct ${extraCorrected}'>` +
                 word[c] +
@@ -943,8 +945,8 @@ export function applyBurstHeatmap() {
     burstlist = burstlist.filter((x) => x < 350);
 
     if (
-      TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
-        .length !== TestLogic.words.getCurrent()?.length
+      TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
+        .length !== TestWords.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
@@ -1016,11 +1018,11 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   try {
     let words;
     if (Config.mode == "zen") {
-      words = TestLogic.input.history.join(" ");
+      words = TestInput.input.history.join(" ");
     } else {
-      words = TestLogic.words
+      words = TestWords.words
         .get()
-        .slice(0, TestLogic.input.history.length)
+        .slice(0, TestInput.input.history.length)
         .join(" ");
     }
     await navigator.clipboard.writeText(words);
@@ -1031,12 +1033,12 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 });
 
 $(".pageTest #rateQuoteButton").click(async (event) => {
-  QuoteRatePopup.show(TestLogic.randomQuote);
+  QuoteRatePopup.show(TestWords.randomQuote);
 });
 
 $(".pageTest #reportQuoteButton").click(async (event) => {
   ReportQuotePopup.show({
-    quoteId: parseInt(TestLogic.randomQuote.id),
+    quoteId: parseInt(TestWords.randomQuote.id),
     noAnim: false,
   });
 });
@@ -1102,7 +1104,7 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show(TestLogic.input.current);
+  Caret.show(TestInput.input.current);
 });
 
 $("#wordsInput").on("focusout", () => {

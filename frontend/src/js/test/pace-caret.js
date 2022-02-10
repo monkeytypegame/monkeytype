@@ -1,4 +1,5 @@
 import * as TestLogic from "./test-logic";
+import * as TestWords from "./test-words";
 import * as TestUI from "./test-ui";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
@@ -34,7 +35,7 @@ function resetCaretPosition() {
 
 export async function init() {
   $("#paceCaret").addClass("hidden");
-  let mode2 = Misc.getMode2(Config, TestLogic.randomQuote);
+  let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -47,7 +48,7 @@ export async function init() {
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
-    let mode2 = Misc.getMode2(Config, TestLogic.randomQuote);
+    let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
     wpm = await DB.getUserAverageWpm10(
       Config.mode,
       mode2,
@@ -97,7 +98,7 @@ export function update(expectedStepEnd) {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestLogic.words.get(settings.currentWordIndex).length
+      TestWords.words.get(settings.currentWordIndex).length
     ) {
       //go to the next word
       settings.currentLetterIndex = -1;
@@ -110,7 +111,7 @@ export function update(expectedStepEnd) {
           if (settings.currentLetterIndex <= -2) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestLogic.words.get(settings.currentWordIndex - 1).length - 1;
+              TestWords.words.get(settings.currentWordIndex - 1).length - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -120,7 +121,7 @@ export function update(expectedStepEnd) {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestLogic.words.get(settings.currentWordIndex).length
+            TestWords.words.get(settings.currentWordIndex).length
           ) {
             //go to the next word
             settings.currentLetterIndex = -1;
@@ -145,7 +146,7 @@ export function update(expectedStepEnd) {
     try {
       let newIndex =
         settings.currentWordIndex -
-        (TestLogic.words.currentIndex - TestUI.currentWordElementIndex);
+        (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
       let word = document.querySelectorAll("#words .word")[newIndex];
       if (settings.currentLetterIndex === -1) {
         currentLetter = word.querySelectorAll("letter")[0];
@@ -217,19 +218,19 @@ export function handleSpace(correct, currentWord) {
   if (correct) {
     if (
       settings !== null &&
-      settings.wordsStatus[TestLogic.words.currentIndex] === true &&
+      settings.wordsStatus[TestWords.words.currentIndex] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestLogic.words.currentIndex] = undefined;
+      settings.wordsStatus[TestWords.words.currentIndex] = undefined;
       settings.correction -= currentWord.length + 1;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestLogic.words.currentIndex] === undefined &&
+      settings.wordsStatus[TestWords.words.currentIndex] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestLogic.words.currentIndex] = true;
+      settings.wordsStatus[TestWords.words.currentIndex] = true;
       settings.correction += currentWord.length + 1;
     }
   }

@@ -1,6 +1,8 @@
 import * as TestLogic from "./test-logic";
 import Config from "../config";
 import * as Misc from "../misc";
+import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
 
 export let invalid = false;
 export let start, end;
@@ -9,43 +11,7 @@ export let wpmHistory = [];
 export let rawHistory = [];
 export let burstHistory = [];
 
-export let keypressPerSecond = [];
-export let currentKeypress = {
-  count: 0,
-  errors: 0,
-  words: [],
-  afk: true,
-};
-export let lastKeypress;
-export let currentBurstStart = 0;
-
-// export let errorsPerSecond = [];
-// export let currentError = {
-//   count: 0,
-//   words: [],
-// };
 export let lastSecondNotRound = false;
-export let missedWords = {};
-export let accuracy = {
-  correct: 0,
-  incorrect: 0,
-};
-export let keypressTimings = {
-  spacing: {
-    current: -1,
-    array: [],
-  },
-  duration: {
-    current: -1,
-    array: [],
-  },
-};
-
-export let spacingDebug = false;
-export function enableSpacingDebug() {
-  spacingDebug = true;
-  console.clear();
-}
 
 export function getStats() {
   let ret = {
@@ -54,23 +20,23 @@ export function getStats() {
     wpmHistory,
     rawHistory,
     burstHistory,
-    keypressPerSecond,
-    currentKeypress,
-    lastKeypress,
-    currentBurstStart,
+    keypressPerSecond: TestInput.keypressPerSecond,
+    currentKeypress: TestInput.currentKeypress,
+    lastKeypress: TestInput.lastKeypress,
+    currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
-    missedWords,
-    accuracy,
-    keypressTimings,
+    missedWords: TestInput.missedWords,
+    accuracy: TestInput.accuracy,
+    keypressTimings: TestInput.keypressTimings,
   };
 
   try {
     ret.keySpacingStats = {
       average:
-        keypressTimings.spacing.array.reduce(
+        TestInput.keypressTimings.spacing.array.reduce(
           (previous, current) => (current += previous)
-        ) / keypressTimings.spacing.array.length,
-      sd: Misc.stdDev(keypressTimings.spacing.array),
+        ) / TestInput.keypressTimings.spacing.array.length,
+      sd: Misc.stdDev(TestInput.keypressTimings.spacing.array),
     };
   } catch (e) {
     //
@@ -78,10 +44,10 @@ export function getStats() {
   try {
     ret.keyDurationStats = {
       average:
-        keypressTimings.duration.array.reduce(
+        TestInput.keypressTimings.duration.array.reduce(
           (previous, current) => (current += previous)
-        ) / keypressTimings.duration.array.length,
-      sd: Misc.stdDev(keypressTimings.duration.array),
+        ) / TestInput.keypressTimings.duration.array.length,
+      sd: Misc.stdDev(TestInput.keypressTimings.duration.array),
     };
   } catch (e) {
     //
@@ -97,35 +63,7 @@ export function restart() {
   wpmHistory = [];
   rawHistory = [];
   burstHistory = [];
-  keypressPerSecond = [];
-  currentKeypress = {
-    count: 0,
-    errors: 0,
-    words: [],
-    afk: true,
-  };
-  currentBurstStart = 0;
-  // errorsPerSecond = [];
-  // currentError = {
-  //   count: 0,
-  //   words: [],
-  // };
   lastSecondNotRound = false;
-  missedWords = {};
-  accuracy = {
-    correct: 0,
-    incorrect: 0,
-  };
-  keypressTimings = {
-    spacing: {
-      current: -1,
-      array: [],
-    },
-    duration: {
-      current: -1,
-      array: [],
-    },
-  };
 }
 
 export let restartCount = 0;
@@ -150,9 +88,9 @@ export function setInvalid() {
 
 export function calculateTestSeconds(now) {
   if (now === undefined) {
-    let endAfkSeconds = (end - lastKeypress) / 1000;
+    let endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
     if ((Config.mode == "zen" || TestLogic.bailout) && endAfkSeconds < 7) {
-      return (lastKeypress - start) / 1000;
+      return (TestInput.lastKeypress - start) / 1000;
     } else {
       return (end - start) / 1000;
     }
@@ -171,10 +109,6 @@ export function setStart(s) {
   start2 = Date.now();
 }
 
-export function updateLastKeypress() {
-  lastKeypress = performance.now();
-}
-
 export function pushToWpmHistory(word) {
   wpmHistory.push(word);
 }
@@ -183,39 +117,13 @@ export function pushToRawHistory(word) {
   rawHistory.push(word);
 }
 
-export function incrementKeypressCount() {
-  currentKeypress.count++;
-}
-
-export function setKeypressNotAfk() {
-  currentKeypress.afk = false;
-}
-
-export function incrementKeypressErrors() {
-  currentKeypress.errors++;
-}
-
-export function pushKeypressWord(word) {
-  currentKeypress.words.push(word);
-}
-
-export function pushKeypressesToHistory() {
-  keypressPerSecond.push(currentKeypress);
-  currentKeypress = {
-    count: 0,
-    errors: 0,
-    words: [],
-    afk: true,
-  };
-}
-
 export function calculateAfkSeconds(testSeconds) {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
     if (Config.mode === "time") {
-      extraAfk = Math.round(testSeconds) - keypressPerSecond.length;
+      extraAfk = Math.round(testSeconds) - TestInput.keypressPerSecond.length;
     } else {
-      extraAfk = Math.ceil(testSeconds) - keypressPerSecond.length;
+      extraAfk = Math.ceil(testSeconds) - TestInput.keypressPerSecond.length;
     }
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
@@ -225,7 +133,7 @@ export function calculateAfkSeconds(testSeconds) {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  let ret = keypressPerSecond.filter((x) => x.afk).length;
+  let ret = TestInput.keypressPerSecond.filter((x) => x.afk).length;
   return ret + extraAfk;
 }
 
@@ -233,127 +141,43 @@ export function setLastSecondNotRound() {
   lastSecondNotRound = true;
 }
 
-export function setBurstStart(time) {
-  currentBurstStart = time;
-}
-
 export function calculateBurst() {
-  let timeToWrite = (performance.now() - currentBurstStart) / 1000;
+  let timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
   let wordLength;
   if (Config.mode === "zen") {
-    wordLength = TestLogic.input.current.length;
+    wordLength = TestInput.input.current.length;
     if (wordLength == 0) {
-      wordLength = TestLogic.input.getHistoryLast().length;
+      wordLength = TestInput.input.getHistoryLast().length;
     }
   } else {
-    wordLength = TestLogic.words.getCurrent().length;
+    wordLength = TestWords.words.getCurrent().length;
   }
   let speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
 
 export function pushBurstToHistory(speed) {
-  if (burstHistory[TestLogic.words.currentIndex] === undefined) {
+  if (burstHistory[TestWords.words.currentIndex] === undefined) {
     burstHistory.push(speed);
   } else {
     //repeated word - override
-    burstHistory[TestLogic.words.currentIndex] = speed;
+    burstHistory[TestWords.words.currentIndex] = speed;
   }
 }
 
 export function calculateAccuracy() {
-  let acc = (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
+  let acc =
+    (TestInput.accuracy.correct /
+      (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
+    100;
   return isNaN(acc) ? 100 : acc;
-}
-
-export function incrementAccuracy(correctincorrect) {
-  if (correctincorrect) {
-    accuracy.correct++;
-  } else {
-    accuracy.incorrect++;
-  }
-}
-
-export function setKeypressTimingsTooLong() {
-  keypressTimings.spacing.array = "toolong";
-  keypressTimings.duration.array = "toolong";
-}
-
-export function pushKeypressDuration(val) {
-  keypressTimings.duration.array.push(val);
-}
-
-export function setKeypressDuration(val) {
-  keypressTimings.duration.current = val;
-}
-
-export function pushKeypressSpacing(val) {
-  keypressTimings.spacing.array.push(val);
-}
-
-export function setKeypressSpacing(val) {
-  keypressTimings.spacing.current = val;
-}
-
-export function recordKeypressSpacing() {
-  let now = performance.now();
-  let diff = Math.abs(keypressTimings.spacing.current - now);
-  if (keypressTimings.spacing.current !== -1) {
-    pushKeypressSpacing(diff);
-    if (spacingDebug)
-      console.log(
-        "spacing debug",
-        "push",
-        diff,
-        "length",
-        keypressTimings.spacing.array.length
-      );
-  }
-  setKeypressSpacing(now);
-  if (spacingDebug)
-    console.log(
-      "spacing debug",
-      "set",
-      now,
-      "length",
-      keypressTimings.spacing.array.length
-    );
-  if (spacingDebug)
-    console.log(
-      "spacing debug",
-      "recorded",
-      "length",
-      keypressTimings.spacing.array.length
-    );
-}
-
-export function resetKeypressTimings() {
-  keypressTimings = {
-    spacing: {
-      current: performance.now(),
-      array: [],
-    },
-    duration: {
-      current: performance.now(),
-      array: [],
-    },
-  };
-  if (spacingDebug) console.clear();
-}
-
-export function pushMissedWord(word) {
-  if (!Object.keys(missedWords).includes(word)) {
-    missedWords[word] = 1;
-  } else {
-    missedWords[word]++;
-  }
 }
 
 export function removeAfkData() {
   let testSeconds = calculateTestSeconds();
-  keypressPerSecond.splice(testSeconds);
-  keypressTimings.duration.array.splice(testSeconds);
-  keypressTimings.spacing.array.splice(testSeconds);
+  TestInput.keypressPerSecond.splice(testSeconds);
+  TestInput.keypressTimings.duration.array.splice(testSeconds);
+  TestInput.keypressTimings.spacing.array.splice(testSeconds);
   wpmHistory.splice(testSeconds);
 }
 
@@ -365,31 +189,31 @@ function countChars() {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
-  for (let i = 0; i < TestLogic.input.history.length; i++) {
+  for (let i = 0; i < TestInput.input.history.length; i++) {
     let word =
       Config.mode == "zen"
-        ? TestLogic.input.getHistory(i)
-        : TestLogic.words.get(i);
-    if (TestLogic.input.getHistory(i) === "") {
+        ? TestInput.input.getHistory(i)
+        : TestWords.words.get(i);
+    if (TestInput.input.getHistory(i) === "") {
       //last word that was not started
       continue;
     }
-    if (TestLogic.input.getHistory(i) == word) {
+    if (TestInput.input.getHistory(i) == word) {
       //the word is correct
       correctWordChars += word.length;
       correctChars += word.length;
       if (
-        i < TestLogic.input.history.length - 1 &&
-        Misc.getLastChar(TestLogic.input.getHistory(i)) !== "\n"
+        i < TestInput.input.history.length - 1 &&
+        Misc.getLastChar(TestInput.input.getHistory(i)) !== "\n"
       ) {
         correctspaces++;
       }
-    } else if (TestLogic.input.getHistory(i).length >= word.length) {
+    } else if (TestInput.input.getHistory(i).length >= word.length) {
       //too many chars
-      for (let c = 0; c < TestLogic.input.getHistory(i).length; c++) {
+      for (let c = 0; c < TestInput.input.getHistory(i).length; c++) {
         if (c < word.length) {
           //on char that still has a word list pair
-          if (TestLogic.input.getHistory(i)[c] == word[c]) {
+          if (TestInput.input.getHistory(i)[c] == word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -407,9 +231,9 @@ function countChars() {
         missed: 0,
       };
       for (let c = 0; c < word.length; c++) {
-        if (c < TestLogic.input.getHistory(i).length) {
+        if (c < TestInput.input.getHistory(i).length) {
           //on char that still has a word list pair
-          if (TestLogic.input.getHistory(i)[c] == word[c]) {
+          if (TestInput.input.getHistory(i)[c] == word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -421,14 +245,14 @@ function countChars() {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === TestLogic.input.history.length - 1 && Config.mode == "time") {
+      if (i === TestInput.input.history.length - 1 && Config.mode == "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
         missedChars += toAdd.missed;
       }
     }
-    if (i < TestLogic.input.history.length - 1) {
+    if (i < TestInput.input.history.length - 1) {
       spaces++;
     }
   }
@@ -440,7 +264,8 @@ function countChars() {
     spaces: spaces,
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
-    incorrectChars: Config.mode == "zen" ? accuracy.incorrect : incorrectChars,
+    incorrectChars:
+      Config.mode == "zen" ? TestInput.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,

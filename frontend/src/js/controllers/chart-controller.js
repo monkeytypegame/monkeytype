@@ -1,5 +1,5 @@
 import Chart from "chart.js";
-import * as TestStats from "../test/test-stats";
+import * as TestInput from "./../test/test-input";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../misc";
 import Config, * as UpdateConfig from "../config";
@@ -61,7 +61,7 @@ export let result = new Chart($("#wpmChart"), {
             $(".wordInputAfter").remove();
 
             let wordsToHighlight =
-              TestStats.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
+              TestInput.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
 
             let unique = [...new Set(wordsToHighlight)];
             unique.forEach((wordIndex) => {

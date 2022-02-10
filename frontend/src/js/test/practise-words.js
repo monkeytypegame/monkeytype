@@ -1,8 +1,10 @@
 import * as TestStats from "./test-stats";
+import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";
+import * as TestInput from "./test-input";
 
 export let before = {
   mode: null,
@@ -21,8 +23,8 @@ export function init(missed, slow) {
 
   let sortableMissedWords = [];
   if (missed) {
-    Object.keys(TestStats.missedWords).forEach((missedWord) => {
-      sortableMissedWords.push([missedWord, TestStats.missedWords[missedWord]]);
+    Object.keys(TestInput.missedWords).forEach((missedWord) => {
+      sortableMissedWords.push([missedWord, TestInput.missedWords[missedWord]]);
     });
     sortableMissedWords.sort((a, b) => {
       return b[1] - a[1];
@@ -37,7 +39,7 @@ export function init(missed, slow) {
 
   let sortableSlowWords = [];
   if (slow) {
-    sortableSlowWords = TestLogic.words.get().map(function (e, i) {
+    sortableSlowWords = TestWords.words.get().map(function (e, i) {
       return [e, TestStats.burstHistory[i]];
     });
     sortableSlowWords.sort((a, b) => {
@@ -45,7 +47,7 @@ export function init(missed, slow) {
     });
     sortableSlowWords = sortableSlowWords.slice(
       0,
-      Math.min(limit, Math.round(TestLogic.words.length * 0.2))
+      Math.min(limit, Math.round(TestWords.words.length * 0.2))
     );
   }
 

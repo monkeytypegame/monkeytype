@@ -6,6 +6,9 @@ import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
+import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
+
 import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
@@ -116,11 +119,11 @@ function layoutfluid() {
 
 function checkIfFailed(wpmAndRaw, acc) {
   if (timerDebug) console.time("fail conditions");
-  TestStats.pushKeypressesToHistory();
+  TestInput.pushKeypressesToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-    TestLogic.words.currentIndex > 3
+    TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
     TestLogic.fail("min wpm");
@@ -131,7 +134,7 @@ function checkIfFailed(wpmAndRaw, acc) {
   if (
     Config.minAcc === "custom" &&
     acc < parseInt(Config.minAccCustom) &&
-    TestLogic.words.currentIndex > 3
+    TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
     TestLogic.fail("min accuracy");
@@ -157,8 +160,8 @@ function checkIfTimeIsUp() {
       //times up
       clearTimeout(timer);
       Caret.hide();
-      TestLogic.input.pushHistory();
-      TestLogic.corrected.pushHistory();
+      TestInput.input.pushHistory();
+      TestInput.corrected.pushHistory();
       TestLogic.finish();
       SlowTimer.clear();
       slowTimerCount = 0;
