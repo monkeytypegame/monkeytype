@@ -27,7 +27,6 @@ import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay.js";
 import axiosInstance from "../axios-instance";
-import * as MonkeyPower from "../elements/monkey-power";
 import * as Poetry from "./poetry.js";
 import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
@@ -38,6 +37,7 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
+import * as MonkeyPower from "./../elements/monkey-power";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -233,7 +233,6 @@ export let bailout = false;
 
 export function setActive(tf) {
   active = tf;
-  if (!tf) MonkeyPower.reset();
 }
 
 export function setRepeated(tf) {
@@ -841,6 +840,7 @@ async function getNextWord(wordset, language, wordsBound) {
 
 export async function init() {
   setActive(false);
+  MonkeyPower.reset();
   Replay.stopReplayRecording();
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
