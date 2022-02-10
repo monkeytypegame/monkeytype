@@ -3,7 +3,6 @@ import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import * as LanguagePicker from "./settings/language-picker";
-import * as CommandlineLists from "./elements/commandline-lists";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
 import * as ChallengeContoller from "./controllers/challenge-controller";
@@ -159,11 +158,9 @@ export async function saveToLocalStorage(noDbCheck = false) {
   delete save.resultFilters;
   let stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
-  CommandlineLists.defaultCommands.list.filter(
-    (command) => command.id == "exportSettingsJSON"
-  )[0].defaultValue = stringified;
   // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
+  dispatchEvent("saveToLocalStorage", stringified);
 }
 
 //numbers
@@ -1226,9 +1223,6 @@ export function setCustomBackground(value, nosave) {
     value == ""
   ) {
     config.customBackground = value;
-    CommandlineLists.defaultCommands.list.filter(
-      (command) => command.id == "changeCustomBackground"
-    )[0].defaultValue = value;
     if (!nosave) saveToLocalStorage();
     dispatchEvent("customBackground", config.customBackground);
   } else {
@@ -1258,9 +1252,6 @@ export function setCustomLayoutfluid(value, nosave) {
     nosave = false;
   }
   config.customLayoutfluid = value;
-  CommandlineLists.defaultCommands.list.filter(
-    (command) => command.id == "changeCustomLayoutfluid"
-  )[0].defaultValue = value.replace(/#/g, " ");
   $(".pageSettings .section.customLayoutfluid input").val(
     value.replace(/#/g, " ")
   );

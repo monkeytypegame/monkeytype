@@ -3139,3 +3139,23 @@ export function pushCurrent(val) {
 export function getList(list) {
   return eval(list);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "saveToLocalStorage") {
+      defaultCommands.list.filter(
+        (command) => command.id == "exportSettingsJSON"
+      )[0].defaultValue = eventValue;
+    }
+    if (eventKey === "customBackground") {
+      defaultCommands.list.filter(
+        (command) => command.id == "changeCustomBackground"
+      )[0].defaultValue = eventValue;
+    }
+    if (eventKey === "customLayoutFluid") {
+      defaultCommands.list.filter(
+        (command) => command.id == "changeCustomLayoutfluid"
+      )[0].defaultValue = eventValue?.replace(/#/g, " ");
+    }
+  });
+});
