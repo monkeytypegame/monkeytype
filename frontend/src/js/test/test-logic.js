@@ -957,7 +957,7 @@ export async function init() {
       ) {
         let section =
           Config.funbox == "wikipedia"
-            ? await Wikipedia.getSection()
+            ? await Wikipedia.getSection(Config.language)
             : await Poetry.getPoem();
         for (let word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
@@ -1197,7 +1197,7 @@ export async function addWord() {
     if (Config.mode == "time" && words.length - words.currentIndex < 20) {
       let section =
         Config.funbox == "wikipedia"
-          ? await Wikipedia.getSection()
+          ? await Wikipedia.getSection(Config.language)
           : await Poetry.getPoem();
       let wordCount = 0;
       for (let word of section.words) {
