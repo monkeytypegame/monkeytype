@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as TestLogic from "./test-logic";
 
 export function update(acc) {
@@ -59,3 +59,9 @@ export function hide() {
     }
   );
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "showLiveWpm") eventValue ? show() : hide();
+  });
+});

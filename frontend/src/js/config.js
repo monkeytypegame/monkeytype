@@ -1,7 +1,6 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
-import * as LiveAcc from "./test/live-acc";
 import * as LiveBurst from "./test/live-burst";
 import * as Funbox from "./test/funbox";
 import * as Notifications from "./elements/notifications";
@@ -697,11 +696,6 @@ export function setShowLiveAcc(live, nosave) {
     live = false;
   }
   config.showLiveAcc = live;
-  if (live) {
-    LiveAcc.show();
-  } else {
-    LiveAcc.hide();
-  }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("showLiveAcc", config.showLiveAcc);
 }
@@ -714,7 +708,7 @@ export function setShowLiveBurst(live, nosave) {
   if (live) {
     LiveBurst.show();
   } else {
-    LiveAcc.hide();
+    LiveBurst.hide();
   }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("showLiveBurst", config.showLiveBurst);
