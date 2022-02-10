@@ -108,7 +108,6 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
     }
     UpdateConfig.setCustomTheme(true);
-    Settings.setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(

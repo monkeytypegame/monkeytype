@@ -212,7 +212,7 @@ export function setMode(mode, nosave) {
       config.funbox === "gibberish" ||
       config.funbox === "ascii"
     ) {
-      Funbox.setActive("none");
+      Funbox.setFunbox("none");
       TestUI.updateModesNotice();
     }
     setPunctuation(false, true);
