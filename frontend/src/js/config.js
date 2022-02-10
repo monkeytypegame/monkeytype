@@ -3,7 +3,6 @@ import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import * as LanguagePicker from "./settings/language-picker";
-import * as UI from "./ui";
 import * as CommandlineLists from "./elements/commandline-lists";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
@@ -361,7 +360,6 @@ export function setSwapEscAndTab(val, nosave) {
     val = false;
   }
   config.swapEscAndTab = val;
-  UI.updateKeytips();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("swapEscAndTab", config.swapEscAndTab);
 }

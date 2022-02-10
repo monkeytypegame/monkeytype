@@ -270,3 +270,9 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   }
   return false;
 });
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey) => {
+    if (eventKey === "swapEscAndTab") updateKeytips();
+  });
+});
