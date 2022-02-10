@@ -687,8 +687,6 @@ export function setHighlightMode(mode, nosave) {
     mode = "letter";
   }
   config.highlightMode = mode;
-  // if(TestLogic.active){
-  // }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("highlightMode", config.highlightMode);
 }

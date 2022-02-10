@@ -17,6 +17,7 @@ import * as Funbox from "./test/funbox";
 import * as About from "./pages/about";
 import * as Misc from "./misc";
 import * as ActivePage from "./states/active-page";
+import * as TestActive from "./states/test-active";
 
 export let pageTransition = true;
 
@@ -244,7 +245,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestLogic.active) {
+    if (TestActive.get()) {
       event.preventDefault();
       // Chrome requires returnValue to be set.
       event.returnValue = "";

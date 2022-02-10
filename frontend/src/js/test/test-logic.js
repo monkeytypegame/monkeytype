@@ -39,6 +39,7 @@ import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "./../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
+import * as TestActive from "./../states/test-active";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -220,7 +221,6 @@ class Corrected {
   }
 }
 
-export let active = false;
 export let words = new Words();
 export let input = new Input();
 export let corrected = new Corrected();
@@ -231,10 +231,6 @@ export let lastTestWpm = 0;
 export let hasTab = false;
 export let randomQuote = null;
 export let bailout = false;
-
-export function setActive(tf) {
-  active = tf;
-}
 
 export function setRepeated(tf) {
   isRepeated = tf;
@@ -432,7 +428,7 @@ export function startTest() {
   } catch (e) {
     console.log("Analytics unavailable");
   }
-  setActive(true);
+  TestActive.set(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(words.list);
   TestStats.resetKeypressTimings();
@@ -501,7 +497,7 @@ export function restart(
       // }
     }
   }
-  if (active) {
+  if (TestActive.get()) {
     TestStats.pushKeypressesToHistory();
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
     let afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -551,7 +547,7 @@ export function restart(
   corrected.reset();
   ShiftTracker.reset();
   Caret.hide();
-  setActive(false);
+  TestActive.set(false);
   Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
@@ -635,7 +631,7 @@ export function restart(
       } else {
         setRepeated(true);
         setPaceRepeat(repeatWithPace);
-        setActive(false);
+        TestActive.set(false);
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
@@ -840,7 +836,7 @@ async function getNextWord(wordset, language, wordsBound) {
 }
 
 export async function init() {
-  setActive(false);
+  TestActive.set(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   words.reset();
@@ -1497,7 +1493,7 @@ function buildCompletedEvent(difficultyFailed) {
 }
 
 export async function finish(difficultyFailed = false) {
-  if (!active) return;
+  if (!TestActive.get()) return;
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
     corrected.pushHistory();
@@ -1509,7 +1505,7 @@ export async function finish(difficultyFailed = false) {
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
-  setActive(false);
+  TestActive.set(false);
   Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();

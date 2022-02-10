@@ -1,5 +1,5 @@
 import Config, * as UpdateConfig from "../config";
-import * as TestLogic from "./test-logic";
+import * as TestActive from "./../states/test-active";
 
 export function update(burst) {
   let number = burst;
@@ -12,7 +12,7 @@ export function update(burst) {
 
 export function show() {
   if (!Config.showLiveBurst) return;
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .burst")

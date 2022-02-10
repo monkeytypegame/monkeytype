@@ -12,6 +12,7 @@ import * as Notifications from "../elements/notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
 
 let slowTimerCount = 0;
 export let time = 0;
@@ -225,7 +226,7 @@ export async function start() {
     timer = setTimeout(function () {
       // time++;
 
-      if (!TestLogic.active) {
+      if (!TestActive.get()) {
         clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

@@ -4,6 +4,7 @@ import * as Misc from "../misc";
 import * as TestLogic from "./test-logic";
 import * as TestTimer from "./test-timer";
 import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -182,7 +183,7 @@ export function update() {
 }
 
 export function updateStyle() {
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
   hide();
   update();
   setTimeout(() => {
@@ -193,7 +194,7 @@ export function updateStyle() {
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
     if (eventKey === "showTimerProgress") {
-      if (eventValue === true && TestLogic.active) {
+      if (eventValue === true && TestActive.get()) {
         show();
       } else {
         hide();

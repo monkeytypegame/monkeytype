@@ -26,6 +26,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as Leaderboards from "../elements/leaderboards";
 import * as ActivePage from "./../states/active-page";
+import * as TestActive from "./../states/test-active";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -56,7 +57,7 @@ function updateUI() {
 }
 
 function backspaceToPrevious() {
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
 
   if (
     TestLogic.input.history.length == 0 ||
@@ -93,7 +94,7 @@ function backspaceToPrevious() {
 }
 
 function handleSpace() {
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
 
   if (TestLogic.input.current === "") return;
 
@@ -395,7 +396,7 @@ function handleChar(char, charIndex) {
   }
 
   //start the test
-  if (!TestLogic.active && !TestLogic.startTest()) {
+  if (!TestActive.get() && !TestLogic.startTest()) {
     return;
   }
 
@@ -622,7 +623,7 @@ function handleTab(event) {
           }
           event.preventDefault();
           if (
-            TestLogic.active &&
+            TestActive.get() &&
             Config.repeatQuotes === "typing" &&
             Config.mode === "quote"
           ) {

@@ -2,6 +2,7 @@ import * as Misc from "../misc";
 import Config from "../config";
 import * as TestLogic from "./test-logic";
 import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
 
 export let caretAnimating = true;
 
@@ -112,7 +113,7 @@ export async function updatePosition() {
     if (
       newTop >= middlePos &&
       contentHeight > browserHeight &&
-      TestLogic.active
+      TestActive.get()
     ) {
       let newscrolltop = newTop - middlePos / 2;
       // console.log('---------');

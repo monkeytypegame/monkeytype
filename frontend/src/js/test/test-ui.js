@@ -21,6 +21,7 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as UI from "../ui";
 import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
+import * as TestActive from "./../states/test-active";
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
@@ -1115,7 +1116,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key == "Enter") {
     ManualRestart.reset();
     if (
-      TestLogic.active &&
+      TestActive.get() &&
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote"
     ) {
@@ -1130,7 +1131,7 @@ $(document.body).on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (resultCalculating) return;
   if (
-    TestLogic.active &&
+    TestActive.get() &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {

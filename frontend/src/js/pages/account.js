@@ -23,6 +23,7 @@ import * as SignOutButton from "../account/sign-out-button";
 import axiosInstance from "../axios-instance";
 import * as TodayTracker from "./../test/today-tracker";
 import * as ActivePage from "../states/active-page";
+import * as TestActive from "./../states/test-active";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -224,7 +225,7 @@ export async function getDataAndInit() {
     AccountButton.loading(false);
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestLogic.active) {
+    if (!TestActive.get()) {
       PaceCaret.init(true);
     }
   }
