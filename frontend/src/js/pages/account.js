@@ -68,6 +68,8 @@ export async function getDataAndInit() {
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
 
+  ResultFilters.loadTags(DB.getSnapshot().tags);
+
   Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     let languages = values[0];
     let funboxModes = values[1];
