@@ -14,7 +14,14 @@ export function subscribeToEvent(fn) {
 }
 
 function dispatchEvent(key, value, value2) {
-  eventSubscribers.forEach((fn) => fn(key, value, value2));
+  eventSubscribers.forEach((fn) => {
+    try {
+      fn(key, value, value2);
+    } catch (e) {
+      console.error("Config event subscriber threw an error");
+      console.error(e);
+    }
+  });
 }
 
 export function setLocalStorageConfig(val) {
