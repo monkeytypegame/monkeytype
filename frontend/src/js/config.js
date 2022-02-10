@@ -199,7 +199,6 @@ export function setPunctuation(punc, nosave) {
 }
 
 export function setMode(mode, nosave) {
-  if (TestUI.testRestarting) return;
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
