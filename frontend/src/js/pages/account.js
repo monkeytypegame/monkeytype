@@ -21,6 +21,7 @@ import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
 import axiosInstance from "../axios-instance";
+import * as TodayTracker from "./../test/today-tracker";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1066,6 +1067,7 @@ export function update() {
   } else if (DB.getSnapshot().results === undefined) {
     LoadingPage.updateBar(45, true);
     DB.getUserResults().then((d) => {
+      TodayTracker.addAllFromToday();
       if (d) {
         ResultFilters.updateActive();
       } else {

@@ -1,7 +1,6 @@
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
-import * as TodayTracker from "./test/today-tracker";
 import * as LoadingPage from "./pages/loading";
 
 let dbSnapshot = null;
@@ -165,7 +164,6 @@ export async function getUserResults() {
         return a.timestamp < b.timestamp;
       });
       dbSnapshot.results = results.data;
-      await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
       Notifications.add("Error getting results: " + e.message, -1);
