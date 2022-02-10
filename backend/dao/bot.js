@@ -1,24 +1,23 @@
-const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 
-async function addCommand(command, arguments) {
+async function addCommand(command, commandArguments) {
   return await mongoDB().collection("bot-commands").insertOne({
     command,
-    arguments,
+    arguments: commandArguments,
     executed: false,
     requestTimestamp: Date.now(),
   });
 }
 
-async function addCommands(commands, arguments) {
-  if (commands.length === 0 || commands.length !== arguments.length) {
+async function addCommands(commands, commandArguments) {
+  if (commands.length === 0 || commands.length !== commandArguments.length) {
     return [];
   }
 
   const normalizedCommands = commands.map((command, index) => {
     return {
       command,
-      arguments: arguments[index],
+      arguments: commandArguments[index],
       executed: false,
       requestTimestamp: Date.now(),
     };

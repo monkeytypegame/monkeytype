@@ -2,14 +2,14 @@ const PresetDAO = require("../../dao/preset");
 const { MonkeyResponse } = require("../../handlers/response");
 
 class PresetController {
-  static async getPresets(req, res) {
+  static async getPresets(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     const data = await PresetDAO.getPresets(uid);
     return new MonkeyResponse("Preset retrieved", data);
   }
 
-  static async addPreset(req, res) {
+  static async addPreset(req, _res) {
     const { name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
