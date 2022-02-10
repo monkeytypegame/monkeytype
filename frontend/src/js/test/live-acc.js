@@ -62,6 +62,6 @@ export function hide() {
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
-    if (eventKey === "showLiveWpm") eventValue ? show() : hide();
+    if (eventKey === "showLiveAcc") eventValue ? show() : hide();
   });
 });
