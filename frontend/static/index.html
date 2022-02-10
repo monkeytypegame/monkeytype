@@ -2047,10 +2047,20 @@
                   page. This function disables tab navigation on the website.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    quickTab="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    quickTab="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2094,29 +2104,24 @@
                   focus on raw speed. If enabled, quick end is recommended.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    blindMode="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    blindMode="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     ⠀
                   </div>
                 </div>
               </div>
-              <!-- <div class="section readAheadMode">
-                <h1>read ahead mode</h1>
-                <div class="text">
-                  When enabled, the active and immediately following test words
-                  will be hidden. Helps you practice reading ahead.
-                </div>
-                <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
-                    off
-                  </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
-                    on
-                  </div>
-                </div>
-              </div> -->
               <div class="section alwaysShowWordsHistory">
                 <h1>always show words history</h1>
                 <div class="text">
@@ -2124,10 +2129,19 @@
                   end of the test. Can cause slight lag with a lot of words.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    alwaysShowWordsHistory="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    alwaysShowWordsHistory="true"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2314,25 +2328,30 @@
                 <div>
                   <div class="buttons">
                     <div
-                      class="button off active"
+                      class="button"
+                      britishEnglish="false"
                       tabindex="0"
                       onclick="this.blur();"
                     >
                       off
                     </div>
-                    <div class="button on" tabindex="0" onclick="this.blur();">
+                    <div
+                      class="button"
+                      britishEnglish="true"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
                       on
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="section languageGroups fullWidth">
-                <h1>language groups</h1>
-                <div class="buttons"></div>
-              </div>
-              <div class="section language fullWidth">
+              <div class="section language">
                 <h1>language</h1>
-                <div class="buttons"></div>
+                <div class="text">
+                  Change in which language you want to type.
+                </div>
+                <select></select>
               </div>
               <div class="section funbox fullWidth">
                 <h1>funbox</h1>
@@ -2375,10 +2394,20 @@
                   Allows you to delete any word, even if it was typed correctly.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    freedomMode="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    freedomMode="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2390,10 +2419,20 @@
                   character when this mode is enabled.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    strictSpace="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    strictSpace="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2521,10 +2560,20 @@
                   last incorrect entry with a space.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    quickEnd="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    quickEnd="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2571,10 +2620,20 @@
                   when you press a key and nothing happens.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    hideExtraLetters="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    hideExtraLetters="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2585,10 +2644,20 @@
                   Swap the behavior of tab and escape keys.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    swapEscAndTab="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    swapEscAndTab="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2599,22 +2668,34 @@
                   Replaces accented letters with their normal equivalents.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    lazyMode="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    lazyMode="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
               </div>
-              <div class="section layout fullWidth">
+              <div class="section layout">
                 <h1>layout emulator</h1>
                 <div class="text">
                   With this setting you can emulate other layouts. This setting
                   is best kept off, as it can break things like dead keys and
                   alt layers.
                 </div>
-                <div class="buttons"></div>
+                <select></select>
+                <!-- <div class="buttons">
+                </div> -->
               </div>
               <div class="sectionSpacer"></div>
             </div>
@@ -2735,10 +2816,20 @@
                   space too early.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    playSoundOnError="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    playSoundOnError="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2757,10 +2848,20 @@
                   The caret will move smoothly between letters and words.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    smoothCaret="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    smoothCaret="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -2882,10 +2983,20 @@
                   does not override the pace caret if it's already enabled.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    repeatedPace="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    repeatedPace="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3102,10 +3213,20 @@
                   When enabled, the line transition will be animated.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    smoothLineScroll="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    smoothLineScroll="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3119,10 +3240,20 @@
                   timer text and live wpm to not be visible.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showAllLines="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showAllLines="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3134,10 +3265,20 @@
                   without the need to hover over the stats.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    alwaysShowDecimalPlaces="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    alwaysShowDecimalPlaces="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3149,10 +3290,20 @@
                   default words per minute calculation.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    alwaysShowCPM="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    alwaysShowCPM="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3164,10 +3315,20 @@
                   data is. Turning this off may exaggerate the value changes.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    startGraphsAtZero="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    startGraphsAtZero="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3318,6 +3479,13 @@
                   </div>
                 </div>
               </div>
+              <div class="section keymapLayout">
+                <h1>keymap layout</h1>
+                <div class="text">
+                  Controls which layout is displayed on the keymap.
+                </div>
+                <select></select>
+              </div>
               <div class="section keymapStyle fullWidth">
                 <h1>keymap style</h1>
                 <!-- <div class="text">Displays the keymap in a different style.</div> -->
@@ -3393,10 +3561,6 @@
                   </div>
                 </div>
               </div>
-              <div class="section keymapLayout fullWidth">
-                <h1>keymap layout</h1>
-                <div class="buttons"></div>
-              </div>
               <div class="sectionSpacer"></div>
             </div>
 
@@ -3415,10 +3579,20 @@
                   be brighter than the already typed text.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    flipTestColors="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    flipTestColors="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3430,10 +3604,20 @@
                   of the text color, making the website more colorful.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    colorfulMode="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    colorfulMode="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3830,10 +4014,20 @@
                   second.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showLiveWpm="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showLiveWpm="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3842,10 +4036,20 @@
                 <h1>live accuracy</h1>
                 <div class="text">Displays live accuracy during the test.</div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showLiveAcc="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showLiveAcc="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3857,10 +4061,20 @@
                   typed.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showLiveBurst="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showLiveBurst="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3872,10 +4086,20 @@
                   words/custom tests.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showTimerProgress="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showTimerProgress="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3886,10 +4110,20 @@
                   Shows the keybind tips at the bottom of the page.
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showKeyTips="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showKeyTips="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3901,10 +4135,20 @@
                   focus' (not being able to type).
                 </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showOutOfFocusWarning="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    showOutOfFocusWarning="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3913,10 +4157,20 @@
                 <h1>caps lock warning</h1>
                 <div class="text">Displays a warning when caps lock is on.</div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    capsLockWarning="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     hide
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    capsLockWarning="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     show
                   </div>
                 </div>
@@ -3938,7 +4192,7 @@
                 <div class="text">Import or export the settings as JSON.</div>
                 <div class="buttons">
                   <div
-                    class="button off"
+                    class="button"
                     id="importSettingsButton"
                     tabindex="0"
                     onclick="this.blur();"
@@ -3946,7 +4200,7 @@
                     import
                   </div>
                   <div
-                    class="button off"
+                    class="button"
                     id="exportSettingsButton"
                     tabindex="0"
                     onclick="this.blur();"
@@ -4000,7 +4254,7 @@
                 </div>
                 <div class="buttons">
                   <div
-                    class="button off danger"
+                    class="button danger"
                     id="resetSettingsButton"
                     tabindex="0"
                     onclick="this.blur();"
@@ -4017,7 +4271,7 @@
                 </div>
                 <div class="buttons">
                   <div
-                    class="button off danger"
+                    class="button danger"
                     id="resetPersonalBestsButton"
                     tabindex="0"
                     onclick="this.blur();"
@@ -4034,7 +4288,7 @@
                 </div>
                 <div class="buttons">
                   <div
-                    class="button off danger"
+                    class="button danger"
                     id="updateAccountName"
                     tabindex="0"
                     onclick="this.blur();"
@@ -4097,36 +4351,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="section updateAccountEmail needsAccount hidden">
-                <h1>update account email</h1>
-                <div class="text">
-                  In case you misspell it or get a new address.
-                </div>
-                <div class="buttons">
-                  <div
-                    class="button off danger"
-                    id="updateAccountEmail"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    update email
-                  </div>
-                </div>
-              </div>
-              <div class="section updateAccountPassword needsAccount hidden">
-                <h1>update account password</h1>
-                <div class="text">Change the password you use to sign in.</div>
-                <div class="buttons">
-                  <div
-                    class="button off danger"
-                    id="updateAccountPassword"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    update password
-                  </div>
-                </div>
-              </div> -->
               <div class="section deleteAccount needsAccount hidden">
                 <h1>delete account</h1>
                 <div class="text">
@@ -4134,7 +4358,7 @@
                 </div>
                 <div class="buttons">
                   <div
-                    class="button off danger"
+                    class="button danger"
                     id="deleteAccount"
                     tabindex="0"
                     onclick="this.blur();"
