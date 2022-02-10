@@ -4,6 +4,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "../test/test-ui";
+import * as PractiseWords from "../test/practise-words";
 import * as SimplePopups from "../popups/simple-popups";
 import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
 import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
@@ -347,6 +348,7 @@ $(document).ready((e) => {
         Leaderboards.hide();
       } else if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
         event.preventDefault();
+        PractiseWords.hidePopup();
       } else if (!$("#simplePopupWrapper").hasClass("hidden")) {
         event.preventDefault();
         SimplePopups.hide();
