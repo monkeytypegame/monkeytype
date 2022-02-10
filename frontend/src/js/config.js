@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import * as LanguagePicker from "./settings/language-picker";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
 import * as TTS from "./test/tts";
@@ -1367,8 +1366,6 @@ export function apply(configObj) {
     setBurstHeatmap(configObj.burstHeatmap, true);
     setBritishEnglish(configObj.britishEnglish, true);
     setLazyMode(configObj.lazyMode, true);
-
-    LanguagePicker.setActiveGroup();
 
     try {
       setEnableAds(configObj.enableAds, true);
