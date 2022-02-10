@@ -2,7 +2,6 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../misc";
 import Config from "../config";
-import * as UI from "../ui";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 
@@ -89,14 +88,14 @@ export function apply(themeName, isPreview = false) {
   let name = "serika_dark";
   if (themeName !== "custom") {
     name = themeName;
-    UI.swapElements(
+    Misc.swapElements(
       $('.pageSettings [tabContent="custom"]'),
       $('.pageSettings [tabContent="preset"]'),
       250
     );
   } else {
     //is custom
-    UI.swapElements(
+    Misc.swapElements(
       $('.pageSettings [tabContent="preset"]'),
       $('.pageSettings [tabContent="custom"]'),
       250

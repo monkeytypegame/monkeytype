@@ -5,7 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as CustomTextPopup from "../popups/custom-text-popup";
-import * as UI from "../ui";
+import * as Misc from "./../misc";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);
@@ -155,7 +155,7 @@ export function update(previous, current) {
     return;
   }
 
-  UI.swapElements(
+  Misc.swapElements(
     $("#top .config ." + submenu[previous]),
     $("#top .config ." + submenu[current]),
     animTime

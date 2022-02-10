@@ -1048,7 +1048,7 @@ export function update() {
       SignOutButton.show();
     }, 125);
     Focus.set(false);
-    UI.swapElements(
+    Misc.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
       250
