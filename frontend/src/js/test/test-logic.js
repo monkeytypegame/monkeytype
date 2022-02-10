@@ -942,7 +942,7 @@ export async function init() {
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = Wordset.withWords(wordList);
+    const wordset = Wordset.withWords(wordList, Config.funbox);
 
     if (
       (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
@@ -1240,7 +1240,7 @@ export async function addWord() {
             .leftToRight,
           words: CustomText.text,
         };
-  const wordset = Wordset.withWords(language.words);
+  const wordset = Wordset.withWords(language.words, Config.funbox);
 
   let randomWord = await getNextWord(wordset, language, bound);
 

@@ -1,5 +1,3 @@
-import Config from "../config";
-
 let currentWordset = null;
 let currentWordGenerator = null;
 
@@ -88,8 +86,8 @@ class WordGenerator extends Wordset {
   }
 }
 
-export function withWords(words) {
-  if (Config.funbox == "pseudolang") {
+export function withWords(words, funbox) {
+  if (funbox == "pseudolang") {
     if (currentWordGenerator == null || words !== currentWordGenerator.words) {
       currentWordGenerator = new WordGenerator(words);
     }
