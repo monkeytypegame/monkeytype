@@ -658,6 +658,7 @@ export function update() {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
+        update();
       }
       //filters done
       //=======================================
@@ -1072,6 +1073,7 @@ export function update() {
       TodayTracker.addAllFromToday();
       if (d) {
         ResultFilters.updateActive();
+        update();
       } else {
         setTimeout(() => {
           UI.changePage("");
