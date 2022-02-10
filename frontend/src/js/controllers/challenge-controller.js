@@ -246,3 +246,26 @@ export async function setup(challengeName) {
     Notifications.add("Something went wrong: " + e, -1);
   }
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey) => {
+    if (
+      [
+        "numbers",
+        "punctuation",
+        "mode",
+        "funbox",
+        "paceCaret",
+        "showAllLines",
+        "showLiveWpm",
+        "highlightMode",
+        "time",
+        "words",
+        "keymapMode",
+        "keymapLayout",
+        "layout",
+      ].includes(eventKey)
+    )
+      clearActive();
+  });
+});

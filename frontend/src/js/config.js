@@ -5,7 +5,6 @@ import * as Notifications from "./elements/notifications";
 import * as LanguagePicker from "./settings/language-picker";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
-import * as ChallengeContoller from "./controllers/challenge-controller";
 import * as TTS from "./test/tts";
 import * as MobileTestConfig from "./popups/mobile-test-config-popup.js";
 import * as TestConfig from "./test/test-config.js";
@@ -174,7 +173,6 @@ export function setNumbers(numb, nosave) {
   } else {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("numbers", config.numbers);
 }
@@ -190,7 +188,6 @@ export function setPunctuation(punc, nosave) {
   } else {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("punctuation", config.punctuation);
 }
@@ -215,7 +212,6 @@ export function setMode(mode, nosave) {
   }
   TestConfig.update(previous, config.mode);
   MobileTestConfig.update();
-  ChallengeContoller.clearActive();
   PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("mode", config.mode);
@@ -273,7 +269,6 @@ export function setFavThemes(themes, nosave) {
 export function setFunbox(funbox, nosave) {
   let val = funbox ? funbox : "none";
   config.funbox = val;
-  ChallengeContoller.clearActive();
   if (val === "none") {
     TTS.clear();
   } else if (val === "tts") {
@@ -377,7 +372,6 @@ export function setPaceCaret(val, nosave) {
   //   val = "off";
   // }
   config.paceCaret = val;
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("paceCaret", config.paceCaret);
 }
@@ -493,7 +487,6 @@ export function setShowAllLines(sal, nosave) {
     sal = false;
   }
   config.showAllLines = sal;
-  ChallengeContoller.clearActive();
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -665,7 +658,6 @@ export function setShowLiveWpm(live, nosave) {
     live = false;
   }
   config.showLiveWpm = live;
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("showLiveWpm", config.showLiveWpm);
 }
@@ -706,7 +698,6 @@ export function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   // if(TestLogic.active){
-  ChallengeContoller.clearActive();
   // }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("highlightMode", config.highlightMode);
@@ -808,7 +799,6 @@ export function setTimeConfig(time, nosave) {
   $("#top .config .time .text-button[timeConfig='" + time + "']").addClass(
     "active"
   );
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("time", config.time);
 }
@@ -866,7 +856,6 @@ export function setWordCount(wordCount, nosave) {
   $(`#top .config .wordCount .text-button[wordCount='${wordCount}']`).addClass(
     "active"
   );
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("words", config.words);
 }
@@ -1085,7 +1074,6 @@ export function setKeymapMode(mode, nosave) {
   $(".active-key").removeClass("active-key");
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("keymapMode", config.keymapMode);
 }
@@ -1137,7 +1125,6 @@ export function setKeymapLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.keymapLayout = layout;
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("keymapLayout", config.keymapLayout);
 }
@@ -1147,7 +1134,6 @@ export function setLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.layout = layout;
-  ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("layout", config.layout);
 }
