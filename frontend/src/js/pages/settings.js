@@ -22,37 +22,48 @@ async function initGroups() {
   await UpdateConfig.loadPromise;
   groups.smoothCaret = new SettingsGroup(
     "smoothCaret",
-    UpdateConfig.setSmoothCaret
+    UpdateConfig.setSmoothCaret,
+    "button"
   );
   groups.difficulty = new SettingsGroup(
     "difficulty",
-    UpdateConfig.setDifficulty
+    UpdateConfig.setDifficulty,
+    "button"
   );
-  groups.quickTab = new SettingsGroup("quickTab", UpdateConfig.setQuickTabMode);
+  groups.quickTab = new SettingsGroup(
+    "quickTab",
+    UpdateConfig.setQuickTabMode,
+    "button"
+  );
   groups.showLiveWpm = new SettingsGroup(
     "showLiveWpm",
     UpdateConfig.setShowLiveWpm,
+    "button",
     () => {
-      groups.keymapMode.updateButton();
+      groups.keymapMode.updateInput();
     }
   );
   groups.showLiveAcc = new SettingsGroup(
     "showLiveAcc",
-    UpdateConfig.setShowLiveAcc
+    UpdateConfig.setShowLiveAcc,
+    "button"
   );
   groups.showLiveBurst = new SettingsGroup(
     "showLiveBurst",
-    UpdateConfig.setShowLiveBurst
+    UpdateConfig.setShowLiveBurst,
+    "button"
   );
   groups.showTimerProgress = new SettingsGroup(
     "showTimerProgress",
-    UpdateConfig.setShowTimerProgress
+    UpdateConfig.setShowTimerProgress,
+    "button"
   );
   groups.keymapMode = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
+    "button",
     () => {
-      groups.showLiveWpm.updateButton();
+      groups.showLiveWpm.updateInput();
     },
     () => {
       if (Config.keymapMode === "off") {
@@ -68,19 +79,23 @@ async function initGroups() {
   );
   groups.keymapMatrix = new SettingsGroup(
     "keymapStyle",
-    UpdateConfig.setKeymapStyle
+    UpdateConfig.setKeymapStyle,
+    "button"
   );
   groups.keymapLayout = new SettingsGroup(
     "keymapLayout",
-    UpdateConfig.setKeymapLayout
+    UpdateConfig.setKeymapLayout,
+    "select"
   );
   groups.keymapLegendStyle = new SettingsGroup(
     "keymapLegendStyle",
-    UpdateConfig.setKeymapLegendStyle
+    UpdateConfig.setKeymapLegendStyle,
+    "button"
   );
   groups.showKeyTips = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
+    "button",
     null,
     () => {
       if (Config.showKeyTips) {
@@ -93,96 +108,128 @@ async function initGroups() {
   groups.freedomMode = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
+    "button",
     () => {
-      groups.confidenceMode.updateButton();
+      groups.confidenceMode.updateInput();
     }
   );
   groups.strictSpace = new SettingsGroup(
     "strictSpace",
-    UpdateConfig.setStrictSpace
+    UpdateConfig.setStrictSpace,
+    "button"
   );
   groups.oppositeShiftMode = new SettingsGroup(
     "oppositeShiftMode",
-    UpdateConfig.setOppositeShiftMode
+    UpdateConfig.setOppositeShiftMode,
+    "button"
   );
   groups.confidenceMode = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
+    "button",
     () => {
-      groups.freedomMode.updateButton();
-      groups.stopOnError.updateButton();
+      groups.freedomMode.updateInput();
+      groups.stopOnError.updateInput();
     }
   );
   groups.indicateTypos = new SettingsGroup(
     "indicateTypos",
-    UpdateConfig.setIndicateTypos
+    UpdateConfig.setIndicateTypos,
+    "button"
   );
   groups.hideExtraLetters = new SettingsGroup(
     "hideExtraLetters",
-    UpdateConfig.setHideExtraLetters
+    UpdateConfig.setHideExtraLetters,
+    "button"
   );
-  groups.blindMode = new SettingsGroup("blindMode", UpdateConfig.setBlindMode);
-  groups.quickEnd = new SettingsGroup("quickEnd", UpdateConfig.setQuickEnd);
+  groups.blindMode = new SettingsGroup(
+    "blindMode",
+    UpdateConfig.setBlindMode,
+    "button"
+  );
+  groups.quickEnd = new SettingsGroup(
+    "quickEnd",
+    UpdateConfig.setQuickEnd,
+    "button"
+  );
   groups.repeatQuotes = new SettingsGroup(
     "repeatQuotes",
-    UpdateConfig.setRepeatQuotes
+    UpdateConfig.setRepeatQuotes,
+    "button"
   );
-  groups.enableAds = new SettingsGroup("enableAds", UpdateConfig.setEnableAds);
+  groups.enableAds = new SettingsGroup(
+    "enableAds",
+    UpdateConfig.setEnableAds,
+    "button"
+  );
   groups.alwaysShowWordsHistory = new SettingsGroup(
     "alwaysShowWordsHistory",
-    UpdateConfig.setAlwaysShowWordsHistory
+    UpdateConfig.setAlwaysShowWordsHistory,
+    "button"
   );
   groups.britishEnglish = new SettingsGroup(
     "britishEnglish",
-    UpdateConfig.setBritishEnglish
+    UpdateConfig.setBritishEnglish,
+    "button"
   );
   groups.singleListCommandLine = new SettingsGroup(
     "singleListCommandLine",
-    UpdateConfig.setSingleListCommandLine
+    UpdateConfig.setSingleListCommandLine,
+    "button"
   );
   groups.capsLockWarning = new SettingsGroup(
     "capsLockWarning",
-    UpdateConfig.setCapsLockWarning
+    UpdateConfig.setCapsLockWarning,
+    "button"
   );
   groups.flipTestColors = new SettingsGroup(
     "flipTestColors",
-    UpdateConfig.setFlipTestColors
+    UpdateConfig.setFlipTestColors,
+    "button"
   );
   groups.swapEscAndTab = new SettingsGroup(
     "swapEscAndTab",
-    UpdateConfig.setSwapEscAndTab
+    UpdateConfig.setSwapEscAndTab,
+    "button"
   );
   groups.showOutOfFocusWarning = new SettingsGroup(
     "showOutOfFocusWarning",
-    UpdateConfig.setShowOutOfFocusWarning
+    UpdateConfig.setShowOutOfFocusWarning,
+    "button"
   );
   groups.colorfulMode = new SettingsGroup(
     "colorfulMode",
-    UpdateConfig.setColorfulMode
+    UpdateConfig.setColorfulMode,
+    "button"
   );
   groups.startGraphsAtZero = new SettingsGroup(
     "startGraphsAtZero",
-    UpdateConfig.setStartGraphsAtZero
+    UpdateConfig.setStartGraphsAtZero,
+    "button"
   );
   groups.randomTheme = new SettingsGroup(
     "randomTheme",
-    UpdateConfig.setRandomTheme
+    UpdateConfig.setRandomTheme,
+    "button"
   );
   groups.stopOnError = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
+    "button",
     () => {
-      groups.confidenceMode.updateButton();
+      groups.confidenceMode.updateInput();
     }
   );
   groups.soundVolume = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
+    "button",
     () => {}
   );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
+    "button",
     () => {
       if (Config.playSoundOnError) Sound.playError();
     }
@@ -190,6 +237,7 @@ async function initGroups() {
   groups.playSoundOnClick = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
+    "button",
     () => {
       if (Config.playSoundOnClick !== "off")
         Sound.playClick(Config.playSoundOnClick);
@@ -197,52 +245,86 @@ async function initGroups() {
   );
   groups.showAllLines = new SettingsGroup(
     "showAllLines",
-    UpdateConfig.setShowAllLines
+    UpdateConfig.setShowAllLines,
+    "button"
   );
-  groups.paceCaret = new SettingsGroup("paceCaret", UpdateConfig.setPaceCaret);
+  groups.paceCaret = new SettingsGroup(
+    "paceCaret",
+    UpdateConfig.setPaceCaret,
+    "button"
+  );
   groups.repeatedPace = new SettingsGroup(
     "repeatedPace",
-    UpdateConfig.setRepeatedPace
+    UpdateConfig.setRepeatedPace,
+    "button"
   );
-  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm);
-  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc);
-  groups.minBurst = new SettingsGroup("minBurst", UpdateConfig.setMinBurst);
+  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, "button");
+  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, "button");
+  groups.minBurst = new SettingsGroup(
+    "minBurst",
+    UpdateConfig.setMinBurst,
+    "button"
+  );
   groups.smoothLineScroll = new SettingsGroup(
     "smoothLineScroll",
-    UpdateConfig.setSmoothLineScroll
+    UpdateConfig.setSmoothLineScroll,
+    "button"
   );
-  groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
-  groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
-  groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
-  groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
-  groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
+  groups.lazyMode = new SettingsGroup(
+    "lazyMode",
+    UpdateConfig.setLazyMode,
+    "button"
+  );
+  groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout, "select");
+  groups.language = new SettingsGroup(
+    "language",
+    UpdateConfig.setLanguage,
+    "select"
+  );
+  groups.fontSize = new SettingsGroup(
+    "fontSize",
+    UpdateConfig.setFontSize,
+    "button"
+  );
+  groups.pageWidth = new SettingsGroup(
+    "pageWidth",
+    UpdateConfig.setPageWidth,
+    "button"
+  );
   groups.caretStyle = new SettingsGroup(
     "caretStyle",
-    UpdateConfig.setCaretStyle
+    UpdateConfig.setCaretStyle,
+    "button"
   );
   groups.paceCaretStyle = new SettingsGroup(
     "paceCaretStyle",
-    UpdateConfig.setPaceCaretStyle
+    UpdateConfig.setPaceCaretStyle,
+    "button"
   );
   groups.timerStyle = new SettingsGroup(
     "timerStyle",
-    UpdateConfig.setTimerStyle
+    UpdateConfig.setTimerStyle,
+    "button"
   );
   groups.highlighteMode = new SettingsGroup(
     "highlightMode",
-    UpdateConfig.setHighlightMode
+    UpdateConfig.setHighlightMode,
+    "button"
   );
   groups.timerOpacity = new SettingsGroup(
     "timerOpacity",
-    UpdateConfig.setTimerOpacity
+    UpdateConfig.setTimerOpacity,
+    "button"
   );
   groups.timerColor = new SettingsGroup(
     "timerColor",
-    UpdateConfig.setTimerColor
+    UpdateConfig.setTimerColor,
+    "button"
   );
   groups.fontFamily = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
+    "button",
     null,
     () => {
       let customButton = $(
@@ -260,15 +342,18 @@ async function initGroups() {
   );
   groups.alwaysShowDecimalPlaces = new SettingsGroup(
     "alwaysShowDecimalPlaces",
-    UpdateConfig.setAlwaysShowDecimalPlaces
+    UpdateConfig.setAlwaysShowDecimalPlaces,
+    "button"
   );
   groups.alwaysShowCPM = new SettingsGroup(
     "alwaysShowCPM",
-    UpdateConfig.setAlwaysShowCPM
+    UpdateConfig.setAlwaysShowCPM,
+    "button"
   );
   groups.customBackgroundSize = new SettingsGroup(
     "customBackgroundSize",
-    UpdateConfig.setCustomBackgroundSize
+    UpdateConfig.setCustomBackgroundSize,
+    "button"
   );
   // groups.customLayoutfluid = new SettingsGroup(
   //   "customLayoutfluid",
@@ -280,8 +365,9 @@ export function reset() {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
-  $(".pageSettings .section.layout .buttons").empty();
-  $(".pageSettings .section.keymapLayout .buttons").empty();
+  $(".pageSettings .section.layout select").empty().select2("destroy");
+  $(".pageSettings .section.keymapLayout select").empty().select2("destroy");
+  $(".pageSettings .section.language select").empty().select2("destroy");
   $(".pageSettings .section.funbox .buttons").empty();
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
@@ -291,43 +377,42 @@ export async function fillSettingsPage() {
   await UpdateConfig.loadPromise;
   ThemePicker.refreshButtons();
 
-  let langGroupsEl = $(
-    ".pageSettings .section.languageGroups .buttons"
-  ).empty();
-  let currentLanguageGroup = await Misc.findCurrentGroup(Config.language);
+  let languageEl = $(".pageSettings .section.language select").empty();
   Misc.getLanguageGroups().then((groups) => {
     groups.forEach((group) => {
-      langGroupsEl.append(
-        `<div class="languageGroup button${
-          currentLanguageGroup === group.name ? " active" : ""
-        }" group='${group.name}'>${group.name}</div>`
-      );
+      let append = `<optgroup label="${group.name}">`;
+      group.languages.forEach((language) => {
+        append += `<option value="${language}">${language.replace(
+          /_/g,
+          " "
+        )}</option>`;
+      });
+      append += `</optgroup>`;
+      languageEl.append(append);
     });
   });
+  languageEl.select2();
 
-  let layoutEl = $(".pageSettings .section.layout .buttons").empty();
+  let layoutEl = $(".pageSettings .section.layout select").empty();
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
-      `<div class="layout button" layout='${layout}'>${
+      `<option value='${layout}'>${
         layout === "default" ? "off" : layout.replace(/_/g, " ")
-      }</div>`
+      }</option>`
     );
   });
+  layoutEl.select2();
 
-  let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
-  keymapEl.append(
-    `<div class="layout button" keymapLayout='overrideSync'>emulator sync</div>`
-  );
+  let keymapEl = $(".pageSettings .section.keymapLayout select").empty();
+  keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
-        `<div class="layout button" keymapLayout='${layout}'>${layout.replace(
-          /_/g,
-          " "
-        )}</div>`
+        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
       );
     }
   });
+  keymapEl.select2();
 
   let funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
@@ -553,7 +638,7 @@ export function showAccountSection() {
 
 export function update() {
   Object.keys(groups).forEach((group) => {
-    groups[group].updateButton();
+    groups[group].updateInput();
   });
 
   refreshTagsSettingsSection();

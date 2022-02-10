@@ -192,7 +192,7 @@ Misc.getFontsList().then((fonts) => {
     },
     exec: (name) => {
       UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
-      // Settings.groups.fontFamily.updateButton();
+      // Settings.groups.fontFamily.updateInput();
     },
   });
 });
