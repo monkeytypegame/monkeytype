@@ -1,7 +1,6 @@
 import * as TestLogic from "./test-logic";
 import Config from "../config";
 import * as Misc from "../misc";
-import * as TestStats from "./test-stats";
 
 export let invalid = false;
 export let start, end;
@@ -441,8 +440,7 @@ function countChars() {
     spaces: spaces,
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
-    incorrectChars:
-      Config.mode == "zen" ? TestStats.accuracy.incorrect : incorrectChars,
+    incorrectChars: Config.mode == "zen" ? accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -450,8 +448,8 @@ function countChars() {
 }
 
 export function calculateStats() {
-  let testSeconds = TestStats.calculateTestSeconds();
-  console.log((TestStats.end2 - TestStats.start2) / 1000);
+  let testSeconds = calculateTestSeconds();
+  console.log((end2 - start2) / 1000);
   console.log(testSeconds);
   if (Config.mode != "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
@@ -468,7 +466,7 @@ export function calculateStats() {
       (60 / testSeconds)) /
       5
   );
-  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  let acc = Misc.roundTo2(calculateAccuracy());
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
