@@ -222,3 +222,9 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   ManualRestart.set();
   TestLogic.restart();
 });
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue, eventValue2) => {
+    if (eventKey === "mode") update(eventValue, eventValue2);
+  });
+});
