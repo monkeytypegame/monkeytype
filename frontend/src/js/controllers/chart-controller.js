@@ -2,7 +2,6 @@ import Chart from "chart.js";
 import * as TestStats from "../test/test-stats";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../misc";
-import * as Account from "../pages/account";
 import Config, * as UpdateConfig from "../config";
 
 export let result = new Chart($("#wpmChart"), {
@@ -162,6 +161,8 @@ export let result = new Chart($("#wpmChart"), {
   },
 });
 
+export let accountHistoryActiveIndex;
+
 export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
   type: "line",
   data: {
@@ -247,7 +248,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
           return;
         },
         afterLabel: function (tooltip) {
-          Account.setActiveChartIndex(tooltip.index);
+          accountHistoryActiveIndex = tooltip.index;
           return;
         },
       },

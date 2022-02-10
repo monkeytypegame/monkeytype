@@ -1173,14 +1173,8 @@ $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
 });
 
-let activeChartIndex;
-
-export function setActiveChartIndex(index) {
-  activeChartIndex = index;
-}
-
 $(".pageAccount #accountHistoryChart").click((e) => {
-  let index = activeChartIndex;
+  let index = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {
