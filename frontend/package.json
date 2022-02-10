@@ -28,6 +28,7 @@
     "gulp-sass": "^5.0.0",
     "gulp-uglify": "^3.0.2",
     "through2": "^4.0.2",
+    "tsify": "^5.0.4",
     "vinyl-buffer": "^1.0.1",
     "vinyl-paths": "^3.0.1",
     "vinyl-source-stream": "^2.0.0"
