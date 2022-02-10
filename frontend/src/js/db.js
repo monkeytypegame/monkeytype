@@ -3,7 +3,6 @@ import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
 import * as TodayTracker from "./test/today-tracker";
 import * as LoadingPage from "./pages/loading";
-// import * as UI from "./ui";
 import Ape from "./ape";
 
 let dbSnapshot = null;
