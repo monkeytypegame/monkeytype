@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
-import * as ChartController from "./controllers/chart-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as TimerProgress from "./test/timer-progress";
 import * as LiveWpm from "./test/live-wpm";
@@ -314,30 +313,11 @@ export function setBlindMode(blind, nosave) {
   dispatchEvent("blindMode", config.blindMode);
 }
 
-function updateChartAccuracy() {
-  ChartController.accountHistory.data.datasets[1].hidden = !config.chartAccuracy;
-  ChartController.accountHistory.options.scales.yAxes[1].display =
-    config.chartAccuracy;
-  ChartController.accountHistory.update();
-}
-
-function updateChartStyle() {
-  if (config.chartStyle == "scatter") {
-    ChartController.accountHistory.data.datasets[0].showLine = false;
-    ChartController.accountHistory.data.datasets[1].showLine = false;
-  } else {
-    ChartController.accountHistory.data.datasets[0].showLine = true;
-    ChartController.accountHistory.data.datasets[1].showLine = true;
-  }
-  ChartController.accountHistory.update();
-}
-
 export function setChartAccuracy(chartAccuracy, nosave) {
   if (chartAccuracy == undefined) {
     chartAccuracy = true;
   }
   config.chartAccuracy = chartAccuracy;
-  updateChartAccuracy();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("chartAccuracy", config.chartAccuracy);
 }
@@ -347,7 +327,6 @@ export function setChartStyle(chartStyle, nosave) {
     chartStyle = "line";
   }
   config.chartStyle = chartStyle;
-  updateChartStyle();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("chartStyle", config.chartStyle);
 }
@@ -1015,7 +994,6 @@ export function setFontFamily(font, nosave) {
     "--font",
     `"${font.replace(/_/g, " ")}", "Roboto Mono"`
   );
-  ChartController.setDefaultFontFamily(font);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("fontFamily", config.fontFamily);
 }
