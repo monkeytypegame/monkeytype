@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import * as ThemeController from "./controllers/theme-controller";
 import * as Keymap from "./elements/keymap";
 import * as LanguagePicker from "./settings/language-picker";
 import * as TestLogic from "./test/test-logic";
@@ -1002,11 +1001,6 @@ export function setIndicateTypos(value, nosave) {
 
 export function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;
-  if (boolean) {
-    ThemeController.set("custom");
-  } else if (!boolean && !nosave) {
-    ThemeController.set(config.theme);
-  }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("customTheme", config.customTheme);
 }
@@ -1014,8 +1008,6 @@ export function setCustomTheme(boolean, nosave) {
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
-  ThemeController.clearPreview();
-  ThemeController.set(config.theme);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("theme", config.theme);
 }
@@ -1023,21 +1015,13 @@ export function setTheme(name, nosave) {
 function setThemes(theme, customState, nosave) {
   config.theme = theme;
   config.customTheme = customState;
-  ThemeController.clearPreview();
-  if (customState) {
-    ThemeController.set("custom");
-  } else {
-    ThemeController.set(config.theme);
-  }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("setThemes", customState);
 }
 
 export function setRandomTheme(val, nosave) {
   if (val === undefined || val === true || val === false) {
     val = "off";
-  }
-  if (val === "off") {
-    ThemeController.clearRandom();
   }
   config.randomTheme = val;
   if (!nosave) saveToLocalStorage();
@@ -1258,7 +1242,6 @@ export function setCustomBackground(value, nosave) {
     CommandlineLists.defaultCommands.list.filter(
       (command) => command.id == "changeCustomBackground"
     )[0].defaultValue = value;
-    ThemeController.applyCustomBackground();
     if (!nosave) saveToLocalStorage();
     dispatchEvent("customBackground", config.customBackground);
   } else {
@@ -1303,7 +1286,6 @@ export function setCustomBackgroundSize(value, nosave) {
     value = "cover";
   }
   config.customBackgroundSize = value;
-  ThemeController.applyCustomBackgroundSize();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("customBackgroundSize", config.customBackgroundSize);
 }
