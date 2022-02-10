@@ -60,4 +60,5 @@ After that add some screenshots of your theme to the pull request. Click create 
 then your new theme is on Monkeytype.
 
 ## Theme Guidelines
+Make sure your theme follows the theme guidelines.
 [Theme guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#theme-guidelines)
