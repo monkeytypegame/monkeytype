@@ -11,25 +11,13 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
+import * as SlowTimer from "./../elements/slow-timer";
 
-export let slowTimer = false;
 let slowTimerCount = 0;
 export let time = 0;
 let timer = null;
 const interval = 1000;
 let expected = 0;
-
-function setSlowTimer() {
-  if (slowTimer) return;
-  slowTimer = true;
-  console.error("Slow timer, disabling animations");
-  // Notifications.add("Slow timer detected", -1, 5);
-}
-
-function clearSlowTimer() {
-  slowTimer = false;
-  slowTimerCount = 0;
-}
 
 let timerDebug = false;
 export function enableTimerDebug() {
@@ -135,7 +123,8 @@ function checkIfFailed(wpmAndRaw, acc) {
   ) {
     clearTimeout(timer);
     TestLogic.fail("min wpm");
-    clearSlowTimer();
+    SlowTimer.clear();
+    slowTimerCount = 0;
     return;
   }
   if (
@@ -145,7 +134,8 @@ function checkIfFailed(wpmAndRaw, acc) {
   ) {
     clearTimeout(timer);
     TestLogic.fail("min accuracy");
-    clearSlowTimer();
+    SlowTimer.clear();
+    slowTimerCount = 0;
     return;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -169,7 +159,8 @@ function checkIfTimeIsUp() {
       TestLogic.input.pushHistory();
       TestLogic.corrected.pushHistory();
       TestLogic.finish();
-      clearSlowTimer();
+      SlowTimer.clear();
+      slowTimerCount = 0;
       return;
     }
   }
@@ -199,7 +190,8 @@ async function timerStep() {
 }
 
 export async function start() {
-  clearSlowTimer();
+  SlowTimer.clear();
+  slowTimerCount = 0;
   timerStats = [];
   expected = TestStats.start + interval;
   (function loop() {
@@ -216,7 +208,7 @@ export async function start() {
     ) {
       if (delay < interval / 2) {
         //slow timer
-        setSlowTimer();
+        SlowTimer.set();
       }
       if (delay < interval / 10) {
         slowTimerCount++;
@@ -235,7 +227,8 @@ export async function start() {
 
       if (!TestLogic.active) {
         clearTimeout(timer);
-        clearSlowTimer();
+        SlowTimer.clear();
+        slowTimerCount = 0;
         return;
       }
 

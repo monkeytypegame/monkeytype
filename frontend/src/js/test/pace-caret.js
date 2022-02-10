@@ -2,7 +2,7 @@ import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
-import * as TestTimer from "./test-timer";
+import * as SlowTimer from "./../elements/slow-timer";
 
 export let settings = null;
 
@@ -181,7 +181,7 @@ export function update(expectedStepEnd) {
         {
           left: newLeft,
         },
-        TestTimer.slowTimer ? 0 : duration,
+        SlowTimer.get() ? 0 : duration,
         "linear"
       );
     } else {
