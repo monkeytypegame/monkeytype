@@ -734,4 +734,9 @@
     "bgColor": "#7c2142",
     "mainColor": "#deb80b"
   }
+  ,{
+    "name": "banana",
+    "bgColor": "#fee528",
+    "mainColor": "#efb923"
+  }
 ]
