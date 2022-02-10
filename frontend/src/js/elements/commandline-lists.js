@@ -528,17 +528,25 @@ let commandsIndicateTypos = {
     {
       id: "setIndicateTyposOff",
       display: "off",
-      configValue: false,
+      configValue: "off",
       exec: () => {
-        UpdateConfig.setIndicateTypos(false);
+        UpdateConfig.setIndicateTypos("off");
       },
     },
     {
-      id: "setIndicateTyposOn",
-      display: "on",
-      configValue: true,
+      id: "setIndicateTyposBelow",
+      display: "below",
+      configValue: "below",
       exec: () => {
-        UpdateConfig.setIndicateTypos(true);
+        UpdateConfig.setIndicateTypos("below");
+      },
+    },
+    {
+      id: "setIndicateTyposReplace",
+      display: "replace",
+      configValue: "replace",
+      exec: () => {
+        UpdateConfig.setIndicateTypos("replace");
       },
     },
   ],
@@ -2429,14 +2437,8 @@ export let defaultCommands = {
     {
       id: "changePunctuation",
       display: "Punctuation...",
-      subgroup: commandsPunctuation,
       icon: "!?",
-      shift: {
-        display: "Toggle punctuation",
-        exec: () => {
-          UpdateConfig.togglePunctuation();
-        },
-      },
+      subgroup: commandsPunctuation,
     },
     {
       id: "changeMode",
@@ -3053,7 +3055,7 @@ export let defaultCommands = {
       icon: "fa-egg",
       visible: false,
       exec: () => {
-        UpdateConfig.toggleMonkey();
+        UpdateConfig.setMonkey(!Config.monkey);
       },
     },
     {

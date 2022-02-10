@@ -738,6 +738,49 @@ export function restart(
   );
 }
 
+function applyFunboxesToWord(word, wordset) {
+  if (Config.funbox === "rAnDoMcAsE") {
+    let randomcaseword = "";
+    for (let i = 0; i < word.length; i++) {
+      if (i % 2 != 0) {
+        randomcaseword += word[i].toUpperCase();
+      } else {
+        randomcaseword += word[i];
+      }
+    }
+    word = randomcaseword;
+  } else if (Config.funbox === "capitals") {
+    word = Misc.capitalizeFirstLetter(word);
+  } else if (Config.funbox === "gibberish") {
+    word = Misc.getGibberish();
+  } else if (Config.funbox === "arrows") {
+    word = Misc.getArrows();
+  } else if (Config.funbox === "58008") {
+    word = Misc.getNumbers(7);
+  } else if (Config.funbox === "specials") {
+    word = Misc.getSpecials();
+  } else if (Config.funbox === "ascii") {
+    word = Misc.getASCII();
+  } else if (wordset && Config.funbox === "weakspot") {
+    word = WeakSpot.getWord(wordset);
+  }
+  return word;
+}
+
+async function applyBritishEnglishToWord(word) {
+  if (Config.britishEnglish && /english/.test(Config.language)) {
+    word = await BritishEnglish.replace(word);
+  }
+  return word;
+}
+
+function applyLazyModeToWord(word, language) {
+  if (Config.lazyMode === true && !language.noLazyMode) {
+    word = LazyMode.replaceAccents(word, language.accents);
+  }
+  return word;
+}
+
 async function getNextWord(wordset, language, wordsBound) {
   let randomWord = wordset.randomWord();
   const previousWord = words.get(words.length - 1, true);
@@ -773,38 +816,11 @@ async function getNextWord(wordset, language, wordsBound) {
     randomWord = wordset.randomWord();
   }
 
-  if (Config.lazyMode === true && !language.noLazyMode) {
-    randomWord = LazyMode.replaceAccents(randomWord, language.accents);
-  }
-
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
-
-  if (Config.funbox === "rAnDoMcAsE") {
-    let randomcaseword = "";
-    for (let i = 0; i < randomWord.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += randomWord[i].toUpperCase();
-      } else {
-        randomcaseword += randomWord[i];
-      }
-    }
-    randomWord = randomcaseword;
-  } else if (Config.funbox === "capitals") {
-    randomWord = Misc.capitalizeFirstLetter(randomWord);
-  } else if (Config.funbox === "gibberish") {
-    randomWord = Misc.getGibberish();
-  } else if (Config.funbox === "arrows") {
-    randomWord = Misc.getArrows();
-  } else if (Config.funbox === "58008") {
-    randomWord = Misc.getNumbers(7);
-  } else if (Config.funbox === "specials") {
-    randomWord = Misc.getSpecials();
-  } else if (Config.funbox === "ascii") {
-    randomWord = Misc.getASCII();
-  } else if (Config.funbox === "weakspot") {
-    randomWord = WeakSpot.getWord(wordset);
-  }
+  randomWord = applyLazyModeToWord(randomWord, language);
+  randomWord = await applyBritishEnglishToWord(randomWord);
+  randomWord = applyFunboxesToWord(randomWord, wordset);
 
   if (Config.punctuation) {
     randomWord = punctuateWord(
@@ -818,10 +834,6 @@ async function getNextWord(wordset, language, wordsBound) {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
     }
-  }
-
-  if (Config.britishEnglish && /english/.test(Config.language)) {
-    randomWord = await BritishEnglish.replace(randomWord);
   }
 
   return randomWord;
@@ -1081,16 +1093,10 @@ export async function init() {
       if (/\t/g.test(w[i])) {
         setHasTab(true);
       }
-      if (
-        Config.britishEnglish &&
-        Config.language.replace(/_\d*k$/g, "") === "english"
-      ) {
-        w[i] = await BritishEnglish.replace(w[i]);
-      }
 
-      if (Config.lazyMode === true && !language.noLazyMode) {
-        w[i] = LazyMode.replaceAccents(w[i], language.accents);
-      }
+      w[i] = applyLazyModeToWord(w[i], language);
+      w[i] = await applyBritishEnglishToWord(w[i]);
+      w[i] = applyFunboxesToWord(w[i]);
 
       words.push(w[i]);
     }

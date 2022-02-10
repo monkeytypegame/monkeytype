@@ -2536,13 +2536,35 @@
               </div>
               <div class="section indicateTypos" section="">
                 <h1>indicate typos</h1>
-                <div class="text">Shows typos underneath the letters.</div>
+                <div class="text">
+                  Shows typos that you've made. Below shows what you typed below
+                  the letters and replace will replace the letters with the ones
+                  you typed.
+                </div>
                 <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
+                  <div
+                    class="button"
+                    indicateTypos="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     off
                   </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
-                    on
+                  <div
+                    class="button"
+                    indicateTypos="below"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    below
+                  </div>
+                  <div
+                    class="button"
+                    indicateTypos="replace"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    replace
                   </div>
                 </div>
               </div>
