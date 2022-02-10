@@ -6,13 +6,13 @@
 - [Theme Guidelines](#theme-guidelines)
 
 ### Forking the Repository
-First you will have to copy the repository also known as forking. Go the the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button. 
+First you will have to copy the repository also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button. 
 
 <img width="1552" alt="Screen Shot 2022-01-12 at 11 51 49 AM" src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
 
 ## Creating Themes
-After you have forked the repository you can now add your theme. (If you haven't already forked the repository yet refer to [here](#forking-the-repository))
+After you have forked the repository you can now add your theme. (If you haven't already forked the repository yet refer to [here](#forking-the-repository).)
 Create a file in ```./frontend/static/themes/```. Call it whatever you want but make sure that it is all lowercase and underscores for spaces. It should look something like this:
 ```theme_name.css```.
 
