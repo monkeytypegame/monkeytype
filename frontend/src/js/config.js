@@ -1582,4 +1582,21 @@ export let loadPromise = new Promise((v) => {
   loadDone = v;
 });
 
+export function getMode2(mode) {
+  if (!mode) mode = config.mode;
+  let mode2 = "";
+  if (mode === "time") {
+    mode2 = config.time;
+  } else if (mode === "words") {
+    mode2 = config.words;
+  } else if (mode === "custom") {
+    mode2 = "custom";
+  } else if (mode === "zen") {
+    mode2 = "zen";
+  } else if (mode === "quote") {
+    mode2 = TestLogic.randomQuote.id;
+  }
+  return mode2;
+}
+
 export default config;

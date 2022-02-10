@@ -103,7 +103,7 @@ export async function activate(funbox) {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if (await Misc.getCurrentLanguage().ligatures) {
+  if (await Misc.getCurrentLanguage(Config.language).ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
