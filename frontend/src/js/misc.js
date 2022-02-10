@@ -1,6 +1,4 @@
 import * as Loader from "./elements/loader";
-import Config from "./config";
-import * as TestLogic from "./test/test-logic";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -317,8 +315,8 @@ export async function getLanguage(lang) {
   }
 }
 
-export async function getCurrentLanguage() {
-  return await getLanguage(Config.language);
+export async function getCurrentLanguage(languageName) {
+  return await getLanguage(languageName);
 }
 
 export function migrateFromCookies() {
@@ -811,23 +809,6 @@ String.prototype.lastIndexOfRegex = function (regex) {
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
-
-export function getMode2(mode) {
-  if (!mode) mode = Config.mode;
-  let mode2 = "";
-  if (mode === "time") {
-    mode2 = Config.time;
-  } else if (mode === "words") {
-    mode2 = Config.words;
-  } else if (mode === "custom") {
-    mode2 = "custom";
-  } else if (mode === "zen") {
-    mode2 = "zen";
-  } else if (mode === "quote") {
-    mode2 = TestLogic.randomQuote.id;
-  }
-  return mode2;
-}
 
 //https://stackoverflow.com/questions/36532307/rem-px-in-javascript
 export function convertRemToPixels(rem) {

@@ -2,7 +2,7 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Loader from "../elements/loader";
-import * as Config from "../config";
+import Config from "./../config";
 
 let dropdownReady = false;
 async function initDropdown() {

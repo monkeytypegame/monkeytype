@@ -674,7 +674,7 @@ export function restart(
         }
       }
 
-      let mode2 = Misc.getMode2();
+      let mode2 = UpdateConfig.getMode2();
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -1233,10 +1233,11 @@ export async function addWord() {
     return;
   const language =
     Config.mode !== "custom"
-      ? await Misc.getCurrentLanguage()
+      ? await Misc.getCurrentLanguage(Config.language)
       : {
           //borrow the direction of the current language
-          leftToRight: await Misc.getCurrentLanguage().leftToRight,
+          leftToRight: await Misc.getCurrentLanguage(Config.language)
+            .leftToRight,
           words: CustomText.text,
         };
   const wordset = Wordset.withWords(language.words);
@@ -1459,7 +1460,7 @@ function buildCompletedEvent(difficultyFailed) {
     completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
   }
 
-  completedEvent.mode2 = Misc.getMode2();
+  completedEvent.mode2 = UpdateConfig.getMode2();
 
   if (Config.mode === "custom") {
     completedEvent.customText = {};

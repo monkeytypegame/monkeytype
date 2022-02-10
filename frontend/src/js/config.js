@@ -212,7 +212,7 @@ export function setMode(mode, nosave) {
       config.funbox === "gibberish" ||
       config.funbox === "ascii"
     ) {
-      Funbox.setActive("none");
+      Funbox.setFunbox("none");
       TestUI.updateModesNotice();
     }
     setPunctuation(false, true);
@@ -1433,6 +1433,17 @@ export function apply(configObj) {
       // }
 
       if (config.enableAds === "max" || config.enableAds === "on") {
+        $("head").append(`
+          <script
+          src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
+          type="text/javascript"
+          data-site-id="60b78af12119122b8958910f"
+          data-mode="scan"
+          id="adScript"
+          async
+          ></script>
+        `);
+
         if (config.enableAds === "max") {
           //
 
@@ -1570,5 +1581,22 @@ export function setConfig(newConfig) {
 export let loadPromise = new Promise((v) => {
   loadDone = v;
 });
+
+export function getMode2(mode) {
+  if (!mode) mode = config.mode;
+  let mode2 = "";
+  if (mode === "time") {
+    mode2 = config.time;
+  } else if (mode === "words") {
+    mode2 = config.words;
+  } else if (mode === "custom") {
+    mode2 = "custom";
+  } else if (mode === "zen") {
+    mode2 = "zen";
+  } else if (mode === "quote") {
+    mode2 = TestLogic.randomQuote.id;
+  }
+  return mode2;
+}
 
 export default config;

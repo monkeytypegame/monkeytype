@@ -180,7 +180,7 @@ export async function addPower(good = true, extra = false) {
   if (
     !TestLogic.active ||
     Config.monkeyPowerLevel === "off" ||
-    TestLogic.slowTimer
+    TestTimer.slowTimer
   )
     return;
 

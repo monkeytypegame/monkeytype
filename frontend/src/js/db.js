@@ -1,4 +1,3 @@
-import { loadTags } from "./account/result-filters";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
@@ -140,7 +139,6 @@ export async function initSnapshot() {
     });
 
     dbSnapshot = snap;
-    loadTags(dbSnapshot.tags);
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = defaultSnap;
