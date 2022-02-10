@@ -22,6 +22,7 @@ import "./pages/about";
 import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";
+import "./popups/edit-tags-popup";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
