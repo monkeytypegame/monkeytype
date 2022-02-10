@@ -2,7 +2,6 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Loader from "../elements/loader";
-import * as Config from "../config";
 
 let dropdownReady = false;
 async function initDropdown() {
@@ -70,9 +69,10 @@ export async function show(noAnim = false) {
   // eslint-disable-next-line no-unreachable
   if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
     await initDropdown();
-    $("#quoteSubmitPopup #submitQuoteLanguage").val(
-      Config.language.replace(/_\d*k$/g, "")
-    );
+    $("#quoteSubmitPopup #submitQuoteLanguage")
+      .val
+      // Config.language.replace(/_\d*k$/g, "") /* Config.language does not exist */
+      ();
     $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
     $("#quoteSubmitPopup input").val("");
     $("#quoteSubmitPopupWrapper")

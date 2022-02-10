@@ -24,7 +24,7 @@ import "./elements/scroll-to-top";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
-import * as Result from "./test/test-timer";
+import { toggleUnsmoothedRaw } from "./test/result";
 
 //try to keep this list short because we need to eliminate it eventually
 global.getuid = Misc.getuid;
@@ -44,6 +44,6 @@ global.enableTimerDebug = TestTimer.enableTimerDebug;
 
 global.getTimerStats = TestTimer.getTimerStats;
 
-global.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+global.toggleUnsmoothedRaw = toggleUnsmoothedRaw;
 
 global.enableSpacingDebug = TestStats.enableSpacingDebug;
