@@ -123,6 +123,7 @@ input[type="number"] {
   outline: none;
   border: none;
   height: auto;
+  border-radius: var(--roundness);
 }
 
 .select2-selection:focus {
