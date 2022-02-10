@@ -1,5 +1,4 @@
 import * as DB from "./db";
-import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import LayoutList from "./test/layouts";
@@ -222,7 +221,6 @@ export function setPlaySoundOnClick(val, nosave) {
     val = "off";
   }
   config.playSoundOnClick = val;
-  if (config.playSoundOnClick !== "off") Sound.init();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("playSoundOnClick", config.playSoundOnClick);
 }
@@ -232,7 +230,6 @@ export function setSoundVolume(val, nosave) {
     val = "1.0";
   }
   config.soundVolume = val;
-  Sound.setVolume(val);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("soundVolume", config.soundVolume);
 }
