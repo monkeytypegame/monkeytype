@@ -282,7 +282,7 @@ window.addEventListener("keydown", function (e) {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    UpdateConfig.toggleCustomTheme();
+    UpdateConfig.setCustomTheme(!Config.customTheme);
   } else {
     // if (Config.customTheme) {
     //   toggleCustomTheme();

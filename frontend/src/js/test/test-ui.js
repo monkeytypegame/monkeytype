@@ -983,7 +983,7 @@ $(document).on("click", "#testModesNotice .text-button.restart", (event) => {
 });
 
 $(document).on("click", "#testModesNotice .text-button.blind", (event) => {
-  UpdateConfig.toggleBlindMode();
+  UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
 $(".pageTest #copyWordsListButton").click(async (event) => {

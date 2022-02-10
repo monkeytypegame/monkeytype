@@ -2437,14 +2437,8 @@ export let defaultCommands = {
     {
       id: "changePunctuation",
       display: "Punctuation...",
-      subgroup: commandsPunctuation,
       icon: "!?",
-      shift: {
-        display: "Toggle punctuation",
-        exec: () => {
-          UpdateConfig.togglePunctuation();
-        },
-      },
+      subgroup: commandsPunctuation,
     },
     {
       id: "changeMode",
@@ -3061,7 +3055,7 @@ export let defaultCommands = {
       icon: "fa-egg",
       visible: false,
       exec: () => {
-        UpdateConfig.toggleMonkey();
+        UpdateConfig.setMonkey(!Config.monkey);
       },
     },
     {
