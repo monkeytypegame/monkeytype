@@ -3,7 +3,6 @@ import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import * as LanguagePicker from "./settings/language-picker";
-import * as TestLogic from "./test/test-logic";
 import * as PaceCaret from "./test/pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./elements/commandline-lists";
@@ -25,8 +24,8 @@ export function subscribeToEvent(fn) {
   eventSubscribers.push(fn);
 }
 
-function dispatchEvent(key, value) {
-  eventSubscribers.forEach((fn) => fn(key, value));
+function dispatchEvent(key, value, value2) {
+  eventSubscribers.forEach((fn) => fn(key, value, value2));
 }
 
 export function setLocalStorageConfig(val) {
@@ -265,9 +264,8 @@ export function setDifficulty(diff, nosave) {
     diff = "normal";
   }
   config.difficulty = diff;
-  if (!nosave) TestLogic.restart(false, nosave);
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("difficulty", config.difficulty);
+  dispatchEvent("difficulty", config.difficulty, nosave);
 }
 
 //set fav themes
@@ -505,7 +503,6 @@ export function setShowAllLines(sal, nosave) {
   ChallengeContoller.clearActive();
   if (!nosave) {
     saveToLocalStorage();
-    TestLogic.restart();
   }
   dispatchEvent("showAllLines", config.showAllLines);
 }
@@ -1096,7 +1093,6 @@ export function setKeymapMode(mode, nosave) {
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
   ChallengeContoller.clearActive();
-  if (!nosave) TestLogic.restart(false, nosave);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("keymapMode", config.keymapMode);
 }
@@ -1565,22 +1561,5 @@ export function setConfig(newConfig) {
 export let loadPromise = new Promise((v) => {
   loadDone = v;
 });
-
-export function getMode2(mode) {
-  if (!mode) mode = config.mode;
-  let mode2 = "";
-  if (mode === "time") {
-    mode2 = config.time;
-  } else if (mode === "words") {
-    mode2 = config.words;
-  } else if (mode === "custom") {
-    mode2 = "custom";
-  } else if (mode === "zen") {
-    mode2 = "zen";
-  } else if (mode === "quote") {
-    mode2 = TestLogic.randomQuote.id;
-  }
-  return mode2;
-}
 
 export default config;
