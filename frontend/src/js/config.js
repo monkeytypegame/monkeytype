@@ -1,7 +1,6 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
-import * as LiveWpm from "./test/live-wpm";
 import * as LiveAcc from "./test/live-acc";
 import * as LiveBurst from "./test/live-burst";
 import * as Funbox from "./test/funbox";
@@ -688,11 +687,6 @@ export function setShowLiveWpm(live, nosave) {
     live = false;
   }
   config.showLiveWpm = live;
-  if (live) {
-    LiveWpm.show();
-  } else {
-    LiveWpm.hide();
-  }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("showLiveWpm", config.showLiveWpm);
