@@ -7,6 +7,7 @@ import * as TimerProgress from "./test/timer-progress";
 import * as LiveWpm from "./test/live-wpm";
 import * as LiveAcc from "./test/live-acc";
 import * as LiveBurst from "./test/live-burst";
+import * as Funbox from "./test/funbox";
 import * as Notifications from "./elements/notifications";
 import * as ThemeController from "./controllers/theme-controller";
 import * as Keymap from "./elements/keymap";
@@ -211,6 +212,7 @@ export function setMode(mode, nosave) {
       config.funbox === "gibberish" ||
       config.funbox === "ascii"
     ) {
+      Funbox.setFunbox("none");
       TestUI.updateModesNotice();
     }
     setPunctuation(false, true);
