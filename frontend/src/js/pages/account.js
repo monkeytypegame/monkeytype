@@ -22,7 +22,7 @@ import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
 import axiosInstance from "../axios-instance";
 import * as TodayTracker from "./../test/today-tracker";
-import * as ActivePage from "./../elements/active-page";
+import * as ActivePage from "../states/active-page";
 
 let filterDebug = false;
 //toggle filterdebug

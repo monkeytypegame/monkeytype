@@ -11,7 +11,7 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 let slowTimerCount = 0;
 export let time = 0;

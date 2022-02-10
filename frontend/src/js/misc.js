@@ -878,3 +878,20 @@ export function swapElements(
     callback();
   }
 }
+
+export function getMode2(config, randomQuote) {
+  let mode = config.mode;
+  let mode2 = "";
+  if (mode === "time") {
+    mode2 = config.time;
+  } else if (mode === "words") {
+    mode2 = config.words;
+  } else if (mode === "custom") {
+    mode2 = "custom";
+  } else if (mode === "zen") {
+    mode2 = "zen";
+  } else if (mode === "quote") {
+    mode2 = randomQuote.id;
+  }
+  return mode2;
+}

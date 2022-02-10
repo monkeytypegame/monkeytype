@@ -1,5 +1,5 @@
 import * as Caret from "./caret";
-import * as ActivePage from "./../elements/active-page";
+import * as ActivePage from "../states/active-page";
 
 let state = false;
 

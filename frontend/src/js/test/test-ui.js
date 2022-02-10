@@ -20,8 +20,32 @@ import * as TestUI from "./test-ui";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as UI from "../ui";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (
+      [
+        "difficulty",
+        "blindMode",
+        "stopOnError",
+        "paceCaret",
+        "minWpm",
+        "minAcc",
+        "minBurst",
+        "confidenceMode",
+        "layout",
+      ].includes(eventKey)
+    ) {
+      updateModesNotice();
+    }
+    if (eventKey === "flipTestColors") flipColors(eventValue);
+    if (eventKey === "colorfulMode") colorful(eventValue);
+    if (eventKey === "highlightMode") updateWordElement(eventValue);
+    if (eventKey === "burstHeatmap") applyBurstHeatmap();
+  });
+});
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -315,6 +339,8 @@ export function updateWordElement(showError = !Config.blindMode) {
   let currentWord;
   wordAtIndex = document.querySelector("#words .word.active");
   currentWord = TestLogic.words.getCurrent();
+  if (!currentWord) return;
+
   let ret = "";
 
   let newlineafter = false;

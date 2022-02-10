@@ -41,22 +41,24 @@ task("browserify", function () {
     //the source files are concatenated together
     debug: false,
   });
-  return b
-    .transform(
-      babelify.configure({
-        presets: ["@babel/preset-env"],
-        plugins: ["@babel/transform-runtime"],
-      })
-    )
-    .bundle()
-    .pipe(source("monkeytype.js"))
-    .pipe(buffer())
-    .pipe(
-      uglify({
-        mangle: false,
-      })
-    )
-    .pipe(dest("./public/js"));
+  return (
+    b
+      .transform(
+        babelify.configure({
+          presets: ["@babel/preset-env"],
+          plugins: ["@babel/transform-runtime"],
+        })
+      )
+      .bundle()
+      .pipe(source("monkeytype.js"))
+      .pipe(buffer())
+      // .pipe(
+      //   uglify({
+      //     mangle: false,
+      //   })
+      // )
+      .pipe(dest("./public/js"))
+  );
 });
 
 task("static", function () {

@@ -1,7 +1,7 @@
 import * as Funbox from "../test/funbox";
 import * as UI from "../ui";
 import Config from "../config";
-import * as ActivePage from "./../elements/active-page";
+import * as ActivePage from "./../states/active-page";
 
 let mappedRoutes = {
   "/": "pageLoading",

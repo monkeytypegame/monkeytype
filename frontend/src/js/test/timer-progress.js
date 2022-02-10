@@ -1,9 +1,9 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as Misc from "../misc";
 import * as TestLogic from "./test-logic";
 import * as TestTimer from "./test-timer";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -189,3 +189,16 @@ export function updateStyle() {
     show();
   }, 125);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "showTimerProgress") {
+      if (eventValue === true && TestLogic.active) {
+        show();
+      } else {
+        hide();
+      }
+    }
+    if (eventKey === "timerStyle") updateStyle();
+  });
+});
