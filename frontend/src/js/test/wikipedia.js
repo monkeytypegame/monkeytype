@@ -1,5 +1,4 @@
 import * as Loader from "../elements/loader";
-import Config from "../config";
 import * as Misc from "../misc";
 
 export class Section {
@@ -39,13 +38,13 @@ export async function getTLD(languageGroup) {
   }
 }
 
-export async function getSection() {
+export async function getSection(language) {
   // console.log("Getting section");
   Loader.show();
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
-  let currentLanguageGroup = await Misc.findCurrentGroup(Config.language);
+  let currentLanguageGroup = await Misc.findCurrentGroup(language);
   urlTLD = await getTLD(currentLanguageGroup);
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;

@@ -348,7 +348,7 @@ $(document).ready((e) => {
         Leaderboards.hide();
       } else if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
         event.preventDefault();
-        PractiseWords.hide();
+        PractiseWords.hidePopup();
       } else if (!$("#simplePopupWrapper").hasClass("hidden")) {
         event.preventDefault();
         SimplePopups.hide();

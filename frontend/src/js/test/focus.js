@@ -1,5 +1,5 @@
 import * as Caret from "./caret";
-import * as UI from "../ui";
+import * as ActivePage from "./../elements/active-page";
 
 let state = false;
 
@@ -23,8 +23,8 @@ export function set(foc, withCursor = false) {
 
 $(document).mousemove(function (event) {
   if (!state) return;
-  if (UI.getActivePage() == "pageLoading") return;
-  if (UI.getActivePage() == "pageAccount" && state == true) return;
+  if (ActivePage.get() == "pageLoading") return;
+  if (ActivePage.get() == "pageAccount" && state == true) return;
   if (
     $("#top").hasClass("focus") &&
     (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)

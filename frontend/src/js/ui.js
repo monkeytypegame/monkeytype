@@ -15,17 +15,10 @@ import * as Account from "./pages/account";
 import * as Leaderboards from "./elements/leaderboards";
 import * as Funbox from "./test/funbox";
 import * as About from "./pages/about";
+import * as Misc from "./misc";
+import * as ActivePage from "./elements/active-page";
 
 export let pageTransition = true;
-let activePage = "pageLoading";
-
-export function getActivePage() {
-  return activePage;
-}
-
-export function setActivePage(active) {
-  activePage = active;
-}
 
 export function setPageTransition(val) {
   pageTransition = val;
@@ -53,70 +46,6 @@ export function updateKeytips() {
   }
 }
 
-export function swapElements(
-  el1,
-  el2,
-  totalDuration,
-  callback = function () {
-    return;
-  },
-  middleCallback = function () {
-    return;
-  }
-) {
-  if (
-    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
-    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
-  ) {
-    //one of them is hidden and the other is visible
-    if (el1.hasClass("hidden")) {
-      callback();
-      return false;
-    }
-    $(el1)
-      .removeClass("hidden")
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        totalDuration / 2,
-        () => {
-          middleCallback();
-          $(el1).addClass("hidden");
-          $(el2)
-            .removeClass("hidden")
-            .css("opacity", 0)
-            .animate(
-              {
-                opacity: 1,
-              },
-              totalDuration / 2,
-              () => {
-                callback();
-              }
-            );
-        }
-      );
-  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
-    //both are hidden, only fade in the second
-    $(el2)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        totalDuration,
-        () => {
-          callback();
-        }
-      );
-  } else {
-    callback();
-  }
-}
-
 export function changePage(page, norestart = false) {
   if (pageTransition) {
     console.log(`change page ${page} stopped`);
@@ -141,7 +70,7 @@ export function changePage(page, norestart = false) {
 
   console.log(`change page ${page}`);
   let activePageElement = $(".page.active");
-  let check = activePage + "";
+  let check = ActivePage.get() + "";
   setTimeout(() => {
     if (check === "pageAccount" && page !== "account") {
       Account.reset();
@@ -152,12 +81,12 @@ export function changePage(page, norestart = false) {
     }
   }, 250);
 
-  activePage = undefined;
+  ActivePage.set(undefined);
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     setPageTransition(true);
-    swapElements(
+    Misc.swapElements(
       activePageElement,
       $(".page.pageTest"),
       250,
@@ -165,7 +94,7 @@ export function changePage(page, norestart = false) {
         setPageTransition(false);
         TestUI.focusWords();
         $(".page.pageTest").addClass("active");
-        activePage = "pageTest";
+        ActivePage.set("pageTest");
         history.pushState("/", null, "/");
       },
       () => {
@@ -182,11 +111,11 @@ export function changePage(page, norestart = false) {
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePageElement, $(".page.pageAbout"), 250, () => {
+    Misc.swapElements(activePageElement, $(".page.pageAbout"), 250, () => {
       setPageTransition(false);
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
-      activePage = "pageAbout";
+      ActivePage.set("pageAbout");
     });
     About.fill();
     Funbox.activate("none");
@@ -195,11 +124,11 @@ export function changePage(page, norestart = false) {
   } else if (page == "settings") {
     setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePageElement, $(".page.pageSettings"), 250, () => {
+    Misc.swapElements(activePageElement, $(".page.pageSettings"), 250, () => {
       setPageTransition(false);
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
-      activePage = "pageSettings";
+      ActivePage.set("pageSettings");
     });
     Funbox.activate("none");
     Settings.fillSettingsPage().then(() => {
@@ -217,11 +146,11 @@ export function changePage(page, norestart = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
+      Misc.swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
         setPageTransition(false);
         history.pushState("account", null, "account");
         $(".page.pageAccount").addClass("active");
-        activePage = "pageAccount";
+        ActivePage.set("pageAccount");
       });
       Funbox.activate("none");
       Account.update();
@@ -233,11 +162,11 @@ export function changePage(page, norestart = false) {
     } else {
       setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePageElement, $(".page.pageLogin"), 250, () => {
+      Misc.swapElements(activePageElement, $(".page.pageLogin"), 250, () => {
         setPageTransition(false);
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
-        activePage = "pageLogin";
+        ActivePage.set("pageLogin");
       });
       Funbox.activate("none");
       TestConfig.hide();
@@ -282,7 +211,7 @@ window.addEventListener("keydown", function (e) {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    UpdateConfig.toggleCustomTheme();
+    UpdateConfig.setCustomTheme(!Config.customTheme);
   } else {
     // if (Config.customTheme) {
     //   toggleCustomTheme();

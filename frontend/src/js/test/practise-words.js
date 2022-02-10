@@ -115,7 +115,7 @@ export function showPopup(focus = false) {
   }
 }
 
-function hidePopup() {
+export function hidePopup() {
   if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)

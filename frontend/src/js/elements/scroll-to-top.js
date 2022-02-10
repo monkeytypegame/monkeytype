@@ -1,4 +1,4 @@
-import * as UI from "../ui";
+import * as ActivePage from "./../elements/active-page";
 
 let visible = false;
 
@@ -7,7 +7,7 @@ $(".scrollToTopButton").click((event) => {
 });
 
 $(window).scroll((e) => {
-  let page = UI.getActivePage();
+  let page = ActivePage.get();
   if (page == "pageTest") return;
   if (page == "pageAbout" || page == "pageSettings" || page == "pageAccount") {
     let scroll = window.scrollY;

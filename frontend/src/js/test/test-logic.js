@@ -27,7 +27,6 @@ import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay.js";
 import axiosInstance from "../axios-instance";
-import * as MonkeyPower from "../elements/monkey-power";
 import * as Poetry from "./poetry.js";
 import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
@@ -38,6 +37,8 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
+import * as MonkeyPower from "./../elements/monkey-power";
+import * as ActivePage from "./../elements/active-page";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -233,7 +234,6 @@ export let bailout = false;
 
 export function setActive(tf) {
   active = tf;
-  if (!tf) MonkeyPower.reset();
 }
 
 export function setRepeated(tf) {
@@ -472,7 +472,7 @@ export function restart(
     } catch {}
     return;
   }
-  if (UI.getActivePage() == "pageTest" && !TestUI.resultVisible) {
+  if (ActivePage.get() == "pageTest" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (hasTab) {
         try {
@@ -564,7 +564,7 @@ export function restart(
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   QuoteRatePopup.clearQuoteStats();
-  if (UI.getActivePage() == "pageTest" && window.scrollY > 0)
+  if (ActivePage.get() == "pageTest" && window.scrollY > 0)
     window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
@@ -597,7 +597,7 @@ export function restart(
     },
     125,
     async () => {
-      if (UI.getActivePage() == "pageTest") Focus.set(false);
+      if (ActivePage.get() == "pageTest") Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -674,7 +674,7 @@ export function restart(
         }
       }
 
-      let mode2 = Misc.getMode2();
+      let mode2 = UpdateConfig.getMode2();
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -841,6 +841,7 @@ async function getNextWord(wordset, language, wordsBound) {
 
 export async function init() {
   setActive(false);
+  MonkeyPower.reset();
   Replay.stopReplayRecording();
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
@@ -942,7 +943,7 @@ export async function init() {
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = Wordset.withWords(wordList);
+    const wordset = Wordset.withWords(wordList, Config.funbox);
 
     if (
       (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
@@ -957,7 +958,7 @@ export async function init() {
       ) {
         let section =
           Config.funbox == "wikipedia"
-            ? await Wikipedia.getSection()
+            ? await Wikipedia.getSection(Config.language)
             : await Poetry.getPoem();
         for (let word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
@@ -1122,7 +1123,7 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if (UI.getActivePage() == "pageTest") {
+  if (ActivePage.get() == "pageTest") {
     await Funbox.activate();
   }
   TestUI.showWords();
@@ -1197,7 +1198,7 @@ export async function addWord() {
     if (Config.mode == "time" && words.length - words.currentIndex < 20) {
       let section =
         Config.funbox == "wikipedia"
-          ? await Wikipedia.getSection()
+          ? await Wikipedia.getSection(Config.language)
           : await Poetry.getPoem();
       let wordCount = 0;
       for (let word of section.words) {
@@ -1233,13 +1234,14 @@ export async function addWord() {
     return;
   const language =
     Config.mode !== "custom"
-      ? await Misc.getCurrentLanguage()
+      ? await Misc.getCurrentLanguage(Config.language)
       : {
           //borrow the direction of the current language
-          leftToRight: await Misc.getCurrentLanguage().leftToRight,
+          leftToRight: await Misc.getCurrentLanguage(Config.language)
+            .leftToRight,
           words: CustomText.text,
         };
-  const wordset = Wordset.withWords(language.words);
+  const wordset = Wordset.withWords(language.words, Config.funbox);
 
   let randomWord = await getNextWord(wordset, language, bound);
 
@@ -1459,7 +1461,7 @@ function buildCompletedEvent(difficultyFailed) {
     completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
   }
 
-  completedEvent.mode2 = Misc.getMode2();
+  completedEvent.mode2 = UpdateConfig.getMode2();
 
   if (Config.mode === "custom") {
     completedEvent.customText = {};

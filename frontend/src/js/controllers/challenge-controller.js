@@ -7,6 +7,7 @@ import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as UI from "../ui";
 import * as TestUI from "../test/test-ui";
+import * as ActivePage from "./../elements/active-page";
 
 export let active = null;
 let challengeLoading = false;
@@ -146,7 +147,7 @@ export function verify(result) {
 
 export async function setup(challengeName) {
   challengeLoading = true;
-  if (UI.getActivePage() !== "pageTest") {
+  if (ActivePage.get() !== "pageTest") {
     UI.changePage("", true);
   }
 
