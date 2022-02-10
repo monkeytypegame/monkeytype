@@ -736,7 +736,7 @@
   }
   ,{
     "name": "seafoam",
-    "bgColor": "#79b791",
-    "mainColor": "#420c14"
+    "bgColor": "linear-gradient(to right, #6aebb4, #b2ffde, #edf4ed)",
+    "mainColor": "#00cbb7"
   }
 ]
