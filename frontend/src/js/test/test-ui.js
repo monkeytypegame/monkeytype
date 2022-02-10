@@ -16,7 +16,6 @@ import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "../misc";
-import * as TestUI from "./test-ui";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as UI from "../ui";
@@ -903,20 +902,20 @@ export function toggleResultWords() {
         );
         loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
-            TestUI.applyBurstHeatmap();
+            applyBurstHeatmap();
           }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
             .slideDown(250, () => {
               if (Config.burstHeatmap) {
-                TestUI.applyBurstHeatmap();
+                applyBurstHeatmap();
               }
             });
         });
       } else {
         if (Config.burstHeatmap) {
-          TestUI.applyBurstHeatmap();
+          applyBurstHeatmap();
         }
         $("#resultWordsHistory")
           .removeClass("hidden")
