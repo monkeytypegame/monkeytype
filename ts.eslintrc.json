@@ -16,13 +16,16 @@
   "extends": [
     "eslint:recommended",
     "plugin:json/recommended",
-    "plugin:require-path-exists/recommended"
+    "plugin:require-path-exists/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["json", "require-path-exists"],
+  "plugins": ["json", "require-path-exists", "@typescript-eslint"],
   "parserOptions": {
-    "ecmaVersion": 13,
+    "ecmaVersion": 12,
     "sourceType": "module"
   },
+  "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
     "indent": ["off"], //handled by prettier
@@ -35,12 +38,23 @@
     "semi": ["error", "always"],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-var": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
     "require-path-exists/exists": [
       2,
       {
-        "extensions": ["", ".ts", ".js", ".es.js", ".json5", ".es", ".es6"]
+        "extensions": [
+          "",
+          ".ts",
+          ".tsx",
+          ".es.ts",
+          ".tsx",
+          ".json5",
+          ".es",
+          ".es6",
+          ".coffee"
+        ]
       }
     ]
   }
