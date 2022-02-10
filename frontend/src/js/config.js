@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
 
 export let localStorageConfig = null;
@@ -1240,8 +1239,6 @@ export function setCustomBackgroundSize(value, nosave) {
 
 export function setCustomBackgroundFilter(array, nosave) {
   config.customBackgroundFilter = array;
-  BackgroundFilter.loadConfig(config.customBackgroundFilter);
-  BackgroundFilter.apply();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("customBackgroundFilter", config.customBackgroundFilter);
 }
