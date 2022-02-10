@@ -28,6 +28,16 @@ export let localStorageConfig = null;
 export let dbConfigLoaded = false;
 export let changedBeforeDb = false;
 
+let eventSubscribers = [];
+
+export function subscribe(fn) {
+  eventSubscribers.push(fn);
+}
+
+function dispatchEvent(key, value) {
+  eventSubscribers.forEach((fn) => fn(key, value));
+}
+
 export function setLocalStorageConfig(val) {
   localStorageConfig = val;
 }
@@ -181,6 +191,7 @@ export function setNumbers(numb, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("numbers", config.numbers);
 }
 
 //punctuation
@@ -196,6 +207,7 @@ export function setPunctuation(punc, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("punctuation", config.punctuation);
 }
 
 export function setMode(mode, nosave) {
@@ -229,6 +241,7 @@ export function setMode(mode, nosave) {
   ChallengeContoller.clearActive();
   PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("mode", config.mode);
 }
 
 export function setPlaySoundOnError(val, nosave) {
@@ -237,6 +250,7 @@ export function setPlaySoundOnError(val, nosave) {
   }
   config.playSoundOnError = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("playSoundOnError", config.playSoundOnError);
 }
 
 export function setPlaySoundOnClick(val, nosave) {
@@ -246,6 +260,7 @@ export function setPlaySoundOnClick(val, nosave) {
   config.playSoundOnClick = val;
   if (config.playSoundOnClick !== "off") Sound.init();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("playSoundOnClick", config.playSoundOnClick);
 }
 
 export function setSoundVolume(val, nosave) {
@@ -255,6 +270,7 @@ export function setSoundVolume(val, nosave) {
   config.soundVolume = val;
   Sound.setVolume(val);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("soundVolume", config.soundVolume);
 }
 
 //difficulty
@@ -269,14 +285,14 @@ export function setDifficulty(diff, nosave) {
   if (!nosave) TestLogic.restart(false, nosave);
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("difficulty", config.difficulty);
 }
 
 //set fav themes
 export function setFavThemes(themes, nosave) {
   config.favThemes = themes;
-  if (!nosave) {
-    saveToLocalStorage();
-  }
+  if (!nosave) saveToLocalStorage();
+  dispatchEvent("favThemes", config.favThemes);
 }
 
 export function setFunbox(funbox, nosave) {
@@ -288,9 +304,8 @@ export function setFunbox(funbox, nosave) {
   } else if (val === "tts") {
     TTS.init();
   }
-  if (!nosave) {
-    saveToLocalStorage();
-  }
+  if (!nosave) saveToLocalStorage();
+  dispatchEvent("funbox", config.funbox);
 }
 
 export function setBlindMode(blind, nosave) {
@@ -300,6 +315,7 @@ export function setBlindMode(blind, nosave) {
   config.blindMode = blind;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("blindMode", config.blindMode);
 }
 
 function updateChartAccuracy() {
@@ -327,6 +343,7 @@ export function setChartAccuracy(chartAccuracy, nosave) {
   config.chartAccuracy = chartAccuracy;
   updateChartAccuracy();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("chartAccuracy", config.chartAccuracy);
 }
 
 export function setChartStyle(chartStyle, nosave) {
@@ -336,6 +353,7 @@ export function setChartStyle(chartStyle, nosave) {
   config.chartStyle = chartStyle;
   updateChartStyle();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("chartStyle", config.chartStyle);
 }
 
 export function setStopOnError(soe, nosave) {
@@ -348,6 +366,7 @@ export function setStopOnError(soe, nosave) {
   }
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("stopOnError", config.stopOnError);
 }
 
 export function setAlwaysShowDecimalPlaces(val, nosave) {
@@ -356,6 +375,7 @@ export function setAlwaysShowDecimalPlaces(val, nosave) {
   }
   config.alwaysShowDecimalPlaces = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("alwaysShowDecimalPlaces", config.alwaysShowDecimalPlaces);
 }
 
 export function setAlwaysShowCPM(val, nosave) {
@@ -364,6 +384,7 @@ export function setAlwaysShowCPM(val, nosave) {
   }
   config.alwaysShowCPM = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("alwaysShowCPM", config.alwaysShowCPM);
 }
 
 export function setShowOutOfFocusWarning(val, nosave) {
@@ -375,6 +396,7 @@ export function setShowOutOfFocusWarning(val, nosave) {
     OutOfFocus.hide();
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("showOutOfFocusWarning", config.showOutOfFocusWarning);
 }
 
 export function setSwapEscAndTab(val, nosave) {
@@ -384,6 +406,7 @@ export function setSwapEscAndTab(val, nosave) {
   config.swapEscAndTab = val;
   UI.updateKeytips();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("swapEscAndTab", config.swapEscAndTab);
 }
 
 //pace caret
@@ -406,6 +429,7 @@ export function setPaceCaret(val, nosave) {
   TestUI.updateModesNotice();
   PaceCaret.init(nosave);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("paceCaret", config.paceCaret);
 }
 
 export function setPaceCaretCustomSpeed(val, nosave) {
@@ -415,6 +439,7 @@ export function setPaceCaretCustomSpeed(val, nosave) {
   }
   config.paceCaretCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 }
 
 export function setRepeatedPace(pace, nosave) {
@@ -423,6 +448,7 @@ export function setRepeatedPace(pace, nosave) {
   }
   config.repeatedPace = pace;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("repeatedPace", config.repeatedPace);
 }
 
 //min wpm
@@ -433,6 +459,7 @@ export function setMinWpm(minwpm, nosave) {
   config.minWpm = minwpm;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("minWpm", config.minWpm);
 }
 
 export function setMinWpmCustomSpeed(val, nosave) {
@@ -442,6 +469,7 @@ export function setMinWpmCustomSpeed(val, nosave) {
   }
   config.minWpmCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("minWpmCustomSpeed", config.minWpmCustomSpeed);
 }
 
 //min acc
@@ -452,6 +480,7 @@ export function setMinAcc(min, nosave) {
   config.minAcc = min;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("minAcc", config.minAcc);
 }
 
 export function setMinAccCustom(val, nosave) {
@@ -460,6 +489,7 @@ export function setMinAccCustom(val, nosave) {
   }
   config.minAccCustom = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("minAccCustom", config.minAccCustom);
 }
 
 //min burst
@@ -470,6 +500,7 @@ export function setMinBurst(min, nosave) {
   config.minBurst = min;
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("minBurst", config.minBurst);
 }
 
 export function setMinBurstCustomSpeed(val, nosave) {
@@ -479,6 +510,7 @@ export function setMinBurstCustomSpeed(val, nosave) {
   }
   config.minBurstCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("minBurstCustomSpeed", config.minBurstCustomSpeed);
 }
 
 //always show words history
@@ -488,6 +520,7 @@ export function setAlwaysShowWordsHistory(val, nosave) {
   }
   config.alwaysShowWordsHistory = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
 }
 
 //single list command line
@@ -495,6 +528,7 @@ export function setSingleListCommandLine(option, nosave) {
   if (!option) option = "manual";
   config.singleListCommandLine = option;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("singleListCommandLine", config.singleListCommandLine);
 }
 
 //caps lock warning
@@ -504,6 +538,7 @@ export function setCapsLockWarning(val, nosave) {
   }
   config.capsLockWarning = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("capsLockWarning", config.capsLockWarning);
 }
 
 export function setShowAllLines(sal, nosave) {
@@ -516,6 +551,7 @@ export function setShowAllLines(sal, nosave) {
     saveToLocalStorage();
     TestLogic.restart();
   }
+  dispatchEvent("showAllLines", config.showAllLines);
 }
 
 export function setQuickEnd(qe, nosave) {
@@ -524,6 +560,7 @@ export function setQuickEnd(qe, nosave) {
   }
   config.quickEnd = qe;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("quickEnd", config.quickEnd);
 }
 
 export function setEnableAds(val, nosave) {
@@ -546,6 +583,7 @@ export function setRepeatQuotes(val, nosave) {
   }
   config.repeatQuotes = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("repeatQuotes", config.repeatQuotes);
 }
 
 //flip colors
@@ -556,6 +594,7 @@ export function setFlipTestColors(flip, nosave) {
   config.flipTestColors = flip;
   TestUI.flipColors(flip);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("flipTestColors", config.flipTestColors);
 }
 
 //extra color
@@ -566,6 +605,7 @@ export function setColorfulMode(extra, nosave) {
   config.colorfulMode = extra;
   TestUI.colorful(extra);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("colorfulMode", config.colorfulMode);
 }
 
 //strict space
@@ -575,6 +615,7 @@ export function setStrictSpace(val, nosave) {
   }
   config.strictSpace = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("strictSpace", config.strictSpace);
 }
 
 //opposite shift space
@@ -584,6 +625,7 @@ export function setOppositeShiftMode(val, nosave) {
   }
   config.oppositeShiftMode = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("oppositeShiftMode", config.oppositeShiftMode);
 }
 
 export function setPageWidth(val, nosave) {
@@ -600,6 +642,7 @@ export function setPageWidth(val, nosave) {
     $("#centerContent").addClass("wide" + val);
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("pageWidth", config.pageWidth);
 }
 
 export function setCaretStyle(caretStyle, nosave) {
@@ -631,6 +674,7 @@ export function setCaretStyle(caretStyle, nosave) {
     $("#caret").addClass("banana");
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("caretStyle", config.caretStyle);
 }
 
 export function setPaceCaretStyle(caretStyle, nosave) {
@@ -660,6 +704,7 @@ export function setPaceCaretStyle(caretStyle, nosave) {
     $("#paceCaret").addClass("banana");
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("paceCaretStyle", config.paceCaretStyle);
 }
 
 export function setShowTimerProgress(timer, nosave) {
@@ -673,6 +718,7 @@ export function setShowTimerProgress(timer, nosave) {
     TimerProgress.hide();
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("showTimerProgress", config.showTimerProgress);
 }
 
 export function setShowLiveWpm(live, nosave) {
@@ -687,6 +733,7 @@ export function setShowLiveWpm(live, nosave) {
   }
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("showLiveWpm", config.showLiveWpm);
 }
 
 export function setShowLiveAcc(live, nosave) {
@@ -700,6 +747,7 @@ export function setShowLiveAcc(live, nosave) {
     LiveAcc.hide();
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("showLiveAcc", config.showLiveAcc);
 }
 
 export function setShowLiveBurst(live, nosave) {
@@ -713,6 +761,7 @@ export function setShowLiveBurst(live, nosave) {
     LiveAcc.hide();
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("showLiveBurst", config.showLiveBurst);
 }
 
 export function setHighlightMode(mode, nosave) {
@@ -739,6 +788,7 @@ export function setHighlightMode(mode, nosave) {
   } catch {}
   // }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("highlightMode", config.highlightMode);
 }
 
 export function setHideExtraLetters(val, nosave) {
@@ -747,6 +797,7 @@ export function setHideExtraLetters(val, nosave) {
   }
   config.hideExtraLetters = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("hideExtraLetters", config.hideExtraLetters);
 }
 
 export function setTimerStyle(style, nosave) {
@@ -756,6 +807,7 @@ export function setTimerStyle(style, nosave) {
   config.timerStyle = style;
   TimerProgress.updateStyle();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("timerStyle", config.timerStyle);
 }
 
 export function setTimerColor(color, nosave) {
@@ -798,6 +850,7 @@ export function setTimerColor(color, nosave) {
   }
 
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("timerColor", config.timerColor);
 }
 export function setTimerOpacity(opacity, nosave) {
   if (opacity == null || opacity == undefined) {
@@ -805,6 +858,7 @@ export function setTimerOpacity(opacity, nosave) {
   }
   config.timerOpacity = opacity;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("timerOpacity", config.timerOpacity);
 }
 
 //key tips
@@ -816,6 +870,7 @@ export function setKeyTips(keyTips, nosave) {
     $("#bottom .keyTips").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("showKeyTips", config.showKeyTips);
 }
 
 //mode
@@ -835,6 +890,7 @@ export function setTimeConfig(time, nosave) {
   );
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("time", config.time);
 }
 
 //quote length
@@ -868,6 +924,7 @@ export function setQuoteLength(len, nosave, multipleMode) {
     ).addClass("active");
   });
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("quoteLength", config.quoteLength);
 }
 
 export function setWordCount(wordCount, nosave) {
@@ -891,28 +948,32 @@ export function setWordCount(wordCount, nosave) {
   );
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("words", config.words);
 }
 
 //caret
 export function setSmoothCaret(mode, nosave) {
   config.smoothCaret = mode;
-  if (!nosave) saveToLocalStorage();
   if (mode) {
     $("#caret").css("animation-name", "caretFlashSmooth");
   } else {
     $("#caret").css("animation-name", "caretFlashHard");
   }
+  if (!nosave) saveToLocalStorage();
+  dispatchEvent("smoothCaret", config.smoothCaret);
 }
 
 export function setStartGraphsAtZero(mode, nosave) {
   config.startGraphsAtZero = mode;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("startGraphsAtZero", config.startGraphsAtZero);
 }
 
 //linescroll
 export function setSmoothLineScroll(mode, nosave) {
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("smoothLineScroll", config.smoothLineScroll);
 }
 
 //quick tab
@@ -930,6 +991,7 @@ export function setQuickTabMode(mode, nosave) {
     <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("quickTab", config.quickTab);
 }
 
 export function previewFontFamily(font) {
@@ -969,6 +1031,7 @@ export function setFontFamily(font, nosave) {
   );
   ChartController.setDefaultFontFamily(font);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("fontFamily", config.fontFamily);
 }
 
 //freedom
@@ -981,6 +1044,7 @@ export function setFreedomMode(freedom, nosave) {
     config.confidenceMode = "off";
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("freedomMode", config.freedomMode);
 }
 
 export function setConfidenceMode(cm, nosave) {
@@ -995,6 +1059,7 @@ export function setConfidenceMode(cm, nosave) {
 
   TestUI.updateModesNotice();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("confidenceMode", config.confidenceMode);
 }
 
 export function setIndicateTypos(value, nosave) {
@@ -1003,6 +1068,7 @@ export function setIndicateTypos(value, nosave) {
   }
   config.indicateTypos = value;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("indicateTypos", config.indicateTypos);
 }
 
 export function setCustomTheme(boolean, nosave) {
@@ -1013,6 +1079,7 @@ export function setCustomTheme(boolean, nosave) {
     ThemeController.set(config.theme);
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("customTheme", config.customTheme);
 }
 
 export function setTheme(name, nosave) {
@@ -1021,6 +1088,7 @@ export function setTheme(name, nosave) {
   ThemeController.clearPreview();
   ThemeController.set(config.theme);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("theme", config.theme);
 }
 
 function setThemes(theme, customState, nosave) {
@@ -1044,6 +1112,7 @@ export function setRandomTheme(val, nosave) {
   }
   config.randomTheme = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("randomTheme", config.randomTheme);
 }
 
 export function setBritishEnglish(val, nosave) {
@@ -1052,6 +1121,7 @@ export function setBritishEnglish(val, nosave) {
   }
   config.britishEnglish = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("britishEnglish", config.britishEnglish);
 }
 
 export function setLazyMode(val, nosave) {
@@ -1060,6 +1130,7 @@ export function setLazyMode(val, nosave) {
   }
   config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("lazyMode", config.lazyMode);
 }
 
 export function setCustomThemeColors(colors, nosave) {
@@ -1069,6 +1140,7 @@ export function setCustomThemeColors(colors, nosave) {
     // applyCustomThemeColors();
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("customThemeColors", config.customThemeColors);
 }
 
 export function setLanguage(language, nosave) {
@@ -1087,6 +1159,7 @@ export function setLanguage(language, nosave) {
     console.log("Analytics unavailable");
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("language", config.language);
 }
 
 export function setMonkey(monkey, nosave) {
@@ -1100,6 +1173,7 @@ export function setMonkey(monkey, nosave) {
     $("#monkey").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("monkey", config.monkey);
 }
 
 export function setKeymapMode(mode, nosave) {
@@ -1112,6 +1186,7 @@ export function setKeymapMode(mode, nosave) {
   ChallengeContoller.clearActive();
   if (!nosave) TestLogic.restart(false, nosave);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("keymapMode", config.keymapMode);
 }
 
 export function setKeymapLegendStyle(style, nosave) {
@@ -1140,6 +1215,7 @@ export function setKeymapLegendStyle(style, nosave) {
   $(".keymapLegendStyle").addClass(style);
   config.keymapLegendStyle = style;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("keymapLegendStyle", config.keymapLegendStyle);
 }
 
 export function setKeymapStyle(style, nosave) {
@@ -1152,6 +1228,7 @@ export function setKeymapStyle(style, nosave) {
   $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("keymapStyle", config.keymapStyle);
 }
 
 export function setKeymapLayout(layout, nosave) {
@@ -1162,6 +1239,7 @@ export function setKeymapLayout(layout, nosave) {
   ChallengeContoller.clearActive();
   Keymap.refreshKeys(layout, setKeymapLayout);
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("keymapLayout", config.keymapLayout);
 }
 
 export function setLayout(layout, nosave) {
@@ -1175,6 +1253,7 @@ export function setLayout(layout, nosave) {
     Keymap.refreshKeys(config.keymapLayout, setKeymapLayout);
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("layout", config.layout);
 }
 
 // export function setSavedLayout(layout, nosave) {
@@ -1226,16 +1305,13 @@ export function setFontSize(fontSize, nosave) {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
-  } else if (fontSize == 35) {
-    $("#words").addClass("size34");
-    $("#caret, #paceCaret").addClass("size35");
-    $("#miniTimerAndLiveWpm").addClass("size35");
   } else if (fontSize == 4) {
     $("#words").addClass("size4");
     $("#caret, #paceCaret").addClass("size4");
     $("#miniTimerAndLiveWpm").addClass("size4");
   }
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("fontSize", config.fontSize);
 }
 
 export function setCustomBackground(value, nosave) {
@@ -1256,6 +1332,7 @@ export function setCustomBackground(value, nosave) {
     )[0].defaultValue = value;
     ThemeController.applyCustomBackground();
     if (!nosave) saveToLocalStorage();
+    dispatchEvent("customBackground", config.customBackground);
   } else {
     Notifications.add("Invalid custom background URL", 0);
   }
@@ -1290,6 +1367,7 @@ export function setCustomLayoutfluid(value, nosave) {
     value.replace(/#/g, " ")
   );
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("customLayoutFluid", config.customLayoutFluid);
 }
 
 export function setCustomBackgroundSize(value, nosave) {
@@ -1299,6 +1377,7 @@ export function setCustomBackgroundSize(value, nosave) {
   config.customBackgroundSize = value;
   ThemeController.applyCustomBackgroundSize();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("customBackgroundSize", config.customBackgroundSize);
 }
 
 export function setCustomBackgroundFilter(array, nosave) {
@@ -1306,12 +1385,14 @@ export function setCustomBackgroundFilter(array, nosave) {
   BackgroundFilter.loadConfig(config.customBackgroundFilter);
   BackgroundFilter.apply();
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("customBackgroundFilter", config.customBackgroundFilter);
 }
 
 export function setMonkeyPowerLevel(level, nosave) {
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
   config.monkeyPowerLevel = level;
   if (!nosave) saveToLocalStorage();
+  dispatchEvent("monkeyPowerLevel", config.monkeyPowerLevel);
 }
 
 export function setBurstHeatmap(value, nosave) {
@@ -1323,6 +1404,7 @@ export function setBurstHeatmap(value, nosave) {
     TestUI.applyBurstHeatmap();
     saveToLocalStorage();
   }
+  dispatchEvent("burstHeatmap", config.burstHeatmap);
 }
 
 export function apply(configObj) {
