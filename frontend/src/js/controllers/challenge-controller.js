@@ -7,7 +7,7 @@ import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as UI from "../ui";
 import * as TestUI from "../test/test-ui";
-import * as ActivePage from "./../elements/active-page";
+import * as ActivePage from "../states/active-page";
 
 export let active = null;
 let challengeLoading = false;

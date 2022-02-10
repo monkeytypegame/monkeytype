@@ -25,7 +25,7 @@ import * as Replay from "../test/replay.js";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as Leaderboards from "../elements/leaderboards";
-import * as ActivePage from "./../elements/active-page";
+import * as ActivePage from "./../states/active-page";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;

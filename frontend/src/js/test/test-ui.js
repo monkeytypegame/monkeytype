@@ -20,7 +20,7 @@ import * as TestUI from "./test-ui";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as UI from "../ui";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
 
 export let currentWordElementIndex = 0;

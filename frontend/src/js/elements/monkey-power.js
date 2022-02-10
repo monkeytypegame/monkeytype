@@ -1,5 +1,5 @@
 import * as ThemeColors from "./theme-colors";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 import * as UI from "../ui";
 import Config from "../config";
 

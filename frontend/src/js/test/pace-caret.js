@@ -2,7 +2,7 @@ import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 export let settings = null;
 

@@ -16,7 +16,7 @@ import * as Leaderboards from "./elements/leaderboards";
 import * as Funbox from "./test/funbox";
 import * as About from "./pages/about";
 import * as Misc from "./misc";
-import * as ActivePage from "./elements/active-page";
+import * as ActivePage from "./states/active-page";
 
 export let pageTransition = true;
 

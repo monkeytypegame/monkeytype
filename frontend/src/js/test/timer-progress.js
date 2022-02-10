@@ -3,7 +3,7 @@ import * as CustomText from "./custom-text";
 import * as Misc from "../misc";
 import * as TestLogic from "./test-logic";
 import * as TestTimer from "./test-timer";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;

@@ -3,7 +3,7 @@ import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
 import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;

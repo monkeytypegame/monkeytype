@@ -38,7 +38,7 @@ import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "./../elements/monkey-power";
-import * as ActivePage from "./../elements/active-page";
+import * as ActivePage from "../states/active-page";
 
 const objecthash = require("node-object-hash")().hash;
 

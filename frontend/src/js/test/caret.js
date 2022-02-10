@@ -1,7 +1,7 @@
 import * as Misc from "../misc";
 import Config from "../config";
 import * as TestLogic from "./test-logic";
-import * as SlowTimer from "./../elements/slow-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 export let caretAnimating = true;
 
