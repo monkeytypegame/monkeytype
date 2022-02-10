@@ -268,3 +268,11 @@ $(document).on("click", ".keymap .r5 #KeySpace", (e) => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   Commandline.show();
 });
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
+      refreshKeys(Config.keymapLayout);
+    if (eventKey === "keymapLayout") refreshKeys(eventValue);
+  });
+});

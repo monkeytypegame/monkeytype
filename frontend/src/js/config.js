@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import * as Keymap from "./elements/keymap";
 import * as LanguagePicker from "./settings/language-picker";
 import * as TestLogic from "./test/test-logic";
 import * as PaceCaret from "./test/pace-caret";
@@ -1150,7 +1149,6 @@ export function setKeymapLayout(layout, nosave) {
   }
   config.keymapLayout = layout;
   ChallengeContoller.clearActive();
-  Keymap.refreshKeys(layout, setKeymapLayout);
   if (!nosave) saveToLocalStorage();
   dispatchEvent("keymapLayout", config.keymapLayout);
 }
@@ -1161,9 +1159,6 @@ export function setLayout(layout, nosave) {
   }
   config.layout = layout;
   ChallengeContoller.clearActive();
-  if (config.keymapLayout === "overrideSync") {
-    Keymap.refreshKeys(config.keymapLayout, setKeymapLayout);
-  }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("layout", config.layout);
 }
