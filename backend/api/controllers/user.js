@@ -186,11 +186,6 @@ class UserController {
   static async addTag(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tagName } = req.body;
-    if (!isTagPresetNameValid(tagName))
-      throw new MonkeyError(
-        400,
-        "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -"
-      );
     let tag = await UsersDAO.addTag(uid, tagName);
     return new MonkeyResponse("Tag updated", tag);
   }
@@ -205,11 +200,6 @@ class UserController {
   static async editTag(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { tagid, newname } = req.body;
-    if (!isTagPresetNameValid(newname))
-      throw new MonkeyError(
-        400,
-        "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -"
-      );
     await UsersDAO.editTag(uid, tagid, newname);
     return new MonkeyResponse("Tag updated");
   }

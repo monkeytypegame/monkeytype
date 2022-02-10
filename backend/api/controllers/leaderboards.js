@@ -22,11 +22,7 @@ class LeaderboardsController {
         : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
     });
 
-    return new MonkeyResponse(
-      200,
-      "Leaderboard retrieved",
-      normalizedLeaderboard
-    );
+    return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
   }
 
   static async getRank(req, res) {
