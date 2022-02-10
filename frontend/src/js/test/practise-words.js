@@ -163,3 +163,9 @@ $("#practiseWordsPopup .button.both").on("focusout", (e) => {
   e.preventDefault();
   $("#practiseWordsPopup .missed").focus();
 });
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey) => {
+    if (eventKey === "mode") resetBefore();
+  });
+});

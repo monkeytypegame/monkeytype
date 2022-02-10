@@ -6,7 +6,6 @@ import * as LanguagePicker from "./settings/language-picker";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
 import * as TTS from "./test/tts";
-import * as PractiseWords from "./test/practise-words";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -208,7 +207,6 @@ export function setMode(mode, nosave) {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
   }
-  PractiseWords.resetBefore();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("mode", previous, config.mode);
 }
