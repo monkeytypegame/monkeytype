@@ -1,7 +1,6 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
-import * as TimerProgress from "./test/timer-progress";
 import * as LiveWpm from "./test/live-wpm";
 import * as LiveAcc from "./test/live-acc";
 import * as LiveBurst from "./test/live-burst";
@@ -680,11 +679,6 @@ export function setShowTimerProgress(timer, nosave) {
     timer = false;
   }
   config.showTimerProgress = timer;
-  if (config.showTimerProgress && TestLogic.active) {
-    TimerProgress.show();
-  } else {
-    TimerProgress.hide();
-  }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("showTimerProgress", config.showTimerProgress);
 }
@@ -770,7 +764,6 @@ export function setTimerStyle(style, nosave) {
     style = "mini";
   }
   config.timerStyle = style;
-  TimerProgress.updateStyle();
   if (!nosave) saveToLocalStorage();
   dispatchEvent("timerStyle", config.timerStyle);
 }

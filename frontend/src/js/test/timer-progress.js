@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as Misc from "../misc";
 import * as TestLogic from "./test-logic";
@@ -189,3 +189,16 @@ export function updateStyle() {
     show();
   }, 125);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "showTimerProgress") {
+      if (eventValue === true && TestLogic.active) {
+        show();
+      } else {
+        hide();
+      }
+    }
+    if (eventKey === "timerStyle") updateStyle();
+  });
+});
