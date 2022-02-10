@@ -1,8 +1,6 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
-import * as CommandlineLists from "./commandline-lists";
-import * as Commandline from "./commandline";
 import * as SlowTimer from "../states/slow-timer";
 
 export function highlightKey(currentKey) {
@@ -263,11 +261,6 @@ export function refreshKeys(layout) {
     UpdateConfig.setKeymapLayout("qwerty", true);
   }
 }
-
-$(document).on("click", ".keymap .r5 #KeySpace", (e) => {
-  CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
-  Commandline.show();
-});
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
