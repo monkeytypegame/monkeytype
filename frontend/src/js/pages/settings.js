@@ -373,23 +373,18 @@ export function reset() {
 }
 
 export async function fillSettingsPage() {
-  await initGroups();
-  await UpdateConfig.loadPromise;
-  ThemePicker.refreshButtons();
-
   let languageEl = $(".pageSettings .section.language select").empty();
-  Misc.getLanguageGroups().then((groups) => {
-    groups.forEach((group) => {
-      let append = `<optgroup label="${group.name}">`;
-      group.languages.forEach((language) => {
-        append += `<option value="${language}">${language.replace(
-          /_/g,
-          " "
-        )}</option>`;
-      });
-      append += `</optgroup>`;
-      languageEl.append(append);
+  const groups = await Misc.getLanguageGroups();
+  groups.forEach((group) => {
+    let append = `<optgroup label="${group.name}">`;
+    group.languages.forEach((language) => {
+      append += `<option value="${language}">${language.replace(
+        /_/g,
+        " "
+      )}</option>`;
     });
+    append += `</optgroup>`;
+    languageEl.append(append);
   });
   languageEl.select2();
 
@@ -478,6 +473,10 @@ export async function fillSettingsPage() {
   $(".pageSettings .section.customLayoutfluid input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
   );
+
+  await initGroups();
+  await UpdateConfig.loadPromise;
+  ThemePicker.refreshButtons();
 }
 
 // export let settingsFillPromise = fillSettingsPage();
