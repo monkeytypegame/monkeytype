@@ -1,7 +1,6 @@
 import * as DB from "./db";
 import * as Sound from "./controllers/sound-controller";
 import * as OutOfFocus from "./test/out-of-focus";
-import * as Funbox from "./test/funbox";
 import * as Notifications from "./elements/notifications";
 import * as ThemeController from "./controllers/theme-controller";
 import * as Keymap from "./elements/keymap";
@@ -212,13 +211,6 @@ export function setMode(mode, nosave) {
   let previous = config.mode;
   config.mode = mode;
   if (config.mode == "custom") {
-    if (
-      config.funbox === "58008" ||
-      config.funbox === "gibberish" ||
-      config.funbox === "ascii"
-    ) {
-      Funbox.setFunbox("none");
-    }
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode == "quote") {
