@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as Misc from "../misc";
 
 let voice;
@@ -25,3 +25,16 @@ export function speak(text) {
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(voice);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "funbox") {
+      if (eventValue === "none") {
+        clear();
+      } else if (eventValue === "tts") {
+        init();
+      }
+    }
+    if (eventKey === "language" && Config.funbox === "tts") setLanguage();
+  });
+});

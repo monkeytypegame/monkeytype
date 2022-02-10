@@ -4,7 +4,6 @@ import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import * as BackgroundFilter from "./elements/custom-background-filter";
 import LayoutList from "./test/layouts";
-import * as TTS from "./test/tts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -262,11 +261,6 @@ export function setFavThemes(themes, nosave) {
 export function setFunbox(funbox, nosave) {
   let val = funbox ? funbox : "none";
   config.funbox = val;
-  if (val === "none") {
-    TTS.clear();
-  } else if (val === "tts") {
-    TTS.init();
-  }
   if (!nosave) saveToLocalStorage();
   dispatchEvent("funbox", config.funbox);
 }
@@ -1032,9 +1026,6 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
-  if (config.funbox === "tts") {
-    TTS.setLanguage();
-  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,
