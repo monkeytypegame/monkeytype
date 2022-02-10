@@ -1,4 +1,4 @@
-import * as UI from "./ui";
+import * as UI from "../ui";
 
 export function loading(truefalse) {
   if (truefalse) {

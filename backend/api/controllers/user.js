@@ -14,6 +14,7 @@ class UserController {
   static async createNewUser(req, res) {
     const { name } = req.body;
     const { email, uid } = req.ctx.decodedToken;
+
     await UsersDAO.addUser(name, email, uid);
     Logger.log("user_created", `${name} ${email}`, uid);
     return new MonkeyResponse("User created");
@@ -22,6 +23,7 @@ class UserController {
   static async deleteUser(req, res) {
     const { uid } = req.ctx.decodedToken;
     const userInfo = await UsersDAO.getUser(uid);
+
     await UsersDAO.deleteUser(uid);
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
     return new MonkeyResponse("User deleted");
@@ -47,18 +49,22 @@ class UserController {
 
   static async clearPb(req, res) {
     const { uid } = req.ctx.decodedToken;
+
     await UsersDAO.clearPb(uid);
     Logger.log("user_cleared_pbs", "", uid);
     return new MonkeyResponse("User's PB cleared");
   }
 
   static async checkName(req, res) {
-    const { name } = req.body;
-    if (!isUsernameValid(name))
+    const { name } = req.params;
+
+    if (!isUsernameValid(name)) {
       throw new MonkeyError(
         400,
         "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
       );
+    }
+
     const available = await UsersDAO.isNameAvailable(name);
     if (!available) throw new MonkeyError(400, "Username unavailable");
     return new MonkeyResponse("Name validated");
@@ -67,6 +73,7 @@ class UserController {
   static async updateEmail(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { newEmail } = req.body;
+
     try {
       await UsersDAO.updateEmail(uid, newEmail);
     } catch (e) {
@@ -76,8 +83,9 @@ class UserController {
     return new MonkeyResponse("Email updated");
   }
 
-  static async getUser(req, res) {
+  static async getUser(req, _res) {
     const { email, uid } = req.ctx.decodedToken;
+
     let userInfo;
     try {
       userInfo = await UsersDAO.getUser(uid);
@@ -121,7 +129,7 @@ class UserController {
     return new MonkeyResponse("User retrieved", userInfo);
   }
 
-  static async linkDiscord(req, res) {
+  static async linkDiscord(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     let requser;
@@ -168,6 +176,7 @@ class UserController {
 
   static async unlinkDiscord(req, res) {
     const { uid } = req.ctx.decodedToken;
+
     let userInfo;
     try {
       userInfo = await UsersDAO.getUser(uid);
@@ -183,7 +192,7 @@ class UserController {
     return new MonkeyResponse("Discord account unlinked ");
   }
 
-  static async addTag(req, res) {
+  static async addTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagName } = req.body;
     let tag = await UsersDAO.addTag(uid, tagName);
@@ -211,7 +220,7 @@ class UserController {
     return new MonkeyResponse("Tag deleted");
   }
 
-  static async getTags(req, res) {
+  static async getTags(req, _res) {
     const { uid } = req.ctx.decodedToken;
     let tags = await UsersDAO.getTags(uid);
     if (tags == undefined) tags = [];
@@ -221,6 +230,7 @@ class UserController {
   static async updateLbMemory(req, res) {
     const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
+
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
     return new MonkeyResponse("Memory updated");
   }

@@ -1,8 +1,8 @@
-import * as Misc from "./misc";
-import * as Notifications from "./notifications";
-import axiosInstance from "./axios-instance";
-import Config from "./config";
-import * as Loader from "./loader";
+import * as Misc from "../misc";
+import * as Notifications from "../elements/notifications";
+import axiosInstance from "../axios-instance";
+import Config from "../config";
+import * as Loader from "../elements/loader";
 
 const CAPTCHA_ID = 1;
 

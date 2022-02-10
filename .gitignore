@@ -80,6 +80,7 @@ serviceAccountKey*.json
 
 #generated files
 dist/
+public/
 
 #cloudflare y
 .cloudflareKey.txt

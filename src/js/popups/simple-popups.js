@@ -1,10 +1,10 @@
-import * as Loader from "./loader";
-import * as Notifications from "./notifications";
-import * as AccountController from "./account-controller";
-import * as DB from "./db";
-import * as Settings from "./settings";
-import axiosInstance from "./axios-instance";
-import * as UpdateConfig from "./config";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as AccountController from "../controllers/account-controller";
+import * as DB from "../db";
+import * as Settings from "../pages/settings";
+import axiosInstance from "../axios-instance";
+import * as UpdateConfig from "../config";
 
 export let list = {};
 class SimplePopup {
@@ -64,30 +64,40 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-        <input type="number" min="1" val="${input.initVal}" placeholder="${
-            input.placeholder
-          }" class="${input.hidden ? "hidden" : ""}" ${
-            input.hidden ? "" : "required"
-          } autocomplete="off">
-        `);
+            <input
+              type="number"
+              min="1"
+              val="${input.initVal}"
+              placeholder="${input.placeholder}"
+              class="${input.hidden ? "hidden" : ""}"
+              ${input.hidden ? "" : "required"}
+              autocomplete="off"
+            >
+          `);
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
           if (input.type) {
             el.find(".inputs").append(`
-            <input type="${input.type}" val="${input.initVal}" placeholder="${
-              input.placeholder
-            }" class="${input.hidden ? "hidden" : ""}" ${
-              input.hidden ? "" : "required"
-            } autocomplete="off">
+              <input
+                type="${input.type}"
+                val="${input.initVal}"
+                placeholder="${input.placeholder}"
+                class="${input.hidden ? "hidden" : ""}"
+                ${input.hidden ? "" : "required"}
+                autocomplete="off"
+              >
             `);
           } else {
             el.find(".inputs").append(`
-            <input type="text" val="${input.initVal}" placeholder="${
-              input.placeholder
-            }" class="${input.hidden ? "hidden" : ""}" ${
-              input.hidden ? "" : "required"
-            } autocomplete="off">
+              <input
+                type="text"
+                val="${input.initVal}"
+                placeholder="${input.placeholder}"
+                class="${input.hidden ? "hidden" : ""}"
+                ${input.hidden ? "" : "required"}
+                autocomplete="off"
+              >
             `);
           }
         });
@@ -204,7 +214,7 @@ list.updateEmail = new SimplePopup(
       Loader.show();
       let response;
       try {
-        response = await axiosInstance.post("/user/updateEmail", {
+        response = await axiosInstance.patch("/user/email", {
           uid: user.uid,
           previousEmail: user.email,
           newEmail: email,
@@ -274,9 +284,7 @@ list.updateName = new SimplePopup(
 
       let response;
       try {
-        response = await axiosInstance.post("/user/checkName", {
-          name: newName,
-        });
+        response = await axiosInstance.get(`/user/checkName/${newName}`);
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;
@@ -289,7 +297,7 @@ list.updateName = new SimplePopup(
         return;
       }
       try {
-        response = await axiosInstance.post("/user/updateName", {
+        response = await axiosInstance.patch("/user/name", {
           name: newName,
         });
       } catch (e) {
@@ -458,7 +466,7 @@ list.deleteAccount = new SimplePopup(
       Notifications.add("Deleting stats...", 0);
       let response;
       try {
-        response = await axiosInstance.post("/user/delete");
+        response = await axiosInstance.delete("/user");
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;
@@ -519,9 +527,7 @@ list.clearTagPb = new SimplePopup(
     let tagid = eval("this.parameters[0]");
     Loader.show();
     axiosInstance
-      .post("/user/tags/clearPb", {
-        tagid: tagid,
-      })
+      .delete(`/user/tags/${tagid}/clearPb`)
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
@@ -595,7 +601,7 @@ list.resetPersonalBests = new SimplePopup(
 
       let response;
       try {
-        response = await axiosInstance.post("/user/clearPb");
+        response = await axiosInstance.delete("/user/personalBests");
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;
