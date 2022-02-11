@@ -920,6 +920,9 @@ $(".quickNav .links a").on("click", (e) => {
 });
 
 let configEventDisabled = false;
+export function setEventDisabled(value) {
+  configEventDisabled = value;
+}
 ConfigEvent.subscribe(() => {
   if (configEventDisabled) return;
   if (ActivePage.get() === "settings") update();

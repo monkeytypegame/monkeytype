@@ -285,7 +285,9 @@ export function updatePresetCommands() {
         id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
+          Settings.setEventDisabled(true);
           PresetController.apply(preset._id);
+          Settings.setEventDisabled(false);
           Settings.update();
           ModesNotice.update();
         },
