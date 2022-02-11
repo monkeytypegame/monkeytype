@@ -8,8 +8,8 @@ var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
 const through2 = require("through2");
 const { webpack } = require("webpack");
-const webpackStream = require("webpack-stream");
-const webpackConfig = require("./webpack.config.js");
+const webpackDevConfig = require("./webpack.config.js");
+const webpackProdConfig = require("./webpack-production.config.js");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = "../.eslintrc.json";
@@ -33,15 +33,31 @@ task("lint-json", function () {
 });
 
 task("webpack", async function () {
-  return src("./src/js/index.js")
-    .pipe(webpackStream(webpackConfig), webpack)
-    .pipe(dest("./public/js"));
+  return new Promise((resolve, reject) => {
+    webpack(webpackDevConfig, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.hasErrors()) {
+        return reject(new Error(stats.compilation.errors.join("\n")));
+      }
+      resolve();
+    });
+  });
 });
 
 task("webpack-production", async function () {
-  return src("./src/js/index.js")
-    .pipe(webpackStream({ ...webpackConfig, mode: "production" }), webpack)
-    .pipe(dest("./public/js"));
+  return new Promise((resolve, reject) => {
+    webpack(webpackProdConfig, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.hasErrors()) {
+        return reject(new Error(stats.compilation.errors.join("\n")));
+      }
+      resolve();
+    });
+  });
 });
 
 task("static", function () {
