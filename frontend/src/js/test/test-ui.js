@@ -296,7 +296,7 @@ export function updateWordElement(showError = !Config.blindMode) {
   let currentWord;
   wordAtIndex = document.querySelector("#words .word.active");
   currentWord = TestWords.words.getCurrent();
-  if (!currentWord) return;
+  if (!currentWord && Config.mode !== "zen") return;
 
   let ret = "";
 
