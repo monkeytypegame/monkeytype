@@ -1,10 +1,5 @@
 const path = require("path");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
-const ESLintPlugin = require("eslint-webpack-plugin");
-
-let eslintConfig = JSON.parse(
-  readFileSync(path.resolve(__dirname, "../.eslintrc.json"), "utf-8").toString()
-);
 
 let circularImportNum = 0;
 
@@ -38,16 +33,6 @@ module.exports = {
     filename: "monkeytype.js",
   },
   plugins: [
-    new ESLintPlugin({
-      failOnError: true,
-      baseConfig: eslintConfig,
-      extensions: ["js", "json"],
-      exclude: "node_modules/",
-      files: [
-        path.resolve(__dirname, "src/js/**/*.js"),
-        path.resolve(__dirname, "static/**/*.json"),
-      ],
-    }),
     // Ensure that there are no circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
