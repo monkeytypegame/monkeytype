@@ -5,9 +5,7 @@ import * as CustomText from "../test/custom-text";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
-import * as UI from "../ui";
 import * as TestUI from "../test/test-ui";
-import * as ActivePage from "../states/active-page";
 
 export let active = null;
 let challengeLoading = false;
@@ -147,9 +145,6 @@ export function verify(result) {
 
 export async function setup(challengeName) {
   challengeLoading = true;
-  if (ActivePage.get() !== "pageTest") {
-    UI.changePage("", true);
-  }
 
   let list = await Misc.getChallengeList();
   let challenge = list.filter((c) => c.name === challengeName)[0];
