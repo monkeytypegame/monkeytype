@@ -1528,7 +1528,7 @@ export function getMode2(mode) {
   } else if (mode === "zen") {
     mode2 = "zen";
   } else if (mode === "quote") {
-    mode2 = TestLogic.randomQuote.id;
+    mode2 = 1; // TODO: Confirm with mio about this TestLogic.randomQuote.id;
   }
   return mode2;
 }
