@@ -19,6 +19,7 @@ import * as Settings from "../pages/settings";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
+import * as ModesNotice from "./../elements/modes-notice";
 
 export let current = [];
 
@@ -215,7 +216,7 @@ export function updateTagCommands() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        TestUI.updateModesNotice();
+        ModesNotice.update();
         TagController.saveActiveToLocalStorage();
       },
     });
@@ -236,7 +237,7 @@ export function updateTagCommands() {
         sticky: true,
         exec: () => {
           TagController.toggle(tag._id);
-          TestUI.updateModesNotice();
+          ModesNotice.update();
 
           if (Config.paceCaret === "average") {
             PaceCaret.init();
@@ -286,7 +287,7 @@ export function updatePresetCommands() {
         exec: () => {
           PresetController.apply(preset._id);
           Settings.update();
-          TestUI.updateModesNotice();
+          ModesNotice.update();
         },
       });
     });
@@ -610,7 +611,7 @@ let commandsOppositeShiftMode = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("off");
-        TestUI.updateModesNotice();
+        ModesNotice.update();
       },
     },
     {
@@ -619,7 +620,7 @@ let commandsOppositeShiftMode = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("on");
-        TestUI.updateModesNotice();
+        ModesNotice.update();
       },
     },
     {
@@ -628,7 +629,7 @@ let commandsOppositeShiftMode = {
       configValue: "keymap",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("keymap");
-        TestUI.updateModesNotice();
+        ModesNotice.update();
       },
     },
   ],

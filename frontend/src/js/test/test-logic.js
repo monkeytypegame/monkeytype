@@ -43,6 +43,7 @@ import * as TestActive from "./../states/test-active";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
+import * as ModesNotice from "./../elements/modes-notice";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -550,7 +551,7 @@ export function restart(
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
             // ChartController.result.update();
-            TestUI.updateModesNotice();
+            ModesNotice.update();
             PageController.setTransition(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);

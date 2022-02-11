@@ -4,7 +4,6 @@ import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
-import * as PaceCaret from "./pace-caret";
 import * as CustomText from "./custom-text";
 import * as Keymap from "../elements/keymap";
 import * as Caret from "./caret";
@@ -12,30 +11,13 @@ import * as OutOfFocus from "./out-of-focus";
 import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
-import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as PageController from "./../controllers/page-controller";
 import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
-import * as TestState from "./test-state";
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
-    if (
-      [
-        "difficulty",
-        "blindMode",
-        "stopOnError",
-        "paceCaret",
-        "minWpm",
-        "minAcc",
-        "minBurst",
-        "confidenceMode",
-        "layout",
-      ].includes(eventKey)
-    ) {
-      updateModesNotice();
-    }
     if (eventKey === "flipTestColors") flipColors(eventValue);
     if (eventKey === "colorfulMode") colorful(eventValue);
     if (eventKey === "highlightMode") updateWordElement(eventValue);
@@ -562,190 +544,6 @@ export function lineJump(currentTop) {
     }
   }
   currentTestLine++;
-}
-
-export function updateModesNotice() {
-  let anim = false;
-  if ($(".pageTest #testModesNotice").text() === "") anim = true;
-
-  $(".pageTest #testModesNotice").empty();
-
-  if (TestState.isRepeated && Config.mode !== "quote") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button restart" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
-    );
-  }
-
-  if (TestWords.hasTab) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
-    );
-  }
-
-  if (ChallengeController.active) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
-    );
-  }
-
-  if (Config.mode === "zen") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
-    );
-  }
-
-  // /^[0-9a-zA-Z_.-]+$/.test(name);
-
-  if (
-    (/_\d+k$/g.test(Config.language) ||
-      /code_/g.test(Config.language) ||
-      Config.language == "english_commonly_misspelled") &&
-    Config.mode !== "quote"
-  ) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  }
-
-  if (Config.difficulty === "expert") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
-    );
-  } else if (Config.difficulty === "master") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star"></i>master</div>`
-    );
-  }
-
-  if (Config.blindMode) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button blind"><i class="fas fa-eye-slash"></i>blind</div>`
-    );
-  }
-
-  if (Config.lazyMode) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLazyMode"><i class="fas fa-couch"></i>lazy</div>`
-    );
-  }
-
-  if (
-    Config.paceCaret !== "off" ||
-    (Config.repeatedPace && TestState.isPaceRepeat)
-  ) {
-    let speed = "";
-    try {
-      speed = ` (${Math.round(PaceCaret.settings.wpm)} wpm)`;
-    } catch {}
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
-        Config.paceCaret === "average"
-          ? "average"
-          : Config.paceCaret === "pb"
-          ? "pb"
-          : "custom"
-      } pace${speed}</div>`
-    );
-  }
-
-  if (Config.minWpm !== "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinWpm"><i class="fas fa-bomb"></i>min ${Config.minWpmCustomSpeed} wpm</div>`
-    );
-  }
-
-  if (Config.minAcc !== "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinAcc"><i class="fas fa-bomb"></i>min ${Config.minAccCustom}% acc</div>`
-    );
-  }
-
-  if (Config.minBurst !== "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinBurst"><i class="fas fa-bomb"></i>min ${
-        Config.minBurstCustomSpeed
-      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
-    );
-  }
-
-  if (Config.funbox !== "none") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${Config.funbox.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  }
-
-  if (Config.confidenceMode === "on") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>confidence</div>`
-    );
-  }
-  if (Config.confidenceMode === "max") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>max confidence</div>`
-    );
-  }
-
-  if (Config.stopOnError != "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsStopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
-    );
-  }
-
-  if (Config.layout !== "default") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLayouts"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  }
-
-  if (Config.oppositeShiftMode !== "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift${
-        Config.oppositeShiftMode === "keymap" ? " (keymap)" : ""
-      }</div>`
-    );
-  }
-
-  let tagsString = "";
-  try {
-    DB.getSnapshot().tags.forEach((tag) => {
-      if (tag.active === true) {
-        tagsString += tag.name + ", ";
-      }
-    });
-
-    if (tagsString !== "") {
-      $(".pageTest #testModesNotice").append(
-        `<div class="text-button" commands="commandsTags"><i class="fas fa-tag"></i>${tagsString.substring(
-          0,
-          tagsString.length - 2
-        )}</div>`
-      );
-    }
-  } catch {}
-
-  if (anim) {
-    $(".pageTest #testModesNotice")
-      .css("transition", "none")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          $(".pageTest #testModesNotice").css("transition", ".125s");
-        }
-      );
-  }
 }
 
 export function arrangeCharactersRightToLeft() {
