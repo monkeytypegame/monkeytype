@@ -1667,6 +1667,19 @@ $("#practiseWordsPopup .button.both").click(() => {
   restart(false, false, false, true);
 });
 
+$(document).on(
+  "click",
+  "#quoteSearchPopup #quoteSearchResults .searchResult",
+  (e) => {
+    if (e.target.classList.contains("report")) {
+      return;
+    }
+    let sid = parseInt($(e.currentTarget).attr("id"));
+    QuoteSearchPopup.setSelectedId(sid);
+    if (QuoteSearchPopup.apply(sid) === true) restart();
+  }
+);
+
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
   if (eventKey === "showAllLines" && !nosave) restart();

@@ -2,7 +2,6 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
@@ -10,6 +9,10 @@ import * as DB from "../db";
 import * as TestUI from "../test/test-ui";
 
 export let selectedId = 1;
+
+export function setSelectedId(val) {
+  selectedId = val;
+}
 
 async function updateResults(searchText) {
   let quotes = await Misc.getQuotes(Config.language);
@@ -135,19 +138,22 @@ export function hide(noAnim = false, focusWords = true) {
   }
 }
 
-function apply(val) {
+export function apply(val) {
   if (isNaN(val)) {
     val = document.getElementById("searchBox").value;
   }
+  let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setQuoteLength(-2, false);
     selectedId = val;
     ManualRestart.set();
-    TestLogic.restart();
+    ret = true;
   } else {
     Notifications.add("Quote ID must be at least 1", 0);
+    ret = false;
   }
   hide();
+  return ret;
 }
 
 $("#quoteSearchPopup .searchBox").keydown((e) => {
@@ -167,18 +173,6 @@ $("#quoteSearchPopupWrapper").click((e) => {
     hide();
   }
 });
-
-$(document).on(
-  "click",
-  "#quoteSearchPopup #quoteSearchResults .searchResult",
-  (e) => {
-    if (e.target.classList.contains("report")) {
-      return;
-    }
-    selectedId = parseInt($(e.currentTarget).attr("id"));
-    apply(selectedId);
-  }
-);
 
 $(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", (e) => {
   hide(true);
