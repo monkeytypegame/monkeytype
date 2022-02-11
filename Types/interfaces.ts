@@ -103,11 +103,11 @@ export declare type MonkeyPowerLevel =
 
 export declare type MinimumBurst = "off" | "fixed" | "flex";
 
-export declare type FunboxJSONType = "script" | "style";
+export declare type FunboxObjectType = "script" | "style";
 
-export declare interface FunboxJSON {
+export declare interface FunboxObject {
   name: string;
-  type: FunboxJSONType;
+  type: FunboxObjectType;
   info: string;
 }
 

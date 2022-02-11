@@ -12,7 +12,7 @@ import {
   TimeModes,
   WordsModes,
   Mode,
-  FunboxJSON,
+  FunboxObject,
 } from "../../../../Types/interfaces";
 
 export const defaultResultFilters = {
@@ -485,8 +485,8 @@ Misc.getLanguageList().then((languages: string[]) => {
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
 ).append(`<div class="button" filter="none">none</div>`);
-// TODO remove FunboxJSON
-Misc.getFunboxList().then((funboxModes: FunboxJSON[]) => {
+// TODO remove FunboxObject
+Misc.getFunboxList().then((funboxModes: FunboxObject[]) => {
   funboxModes.forEach((funbox) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
