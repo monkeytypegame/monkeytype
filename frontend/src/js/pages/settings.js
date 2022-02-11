@@ -12,7 +12,6 @@ import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
-import * as AccountController from "../controllers/account-controller";
 import Page from "./page";
 
 export let groups = {};
@@ -860,17 +859,6 @@ $("#shareCustomThemeButton").click((e) => {
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group"));
-});
-
-$(".pageSettings #addGoogleAuth").on("click", async (e) => {
-  await AccountController.addGoogleAuth();
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
-});
-
-$(".pageSettings #removeGoogleAuth").on("click", (e) => {
-  AccountController.removeGoogleAuth();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(

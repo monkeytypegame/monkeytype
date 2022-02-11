@@ -552,3 +552,14 @@ $(".pageLogin .register .button").click((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
   signUp();
 });
+
+$(".pageSettings #addGoogleAuth").on("click", async (e) => {
+  await addGoogleAuth();
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+});
+
+$(".pageSettings #removeGoogleAuth").on("click", (e) => {
+  removeGoogleAuth();
+});
