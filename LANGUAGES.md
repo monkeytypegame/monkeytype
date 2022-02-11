@@ -4,12 +4,12 @@
 - [Creating Languages](#creating-langauges)
 
 ### Forking the Repository
-First you will have ot cpoy the repostiriy also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+First you will have to copy the repostiriy also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
 
 <img width="1552" alt="Screen Shot 2022-01-12 at 11 51 49 AM" src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
 ## Creating Langauges
-Once you have forked the repository you can now add your langauge. (If you haven't already forked the repository yet efer to [here](#forking-the-repository).) Create a file in ```./frontend/static/languages/```. Name it the whatever language you are adding and add the amount of words at the end. It should look something like this: ```language_1k.json```. The inside of the file should look like this:
+Once you have forked the repository you can now add your langauge. (If you haven't already forked the repository, refer to this [section](#forking-the-repository).) Create a file in ```./frontend/static/languages/```. Create a json file with the language name and the amount of words. e.g ```language_1k.json```. It should look something like this: ```language_1k.json```. The inside of the file should look like this:
 ```
 {
   "name": "language",
@@ -20,7 +20,7 @@ Once you have forked the repository you can now add your langauge. (If you haven
   ]
 }
 ```
-(I recommend that you familiarize yourself with JSON before implementing your langauge in Monkeytype.) For the name varible put the name of your language. Left to right indicates how the language is written. If it is written left to right then put ```true``` otherwise put false. For bcp47 put your languages IETF language tag. (For more information about the IETF language tag refer to [here]("https://en.wikipedia.org/wiki/IETF_language_tag").) But you aren't done just yet. You need to add your language to the ```_groups.json``` and ```_list.json``` files. 
+(It is recommended that you familiarize yourselves with JSON before adding a language.) For the name varible put the name of your language. Left to right indicates how the language is written. If it is written left to right then put ```true``` otherwise put false. For bcp47 put your languages IETF language tag. (For more information about the IETF language tag refer to [here]("https://en.wikipedia.org/wiki/IETF_language_tag").) But you aren't done just yet. You need to add your language to the ```_groups.json``` and ```_list.json``` files. 
 Add the name of the language to the ```_groups.json``` file like so:
 ```
 {
