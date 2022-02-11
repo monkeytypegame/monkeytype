@@ -45,6 +45,7 @@ import * as TestState from "./test-state";
 import * as ModesNotice from "./../elements/modes-notice";
 import * as PageTransition from "./../states/page-transition";
 import * as ConfigEvent from "./../observables/config-event";
+import * as TimerEvent from "./../observables/timer-event";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -1653,5 +1654,10 @@ $(document).ready(() => {
     if (eventKey === "difficulty" && !nosave) restart(false, nosave);
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+  });
+
+  TimerEvent.subscribe((eventKey, eventValue) => {
+    if (eventKey === "fail") fail(eventValue);
+    if (eventKey === "finish") finish();
   });
 });
