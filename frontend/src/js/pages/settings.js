@@ -9,7 +9,6 @@ import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as SimplePopups from "../popups/simple-popups";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
@@ -450,18 +449,15 @@ export async function fillSettingsPage() {
         }</div>`
       );
     });
-    $(
+
+    fontsEl.append(
       isCustomFont
-        ? `<div class="language button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
             /_/g,
             " "
           )})</div>`
-        : '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-    )
-      .on("click", () => {
-        SimplePopups.list.applyCustomFont.show([]);
-      })
-      .appendTo(fontsEl);
+        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+    );
   });
 
   $(".pageSettings .section.customBackgroundSize input").val(
@@ -784,12 +780,6 @@ $(document).on(
   }
 );
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
-  (e) => {
-    SimplePopups.list.unlinkDiscord.show();
-  }
-);
-
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
@@ -820,10 +810,6 @@ $(document).on(
     PresetController.apply(presetid);
   }
 );
-
-$("#resetSettingsButton").click((e) => {
-  SimplePopups.list.resetSettings.show();
-});
 
 $("#importSettingsButton").click((e) => {
   ImportExportSettingsPopup.show("import");
@@ -868,26 +854,6 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group"));
 });
 
-$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
-  SimplePopups.list.resetPersonalBests.show();
-});
-
-$(".pageSettings #updateAccountName").on("click", (e) => {
-  SimplePopups.list.updateName.show();
-});
-
-$(".pageSettings #addPasswordAuth").on("click", (e) => {
-  SimplePopups.list.addPasswordAuth.show();
-});
-
-$(".pageSettings #emailPasswordAuth").on("click", (e) => {
-  SimplePopups.list.updateEmail.show();
-});
-
-$(".pageSettings #passPasswordAuth").on("click", (e) => {
-  SimplePopups.list.updatePassword.show();
-});
-
 $(".pageSettings #addGoogleAuth").on("click", async (e) => {
   await AccountController.addGoogleAuth();
   setTimeout(() => {
@@ -897,10 +863,6 @@ $(".pageSettings #addGoogleAuth").on("click", async (e) => {
 
 $(".pageSettings #removeGoogleAuth").on("click", (e) => {
   AccountController.removeGoogleAuth();
-});
-
-$(".pageSettings #deleteAccount").on("click", (e) => {
-  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(

@@ -683,3 +683,45 @@ list.unlinkDiscord = new SimplePopup(
   },
   () => {}
 );
+
+$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
+  (e) => {
+    list.unlinkDiscord.show();
+  }
+);
+
+$("#resetSettingsButton").click((e) => {
+  list.resetSettings.show();
+});
+
+$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
+  list.resetPersonalBests.show();
+});
+
+$(".pageSettings #updateAccountName").on("click", (e) => {
+  list.updateName.show();
+});
+
+$(".pageSettings #addPasswordAuth").on("click", (e) => {
+  list.addPasswordAuth.show();
+});
+
+$(".pageSettings #emailPasswordAuth").on("click", (e) => {
+  list.updateEmail.show();
+});
+
+$(".pageSettings #passPasswordAuth").on("click", (e) => {
+  list.updatePassword.show();
+});
+
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  list.deleteAccount.show();
+});
+
+$(document).on(
+  "click",
+  ".pageSettings .section.fontFamily .button.custom",
+  (e) => {
+    list.applyCustomFont.show([]);
+  }
+);
