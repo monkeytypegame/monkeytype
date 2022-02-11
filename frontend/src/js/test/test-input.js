@@ -129,6 +129,10 @@ export let keypressTimings = {
 export let wpmHistory = [];
 export let rawHistory = [];
 export let burstHistory = [];
+export let bailout = false;
+export function setBailout(tf) {
+  bailout = tf;
+}
 
 export let spacingDebug = false;
 export function enableSpacingDebug() {

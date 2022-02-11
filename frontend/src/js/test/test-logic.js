@@ -72,7 +72,6 @@ export function setNotSignedInUid(uid) {
 export let isRepeated = false;
 export let isPaceRepeat = false;
 export let lastTestWpm = 0;
-export let bailout = false;
 
 export function setRepeated(tf) {
   isRepeated = tf;
@@ -80,10 +79,6 @@ export function setRepeated(tf) {
 
 export function setPaceRepeat(tf) {
   isPaceRepeat = tf;
-}
-
-export function setBailout(tf) {
-  bailout = tf;
 }
 
 let spanishSentenceTracker = "";
@@ -389,7 +384,7 @@ export function restart(
   LiveBurst.hide();
   TimerProgress.hide();
   Replay.pauseReplay();
-  setBailout(false);
+  TestInput.setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
@@ -1219,7 +1214,7 @@ function buildCompletedEvent(difficultyFailed) {
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
-    bailedOut: bailout,
+    bailedOut: TestInput.bailout,
     chartData: {
       wpm: TestInput.wpmHistory,
       raw: undefined,
@@ -1375,7 +1370,7 @@ export async function finish(difficultyFailed = false) {
   }
 
   //remove afk from zen
-  if (Config.mode == "zen" || bailout) {
+  if (Config.mode == "zen" || TestInput.bailout) {
     TestStats.removeAfkData();
   }
 
@@ -1388,7 +1383,7 @@ export async function finish(difficultyFailed = false) {
   //afk check
   let kps = TestInput.keypressPerSecond.slice(-5);
   let afkDetected = kps.every((second) => second.afk);
-  if (bailout) afkDetected = false;
+  if (TestInput.bailout) afkDetected = false;
 
   let tooShort = false;
   let dontSave = false;

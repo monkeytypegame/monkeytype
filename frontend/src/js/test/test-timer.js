@@ -8,7 +8,6 @@ import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
-
 import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";

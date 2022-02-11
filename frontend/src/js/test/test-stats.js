@@ -1,4 +1,3 @@
-import * as TestLogic from "./test-logic";
 import Config from "../config";
 import * as Misc from "../misc";
 import * as TestInput from "./test-input";
@@ -82,7 +81,7 @@ export function setInvalid() {
 export function calculateTestSeconds(now) {
   if (now === undefined) {
     let endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    if ((Config.mode == "zen" || TestLogic.bailout) && endAfkSeconds < 7) {
+    if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
       return (TestInput.lastKeypress - start) / 1000;
     } else {
       return (end - start) / 1000;

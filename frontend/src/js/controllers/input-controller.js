@@ -758,7 +758,7 @@ $(document).keydown((event) => {
       ((Config.mode == "time" && Config.time === 0) ||
         (Config.mode == "words" && Config.words === 0))
     ) {
-      TestLogic.setBailout(true);
+      TestInput.setBailout(true);
       TestLogic.finish();
     } else {
       handleChar("\n", TestInput.input.current.length);

@@ -18,6 +18,7 @@ import * as CustomText from "../test/custom-text";
 import * as Settings from "../pages/settings";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as PaceCaret from "../test/pace-caret";
+import * as TestInput from "../test/test-input";
 
 export let current = [];
 
@@ -2969,7 +2970,7 @@ export let defaultCommands = {
             id: "bailOutForSure",
             display: "Yes, I am sure",
             exec: () => {
-              TestLogic.setBailout(true);
+              TestInput.setBailout(true);
               TestLogic.finish();
             },
             available: () => {
