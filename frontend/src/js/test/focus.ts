@@ -5,7 +5,7 @@ import * as ActivePage from "../states/active-page";
 
 let state = false;
 
-export function set(foc: boolean, withCursor = false) {
+export function set(foc: boolean, withCursor = false): void {
   if (foc && !state) {
     state = true;
     Caret.stopAnimation();
