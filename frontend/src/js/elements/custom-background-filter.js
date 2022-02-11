@@ -124,11 +124,9 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
   Notifications.add("Custom background filters saved", 1);
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "customBackgroundFilter") {
-      loadConfig(eventValue);
-      apply();
-    }
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "customBackgroundFilter") {
+    loadConfig(eventValue);
+    apply();
+  }
 });

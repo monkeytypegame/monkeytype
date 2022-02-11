@@ -193,15 +193,13 @@ export function updateStyle() {
   }, 125);
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "showTimerProgress") {
-      if (eventValue === true && TestActive.get()) {
-        show();
-      } else {
-        hide();
-      }
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "showTimerProgress") {
+    if (eventValue === true && TestActive.get()) {
+      show();
+    } else {
+      hide();
     }
-    if (eventKey === "timerStyle") updateStyle();
-  });
+  }
+  if (eventKey === "timerStyle") updateStyle();
 });

@@ -756,10 +756,8 @@ export function updateAllChartColors() {
   miniResult.updateColors();
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "chartAccuracy") updateAccuracy();
-    if (eventKey === "chartStyle") updateStyle();
-    if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "chartAccuracy") updateAccuracy();
+  if (eventKey === "chartStyle") updateStyle();
+  if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);
 });

@@ -263,10 +263,8 @@ export function refreshKeys(layout) {
   }
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
-      refreshKeys(Config.keymapLayout);
-    if (eventKey === "keymapLayout") refreshKeys(eventValue);
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
+    refreshKeys(Config.keymapLayout);
+  if (eventKey === "keymapLayout") refreshKeys(eventValue);
 });

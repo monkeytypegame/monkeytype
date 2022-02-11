@@ -916,10 +916,8 @@ $(".quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (eventKey === "configApplied") update();
-  });
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "configApplied") update();
 });
 
 export const page = new Page(

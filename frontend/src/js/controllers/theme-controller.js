@@ -227,24 +227,22 @@ export function applyCustomBackground() {
   }
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "customTheme")
-      eventValue ? set("custom") : set(Config.theme);
-    if (eventKey === "theme") {
-      clearPreview();
-      set(eventValue);
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "customTheme")
+    eventValue ? set("custom") : set(Config.theme);
+  if (eventKey === "theme") {
+    clearPreview();
+    set(eventValue);
+  }
+  if (eventKey === "setThemes") {
+    clearPreview();
+    if (eventValue) {
+      set("custom");
+    } else {
+      set(Config.theme);
     }
-    if (eventKey === "setThemes") {
-      clearPreview();
-      if (eventValue) {
-        set("custom");
-      } else {
-        set(Config.theme);
-      }
-    }
-    if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
-    if (eventKey === "customBackground") applyCustomBackground();
-    if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
-  });
+  }
+  if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
+  if (eventKey === "customBackground") applyCustomBackground();
+  if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
 });

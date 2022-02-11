@@ -1649,15 +1649,13 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   restart();
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-    if (eventKey === "difficulty" && !nosave) restart(false, nosave);
-    if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
-  });
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "difficulty" && !nosave) restart(false, nosave);
+  if (eventKey === "showAllLines" && !nosave) restart();
+  if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+});
 
-  TimerEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "fail") fail(eventValue);
-    if (eventKey === "finish") finish();
-  });
+TimerEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "fail") fail(eventValue);
+  if (eventKey === "finish") finish();
 });

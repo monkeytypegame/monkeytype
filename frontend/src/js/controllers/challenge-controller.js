@@ -243,25 +243,23 @@ export async function setup(challengeName) {
   }
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (
-      [
-        "numbers",
-        "punctuation",
-        "mode",
-        "funbox",
-        "paceCaret",
-        "showAllLines",
-        "showLiveWpm",
-        "highlightMode",
-        "time",
-        "words",
-        "keymapMode",
-        "keymapLayout",
-        "layout",
-      ].includes(eventKey)
-    )
-      clearActive();
-  });
+ConfigEvent.subscribe((eventKey) => {
+  if (
+    [
+      "numbers",
+      "punctuation",
+      "mode",
+      "funbox",
+      "paceCaret",
+      "showAllLines",
+      "showLiveWpm",
+      "highlightMode",
+      "time",
+      "words",
+      "keymapMode",
+      "keymapLayout",
+      "layout",
+    ].includes(eventKey)
+  )
+    clearActive();
 });

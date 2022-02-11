@@ -6,24 +6,22 @@ import Config from "../config";
 import * as TestWords from "./../test/test-words";
 import * as ConfigEvent from "./../observables/config-event";
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (
-      [
-        "difficulty",
-        "blindMode",
-        "stopOnError",
-        "paceCaret",
-        "minWpm",
-        "minAcc",
-        "minBurst",
-        "confidenceMode",
-        "layout",
-      ].includes(eventKey)
-    ) {
-      update();
-    }
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (
+    [
+      "difficulty",
+      "blindMode",
+      "stopOnError",
+      "paceCaret",
+      "minWpm",
+      "minAcc",
+      "minBurst",
+      "confidenceMode",
+      "layout",
+    ].includes(eventKey)
+  ) {
+    update();
+  }
 });
 
 export function update() {

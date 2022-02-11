@@ -250,9 +250,7 @@ export function setVolume(val) {
   Howler.Howler.volume(val);
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
-    if (eventKey === "soundVolume") setVolume(eventValue);
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
+  if (eventKey === "soundVolume") setVolume(eventValue);
 });
