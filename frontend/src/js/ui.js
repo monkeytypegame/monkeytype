@@ -3,8 +3,6 @@ import * as Notifications from "./elements/notifications";
 import * as Caret from "./test/caret";
 import * as TestLogic from "./test/test-logic";
 import * as CustomText from "./test/custom-text";
-import * as CommandlineLists from "./elements/commandline-lists";
-import * as Commandline from "./elements/commandline";
 import * as TestUI from "./test/test-ui";
 import * as TestConfig from "./test/test-config";
 import * as SignOutButton from "./account/sign-out-button";
@@ -208,23 +206,6 @@ window.addEventListener("keydown", function (e) {
   if (e.keyCode == 32 && e.target == document.body) {
     e.preventDefault();
   }
-});
-
-$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
-  if (e.shiftKey) {
-    UpdateConfig.setCustomTheme(!Config.customTheme);
-  } else {
-    // if (Config.customTheme) {
-    //   toggleCustomTheme();
-    // }
-    CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
-    Commandline.show();
-  }
-});
-
-$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
-  Commandline.show();
 });
 
 window.addEventListener("beforeunload", (event) => {
