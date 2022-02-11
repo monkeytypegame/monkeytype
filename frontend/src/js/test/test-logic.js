@@ -438,6 +438,17 @@ export function restart(
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
       }
+      if (
+        withSameWordset &&
+        (Config.funbox === "plus_one" || Config.funbox === "plus_two")
+      ) {
+        Notifications.add(
+          "Sorry, this funbox won't work with repeated tests.",
+          0,
+          4
+        );
+        withSameWordset = false;
+      }
       if (!withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
@@ -451,15 +462,6 @@ export function restart(
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
-        if (Config.funbox === "plus_one" || Config.funbox === "plus_two") {
-          Notifications.add(
-            "Sorry, this funbox won't work with repeated tests.",
-            0
-          );
-          await Funbox.clear();
-        } else {
-          await Funbox.activate();
-        }
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
           Keymap.highlightKey(
@@ -680,6 +682,10 @@ export async function init() {
 
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
+
+  if (ActivePage.get() == "test") {
+    await Funbox.activate();
+  }
 
   let language = await Misc.getLanguage(Config.language);
   if (language && language.name !== Config.language) {
@@ -951,9 +957,6 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if (ActivePage.get() == "test") {
-    await Funbox.activate();
-  }
   TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
@@ -1303,7 +1306,7 @@ export async function finish(difficultyFailed = false) {
   TimerProgress.hide();
   OutOfFocus.hide();
   TestTimer.clear();
-  Funbox.activate("none", null);
+  Funbox.clear();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
