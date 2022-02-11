@@ -44,7 +44,10 @@ async function loadUser(user) {
   PageTransition.set(false);
   AccountButton.update();
   AccountButton.loading(true);
-  await Account.getDataAndInit();
+  if ((await Account.getDataAndInit()) == false) {
+    console.log("Signing out!");
+    signOut();
+  }
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -563,4 +566,8 @@ $(".pageSettings #addGoogleAuth").on("click", async (e) => {
 
 $(".pageSettings #removeGoogleAuth").on("click", (e) => {
   removeGoogleAuth();
+});
+
+$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
+  sendVerificationEmail();
 });

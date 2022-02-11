@@ -10,6 +10,7 @@ Chart.plugins.register(chartAnnotation);
 
 import * as DB from "./db";
 import * as Misc from "./misc";
+import "./controllers/account-controller";
 import Config from "./config";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
