@@ -24,6 +24,7 @@ import axiosInstance from "../axios-instance";
 import * as TodayTracker from "./../test/today-tracker";
 import * as ActivePage from "../states/active-page";
 import * as TestActive from "./../states/test-active";
+import * as PageTransition from "./../states/page-transition";
 import Page from "./page";
 
 let filterDebug = false;
@@ -243,7 +244,7 @@ export async function getDataAndInit() {
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
-  PageController.setTransition(false);
+  PageTransition.set(false);
   console.log("account loading finished");
   // if (ActivePage.get() == "loading") {
   //   LoadingPage.updateBar(100, true);

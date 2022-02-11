@@ -7,15 +7,10 @@ import * as PageTest from "./../pages/test";
 import * as PageAbout from "./../pages/about";
 import * as PageLogin from "./../pages/login";
 import * as PageLoading from "./../pages/loading";
-
-export let transition = true;
-
-export function setTransition(val) {
-  transition = val;
-}
+import * as PageTransition from "./../states/page-transition";
 
 export function change(page) {
-  if (transition) {
+  if (PageTransition.get()) {
     console.log(`change page ${page} stopped`);
     return;
   }
@@ -58,13 +53,13 @@ export function change(page) {
   ActivePage.set(undefined);
   $(".page").removeClass("active");
   previousPage?.beforeHide();
-  setTransition(true);
+  PageTransition.set(true);
   Misc.swapElements(
     previousPage.element,
     nextPage.element,
     250,
     () => {
-      setTransition(false);
+      PageTransition.set(false);
       ActivePage.set(nextPage.name);
       previousPage?.afterHide();
       nextPage.element.addClass("active");

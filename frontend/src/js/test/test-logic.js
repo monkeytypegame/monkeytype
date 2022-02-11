@@ -17,7 +17,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as PageController from "./../controllers/page-controller";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
 import * as PbCrown from "./pb-crown";
@@ -44,6 +43,7 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as ModesNotice from "./../elements/modes-notice";
+import * as PageTransition from "./../states/page-transition";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -222,7 +222,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 export function startTest() {
-  if (PageController.transition) {
+  if (PageTransition.get()) {
     return false;
   }
   if (!Config.dbConfigLoaded) {
@@ -392,14 +392,14 @@ export function restart(
   if (TestUI.resultVisible) {
     if (
       Config.randomTheme !== "off" &&
-      !PageController.transition &&
+      !PageTransition.get() &&
       !Config.customTheme
     ) {
       ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);
-  PageController.setTransition(true);
+  PageTransition.set(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -555,7 +555,7 @@ export function restart(
               TestUI.focusWords();
             // ChartController.result.update();
             ModesNotice.update();
-            PageController.setTransition(false);
+            PageTransition.set(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
           }

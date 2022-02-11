@@ -13,6 +13,7 @@ import axiosInstance from "../axios-instance";
 import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
+import * as PageTransition from "./../states/page-transition";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -40,7 +41,7 @@ async function loadUser(user) {
       `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
     );
   }
-  PageController.setTransition(false);
+  PageTransition.set(false);
   AccountButton.update();
   AccountButton.loading(true);
   await Account.getDataAndInit();
@@ -80,7 +81,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     if (window.location.pathname == "/account") {
       window.history.replaceState("", null, "/login");
     }
-    PageController.setTransition(false);
+    PageTransition.set(false);
   }
   if (window.location.pathname == "/login" && user) {
     PageController.change("account");
