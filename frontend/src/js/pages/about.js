@@ -1,5 +1,3 @@
-import * as CommandlineLists from "../elements/commandline-lists.js";
-import * as Commandline from "../elements/commandline.js";
 import * as Misc from "../misc";
 
 export function reset() {
@@ -21,8 +19,3 @@ export async function fill() {
     `);
   });
 }
-
-$(".supportButtons .button.ads").click((e) => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
-  Commandline.show();
-});

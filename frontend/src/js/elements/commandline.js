@@ -648,3 +648,8 @@ $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
   show();
 });
+
+$(".supportButtons .button.ads").click((e) => {
+  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  show();
+});
