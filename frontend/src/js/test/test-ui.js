@@ -9,7 +9,6 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
-import * as PageController from "./../controllers/page-controller";
 import * as SlowTimer from "../states/slow-timer";
 
 $(document).ready(() => {
@@ -807,10 +806,6 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
-});
-
-$(".pageTest .loginTip .link").click(async (event) => {
-  PageController.change("login");
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {

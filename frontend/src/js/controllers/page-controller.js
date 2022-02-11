@@ -159,3 +159,7 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   }
   return false;
 });
+
+$(".pageTest .loginTip .link").click(async (event) => {
+  change("login");
+});
