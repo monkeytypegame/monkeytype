@@ -284,6 +284,7 @@ export function updatePresetCommands() {
         display: dis,
         exec: () => {
           PresetController.apply(preset._id);
+          Settings.update();
           TestUI.updateModesNotice();
         },
       });

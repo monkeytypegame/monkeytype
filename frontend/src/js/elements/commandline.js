@@ -634,3 +634,19 @@ $(document).on("click", ".keymap .r5 #KeySpace", (e) => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   show();
 });
+
+$(document).on("click", "#testModesNotice .text-button", (event) => {
+  let commands = CommandlineLists.getList(
+    $(event.currentTarget).attr("commands")
+  );
+  let func = $(event.currentTarget).attr("function");
+  if (commands !== undefined) {
+    if ($(event.currentTarget).attr("commands") === "commandsTags") {
+      CommandlineLists.updateTagCommands();
+    }
+    CommandlineLists.pushCurrent(commands);
+    show();
+  } else if (func != undefined) {
+    eval(func);
+  }
+});

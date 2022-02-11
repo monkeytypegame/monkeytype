@@ -808,6 +808,7 @@ $(document).on(
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
     PresetController.apply(presetid);
+    update();
   }
 );
 

@@ -9,8 +9,6 @@ import * as PaceCaret from "./pace-caret";
 import * as CustomText from "./custom-text";
 import * as Keymap from "../elements/keymap";
 import * as Caret from "./caret";
-import * as CommandlineLists from "../elements/commandline-lists";
-import * as Commandline from "../elements/commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseWords from "./practise-words";
@@ -1077,23 +1075,6 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
           </div>
           </div>`
       );
-  }
-});
-
-$(document).on("click", "#testModesNotice .text-button", (event) => {
-  // console.log("CommandlineLists."+$(event.currentTarget).attr("commands"));
-  let commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands")
-  );
-  let func = $(event.currentTarget).attr("function");
-  if (commands !== undefined) {
-    if ($(event.currentTarget).attr("commands") === "commandsTags") {
-      CommandlineLists.updateTagCommands();
-    }
-    CommandlineLists.pushCurrent(commands);
-    Commandline.show();
-  } else if (func != undefined) {
-    eval(func);
   }
 });
 
