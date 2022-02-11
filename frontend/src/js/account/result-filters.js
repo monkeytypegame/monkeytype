@@ -419,7 +419,6 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   filters["date"]["all"] = true;
   updateActive();
   save();
-  console.log(getFilters());
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
