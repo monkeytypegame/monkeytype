@@ -7,7 +7,6 @@ import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
-import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
@@ -871,17 +870,6 @@ $("#wordsInput").on("focusout", () => {
     OutOfFocus.show();
   }
   Caret.hide();
-});
-
-$(document).on("keypress", "#practiseWordsButton", (event) => {
-  if (event.keyCode == 13) {
-    PractiseWords.showPopup(true);
-  }
-});
-
-$(document.body).on("click", "#practiseWordsButton", () => {
-  // PractiseWords.init();
-  PractiseWords.showPopup();
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {

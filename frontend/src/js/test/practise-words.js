@@ -175,6 +175,16 @@ $(document).keydown((event) => {
   }
 });
 
+$(document).on("keypress", "#practiseWordsButton", (event) => {
+  if (event.keyCode == 13) {
+    showPopup(true);
+  }
+});
+
+$(document.body).on("click", "#practiseWordsButton", () => {
+  showPopup();
+});
+
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey) => {
     if (eventKey === "mode") resetBefore();
