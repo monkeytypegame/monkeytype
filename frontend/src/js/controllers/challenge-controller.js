@@ -7,20 +7,24 @@ import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "./../observables/config-event";
+import * as TestState from "./../test/test-state";
 
-export let active = null;
 let challengeLoading = false;
 
 export function clearActive() {
-  if (active && !challengeLoading && !TestUI.testRestarting) {
+  if (
+    TestState.activeChallenge &&
+    !challengeLoading &&
+    !TestUI.testRestarting
+  ) {
     Notifications.add("Challenge cleared", 0);
-    active = null;
+    TestState.setActiveChallenge(null);
   }
 }
 
 export function verify(result) {
   try {
-    if (active) {
+    if (TestState.activeChallenge) {
       let afk = (result.afkDuration / result.testDuration) * 100;
 
       if (afk > 10) {
@@ -28,15 +32,19 @@ export function verify(result) {
         return null;
       }
 
-      if (!active.requirements) {
-        Notifications.add(`${active.display} challenge passed!`, 1);
-        return active.name;
+      if (!TestState.activeChallenge.requirements) {
+        Notifications.add(
+          `${TestState.activeChallenge.display} challenge passed!`,
+          1
+        );
+        return TestState.activeChallenge.name;
       } else {
         let requirementsMet = true;
         let failReasons = [];
-        for (let requirementType in active.requirements) {
+        for (let requirementType in TestState.activeChallenge.requirements) {
           if (requirementsMet == false) return;
-          let requirementValue = active.requirements[requirementType];
+          let requirementValue =
+            TestState.activeChallenge.requirements[requirementType];
           if (requirementType == "wpm") {
             let wpmMode = Object.keys(requirementValue)[0];
             if (wpmMode == "exact") {
@@ -114,18 +122,23 @@ export function verify(result) {
           }
         }
         if (requirementsMet) {
-          if (active.autoRole) {
+          if (TestState.activeChallenge.autoRole) {
             Notifications.add(
               "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
               1,
               5
             );
           }
-          Notifications.add(`${active.display} challenge passed!`, 1);
-          return active.name;
+          Notifications.add(
+            `${TestState.activeChallenge.display} challenge passed!`,
+            1
+          );
+          return TestState.activeChallenge.name;
         } else {
           Notifications.add(
-            `${active.display} challenge failed: ${failReasons.join(", ")}`,
+            `${
+              TestState.activeChallenge.display
+            } challenge failed: ${failReasons.join(", ")}`,
             0
           );
           return null;
@@ -236,7 +249,7 @@ export async function setup(challengeName) {
     } else {
       Notifications.add("Challenge loaded. " + notitext, 0);
     }
-    active = challenge;
+    TestState.setActiveChallenge(challenge);
     challengeLoading = false;
   } catch (e) {
     Notifications.add("Something went wrong: " + e, -1);

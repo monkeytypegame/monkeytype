@@ -1,5 +1,4 @@
 import * as PaceCaret from "./../test/pace-caret";
-import * as ChallengeController from "../controllers/challenge-controller";
 import * as TestState from "./../test/test-state";
 import * as DB from "../db";
 import Config from "../config";
@@ -42,9 +41,9 @@ export function update() {
     );
   }
 
-  if (ChallengeController.active) {
+  if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
