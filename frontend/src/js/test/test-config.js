@@ -1,4 +1,3 @@
-import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
 import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
@@ -172,9 +171,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
   let mode = $(e.currentTarget).attr("timeConfig");
-  if (mode == "custom") {
-    CustomTestDurationPopup.show();
-  } else {
+  if (mode != "custom") {
     UpdateConfig.setTimeConfig(mode);
     ManualRestart.set();
     TestLogic.restart();

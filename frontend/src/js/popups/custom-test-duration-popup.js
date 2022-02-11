@@ -138,3 +138,10 @@ $("#customTestDurationPopup input").keyup((e) => {
 $("#customTestDurationPopup .button").click(() => {
   apply();
 });
+
+$(document).on("click", "#top .config .time .text-button", (e) => {
+  let mode = $(e.currentTarget).attr("timeConfig");
+  if (mode == "custom") {
+    show();
+  }
+});
