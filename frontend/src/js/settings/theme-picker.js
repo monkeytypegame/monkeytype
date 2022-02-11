@@ -196,7 +196,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   var $target = $(e.currentTarget);
   $target.addClass("active");
   setCustomInputs();
-  if ($target.attr("tab") == "preset") {
+  if ($target.attr("tab") === "preset") {
     UpdateConfig.setCustomTheme(false);
     // ThemeController.set(Config.theme);
     // applyCustomThemeColors();

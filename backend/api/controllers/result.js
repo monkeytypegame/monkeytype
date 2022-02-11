@@ -69,11 +69,11 @@ class ResultController {
     if (
       (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
       (result.mode === "time" &&
-        result.mode2 == 0 &&
+        result.mode2 === 0 &&
         result.testDuration < 15) ||
       (result.mode === "words" && result.mode2 < 10 && result.mode2 > 0) ||
       (result.mode === "words" &&
-        result.mode2 == 0 &&
+        result.mode2 === 0 &&
         result.testDuration < 15) ||
       (result.mode === "custom" &&
         result.customText !== undefined &&
@@ -286,7 +286,7 @@ class ResultController {
 
     let tt = 0;
     let afk = result.afkDuration;
-    if (afk == undefined) {
+    if (afk === undefined) {
       afk = 0;
     }
     tt = result.testDuration + result.incompleteTestSeconds - afk;

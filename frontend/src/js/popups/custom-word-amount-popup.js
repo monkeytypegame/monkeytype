@@ -41,7 +41,7 @@ function apply() {
     TestLogic.restart();
     if (val > 2000) {
       Notifications.add("Stay safe and take breaks!", 0);
-    } else if (val == 0) {
+    } else if (val === 0) {
       Notifications.add(
         "Infinite words! Make sure to use Bail Out from the command line to save your result.",
         0,
@@ -62,7 +62,7 @@ $("#customWordAmountPopupWrapper").click((e) => {
 });
 
 $("#customWordAmountPopup input").keypress((e) => {
-  if (e.keyCode == 13) {
+  if (e.keyCode === 13) {
     apply();
   }
 });
@@ -73,7 +73,7 @@ $("#customWordAmountPopup .button").click(() => {
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
+  if (wrd === "custom") {
     show();
   }
 });

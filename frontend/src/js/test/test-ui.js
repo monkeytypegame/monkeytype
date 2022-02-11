@@ -70,10 +70,10 @@ export function focusWords() {
 
 export function updateActiveElement(backspace) {
   let active = document.querySelector("#words .active");
-  if (Config.mode == "zen" && backspace) {
+  if (Config.mode === "zen" && backspace) {
     active.remove();
   } else if (active !== null) {
-    if (Config.highlightMode == "word") {
+    if (Config.highlightMode === "word") {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
       });
@@ -81,13 +81,12 @@ export function updateActiveElement(backspace) {
     active.classList.remove("active");
   }
   try {
-    let activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ];
+    let activeWord =
+      document.querySelectorAll("#words .word")[currentWordElementIndex];
     activeWord.classList.add("active");
     activeWord.classList.remove("error");
     activeWordTop = document.querySelector("#words .active").offsetTop;
-    if (Config.highlightMode == "word") {
+    if (Config.highlightMode === "word") {
       activeWord.querySelectorAll("letter").forEach((e) => {
         e.classList.add("correct");
       });
@@ -149,8 +148,8 @@ export function showWords() {
   );
   if (
     Config.showAllLines &&
-    Config.mode != "time" &&
-    !(CustomText.isWordRandom && CustomText.word == 0) &&
+    Config.mode !== "time" &&
+    !(CustomText.isWordRandom && CustomText.word === 0) &&
     !CustomText.isTimeRandom
   ) {
     $("#words").css("height", "auto");
@@ -208,7 +207,7 @@ export async function screenshot() {
     $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (firebase.auth().currentUser == null)
+    if (firebase.auth().currentUser === null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
 
@@ -221,7 +220,7 @@ export async function screenshot() {
   $(".pageTest .ssWatermark").text(
     moment(Date.now()).format("DD MMM YYYY HH:mm") + " | monkeytype.com "
   );
-  if (firebase.auth().currentUser != null) {
+  if (firebase.auth().currentUser !== null) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot().name +
         " | " +
@@ -233,12 +232,10 @@ export async function screenshot() {
   let src = $("#middle");
   var sourceX = src.position().left; /*X position from div#target*/
   var sourceY = src.position().top; /*Y position from div#target*/
-  var sourceWidth = src.outerWidth(
-    true
-  ); /*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.outerHeight(
-    true
-  ); /*clientHeight/offsetHeight from div#target*/
+  var sourceWidth =
+    src.outerWidth(true); /*clientWidth/offsetWidth from div#target*/
+  var sourceHeight =
+    src.outerHeight(true); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
@@ -334,10 +331,10 @@ export function updateWordElement(showError = !Config.blindMode) {
     }
 
     for (let i = 0; i < input.length; i++) {
-      let charCorrect = currentWord[i] == input[i];
+      let charCorrect = currentWord[i] === input[i];
 
       let correctClass = "correct";
-      if (Config.highlightMode == "off") {
+      if (Config.highlightMode === "off") {
         correctClass = "";
       }
 
@@ -373,7 +370,7 @@ export function updateWordElement(showError = !Config.blindMode) {
 
       if (charCorrect) {
         ret += `<letter class="${
-          Config.highlightMode == "word"
+          Config.highlightMode === "word"
             ? wordHighlightClassString
             : correctClass
         } ${tabChar}${nlChar}">${currentLetter}</letter>`;
@@ -383,12 +380,12 @@ export function updateWordElement(showError = !Config.blindMode) {
         i === input.search(Misc.trailingComposeChars)
       ) {
         ret += `<letter class="${
-          Config.highlightMode == "word" ? wordHighlightClassString : ""
+          Config.highlightMode === "word" ? wordHighlightClassString : ""
         } dead">${currentLetter}</letter>`;
       } else if (!showError) {
         if (currentLetter !== undefined) {
           ret += `<letter class="${
-            Config.highlightMode == "word"
+            Config.highlightMode === "word"
               ? wordHighlightClassString
               : correctClass
           } ${tabChar}${nlChar}">${currentLetter}</letter>`;
@@ -396,11 +393,11 @@ export function updateWordElement(showError = !Config.blindMode) {
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
           let letter = input[i];
-          if (letter == " " || letter == "\t" || letter == "\n") {
+          if (letter === " " || letter === "\t" || letter === "\n") {
             letter = "_";
           }
           ret += `<letter class="${
-            Config.highlightMode == "word"
+            Config.highlightMode === "word"
               ? wordHighlightClassString
               : "incorrect"
           } extra ${tabChar}${nlChar}">${letter}</letter>`;
@@ -408,12 +405,12 @@ export function updateWordElement(showError = !Config.blindMode) {
       } else {
         ret +=
           `<letter class="${
-            Config.highlightMode == "word"
+            Config.highlightMode === "word"
               ? wordHighlightClassString
               : "incorrect"
           } ${tabChar}${nlChar}">` +
           (Config.indicateTypos === "replace"
-            ? input[i] == " "
+            ? input[i] === " "
               ? "_"
               : input[i]
             : currentLetter) +
@@ -447,7 +444,7 @@ export function updateWordElement(showError = !Config.blindMode) {
         } else {
           ret +=
             `<letter class="${
-              Config.highlightMode == "word" ? wordHighlightClassString : ""
+              Config.highlightMode === "word" ? wordHighlightClassString : ""
             }">` +
             currentWord[i] +
             "</letter>";
@@ -458,7 +455,7 @@ export function updateWordElement(showError = !Config.blindMode) {
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
         $(wordAtIndex).addClass("error");
-      } else if (input.length == currentWord.length) {
+      } else if (input.length === currentWord.length) {
         $(wordAtIndex).removeClass("error");
       }
     }
@@ -570,11 +567,11 @@ async function loadWordsHistory() {
           incorrect: 0,
           missed: 0,
         };
-        let length = Config.mode == "zen" ? input.length : word.length;
+        let length = Config.mode === "zen" ? input.length : word.length;
         for (let c = 0; c < length; c++) {
           if (c < input.length) {
             //on char that still has a word list pair
-            if (Config.mode == "zen" || input[c] == word[c]) {
+            if (Config.mode === "zen" || input[c] === word[c]) {
               wordstats.correct++;
             } else {
               wordstats.incorrect++;
@@ -585,14 +582,14 @@ async function loadWordsHistory() {
           }
         }
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
-          if (Config.mode != "zen" && input !== word) {
+          if (Config.mode !== "zen" && input !== word) {
             wordEl = `<div class='word error' burst="${
               TestInput.burstHistory[i]
             }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
         }
       } else {
-        if (Config.mode != "zen" && input !== word) {
+        if (Config.mode !== "zen" && input !== word) {
           wordEl = `<div class='word error' burst="${
             TestInput.burstHistory[i]
           }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
@@ -600,7 +597,7 @@ async function loadWordsHistory() {
       }
 
       let loop;
-      if (Config.mode == "zen" || input.length > word.length) {
+      if (Config.mode === "zen" || input.length > word.length) {
         //input is longer - extra characters possible (loop over input)
         loop = input.length;
       } else {
@@ -623,8 +620,8 @@ async function loadWordsHistory() {
         ) {
           extraCorrected = "extraCorrected";
         }
-        if (Config.mode == "zen" || word[c] !== undefined) {
-          if (Config.mode == "zen" || input[c] === word[c]) {
+        if (Config.mode === "zen" || word[c] !== undefined) {
+          if (Config.mode === "zen" || input[c] === word[c]) {
             if (correctedChar === input[c] || correctedChar === undefined) {
               wordEl += `<letter class="correct ${extraCorrected}">${input[c]}</letter>`;
             } else {
@@ -788,7 +785,7 @@ $(document).on("click", "#testModesNotice .text-button.blind", (event) => {
 $(".pageTest #copyWordsListButton").click(async (event) => {
   try {
     let words;
-    if (Config.mode == "zen") {
+    if (Config.mode === "zen") {
       words = TestInput.input.history.join(" ");
     } else {
       words = TestWords.words
@@ -819,7 +816,7 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
     let input = $(e.currentTarget).attr("input");
     let burst = $(e.currentTarget).attr("burst");
-    if (input != undefined)
+    if (input !== undefined)
       $(e.currentTarget).append(
         `<div class="wordInputAfter">
           <div class="text">
@@ -854,7 +851,7 @@ $("#wordsInput").on("focusout", () => {
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.keyCode === 13) {
     toggleResultWords();
   }
 });

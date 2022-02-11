@@ -66,13 +66,13 @@ async function updateRatingStats() {
 
 function updateData() {
   let lengthDesc;
-  if (currentQuote.group == 0) {
+  if (currentQuote.group === 0) {
     lengthDesc = "short";
-  } else if (currentQuote.group == 1) {
+  } else if (currentQuote.group === 1) {
     lengthDesc = "medium";
-  } else if (currentQuote.group == 2) {
+  } else if (currentQuote.group === 2) {
     lengthDesc = "long";
-  } else if (currentQuote.group == 3) {
+  } else if (currentQuote.group === 3) {
     lengthDesc = "thicc";
   }
   $(`#quoteRatePopup .quote .text`).text(currentQuote.text);
@@ -90,9 +90,8 @@ export function show(quote, shouldReset = true) {
 
     currentQuote = quote;
     rating = 0;
-    let alreadyRated = DB.getSnapshot().quoteRatings?.[currentQuote.language]?.[
-      currentQuote.id
-    ];
+    let alreadyRated =
+      DB.getSnapshot().quoteRatings?.[currentQuote.language]?.[currentQuote.id];
     if (alreadyRated) {
       rating = alreadyRated;
     }
@@ -129,7 +128,7 @@ export function clearQuoteStats() {
 }
 
 async function submit() {
-  if (rating == 0) {
+  if (rating === 0) {
     Notifications.add("Please select a rating");
     return;
   }

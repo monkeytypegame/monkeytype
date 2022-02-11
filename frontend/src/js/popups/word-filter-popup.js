@@ -45,10 +45,10 @@ async function filter(language) {
   let languageWordList = await Misc.getLanguage(language);
   let maxLength = $("#wordFilterPopup .wordMaxInput").val();
   let minLength = $("#wordFilterPopup .wordMinInput").val();
-  if (maxLength == "") {
+  if (maxLength === "") {
     maxLength = 999;
   }
-  if (minLength == "") {
+  if (minLength === "") {
     minLength = 1;
   }
   for (let i = 0; i < languageWordList.words.length; i++) {
@@ -56,7 +56,7 @@ async function filter(language) {
     let test1 = regincl.test(word);
     let test2 = regexcl.test(word);
     if (
-      ((test1 && !test2) || (test1 && filterout == "")) &&
+      ((test1 && !test2) || (test1 && filterout === "")) &&
       word.length <= maxLength &&
       word.length >= minLength
     ) {

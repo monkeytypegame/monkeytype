@@ -24,9 +24,9 @@ let filters = {
 export function getCSS() {
   let ret = "";
   Object.keys(filters).forEach((filterKey) => {
-    if (filters[filterKey].value != filters[filterKey].default) {
+    if (filters[filterKey].value !== filters[filterKey].default) {
       ret += `${filterKey}(${filters[filterKey].value}${
-        filterKey == "blur" ? "rem" : ""
+        filterKey === "blur" ? "rem" : ""
       }) `;
     }
   });

@@ -76,7 +76,7 @@ class WordGenerator extends Wordset {
       }
       // Pick a random char from the distribution that comes after `prefix`.
       const nextChar = charDistribution.randomChar();
-      if (nextChar == " ") {
+      if (nextChar === " ") {
         // A space marks the end of the word, so stop generating and return.
         break;
       }
@@ -87,13 +87,13 @@ class WordGenerator extends Wordset {
 }
 
 export function withWords(words, funbox) {
-  if (funbox == "pseudolang") {
-    if (currentWordGenerator == null || words !== currentWordGenerator.words) {
+  if (funbox === "pseudolang") {
+    if (currentWordGenerator === null || words !== currentWordGenerator.words) {
       currentWordGenerator = new WordGenerator(words);
     }
     return currentWordGenerator;
   } else {
-    if (currentWordset == null || words !== currentWordset.words) {
+    if (currentWordset === null || words !== currentWordset.words) {
       currentWordset = new Wordset(words);
     }
     return currentWordset;

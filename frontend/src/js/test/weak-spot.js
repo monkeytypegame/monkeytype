@@ -31,7 +31,7 @@ class Score {
 
 export function updateScore(char, isCorrect) {
   const timings = TestInput.keypressTimings.spacing.array;
-  if (timings.length == 0) {
+  if (timings.length === 0) {
     return;
   }
   let score = timings[timings.length - 1];
@@ -53,7 +53,7 @@ function score(word) {
       numChars++;
     }
   }
-  return numChars == 0 ? 0.0 : total / numChars;
+  return numChars === 0 ? 0.0 : total / numChars;
 }
 
 export function getWord(wordset) {
@@ -62,7 +62,7 @@ export function getWord(wordset) {
   for (let i = 0; i < wordSamples; i++) {
     let newWord = wordset.randomWord();
     let newScore = score(newWord);
-    if (i == 0 || newScore > highScore) {
+    if (i === 0 || newScore > highScore) {
       randomWord = newWord;
       highScore = newScore;
     }

@@ -17,7 +17,7 @@ export function change(page) {
   console.log(`change page ${page}`);
 
   if (page === "") page = "test";
-  if (page == undefined) {
+  if (page === undefined) {
     //use window loacation
     let pages = {
       "/": "test",

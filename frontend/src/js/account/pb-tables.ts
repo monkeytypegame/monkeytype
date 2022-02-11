@@ -1,6 +1,7 @@
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../misc";
+import { PersonalBest, PersonalBests } from "../../../../Typings/interfaces";
 
 export function update() {
   $(".pageAccount .timePbTable tbody").html(`
@@ -74,15 +75,15 @@ export function update() {
     ).html('wpm<br><span class="sub">accuracy</span>');
   }
 
-  const pb = DB.getSnapshot().personalBests;
+  const pb = DB.getSnapshot().personalBests as PersonalBests;
   let pbData;
   let text;
   let dateText = `-<br><span class="sub">-</span>`;
-  let multiplier = Config.alwaysShowCPM ? 5 : 1;
+  const multiplier = Config.alwaysShowCPM ? 5 : 1;
 
   text = "";
   try {
-    pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -110,7 +111,7 @@ export function update() {
     </tr>`;
   }
   try {
-    pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -138,7 +139,7 @@ export function update() {
     </tr>`;
   }
   try {
-    pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -166,7 +167,7 @@ export function update() {
     </tr>`;
   }
   try {
-    pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -197,7 +198,7 @@ export function update() {
 
   text = "";
   try {
-    pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -225,7 +226,7 @@ export function update() {
     </tr>`;
   }
   try {
-    pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -253,7 +254,7 @@ export function update() {
     </tr>`;
   }
   try {
-    pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =
@@ -281,7 +282,7 @@ export function update() {
     </tr>`;
   }
   try {
-    pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
+    pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0] as PersonalBest;
     dateText = `-<br><span class="sub">-</span>`;
     if (pbData.timestamp) {
       dateText =

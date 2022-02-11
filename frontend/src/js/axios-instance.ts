@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { firebase } from "./modules.d";
+
 const apiPath = "";
 
 let baseURL;
@@ -18,8 +20,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     let idToken: string | null;
-    if (firebase.auth().currentUser != null) {
-      idToken = await firebase.auth().currentUser.getIdToken();
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser !== null) {
+      idToken = await currentUser.getIdToken();
     } else {
       idToken = null;
     }

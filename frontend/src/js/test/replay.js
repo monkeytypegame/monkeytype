@@ -162,7 +162,7 @@ function toggleReplayDisplay() {
     }
   } else {
     //hide
-    if (toggleButton.parentNode.getAttribute("aria-label") != "Start replay") {
+    if (toggleButton.parentNode.getAttribute("aria-label") !== "Start replay") {
       pauseReplay();
     }
     $("#resultReplay").slideUp(250, () => {
@@ -265,7 +265,7 @@ $("#replayWords").on("click", "letter", (event) => {
 });
 
 $(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.keyCode === 13) {
     toggleReplayDisplay();
   }
 });

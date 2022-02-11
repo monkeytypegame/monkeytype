@@ -1,7 +1,7 @@
 // module.exports = {
 //   check(result, userdata) {
 //     let pbs = null;
-//     if (result.mode == "quote") {
+//     if (result.mode==="quote") {
 //       return false;
 //     }
 //     if (result.funbox !== "none") {

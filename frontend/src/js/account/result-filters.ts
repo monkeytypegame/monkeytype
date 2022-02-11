@@ -2,8 +2,21 @@ import * as Misc from "../misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import {
+  Difficulty,
+  Filter,
+  Group,
+  QuoteModes,
+  ResultFilters,
+  Tag,
+  TimeModes,
+  WordsModes,
+  Mode,
+} from "../../../../Typings/interfaces";
+import { Language } from "../../../../Typings/language";
+import { FunboxJSON } from "../../../../Typings/funbox";
 
-export let defaultResultFilters = {
+export const defaultResultFilters = {
   difficulty: {
     normal: true,
     expert: true,
@@ -59,7 +72,7 @@ export let defaultResultFilters = {
   funbox: {
     none: true,
   },
-};
+} as ResultFilters;
 
 export let filters = defaultResultFilters;
 
@@ -71,9 +84,10 @@ export function load() {
   // let newTags = $.cookie("activeTags");
   console.log("loading filters");
   try {
-    let newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters");
     if (
-      newResultFilters != undefined &&
+      newResultFilters !== undefined &&
+      newResultFilters !== null &&
       newResultFilters !== "" &&
       Object.keys(JSON.parse(newResultFilters)).length >=
         Object.keys(defaultResultFilters).length
@@ -85,11 +99,11 @@ export function load() {
       // save();
     }
 
-    let newTags = {};
+    const newTags = {} as { [key: string]: boolean };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
-        newTags[tag] = filters.tags[tag];
+        newTags[tag] = filters.tags[tag] as boolean;
       } else {
         newTags[tag] = true;
       }
@@ -105,11 +119,11 @@ export function load() {
   }
 }
 
-export function getFilters() {
+export function getFilters(): ResultFilters {
   return filters;
 }
 
-export function getGroup(group) {
+export function getGroup(group: Group) {
   return filters[group];
 }
 
@@ -117,7 +131,7 @@ export function getGroup(group) {
 //   filters[group][filter] = value;
 // }
 
-export function getFilter(group, filter) {
+export function getFilter<G extends Group>(group: G, filter: Filter<G>) {
   return filters[group][filter];
 }
 
@@ -125,7 +139,7 @@ export function getFilter(group, filter) {
 //   filters[group][filter] = !filters[group][filter];
 // }
 
-export function loadTags(tags) {
+export function loadTags(tags: Tag[]) {
   console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
@@ -138,67 +152,69 @@ export function reset() {
 }
 
 export function updateActive() {
-  let aboveChartDisplay = {};
-  Object.keys(getFilters()).forEach((group) => {
+  const aboveChartDisplay = {} as ResultFilters;
+  (Object.keys(getFilters()) as Group[]).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
-    Object.keys(getGroup(group)).forEach((filter) => {
-      if (getFilter(group, filter)) {
-        aboveChartDisplay[group].array.push(filter);
-      } else {
-        aboveChartDisplay[group].all = false;
+    (Object.keys(getGroup(group)) as Filter<typeof group>[]).forEach(
+      (filter) => {
+        if (getFilter(group, filter)) {
+          aboveChartDisplay[group].array?.push(filter);
+        } else {
+          aboveChartDisplay[group].all = false;
+        }
+        let buttonEl;
+        if (group === "date") {
+          buttonEl = $(
+            `.pageAccount .group.topFilters .filterGroup[group="${group}"] .button[filter="${filter}"]`
+          );
+        } else {
+          buttonEl = $(
+            `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
+          );
+        }
+        if (getFilter(group, filter)) {
+          buttonEl.addClass("active");
+        } else {
+          buttonEl.removeClass("active");
+        }
       }
-      let buttonEl;
-      if (group === "date") {
-        buttonEl = $(
-          `.pageAccount .group.topFilters .filterGroup[group="${group}"] .button[filter="${filter}"]`
-        );
-      } else {
-        buttonEl = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
-        );
-      }
-      if (getFilter(group, filter)) {
-        buttonEl.addClass("active");
-      } else {
-        buttonEl.removeClass("active");
-      }
-    });
+    );
   });
 
-  function addText(group) {
+  function addText(group: Group) {
     let ret = "";
     ret += "<div class='group'>";
-    if (group == "difficulty") {
+    if (group === "difficulty") {
       ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-    } else if (group == "mode") {
+    } else if (group === "mode") {
       ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-    } else if (group == "punctuation") {
+    } else if (group === "punctuation") {
       ret += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
       width: 1.25rem;
       text-align: center;
       display: inline-block;
       letter-spacing: -.1rem;">!?</span>`;
-    } else if (group == "numbers") {
+    } else if (group === "numbers") {
       ret += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
         width: 1.25rem;
         text-align: center;
         margin-right: .1rem;
         display: inline-block;
         letter-spacing: -.1rem;">15</span>`;
-    } else if (group == "words") {
+    } else if (group === "words") {
       ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-    } else if (group == "time") {
+    } else if (group === "time") {
       ret += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-    } else if (group == "date") {
+    } else if (group === "date") {
       ret += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-    } else if (group == "tags") {
+    } else if (group === "tags") {
       ret += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-    } else if (group == "language") {
+    } else if (group === "language") {
       ret += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-    } else if (group == "funbox") {
+    } else if (group === "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
     if (aboveChartDisplay[group].all) {
@@ -206,16 +222,21 @@ export function updateActive() {
     } else {
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
-          .map((id) => {
-            if (id == "none") return id;
-            let name = DB.getSnapshot().tags.filter((t) => t._id == id)[0];
+          ?.map((id) => {
+            if (id === "none") return id;
+            // TODO remove Tag when DB is done
+            const name = DB.getSnapshot().tags.filter(
+              (t: Tag) => t._id === id
+            )[0];
             if (name !== undefined) {
-              return DB.getSnapshot().tags.filter((t) => t._id == id)[0].name;
+              // TODO remove Tag when DB is done
+              return DB.getSnapshot().tags.filter((t: Tag) => t._id === id)[0]
+                .name;
             }
           })
           .join(", ");
       } else {
-        ret += aboveChartDisplay[group].array.join(", ").replace(/_/g, " ");
+        ret += aboveChartDisplay[group].array?.join(", ").replace(/_/g, " ");
       }
     }
     ret += "</span></div>";
@@ -233,13 +254,13 @@ export function updateActive() {
   chartString += `<div class="spacer"></div>`;
 
   //time
-  if (aboveChartDisplay.mode.array.includes("time")) {
+  if (aboveChartDisplay.mode.array?.includes("time")) {
     chartString += addText("time");
     chartString += `<div class="spacer"></div>`;
   }
 
   //words
-  if (aboveChartDisplay.mode.array.includes("words")) {
+  if (aboveChartDisplay.mode.array?.includes("words")) {
     chartString += addText("words");
     chartString += `<div class="spacer"></div>`;
   }
@@ -272,14 +293,16 @@ export function updateActive() {
   }, 0);
 }
 
-export function toggle(group, filter) {
+export function toggle<G extends Group>(group: G, filter: Filter<G>) {
   try {
     if (group === "date") {
       Object.keys(getGroup("date")).forEach((date) => {
         filters["date"][date] = false;
       });
     }
-    filters[group][filter] = !filters[group][filter];
+    filters[group][filter] = !filters[group][
+      filter
+    ] as unknown as ResultFilters[G][keyof ResultFilters[G]];
     save();
   } catch (e) {
     Notifications.add(
@@ -304,7 +327,8 @@ export function updateTags() {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    DB.getSnapshot().tags.forEach((tag) => {
+    // TODO remove Tag when DB is done
+    DB.getSnapshot().tags.forEach((tag: Tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
@@ -319,33 +343,39 @@ export function updateTags() {
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
 ).click(".button", (e) => {
-  const filter = $(e.target).attr("filter");
-  const group = $(e.target).parents(".buttons").attr("group");
+  const group = $(e.target).parents(".buttons").attr("group") as Group;
+  const filter = $(e.target).attr("filter") as Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    Object.keys(getFilters()).forEach((group) => {
-      Object.keys(getGroup(group)).forEach((filter) => {
-        if (group === "date") {
-          filters[group][filter] = false;
-        } else {
-          filters[group][filter] = true;
+    (Object.keys(getFilters()) as Group[]).forEach((group) => {
+      (Object.keys(getGroup(group)) as Filter<typeof group>[]).forEach(
+        (filter) => {
+          if (group === "date") {
+            filters[group][filter] = false as boolean & (string | number)[];
+          } else {
+            filters[group][filter] = true as boolean & (string | number)[];
+          }
         }
-      });
+      );
     });
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.keys(getFilters()).forEach((group) => {
+    (Object.keys(getFilters()) as Group[]).forEach((group) => {
       if (group !== "date") {
-        Object.keys(getGroup(group)).forEach((filter) => {
-          filters[group][filter] = false;
-        });
+        (Object.keys(getGroup(group)) as Filter<typeof group>[]).forEach(
+          (filter) => {
+            filters[group][filter] = false as boolean & (string | number)[];
+          }
+        );
       }
     });
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      Object.keys(getGroup(group)).forEach((filter) => {
-        filters[group][filter] = false;
-      });
-      filters[group][filter] = true;
+      (Object.keys(getGroup(group)) as Filter<typeof group>[]).forEach(
+        (filter) => {
+          filters[group][filter] = false as boolean & (string | number)[];
+        }
+      );
+      filters[group][filter] = true as boolean & (string | number)[];
     } else {
       toggle(group, filter);
       // filters[group][filter] = !filters[group][filter];
@@ -355,37 +385,42 @@ $(
   save();
 });
 
-$(".pageAccount .topFilters .button.allFilters").click((e) => {
-  Object.keys(getFilters()).forEach((group) => {
-    Object.keys(getGroup(group)).forEach((filter) => {
-      if (group === "date") {
-        filters[group][filter] = false;
-      } else {
-        filters[group][filter] = true;
+$(".pageAccount .topFilters .button.allFilters").click(() => {
+  (Object.keys(getFilters()) as Group[]).forEach((group) => {
+    (Object.keys(getGroup(group)) as Filter<typeof group>[]).forEach(
+      (filter) => {
+        if (group === "date") {
+          filters[group][filter] = false as boolean & (string | number)[];
+        } else {
+          filters[group][filter] = true as boolean & (string | number)[];
+        }
       }
-    });
+    );
   });
   filters["date"]["all"] = true;
   updateActive();
   save();
 });
 
-$(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  Object.keys(getFilters()).forEach((group) => {
-    Object.keys(getGroup(group)).forEach((filter) => {
-      filters[group][filter] = false;
-    });
+$(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
+  (Object.keys(getFilters()) as Group[]).forEach((group) => {
+    (Object.keys(getGroup(group)) as Filter<typeof group>[]).forEach(
+      (filter) => {
+        filters[group][filter] = false as boolean & (string | number)[];
+      }
+    );
   });
 
-  filters["difficulty"][Config.difficulty] = true;
-  filters["mode"][Config.mode] = true;
+  // TODO remove all these types when Config is done
+  filters["difficulty"][Config.difficulty as Difficulty] = true;
+  filters["mode"][Config.mode as Mode] = true;
   if (Config.mode === "time") {
-    filters["time"][Config.time] = true;
+    filters["time"][Config.time as TimeModes] = true;
   } else if (Config.mode === "words") {
-    filters["words"][Config.words] = true;
+    filters["words"][Config.words as WordsModes] = true;
   } else if (Config.mode === "quote") {
     Object.keys(getGroup("quoteLength")).forEach((ql) => {
-      filters["quoteLength"][ql] = true;
+      filters["quoteLength"][ql as QuoteModes] = true;
     });
   }
   if (Config.punctuation) {
@@ -411,7 +446,8 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   }
 
   filters["tags"]["none"] = true;
-  DB.getSnapshot().tags.forEach((tag) => {
+  // TODO remove Tag when DB is done
+  DB.getSnapshot().tags.forEach((tag: Tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
       filters["tags"][tag._id] = true;
@@ -423,14 +459,15 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   save();
 });
 
-$(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
+$(".pageAccount .topFilters .button.toggleAdvancedFilters").click(() => {
   $(".pageAccount .filterButtons").slideToggle(250);
   $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
     "active"
   );
 });
 
-Misc.getLanguageList().then((languages) => {
+// TODO remove Language[] when Misc is done
+Misc.getLanguageList().then((languages: Language[]) => {
   languages.forEach((language) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
@@ -446,7 +483,8 @@ Misc.getLanguageList().then((languages) => {
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
 ).append(`<div class="button" filter="none">none</div>`);
-Misc.getFunboxList().then((funboxModes) => {
+// TODO remove FunboxJSON
+Misc.getFunboxList().then((funboxModes: FunboxJSON[]) => {
   funboxModes.forEach((funbox) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
