@@ -476,7 +476,9 @@ export async function fillSettingsPage() {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  setEventDisabled(true);
   await initGroups();
+  setEventDisabled(false);
   await UpdateConfig.loadPromise;
   ThemePicker.refreshButtons();
 }
@@ -923,9 +925,11 @@ let configEventDisabled = false;
 export function setEventDisabled(value) {
   configEventDisabled = value;
 }
-ConfigEvent.subscribe(() => {
-  if (configEventDisabled) return;
-  if (ActivePage.get() === "settings") update();
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (configEventDisabled || eventKey === "saveToLocalStorage") return;
+  if (ActivePage.get() === "settings") {
+    update();
+  }
 });
 
 export const page = new Page(
@@ -939,7 +943,7 @@ export const page = new Page(
     reset();
   },
   async () => {
-    fillSettingsPage();
+    await fillSettingsPage();
     update();
   },
   () => {
