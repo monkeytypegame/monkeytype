@@ -13,6 +13,7 @@ import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "./../observables/config-event";
+import * as ActivePage from "./../states/active-page";
 import Page from "./page";
 
 export let groups = {};
@@ -916,8 +917,8 @@ $(".quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "configApplied") update();
+ConfigEvent.subscribe(() => {
+  if (ActivePage.get() === "settings") update();
 });
 
 export const page = new Page(
