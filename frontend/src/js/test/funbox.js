@@ -136,10 +136,10 @@ export async function activate(funbox) {
       setFunbox("none", null);
       if (TestUI.testRestartingPromise) {
         TestUI.testRestartingPromise.then(() => {
-          TestLogic.restart(undefined, true);
+          TestLogic.restart(false, true);
         });
       } else {
-        TestLogic.restart(undefined, true);
+        TestLogic.restart(false, true);
       }
       return;
     }
@@ -167,7 +167,7 @@ export async function activate(funbox) {
 
     if (funbox === "simon_says") {
       UpdateConfig.setKeymapMode("next", true);
-      TestLogic.restart(undefined, true);
+      TestLogic.restart(false, true);
     }
 
     if (
@@ -176,14 +176,14 @@ export async function activate(funbox) {
       funbox === "read_ahead_hard"
     ) {
       UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart(undefined, true);
+      TestLogic.restart(false, true);
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       UpdateConfig.setKeymapMode("off", true);
       UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart(undefined, true);
+      TestLogic.restart(false, true);
     } else if (funbox === "layoutfluid") {
       UpdateConfig.setLayout(
         Config.customLayoutfluid
@@ -197,7 +197,7 @@ export async function activate(funbox) {
           : "qwerty",
         true
       );
-      TestLogic.restart(undefined, true);
+      TestLogic.restart(false, true);
     } else if (funbox === "memory") {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setShowAllLines(true, true);
