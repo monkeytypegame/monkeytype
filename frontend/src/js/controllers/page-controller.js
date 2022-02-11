@@ -71,8 +71,8 @@ export function change(page) {
       history.pushState(nextPage.pathname, null, nextPage.pathname);
       nextPage?.afterShow();
     },
-    () => {
-      nextPage?.beforeShow();
+    async () => {
+      await nextPage?.beforeShow();
     }
   );
 }
