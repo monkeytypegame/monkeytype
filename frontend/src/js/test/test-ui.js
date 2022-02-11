@@ -452,7 +452,11 @@ export function updateWordElement(showError = !Config.blindMode) {
               ? wordHighlightClassString
               : "incorrect"
           } ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace" ? input[i] : currentLetter) +
+          (Config.indicateTypos === "replace"
+            ? input[i] == " "
+              ? "_"
+              : input[i]
+            : currentLetter) +
           (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
           "</letter>";
       }
