@@ -241,6 +241,7 @@ export function updateTagCommands() {
 
           if (Config.paceCaret === "average") {
             PaceCaret.init();
+            ModesNotice.update();
           }
 
           let txt = tag.name;
