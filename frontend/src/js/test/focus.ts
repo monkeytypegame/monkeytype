@@ -1,9 +1,11 @@
+// @ts-ignore
 import * as Caret from "./caret";
+// @ts-ignore
 import * as ActivePage from "../states/active-page";
 
 let state = false;
 
-export function set(foc, withCursor = false) {
+export function set(foc: boolean, withCursor = false) {
   if (foc && !state) {
     state = true;
     Caret.stopAnimation();
@@ -23,10 +25,11 @@ export function set(foc, withCursor = false) {
 
 $(document).mousemove(function (event) {
   if (!state) return;
-  if (ActivePage.get() == "pageLoading") return;
-  if (ActivePage.get() == "pageAccount" && state == true) return;
+  if (ActivePage.get() == "loading") return;
+  if (ActivePage.get() == "account" && state == true) return;
   if (
     $("#top").hasClass("focus") &&
+    event.originalEvent &&
     (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
   ) {
     set(false);

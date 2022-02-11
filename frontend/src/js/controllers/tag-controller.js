@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import * as TestUI from "../test/test-ui";
+import * as ModesNotice from "./../elements/modes-notice";
 
 export function saveActiveToLocalStorage() {
   let tags = [];
@@ -25,7 +25,7 @@ export function clear(nosave = false) {
   DB.getSnapshot().tags.forEach((tag) => {
     tag.active = false;
   });
-  TestUI.updateModesNotice();
+  ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -35,7 +35,7 @@ export function set(tagid, state, nosave = false) {
       tag.active = state;
     }
   });
-  TestUI.updateModesNotice();
+  ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -49,7 +49,7 @@ export function toggle(tagid, nosave = false) {
       }
     }
   });
-  TestUI.updateModesNotice();
+  ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 

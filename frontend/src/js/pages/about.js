@@ -1,6 +1,5 @@
-import * as CommandlineLists from "../elements/commandline-lists.js";
-import * as Commandline from "../elements/commandline.js";
 import * as Misc from "../misc";
+import Page from "./page";
 
 export function reset() {
   $(".pageAbout .contributors").empty();
@@ -22,7 +21,20 @@ export async function fill() {
   });
 }
 
-$(".supportButtons .button.ads").click((e) => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
-  Commandline.show();
-});
+export const page = new Page(
+  "about",
+  $(".page.pageAbout"),
+  "/about",
+  () => {
+    //
+  },
+  async () => {
+    reset();
+  },
+  () => {
+    fill();
+  },
+  () => {
+    //
+  }
+);

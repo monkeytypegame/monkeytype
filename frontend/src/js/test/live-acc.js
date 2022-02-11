@@ -1,5 +1,6 @@
-import Config, * as UpdateConfig from "../config";
-import * as TestLogic from "./test-logic";
+import Config from "../config";
+import * as TestActive from "./../states/test-active";
+import * as ConfigEvent from "./../observables/config-event";
 
 export function update(acc) {
   let number = Math.floor(acc);
@@ -12,7 +13,7 @@ export function update(acc) {
 
 export function show() {
   if (!Config.showLiveAcc) return;
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
     if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
@@ -60,8 +61,6 @@ export function hide() {
   );
 }
 
-$(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
-    if (eventKey === "showLiveAcc") eventValue ? show() : hide();
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "showLiveAcc") eventValue ? show() : hide();
 });

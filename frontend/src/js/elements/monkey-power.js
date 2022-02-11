@@ -1,6 +1,5 @@
 import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
-import * as UI from "../ui";
 import Config from "../config";
 
 /**
@@ -154,7 +153,7 @@ export function reset(immediate = false) {
       $("html").css("overflow", "inherit");
       $("html").css("overflow-y", "scroll");
     },
-    immediate || UI.pageTransition ? 0 : 1000
+    immediate ? 0 : 1000
   );
 }
 

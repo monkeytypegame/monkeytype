@@ -6,15 +6,18 @@ import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
+import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
-import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
+import * as Time from "./../states/time";
+import * as TimerEvent from "./../observables/timer-event";
 
 let slowTimerCount = 0;
-export let time = 0;
 let timer = null;
 const interval = 1000;
 let expected = 0;
@@ -25,13 +28,14 @@ export function enableTimerDebug() {
 }
 
 export function clear() {
-  time = 0;
+  Time.set(0);
   clearTimeout(timer);
 }
 
 function premid() {
   if (timerDebug) console.time("premid");
-  document.querySelector("#premidSecondsLeft").innerHTML = Config.time - time;
+  document.querySelector("#premidSecondsLeft").innerHTML =
+    Config.time - Time.get();
   if (timerDebug) console.timeEnd("premid");
 }
 
@@ -41,21 +45,21 @@ function updateTimer() {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
-    TimerProgress.update(time);
+    TimerProgress.update();
   }
   if (timerDebug) console.timeEnd("timer progress update");
 }
 
 function calculateWpmRaw() {
   if (timerDebug) console.time("calculate wpm and raw");
-  let wpmAndRaw = TestLogic.calculateWpmAndRaw();
+  let wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
   if (timerDebug) console.time("update live wpm");
   LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
-  TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-  TestStats.pushToRawHistory(wpmAndRaw.raw);
+  TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+  TestInput.pushToRawHistory(wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("push to history");
   return wpmAndRaw;
 }
@@ -83,23 +87,23 @@ function layoutfluid() {
     // console.log(layouts);
     const numLayouts = layouts.length;
     let index = 0;
-    index = Math.floor(time / (Config.time / numLayouts));
+    index = Math.floor(Time.get() / (Config.time / numLayouts));
 
     if (
-      time == Math.floor(Config.time / numLayouts) - 3 ||
-      time == (Config.time / numLayouts) * 2 - 3
+      Time.get() == Math.floor(Config.time / numLayouts) - 3 ||
+      Time.get() == (Config.time / numLayouts) * 2 - 3
     ) {
       Notifications.add("3", 0, 1);
     }
     if (
-      time == Math.floor(Config.time / numLayouts) - 2 ||
-      time == Math.floor(Config.time / numLayouts) * 2 - 2
+      Time.get() == Math.floor(Config.time / numLayouts) - 2 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 2
     ) {
       Notifications.add("2", 0, 1);
     }
     if (
-      time == Math.floor(Config.time / numLayouts) - 1 ||
-      time == Math.floor(Config.time / numLayouts) * 2 - 1
+      Time.get() == Math.floor(Config.time / numLayouts) - 1 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 1
     ) {
       Notifications.add("1", 0, 1);
     }
@@ -115,27 +119,27 @@ function layoutfluid() {
 
 function checkIfFailed(wpmAndRaw, acc) {
   if (timerDebug) console.time("fail conditions");
-  TestStats.pushKeypressesToHistory();
+  TestInput.pushKeypressesToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-    TestLogic.words.currentIndex > 3
+    TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
-    TestLogic.fail("min wpm");
     SlowTimer.clear();
     slowTimerCount = 0;
+    TimerEvent.dispatch("fail", "min wpm");
     return;
   }
   if (
     Config.minAcc === "custom" &&
     acc < parseInt(Config.minAccCustom) &&
-    TestLogic.words.currentIndex > 3
+    TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
-    TestLogic.fail("min accuracy");
     SlowTimer.clear();
     slowTimerCount = 0;
+    TimerEvent.dispatch("fail", "min accuracy");
     return;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -148,19 +152,21 @@ function checkIfTimeIsUp() {
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     if (
-      (time >= Config.time && Config.time !== 0 && Config.mode === "time") ||
-      (time >= CustomText.time &&
+      (Time.get() >= Config.time &&
+        Config.time !== 0 &&
+        Config.mode === "time") ||
+      (Time.get() >= CustomText.time &&
         CustomText.time !== 0 &&
         Config.mode === "custom")
     ) {
       //times up
       clearTimeout(timer);
       Caret.hide();
-      TestLogic.input.pushHistory();
-      TestLogic.corrected.pushHistory();
-      TestLogic.finish();
+      TestInput.input.pushHistory();
+      TestInput.corrected.pushHistory();
       SlowTimer.clear();
       slowTimerCount = 0;
+      TimerEvent.dispatch("finish");
       return;
     }
   }
@@ -177,7 +183,7 @@ export function getTimerStats() {
 
 async function timerStep() {
   if (timerDebug) console.time("timer step -----------------------------");
-  time++;
+  Time.increment();
   premid();
   updateTimer();
   let wpmAndRaw = calculateWpmRaw();
@@ -218,14 +224,14 @@ export async function start() {
             "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
             -1
           );
-          TestLogic.fail("slow timer");
+          TimerEvent.dispatch("fail", "slow timer");
         }
       }
     }
     timer = setTimeout(function () {
       // time++;
 
-      if (!TestLogic.active) {
+      if (!TestActive.get()) {
         clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

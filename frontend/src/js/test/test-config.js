@@ -1,10 +1,4 @@
-import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
-import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
-import Config, * as UpdateConfig from "../config";
-import * as ManualRestart from "./manual-restart-tracker";
-import * as TestLogic from "./test-logic";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
-import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as ConfigEvent from "./../observables/config-event";
 import * as Misc from "./../misc";
 
 // export function show() {
@@ -162,63 +156,6 @@ export function update(previous, current) {
   );
 }
 
-$(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  const wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
-    CustomWordAmountPopup.show();
-  } else {
-    UpdateConfig.setWordCount(wrd);
-    ManualRestart.set();
-    TestLogic.restart();
-  }
-});
-
-$(document).on("click", "#top .config .time .text-button", (e) => {
-  let mode = $(e.currentTarget).attr("timeConfig");
-  if (mode == "custom") {
-    CustomTestDurationPopup.show();
-  } else {
-    UpdateConfig.setTimeConfig(mode);
-    ManualRestart.set();
-    TestLogic.restart();
-  }
-});
-
-$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
-  let len = $(e.currentTarget).attr("quoteLength");
-  if (len == -2) {
-    // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
-    QuoteSearchPopup.show();
-  } else {
-    if (len == -1) {
-      len = [0, 1, 2, 3];
-    }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
-    ManualRestart.set();
-    TestLogic.restart();
-  }
-});
-
-$(document).on("click", "#top .config .customText .text-button", () => {
-  CustomTextPopup.show();
-});
-
-$(document).on("click", "#top .config .punctuationMode .text-button", () => {
-  UpdateConfig.setPunctuation(!Config.punctuation);
-  ManualRestart.set();
-  TestLogic.restart();
-});
-
-$(document).on("click", "#top .config .numbersMode .text-button", () => {
-  UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  TestLogic.restart();
-});
-
-$(document).on("click", "#top .config .mode .text-button", (e) => {
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = $(e.currentTarget).attr("mode");
-  UpdateConfig.setMode(mode);
-  ManualRestart.set();
-  TestLogic.restart();
+ConfigEvent.subscribe((eventKey, eventValue, eventValue2) => {
+  if (eventKey === "mode") update(eventValue, eventValue2);
 });

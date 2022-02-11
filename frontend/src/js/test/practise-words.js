@@ -1,8 +1,9 @@
-import * as TestStats from "./test-stats";
+import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as TestLogic from "./test-logic";
+import * as TestInput from "./test-input";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let before = {
   mode: null,
@@ -21,8 +22,8 @@ export function init(missed, slow) {
 
   let sortableMissedWords = [];
   if (missed) {
-    Object.keys(TestStats.missedWords).forEach((missedWord) => {
-      sortableMissedWords.push([missedWord, TestStats.missedWords[missedWord]]);
+    Object.keys(TestInput.missedWords).forEach((missedWord) => {
+      sortableMissedWords.push([missedWord, TestInput.missedWords[missedWord]]);
     });
     sortableMissedWords.sort((a, b) => {
       return b[1] - a[1];
@@ -37,15 +38,15 @@ export function init(missed, slow) {
 
   let sortableSlowWords = [];
   if (slow) {
-    sortableSlowWords = TestLogic.words.get().map(function (e, i) {
-      return [e, TestStats.burstHistory[i]];
+    sortableSlowWords = TestWords.words.get().map(function (e, i) {
+      return [e, TestInput.burstHistory[i]];
     });
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
     });
     sortableSlowWords = sortableSlowWords.slice(
       0,
-      Math.min(limit, Math.round(TestLogic.words.length * 0.2))
+      Math.min(limit, Math.round(TestWords.words.length * 0.2))
     );
   }
 
@@ -84,7 +85,6 @@ export function init(missed, slow) {
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
 
-  TestLogic.restart(false, false, false, true);
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;
@@ -138,21 +138,6 @@ $("#practiseWordsPopupWrapper").click((e) => {
   }
 });
 
-$("#practiseWordsPopup .button.missed").click(() => {
-  hidePopup();
-  init(true, false);
-});
-
-$("#practiseWordsPopup .button.slow").click(() => {
-  hidePopup();
-  init(false, true);
-});
-
-$("#practiseWordsPopup .button.both").click(() => {
-  hidePopup();
-  init(true, true);
-});
-
 $("#practiseWordsPopup .button").keypress((e) => {
   if (e.key == "Enter") {
     $(e.currentTarget).click();
@@ -162,4 +147,28 @@ $("#practiseWordsPopup .button").keypress((e) => {
 $("#practiseWordsPopup .button.both").on("focusout", (e) => {
   e.preventDefault();
   $("#practiseWordsPopup .missed").focus();
+});
+
+$(document).keydown((event) => {
+  if (
+    event.key === "Escape" &&
+    !$("#practiseWordsPopupWrapper").hasClass("hidden")
+  ) {
+    hidePopup();
+    event.preventDefault();
+  }
+});
+
+$(document).on("keypress", "#practiseWordsButton", (event) => {
+  if (event.keyCode == 13) {
+    showPopup(true);
+  }
+});
+
+$(document.body).on("click", "#practiseWordsButton", () => {
+  showPopup();
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "mode") resetBefore();
 });

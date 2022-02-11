@@ -12,9 +12,11 @@ var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
 const uglify = require("gulp-uglify");
 const through2 = require("through2");
+const tsify = require("tsify");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = "../.eslintrc.json";
+let tsEslintConfig = "../ts.eslintrc.json";
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -23,6 +25,13 @@ task("clean", function () {
 task("lint-js", function () {
   return src("./src/js/**/*.js")
     .pipe(eslint(eslintConfig))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
+task("lint-ts", function () {
+  return src("./src/js/**/*.ts")
+    .pipe(eslint(tsEslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
@@ -41,24 +50,28 @@ task("browserify", function () {
     //the source files are concatenated together
     debug: false,
   });
-  return (
-    b
-      .transform(
-        babelify.configure({
-          presets: ["@babel/preset-env"],
-          plugins: ["@babel/transform-runtime"],
-        })
-      )
-      .bundle()
-      .pipe(source("monkeytype.js"))
-      .pipe(buffer())
-      // .pipe(
-      //   uglify({
-      //     mangle: false,
-      //   })
-      // )
-      .pipe(dest("./public/js"))
-  );
+  let ret = b
+    .transform(
+      babelify.configure({
+        presets: ["@babel/preset-env"],
+        plugins: ["@babel/transform-runtime"],
+      })
+    )
+    .plugin(tsify)
+    .bundle()
+    .pipe(source("monkeytype.js"))
+    .pipe(buffer());
+
+  if (process.argv[4] === "production") {
+    ret = ret.pipe(
+      uglify({
+        mangle: false,
+      })
+    );
+  }
+
+  ret = ret.pipe(dest("./public/js"));
+  return ret;
 });
 
 task("static", function () {
@@ -73,8 +86,8 @@ task("sass", function () {
 });
 
 task("updateSwCacheName", function () {
-  let date = new Date();
-  let dateString =
+  const date = new Date();
+  const dateString =
     date.getFullYear() +
     "-" +
     (date.getMonth() + 1) +
@@ -86,6 +99,7 @@ task("updateSwCacheName", function () {
     date.getMinutes() +
     "-" +
     date.getSeconds();
+
   return src(["static/sw.js"])
     .pipe(
       replace(
@@ -95,7 +109,7 @@ task("updateSwCacheName", function () {
     )
     .pipe(
       through2.obj(function (file, enc, cb) {
-        var date = new Date();
+        const date = new Date();
         file.stat.atime = date;
         file.stat.mtime = date;
         cb(null, file);
@@ -108,6 +122,7 @@ task(
   "compile",
   series(
     "lint-js",
+    "lint-ts",
     "lint-json",
     "browserify",
     "static",
@@ -119,6 +134,7 @@ task(
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
   watch("./src/js/**/*.js", series("lint-js", "browserify"));
+  watch("./src/js/**/*.ts", series("lint-ts", "browserify"));
   watch("./static/**/*.*", series("lint-json", "static"));
 });
 

@@ -1,11 +1,12 @@
-import Config, * as UpdateConfig from "../config";
-import * as TestLogic from "./test-logic";
+import Config from "../config";
+import * as TestActive from "./../states/test-active";
+import * as ConfigEvent from "./../observables/config-event";
 
 let liveWpmElement = document.querySelector("#liveWpm");
 let miniLiveWpmElement = document.querySelector("#miniTimerAndLiveWpm .wpm");
 
 export function update(wpm, raw) {
-  // if (!TestLogic.active || !Config.showLiveWpm) {
+  // if (!TestActive.get() || !Config.showLiveWpm) {
   //   hideLiveWpm();
   // } else {
   //   showLiveWpm();
@@ -23,7 +24,7 @@ export function update(wpm, raw) {
 
 export function show() {
   if (!Config.showLiveWpm) return;
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
     if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
@@ -69,8 +70,6 @@ export function hide() {
   );
 }
 
-$(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
-    if (eventKey === "showLiveWpm") eventValue ? show() : hide();
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "showLiveWpm") eventValue ? show() : hide();
 });

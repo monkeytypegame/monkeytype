@@ -9,13 +9,12 @@ import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as SimplePopups from "../popups/simple-popups";
-import * as EditTagsPopup from "../popups/edit-tags-popup";
-import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
-import * as AccountController from "../controllers/account-controller";
+import * as ConfigEvent from "./../observables/config-event";
+import * as ActivePage from "./../states/active-page";
+import Page from "./page";
 
 export let groups = {};
 async function initGroups() {
@@ -373,6 +372,12 @@ export function reset() {
 }
 
 export async function fillSettingsPage() {
+  if (Config.showKeyTips) {
+    $(".pageSettings .tip").removeClass("hidden");
+  } else {
+    $(".pageSettings .tip").addClass("hidden");
+  }
+
   let languageEl = $(".pageSettings .section.language select").empty();
   const groups = await Misc.getLanguageGroups();
   groups.forEach((group) => {
@@ -452,18 +457,15 @@ export async function fillSettingsPage() {
         }</div>`
       );
     });
-    $(
+
+    fontsEl.append(
       isCustomFont
-        ? `<div class="language button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
             /_/g,
             " "
           )})</div>`
-        : '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-    )
-      .on("click", () => {
-        SimplePopups.list.applyCustomFont.show([]);
-      })
-      .appendTo(fontsEl);
+        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+    );
   });
 
   $(".pageSettings .section.customBackgroundSize input").val(
@@ -474,7 +476,9 @@ export async function fillSettingsPage() {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  setEventDisabled(true);
   await initGroups();
+  setEventDisabled(false);
   await UpdateConfig.loadPromise;
   ThemePicker.refreshButtons();
 }
@@ -786,12 +790,6 @@ $(document).on(
   }
 );
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
-  (e) => {
-    SimplePopups.list.unlinkDiscord.show();
-  }
-);
-
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
@@ -812,30 +810,6 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
-  EditTagsPopup.show("add");
-});
-
-$(document).on(
-  "click",
-  ".pageSettings .section.presets .addPresetButton",
-  (e) => {
-    EditPresetPopup.show("add");
-  }
-);
-
-$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
-  EditPresetPopup.show("edit", presetid, name);
-});
-
-$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
-  EditPresetPopup.show("remove", presetid, name);
-});
-
 $(document).on(
   "click",
   ".pageSettings .section.presets .presetsList .preset .presetButton",
@@ -843,52 +817,12 @@ $(document).on(
     let target = e.currentTarget;
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
+    configEventDisabled = true;
     PresetController.apply(presetid);
+    configEventDisabled = false;
+    update();
   }
 );
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("edit", tagid, name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("clearPb", tagid, name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .removeButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("remove", tagid, name);
-  }
-);
-
-$("#resetSettingsButton").click((e) => {
-  SimplePopups.list.resetSettings.show();
-});
 
 $("#importSettingsButton").click((e) => {
   ImportExportSettingsPopup.show("import");
@@ -931,41 +865,6 @@ $("#shareCustomThemeButton").click((e) => {
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group"));
-});
-
-$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
-  SimplePopups.list.resetPersonalBests.show();
-});
-
-$(".pageSettings #updateAccountName").on("click", (e) => {
-  SimplePopups.list.updateName.show();
-});
-
-$(".pageSettings #addPasswordAuth").on("click", (e) => {
-  SimplePopups.list.addPasswordAuth.show();
-});
-
-$(".pageSettings #emailPasswordAuth").on("click", (e) => {
-  SimplePopups.list.updateEmail.show();
-});
-
-$(".pageSettings #passPasswordAuth").on("click", (e) => {
-  SimplePopups.list.updatePassword.show();
-});
-
-$(".pageSettings #addGoogleAuth").on("click", async (e) => {
-  await AccountController.addGoogleAuth();
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
-});
-
-$(".pageSettings #removeGoogleAuth").on("click", (e) => {
-  AccountController.removeGoogleAuth();
-});
-
-$(".pageSettings #deleteAccount").on("click", (e) => {
-  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
@@ -1021,3 +920,33 @@ $(".quickNav .links a").on("click", (e) => {
   );
   isOpen && toggleSettingsGroup(settingsGroup);
 });
+
+let configEventDisabled = false;
+export function setEventDisabled(value) {
+  configEventDisabled = value;
+}
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (configEventDisabled || eventKey === "saveToLocalStorage") return;
+  if (ActivePage.get() === "settings") {
+    update();
+  }
+});
+
+export const page = new Page(
+  "settings",
+  $(".page.pageSettings"),
+  "/settings",
+  () => {
+    //
+  },
+  async () => {
+    reset();
+  },
+  async () => {
+    await fillSettingsPage();
+    update();
+  },
+  () => {
+    //
+  }
+);

@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import * as ConfigEvent from "./../observables/config-event";
 
 let voice;
 
@@ -25,3 +26,14 @@ export function speak(text) {
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(voice);
 }
+
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "funbox") {
+    if (eventValue === "none") {
+      clear();
+    } else if (eventValue === "tts") {
+      init();
+    }
+  }
+  if (eventKey === "language" && Config.funbox === "tts") setLanguage();
+});

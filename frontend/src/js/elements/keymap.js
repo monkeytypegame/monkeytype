@@ -1,9 +1,8 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
-import * as CommandlineLists from "./commandline-lists";
-import * as Commandline from "./commandline";
 import * as SlowTimer from "../states/slow-timer";
+import * as ConfigEvent from "./../observables/config-event";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
@@ -264,15 +263,8 @@ export function refreshKeys(layout) {
   }
 }
 
-$(document).on("click", ".keymap .r5 #KeySpace", (e) => {
-  CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
-  Commandline.show();
-});
-
-$(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
-    if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
-      refreshKeys(Config.keymapLayout);
-    if (eventKey === "keymapLayout") refreshKeys(eventValue);
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
+    refreshKeys(Config.keymapLayout);
+  if (eventKey === "keymapLayout") refreshKeys(eventValue);
 });

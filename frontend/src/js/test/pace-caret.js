@@ -1,14 +1,18 @@
-import * as TestLogic from "./test-logic";
+import * as TestStats from "./test-stats";
+import * as TestWords from "./test-words";
 import * as TestUI from "./test-ui";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as DB from "../db";
-import * as SlowTimer from "../states/slow-timer";
+import * as SlowTimer from "./../states/slow-timer";
 import * as Misc from "./../misc";
+import * as TestActive from "./../states/test-active";
+import * as TestState from "./test-state";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let settings = null;
 
 function resetCaretPosition() {
-  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat) return;
+  if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
@@ -33,7 +37,7 @@ function resetCaretPosition() {
 
 export async function init() {
   $("#paceCaret").addClass("hidden");
-  let mode2 = Misc.getMode2(Config, TestLogic.randomQuote);
+  let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -46,7 +50,7 @@ export async function init() {
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
-    let mode2 = Misc.getMode2(Config, TestLogic.randomQuote);
+    let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
     wpm = await DB.getUserAverageWpm10(
       Config.mode,
       mode2,
@@ -58,8 +62,8 @@ export async function init() {
     console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (TestLogic.isPaceRepeat == true) {
-    wpm = TestLogic.lastTestWpm;
+  } else if (TestState.isPaceRepeat == true) {
+    wpm = TestStats.lastTestWpm;
   }
   if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
     settings = null;
@@ -80,13 +84,11 @@ export async function init() {
     wordsStatus: {},
     timeout: null,
   };
-
   resetCaretPosition();
-  TestUI.updateModesNotice();
 }
 
 export function update(expectedStepEnd) {
-  if (settings === null || !TestLogic.active || TestUI.resultVisible) {
+  if (settings === null || !TestActive.get() || TestUI.resultVisible) {
     return;
   }
   if ($("#paceCaret").hasClass("hidden")) {
@@ -96,7 +98,7 @@ export function update(expectedStepEnd) {
     settings.currentLetterIndex++;
     if (
       settings.currentLetterIndex >=
-      TestLogic.words.get(settings.currentWordIndex).length
+      TestWords.words.get(settings.currentWordIndex).length
     ) {
       //go to the next word
       settings.currentLetterIndex = -1;
@@ -109,7 +111,7 @@ export function update(expectedStepEnd) {
           if (settings.currentLetterIndex <= -2) {
             //go to the previous word
             settings.currentLetterIndex =
-              TestLogic.words.get(settings.currentWordIndex - 1).length - 1;
+              TestWords.words.get(settings.currentWordIndex - 1).length - 1;
             settings.currentWordIndex--;
           }
           settings.correction++;
@@ -119,7 +121,7 @@ export function update(expectedStepEnd) {
           settings.currentLetterIndex++;
           if (
             settings.currentLetterIndex >=
-            TestLogic.words.get(settings.currentWordIndex).length
+            TestWords.words.get(settings.currentWordIndex).length
           ) {
             //go to the next word
             settings.currentLetterIndex = -1;
@@ -144,7 +146,7 @@ export function update(expectedStepEnd) {
     try {
       let newIndex =
         settings.currentWordIndex -
-        (TestLogic.words.currentIndex - TestUI.currentWordElementIndex);
+        (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
       let word = document.querySelectorAll("#words .word")[newIndex];
       if (settings.currentLetterIndex === -1) {
         currentLetter = word.querySelectorAll("letter")[0];
@@ -216,19 +218,19 @@ export function handleSpace(correct, currentWord) {
   if (correct) {
     if (
       settings !== null &&
-      settings.wordsStatus[TestLogic.words.currentIndex] === true &&
+      settings.wordsStatus[TestWords.words.currentIndex] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestLogic.words.currentIndex] = undefined;
+      settings.wordsStatus[TestWords.words.currentIndex] = undefined;
       settings.correction -= currentWord.length + 1;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestLogic.words.currentIndex] === undefined &&
+      settings.wordsStatus[TestWords.words.currentIndex] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestLogic.words.currentIndex] = true;
+      settings.wordsStatus[TestWords.words.currentIndex] = true;
       settings.correction += currentWord.length + 1;
     }
   }
@@ -238,8 +240,6 @@ export function start() {
   update(performance.now() + settings.spc * 1000);
 }
 
-$(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
-    if (eventKey === "paceCaret") init(nosave);
-  });
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "paceCaret") init(nosave);
 });

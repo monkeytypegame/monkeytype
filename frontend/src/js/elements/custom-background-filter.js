@@ -1,5 +1,6 @@
 import * as UpdateConfig from "../config";
 import * as Notifications from "./notifications";
+import * as ConfigEvent from "./../observables/config-event";
 
 let filters = {
   blur: {
@@ -121,4 +122,11 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
   });
   UpdateConfig.setCustomBackgroundFilter(arr, false);
   Notifications.add("Custom background filters saved", 1);
+});
+
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "customBackgroundFilter") {
+    loadConfig(eventValue);
+    apply();
+  }
 });

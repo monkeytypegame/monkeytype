@@ -40,17 +40,7 @@
     "require-path-exists/exists": [
       2,
       {
-        "extensions": [
-          "",
-          ".js",
-          ".jsx",
-          ".es.js",
-          ".jsx",
-          ".json5",
-          ".es",
-          ".es6",
-          ".coffee"
-        ]
+        "extensions": ["", ".ts", ".js", ".es.js", ".json5", ".es", ".es6"]
       }
     ]
   }

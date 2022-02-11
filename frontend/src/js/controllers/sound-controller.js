@@ -1,5 +1,6 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
+import * as ConfigEvent from "./../observables/config-event";
 
 let errorSound = null;
 let clickSounds = null;
@@ -248,3 +249,8 @@ export function playError() {
 export function setVolume(val) {
   Howler.Howler.volume(val);
 }
+
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
+  if (eventKey === "soundVolume") setVolume(eventValue);
+});

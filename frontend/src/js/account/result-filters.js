@@ -2,7 +2,6 @@ import * as Misc from "../misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
-import * as Account from "../pages/account";
 
 export let defaultResultFilters = {
   difficulty: {
@@ -268,9 +267,9 @@ export function updateActive() {
   //tags
   chartString += addText("tags");
 
-  $(".pageAccount .group.chart .above").html(chartString);
-
-  Account.update();
+  setTimeout(() => {
+    $(".pageAccount .group.chart .above").html(chartString);
+  }, 0);
 }
 
 export function toggle(group, filter) {
@@ -422,7 +421,6 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   filters["date"]["all"] = true;
   updateActive();
   save();
-  console.log(getFilters());
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {

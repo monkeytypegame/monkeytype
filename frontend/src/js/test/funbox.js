@@ -1,11 +1,10 @@
-import * as TestLogic from "./test-logic";
+import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
-import * as TestUI from "./test-ui";
 import * as Misc from "../misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Settings from "../pages/settings";
 import * as TTS from "./tts";
+import * as ModesNotice from "./../elements/modes-notice";
 
 let modeSaved = null;
 let memoryTimer = null;
@@ -61,7 +60,7 @@ function updateMemoryTimer(sec) {
 
 export function startMemoryTimer() {
   resetMemoryTimer();
-  memoryTimer = Math.round(Math.pow(TestLogic.words.length, 1.2));
+  memoryTimer = Math.round(Math.pow(TestWords.words.length, 1.2));
   updateMemoryTimer(memoryTimer);
   showMemoryTimer();
   memoryInterval = setInterval(() => {
@@ -91,6 +90,17 @@ export function setFunbox(funbox, mode) {
   return true;
 }
 
+export async function clear() {
+  $("#funBoxTheme").attr("href", ``);
+  $("#words").removeClass("nospace");
+  $("#words").removeClass("arrows");
+  reset();
+  $("#wordsWrapper").removeClass("hidden");
+  ManualRestart.set();
+  ModesNotice.update();
+  return true;
+}
+
 export async function activate(funbox) {
   let mode = modeSaved;
 
@@ -109,7 +119,8 @@ export async function activate(funbox) {
         "Current language does not support this funbox mode",
         0
       );
-      setFunbox("none", null);
+      UpdateConfig.setFunbox("none", true);
+      await clear();
       return;
     }
   }
@@ -121,14 +132,8 @@ export async function activate(funbox) {
         )} mode does not support the ${funbox} funbox`,
         0
       );
-      setFunbox("none", null);
-      if (TestUI.testRestartingPromise) {
-        TestUI.testRestartingPromise.then(() => {
-          TestLogic.restart(undefined, true);
-        });
-      } else {
-        TestLogic.restart(undefined, true);
-      }
+      UpdateConfig.setFunbox("none", true);
+      await clear();
       return;
     }
   }
@@ -155,8 +160,6 @@ export async function activate(funbox) {
 
     if (funbox === "simon_says") {
       UpdateConfig.setKeymapMode("next", true);
-      Settings.groups.keymapMode?.updateInput();
-      TestLogic.restart(undefined, true);
     }
 
     if (
@@ -165,59 +168,40 @@ export async function activate(funbox) {
       funbox === "read_ahead_hard"
     ) {
       UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart(undefined, true);
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       UpdateConfig.setKeymapMode("off", true);
       UpdateConfig.setHighlightMode("letter", true);
-      Settings.groups.keymapMode?.updateInput();
-      TestLogic.restart(undefined, true);
     } else if (funbox === "layoutfluid") {
-      // UpdateConfig.setKeymapMode("next");
-      Settings.groups.keymapMode?.updateInput();
-      // UpdateConfig.setSavedLayout(Config.layout);
       UpdateConfig.setLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
           : "qwerty",
         true
       );
-      Settings.groups.layout?.updateInput();
       UpdateConfig.setKeymapLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
           : "qwerty",
         true
       );
-      Settings.groups.keymapLayout?.updateInput();
-      TestLogic.restart(undefined, true);
     } else if (funbox === "memory") {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setShowAllLines(true, true);
-      TestLogic.restart(false, true);
       if (Config.keymapMode === "next") {
         UpdateConfig.setKeymapMode("react", true);
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
       UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart(false, true);
     } else if (funbox === "arrows") {
       $("#words").addClass("arrows");
       UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart(false, true);
     }
   }
-
-  // if (funbox !== "layoutfluid" || mode !== "script") {
-  //   if (Config.layout !== Config.savedLayout) {
-  //     UpdateConfig.setLayout(Config.savedLayout);
-  //     Settings.groups.layout.updateInput();
-  //   }
-  // }
-  TestUI.updateModesNotice();
+  ModesNotice.update();
   return true;
 }
 

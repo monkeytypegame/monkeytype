@@ -6,6 +6,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
+import * as ConfigEvent from "./../observables/config-event";
 
 let el = $("#mobileTestConfigPopup");
 
@@ -160,4 +161,8 @@ el.find(".modeGroup .button").on("click", (e) => {
 $("#mobileTestConfigPopup .button").click((e) => {
   // hidePopup();
   update();
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "mode") update();
 });

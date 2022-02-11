@@ -138,3 +138,20 @@ $("#customTestDurationPopup input").keyup((e) => {
 $("#customTestDurationPopup .button").click(() => {
   apply();
 });
+
+$(document).on("click", "#top .config .time .text-button", (e) => {
+  let mode = $(e.currentTarget).attr("timeConfig");
+  if (mode == "custom") {
+    show();
+  }
+});
+
+$(document).keydown((event) => {
+  if (
+    event.key === "Escape" &&
+    !$("#customTestDurationPopupWrapper").hasClass("hidden")
+  ) {
+    hide();
+    event.preventDefault();
+  }
+});
