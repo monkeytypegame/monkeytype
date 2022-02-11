@@ -555,7 +555,7 @@ export async function addPasswordAuth(email, password) {
       return Notifications.add("Could not reauthenticate: " + e.message, -1);
     }
   }
-  var credential = firebase.auth.EmailAuthProvider.credential(email, password);
+  let credential = firebase.auth.EmailAuthProvider.credential(email, password);
   firebase
     .auth()
     .currentUser.linkWithCredential(credential)

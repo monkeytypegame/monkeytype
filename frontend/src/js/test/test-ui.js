@@ -231,12 +231,12 @@ export async function screenshot() {
   }
   $(".pageTest .buttons").addClass("hidden");
   let src = $("#middle");
-  var sourceX = src.position().left; /*X position from div#target*/
-  var sourceY = src.position().top; /*Y position from div#target*/
-  var sourceWidth = src.outerWidth(
+  let sourceX = src.position().left; /*X position from div#target*/
+  let sourceY = src.position().top; /*Y position from div#target*/
+  let sourceWidth = src.outerWidth(
     true
   ); /*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.outerHeight(
+  let sourceHeight = src.outerHeight(
     true
   ); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");

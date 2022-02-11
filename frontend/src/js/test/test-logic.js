@@ -1043,7 +1043,7 @@ export async function addWord() {
   }
 }
 
-var retrySaving = {
+let retrySaving = {
   completedEvent: null,
   canRetry: false,
 };
@@ -1067,7 +1067,7 @@ export function retrySavingResult() {
 
   Notifications.add("Retrying to save...");
 
-  var { completedEvent } = retrySaving;
+  let { completedEvent } = retrySaving;
 
   axiosInstance
     .post("/results/add", {
