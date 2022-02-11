@@ -166,6 +166,7 @@ export let show = () => {
       );
   }
   $("#commandLine input").val("");
+  CommandlineLists.updateThemeCommands();
   updateSuggested();
   $("#commandLine input").focus();
 };

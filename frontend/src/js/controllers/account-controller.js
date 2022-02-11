@@ -2,7 +2,6 @@ import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Account from "../pages/account";
-import * as CommandlineLists from "../elements/commandline-lists";
 import * as VerificationController from "./verification-controller";
 import * as Misc from "../misc";
 import * as Settings from "../pages/settings";
@@ -55,7 +54,6 @@ async function loadUser(user) {
   $(".pageLogin .preloader").addClass("hidden");
 
   // showFavouriteThemesAtTheTop();
-  CommandlineLists.updateThemeCommands();
 
   let text = "Account created on " + user.metadata.creationTime;
 

@@ -2,7 +2,6 @@ import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
-import * as CommandlineLists from "../elements/commandline-lists";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 
@@ -165,8 +164,6 @@ function toggleFavourite(themename) {
   }
   UpdateConfig.saveToLocalStorage();
   refreshButtons();
-  // showFavouriteThemesAtTheTop();
-  CommandlineLists.updateThemeCommands();
 }
 
 export function updateActiveTab() {
