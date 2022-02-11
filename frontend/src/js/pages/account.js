@@ -101,32 +101,6 @@ export async function getDataAndInit() {
       DB.updateName(user.uid, user.name);
     } else {
       //invalid, get new
-      // Notifications.add("Invalid name", 0);
-      // let promptVal = null;
-      // let cdnVal = undefined;
-
-      // while (
-      //   promptVal === null ||
-      //   cdnVal === undefined ||
-      //   cdnVal.data.status < 0
-      // ) {
-      //   promptVal = prompt(
-      //     "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
-      //   );
-      //   //TODO update
-      //   axiosInstance
-      //     .post("/updateName", {
-      //       name: promptVal,
-      //     })
-      //     .then((cdnVal) => {
-      //       if (cdnVal.data.status === 1) {
-      //         alert("Name updated", 1);
-      //         location.reload();
-      //       } else if (cdnVal.data.status < 0) {
-      //         alert(cdnVal.data.message, 0);
-      //       }
-      //     });
-      // }
       let nameGood = false;
       let name = "";
 
