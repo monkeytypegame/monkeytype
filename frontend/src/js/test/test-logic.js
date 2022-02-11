@@ -970,74 +970,6 @@ export async function init() {
   // }
 }
 
-export function calculateWpmAndRaw() {
-  let chars = 0;
-  let correctWordChars = 0;
-  let spaces = 0;
-  //check input history
-  for (let i = 0; i < TestInput.input.history.length; i++) {
-    let word =
-      Config.mode == "zen"
-        ? TestInput.input.getHistory(i)
-        : TestWords.words.get(i);
-    if (TestInput.input.getHistory(i) == word) {
-      //the word is correct
-      //+1 for space
-      correctWordChars += word.length;
-      if (
-        i < TestInput.input.history.length - 1 &&
-        Misc.getLastChar(TestInput.input.getHistory(i)) !== "\n"
-      ) {
-        spaces++;
-      }
-    }
-    chars += TestInput.input.getHistory(i).length;
-  }
-  if (TestInput.input.current !== "") {
-    let word =
-      Config.mode == "zen"
-        ? TestInput.input.current
-        : TestWords.words.getCurrent();
-    //check whats currently typed
-    let toAdd = {
-      correct: 0,
-      incorrect: 0,
-      missed: 0,
-    };
-    for (let c = 0; c < word.length; c++) {
-      if (c < TestInput.input.current.length) {
-        //on char that still has a word list pair
-        if (TestInput.input.current[c] == word[c]) {
-          toAdd.correct++;
-        } else {
-          toAdd.incorrect++;
-        }
-      } else {
-        //on char that is extra
-        toAdd.missed++;
-      }
-    }
-    chars += toAdd.correct;
-    chars += toAdd.incorrect;
-    chars += toAdd.missed;
-    if (toAdd.incorrect == 0) {
-      //word is correct so far, add chars
-      correctWordChars += toAdd.correct;
-    }
-  }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
-    spaces = 0;
-  }
-  chars += TestInput.input.current.length;
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
-  let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
-  return {
-    wpm: wpm,
-    raw: raw,
-  };
-}
-
 export async function addWord() {
   let bound = 100;
   if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
@@ -1252,7 +1184,7 @@ function buildCompletedEvent(difficultyFailed) {
 
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    let wpmAndRaw = calculateWpmAndRaw();
+    let wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
