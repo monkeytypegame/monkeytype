@@ -267,7 +267,9 @@ export function updateActive() {
   //tags
   chartString += addText("tags");
 
-  $(".pageAccount .group.chart .above").html(chartString);
+  setTimeout(() => {
+    $(".pageAccount .group.chart .above").html(chartString);
+  }, 0);
 }
 
 export function toggle(group, filter) {
