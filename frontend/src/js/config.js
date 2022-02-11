@@ -2,27 +2,11 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import LayoutList from "./test/layouts";
+import * as ConfigEvent from "./observables/config-event";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
 export let changedBeforeDb = false;
-
-const eventSubscribers = [];
-
-export function subscribeToEvent(fn) {
-  eventSubscribers.push(fn);
-}
-
-function dispatchEvent(key, value, value2) {
-  eventSubscribers.forEach((fn) => {
-    try {
-      fn(key, value, value2);
-    } catch (e) {
-      console.error("Config event subscriber threw an error");
-      console.error(e);
-    }
-  });
-}
 
 export function setLocalStorageConfig(val) {
   localStorageConfig = val;
@@ -159,7 +143,7 @@ export async function saveToLocalStorage(noDbCheck = false) {
   window.localStorage.setItem("config", stringified);
   // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
-  dispatchEvent("saveToLocalStorage", stringified);
+  ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
 //numbers
@@ -174,7 +158,7 @@ export function setNumbers(numb, nosave) {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("numbers", config.numbers);
+  ConfigEvent.dispatch("numbers", config.numbers);
 }
 
 //punctuation
@@ -189,7 +173,7 @@ export function setPunctuation(punc, nosave) {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("punctuation", config.punctuation);
+  ConfigEvent.dispatch("punctuation", config.punctuation);
 }
 
 export function setMode(mode, nosave) {
@@ -211,7 +195,7 @@ export function setMode(mode, nosave) {
     }
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("mode", previous, config.mode);
+  ConfigEvent.dispatch("mode", previous, config.mode);
 }
 
 export function setPlaySoundOnError(val, nosave) {
@@ -220,7 +204,7 @@ export function setPlaySoundOnError(val, nosave) {
   }
   config.playSoundOnError = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("playSoundOnError", config.playSoundOnError);
+  ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
 }
 
 export function setPlaySoundOnClick(val, nosave) {
@@ -229,7 +213,7 @@ export function setPlaySoundOnClick(val, nosave) {
   }
   config.playSoundOnClick = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("playSoundOnClick", config.playSoundOnClick);
+  ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
 }
 
 export function setSoundVolume(val, nosave) {
@@ -238,7 +222,7 @@ export function setSoundVolume(val, nosave) {
   }
   config.soundVolume = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("soundVolume", config.soundVolume);
+  ConfigEvent.dispatch("soundVolume", config.soundVolume);
 }
 
 //difficulty
@@ -251,21 +235,21 @@ export function setDifficulty(diff, nosave) {
   }
   config.difficulty = diff;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("difficulty", config.difficulty, nosave);
+  ConfigEvent.dispatch("difficulty", config.difficulty, nosave);
 }
 
 //set fav themes
 export function setFavThemes(themes, nosave) {
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("favThemes", config.favThemes);
+  ConfigEvent.dispatch("favThemes", config.favThemes);
 }
 
 export function setFunbox(funbox, nosave) {
   let val = funbox ? funbox : "none";
   config.funbox = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("funbox", config.funbox);
+  ConfigEvent.dispatch("funbox", config.funbox);
 }
 
 export function setBlindMode(blind, nosave) {
@@ -274,7 +258,7 @@ export function setBlindMode(blind, nosave) {
   }
   config.blindMode = blind;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("blindMode", config.blindMode);
+  ConfigEvent.dispatch("blindMode", config.blindMode);
 }
 
 export function setChartAccuracy(chartAccuracy, nosave) {
@@ -283,7 +267,7 @@ export function setChartAccuracy(chartAccuracy, nosave) {
   }
   config.chartAccuracy = chartAccuracy;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("chartAccuracy", config.chartAccuracy);
+  ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
 }
 
 export function setChartStyle(chartStyle, nosave) {
@@ -292,7 +276,7 @@ export function setChartStyle(chartStyle, nosave) {
   }
   config.chartStyle = chartStyle;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("chartStyle", config.chartStyle);
+  ConfigEvent.dispatch("chartStyle", config.chartStyle);
 }
 
 export function setStopOnError(soe, nosave) {
@@ -304,7 +288,7 @@ export function setStopOnError(soe, nosave) {
     config.confidenceMode = "off";
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("stopOnError", config.stopOnError);
+  ConfigEvent.dispatch("stopOnError", config.stopOnError);
 }
 
 export function setAlwaysShowDecimalPlaces(val, nosave) {
@@ -313,7 +297,10 @@ export function setAlwaysShowDecimalPlaces(val, nosave) {
   }
   config.alwaysShowDecimalPlaces = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("alwaysShowDecimalPlaces", config.alwaysShowDecimalPlaces);
+  ConfigEvent.dispatch(
+    "alwaysShowDecimalPlaces",
+    config.alwaysShowDecimalPlaces
+  );
 }
 
 export function setAlwaysShowCPM(val, nosave) {
@@ -322,7 +309,7 @@ export function setAlwaysShowCPM(val, nosave) {
   }
   config.alwaysShowCPM = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("alwaysShowCPM", config.alwaysShowCPM);
+  ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
 }
 
 export function setShowOutOfFocusWarning(val, nosave) {
@@ -334,7 +321,7 @@ export function setShowOutOfFocusWarning(val, nosave) {
     OutOfFocus.hide();
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("showOutOfFocusWarning", config.showOutOfFocusWarning);
+  ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
 }
 
 export function setSwapEscAndTab(val, nosave) {
@@ -343,7 +330,7 @@ export function setSwapEscAndTab(val, nosave) {
   }
   config.swapEscAndTab = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("swapEscAndTab", config.swapEscAndTab);
+  ConfigEvent.dispatch("swapEscAndTab", config.swapEscAndTab);
 }
 
 //pace caret
@@ -363,7 +350,7 @@ export function setPaceCaret(val, nosave) {
   // }
   config.paceCaret = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("paceCaret", config.paceCaret);
+  ConfigEvent.dispatch("paceCaret", config.paceCaret);
 }
 
 export function setPaceCaretCustomSpeed(val, nosave) {
@@ -373,7 +360,7 @@ export function setPaceCaretCustomSpeed(val, nosave) {
   }
   config.paceCaretCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
+  ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 }
 
 export function setRepeatedPace(pace, nosave) {
@@ -382,7 +369,7 @@ export function setRepeatedPace(pace, nosave) {
   }
   config.repeatedPace = pace;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("repeatedPace", config.repeatedPace);
+  ConfigEvent.dispatch("repeatedPace", config.repeatedPace);
 }
 
 //min wpm
@@ -392,7 +379,7 @@ export function setMinWpm(minwpm, nosave) {
   }
   config.minWpm = minwpm;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("minWpm", config.minWpm);
+  ConfigEvent.dispatch("minWpm", config.minWpm);
 }
 
 export function setMinWpmCustomSpeed(val, nosave) {
@@ -402,7 +389,7 @@ export function setMinWpmCustomSpeed(val, nosave) {
   }
   config.minWpmCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("minWpmCustomSpeed", config.minWpmCustomSpeed);
+  ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
 }
 
 //min acc
@@ -412,7 +399,7 @@ export function setMinAcc(min, nosave) {
   }
   config.minAcc = min;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("minAcc", config.minAcc);
+  ConfigEvent.dispatch("minAcc", config.minAcc);
 }
 
 export function setMinAccCustom(val, nosave) {
@@ -421,7 +408,7 @@ export function setMinAccCustom(val, nosave) {
   }
   config.minAccCustom = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("minAccCustom", config.minAccCustom);
+  ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
 }
 
 //min burst
@@ -431,7 +418,7 @@ export function setMinBurst(min, nosave) {
   }
   config.minBurst = min;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("minBurst", config.minBurst);
+  ConfigEvent.dispatch("minBurst", config.minBurst);
 }
 
 export function setMinBurstCustomSpeed(val, nosave) {
@@ -441,7 +428,7 @@ export function setMinBurstCustomSpeed(val, nosave) {
   }
   config.minBurstCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("minBurstCustomSpeed", config.minBurstCustomSpeed);
+  ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
 }
 
 //always show words history
@@ -451,7 +438,7 @@ export function setAlwaysShowWordsHistory(val, nosave) {
   }
   config.alwaysShowWordsHistory = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
+  ConfigEvent.dispatch("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
 }
 
 //single list command line
@@ -459,7 +446,7 @@ export function setSingleListCommandLine(option, nosave) {
   if (!option) option = "manual";
   config.singleListCommandLine = option;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("singleListCommandLine", config.singleListCommandLine);
+  ConfigEvent.dispatch("singleListCommandLine", config.singleListCommandLine);
 }
 
 //caps lock warning
@@ -469,7 +456,7 @@ export function setCapsLockWarning(val, nosave) {
   }
   config.capsLockWarning = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("capsLockWarning", config.capsLockWarning);
+  ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
 }
 
 export function setShowAllLines(sal, nosave) {
@@ -480,7 +467,7 @@ export function setShowAllLines(sal, nosave) {
   if (!nosave) {
     saveToLocalStorage();
   }
-  dispatchEvent("showAllLines", config.showAllLines);
+  ConfigEvent.dispatch("showAllLines", config.showAllLines);
 }
 
 export function setQuickEnd(qe, nosave) {
@@ -489,7 +476,7 @@ export function setQuickEnd(qe, nosave) {
   }
   config.quickEnd = qe;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("quickEnd", config.quickEnd);
+  ConfigEvent.dispatch("quickEnd", config.quickEnd);
 }
 
 export function setEnableAds(val, nosave) {
@@ -512,7 +499,7 @@ export function setRepeatQuotes(val, nosave) {
   }
   config.repeatQuotes = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("repeatQuotes", config.repeatQuotes);
+  ConfigEvent.dispatch("repeatQuotes", config.repeatQuotes);
 }
 
 //flip colors
@@ -522,7 +509,7 @@ export function setFlipTestColors(flip, nosave) {
   }
   config.flipTestColors = flip;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("flipTestColors", config.flipTestColors);
+  ConfigEvent.dispatch("flipTestColors", config.flipTestColors);
 }
 
 //extra color
@@ -532,7 +519,7 @@ export function setColorfulMode(extra, nosave) {
   }
   config.colorfulMode = extra;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("colorfulMode", config.colorfulMode);
+  ConfigEvent.dispatch("colorfulMode", config.colorfulMode);
 }
 
 //strict space
@@ -542,7 +529,7 @@ export function setStrictSpace(val, nosave) {
   }
   config.strictSpace = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("strictSpace", config.strictSpace);
+  ConfigEvent.dispatch("strictSpace", config.strictSpace);
 }
 
 //opposite shift space
@@ -552,7 +539,7 @@ export function setOppositeShiftMode(val, nosave) {
   }
   config.oppositeShiftMode = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("oppositeShiftMode", config.oppositeShiftMode);
+  ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
 }
 
 export function setPageWidth(val, nosave) {
@@ -569,7 +556,7 @@ export function setPageWidth(val, nosave) {
     $("#centerContent").addClass("wide" + val);
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("pageWidth", config.pageWidth);
+  ConfigEvent.dispatch("pageWidth", config.pageWidth);
 }
 
 export function setCaretStyle(caretStyle, nosave) {
@@ -601,7 +588,7 @@ export function setCaretStyle(caretStyle, nosave) {
     $("#caret").addClass("banana");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("caretStyle", config.caretStyle);
+  ConfigEvent.dispatch("caretStyle", config.caretStyle);
 }
 
 export function setPaceCaretStyle(caretStyle, nosave) {
@@ -631,7 +618,7 @@ export function setPaceCaretStyle(caretStyle, nosave) {
     $("#paceCaret").addClass("banana");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("paceCaretStyle", config.paceCaretStyle);
+  ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
 }
 
 export function setShowTimerProgress(timer, nosave) {
@@ -640,7 +627,7 @@ export function setShowTimerProgress(timer, nosave) {
   }
   config.showTimerProgress = timer;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("showTimerProgress", config.showTimerProgress);
+  ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
 }
 
 export function setShowLiveWpm(live, nosave) {
@@ -649,7 +636,7 @@ export function setShowLiveWpm(live, nosave) {
   }
   config.showLiveWpm = live;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("showLiveWpm", config.showLiveWpm);
+  ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
 }
 
 export function setShowLiveAcc(live, nosave) {
@@ -658,7 +645,7 @@ export function setShowLiveAcc(live, nosave) {
   }
   config.showLiveAcc = live;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("showLiveAcc", config.showLiveAcc);
+  ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
 }
 
 export function setShowLiveBurst(live, nosave) {
@@ -667,7 +654,7 @@ export function setShowLiveBurst(live, nosave) {
   }
   config.showLiveBurst = live;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("showLiveBurst", config.showLiveBurst);
+  ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
 }
 
 export function setHighlightMode(mode, nosave) {
@@ -688,7 +675,7 @@ export function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("highlightMode", config.highlightMode);
+  ConfigEvent.dispatch("highlightMode", config.highlightMode);
 }
 
 export function setHideExtraLetters(val, nosave) {
@@ -697,7 +684,7 @@ export function setHideExtraLetters(val, nosave) {
   }
   config.hideExtraLetters = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("hideExtraLetters", config.hideExtraLetters);
+  ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
 }
 
 export function setTimerStyle(style, nosave) {
@@ -706,7 +693,7 @@ export function setTimerStyle(style, nosave) {
   }
   config.timerStyle = style;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("timerStyle", config.timerStyle);
+  ConfigEvent.dispatch("timerStyle", config.timerStyle);
 }
 
 export function setTimerColor(color, nosave) {
@@ -749,7 +736,7 @@ export function setTimerColor(color, nosave) {
   }
 
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("timerColor", config.timerColor);
+  ConfigEvent.dispatch("timerColor", config.timerColor);
 }
 export function setTimerOpacity(opacity, nosave) {
   if (opacity == null || opacity == undefined) {
@@ -757,7 +744,7 @@ export function setTimerOpacity(opacity, nosave) {
   }
   config.timerOpacity = opacity;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("timerOpacity", config.timerOpacity);
+  ConfigEvent.dispatch("timerOpacity", config.timerOpacity);
 }
 
 //key tips
@@ -769,7 +756,7 @@ export function setKeyTips(keyTips, nosave) {
     $("#bottom .keyTips").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("showKeyTips", config.showKeyTips);
+  ConfigEvent.dispatch("showKeyTips", config.showKeyTips);
 }
 
 //mode
@@ -788,7 +775,7 @@ export function setTimeConfig(time, nosave) {
     "active"
   );
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("time", config.time);
+  ConfigEvent.dispatch("time", config.time);
 }
 
 //quote length
@@ -822,7 +809,7 @@ export function setQuoteLength(len, nosave, multipleMode) {
     ).addClass("active");
   });
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("quoteLength", config.quoteLength);
+  ConfigEvent.dispatch("quoteLength", config.quoteLength);
 }
 
 export function setWordCount(wordCount, nosave) {
@@ -845,7 +832,7 @@ export function setWordCount(wordCount, nosave) {
     "active"
   );
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("words", config.words);
+  ConfigEvent.dispatch("words", config.words);
 }
 
 //caret
@@ -857,20 +844,20 @@ export function setSmoothCaret(mode, nosave) {
     $("#caret").css("animation-name", "caretFlashHard");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("smoothCaret", config.smoothCaret);
+  ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 }
 
 export function setStartGraphsAtZero(mode, nosave) {
   config.startGraphsAtZero = mode;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("startGraphsAtZero", config.startGraphsAtZero);
+  ConfigEvent.dispatch("startGraphsAtZero", config.startGraphsAtZero);
 }
 
 //linescroll
 export function setSmoothLineScroll(mode, nosave) {
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("smoothLineScroll", config.smoothLineScroll);
+  ConfigEvent.dispatch("smoothLineScroll", config.smoothLineScroll);
 }
 
 //quick tab
@@ -888,7 +875,7 @@ export function setQuickTabMode(mode, nosave) {
     <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("quickTab", config.quickTab);
+  ConfigEvent.dispatch("quickTab", config.quickTab);
 }
 
 export function previewFontFamily(font) {
@@ -927,7 +914,7 @@ export function setFontFamily(font, nosave) {
     `"${font.replace(/_/g, " ")}", "Roboto Mono"`
   );
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("fontFamily", config.fontFamily);
+  ConfigEvent.dispatch("fontFamily", config.fontFamily);
 }
 
 //freedom
@@ -940,7 +927,7 @@ export function setFreedomMode(freedom, nosave) {
     config.confidenceMode = "off";
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("freedomMode", config.freedomMode);
+  ConfigEvent.dispatch("freedomMode", config.freedomMode);
 }
 
 export function setConfidenceMode(cm, nosave) {
@@ -953,7 +940,7 @@ export function setConfidenceMode(cm, nosave) {
     config.stopOnError = "off";
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("confidenceMode", config.confidenceMode);
+  ConfigEvent.dispatch("confidenceMode", config.confidenceMode);
 }
 
 export function setIndicateTypos(value, nosave) {
@@ -962,27 +949,27 @@ export function setIndicateTypos(value, nosave) {
   }
   config.indicateTypos = value;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("indicateTypos", config.indicateTypos);
+  ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
 }
 
 export function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("customTheme", config.customTheme);
+  ConfigEvent.dispatch("customTheme", config.customTheme);
 }
 
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("theme", config.theme);
+  ConfigEvent.dispatch("theme", config.theme);
 }
 
 function setThemes(theme, customState, nosave) {
   config.theme = theme;
   config.customTheme = customState;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("setThemes", customState);
+  ConfigEvent.dispatch("setThemes", customState);
 }
 
 export function setRandomTheme(val, nosave) {
@@ -991,7 +978,7 @@ export function setRandomTheme(val, nosave) {
   }
   config.randomTheme = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("randomTheme", config.randomTheme);
+  ConfigEvent.dispatch("randomTheme", config.randomTheme);
 }
 
 export function setBritishEnglish(val, nosave) {
@@ -1000,7 +987,7 @@ export function setBritishEnglish(val, nosave) {
   }
   config.britishEnglish = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("britishEnglish", config.britishEnglish);
+  ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
 }
 
 export function setLazyMode(val, nosave) {
@@ -1009,7 +996,7 @@ export function setLazyMode(val, nosave) {
   }
   config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("lazyMode", config.lazyMode);
+  ConfigEvent.dispatch("lazyMode", config.lazyMode);
 }
 
 export function setCustomThemeColors(colors, nosave) {
@@ -1019,7 +1006,7 @@ export function setCustomThemeColors(colors, nosave) {
     // applyCustomThemeColors();
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("customThemeColors", config.customThemeColors);
+  ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
 }
 
 export function setLanguage(language, nosave) {
@@ -1035,7 +1022,7 @@ export function setLanguage(language, nosave) {
     console.log("Analytics unavailable");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("language", config.language);
+  ConfigEvent.dispatch("language", config.language);
 }
 
 export function setMonkey(monkey, nosave) {
@@ -1049,7 +1036,7 @@ export function setMonkey(monkey, nosave) {
     $("#monkey").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("monkey", config.monkey);
+  ConfigEvent.dispatch("monkey", config.monkey);
 }
 
 export function setKeymapMode(mode, nosave) {
@@ -1060,7 +1047,7 @@ export function setKeymapMode(mode, nosave) {
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("keymapMode", config.keymapMode);
+  ConfigEvent.dispatch("keymapMode", config.keymapMode);
 }
 
 export function setKeymapLegendStyle(style, nosave) {
@@ -1089,7 +1076,7 @@ export function setKeymapLegendStyle(style, nosave) {
   $(".keymapLegendStyle").addClass(style);
   config.keymapLegendStyle = style;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("keymapLegendStyle", config.keymapLegendStyle);
+  ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
 }
 
 export function setKeymapStyle(style, nosave) {
@@ -1102,7 +1089,7 @@ export function setKeymapStyle(style, nosave) {
   $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("keymapStyle", config.keymapStyle);
+  ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
 }
 
 export function setKeymapLayout(layout, nosave) {
@@ -1111,7 +1098,7 @@ export function setKeymapLayout(layout, nosave) {
   }
   config.keymapLayout = layout;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("keymapLayout", config.keymapLayout);
+  ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
 }
 
 export function setLayout(layout, nosave) {
@@ -1120,7 +1107,7 @@ export function setLayout(layout, nosave) {
   }
   config.layout = layout;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("layout", config.layout);
+  ConfigEvent.dispatch("layout", config.layout);
 }
 
 // export function setSavedLayout(layout, nosave) {
@@ -1178,7 +1165,7 @@ export function setFontSize(fontSize, nosave) {
     $("#miniTimerAndLiveWpm").addClass("size4");
   }
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("fontSize", config.fontSize);
+  ConfigEvent.dispatch("fontSize", config.fontSize);
 }
 
 export function setCustomBackground(value, nosave) {
@@ -1195,7 +1182,7 @@ export function setCustomBackground(value, nosave) {
   ) {
     config.customBackground = value;
     if (!nosave) saveToLocalStorage();
-    dispatchEvent("customBackground", config.customBackground);
+    ConfigEvent.dispatch("customBackground", config.customBackground);
   } else {
     Notifications.add("Invalid custom background URL", 0);
   }
@@ -1227,7 +1214,7 @@ export function setCustomLayoutfluid(value, nosave) {
     value.replace(/#/g, " ")
   );
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("customLayoutFluid", config.customLayoutFluid);
+  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutFluid);
 }
 
 export function setCustomBackgroundSize(value, nosave) {
@@ -1236,20 +1223,20 @@ export function setCustomBackgroundSize(value, nosave) {
   }
   config.customBackgroundSize = value;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("customBackgroundSize", config.customBackgroundSize);
+  ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
 }
 
 export function setCustomBackgroundFilter(array, nosave) {
   config.customBackgroundFilter = array;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("customBackgroundFilter", config.customBackgroundFilter);
+  ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
 }
 
 export function setMonkeyPowerLevel(level, nosave) {
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
   config.monkeyPowerLevel = level;
   if (!nosave) saveToLocalStorage();
-  dispatchEvent("monkeyPowerLevel", config.monkeyPowerLevel);
+  ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
 }
 
 export function setBurstHeatmap(value, nosave) {
@@ -1260,7 +1247,7 @@ export function setBurstHeatmap(value, nosave) {
   if (!nosave) {
     saveToLocalStorage();
   }
-  dispatchEvent("burstHeatmap", config.burstHeatmap);
+  ConfigEvent.dispatch("burstHeatmap", config.burstHeatmap);
 }
 
 export function apply(configObj) {

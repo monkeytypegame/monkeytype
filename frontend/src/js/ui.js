@@ -1,8 +1,9 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as Notifications from "./elements/notifications";
 import * as Caret from "./test/caret";
 import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
+import * as ConfigEvent from "./observables/config-event";
 
 export function updateKeytips() {
   if (Config.swapEscAndTab) {
@@ -91,7 +92,7 @@ $(window).resize(() => {
 });
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey) => {
+  ConfigEvent.subscribe((eventKey) => {
     if (eventKey === "swapEscAndTab") updateKeytips();
   });
 });

@@ -2,11 +2,12 @@ import * as PaceCaret from "./../test/pace-caret";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as TestState from "./../test/test-state";
 import * as DB from "../db";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as TestWords from "./../test/test-words";
+import * as ConfigEvent from "./../observables/config-event";
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (
       [
         "difficulty",

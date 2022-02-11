@@ -1,13 +1,14 @@
 import * as TestStats from "./test-stats";
 import * as TestWords from "./test-words";
 import * as TestUI from "./test-ui";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "./../states/slow-timer";
 import * as Misc from "./../misc";
 import * as TestActive from "./../states/test-active";
 import * as TestState from "./test-state";
 import * as ModesNotice from "./../elements/modes-notice";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let settings = null;
 
@@ -243,7 +244,7 @@ export function start() {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
+  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventKey === "paceCaret") init(nosave);
   });
 });

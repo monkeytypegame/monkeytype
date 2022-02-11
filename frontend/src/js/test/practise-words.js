@@ -4,6 +4,7 @@ import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";
 import * as TestInput from "./test-input";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let before = {
   mode: null,
@@ -186,7 +187,7 @@ $(document.body).on("click", "#practiseWordsButton", () => {
 });
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey) => {
+  ConfigEvent.subscribe((eventKey) => {
     if (eventKey === "mode") resetBefore();
   });
 });

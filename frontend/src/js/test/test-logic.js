@@ -44,6 +44,7 @@ import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
 import * as ModesNotice from "./../elements/modes-notice";
 import * as PageTransition from "./../states/page-transition";
+import * as ConfigEvent from "./../observables/config-event";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -1716,7 +1717,7 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 });
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
+  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventKey === "difficulty" && !nosave) restart(false, nosave);
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "keymapMode" && !nosave) restart(false, nosave);

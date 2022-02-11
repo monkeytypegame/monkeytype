@@ -2,6 +2,7 @@ import Config, * as UpdateConfig from "../config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
 import * as SlowTimer from "../states/slow-timer";
+import * as ConfigEvent from "./../observables/config-event";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
@@ -263,7 +264,7 @@ export function refreshKeys(layout) {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
       refreshKeys(Config.keymapLayout);
     if (eventKey === "keymapLayout") refreshKeys(eventValue);

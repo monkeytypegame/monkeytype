@@ -2,7 +2,8 @@ import Chart from "chart.js";
 import * as TestInput from "./../test/test-input";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../misc";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
@@ -756,7 +757,7 @@ export function updateAllChartColors() {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "chartAccuracy") updateAccuracy();
     if (eventKey === "chartStyle") updateStyle();
     if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);

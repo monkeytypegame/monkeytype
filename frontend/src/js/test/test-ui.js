@@ -10,9 +10,10 @@ import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
 import * as SlowTimer from "../states/slow-timer";
+import * as ConfigEvent from "./../observables/config-event";
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "flipTestColors") flipColors(eventValue);
     if (eventKey === "colorfulMode") colorful(eventValue);
     if (eventKey === "highlightMode") updateWordElement(eventValue);

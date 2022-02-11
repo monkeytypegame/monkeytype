@@ -1,4 +1,4 @@
-import UpdateConfig from "../config";
+import * as ConfigEvent from "./../observables/config-event";
 import * as Misc from "./../misc";
 
 // export function show() {
@@ -157,7 +157,7 @@ export function update(previous, current) {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue, eventValue2) => {
+  ConfigEvent.subscribe((eventKey, eventValue, eventValue2) => {
     if (eventKey === "mode") update(eventValue, eventValue2);
   });
 });
