@@ -10,7 +10,6 @@ import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as SimplePopups from "../popups/simple-popups";
-import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
@@ -810,26 +809,6 @@ $(document).on(
     $(target).toggleClass("active");
   }
 );
-
-$(document).on(
-  "click",
-  ".pageSettings .section.presets .addPresetButton",
-  (e) => {
-    EditPresetPopup.show("add");
-  }
-);
-
-$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
-  EditPresetPopup.show("edit", presetid, name);
-});
-
-$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
-  EditPresetPopup.show("remove", presetid, name);
-});
 
 $(document).on(
   "click",
