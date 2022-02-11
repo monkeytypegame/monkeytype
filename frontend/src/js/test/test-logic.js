@@ -47,17 +47,7 @@ import * as ModesNotice from "./../elements/modes-notice";
 
 const objecthash = require("node-object-hash")().hash;
 
-export let glarsesMode = false;
-
 let failReason = "";
-
-export function toggleGlarses() {
-  glarsesMode = true;
-  console.log(
-    "Glarses Mode On - test result will be hidden. You can check the stats in the console (here)"
-  );
-  console.log("To disable Glarses Mode refresh the page.");
-}
 
 export let notSignedInLastResult = null;
 

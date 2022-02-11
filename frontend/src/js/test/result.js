@@ -9,7 +9,7 @@ import * as DB from "../db";
 import * as TodayTracker from "./today-tracker";
 import * as PbCrown from "./pb-crown";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
-import * as TestLogic from "./test-logic";
+import * as GlarsesMode from "./../states/glarses-mode";
 import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 
@@ -624,7 +624,7 @@ export function update(
     $("#result .stats .infoAndTags").removeClass("hidden");
   }
 
-  if (TestLogic.glarsesMode) {
+  if (GlarsesMode.get()) {
     $("#middle #result .noStressMessage").remove();
     $("#middle #result").prepend(`
 
@@ -690,7 +690,7 @@ export function update(
         },
         125
       );
-      if (Config.alwaysShowWordsHistory && !TestLogic.glarsesMode) {
+      if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
         TestUI.toggleResultWords();
       }
       Keymap.hide();
