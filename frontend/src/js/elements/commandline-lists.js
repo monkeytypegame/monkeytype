@@ -13,7 +13,6 @@ import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as Commandline from "./commandline";
 import * as CustomText from "../test/custom-text";
 import * as Settings from "../pages/settings";
 import * as ChallengeController from "../controllers/challenge-controller";
@@ -250,7 +249,7 @@ export function updateTagCommands() {
           } else {
             txt = '<i class="fas fa-fw"></i>' + txt;
           }
-          if (Commandline.isSingleListCommandLineActive()) {
+          if ($("#commandLine").hasClass("allCommands")) {
             $(
               `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(
@@ -3068,7 +3067,6 @@ export let defaultCommands = {
       subgroup: true,
       exec: () => {
         current.push(commandsCopyWordsToClipboard);
-        Commandline.show();
       },
     },
     {
