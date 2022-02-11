@@ -94,14 +94,7 @@ async function initGroups() {
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button",
-    null,
-    () => {
-      if (Config.showKeyTips) {
-        $(".pageSettings .tip").removeClass("hidden");
-      } else {
-        $(".pageSettings .tip").addClass("hidden");
-      }
-    }
+    null
   );
   groups.freedomMode = new SettingsGroup(
     "freedomMode",
@@ -371,6 +364,12 @@ export function reset() {
 }
 
 export async function fillSettingsPage() {
+  if (Config.showKeyTips) {
+    $(".pageSettings .tip").removeClass("hidden");
+  } else {
+    $(".pageSettings .tip").addClass("hidden");
+  }
+
   let languageEl = $(".pageSettings .section.language select").empty();
   const groups = await Misc.getLanguageGroups();
   groups.forEach((group) => {
@@ -931,10 +930,9 @@ export const page = new Page(
   async () => {
     reset();
   },
-  () => {
-    fillSettingsPage().then(() => {
-      update();
-    });
+  async () => {
+    fillSettingsPage();
+    update();
   },
   () => {
     //
