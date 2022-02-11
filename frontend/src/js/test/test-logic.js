@@ -1649,6 +1649,24 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   restart();
 });
 
+$("#practiseWordsPopup .button.missed").click(() => {
+  PractiseWords.hidePopup();
+  PractiseWords.init(true, false);
+  restart(false, false, false, true);
+});
+
+$("#practiseWordsPopup .button.slow").click(() => {
+  PractiseWords.hidePopup();
+  PractiseWords.init(false, true);
+  restart(false, false, false, true);
+});
+
+$("#practiseWordsPopup .button.both").click(() => {
+  PractiseWords.hidePopup();
+  PractiseWords.init(true, true);
+  restart(false, false, false, true);
+});
+
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
   if (eventKey === "showAllLines" && !nosave) restart();

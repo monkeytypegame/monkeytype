@@ -2,7 +2,6 @@ import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as TestLogic from "./test-logic";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "./../observables/config-event";
 
@@ -86,7 +85,6 @@ export function init(missed, slow) {
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
 
-  TestLogic.restart(false, false, false, true);
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;
@@ -138,21 +136,6 @@ $("#practiseWordsPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "practiseWordsPopupWrapper") {
     hidePopup();
   }
-});
-
-$("#practiseWordsPopup .button.missed").click(() => {
-  hidePopup();
-  init(true, false);
-});
-
-$("#practiseWordsPopup .button.slow").click(() => {
-  hidePopup();
-  init(false, true);
-});
-
-$("#practiseWordsPopup .button.both").click(() => {
-  hidePopup();
-  init(true, true);
 });
 
 $("#practiseWordsPopup .button").keypress((e) => {
