@@ -1,12 +1,12 @@
-import { Language } from "./language";
+import { Language } from "./language.d";
 
-import { Layout, KeymapLayout, CustomLayoutFluid } from "./layout";
+import { Layout, KeymapLayout, CustomLayoutFluid } from "./layout.d";
 
-import { Theme } from "./theme";
+import { Theme } from "./theme.d";
 
-import { Funbox } from "./funbox";
+import { Funbox } from "./funbox.d";
 
-import { FontFamily } from "./font";
+import { FontFamily } from "./font.d";
 
 export declare type Difficulty = "normal" | "expert" | "master";
 

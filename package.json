@@ -10,7 +10,7 @@
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/js/**/*.js'",
-    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "pretty": "prettier --check './backend/**/*.{ts,js}' './frontend/src/**/*.{ts,js,scss}' './frontend/static/**/*.{json,html}'",
     "webpack": "cd frontend && npx webpack --config webpack.config.js"
   },
   "engines": {
@@ -31,7 +31,7 @@
     "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "4.3.0",
-    "prettier": "2.1.2",
+    "prettier": "^2.5.1",
     "pretty-quick": "3.1.0",
     "webpack-cli": "^4.9.2"
   },
