@@ -1,5 +1,4 @@
 import UpdateConfig from "../config";
-import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Misc from "./../misc";
 
 // export function show() {
@@ -156,10 +155,6 @@ export function update(previous, current) {
     animTime
   );
 }
-
-$(document).on("click", "#top .config .customText .text-button", () => {
-  CustomTextPopup.show();
-});
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue, eventValue2) => {
