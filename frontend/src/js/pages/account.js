@@ -1000,6 +1000,14 @@ $(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
 });
 
+$(
+  ".pageAccount .topFilters .button, .pageAccount .filterButtons .button "
+).click((e) => {
+  setTimeout(() => {
+    update();
+  }, 0);
+});
+
 export const page = new Page(
   "account",
   $(".page.pageAccount"),
