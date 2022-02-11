@@ -25,7 +25,7 @@
   },
   "rules": {
     "json/*": ["error"],
-    "indent": ["off"], //handled by prettier
+    "indent": ["off"],
     "linebreak-style": ["error", "unix"],
     "quotes": [
       "error",
