@@ -3,7 +3,7 @@ import * as CustomText from "./custom-text";
 import * as Misc from "../misc";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
-import * as TestTimer from "./test-timer";
+import * as Time from "./../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "./../states/test-active";
 
@@ -94,7 +94,7 @@ let miniTimerNumberElement = document.querySelector(
 );
 
 export function update() {
-  let time = TestTimer.time;
+  let time = Time.get();
   if (
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)

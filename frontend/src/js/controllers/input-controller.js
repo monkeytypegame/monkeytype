@@ -18,7 +18,6 @@ import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
 import * as TimerProgress from "../test/timer-progress";
-import * as TestTimer from "../test/test-timer";
 import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay.js";
@@ -267,7 +266,7 @@ function handleSpace() {
     Config.mode === "quote" ||
     Config.mode === "zen"
   ) {
-    TimerProgress.update(TestTimer.time);
+    TimerProgress.update();
   }
   if (
     Config.mode == "time" ||

@@ -16,9 +16,9 @@ import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "./../states/test-active";
+import * as Time from "./../states/time";
 
 let slowTimerCount = 0;
-export let time = 0;
 let timer = null;
 const interval = 1000;
 let expected = 0;
@@ -29,13 +29,14 @@ export function enableTimerDebug() {
 }
 
 export function clear() {
-  time = 0;
+  Time.set(0);
   clearTimeout(timer);
 }
 
 function premid() {
   if (timerDebug) console.time("premid");
-  document.querySelector("#premidSecondsLeft").innerHTML = Config.time - time;
+  document.querySelector("#premidSecondsLeft").innerHTML =
+    Config.time - Time.get();
   if (timerDebug) console.timeEnd("premid");
 }
 
@@ -45,7 +46,7 @@ function updateTimer() {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
-    TimerProgress.update(time);
+    TimerProgress.update();
   }
   if (timerDebug) console.timeEnd("timer progress update");
 }
@@ -87,23 +88,23 @@ function layoutfluid() {
     // console.log(layouts);
     const numLayouts = layouts.length;
     let index = 0;
-    index = Math.floor(time / (Config.time / numLayouts));
+    index = Math.floor(Time.get() / (Config.time / numLayouts));
 
     if (
-      time == Math.floor(Config.time / numLayouts) - 3 ||
-      time == (Config.time / numLayouts) * 2 - 3
+      Time.get() == Math.floor(Config.time / numLayouts) - 3 ||
+      Time.get() == (Config.time / numLayouts) * 2 - 3
     ) {
       Notifications.add("3", 0, 1);
     }
     if (
-      time == Math.floor(Config.time / numLayouts) - 2 ||
-      time == Math.floor(Config.time / numLayouts) * 2 - 2
+      Time.get() == Math.floor(Config.time / numLayouts) - 2 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 2
     ) {
       Notifications.add("2", 0, 1);
     }
     if (
-      time == Math.floor(Config.time / numLayouts) - 1 ||
-      time == Math.floor(Config.time / numLayouts) * 2 - 1
+      Time.get() == Math.floor(Config.time / numLayouts) - 1 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 1
     ) {
       Notifications.add("1", 0, 1);
     }
@@ -152,8 +153,10 @@ function checkIfTimeIsUp() {
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     if (
-      (time >= Config.time && Config.time !== 0 && Config.mode === "time") ||
-      (time >= CustomText.time &&
+      (Time.get() >= Config.time &&
+        Config.time !== 0 &&
+        Config.mode === "time") ||
+      (Time.get() >= CustomText.time &&
         CustomText.time !== 0 &&
         Config.mode === "custom")
     ) {
@@ -181,7 +184,7 @@ export function getTimerStats() {
 
 async function timerStep() {
   if (timerDebug) console.time("timer step -----------------------------");
-  time++;
+  Time.increment();
   premid();
   updateTimer();
   let wpmAndRaw = calculateWpmRaw();

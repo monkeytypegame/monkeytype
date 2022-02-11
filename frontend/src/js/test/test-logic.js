@@ -272,7 +272,7 @@ export function startTest() {
   LiveWpm.show();
   LiveAcc.show();
   LiveBurst.show();
-  TimerProgress.update(TestTimer.time);
+  TimerProgress.update();
   TestTimer.clear();
 
   if (Config.funbox === "memory") {
