@@ -4,11 +4,7 @@
   "htmlWhitespaceSensitivity": "ignore",
   "overrides": [
     {
-      "files": [
-        "Typings/**/*.d.ts",
-        "frontend/src/js/**/*.ts",
-        "backend/**/*.ts"
-      ],
+      "files": ["frontend/src/js/**/*.ts", "backend/**/*.ts"],
       "options": {
         "parser": "typescript"
       }

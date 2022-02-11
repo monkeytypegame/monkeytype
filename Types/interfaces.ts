@@ -1,13 +1,3 @@
-import { Language } from "./language";
-
-import { Layout, KeymapLayout, CustomLayoutFluid } from "./layout";
-
-import { Theme } from "./theme";
-
-import { Funbox } from "./funbox";
-
-import { FontFamily } from "./font";
-
 export declare type Difficulty = "normal" | "expert" | "master";
 
 export declare type CustomModes = "custom";
@@ -113,6 +103,14 @@ export declare type MonkeyPowerLevel =
 
 export declare type MinimumBurst = "off" | "fixed" | "flex";
 
+export declare type FunboxJSONType = "script" | "style";
+
+export declare interface FunboxJSON {
+  name: string;
+  type: FunboxJSONType;
+  info: string;
+}
+
 export declare interface Preset {
   _id: string;
   name: string;
@@ -124,7 +122,7 @@ export declare interface PersonalBest {
   consistency: number;
   difficulty: Difficulty;
   lazyMode: boolean;
-  language: Language;
+  language: string;
   punctuation: boolean;
   raw: number;
   wpm: number;
@@ -198,17 +196,17 @@ export declare interface Result {
   blindMode?: boolean;
   lazyMode?: boolean;
   difficulty?: Difficulty;
-  funbox?: Funbox;
-  language?: Language | null;
+  funbox?: string;
+  language?: string | null;
   numbers?: boolean;
   punctuation?: boolean;
 }
 
 export declare interface Config {
-  theme: Theme;
+  theme: string;
   customTheme: boolean;
   customThemeColors: string[];
-  favThemes: Theme[];
+  favThemes: string[];
   showKeyTips: boolean;
   showLiveWpm: boolean;
   showTimerProgress: boolean;
@@ -220,7 +218,7 @@ export declare interface Config {
   time: TimeModes;
   mode: Mode;
   quoteLength: QuoteLengthArray;
-  language: Language;
+  language: string;
   fontSize: FontSize;
   freedomMode: boolean;
   resultFilters?: ResultFilters | null;
@@ -230,8 +228,8 @@ export declare interface Config {
   caretStyle: CaretStyle;
   paceCaretStyle: CaretStyle;
   flipTestColors: boolean;
-  layout: Layout;
-  funbox: Funbox;
+  layout: string;
+  funbox: string;
   confidenceMode: ConfidenceMode;
   indicateTypos: boolean;
   timerStyle: TimerStyle;
@@ -244,8 +242,8 @@ export declare interface Config {
   keymapMode: KeymapMode;
   keymapStyle: KeymapStyle;
   keymapLegendStyle: KeymapLegendStyle;
-  keymapLayout: KeymapLayout;
-  fontFamily: FontFamily;
+  keymapLayout: string;
+  fontFamily: string;
   smoothLineScroll: boolean;
   alwaysShowDecimalPlaces: boolean;
   alwaysShowWordsHistory: boolean;
@@ -280,7 +278,7 @@ export declare interface Config {
   customBackground: string;
   customBackgroundSize: CustomBackgroundSize;
   customBackgroundFilter: CustomBackgroundFilter;
-  customLayoutfluid: CustomLayoutFluid;
+  customLayoutfluid: string;
   monkeyPowerLevel: MonkeyPowerLevel;
   minBurst: MinimumBurst;
   minBurstCustomSpeed: number;
@@ -308,7 +306,7 @@ export declare interface Snapshot {
   name?: string;
   presets: Preset[];
   tags: Tag[];
-  favouriteThemes: Theme[];
+  favouriteThemes: string[];
   lbMemory?: Leaderboard;
   globalStats: Stats;
   quoteMod: boolean;

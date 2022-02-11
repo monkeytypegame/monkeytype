@@ -12,9 +12,8 @@ import {
   TimeModes,
   WordsModes,
   Mode,
-} from "../../../../Typings/interfaces";
-import { Language } from "../../../../Typings/language";
-import { FunboxJSON } from "../../../../Typings/funbox";
+  FunboxJSON,
+} from "../../../../Types/interfaces";
 
 export const defaultResultFilters = {
   difficulty: {
@@ -76,11 +75,11 @@ export const defaultResultFilters = {
 
 export let filters = defaultResultFilters;
 
-function save() {
+function save(): void {
   window.localStorage.setItem("resultFilters", JSON.stringify(filters));
 }
 
-export function load() {
+export function load(): void {
   // let newTags = $.cookie("activeTags");
   console.log("loading filters");
   try {
@@ -123,7 +122,7 @@ export function getFilters(): ResultFilters {
   return filters;
 }
 
-export function getGroup(group: Group) {
+export function getGroup<G extends Group>(group: G): ResultFilters[G] {
   return filters[group];
 }
 
@@ -131,7 +130,10 @@ export function getGroup(group: Group) {
 //   filters[group][filter] = value;
 // }
 
-export function getFilter<G extends Group>(group: G, filter: Filter<G>) {
+export function getFilter<G extends Group>(
+  group: G,
+  filter: Filter<G>
+): ResultFilters[G][Filter<G>] {
   return filters[group][filter];
 }
 
@@ -139,19 +141,19 @@ export function getFilter<G extends Group>(group: G, filter: Filter<G>) {
 //   filters[group][filter] = !filters[group][filter];
 // }
 
-export function loadTags(tags: Tag[]) {
+export function loadTags(tags: Tag[]): void {
   console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
 
-export function reset() {
+export function reset(): void {
   filters = defaultResultFilters;
   save();
 }
 
-export function updateActive() {
+export function updateActive(): void {
   const aboveChartDisplay = {} as ResultFilters;
   (Object.keys(getFilters()) as Group[]).forEach((group) => {
     aboveChartDisplay[group] = {
@@ -184,7 +186,7 @@ export function updateActive() {
     );
   });
 
-  function addText(group: Group) {
+  function addText(group: Group): string {
     let ret = "";
     ret += "<div class='group'>";
     if (group === "difficulty") {
@@ -293,7 +295,7 @@ export function updateActive() {
   }, 0);
 }
 
-export function toggle<G extends Group>(group: G, filter: Filter<G>) {
+export function toggle<G extends Group>(group: G, filter: Filter<G>): void {
   try {
     if (group === "date") {
       Object.keys(getGroup("date")).forEach((date) => {
@@ -316,7 +318,7 @@ export function toggle<G extends Group>(group: G, filter: Filter<G>) {
   }
 }
 
-export function updateTags() {
+export function updateTags(): void {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
@@ -467,7 +469,7 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").click(() => {
 });
 
 // TODO remove Language[] when Misc is done
-Misc.getLanguageList().then((languages: Language[]) => {
+Misc.getLanguageList().then((languages: string[]) => {
   languages.forEach((language) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"

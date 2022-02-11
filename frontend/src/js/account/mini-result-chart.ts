@@ -1,22 +1,22 @@
 import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";
-import { ChartData } from "../../../../Typings/interfaces";
+import { ChartData } from "../../../../Types/interfaces";
 
-export function updatePosition(x: number, y: number) {
+export function updatePosition(x: number, y: number): void {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
 }
 
-export function show() {
+export function show(): void {
   $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeIn(125);
   $(".pageAccount .miniResultChartBg").stop(true, true).fadeIn(125);
 }
 
-function hide() {
+function hide(): void {
   $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeOut(125);
   $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
 }
 
-export function updateData(data: ChartData) {
+export function updateData(data: ChartData): void {
   // let data = filteredResults[filteredId].chartData;
   const labels = [];
   for (let i = 1; i <= data.wpm.length; i++) {
