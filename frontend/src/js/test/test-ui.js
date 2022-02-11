@@ -5,7 +5,6 @@ import * as DB from "../db";
 import * as TestLogic from "./test-logic";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
-import * as Funbox from "./funbox";
 import * as PaceCaret from "./pace-caret";
 import * as CustomText from "./custom-text";
 import * as Keymap from "../elements/keymap";
@@ -219,8 +218,6 @@ export function showWords() {
   }
 
   updateActiveElement();
-  Funbox.toggleScript(TestWords.words.getCurrent());
-
   Caret.updatePosition();
 }
 

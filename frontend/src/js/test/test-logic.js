@@ -480,6 +480,7 @@ export function restart(
           await Funbox.activate();
         }
         TestUI.showWords();
+        Funbox.toggleScript(TestWords.words.getCurrent());
         PaceCaret.init();
       }
       failReason = "";
@@ -961,6 +962,7 @@ export async function init() {
     await Funbox.activate();
   }
   TestUI.showWords();
+  Funbox.toggleScript(TestWords.words.getCurrent());
   // }
 }
 
