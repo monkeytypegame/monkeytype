@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "npx gulp build",
-    "build:live": "npx gulp build --option production",
+    "build:live": "npx gulp build-production",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
     "deploy:live": "npm run build:live && firebase deploy -P live --only hosting"
   },
