@@ -22,16 +22,9 @@ task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
-task("lint-js", function () {
-  return src("./src/js/**/*.js")
+task("lint", function () {
+  return src(["./src/js/**/*.js", "./src/js/**/*.ts"])
     .pipe(eslint(eslintConfig))
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-});
-
-task("lint-ts", function () {
-  return src("./src/js/**/*.ts")
-    .pipe(eslint(tsEslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
@@ -121,8 +114,7 @@ task("updateSwCacheName", function () {
 task(
   "compile",
   series(
-    "lint-js",
-    "lint-ts",
+    "lint",
     "lint-json",
     "browserify",
     "static",
@@ -133,8 +125,7 @@ task(
 
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
-  watch("./src/js/**/*.js", series("lint-js", "browserify"));
-  watch("./src/js/**/*.ts", series("lint-ts", "browserify"));
+  watch(["./src/js/**/*.js", "./src/js/**/*.ts"], series("lint", "browserify"));
   watch("./static/**/*.*", series("lint-json", "static"));
 });
 

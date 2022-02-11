@@ -16,18 +16,14 @@
   "extends": [
     "eslint:recommended",
     "plugin:json/recommended",
-    "plugin:require-path-exists/recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:require-path-exists/recommended"
   ],
-  "plugins": ["json", "require-path-exists", "@typescript-eslint"],
+  "plugins": ["json", "require-path-exists"],
   "parserOptions": {
-    "ecmaVersion": 12,
+    "ecmaVersion": 13,
     "sourceType": "module"
   },
-  "parser": "@typescript-eslint/parser",
   "rules": {
-    "@typescript-eslint/ban-ts-comment": "off",
     "json/*": ["error"],
     "indent": ["off"], //handled by prettier
     "linebreak-style": ["error", "unix"],
@@ -37,25 +33,14 @@
       { "allowTemplateLiterals": true, "avoidEscape": true }
     ],
     "semi": ["error", "always"],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
-    "no-var": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
     "require-path-exists/exists": [
       2,
       {
-        "extensions": [
-          "",
-          ".js",
-          ".ts",
-          ".tsx",
-          ".es.ts",
-          ".tsx",
-          ".json5",
-          ".es",
-          ".es6",
-          ".coffee"
-        ]
+        "extensions": ["", ".ts", ".js", ".es.js", ".json5", ".es", ".es6"]
       }
     ]
   }
