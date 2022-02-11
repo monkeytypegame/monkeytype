@@ -1,19 +1,14 @@
 const { task, src, dest, series, watch } = require("gulp");
 // const axios = require("axios");
-const babelify = require("babelify");
 const concat = require("gulp-concat");
 const del = require("del");
-const source = require("vinyl-source-stream");
-const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint-new");
 var sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
-const uglify = require("gulp-uglify");
 const through2 = require("through2");
 const { webpack } = require("webpack");
 const webpackStream = require("webpack-stream");
-const path = require("path");
 const webpackConfig = require("./webpack.config.js");
 // sass.compiler = require("dart-sass");
 
