@@ -94,7 +94,14 @@ async function initGroups() {
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button",
-    null
+    null,
+    () => {
+      if (Config.showKeyTips) {
+        $(".pageSettings .tip").removeClass("hidden");
+      } else {
+        $(".pageSettings .tip").addClass("hidden");
+      }
+    }
   );
   groups.freedomMode = new SettingsGroup(
     "freedomMode",
