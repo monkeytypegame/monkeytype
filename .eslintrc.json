@@ -59,7 +59,8 @@
       }
     ],
     "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-unused-vars": "off"
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-var-requires": "off"
   },
   "overrides": [
     {
@@ -69,7 +70,8 @@
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-vars": "error"
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-var-requires": "error"
       }
     }
   ]
