@@ -9,7 +9,6 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as PageController from "./../controllers/page-controller";
 import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
@@ -805,10 +804,6 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
-});
-
-$(".pageTest #rateQuoteButton").click(async (event) => {
-  QuoteRatePopup.show(TestWords.randomQuote);
 });
 
 $(".pageTest #reportQuoteButton").click(async (event) => {
