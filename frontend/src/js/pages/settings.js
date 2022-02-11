@@ -13,6 +13,7 @@ import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as AccountController from "../controllers/account-controller";
+import Page from "./page";
 
 export let groups = {};
 async function initGroups() {
@@ -919,3 +920,23 @@ $(".quickNav .links a").on("click", (e) => {
   );
   isOpen && toggleSettingsGroup(settingsGroup);
 });
+
+export const page = new Page(
+  "settings",
+  $(".page.pageSettings"),
+  "/settings",
+  () => {
+    //
+  },
+  async () => {
+    reset();
+  },
+  () => {
+    fillSettingsPage().then(() => {
+      update();
+    });
+  },
+  () => {
+    //
+  }
+);

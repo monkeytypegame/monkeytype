@@ -1,4 +1,5 @@
 import * as Misc from "../misc";
+import Page from "./page";
 
 export function reset() {
   $(".pageAbout .contributors").empty();
@@ -19,3 +20,21 @@ export async function fill() {
     `);
   });
 }
+
+export const page = new Page(
+  "about",
+  $(".page.pageAbout"),
+  "/about",
+  () => {
+    //
+  },
+  async () => {
+    reset();
+  },
+  () => {
+    fill();
+  },
+  () => {
+    //
+  }
+);

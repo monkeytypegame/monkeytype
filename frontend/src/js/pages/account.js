@@ -24,6 +24,7 @@ import axiosInstance from "../axios-instance";
 import * as TodayTracker from "./../test/today-tracker";
 import * as ActivePage from "../states/active-page";
 import * as TestActive from "./../states/test-active";
+import Page from "./page";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -37,7 +38,7 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
-    if (ActivePage.get() == "pageLoading") {
+    if (ActivePage.get() == "loading") {
       LoadingPage.updateBar(90);
     } else {
       LoadingPage.updateBar(45);
@@ -64,11 +65,11 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() == "pageLoading") PageController.change("");
+    if (ActivePage.get() == "loading") PageController.change("");
     AccountController.signOut();
     return;
   }
-  if (ActivePage.get() == "pageLoading") {
+  if (ActivePage.get() == "loading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -213,7 +214,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if (ActivePage.get() == "pageTest") {
+        if (ActivePage.get() == "test") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -230,7 +231,7 @@ export async function getDataAndInit() {
     }
   }
   // if (
-  //   ActivePage.get() == "pageLogin" ||
+  //   ActivePage.get() == "login" ||
   //   window.location.pathname === "/account"
   // ) {
   //   PageController.change("account");
@@ -244,7 +245,7 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   PageController.setTransition(false);
   console.log("account loading finished");
-  // if (ActivePage.get() == "pageLoading") {
+  // if (ActivePage.get() == "loading") {
   //   LoadingPage.updateBar(100, true);
   //   Focus.set(false);
   //   PageController.change("");
@@ -1235,3 +1236,22 @@ $(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
   // We want to 'force' descending sort:
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
 });
+
+export const page = new Page(
+  "account",
+  $(".page.pageAccount"),
+  "/account",
+  () => {
+    SignOutButton.hide();
+  },
+  async () => {
+    reset();
+  },
+  () => {
+    update();
+    // SignOutButton.show();
+  },
+  () => {
+    //
+  }
+);

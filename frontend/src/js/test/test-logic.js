@@ -282,7 +282,8 @@ export function restart(
   withSameWordset = false,
   nosave = false,
   event,
-  practiseMissed = false
+  practiseMissed = false,
+  noAnim = false
 ) {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
@@ -290,7 +291,7 @@ export function restart(
     } catch {}
     return;
   }
-  if (ActivePage.get() == "pageTest" && !TestUI.resultVisible) {
+  if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (TestWords.hasTab) {
         try {
@@ -383,7 +384,7 @@ export function restart(
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   QuoteRatePopup.clearQuoteStats();
-  if (ActivePage.get() == "pageTest" && window.scrollY > 0)
+  if (ActivePage.get() == "test" && window.scrollY > 0)
     window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
@@ -414,9 +415,9 @@ export function restart(
     {
       opacity: 0,
     },
-    125,
+    noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "pageTest") Focus.set(false);
+      if (ActivePage.get() == "test") Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -554,7 +555,7 @@ export function restart(
           {
             opacity: 1,
           },
-          125,
+          noAnim ? 0 : 125,
           () => {
             TestUI.setTestRestarting(false);
             // resetPaceCaret();
@@ -958,7 +959,7 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if (ActivePage.get() == "pageTest") {
+  if (ActivePage.get() == "test") {
     await Funbox.activate();
   }
   TestUI.showWords();

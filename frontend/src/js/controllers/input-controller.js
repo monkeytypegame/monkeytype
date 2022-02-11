@@ -603,9 +603,9 @@ function handleTab(event) {
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
     $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
-    ActivePage.get() != "pageLogin"
+    ActivePage.get() != "login"
   ) {
-    if (ActivePage.get() == "pageTest") {
+    if (ActivePage.get() == "test") {
       if (Config.quickTab) {
         if (!$("#leaderboardsWrapper").hasClass("hidden")) {
           Leaderboards.hide();
@@ -659,11 +659,11 @@ function handleTab(event) {
 }
 
 $(document).keydown((event) => {
-  if (ActivePage.get() == "pageLoading") return event.preventDefault();
+  if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = ActivePage.get() === "pageTest";
+  const pageTestActive = ActivePage.get() === "test";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 

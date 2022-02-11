@@ -1,4 +1,5 @@
 import * as Misc from "./../misc";
+import Page from "./page";
 
 export function updateBar(percentage, fast) {
   const speed = fast ? 100 : 1000;
@@ -36,3 +37,21 @@ export function showBar() {
     );
   });
 }
+
+export const page = new Page(
+  "loading",
+  $(".page.pageLoading"),
+  "/",
+  async () => {
+    //
+  },
+  async () => {
+    //
+  },
+  () => {
+    //
+  },
+  () => {
+    //
+  }
+);

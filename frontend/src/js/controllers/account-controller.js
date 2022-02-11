@@ -75,9 +75,6 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
-    if (window.location.pathname == "/login") {
-      window.history.replaceState("", null, "/account");
-    }
     await loadUser(user);
   } else {
     if (window.location.pathname == "/account") {
@@ -85,12 +82,18 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }
     PageController.setTransition(false);
   }
-  if (window.location.pathname != "/account") {
+  if (window.location.pathname == "/login" && user) {
+    PageController.change("account");
+  } else if (window.location.pathname != "/account") {
+    PageController.change();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
+  } else {
+    Account.update();
+    // SignOutButton.show();
   }
-  PageController.change();
+
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {

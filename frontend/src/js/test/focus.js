@@ -23,8 +23,8 @@ export function set(foc, withCursor = false) {
 
 $(document).mousemove(function (event) {
   if (!state) return;
-  if (ActivePage.get() == "pageLoading") return;
-  if (ActivePage.get() == "pageAccount" && state == true) return;
+  if (ActivePage.get() == "loading") return;
+  if (ActivePage.get() == "account" && state == true) return;
   if (
     $("#top").hasClass("focus") &&
     (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
