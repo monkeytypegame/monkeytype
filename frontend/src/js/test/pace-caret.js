@@ -1,4 +1,4 @@
-import * as TestLogic from "./test-logic";
+import * as TestStats from "./test-stats";
 import * as TestWords from "./test-words";
 import * as TestUI from "./test-ui";
 import Config, * as UpdateConfig from "../config";
@@ -6,11 +6,12 @@ import * as DB from "../db";
 import * as SlowTimer from "./../states/slow-timer";
 import * as Misc from "./../misc";
 import * as TestActive from "./../states/test-active";
+import * as TestState from "./test-state";
 
 export let settings = null;
 
 function resetCaretPosition() {
-  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat) return;
+  if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
@@ -60,8 +61,8 @@ export async function init() {
     console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (TestLogic.isPaceRepeat == true) {
-    wpm = TestLogic.lastTestWpm;
+  } else if (TestState.isPaceRepeat == true) {
+    wpm = TestStats.lastTestWpm;
   }
   if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
     settings = null;

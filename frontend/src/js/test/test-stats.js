@@ -8,6 +8,12 @@ export let start, end;
 export let start2, end2;
 export let lastSecondNotRound = false;
 
+export let lastTestWpm = 0;
+
+export function setLastTestWpm(wpm) {
+  lastTestWpm = wpm;
+}
+
 export function getStats() {
   let ret = {
     start,

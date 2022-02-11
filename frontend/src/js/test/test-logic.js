@@ -42,6 +42,7 @@ import * as ActivePage from "../states/active-page";
 import * as TestActive from "./../states/test-active";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import * as TestState from "./test-state";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -67,18 +68,6 @@ export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objecthash(notSignedInLastResult);
-}
-
-export let isRepeated = false;
-export let isPaceRepeat = false;
-export let lastTestWpm = 0;
-
-export function setRepeated(tf) {
-  isRepeated = tf;
-}
-
-export function setPaceRepeat(tf) {
-  isPaceRepeat = tf;
 }
 
 let spanishSentenceTracker = "";
@@ -276,7 +265,10 @@ export function startTest() {
   }
 
   try {
-    if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat))
+    if (
+      Config.paceCaret !== "off" ||
+      (Config.repeatedPace && TestState.isPaceRepeat)
+    )
       PaceCaret.start();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
@@ -453,14 +445,14 @@ export function restart(
         UpdateConfig.setNumbers(false, true);
       }
       if (!withSameWordset && !shouldQuoteRepeat) {
-        setRepeated(false);
-        setPaceRepeat(repeatWithPace);
+        TestState.setRepeated(false);
+        TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
-        setRepeated(true);
-        setPaceRepeat(repeatWithPace);
+        TestState.setRepeated(true);
+        TestState.setPaceRepeat(repeatWithPace);
         TestActive.set(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
@@ -480,7 +472,7 @@ export function restart(
       }
       failReason = "";
       if (Config.mode === "quote") {
-        setRepeated(false);
+        TestState.setRepeated(false);
       }
       if (Config.keymapMode !== "off") {
         Keymap.show();
@@ -1230,7 +1222,7 @@ function buildCompletedEvent(difficultyFailed) {
   if (stats.time % 1 != 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
-  lastTestWpm = stats.wpm;
+  TestStats.setLastTestWpm(stats.wpm);
   completedEvent.wpm = stats.wpm;
   completedEvent.rawWpm = stats.wpmRaw;
   completedEvent.charStats = [
@@ -1394,7 +1386,7 @@ export async function finish(difficultyFailed = false) {
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
     dontSave = true;
-  } else if (isRepeated) {
+  } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
   } else if (
@@ -1469,7 +1461,7 @@ export async function finish(difficultyFailed = false) {
     difficultyFailed,
     failReason,
     afkDetected,
-    isRepeated,
+    TestState.isRepeated,
     tooShort,
     TestWords.randomQuote,
     dontSave
@@ -1591,6 +1583,71 @@ export function fail(reason) {
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
 }
+
+$(document).on("click", "#testModesNotice .text-button.restart", (event) => {
+  restart();
+});
+
+$(document).on("keypress", "#restartTestButton", (event) => {
+  if (event.key == "Enter") {
+    ManualRestart.reset();
+    if (
+      TestActive.get() &&
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote"
+    ) {
+      restart(true);
+    } else {
+      restart();
+    }
+  }
+});
+
+$(document.body).on("click", "#restartTestButton", () => {
+  ManualRestart.set();
+  if (TestUI.resultCalculating) return;
+  if (
+    TestActive.get() &&
+    Config.repeatQuotes === "typing" &&
+    Config.mode === "quote"
+  ) {
+    restart(true);
+  } else {
+    restart();
+  }
+});
+
+$(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
+
+$(document).on("keypress", "#nextTestButton", (event) => {
+  if (event.keyCode == 13) {
+    restart();
+  }
+});
+
+$(document.body).on("click", "#nextTestButton", () => {
+  ManualRestart.set();
+  restart();
+});
+
+$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+  if (Config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
+  ManualRestart.set();
+  restart(true);
+});
+
+$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
+  if (Config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
+  if (event.keyCode == 13) {
+    restart(true);
+  }
+});
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {

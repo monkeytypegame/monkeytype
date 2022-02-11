@@ -2,7 +2,6 @@ import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
-import * as TestLogic from "./test-logic";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as PaceCaret from "./pace-caret";
@@ -10,7 +9,6 @@ import * as CustomText from "./custom-text";
 import * as Keymap from "../elements/keymap";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
-import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
@@ -19,7 +17,7 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as PageController from "./../controllers/page-controller";
 import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
-import * as TestActive from "./../states/test-active";
+import * as TestState from "./test-state";
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
@@ -572,7 +570,7 @@ export function updateModesNotice() {
 
   $(".pageTest #testModesNotice").empty();
 
-  if (TestLogic.isRepeated && Config.mode !== "quote") {
+  if (TestState.isRepeated && Config.mode !== "quote") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button restart" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
@@ -636,7 +634,7 @@ export function updateModesNotice() {
 
   if (
     Config.paceCaret !== "off" ||
-    (Config.repeatedPace && TestLogic.isPaceRepeat)
+    (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
     let speed = "";
     try {
@@ -1004,10 +1002,6 @@ $(document.body).on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
-$(document).on("click", "#testModesNotice .text-button.restart", (event) => {
-  TestLogic.restart();
-});
-
 $(document).on("click", "#testModesNotice .text-button.blind", (event) => {
   UpdateConfig.setBlindMode(!Config.blindMode);
 });
@@ -1095,41 +1089,6 @@ $("#wordsInput").on("focusout", () => {
   Caret.hide();
 });
 
-$(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key == "Enter") {
-    ManualRestart.reset();
-    if (
-      TestActive.get() &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      TestLogic.restart(true);
-    } else {
-      TestLogic.restart();
-    }
-  }
-});
-
-$(document.body).on("click", "#restartTestButton", () => {
-  ManualRestart.set();
-  if (resultCalculating) return;
-  if (
-    TestActive.get() &&
-    Config.repeatQuotes === "typing" &&
-    Config.mode === "quote"
-  ) {
-    TestLogic.restart(true);
-  } else {
-    TestLogic.restart();
-  }
-});
-
-$(document.body).on(
-  "click",
-  "#retrySavingResultButton",
-  TestLogic.retrySavingResult
-);
-
 $(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
     PractiseWords.showPopup(true);
@@ -1141,17 +1100,6 @@ $(document.body).on("click", "#practiseWordsButton", () => {
   PractiseWords.showPopup();
 });
 
-$(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.keyCode == 13) {
-    TestLogic.restart();
-  }
-});
-
-$(document.body).on("click", "#nextTestButton", () => {
-  ManualRestart.set();
-  TestLogic.restart();
-});
-
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
   if (event.keyCode == 13) {
     toggleResultWords();
@@ -1160,25 +1108,6 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
 
 $(document.body).on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
-});
-
-$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
-  if (Config.mode == "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
-    return;
-  }
-  ManualRestart.set();
-  TestLogic.restart(true);
-});
-
-$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (Config.mode == "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
-    return;
-  }
-  if (event.keyCode == 13) {
-    TestLogic.restart(true);
-  }
 });
 
 $("#wordsWrapper").on("click", () => {
