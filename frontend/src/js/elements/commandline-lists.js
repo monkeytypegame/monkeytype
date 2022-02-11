@@ -2332,6 +2332,7 @@ Misc.getChallengeList().then((challenges) => {
       display: challenge.display,
       exec: () => {
         ChallengeController.setup(challenge.name);
+        TestLogic.restart(false, true);
       },
     });
   });

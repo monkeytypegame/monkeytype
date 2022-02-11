@@ -2,7 +2,6 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
-import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
@@ -167,12 +166,11 @@ export async function setup(challengeName) {
     if (challenge === undefined) {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
-      TestLogic.restart(false, true);
       setTimeout(() => {
         $("#top .config").removeClass("hidden");
         $(".page.pageTest").removeClass("hidden");
       }, 250);
-      return;
+      return false;
     }
     if (challenge.type === "customTime") {
       UpdateConfig.setTimeConfig(challenge.parameters[0], true);
@@ -239,7 +237,6 @@ export async function setup(challengeName) {
       }
     }
     ManualRestart.set();
-    TestLogic.restart(false, true);
     notitext = challenge.message;
     $("#top .config").removeClass("hidden");
     $(".page.pageTest").removeClass("hidden");
@@ -251,6 +248,7 @@ export async function setup(challengeName) {
     }
     TestState.setActiveChallenge(challenge);
     challengeLoading = false;
+    return true;
   } catch (e) {
     Notifications.add("Something went wrong: " + e, -1);
   }
