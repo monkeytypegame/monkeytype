@@ -17,6 +17,7 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.13",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "circular-dependency-plugin": "^5.2.2",
