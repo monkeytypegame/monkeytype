@@ -44,8 +44,7 @@ async function loadUser(user) {
   PageTransition.set(false);
   AccountButton.update();
   AccountButton.loading(true);
-  if ((await Account.getDataAndInit()) == false) {
-    console.log("Signing out!");
+  if ((await Account.getDataAndInit()) === false) {
     signOut();
   }
   // var displayName = user.displayName;
