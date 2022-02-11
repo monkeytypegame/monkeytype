@@ -456,7 +456,7 @@ export function restart(
             "Sorry, this funbox won't work with repeated tests.",
             0
           );
-          await Funbox.activate("none");
+          await Funbox.clear();
         } else {
           await Funbox.activate();
         }

@@ -92,6 +92,17 @@ export function setFunbox(funbox, mode) {
   return true;
 }
 
+export async function clear() {
+  $("#funBoxTheme").attr("href", ``);
+  $("#words").removeClass("nospace");
+  $("#words").removeClass("arrows");
+  reset();
+  $("#wordsWrapper").removeClass("hidden");
+  ManualRestart.set();
+  ModesNotice.update();
+  return true;
+}
+
 export async function activate(funbox) {
   let mode = modeSaved;
 
