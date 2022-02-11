@@ -5,7 +5,6 @@ import * as DB from "../db";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as CustomText from "./custom-text";
-import * as Keymap from "../elements/keymap";
 import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as PractiseWords from "./practise-words";
@@ -179,19 +178,6 @@ export function showWords() {
 
   if (Config.mode === "zen") {
     $(document.querySelector(".word")).remove();
-  } else {
-    if (Config.keymapMode === "next") {
-      Keymap.highlightKey(
-        TestWords.words
-          .getCurrent()
-          .substring(
-            TestInput.input.current.length,
-            TestInput.input.current.length + 1
-          )
-          .toString()
-          .toUpperCase()
-      );
-    }
   }
 
   updateActiveElement();

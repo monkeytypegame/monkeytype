@@ -468,6 +468,18 @@ export function restart(
           await Funbox.activate();
         }
         TestUI.showWords();
+        if (Config.keymapMode === "next" && Config.mode !== "zen") {
+          Keymap.highlightKey(
+            TestWords.words
+              .getCurrent()
+              .substring(
+                TestInput.input.current.length,
+                TestInput.input.current.length + 1
+              )
+              .toString()
+              .toUpperCase()
+          );
+        }
         Funbox.toggleScript(TestWords.words.getCurrent());
         PaceCaret.init();
       }
@@ -950,6 +962,18 @@ export async function init() {
     await Funbox.activate();
   }
   TestUI.showWords();
+  if (Config.keymapMode === "next" && Config.mode !== "zen") {
+    Keymap.highlightKey(
+      TestWords.words
+        .getCurrent()
+        .substring(
+          TestInput.input.current.length,
+          TestInput.input.current.length + 1
+        )
+        .toString()
+        .toUpperCase()
+    );
+  }
   Funbox.toggleScript(TestWords.words.getCurrent());
   // }
 }
