@@ -1,4 +1,4 @@
-let activePage = "pageLoading";
+let activePage = "loading";
 
 export function get() {
   return activePage;

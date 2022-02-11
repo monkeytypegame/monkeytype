@@ -1,5 +1,6 @@
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as Misc from "../misc";
+import * as ConfigEvent from "./../observables/config-event";
 
 let voice;
 
@@ -27,7 +28,7 @@ export function speak(text) {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "funbox") {
       if (eventValue === "none") {
         clear();

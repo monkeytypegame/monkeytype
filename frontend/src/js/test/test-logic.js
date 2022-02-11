@@ -17,7 +17,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as UI from "../ui";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
 import * as PbCrown from "./pb-crown";
@@ -42,20 +41,14 @@ import * as ActivePage from "../states/active-page";
 import * as TestActive from "./../states/test-active";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import * as TestState from "./test-state";
+import * as ModesNotice from "./../elements/modes-notice";
+import * as PageTransition from "./../states/page-transition";
+import * as ConfigEvent from "./../observables/config-event";
 
 const objecthash = require("node-object-hash")().hash;
 
-export let glarsesMode = false;
-
 let failReason = "";
-
-export function toggleGlarses() {
-  glarsesMode = true;
-  console.log(
-    "Glarses Mode On - test result will be hidden. You can check the stats in the console (here)"
-  );
-  console.log("To disable Glarses Mode refresh the page.");
-}
 
 export let notSignedInLastResult = null;
 
@@ -67,23 +60,6 @@ export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objecthash(notSignedInLastResult);
-}
-
-export let isRepeated = false;
-export let isPaceRepeat = false;
-export let lastTestWpm = 0;
-export let bailout = false;
-
-export function setRepeated(tf) {
-  isRepeated = tf;
-}
-
-export function setPaceRepeat(tf) {
-  isPaceRepeat = tf;
-}
-
-export function setBailout(tf) {
-  bailout = tf;
 }
 
 let spanishSentenceTracker = "";
@@ -247,7 +223,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 export function startTest() {
-  if (UI.pageTransition) {
+  if (PageTransition.get()) {
     return false;
   }
   if (!Config.dbConfigLoaded) {
@@ -281,7 +257,10 @@ export function startTest() {
   }
 
   try {
-    if (Config.paceCaret !== "off" || (Config.repeatedPace && isPaceRepeat))
+    if (
+      Config.paceCaret !== "off" ||
+      (Config.repeatedPace && TestState.isPaceRepeat)
+    )
       PaceCaret.start();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
@@ -294,7 +273,8 @@ export function restart(
   withSameWordset = false,
   nosave = false,
   event,
-  practiseMissed = false
+  practiseMissed = false,
+  noAnim = false
 ) {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
@@ -302,7 +282,7 @@ export function restart(
     } catch {}
     return;
   }
-  if (ActivePage.get() == "pageTest" && !TestUI.resultVisible) {
+  if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (TestWords.hasTab) {
         try {
@@ -389,13 +369,13 @@ export function restart(
   LiveBurst.hide();
   TimerProgress.hide();
   Replay.pauseReplay();
-  setBailout(false);
+  TestInput.setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   QuoteRatePopup.clearQuoteStats();
-  if (ActivePage.get() == "pageTest" && window.scrollY > 0)
+  if (ActivePage.get() == "test" && window.scrollY > 0)
     window.scrollTo({ top: 0, behavior: "smooth" });
   $("#wordsInput").val(" ");
 
@@ -413,22 +393,22 @@ export function restart(
   if (TestUI.resultVisible) {
     if (
       Config.randomTheme !== "off" &&
-      !UI.pageTransition &&
+      !PageTransition.get() &&
       !Config.customTheme
     ) {
       ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);
-  UI.setPageTransition(true);
+  PageTransition.set(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
       opacity: 0,
     },
-    125,
+    noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "pageTest") Focus.set(false);
+      if (ActivePage.get() == "test") Focus.set(false);
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -458,14 +438,14 @@ export function restart(
         UpdateConfig.setNumbers(false, true);
       }
       if (!withSameWordset && !shouldQuoteRepeat) {
-        setRepeated(false);
-        setPaceRepeat(repeatWithPace);
+        TestState.setRepeated(false);
+        TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
-        setRepeated(true);
-        setPaceRepeat(repeatWithPace);
+        TestState.setRepeated(true);
+        TestState.setPaceRepeat(repeatWithPace);
         TestActive.set(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
@@ -480,12 +460,24 @@ export function restart(
           await Funbox.activate();
         }
         TestUI.showWords();
+        if (Config.keymapMode === "next" && Config.mode !== "zen") {
+          Keymap.highlightKey(
+            TestWords.words
+              .getCurrent()
+              .substring(
+                TestInput.input.current.length,
+                TestInput.input.current.length + 1
+              )
+              .toString()
+              .toUpperCase()
+          );
+        }
         Funbox.toggleScript(TestWords.words.getCurrent());
         PaceCaret.init();
       }
       failReason = "";
       if (Config.mode === "quote") {
-        setRepeated(false);
+        TestState.setRepeated(false);
       }
       if (Config.keymapMode !== "off") {
         Keymap.show();
@@ -554,7 +546,7 @@ export function restart(
           {
             opacity: 1,
           },
-          125,
+          noAnim ? 0 : 125,
           () => {
             TestUI.setTestRestarting(false);
             // resetPaceCaret();
@@ -563,8 +555,8 @@ export function restart(
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
             // ChartController.result.update();
-            TestUI.updateModesNotice();
-            UI.setPageTransition(false);
+            ModesNotice.update();
+            PageTransition.set(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
           }
@@ -958,10 +950,22 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if (ActivePage.get() == "pageTest") {
+  if (ActivePage.get() == "test") {
     await Funbox.activate();
   }
   TestUI.showWords();
+  if (Config.keymapMode === "next" && Config.mode !== "zen") {
+    Keymap.highlightKey(
+      TestWords.words
+        .getCurrent()
+        .substring(
+          TestInput.input.current.length,
+          TestInput.input.current.length + 1
+        )
+        .toString()
+        .toUpperCase()
+    );
+  }
   Funbox.toggleScript(TestWords.words.getCurrent());
   // }
 }
@@ -1219,9 +1223,9 @@ function buildCompletedEvent(difficultyFailed) {
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
-    bailedOut: bailout,
+    bailedOut: TestInput.bailout,
     chartData: {
-      wpm: TestStats.wpmHistory,
+      wpm: TestInput.wpmHistory,
       raw: undefined,
       err: undefined,
     },
@@ -1235,7 +1239,7 @@ function buildCompletedEvent(difficultyFailed) {
   if (stats.time % 1 != 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
-  lastTestWpm = stats.wpm;
+  TestStats.setLastTestWpm(stats.wpm);
   completedEvent.wpm = stats.wpm;
   completedEvent.rawWpm = stats.wpmRaw;
   completedEvent.charStats = [
@@ -1249,8 +1253,8 @@ function buildCompletedEvent(difficultyFailed) {
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
-    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-    TestStats.pushToRawHistory(wpmAndRaw.raw);
+    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+    TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
   }
 
@@ -1369,13 +1373,13 @@ export async function finish(difficultyFailed = false) {
   Funbox.activate("none", null);
 
   //need one more calculation for the last word if test auto ended
-  if (TestStats.burstHistory.length !== TestInput.input.getHistory().length) {
+  if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
     let burst = TestStats.calculateBurst();
-    TestStats.pushBurstToHistory(burst);
+    TestInput.pushBurstToHistory(burst);
   }
 
   //remove afk from zen
-  if (Config.mode == "zen" || bailout) {
+  if (Config.mode == "zen" || TestInput.bailout) {
     TestStats.removeAfkData();
   }
 
@@ -1388,7 +1392,7 @@ export async function finish(difficultyFailed = false) {
   //afk check
   let kps = TestInput.keypressPerSecond.slice(-5);
   let afkDetected = kps.every((second) => second.afk);
-  if (bailout) afkDetected = false;
+  if (TestInput.bailout) afkDetected = false;
 
   let tooShort = false;
   let dontSave = false;
@@ -1399,7 +1403,7 @@ export async function finish(difficultyFailed = false) {
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
     dontSave = true;
-  } else if (isRepeated) {
+  } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
   } else if (
@@ -1474,7 +1478,7 @@ export async function finish(difficultyFailed = false) {
     difficultyFailed,
     failReason,
     afkDetected,
-    isRepeated,
+    TestState.isRepeated,
     tooShort,
     TestWords.randomQuote,
     dontSave
@@ -1597,8 +1601,123 @@ export function fail(reason) {
   TestStats.incrementRestartCount();
 }
 
+$(document).on("click", "#testModesNotice .text-button.restart", (event) => {
+  restart();
+});
+
+$(document).on("keypress", "#restartTestButton", (event) => {
+  if (event.key == "Enter") {
+    ManualRestart.reset();
+    if (
+      TestActive.get() &&
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote"
+    ) {
+      restart(true);
+    } else {
+      restart();
+    }
+  }
+});
+
+$(document.body).on("click", "#restartTestButton", () => {
+  ManualRestart.set();
+  if (TestUI.resultCalculating) return;
+  if (
+    TestActive.get() &&
+    Config.repeatQuotes === "typing" &&
+    Config.mode === "quote"
+  ) {
+    restart(true);
+  } else {
+    restart();
+  }
+});
+
+$(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
+
+$(document).on("keypress", "#nextTestButton", (event) => {
+  if (event.keyCode == 13) {
+    restart();
+  }
+});
+
+$(document.body).on("click", "#nextTestButton", () => {
+  ManualRestart.set();
+  restart();
+});
+
+$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+  if (Config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
+  ManualRestart.set();
+  restart(true);
+});
+
+$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
+  if (Config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
+  if (event.keyCode == 13) {
+    restart(true);
+  }
+});
+
+$(document).on("click", "#top .config .wordCount .text-button", (e) => {
+  const wrd = $(e.currentTarget).attr("wordCount");
+  if (wrd != "custom") {
+    UpdateConfig.setWordCount(wrd);
+    ManualRestart.set();
+    restart();
+  }
+});
+
+$(document).on("click", "#top .config .time .text-button", (e) => {
+  let mode = $(e.currentTarget).attr("timeConfig");
+  if (mode != "custom") {
+    UpdateConfig.setTimeConfig(mode);
+    ManualRestart.set();
+    restart();
+  }
+});
+
+$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+  let len = $(e.currentTarget).attr("quoteLength");
+  if (len != -2) {
+    if (len == -1) {
+      len = [0, 1, 2, 3];
+    }
+    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
+    ManualRestart.set();
+    restart();
+  }
+});
+
+$(document).on("click", "#top .config .punctuationMode .text-button", () => {
+  UpdateConfig.setPunctuation(!Config.punctuation);
+  ManualRestart.set();
+  restart();
+});
+
+$(document).on("click", "#top .config .numbersMode .text-button", () => {
+  UpdateConfig.setNumbers(!Config.numbers);
+  ManualRestart.set();
+  restart();
+});
+
+$(document).on("click", "#top .config .mode .text-button", (e) => {
+  if ($(e.currentTarget).hasClass("active")) return;
+  const mode = $(e.currentTarget).attr("mode");
+  UpdateConfig.setMode(mode);
+  ManualRestart.set();
+  restart();
+});
+
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
+  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventKey === "difficulty" && !nosave) restart(false, nosave);
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "keymapMode" && !nosave) restart(false, nosave);

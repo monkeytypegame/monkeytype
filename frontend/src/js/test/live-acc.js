@@ -1,5 +1,6 @@
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as TestActive from "./../states/test-active";
+import * as ConfigEvent from "./../observables/config-event";
 
 export function update(acc) {
   let number = Math.floor(acc);
@@ -61,7 +62,7 @@ export function hide() {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "showLiveAcc") eventValue ? show() : hide();
   });
 });

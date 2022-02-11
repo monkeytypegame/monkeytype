@@ -8,7 +8,6 @@ import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
-
 import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
@@ -59,8 +58,8 @@ function calculateWpmRaw() {
   LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
-  TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-  TestStats.pushToRawHistory(wpmAndRaw.raw);
+  TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+  TestInput.pushToRawHistory(wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("push to history");
   return wpmAndRaw;
 }

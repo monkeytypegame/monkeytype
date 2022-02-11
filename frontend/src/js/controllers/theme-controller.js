@@ -1,9 +1,10 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../misc";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
+import * as ConfigEvent from "./../observables/config-event";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -227,7 +228,7 @@ export function applyCustomBackground() {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "customTheme")
       eventValue ? set("custom") : set(Config.theme);
     if (eventKey === "theme") {

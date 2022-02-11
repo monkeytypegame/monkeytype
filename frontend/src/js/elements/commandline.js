@@ -634,3 +634,22 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
     eval(func);
   }
 });
+
+$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+  if (e.shiftKey) {
+    UpdateConfig.setCustomTheme(!Config.customTheme);
+  } else {
+    CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
+    show();
+  }
+});
+
+$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
+  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  show();
+});
+
+$(".supportButtons .button.ads").click((e) => {
+  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  show();
+});

@@ -1,5 +1,6 @@
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as TestActive from "./../states/test-active";
+import * as ConfigEvent from "./../observables/config-event";
 
 let liveWpmElement = document.querySelector("#liveWpm");
 let miniLiveWpmElement = document.querySelector("#miniTimerAndLiveWpm .wpm");
@@ -70,7 +71,7 @@ export function hide() {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "showLiveWpm") eventValue ? show() : hide();
   });
 });

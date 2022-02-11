@@ -1,4 +1,3 @@
-import * as TestLogic from "./test-logic";
 import Config from "../config";
 import * as Misc from "../misc";
 import * as TestInput from "./test-input";
@@ -7,19 +6,21 @@ import * as TestWords from "./test-words";
 export let invalid = false;
 export let start, end;
 export let start2, end2;
-export let wpmHistory = [];
-export let rawHistory = [];
-export let burstHistory = [];
-
 export let lastSecondNotRound = false;
+
+export let lastTestWpm = 0;
+
+export function setLastTestWpm(wpm) {
+  lastTestWpm = wpm;
+}
 
 export function getStats() {
   let ret = {
     start,
     end,
-    wpmHistory,
-    rawHistory,
-    burstHistory,
+    wpmHistory: TestInput.wpmHistory,
+    rawHistory: TestInput.wpmHistory,
+    burstHistory: TestInput.burstHistory,
     keypressPerSecond: TestInput.keypressPerSecond,
     currentKeypress: TestInput.currentKeypress,
     lastKeypress: TestInput.lastKeypress,
@@ -60,9 +61,6 @@ export function restart() {
   start = 0;
   end = 0;
   invalid = false;
-  wpmHistory = [];
-  rawHistory = [];
-  burstHistory = [];
   lastSecondNotRound = false;
 }
 
@@ -89,7 +87,7 @@ export function setInvalid() {
 export function calculateTestSeconds(now) {
   if (now === undefined) {
     let endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    if ((Config.mode == "zen" || TestLogic.bailout) && endAfkSeconds < 7) {
+    if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
       return (TestInput.lastKeypress - start) / 1000;
     } else {
       return (end - start) / 1000;
@@ -107,14 +105,6 @@ export function setEnd(e) {
 export function setStart(s) {
   start = s;
   start2 = Date.now();
-}
-
-export function pushToWpmHistory(word) {
-  wpmHistory.push(word);
-}
-
-export function pushToRawHistory(word) {
-  rawHistory.push(word);
 }
 
 export function calculateAfkSeconds(testSeconds) {
@@ -156,15 +146,6 @@ export function calculateBurst() {
   return Math.round(speed);
 }
 
-export function pushBurstToHistory(speed) {
-  if (burstHistory[TestWords.words.currentIndex] === undefined) {
-    burstHistory.push(speed);
-  } else {
-    //repeated word - override
-    burstHistory[TestWords.words.currentIndex] = speed;
-  }
-}
-
 export function calculateAccuracy() {
   let acc =
     (TestInput.accuracy.correct /
@@ -178,7 +159,7 @@ export function removeAfkData() {
   TestInput.keypressPerSecond.splice(testSeconds);
   TestInput.keypressTimings.duration.array.splice(testSeconds);
   TestInput.keypressTimings.spacing.array.splice(testSeconds);
-  wpmHistory.splice(testSeconds);
+  TestInput.wpmHistory.splice(testSeconds);
 }
 
 function countChars() {

@@ -6,6 +6,7 @@ import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let active = null;
 let challengeLoading = false;
@@ -243,7 +244,7 @@ export async function setup(challengeName) {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey) => {
+  ConfigEvent.subscribe((eventKey) => {
     if (
       [
         "numbers",

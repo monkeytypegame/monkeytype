@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as CustomText from "./custom-text";
 import * as Misc from "../misc";
 import * as TestWords from "./test-words";
@@ -6,6 +6,7 @@ import * as TestInput from "./test-input";
 import * as Time from "./../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "./../states/test-active";
+import * as ConfigEvent from "./../observables/config-event";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -193,7 +194,7 @@ export function updateStyle() {
 }
 
 $(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+  ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventKey === "showTimerProgress") {
       if (eventValue === true && TestActive.get()) {
         show();

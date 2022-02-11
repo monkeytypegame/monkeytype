@@ -204,6 +204,14 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
   });
 });
 
+$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+  let len = $(e.currentTarget).attr("quoteLength");
+  if (len == -2) {
+    // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
+    show();
+  }
+});
+
 $(document).keydown((event) => {
   if (
     event.key === "Escape" &&

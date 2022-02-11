@@ -13,7 +13,7 @@ import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
@@ -133,7 +133,7 @@ function handleSpace() {
 
   let burst = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
-  TestStats.pushBurstToHistory(burst);
+  TestInput.pushBurstToHistory(burst);
 
   //correct word or in zen mode
   const isWordCorrect =
@@ -603,9 +603,9 @@ function handleTab(event) {
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
     $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
-    ActivePage.get() != "pageLogin"
+    ActivePage.get() != "login"
   ) {
-    if (ActivePage.get() == "pageTest") {
+    if (ActivePage.get() == "test") {
       if (Config.quickTab) {
         if (!$("#leaderboardsWrapper").hasClass("hidden")) {
           Leaderboards.hide();
@@ -653,17 +653,17 @@ function handleTab(event) {
       }
     } else if (Config.quickTab) {
       event.preventDefault();
-      UI.changePage("test");
+      PageController.change("test");
     }
   }
 }
 
 $(document).keydown((event) => {
-  if (ActivePage.get() == "pageLoading") return event.preventDefault();
+  if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
   const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = ActivePage.get() === "pageTest";
+  const pageTestActive = ActivePage.get() === "test";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
@@ -758,7 +758,7 @@ $(document).keydown((event) => {
       ((Config.mode == "time" && Config.time === 0) ||
         (Config.mode == "words" && Config.words === 0))
     ) {
-      TestLogic.setBailout(true);
+      TestInput.setBailout(true);
       TestLogic.finish();
     } else {
       handleChar("\n", TestInput.input.current.length);
