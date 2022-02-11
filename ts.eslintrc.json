@@ -27,6 +27,7 @@
   },
   "parser": "@typescript-eslint/parser",
   "rules": {
+    "@typescript-eslint/ban-ts-comment": "off",
     "json/*": ["error"],
     "indent": ["off"], //handled by prettier
     "linebreak-style": ["error", "unix"],
@@ -46,6 +47,7 @@
       {
         "extensions": [
           "",
+          ".js",
           ".ts",
           ".tsx",
           ".es.ts",
