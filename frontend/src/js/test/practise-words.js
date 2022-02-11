@@ -1,4 +1,3 @@
-import * as TestStats from "./test-stats";
 import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
@@ -40,7 +39,7 @@ export function init(missed, slow) {
   let sortableSlowWords = [];
   if (slow) {
     sortableSlowWords = TestWords.words.get().map(function (e, i) {
-      return [e, TestStats.burstHistory[i]];
+      return [e, TestInput.burstHistory[i]];
     });
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];

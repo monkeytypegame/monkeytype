@@ -10,6 +10,7 @@ import * as TodayTracker from "./today-tracker";
 import * as PbCrown from "./pb-crown";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as TestLogic from "./test-logic";
+import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 
 let result;
@@ -25,8 +26,8 @@ export function toggleUnsmoothedRaw() {
 async function updateGraph() {
   ChartController.result.options.annotation.annotations = [];
   let labels = [];
-  for (let i = 1; i <= TestStats.wpmHistory.length; i++) {
-    if (TestStats.lastSecondNotRound && i === TestStats.wpmHistory.length) {
+  for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
+    if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
       labels.push(Misc.roundTo2(result.testDuration).toString());
     } else {
       labels.push(i.toString());
@@ -38,8 +39,8 @@ async function updateGraph() {
     ? "Character per Minute"
     : "Words per Minute";
   let chartData1 = Config.alwaysShowCPM
-    ? TestStats.wpmHistory.map((a) => a * 5)
-    : TestStats.wpmHistory;
+    ? TestInput.wpmHistory.map((a) => a * 5)
+    : TestInput.wpmHistory;
 
   let chartData2;
 

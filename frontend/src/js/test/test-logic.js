@@ -1221,7 +1221,7 @@ function buildCompletedEvent(difficultyFailed) {
     funbox: Config.funbox,
     bailedOut: bailout,
     chartData: {
-      wpm: TestStats.wpmHistory,
+      wpm: TestInput.wpmHistory,
       raw: undefined,
       err: undefined,
     },
@@ -1249,8 +1249,8 @@ function buildCompletedEvent(difficultyFailed) {
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
-    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-    TestStats.pushToRawHistory(wpmAndRaw.raw);
+    TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+    TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
   }
 
@@ -1369,9 +1369,9 @@ export async function finish(difficultyFailed = false) {
   Funbox.activate("none", null);
 
   //need one more calculation for the last word if test auto ended
-  if (TestStats.burstHistory.length !== TestInput.input.getHistory().length) {
+  if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
     let burst = TestStats.calculateBurst();
-    TestStats.pushBurstToHistory(burst);
+    TestInput.pushBurstToHistory(burst);
   }
 
   //remove afk from zen

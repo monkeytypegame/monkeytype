@@ -1,3 +1,5 @@
+import * as TestWords from "./test-words";
+
 class Input {
   constructor() {
     this.current = "";
@@ -124,6 +126,9 @@ export let keypressTimings = {
     array: [],
   },
 };
+export let wpmHistory = [];
+export let rawHistory = [];
+export let burstHistory = [];
 
 export let spacingDebug = false;
 export function enableSpacingDebug() {
@@ -248,7 +253,27 @@ export function pushMissedWord(word) {
   }
 }
 
+export function pushToWpmHistory(word) {
+  wpmHistory.push(word);
+}
+
+export function pushToRawHistory(word) {
+  rawHistory.push(word);
+}
+
+export function pushBurstToHistory(speed) {
+  if (burstHistory[TestWords.words.currentIndex] === undefined) {
+    burstHistory.push(speed);
+  } else {
+    //repeated word - override
+    burstHistory[TestWords.words.currentIndex] = speed;
+  }
+}
+
 export function restart() {
+  wpmHistory = [];
+  rawHistory = [];
+  burstHistory = [];
   keypressPerSecond = [];
   currentKeypress = {
     count: 0,

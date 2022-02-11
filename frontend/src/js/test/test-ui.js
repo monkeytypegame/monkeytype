@@ -13,7 +13,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
-import * as TestStats from "./test-stats";
 import * as Misc from "../misc";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
@@ -777,14 +776,14 @@ async function loadWordsHistory() {
         TestInput.corrected.getHistory(i) !== ""
       ) {
         wordEl = `<div class='word' burst="${
-          TestStats.burstHistory[i]
+          TestInput.burstHistory[i]
         }" input="${TestInput.corrected
           .getHistory(i)
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
         wordEl = `<div class='word' burst="${
-          TestStats.burstHistory[i]
+          TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
       if (i === TestInput.input.history.length - 1) {
@@ -811,14 +810,14 @@ async function loadWordsHistory() {
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
           if (Config.mode != "zen" && input !== word) {
             wordEl = `<div class='word error' burst="${
-              TestStats.burstHistory[i]
+              TestInput.burstHistory[i]
             }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
         }
       } else {
         if (Config.mode != "zen" && input !== word) {
           wordEl = `<div class='word error' burst="${
-            TestStats.burstHistory[i]
+            TestInput.burstHistory[i]
           }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
         }
       }
@@ -938,7 +937,7 @@ export function applyBurstHeatmap() {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
 
-    let burstlist = [...TestStats.burstHistory];
+    let burstlist = [...TestInput.burstHistory];
 
     burstlist = burstlist.filter((x) => x !== Infinity);
     burstlist = burstlist.filter((x) => x < 350);

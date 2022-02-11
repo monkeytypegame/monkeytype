@@ -7,19 +7,15 @@ import * as TestWords from "./test-words";
 export let invalid = false;
 export let start, end;
 export let start2, end2;
-export let wpmHistory = [];
-export let rawHistory = [];
-export let burstHistory = [];
-
 export let lastSecondNotRound = false;
 
 export function getStats() {
   let ret = {
     start,
     end,
-    wpmHistory,
-    rawHistory,
-    burstHistory,
+    wpmHistory: TestInput.wpmHistory,
+    rawHistory: TestInput.wpmHistory,
+    burstHistory: TestInput.burstHistory,
     keypressPerSecond: TestInput.keypressPerSecond,
     currentKeypress: TestInput.currentKeypress,
     lastKeypress: TestInput.lastKeypress,
@@ -60,9 +56,6 @@ export function restart() {
   start = 0;
   end = 0;
   invalid = false;
-  wpmHistory = [];
-  rawHistory = [];
-  burstHistory = [];
   lastSecondNotRound = false;
 }
 
@@ -109,14 +102,6 @@ export function setStart(s) {
   start2 = Date.now();
 }
 
-export function pushToWpmHistory(word) {
-  wpmHistory.push(word);
-}
-
-export function pushToRawHistory(word) {
-  rawHistory.push(word);
-}
-
 export function calculateAfkSeconds(testSeconds) {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
@@ -156,15 +141,6 @@ export function calculateBurst() {
   return Math.round(speed);
 }
 
-export function pushBurstToHistory(speed) {
-  if (burstHistory[TestWords.words.currentIndex] === undefined) {
-    burstHistory.push(speed);
-  } else {
-    //repeated word - override
-    burstHistory[TestWords.words.currentIndex] = speed;
-  }
-}
-
 export function calculateAccuracy() {
   let acc =
     (TestInput.accuracy.correct /
@@ -178,7 +154,7 @@ export function removeAfkData() {
   TestInput.keypressPerSecond.splice(testSeconds);
   TestInput.keypressTimings.duration.array.splice(testSeconds);
   TestInput.keypressTimings.spacing.array.splice(testSeconds);
-  wpmHistory.splice(testSeconds);
+  TestInput.wpmHistory.splice(testSeconds);
 }
 
 function countChars() {

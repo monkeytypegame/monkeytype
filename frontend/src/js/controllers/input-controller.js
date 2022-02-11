@@ -133,7 +133,7 @@ function handleSpace() {
 
   let burst = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
-  TestStats.pushBurstToHistory(burst);
+  TestInput.pushBurstToHistory(burst);
 
   //correct word or in zen mode
   const isWordCorrect =

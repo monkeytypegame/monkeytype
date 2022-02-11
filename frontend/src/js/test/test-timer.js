@@ -59,8 +59,8 @@ function calculateWpmRaw() {
   LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
-  TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-  TestStats.pushToRawHistory(wpmAndRaw.raw);
+  TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+  TestInput.pushToRawHistory(wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("push to history");
   return wpmAndRaw;
 }
