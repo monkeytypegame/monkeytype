@@ -6,30 +6,22 @@ import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
+import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
+
 import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
+import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
+import * as Time from "./../states/time";
 
-export let slowTimer = false;
 let slowTimerCount = 0;
-export let time = 0;
 let timer = null;
 const interval = 1000;
 let expected = 0;
-
-function setSlowTimer() {
-  if (slowTimer) return;
-  slowTimer = true;
-  console.error("Slow timer, disabling animations");
-  // Notifications.add("Slow timer detected", -1, 5);
-}
-
-function clearSlowTimer() {
-  slowTimer = false;
-  slowTimerCount = 0;
-}
 
 let timerDebug = false;
 export function enableTimerDebug() {
@@ -37,13 +29,14 @@ export function enableTimerDebug() {
 }
 
 export function clear() {
-  time = 0;
+  Time.set(0);
   clearTimeout(timer);
 }
 
 function premid() {
   if (timerDebug) console.time("premid");
-  document.querySelector("#premidSecondsLeft").innerHTML = Config.time - time;
+  document.querySelector("#premidSecondsLeft").innerHTML =
+    Config.time - Time.get();
   if (timerDebug) console.timeEnd("premid");
 }
 
@@ -53,7 +46,7 @@ function updateTimer() {
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
-    TimerProgress.update(time);
+    TimerProgress.update();
   }
   if (timerDebug) console.timeEnd("timer progress update");
 }
@@ -95,23 +88,23 @@ function layoutfluid() {
     // console.log(layouts);
     const numLayouts = layouts.length;
     let index = 0;
-    index = Math.floor(time / (Config.time / numLayouts));
+    index = Math.floor(Time.get() / (Config.time / numLayouts));
 
     if (
-      time == Math.floor(Config.time / numLayouts) - 3 ||
-      time == (Config.time / numLayouts) * 2 - 3
+      Time.get() == Math.floor(Config.time / numLayouts) - 3 ||
+      Time.get() == (Config.time / numLayouts) * 2 - 3
     ) {
       Notifications.add("3", 0, 1);
     }
     if (
-      time == Math.floor(Config.time / numLayouts) - 2 ||
-      time == Math.floor(Config.time / numLayouts) * 2 - 2
+      Time.get() == Math.floor(Config.time / numLayouts) - 2 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 2
     ) {
       Notifications.add("2", 0, 1);
     }
     if (
-      time == Math.floor(Config.time / numLayouts) - 1 ||
-      time == Math.floor(Config.time / numLayouts) * 2 - 1
+      Time.get() == Math.floor(Config.time / numLayouts) - 1 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 1
     ) {
       Notifications.add("1", 0, 1);
     }
@@ -127,25 +120,27 @@ function layoutfluid() {
 
 function checkIfFailed(wpmAndRaw, acc) {
   if (timerDebug) console.time("fail conditions");
-  TestStats.pushKeypressesToHistory();
+  TestInput.pushKeypressesToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-    TestLogic.words.currentIndex > 3
+    TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
     TestLogic.fail("min wpm");
-    clearSlowTimer();
+    SlowTimer.clear();
+    slowTimerCount = 0;
     return;
   }
   if (
     Config.minAcc === "custom" &&
     acc < parseInt(Config.minAccCustom) &&
-    TestLogic.words.currentIndex > 3
+    TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
     TestLogic.fail("min accuracy");
-    clearSlowTimer();
+    SlowTimer.clear();
+    slowTimerCount = 0;
     return;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -158,18 +153,21 @@ function checkIfTimeIsUp() {
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     if (
-      (time >= Config.time && Config.time !== 0 && Config.mode === "time") ||
-      (time >= CustomText.time &&
+      (Time.get() >= Config.time &&
+        Config.time !== 0 &&
+        Config.mode === "time") ||
+      (Time.get() >= CustomText.time &&
         CustomText.time !== 0 &&
         Config.mode === "custom")
     ) {
       //times up
       clearTimeout(timer);
       Caret.hide();
-      TestLogic.input.pushHistory();
-      TestLogic.corrected.pushHistory();
+      TestInput.input.pushHistory();
+      TestInput.corrected.pushHistory();
       TestLogic.finish();
-      clearSlowTimer();
+      SlowTimer.clear();
+      slowTimerCount = 0;
       return;
     }
   }
@@ -186,7 +184,7 @@ export function getTimerStats() {
 
 async function timerStep() {
   if (timerDebug) console.time("timer step -----------------------------");
-  time++;
+  Time.increment();
   premid();
   updateTimer();
   let wpmAndRaw = calculateWpmRaw();
@@ -199,7 +197,8 @@ async function timerStep() {
 }
 
 export async function start() {
-  clearSlowTimer();
+  SlowTimer.clear();
+  slowTimerCount = 0;
   timerStats = [];
   expected = TestStats.start + interval;
   (function loop() {
@@ -216,7 +215,7 @@ export async function start() {
     ) {
       if (delay < interval / 2) {
         //slow timer
-        setSlowTimer();
+        SlowTimer.set();
       }
       if (delay < interval / 10) {
         slowTimerCount++;
@@ -233,9 +232,10 @@ export async function start() {
     timer = setTimeout(function () {
       // time++;
 
-      if (!TestLogic.active) {
+      if (!TestActive.get()) {
         clearTimeout(timer);
-        clearSlowTimer();
+        SlowTimer.clear();
+        slowTimerCount = 0;
         return;
       }
 

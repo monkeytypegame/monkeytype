@@ -4,7 +4,6 @@ import * as Misc from "../misc";
 import * as TestStats from "./test-stats";
 import * as Keymap from "../elements/keymap";
 import * as ChartController from "../controllers/chart-controller";
-import * as UI from "../ui";
 import * as ThemeColors from "../elements/theme-colors";
 import * as DB from "../db";
 import * as TodayTracker from "./today-tracker";
@@ -667,7 +666,7 @@ export function update(
       .stop()
       .animate({ scrollTop: 0 }, 250);
 
-  UI.swapElements(
+  Misc.swapElements(
     $("#typingTest"),
     $("#result"),
     250,

@@ -9,9 +9,6 @@ import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as SimplePopups from "../popups/simple-popups";
-import * as EditTagsPopup from "../popups/edit-tags-popup";
-import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
@@ -373,23 +370,18 @@ export function reset() {
 }
 
 export async function fillSettingsPage() {
-  await initGroups();
-  await UpdateConfig.loadPromise;
-  ThemePicker.refreshButtons();
-
   let languageEl = $(".pageSettings .section.language select").empty();
-  Misc.getLanguageGroups().then((groups) => {
-    groups.forEach((group) => {
-      let append = `<optgroup label="${group.name}">`;
-      group.languages.forEach((language) => {
-        append += `<option value="${language}">${language.replace(
-          /_/g,
-          " "
-        )}</option>`;
-      });
-      append += `</optgroup>`;
-      languageEl.append(append);
+  const groups = await Misc.getLanguageGroups();
+  groups.forEach((group) => {
+    let append = `<optgroup label="${group.name}">`;
+    group.languages.forEach((language) => {
+      append += `<option value="${language}">${language.replace(
+        /_/g,
+        " "
+      )}</option>`;
     });
+    append += `</optgroup>`;
+    languageEl.append(append);
   });
   languageEl.select2();
 
@@ -457,18 +449,15 @@ export async function fillSettingsPage() {
         }</div>`
       );
     });
-    $(
+
+    fontsEl.append(
       isCustomFont
-        ? `<div class="language button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
             /_/g,
             " "
           )})</div>`
-        : '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-    )
-      .on("click", () => {
-        SimplePopups.list.applyCustomFont.show([]);
-      })
-      .appendTo(fontsEl);
+        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+    );
   });
 
   $(".pageSettings .section.customBackgroundSize input").val(
@@ -478,6 +467,10 @@ export async function fillSettingsPage() {
   $(".pageSettings .section.customLayoutfluid input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
   );
+
+  await initGroups();
+  await UpdateConfig.loadPromise;
+  ThemePicker.refreshButtons();
 }
 
 // export let settingsFillPromise = fillSettingsPage();
@@ -787,12 +780,6 @@ $(document).on(
   }
 );
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
-  (e) => {
-    SimplePopups.list.unlinkDiscord.show();
-  }
-);
-
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
@@ -813,30 +800,6 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
-  EditTagsPopup.show("add");
-});
-
-$(document).on(
-  "click",
-  ".pageSettings .section.presets .addPresetButton",
-  (e) => {
-    EditPresetPopup.show("add");
-  }
-);
-
-$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
-  EditPresetPopup.show("edit", presetid, name);
-});
-
-$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
-  EditPresetPopup.show("remove", presetid, name);
-});
-
 $(document).on(
   "click",
   ".pageSettings .section.presets .presetsList .preset .presetButton",
@@ -845,51 +808,9 @@ $(document).on(
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
     PresetController.apply(presetid);
+    update();
   }
 );
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("edit", tagid, name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("clearPb", tagid, name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageSettings .section.tags .tagsList .tag .removeButton",
-  (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
-    EditTagsPopup.show("remove", tagid, name);
-  }
-);
-
-$("#resetSettingsButton").click((e) => {
-  SimplePopups.list.resetSettings.show();
-});
 
 $("#importSettingsButton").click((e) => {
   ImportExportSettingsPopup.show("import");
@@ -934,26 +855,6 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group"));
 });
 
-$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
-  SimplePopups.list.resetPersonalBests.show();
-});
-
-$(".pageSettings #updateAccountName").on("click", (e) => {
-  SimplePopups.list.updateName.show();
-});
-
-$(".pageSettings #addPasswordAuth").on("click", (e) => {
-  SimplePopups.list.addPasswordAuth.show();
-});
-
-$(".pageSettings #emailPasswordAuth").on("click", (e) => {
-  SimplePopups.list.updateEmail.show();
-});
-
-$(".pageSettings #passPasswordAuth").on("click", (e) => {
-  SimplePopups.list.updatePassword.show();
-});
-
 $(".pageSettings #addGoogleAuth").on("click", async (e) => {
   await AccountController.addGoogleAuth();
   setTimeout(() => {
@@ -963,10 +864,6 @@ $(".pageSettings #addGoogleAuth").on("click", async (e) => {
 
 $(".pageSettings #removeGoogleAuth").on("click", (e) => {
   AccountController.removeGoogleAuth();
-});
-
-$(".pageSettings #deleteAccount").on("click", (e) => {
-  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(

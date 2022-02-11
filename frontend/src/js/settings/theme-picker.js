@@ -2,7 +2,6 @@ import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
-import * as CommandlineLists from "../elements/commandline-lists";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 
@@ -165,8 +164,6 @@ function toggleFavourite(themename) {
   }
   UpdateConfig.saveToLocalStorage();
   refreshButtons();
-  // showFavouriteThemesAtTheTop();
-  CommandlineLists.updateThemeCommands();
 }
 
 export function updateActiveTab() {
@@ -176,7 +173,7 @@ export function updateActiveTab() {
       "active"
     );
 
-    // UI.swapElements(
+    // Misc.swapElements(
     //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
     //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
     //   250
@@ -186,7 +183,7 @@ export function updateActiveTab() {
       "active"
     );
 
-    // UI.swapElements(
+    // Misc.swapElements(
     //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
     //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
     //   250
@@ -203,7 +200,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
     UpdateConfig.setCustomTheme(false);
     // ThemeController.set(Config.theme);
     // applyCustomThemeColors();
-    // UI.swapElements(
+    // Misc.swapElements(
     //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
     //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
     //   250
@@ -212,7 +209,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
     UpdateConfig.setCustomTheme(true);
     // ThemeController.set("custom");
     // applyCustomThemeColors();
-    // UI.swapElements(
+    // Misc.swapElements(
     //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
     //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
     //   250

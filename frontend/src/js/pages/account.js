@@ -21,6 +21,9 @@ import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
 import axiosInstance from "../axios-instance";
+import * as TodayTracker from "./../test/today-tracker";
+import * as ActivePage from "../states/active-page";
+import * as TestActive from "./../states/test-active";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -34,6 +37,12 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
+    if (ActivePage.get() == "pageLoading") {
+      LoadingPage.updateBar(90);
+    } else {
+      LoadingPage.updateBar(45);
+    }
+    LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (e) {
@@ -55,11 +64,11 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if (UI.getActivePage() == "pageLoading") UI.changePage("");
+    if (ActivePage.get() == "pageLoading") UI.changePage("");
     AccountController.signOut();
     return;
   }
-  if (UI.getActivePage() == "pageLoading") {
+  if (ActivePage.get() == "pageLoading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -67,6 +76,8 @@ export async function getDataAndInit() {
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
+
+  ResultFilters.loadTags(DB.getSnapshot().tags);
 
   Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     let languages = values[0];
@@ -202,7 +213,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if (UI.getActivePage() == "pageTest") {
+        if (ActivePage.get() == "pageTest") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -214,12 +225,12 @@ export async function getDataAndInit() {
     AccountButton.loading(false);
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestLogic.active) {
+    if (!TestActive.get()) {
       PaceCaret.init(true);
     }
   }
   // if (
-  //   UI.getActivePage() == "pageLogin" ||
+  //   ActivePage.get() == "pageLogin" ||
   //   window.location.pathname === "/account"
   // ) {
   //   UI.changePage("account");
@@ -233,7 +244,7 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  // if (UI.getActivePage() == "pageLoading") {
+  // if (ActivePage.get() == "pageLoading") {
   //   LoadingPage.updateBar(100, true);
   //   Focus.set(false);
   //   UI.changePage("");
@@ -647,6 +658,7 @@ export function update() {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
+        update();
       }
       //filters done
       //=======================================
@@ -1046,7 +1058,7 @@ export function update() {
       SignOutButton.show();
     }, 125);
     Focus.set(false);
-    UI.swapElements(
+    Misc.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
       250
@@ -1058,8 +1070,10 @@ export function update() {
   } else if (DB.getSnapshot().results === undefined) {
     LoadingPage.updateBar(45, true);
     DB.getUserResults().then((d) => {
+      TodayTracker.addAllFromToday();
       if (d) {
         ResultFilters.updateActive();
+        update();
       } else {
         setTimeout(() => {
           UI.changePage("");
@@ -1159,14 +1173,8 @@ $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
 });
 
-let activeChartIndex;
-
-export function setActiveChartIndex(index) {
-  activeChartIndex = index;
-}
-
 $(".pageAccount #accountHistoryChart").click((e) => {
-  let index = activeChartIndex;
+  let index = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {

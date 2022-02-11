@@ -1,10 +1,7 @@
-import { loadTags } from "./account/result-filters";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
-import * as TodayTracker from "./test/today-tracker";
 import * as LoadingPage from "./pages/loading";
-import * as UI from "./ui";
 
 let dbSnapshot = null;
 
@@ -53,18 +50,12 @@ export async function initSnapshot() {
   let snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    if (UI.getActivePage() == "pageLoading") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Downloading user data...");
     let promises = await Promise.all([
       axiosInstance.get("/user"),
       axiosInstance.get("/config"),
@@ -97,7 +88,7 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(45);
     // } else {
     //   LoadingPage.updateBar(32);
@@ -106,7 +97,7 @@ export async function initSnapshot() {
     if (configData) {
       snap.config = configData.config;
     }
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(67.5);
     // } else {
     //   LoadingPage.updateBar(48);
@@ -122,7 +113,7 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    // if (UI.getActivePage() == "pageLoading") {
+    // if (ActivePage.get() == "pageLoading") {
     //   LoadingPage.updateBar(90);
     // } else {
     //   LoadingPage.updateBar(64);
@@ -140,7 +131,6 @@ export async function initSnapshot() {
     });
 
     dbSnapshot = snap;
-    loadTags(dbSnapshot.tags);
     return dbSnapshot;
   } catch (e) {
     dbSnapshot = defaultSnap;
@@ -174,7 +164,6 @@ export async function getUserResults() {
         return a.timestamp < b.timestamp;
       });
       dbSnapshot.results = results.data;
-      await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
       Notifications.add("Error getting results: " + e.message, -1);

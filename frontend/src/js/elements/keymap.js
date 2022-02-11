@@ -1,9 +1,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
-import * as CommandlineLists from "./commandline-lists";
-import * as Commandline from "./commandline";
-import * as TestTimer from "../test/test-timer";
+import * as SlowTimer from "../states/slow-timer";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
@@ -125,7 +123,7 @@ export async function flashKey(key, correct) {
             backgroundColor: "transparent",
             borderColor: themecolors.sub,
           },
-          TestTimer.slowTimer ? 0 : 500,
+          SlowTimer.get() ? 0 : 500,
           "easeOutExpo"
         );
     } else {
@@ -142,7 +140,7 @@ export async function flashKey(key, correct) {
             backgroundColor: "transparent",
             borderColor: themecolors.sub,
           },
-          TestTimer.slowTimer ? 0 : 500,
+          SlowTimer.get() ? 0 : 500,
           "easeOutExpo"
         );
     }
@@ -264,7 +262,10 @@ export function refreshKeys(layout) {
   }
 }
 
-$(document).on("click", ".keymap .r5 #KeySpace", (e) => {
-  CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
-  Commandline.show();
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
+      refreshKeys(Config.keymapLayout);
+    if (eventKey === "keymapLayout") refreshKeys(eventValue);
+  });
 });

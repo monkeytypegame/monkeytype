@@ -204,6 +204,16 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
   });
 });
 
+$(document).keydown((event) => {
+  if (
+    event.key === "Escape" &&
+    !$("#quoteSearchPopupWrapper").hasClass("hidden")
+  ) {
+    hide();
+    event.preventDefault();
+  }
+});
+
 // $("#quoteSearchPopup input").keypress((e) => {
 //   if (e.keyCode == 13) {
 //     if (!isNaN(document.getElementById("searchBox").value)) {

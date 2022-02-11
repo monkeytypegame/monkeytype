@@ -1,8 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../misc";
-import Config from "../config";
-import * as UI from "../ui";
+import Config, * as UpdateConfig from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 
@@ -89,14 +88,14 @@ export function apply(themeName, isPreview = false) {
   let name = "serika_dark";
   if (themeName !== "custom") {
     name = themeName;
-    UI.swapElements(
+    Misc.swapElements(
       $('.pageSettings [tabContent="custom"]'),
       $('.pageSettings [tabContent="preset"]'),
       250
     );
   } else {
     //is custom
-    UI.swapElements(
+    Misc.swapElements(
       $('.pageSettings [tabContent="preset"]'),
       $('.pageSettings [tabContent="custom"]'),
       250
@@ -226,3 +225,25 @@ export function applyCustomBackground() {
     applyCustomBackgroundSize();
   }
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "customTheme")
+      eventValue ? set("custom") : set(Config.theme);
+    if (eventKey === "theme") {
+      clearPreview();
+      set(eventValue);
+    }
+    if (eventKey === "setThemes") {
+      clearPreview();
+      if (eventValue) {
+        set("custom");
+      } else {
+        set(Config.theme);
+      }
+    }
+    if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
+    if (eventKey === "customBackground") applyCustomBackground();
+    if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
+  });
+});

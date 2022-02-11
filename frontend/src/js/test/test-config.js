@@ -1,11 +1,9 @@
-import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
-import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
 import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as CustomTextPopup from "../popups/custom-text-popup";
-import * as UI from "../ui";
+import * as Misc from "./../misc";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);
@@ -155,7 +153,7 @@ export function update(previous, current) {
     return;
   }
 
-  UI.swapElements(
+  Misc.swapElements(
     $("#top .config ." + submenu[previous]),
     $("#top .config ." + submenu[current]),
     animTime
@@ -164,9 +162,7 @@ export function update(previous, current) {
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
-    CustomWordAmountPopup.show();
-  } else {
+  if (wrd != "custom") {
     UpdateConfig.setWordCount(wrd);
     ManualRestart.set();
     TestLogic.restart();
@@ -175,9 +171,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
   let mode = $(e.currentTarget).attr("timeConfig");
-  if (mode == "custom") {
-    CustomTestDurationPopup.show();
-  } else {
+  if (mode != "custom") {
     UpdateConfig.setTimeConfig(mode);
     ManualRestart.set();
     TestLogic.restart();
@@ -221,4 +215,10 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   UpdateConfig.setMode(mode);
   ManualRestart.set();
   TestLogic.restart();
+});
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue, eventValue2) => {
+    if (eventKey === "mode") update(eventValue, eventValue2);
+  });
 });

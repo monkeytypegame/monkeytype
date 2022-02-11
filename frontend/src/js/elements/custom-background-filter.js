@@ -122,3 +122,12 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
   UpdateConfig.setCustomBackgroundFilter(arr, false);
   Notifications.add("Custom background filters saved", 1);
 });
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "customBackgroundFilter") {
+      loadConfig(eventValue);
+      apply();
+    }
+  });
+});

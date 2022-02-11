@@ -1,9 +1,8 @@
 import Chart from "chart.js";
-import * as TestStats from "../test/test-stats";
+import * as TestInput from "./../test/test-input";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../misc";
-import * as Account from "../pages/account";
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
@@ -62,7 +61,7 @@ export let result = new Chart($("#wpmChart"), {
             $(".wordInputAfter").remove();
 
             let wordsToHighlight =
-              TestStats.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
+              TestInput.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
 
             let unique = [...new Set(wordsToHighlight)];
             unique.forEach((wordIndex) => {
@@ -162,6 +161,8 @@ export let result = new Chart($("#wpmChart"), {
   },
 });
 
+export let accountHistoryActiveIndex;
+
 export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
   type: "line",
   data: {
@@ -247,7 +248,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
           return;
         },
         afterLabel: function (tooltip) {
-          Account.setActiveChartIndex(tooltip.index);
+          accountHistoryActiveIndex = tooltip.index;
           return;
         },
       },
@@ -625,6 +626,23 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
   },
 });
 
+function updateAccuracy() {
+  accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
+  accountHistory.options.scales.yAxes[1].display = Config.chartAccuracy;
+  accountHistory.update();
+}
+
+function updateStyle() {
+  if (Config.chartStyle == "scatter") {
+    accountHistory.data.datasets[0].showLine = false;
+    accountHistory.data.datasets[1].showLine = false;
+  } else {
+    accountHistory.data.datasets[0].showLine = true;
+    accountHistory.data.datasets[1].showLine = true;
+  }
+  accountHistory.update();
+}
+
 export async function updateColors(chart) {
   let bgcolor = await ThemeColors.get("bg");
   let subcolor = await ThemeColors.get("sub");
@@ -736,3 +754,11 @@ export function updateAllChartColors() {
   accountActivity.updateColors();
   miniResult.updateColors();
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "chartAccuracy") updateAccuracy();
+    if (eventKey === "chartStyle") updateStyle();
+    if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);
+  });
+});

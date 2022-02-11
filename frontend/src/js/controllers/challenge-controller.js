@@ -5,7 +5,6 @@ import * as CustomText from "../test/custom-text";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
-import * as UI from "../ui";
 import * as TestUI from "../test/test-ui";
 
 export let active = null;
@@ -146,9 +145,6 @@ export function verify(result) {
 
 export async function setup(challengeName) {
   challengeLoading = true;
-  if (UI.getActivePage() !== "pageTest") {
-    UI.changePage("", true);
-  }
 
   let list = await Misc.getChallengeList();
   let challenge = list.filter((c) => c.name === challengeName)[0];
@@ -245,3 +241,26 @@ export async function setup(challengeName) {
     Notifications.add("Something went wrong: " + e, -1);
   }
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey) => {
+    if (
+      [
+        "numbers",
+        "punctuation",
+        "mode",
+        "funbox",
+        "paceCaret",
+        "showAllLines",
+        "showLiveWpm",
+        "highlightMode",
+        "time",
+        "words",
+        "keymapMode",
+        "keymapLayout",
+        "layout",
+      ].includes(eventKey)
+    )
+      clearActive();
+  });
+});

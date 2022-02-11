@@ -2,7 +2,6 @@ import * as Misc from "../misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
-import * as Account from "../pages/account";
 
 export let defaultResultFilters = {
   difficulty: {
@@ -269,8 +268,6 @@ export function updateActive() {
   chartString += addText("tags");
 
   $(".pageAccount .group.chart .above").html(chartString);
-
-  Account.update();
 }
 
 export function toggle(group, filter) {

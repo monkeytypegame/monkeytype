@@ -1,10 +1,10 @@
 import * as TestLogic from "./test-logic";
+import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import * as TestUI from "./test-ui";
 import * as Misc from "../misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Settings from "../pages/settings";
 import * as TTS from "./tts";
 
 let modeSaved = null;
@@ -61,7 +61,7 @@ function updateMemoryTimer(sec) {
 
 export function startMemoryTimer() {
   resetMemoryTimer();
-  memoryTimer = Math.round(Math.pow(TestLogic.words.length, 1.2));
+  memoryTimer = Math.round(Math.pow(TestWords.words.length, 1.2));
   updateMemoryTimer(memoryTimer);
   showMemoryTimer();
   memoryInterval = setInterval(() => {
@@ -155,7 +155,6 @@ export async function activate(funbox) {
 
     if (funbox === "simon_says") {
       UpdateConfig.setKeymapMode("next", true);
-      Settings.groups.keymapMode?.updateInput();
       TestLogic.restart(undefined, true);
     }
 
@@ -172,26 +171,20 @@ export async function activate(funbox) {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       UpdateConfig.setKeymapMode("off", true);
       UpdateConfig.setHighlightMode("letter", true);
-      Settings.groups.keymapMode?.updateInput();
       TestLogic.restart(undefined, true);
     } else if (funbox === "layoutfluid") {
-      // UpdateConfig.setKeymapMode("next");
-      Settings.groups.keymapMode?.updateInput();
-      // UpdateConfig.setSavedLayout(Config.layout);
       UpdateConfig.setLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
           : "qwerty",
         true
       );
-      Settings.groups.layout?.updateInput();
       UpdateConfig.setKeymapLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
           : "qwerty",
         true
       );
-      Settings.groups.keymapLayout?.updateInput();
       TestLogic.restart(undefined, true);
     } else if (funbox === "memory") {
       UpdateConfig.setMode("words", true);
@@ -210,13 +203,6 @@ export async function activate(funbox) {
       TestLogic.restart(false, true);
     }
   }
-
-  // if (funbox !== "layoutfluid" || mode !== "script") {
-  //   if (Config.layout !== Config.savedLayout) {
-  //     UpdateConfig.setLayout(Config.savedLayout);
-  //     Settings.groups.layout.updateInput();
-  //   }
-  // }
   TestUI.updateModesNotice();
   return true;
 }

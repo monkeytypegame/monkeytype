@@ -3,25 +3,48 @@ import * as ThemeColors from "../elements/theme-colors";
 import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as TestLogic from "./test-logic";
-import * as Funbox from "./funbox";
+import * as TestWords from "./test-words";
+import * as TestInput from "./test-input";
 import * as PaceCaret from "./pace-caret";
 import * as CustomText from "./custom-text";
 import * as Keymap from "../elements/keymap";
 import * as Caret from "./caret";
-import * as CommandlineLists from "../elements/commandline-lists";
-import * as Commandline from "../elements/commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "../misc";
-import * as TestUI from "./test-ui";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as UI from "../ui";
-import * as TestTimer from "./test-timer";
+import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
+import * as TestActive from "./../states/test-active";
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (
+      [
+        "difficulty",
+        "blindMode",
+        "stopOnError",
+        "paceCaret",
+        "minWpm",
+        "minAcc",
+        "minBurst",
+        "confidenceMode",
+        "layout",
+      ].includes(eventKey)
+    ) {
+      updateModesNotice();
+    }
+    if (eventKey === "flipTestColors") flipColors(eventValue);
+    if (eventKey === "colorfulMode") colorful(eventValue);
+    if (eventKey === "highlightMode") updateWordElement(eventValue);
+    if (eventKey === "burstHeatmap") applyBurstHeatmap();
+  });
+});
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -135,8 +158,8 @@ export function showWords() {
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
-    for (let i = 0; i < TestLogic.words.length; i++) {
-      wordsHTML += getWordHTML(TestLogic.words.get(i));
+    for (let i = 0; i < TestWords.words.length; i++) {
+      wordsHTML += getWordHTML(TestWords.words.get(i));
     }
   } else {
     wordsHTML =
@@ -180,11 +203,11 @@ export function showWords() {
   } else {
     if (Config.keymapMode === "next") {
       Keymap.highlightKey(
-        TestLogic.words
+        TestWords.words
           .getCurrent()
           .substring(
-            TestLogic.input.current.length,
-            TestLogic.input.current.length + 1
+            TestInput.input.current.length,
+            TestInput.input.current.length + 1
           )
           .toString()
           .toUpperCase()
@@ -193,8 +216,6 @@ export function showWords() {
   }
 
   updateActiveElement();
-  Funbox.toggleScript(TestLogic.words.getCurrent());
-
   Caret.updatePosition();
 }
 
@@ -310,24 +331,26 @@ export async function screenshot() {
 }
 
 export function updateWordElement(showError = !Config.blindMode) {
-  let input = TestLogic.input.current;
+  let input = TestInput.input.current;
   let wordAtIndex;
   let currentWord;
   wordAtIndex = document.querySelector("#words .word.active");
-  currentWord = TestLogic.words.getCurrent();
+  currentWord = TestWords.words.getCurrent();
+  if (!currentWord) return;
+
   let ret = "";
 
   let newlineafter = false;
 
   if (Config.mode === "zen") {
-    for (let i = 0; i < TestLogic.input.current.length; i++) {
-      if (TestLogic.input.current[i] === "\t") {
+    for (let i = 0; i < TestInput.input.current.length; i++) {
+      if (TestInput.input.current[i] === "\t") {
         ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-      } else if (TestLogic.input.current[i] === "\n") {
+      } else if (TestInput.input.current[i] === "\n") {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
-        ret += `<letter class="correct">${TestLogic.input.current[i]}</letter>`;
+        ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
       }
     }
   } else {
@@ -429,7 +452,11 @@ export function updateWordElement(showError = !Config.blindMode) {
               ? wordHighlightClassString
               : "incorrect"
           } ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace" ? input[i] : currentLetter) +
+          (Config.indicateTypos === "replace"
+            ? input[i] == " "
+              ? "_"
+              : input[i]
+            : currentLetter) +
           (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
           "</letter>";
       }
@@ -504,7 +531,7 @@ export function lineJump(currentTop) {
         {
           height: 0,
         },
-        TestTimer.slowTimer ? 0 : 125,
+        SlowTimer.get() ? 0 : 125,
         () => {
           $("#words .smoothScroller").remove();
         }
@@ -513,13 +540,13 @@ export function lineJump(currentTop) {
         {
           top: document.querySelector("#paceCaret").offsetTop - wordHeight,
         },
-        TestTimer.slowTimer ? 0 : 125
+        SlowTimer.get() ? 0 : 125
       );
       $("#words").animate(
         {
           marginTop: `-${wordHeight}px`,
         },
-        TestTimer.slowTimer ? 0 : 125,
+        SlowTimer.get() ? 0 : 125,
         () => {
           activeWordTop = document.querySelector("#words .active").offsetTop;
 
@@ -552,7 +579,7 @@ export function updateModesNotice() {
     );
   }
 
-  if (TestLogic.hasTab) {
+  if (TestWords.hasTab) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
     );
@@ -739,19 +766,19 @@ export function arrangeCharactersLeftToRight() {
 async function loadWordsHistory() {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
-  for (let i = 0; i < TestLogic.input.history.length + 2; i++) {
-    let input = TestLogic.input.getHistory(i);
-    let word = TestLogic.words.get(i);
+  for (let i = 0; i < TestInput.input.history.length + 2; i++) {
+    let input = TestInput.input.getHistory(i);
+    let word = TestWords.words.get(i);
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
       if (
-        TestLogic.corrected.getHistory(i) !== undefined &&
-        TestLogic.corrected.getHistory(i) !== ""
+        TestInput.corrected.getHistory(i) !== undefined &&
+        TestInput.corrected.getHistory(i) !== ""
       ) {
         wordEl = `<div class='word' burst="${
           TestStats.burstHistory[i]
-        }" input="${TestLogic.corrected
+        }" input="${TestInput.corrected
           .getHistory(i)
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
@@ -760,7 +787,7 @@ async function loadWordsHistory() {
           TestStats.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
-      if (i === TestLogic.input.history.length - 1) {
+      if (i === TestInput.input.history.length - 1) {
         //last word
         let wordstats = {
           correct: 0,
@@ -808,15 +835,15 @@ async function loadWordsHistory() {
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
-          correctedChar = TestLogic.corrected.getHistory(i)[c];
+          correctedChar = TestInput.corrected.getHistory(i)[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
         if (
           c + 1 === loop &&
-          TestLogic.corrected.getHistory(i) !== undefined &&
-          TestLogic.corrected.getHistory(i).length > input.length
+          TestInput.corrected.getHistory(i) !== undefined &&
+          TestInput.corrected.getHistory(i).length > input.length
         ) {
           extraCorrected = "extraCorrected";
         }
@@ -831,7 +858,7 @@ async function loadWordsHistory() {
                 "</letter>";
             }
           } else {
-            if (input[c] === TestLogic.input.current) {
+            if (input[c] === TestInput.input.current) {
               wordEl +=
                 `<letter class='correct ${extraCorrected}'>` +
                 word[c] +
@@ -877,20 +904,20 @@ export function toggleResultWords() {
         );
         loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
-            TestUI.applyBurstHeatmap();
+            applyBurstHeatmap();
           }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
             .slideDown(250, () => {
               if (Config.burstHeatmap) {
-                TestUI.applyBurstHeatmap();
+                applyBurstHeatmap();
               }
             });
         });
       } else {
         if (Config.burstHeatmap) {
-          TestUI.applyBurstHeatmap();
+          applyBurstHeatmap();
         }
         $("#resultWordsHistory")
           .removeClass("hidden")
@@ -917,8 +944,8 @@ export function applyBurstHeatmap() {
     burstlist = burstlist.filter((x) => x < 350);
 
     if (
-      TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
-        .length !== TestLogic.words.getCurrent()?.length
+      TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
+        .length !== TestWords.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
@@ -990,11 +1017,11 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   try {
     let words;
     if (Config.mode == "zen") {
-      words = TestLogic.input.history.join(" ");
+      words = TestInput.input.history.join(" ");
     } else {
-      words = TestLogic.words
+      words = TestWords.words
         .get()
-        .slice(0, TestLogic.input.history.length)
+        .slice(0, TestInput.input.history.length)
         .join(" ");
     }
     await navigator.clipboard.writeText(words);
@@ -1005,12 +1032,12 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 });
 
 $(".pageTest #rateQuoteButton").click(async (event) => {
-  QuoteRatePopup.show(TestLogic.randomQuote);
+  QuoteRatePopup.show(TestWords.randomQuote);
 });
 
 $(".pageTest #reportQuoteButton").click(async (event) => {
   ReportQuotePopup.show({
-    quoteId: parseInt(TestLogic.randomQuote.id),
+    quoteId: parseInt(TestWords.randomQuote.id),
     noAnim: false,
   });
 });
@@ -1055,28 +1082,11 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   }
 });
 
-$(document).on("click", "#testModesNotice .text-button", (event) => {
-  // console.log("CommandlineLists."+$(event.currentTarget).attr("commands"));
-  let commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands")
-  );
-  let func = $(event.currentTarget).attr("function");
-  if (commands !== undefined) {
-    if ($(event.currentTarget).attr("commands") === "commandsTags") {
-      CommandlineLists.updateTagCommands();
-    }
-    CommandlineLists.pushCurrent(commands);
-    Commandline.show();
-  } else if (func != undefined) {
-    eval(func);
-  }
-});
-
 $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show(TestLogic.input.current);
+  Caret.show(TestInput.input.current);
 });
 
 $("#wordsInput").on("focusout", () => {
@@ -1090,7 +1100,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key == "Enter") {
     ManualRestart.reset();
     if (
-      TestLogic.active &&
+      TestActive.get() &&
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote"
     ) {
@@ -1105,7 +1115,7 @@ $(document.body).on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (resultCalculating) return;
   if (
-    TestLogic.active &&
+    TestActive.get() &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {

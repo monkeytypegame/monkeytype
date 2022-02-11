@@ -556,3 +556,10 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async (e) => {
     }
   );
 });
+
+$(document).keydown((event) => {
+  if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
+    hide();
+    event.preventDefault();
+  }
+});

@@ -1,7 +1,5 @@
-import * as TestLogic from "../test/test-logic";
 import * as ThemeColors from "./theme-colors";
-import * as TestTimer from "../test/test-timer";
-import * as UI from "../ui";
+import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 
 /**
@@ -133,7 +131,7 @@ function render() {
   }
   ctx.particles = keep;
 
-  if (ctx.particles.length && !TestTimer.slowTimer) {
+  if (ctx.particles.length && !SlowTimer.get()) {
     requestAnimationFrame(render);
   } else {
     ctx.context2d.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -155,7 +153,7 @@ export function reset(immediate = false) {
       $("html").css("overflow", "inherit");
       $("html").css("overflow-y", "scroll");
     },
-    immediate || UI.pageTransition ? 0 : 1000
+    immediate ? 0 : 1000
   );
 }
 
@@ -177,12 +175,7 @@ function randomColor() {
  * @param {boolean} good Good power or not?
  */
 export async function addPower(good = true, extra = false) {
-  if (
-    !TestLogic.active ||
-    Config.monkeyPowerLevel === "off" ||
-    TestTimer.slowTimer
-  )
-    return;
+  if (Config.monkeyPowerLevel === "off" || SlowTimer.get()) return;
 
   // Shake
   if (["3", "4"].includes(Config.monkeyPowerLevel)) {
