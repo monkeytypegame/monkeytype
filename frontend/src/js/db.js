@@ -313,8 +313,8 @@ export async function getUserAverageWpm10(
 
   let retval = 0;
 
-  if (dbSnapshot === null) return retval;
-  var dbSnapshotValid = await getUserResults();
+  if (dbSnapshot == null) return retval;
+  let dbSnapshotValid = await getUserResults();
   if (dbSnapshotValid === false) {
     return retval;
   }

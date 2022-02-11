@@ -192,14 +192,14 @@ export function refreshKeys(layout) {
       $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
     }
 
-    var toReplace = lts.keys.slice(1, 48);
-    var count = 0;
+    let toReplace = lts.keys.slice(1, 48);
+    let count = 0;
 
     // let repeatB = false;
     $(".keymap .keymap-key .letter")
       .map(function () {
         if (count < toReplace.length) {
-          var key = toReplace[count].charAt(0);
+          let key = toReplace[count].charAt(0);
           this.innerHTML = key;
 
           switch (key) {

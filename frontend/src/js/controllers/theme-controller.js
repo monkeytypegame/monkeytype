@@ -35,7 +35,7 @@ function updateFavicon(size, curveSize) {
       bgcolor = "#111";
       maincolor = "#eee";
     }
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.width = size;
     canvas.height = size;
     let ctx = canvas.getContext("2d");
@@ -159,7 +159,7 @@ export function clearPreview() {
 }
 
 export function randomizeTheme() {
-  var randomList;
+  let randomList;
   Misc.getThemesList().then((themes) => {
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
       randomList = Config.favThemes;

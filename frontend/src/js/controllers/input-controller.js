@@ -588,8 +588,8 @@ function handleTab(event) {
 
     let area = $("#customTextPopup .textarea")[0];
 
-    var start = area.selectionStart;
-    var end = area.selectionEnd;
+    let start = area.selectionStart;
+    let end = area.selectionEnd;
 
     // set textarea value to: text before caret + tab + text after caret
     area.value =
