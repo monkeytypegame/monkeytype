@@ -815,7 +815,9 @@ $(document).on(
     let target = e.currentTarget;
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
+    configEventDisabled = true;
     PresetController.apply(presetid);
+    configEventDisabled = false;
     update();
   }
 );
@@ -917,7 +919,9 @@ $(".quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
+let configEventDisabled = false;
 ConfigEvent.subscribe(() => {
+  if (configEventDisabled) return;
   if (ActivePage.get() === "settings") update();
 });
 
