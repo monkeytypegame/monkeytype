@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import Howler, { Howl } from "howler";
 
 let errorSound = null;
@@ -248,3 +248,10 @@ export function playError() {
 export function setVolume(val) {
   Howler.Howler.volume(val);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
+    if (eventKey === "soundVolume") setVolume(eventValue);
+  });
+});

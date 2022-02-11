@@ -1,4 +1,4 @@
-import * as TestStats from "./test-stats";
+import * as TestInput from "./test-input";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
 // is based on last perCharCount occurrences. Make it smaller to adjust faster.
@@ -30,7 +30,7 @@ class Score {
 }
 
 export function updateScore(char, isCorrect) {
-  const timings = TestStats.keypressTimings.spacing.array;
+  const timings = TestInput.keypressTimings.spacing.array;
   if (timings.length == 0) {
     return;
   }

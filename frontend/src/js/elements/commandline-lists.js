@@ -192,7 +192,7 @@ Misc.getFontsList().then((fonts) => {
     },
     exec: (name) => {
       UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
-      // Settings.groups.fontFamily.updateButton();
+      // Settings.groups.fontFamily.updateInput();
     },
   });
 });
@@ -284,6 +284,7 @@ export function updatePresetCommands() {
         display: dis,
         exec: () => {
           PresetController.apply(preset._id);
+          Settings.update();
           TestUI.updateModesNotice();
         },
       });
@@ -528,17 +529,25 @@ let commandsIndicateTypos = {
     {
       id: "setIndicateTyposOff",
       display: "off",
-      configValue: false,
+      configValue: "off",
       exec: () => {
-        UpdateConfig.setIndicateTypos(false);
+        UpdateConfig.setIndicateTypos("off");
       },
     },
     {
-      id: "setIndicateTyposOn",
-      display: "on",
-      configValue: true,
+      id: "setIndicateTyposBelow",
+      display: "below",
+      configValue: "below",
       exec: () => {
-        UpdateConfig.setIndicateTypos(true);
+        UpdateConfig.setIndicateTypos("below");
+      },
+    },
+    {
+      id: "setIndicateTyposReplace",
+      display: "replace",
+      configValue: "replace",
+      exec: () => {
+        UpdateConfig.setIndicateTypos("replace");
       },
     },
   ],
@@ -2429,14 +2438,8 @@ export let defaultCommands = {
     {
       id: "changePunctuation",
       display: "Punctuation...",
-      subgroup: commandsPunctuation,
       icon: "!?",
-      shift: {
-        display: "Toggle punctuation",
-        exec: () => {
-          UpdateConfig.togglePunctuation();
-        },
-      },
+      subgroup: commandsPunctuation,
     },
     {
       id: "changeMode",
@@ -3053,7 +3056,7 @@ export let defaultCommands = {
       icon: "fa-egg",
       visible: false,
       exec: () => {
-        UpdateConfig.toggleMonkey();
+        UpdateConfig.setMonkey(!Config.monkey);
       },
     },
     {
@@ -3137,3 +3140,23 @@ export function pushCurrent(val) {
 export function getList(list) {
   return eval(list);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "saveToLocalStorage") {
+      defaultCommands.list.filter(
+        (command) => command.id == "exportSettingsJSON"
+      )[0].defaultValue = eventValue;
+    }
+    if (eventKey === "customBackground") {
+      defaultCommands.list.filter(
+        (command) => command.id == "changeCustomBackground"
+      )[0].defaultValue = eventValue;
+    }
+    if (eventKey === "customLayoutFluid") {
+      defaultCommands.list.filter(
+        (command) => command.id == "changeCustomLayoutfluid"
+      )[0].defaultValue = eventValue?.replace(/#/g, " ");
+    }
+  });
+});

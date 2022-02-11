@@ -21,6 +21,9 @@ import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
 import axiosInstance from "../axios-instance";
+import * as TodayTracker from "./../test/today-tracker";
+import * as ActivePage from "../states/active-page";
+import * as TestActive from "./../states/test-active";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -34,6 +37,12 @@ export function toggleFilterDebug() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
+    if (ActivePage.get() == "pageLoading") {
+      LoadingPage.updateBar(90);
+    } else {
+      LoadingPage.updateBar(45);
+    }
+    LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (e) {
@@ -55,11 +64,11 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if (UI.getActivePage() == "pageLoading") UI.changePage("");
+    if (ActivePage.get() == "pageLoading") UI.changePage("");
     AccountController.signOut();
     return;
   }
-  if (UI.getActivePage() == "pageLoading") {
+  if (ActivePage.get() == "pageLoading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -67,9 +76,22 @@ export async function getDataAndInit() {
   LoadingPage.updateText("Applying settings...");
   let snap = DB.getSnapshot();
   $("#menu .icon-button.account .text").text(snap.name);
-  // if (snap === null) {
-  //   throw "Missing db snapshot. Client likely could not connect to the backend.";
-  // }
+
+  ResultFilters.loadTags(DB.getSnapshot().tags);
+
+  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
+    let languages = values[0];
+    let funboxModes = values[1];
+    languages.forEach((language) => {
+      ResultFilters.defaultResultFilters.language[language] = true;
+    });
+    funboxModes.forEach((funbox) => {
+      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+    });
+    // filters = defaultResultFilters;
+    ResultFilters.load();
+  });
+
   let user = firebase.auth().currentUser;
   if (snap.name == undefined) {
     //verify username
@@ -191,7 +213,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if (UI.getActivePage() == "pageTest") {
+        if (ActivePage.get() == "pageTest") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -203,12 +225,12 @@ export async function getDataAndInit() {
     AccountButton.loading(false);
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestLogic.active) {
+    if (!TestActive.get()) {
       PaceCaret.init(true);
     }
   }
   // if (
-  //   UI.getActivePage() == "pageLogin" ||
+  //   ActivePage.get() == "pageLogin" ||
   //   window.location.pathname === "/account"
   // ) {
   //   UI.changePage("account");
@@ -222,7 +244,7 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   UI.setPageTransition(false);
   console.log("account loading finished");
-  // if (UI.getActivePage() == "pageLoading") {
+  // if (ActivePage.get() == "pageLoading") {
   //   LoadingPage.updateBar(100, true);
   //   Focus.set(false);
   //   UI.changePage("");
@@ -417,6 +439,7 @@ export function update() {
     let last10 = 0;
     let wpmLast10total = 0;
 
+    let topAcc = 0;
     let totalAcc = 0;
     let totalAcc10 = 0;
 
@@ -431,6 +454,7 @@ export function update() {
     // let totalSeconds = 0;
     totalSecondsFiltered = 0;
 
+    let topCons = 0;
     let totalCons = 0;
     let totalCons10 = 0;
     let consCount = 0;
@@ -634,6 +658,7 @@ export function update() {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
+        update();
       }
       //filters done
       //=======================================
@@ -697,6 +722,9 @@ export function update() {
       if (result.consistency !== undefined) {
         consCount++;
         totalCons += result.consistency;
+        if (result.consistency > topCons) {
+          topCons = result.consistency;
+        }
       }
 
       if (result.rawWpm != null) {
@@ -709,6 +737,10 @@ export function update() {
         if (result.rawWpm > rawWpm.max) {
           rawWpm.max = result.rawWpm;
         }
+      }
+
+      if (result.acc > topAcc) {
+        topAcc = result.acc;
       }
 
       totalAcc += result.acc;
@@ -959,6 +991,7 @@ export function update() {
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
+    $(".pageAccount .highestAcc .val").text(topAcc + "%");
     $(".pageAccount .avgAcc .val").text(Math.round(totalAcc / testCount) + "%");
     $(".pageAccount .avgAcc10 .val").text(
       Math.round(totalAcc10 / last10) + "%"
@@ -968,6 +1001,7 @@ export function update() {
       $(".pageAccount .avgCons .val").text("-");
       $(".pageAccount .avgCons10 .val").text("-");
     } else {
+      $(".pageAccount .highestCons .val").text(topCons + "%");
       $(".pageAccount .avgCons .val").text(
         Math.round(totalCons / consCount) + "%"
       );
@@ -976,8 +1010,6 @@ export function update() {
       );
     }
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-    console.log("Test count: " + testCount);
-    console.log("Test restarts: " + testRestarts);
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100
@@ -1026,7 +1058,7 @@ export function update() {
       SignOutButton.show();
     }, 125);
     Focus.set(false);
-    UI.swapElements(
+    Misc.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
       250
@@ -1038,8 +1070,10 @@ export function update() {
   } else if (DB.getSnapshot().results === undefined) {
     LoadingPage.updateBar(45, true);
     DB.getUserResults().then((d) => {
+      TodayTracker.addAllFromToday();
       if (d) {
         ResultFilters.updateActive();
+        update();
       } else {
         setTimeout(() => {
           UI.changePage("");
@@ -1124,25 +1158,23 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
-  UpdateConfig.toggleChartAccuracy();
+  UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  UpdateConfig.toggleChartStyle();
+  if (Config.chartStyle == "line") {
+    UpdateConfig.setChartStyle("scatter");
+  } else {
+    UpdateConfig.setChartStyle("line");
+  }
 });
 
 $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
 });
 
-let activeChartIndex;
-
-export function setActiveChartIndex(index) {
-  activeChartIndex = index;
-}
-
 $(".pageAccount #accountHistoryChart").click((e) => {
-  let index = activeChartIndex;
+  let index = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {

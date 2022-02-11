@@ -192,3 +192,46 @@ $("#tagsWrapper #tagsEdit input").keypress((e) => {
     apply();
   }
 });
+
+$(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
+  show("add");
+});
+
+$(document).on(
+  "click",
+  ".pageSettings .section.tags .tagsList .tag .editButton",
+  (e) => {
+    let tagid = $(e.currentTarget).parent(".tag").attr("id");
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    show("edit", tagid, name);
+  }
+);
+
+$(document).on(
+  "click",
+  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  (e) => {
+    let tagid = $(e.currentTarget).parent(".tag").attr("id");
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    show("clearPb", tagid, name);
+  }
+);
+
+$(document).on(
+  "click",
+  ".pageSettings .section.tags .tagsList .tag .removeButton",
+  (e) => {
+    let tagid = $(e.currentTarget).parent(".tag").attr("id");
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    show("remove", tagid, name);
+  }
+);

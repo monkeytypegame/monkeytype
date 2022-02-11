@@ -1,8 +1,11 @@
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as Misc from "../misc";
-import * as TestLogic from "./test-logic";
-import * as TestTimer from "./test-timer";
+import * as TestWords from "./test-words";
+import * as TestInput from "./test-input";
+import * as Time from "./../states/time";
+import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -91,7 +94,7 @@ let miniTimerNumberElement = document.querySelector(
 );
 
 export function update() {
-  let time = TestTimer.time;
+  let time = Time.get();
   if (
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
@@ -108,7 +111,7 @@ export function update() {
           {
             width: percent + "vw",
           },
-          TestTimer.slowTimer ? 0 : 1000,
+          SlowTimer.get() ? 0 : 1000,
           "linear"
         );
     } else if (Config.timerStyle === "text") {
@@ -129,7 +132,7 @@ export function update() {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    let outof = TestLogic.words.length;
+    let outof = TestWords.words.length;
     if (Config.mode === "words") {
       outof = Config.words;
     }
@@ -141,11 +144,11 @@ export function update() {
       }
     }
     if (Config.mode === "quote") {
-      outof = TestLogic?.randomQuote?.textSplit?.length ?? 1;
+      outof = TestWords.randomQuote?.textSplit?.length ?? 1;
     }
     if (Config.timerStyle === "bar") {
       let percent = Math.floor(
-        ((TestLogic.words.currentIndex + 1) / outof) * 100
+        ((TestWords.words.currentIndex + 1) / outof) * 100
       );
       $("#timer")
         .stop(true, true)
@@ -153,38 +156,51 @@ export function update() {
           {
             width: percent + "vw",
           },
-          TestTimer.slowTimer ? 0 : 250
+          SlowTimer.get() ? 0 : 250
         );
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
         timerNumberElement.innerHTML =
-          "<div>" + `${TestLogic.input.history.length}` + "</div>";
+          "<div>" + `${TestInput.input.history.length}` + "</div>";
       } else {
         timerNumberElement.innerHTML =
-          "<div>" + `${TestLogic.input.history.length}/${outof}` + "</div>";
+          "<div>" + `${TestInput.input.history.length}/${outof}` + "</div>";
       }
     } else if (Config.timerStyle === "mini") {
       if (Config.words === 0) {
-        miniTimerNumberElement.innerHTML = `${TestLogic.input.history.length}`;
+        miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
       } else {
-        miniTimerNumberElement.innerHTML = `${TestLogic.input.history.length}/${outof}`;
+        miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}/${outof}`;
       }
     }
   } else if (Config.mode == "zen") {
     if (Config.timerStyle === "text") {
       timerNumberElement.innerHTML =
-        "<div>" + `${TestLogic.input.history.length}` + "</div>";
+        "<div>" + `${TestInput.input.history.length}` + "</div>";
     } else {
-      miniTimerNumberElement.innerHTML = `${TestLogic.input.history.length}`;
+      miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
     }
   }
 }
 
 export function updateStyle() {
-  if (!TestLogic.active) return;
+  if (!TestActive.get()) return;
   hide();
   update();
   setTimeout(() => {
     show();
   }, 125);
 }
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
+    if (eventKey === "showTimerProgress") {
+      if (eventValue === true && TestActive.get()) {
+        show();
+      } else {
+        hide();
+      }
+    }
+    if (eventKey === "timerStyle") updateStyle();
+  });
+});

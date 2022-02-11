@@ -1,4 +1,4 @@
-import * as UI from "../ui";
+import * as Misc from "./../misc";
 
 export function updateBar(percentage, fast) {
   const speed = fast ? 100 : 1000;
@@ -18,7 +18,7 @@ export function updateText(text) {
 
 export function showBar() {
   return new Promise((resolve, _reject) => {
-    UI.swapElements(
+    Misc.swapElements(
       $(".pageLoading .icon"),
       $(".pageLoading .barWrapper"),
       125,
@@ -26,7 +26,7 @@ export function showBar() {
         resolve();
       }
     );
-    UI.swapElements(
+    Misc.swapElements(
       $(".pageAccount .icon"),
       $(".pageAccount .barWrapper"),
       125,

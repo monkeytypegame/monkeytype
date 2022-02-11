@@ -1,6 +1,4 @@
 import * as Loader from "./elements/loader";
-import Config from "./config";
-import * as TestLogic from "./test/test-logic";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -317,8 +315,8 @@ export async function getLanguage(lang) {
   }
 }
 
-export async function getCurrentLanguage() {
-  return await getLanguage(Config.language);
+export async function getCurrentLanguage(languageName) {
+  return await getLanguage(languageName);
 }
 
 export function migrateFromCookies() {
@@ -812,24 +810,88 @@ String.prototype.lastIndexOfRegex = function (regex) {
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
-export function getMode2(mode) {
-  if (!mode) mode = Config.mode;
+//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
+export function convertRemToPixels(rem) {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
+export function swapElements(
+  el1,
+  el2,
+  totalDuration,
+  callback = function () {
+    return;
+  },
+  middleCallback = function () {
+    return;
+  }
+) {
+  if (
+    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
+    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
+  ) {
+    //one of them is hidden and the other is visible
+    if (el1.hasClass("hidden")) {
+      callback();
+      return false;
+    }
+    $(el1)
+      .removeClass("hidden")
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        totalDuration / 2,
+        () => {
+          middleCallback();
+          $(el1).addClass("hidden");
+          $(el2)
+            .removeClass("hidden")
+            .css("opacity", 0)
+            .animate(
+              {
+                opacity: 1,
+              },
+              totalDuration / 2,
+              () => {
+                callback();
+              }
+            );
+        }
+      );
+  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
+    //both are hidden, only fade in the second
+    $(el2)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: 1,
+        },
+        totalDuration,
+        () => {
+          callback();
+        }
+      );
+  } else {
+    callback();
+  }
+}
+
+export function getMode2(config, randomQuote) {
+  let mode = config.mode;
   let mode2 = "";
   if (mode === "time") {
-    mode2 = Config.time;
+    mode2 = config.time;
   } else if (mode === "words") {
-    mode2 = Config.words;
+    mode2 = config.words;
   } else if (mode === "custom") {
     mode2 = "custom";
   } else if (mode === "zen") {
     mode2 = "zen";
   } else if (mode === "quote") {
-    mode2 = TestLogic.randomQuote.id;
+    mode2 = randomQuote.id;
   }
   return mode2;
-}
-
-//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
-export function convertRemToPixels(rem) {
-  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }

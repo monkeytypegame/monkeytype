@@ -245,6 +245,27 @@
     "languages": ["japanese_hiragana", "japanese_katakana"]
   },
   {
+    "name": "hindi",
+    "languages": ["hindi", "hindi_1k"]
+  },
+  {
+    "name": "macedonian",
+    "languages": [
+      "macedonian",
+      "macedonian_1k",
+      "macedonian_10k",
+      "macedonian_75k"
+    ]
+  },
+  {
+    "name": "belarusian",
+    "languages": ["belarusian_1k"]
+  },
+  {
+    "name": "malayalam",
+    "languages": ["malayalam"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -276,26 +297,5 @@
       "twitch_emotes",
       "git"
     ]
-  },
-  {
-    "name": "hindi",
-    "languages": ["hindi", "hindi_1k"]
-  },
-  {
-    "name": "macedonian",
-    "languages": [
-      "macedonian",
-      "macedonian_1k",
-      "macedonian_10k",
-      "macedonian_75k"
-    ]
-  },
-  {
-    "name": "belarusian",
-    "languages": ["belarusian_1k"]
-  },
-  {
-    "name": "malayalam",
-    "languages": ["malayalam"]
   }
 ]

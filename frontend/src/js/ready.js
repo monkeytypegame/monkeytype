@@ -9,9 +9,11 @@ import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 
-ManualRestart.set();
-Misc.migrateFromCookies();
-UpdateConfig.loadFromLocalStorage();
+$(document).ready(() => {
+  ManualRestart.set();
+  Misc.migrateFromCookies();
+  UpdateConfig.loadFromLocalStorage();
+});
 if (window.location.hostname === "localhost") {
   $("#bottom .version .text").text("localhost");
   $("#bottom .version").css("opacity", 1);

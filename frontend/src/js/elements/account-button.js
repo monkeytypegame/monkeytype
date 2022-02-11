@@ -1,4 +1,4 @@
-import * as UI from "../ui";
+import * as Misc from "./../misc";
 
 export function loading(truefalse) {
   if (truefalse) {
@@ -14,13 +14,13 @@ export function loading(truefalse) {
 
 export function update() {
   if (firebase.auth().currentUser != null) {
-    UI.swapElements(
+    Misc.swapElements(
       $("#menu .icon-button.login"),
       $("#menu .icon-button.account"),
       250
     );
   } else {
-    UI.swapElements(
+    Misc.swapElements(
       $("#menu .icon-button.account"),
       $("#menu .icon-button.login"),
       250

@@ -138,13 +138,13 @@ el.find(".customChange").on("click", (e) => {
 });
 
 el.find(".punctuation").on("click", (e) => {
-  UpdateConfig.togglePunctuation();
+  UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   TestLogic.restart();
 });
 
 el.find(".numbers").on("click", (e) => {
-  UpdateConfig.toggleNumbers();
+  UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   TestLogic.restart();
 });
@@ -160,4 +160,10 @@ el.find(".modeGroup .button").on("click", (e) => {
 $("#mobileTestConfigPopup .button").click((e) => {
   // hidePopup();
   update();
+});
+
+$(document).ready(() => {
+  UpdateConfig.subscribeToEvent((eventKey) => {
+    if (eventKey === "mode") update();
+  });
 });

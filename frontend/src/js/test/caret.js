@@ -1,7 +1,8 @@
 import * as Misc from "../misc";
 import Config from "../config";
-import * as TestLogic from "./test-logic";
-import * as TestTimer from "./test-timer";
+import * as TestInput from "./test-input";
+import * as SlowTimer from "../states/slow-timer";
+import * as TestActive from "./../states/test-active";
 
 export let caretAnimating = true;
 
@@ -15,7 +16,7 @@ export function stopAnimation() {
 
 export function startAnimation() {
   if (caretAnimating === false) {
-    if (Config.smoothCaret && !TestTimer.slowTimer) {
+    if (Config.smoothCaret && !SlowTimer.get()) {
       $("#caret").css("animation-name", "caretFlashSmooth");
     } else {
       $("#caret").css("animation-name", "caretFlashHard");
@@ -36,9 +37,9 @@ export async function updatePosition() {
 
   let caret = $("#caret");
 
-  let inputLen = TestLogic.input.current.length;
-  inputLen = Misc.trailingComposeChars.test(TestLogic.input.current)
-    ? TestLogic.input.current.search(Misc.trailingComposeChars) + 1
+  let inputLen = TestInput.input.current.length;
+  inputLen = Misc.trailingComposeChars.test(TestInput.input.current)
+    ? TestInput.input.current.search(Misc.trailingComposeChars) + 1
     : inputLen;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
@@ -62,7 +63,7 @@ export async function updatePosition() {
   }
 
   if (Config.mode != "zen" && $(currentLetter).length == 0) return;
-  const currentLanguage = await Misc.getCurrentLanguage();
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageLeftToRight = currentLanguage.leftToRight;
   let currentLetterPosLeft = isLanguageLeftToRight
     ? currentLetter.offsetLeft
@@ -92,7 +93,7 @@ export async function updatePosition() {
         top: newTop - smoothlinescroll,
         left: newLeft,
       },
-      TestTimer.slowTimer ? 0 : 100
+      SlowTimer.get() ? 0 : 100
     );
   } else {
     caret.stop(true, true).animate(
@@ -112,7 +113,7 @@ export async function updatePosition() {
     if (
       newTop >= middlePos &&
       contentHeight > browserHeight &&
-      TestLogic.active
+      TestActive.get()
     ) {
       let newscrolltop = newTop - middlePos / 2;
       // console.log('---------');

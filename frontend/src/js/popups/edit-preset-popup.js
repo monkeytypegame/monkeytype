@@ -180,3 +180,23 @@ $("#presetWrapper #presetEdit input").keypress((e) => {
     apply();
   }
 });
+
+$(document).on(
+  "click",
+  ".pageSettings .section.presets .addPresetButton",
+  (e) => {
+    show("add");
+  }
+);
+
+$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
+  let presetid = $(e.currentTarget).parent(".preset").attr("id");
+  let name = $(e.currentTarget).siblings(".button").children(".title").text();
+  show("edit", presetid, name);
+});
+
+$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
+  let presetid = $(e.currentTarget).parent(".preset").attr("id");
+  let name = $(e.currentTarget).siblings(".button").children(".title").text();
+  show("remove", presetid, name);
+});
