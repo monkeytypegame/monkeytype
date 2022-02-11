@@ -26,7 +26,6 @@ import "./popups/edit-tags-popup";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
-import { toggleUnsmoothedRaw } from "./test/result";
 import * as Result from "./test/result";
 import * as TestInput from "./test/test-input";
 
@@ -48,6 +47,6 @@ global.enableTimerDebug = TestTimer.enableTimerDebug;
 
 global.getTimerStats = TestTimer.getTimerStats;
 
-global.toggleUnsmoothedRaw = toggleUnsmoothedRaw;
+global.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
 global.enableSpacingDebug = TestInput.enableSpacingDebug;
