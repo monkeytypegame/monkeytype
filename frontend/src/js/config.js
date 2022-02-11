@@ -1455,6 +1455,8 @@ export function apply(configObj) {
       $("#ad_about1").remove();
       $("#ad_about2").remove();
     }
+
+    ConfigEvent.dispatch("configApplied", config);
   }
 }
 

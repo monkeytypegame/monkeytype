@@ -12,6 +12,7 @@ import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
+import * as ConfigEvent from "./../observables/config-event";
 import Page from "./page";
 
 export let groups = {};
@@ -913,6 +914,12 @@ $(".quickNav .links a").on("click", (e) => {
     "slideup"
   );
   isOpen && toggleSettingsGroup(settingsGroup);
+});
+
+$(document).ready(() => {
+  ConfigEvent.subscribe((eventKey) => {
+    if (eventKey === "configApplied") update();
+  });
 });
 
 export const page = new Page(
