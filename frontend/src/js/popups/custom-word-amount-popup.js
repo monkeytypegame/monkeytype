@@ -77,3 +77,13 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
     show();
   }
 });
+
+$(document).keydown((event) => {
+  if (
+    event.key === "Escape" &&
+    !$("#customWordAmountPopupWrapper").hasClass("hidden")
+  ) {
+    hide();
+    event.preventDefault();
+  }
+});

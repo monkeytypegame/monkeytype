@@ -166,6 +166,16 @@ $("#practiseWordsPopup .button.both").on("focusout", (e) => {
   $("#practiseWordsPopup .missed").focus();
 });
 
+$(document).keydown((event) => {
+  if (
+    event.key === "Escape" &&
+    !$("#practiseWordsPopupWrapper").hasClass("hidden")
+  ) {
+    hidePopup();
+    event.preventDefault();
+  }
+});
+
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey) => {
     if (eventKey === "mode") resetBefore();

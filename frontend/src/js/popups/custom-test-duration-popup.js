@@ -145,3 +145,13 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
     show();
   }
 });
+
+$(document).keydown((event) => {
+  if (
+    event.key === "Escape" &&
+    !$("#customTestDurationPopupWrapper").hasClass("hidden")
+  ) {
+    hide();
+    event.preventDefault();
+  }
+});

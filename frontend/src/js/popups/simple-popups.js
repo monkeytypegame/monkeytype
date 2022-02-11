@@ -725,3 +725,10 @@ $(document).on(
     list.applyCustomFont.show([]);
   }
 );
+
+$(document).keydown((event) => {
+  if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
+    hide();
+    event.preventDefault();
+  }
+});
