@@ -5,7 +5,7 @@ let chec = 10;
 
 module.exports = {
   mode: "production", // Change to 'production' for production
-  entry: "./src/js/index.js",
+  entry: path.resolve(__dirname, "src/js/index.js"),
   resolve: {
     fallback: {
       crypto: require.resolve("crypto-browserify"),
