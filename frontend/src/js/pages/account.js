@@ -63,7 +63,6 @@ export async function getDataAndInit() {
     let msg = e?.response?.data?.message ?? e?.response?.data ?? e?.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
-    // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
     if (ActivePage.get() == "loading") PageController.change("");
     return false;
@@ -228,13 +227,6 @@ export async function getDataAndInit() {
       PaceCaret.init(true);
     }
   }
-  // if (
-  //   ActivePage.get() == "login" ||
-  //   window.location.pathname === "/account"
-  // ) {
-  //   PageController.change("account");
-  // }
-  // ThemePicker.refreshButtons();
   AccountButton.loading(false);
   ResultFilters.updateTags();
   CommandlineLists.updateTagCommands();
@@ -243,11 +235,6 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   PageTransition.set(false);
   console.log("account loading finished");
-  // if (ActivePage.get() == "loading") {
-  //   LoadingPage.updateBar(100, true);
-  //   Focus.set(false);
-  //   PageController.change("");
-  // }
 }
 
 let filteredResults = [];
@@ -1073,10 +1060,6 @@ export function update() {
       if (d) {
         ResultFilters.updateActive();
         update();
-      } else {
-        setTimeout(() => {
-          PageController.change("");
-        }, 500);
       }
     });
   } else {
