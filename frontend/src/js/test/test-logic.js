@@ -1675,6 +1675,56 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
+$(document).on("click", "#top .config .wordCount .text-button", (e) => {
+  const wrd = $(e.currentTarget).attr("wordCount");
+  if (wrd != "custom") {
+    UpdateConfig.setWordCount(wrd);
+    ManualRestart.set();
+    restart();
+  }
+});
+
+$(document).on("click", "#top .config .time .text-button", (e) => {
+  let mode = $(e.currentTarget).attr("timeConfig");
+  if (mode != "custom") {
+    UpdateConfig.setTimeConfig(mode);
+    ManualRestart.set();
+    restart();
+  }
+});
+
+$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+  let len = $(e.currentTarget).attr("quoteLength");
+  if (len != -2) {
+    if (len == -1) {
+      len = [0, 1, 2, 3];
+    }
+    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
+    ManualRestart.set();
+    restart();
+  }
+});
+
+$(document).on("click", "#top .config .punctuationMode .text-button", () => {
+  UpdateConfig.setPunctuation(!Config.punctuation);
+  ManualRestart.set();
+  restart();
+});
+
+$(document).on("click", "#top .config .numbersMode .text-button", () => {
+  UpdateConfig.setNumbers(!Config.numbers);
+  ManualRestart.set();
+  restart();
+});
+
+$(document).on("click", "#top .config .mode .text-button", (e) => {
+  if ($(e.currentTarget).hasClass("active")) return;
+  const mode = $(e.currentTarget).attr("mode");
+  UpdateConfig.setMode(mode);
+  ManualRestart.set();
+  restart();
+});
+
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue, nosave) => {
     if (eventKey === "difficulty" && !nosave) restart(false, nosave);
