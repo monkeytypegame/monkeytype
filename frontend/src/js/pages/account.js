@@ -16,7 +16,6 @@ import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as Settings from "./settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as PbTables from "../account/pb-tables";
-import * as AccountController from "../controllers/account-controller";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
@@ -67,8 +66,7 @@ export async function getDataAndInit() {
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
     if (ActivePage.get() == "loading") PageController.change("");
-    AccountController.signOut();
-    return;
+    return false;
   }
   if (ActivePage.get() == "loading") {
     LoadingPage.updateBar(100);
@@ -139,8 +137,7 @@ export async function getDataAndInit() {
         );
 
         if (name == null) {
-          AccountController.signOut();
-          return;
+          return false;
         }
 
         let response;
@@ -1198,10 +1195,6 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
     event.pageY + 30
   );
-});
-
-$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
-  AccountController.sendVerificationEmail();
 });
 
 $(document).on("click", ".history-wpm-header", (event) => {
