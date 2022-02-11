@@ -186,8 +186,6 @@ $(document.body).on("click", "#practiseWordsButton", () => {
   showPopup();
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (eventKey === "mode") resetBefore();
-  });
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "mode") resetBefore();
 });

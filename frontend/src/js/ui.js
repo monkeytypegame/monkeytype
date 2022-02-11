@@ -91,8 +91,6 @@ $(window).resize(() => {
   Caret.updatePosition();
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (eventKey === "swapEscAndTab") updateKeytips();
-  });
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "swapEscAndTab") updateKeytips();
 });

@@ -61,8 +61,6 @@ export function hide() {
   );
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "showLiveAcc") eventValue ? show() : hide();
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "showLiveAcc") eventValue ? show() : hide();
 });

@@ -12,13 +12,11 @@ import * as Misc from "../misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "./../observables/config-event";
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "flipTestColors") flipColors(eventValue);
-    if (eventKey === "colorfulMode") colorful(eventValue);
-    if (eventKey === "highlightMode") updateWordElement(eventValue);
-    if (eventKey === "burstHeatmap") applyBurstHeatmap();
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "flipTestColors") flipColors(eventValue);
+  if (eventKey === "colorfulMode") colorful(eventValue);
+  if (eventKey === "highlightMode") updateWordElement(eventValue);
+  if (eventKey === "burstHeatmap") applyBurstHeatmap();
 });
 
 export let currentWordElementIndex = 0;

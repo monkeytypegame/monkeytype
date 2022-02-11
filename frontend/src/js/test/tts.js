@@ -27,15 +27,13 @@ export function speak(text) {
   window.speechSynthesis.speak(voice);
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "funbox") {
-      if (eventValue === "none") {
-        clear();
-      } else if (eventValue === "tts") {
-        init();
-      }
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "funbox") {
+    if (eventValue === "none") {
+      clear();
+    } else if (eventValue === "tts") {
+      init();
     }
-    if (eventKey === "language" && Config.funbox === "tts") setLanguage();
-  });
+  }
+  if (eventKey === "language" && Config.funbox === "tts") setLanguage();
 });

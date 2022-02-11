@@ -163,8 +163,6 @@ $("#mobileTestConfigPopup .button").click((e) => {
   update();
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (eventKey === "mode") update();
-  });
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "mode") update();
 });

@@ -243,8 +243,6 @@ export function start() {
   update(performance.now() + settings.spc * 1000);
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-    if (eventKey === "paceCaret") init(nosave);
-  });
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "paceCaret") init(nosave);
 });

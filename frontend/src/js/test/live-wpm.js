@@ -70,8 +70,6 @@ export function hide() {
   );
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "showLiveWpm") eventValue ? show() : hide();
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "showLiveWpm") eventValue ? show() : hide();
 });

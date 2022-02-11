@@ -13,6 +13,7 @@ import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "./../observables/config-event";
+import * as ActivePage from "./../states/active-page";
 import Page from "./page";
 
 export let groups = {};
@@ -814,7 +815,9 @@ $(document).on(
     let target = e.currentTarget;
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
+    configEventDisabled = true;
     PresetController.apply(presetid);
+    configEventDisabled = false;
     update();
   }
 );
@@ -916,10 +919,13 @@ $(".quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (eventKey === "configApplied") update();
-  });
+let configEventDisabled = false;
+export function setEventDisabled(value) {
+  configEventDisabled = value;
+}
+ConfigEvent.subscribe(() => {
+  if (configEventDisabled) return;
+  if (ActivePage.get() === "settings") update();
 });
 
 export const page = new Page(
