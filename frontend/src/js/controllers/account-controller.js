@@ -8,7 +8,7 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import axiosInstance from "../axios-instance";
 import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
@@ -40,7 +40,7 @@ async function loadUser(user) {
       `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
     );
   }
-  UI.setPageTransition(false);
+  PageController.setTransition(false);
   AccountButton.update();
   AccountButton.loading(true);
   await Account.getDataAndInit();
@@ -83,14 +83,14 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     if (window.location.pathname == "/account") {
       window.history.replaceState("", null, "/login");
     }
-    UI.setPageTransition(false);
+    PageController.setTransition(false);
   }
   if (window.location.pathname != "/account") {
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
   }
-  UI.changePage();
+  PageController.change();
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {
@@ -142,7 +142,7 @@ export function signIn() {
         .signInWithEmailAndPassword(email, password)
         .then(async (e) => {
           await loadUser(e.user);
-          UI.changePage("account");
+          PageController.change("account");
           if (TestLogic.notSignedInLastResult !== null) {
             TestLogic.setNotSignedInUid(e.user.uid);
             let response;
@@ -161,9 +161,9 @@ export function signIn() {
               TestLogic.clearNotSignedInResult();
               Notifications.add("Last test result saved", 1);
             }
-            // UI.changePage("account");
+            // PageController.change("account");
           }
-          // UI.changePage("test");
+          // PageController.change("test");
           //TODO: redirect user to relevant page
         })
         .catch(function (error) {
@@ -245,7 +245,7 @@ export async function signInWithGoogle() {
         $(".pageLogin .button").removeClass("disabled");
         $(".pageLogin .preloader").addClass("hidden");
         await loadUser(signedInUser.user);
-        UI.changePage("account");
+        PageController.change("account");
         if (TestLogic.notSignedInLastResult !== null) {
           TestLogic.setNotSignedInUid(signedInUser.user.uid);
           axiosInstance
@@ -257,12 +257,12 @@ export async function signInWithGoogle() {
                 DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
               }
             });
-          // UI.changePage("account");
+          // PageController.change("account");
         }
       }
     } else {
       await loadUser(signedInUser.user);
-      UI.changePage("account");
+      PageController.change("account");
     }
   } catch (e) {
     console.log(e);
@@ -392,7 +392,7 @@ export function signOut() {
       AllTimeStats.clear();
       Settings.hideAccountSection();
       AccountButton.update();
-      UI.changePage("login");
+      PageController.change("login");
       DB.setSnapshot(null);
       $(".pageLogin .button").removeClass("disabled");
     })
@@ -472,7 +472,7 @@ async function signUp() {
             DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
           }
         });
-      UI.changePage("account");
+      PageController.change("account");
     }
   } catch (e) {
     //make sure to do clean up here

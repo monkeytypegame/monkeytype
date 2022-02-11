@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "./config";
 import * as Misc from "./misc";
 import * as VerificationController from "./controllers/verification-controller";
 import * as RouteController from "./controllers/route-controller";
-import * as UI from "./ui";
+import * as PageController from "./controllers/page-controller";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
@@ -61,7 +61,7 @@ $(document).ready(() => {
           history.replaceState("/", null, "/");
         }
         let page = window.location.pathname.replace("/", "");
-        UI.changePage(page);
+        PageController.change(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
       } else if (/challenge_.+/g.test(window.location.pathname)) {
@@ -69,7 +69,7 @@ $(document).ready(() => {
         // }
       } else if (window.location.pathname !== "/") {
         // let page = window.location.pathname.replace("/", "");
-        // UI.changePage(page);
+        // PageController.change(page);
       }
     });
   // Settings.settingsFillPromise.then(Settings.update);

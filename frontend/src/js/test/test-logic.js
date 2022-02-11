@@ -17,7 +17,7 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
 import * as PbCrown from "./pb-crown";
@@ -242,7 +242,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 export function startTest() {
-  if (UI.pageTransition) {
+  if (PageController.transition) {
     return false;
   }
   if (!Config.dbConfigLoaded) {
@@ -408,14 +408,14 @@ export function restart(
   if (TestUI.resultVisible) {
     if (
       Config.randomTheme !== "off" &&
-      !UI.pageTransition &&
+      !PageController.transition &&
       !Config.customTheme
     ) {
       ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);
-  UI.setPageTransition(true);
+  PageController.setTransition(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -559,7 +559,7 @@ export function restart(
               TestUI.focusWords();
             // ChartController.result.update();
             TestUI.updateModesNotice();
-            UI.setPageTransition(false);
+            PageController.setTransition(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
           }

@@ -13,7 +13,7 @@ import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
@@ -653,7 +653,7 @@ function handleTab(event) {
       }
     } else if (Config.quickTab) {
       event.preventDefault();
-      UI.changePage("test");
+      PageController.change("test");
     }
   }
 }

@@ -16,7 +16,7 @@ import * as Replay from "./replay";
 import * as Misc from "../misc";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import * as SlowTimer from "../states/slow-timer";
 import * as ReportQuotePopup from "../popups/quote-report-popup";
 import * as TestActive from "./../states/test-active";
@@ -1046,7 +1046,7 @@ $(".pageTest #toggleBurstHeatmap").click(async (event) => {
 });
 
 $(".pageTest .loginTip .link").click(async (event) => {
-  UI.changePage("login");
+  PageController.change("login");
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {

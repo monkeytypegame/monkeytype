@@ -9,7 +9,7 @@ import * as AccountButton from "../elements/account-button";
 import * as TestLogic from "../test/test-logic";
 import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "../controllers/tag-controller";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import * as CommandlineLists from "../elements/commandline-lists";
 import * as MiniResultChart from "../account/mini-result-chart";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
@@ -64,7 +64,7 @@ export async function getDataAndInit() {
 
     // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() == "pageLoading") UI.changePage("");
+    if (ActivePage.get() == "pageLoading") PageController.change("");
     AccountController.signOut();
     return;
   }
@@ -233,7 +233,7 @@ export async function getDataAndInit() {
   //   ActivePage.get() == "pageLogin" ||
   //   window.location.pathname === "/account"
   // ) {
-  //   UI.changePage("account");
+  //   PageController.change("account");
   // }
   // ThemePicker.refreshButtons();
   AccountButton.loading(false);
@@ -242,12 +242,12 @@ export async function getDataAndInit() {
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
-  UI.setPageTransition(false);
+  PageController.setTransition(false);
   console.log("account loading finished");
   // if (ActivePage.get() == "pageLoading") {
   //   LoadingPage.updateBar(100, true);
   //   Focus.set(false);
-  //   UI.changePage("");
+  //   PageController.change("");
   // }
 }
 
@@ -1076,7 +1076,7 @@ export function update() {
         update();
       } else {
         setTimeout(() => {
-          UI.changePage("");
+          PageController.change("");
         }, 500);
       }
     });

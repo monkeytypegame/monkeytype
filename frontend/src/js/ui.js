@@ -1,27 +1,8 @@
 import Config, * as UpdateConfig from "./config";
 import * as Notifications from "./elements/notifications";
 import * as Caret from "./test/caret";
-import * as TestLogic from "./test/test-logic";
 import * as CustomText from "./test/custom-text";
-import * as TestUI from "./test/test-ui";
-import * as TestConfig from "./test/test-config";
-import * as SignOutButton from "./account/sign-out-button";
-import * as TestStats from "./test/test-stats";
-import * as ManualRestart from "./test/manual-restart-tracker";
-import * as Settings from "./pages/settings";
-import * as Account from "./pages/account";
-import * as Leaderboards from "./elements/leaderboards";
-import * as Funbox from "./test/funbox";
-import * as About from "./pages/about";
-import * as Misc from "./misc";
-import * as ActivePage from "./states/active-page";
 import * as TestActive from "./states/test-active";
-
-export let pageTransition = true;
-
-export function setPageTransition(val) {
-  pageTransition = val;
-}
 
 export function updateKeytips() {
   if (Config.swapEscAndTab) {
@@ -42,135 +23,6 @@ export function updateKeytips() {
     $("#bottom .keyTips").html(`
     <key>tab</key> - restart test<br>
       <key>esc</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
-  }
-}
-
-export function changePage(page, norestart = false) {
-  if (pageTransition) {
-    console.log(`change page ${page} stopped`);
-    return;
-  }
-
-  if (page == undefined) {
-    //use window loacation
-    let pages = {
-      "/": "test",
-      "/login": "login",
-      "/settings": "settings",
-      "/about": "about",
-      "/account": "account",
-    };
-    let path = pages[window.location.pathname];
-    if (!path) {
-      path = "test";
-    }
-    page = path;
-  }
-
-  console.log(`change page ${page}`);
-  let activePageElement = $(".page.active");
-  let check = ActivePage.get() + "";
-  setTimeout(() => {
-    if (check === "pageAccount" && page !== "account") {
-      Account.reset();
-    } else if (check === "pageSettings" && page !== "settings") {
-      Settings.reset();
-    } else if (check === "pageAbout" && page !== "about") {
-      About.reset();
-    }
-  }, 250);
-
-  ActivePage.set(undefined);
-  $(".page").removeClass("active");
-  $("#wordsInput").focusout();
-  if (page == "test" || page == "") {
-    setPageTransition(true);
-    Misc.swapElements(
-      activePageElement,
-      $(".page.pageTest"),
-      250,
-      () => {
-        setPageTransition(false);
-        TestUI.focusWords();
-        $(".page.pageTest").addClass("active");
-        ActivePage.set("pageTest");
-        history.pushState("/", null, "/");
-      },
-      () => {
-        TestConfig.show();
-      }
-    );
-    SignOutButton.hide();
-    // restartCount = 0;
-    // incompleteTestSeconds = 0;
-    TestStats.resetIncomplete();
-    ManualRestart.set();
-    if (!norestart) TestLogic.restart();
-    Funbox.activate(Config.funbox);
-  } else if (page == "about") {
-    setPageTransition(true);
-    TestLogic.restart();
-    Misc.swapElements(activePageElement, $(".page.pageAbout"), 250, () => {
-      setPageTransition(false);
-      history.pushState("about", null, "about");
-      $(".page.pageAbout").addClass("active");
-      ActivePage.set("pageAbout");
-    });
-    About.fill();
-    Funbox.activate("none");
-    TestConfig.hide();
-    SignOutButton.hide();
-  } else if (page == "settings") {
-    setPageTransition(true);
-    TestLogic.restart();
-    Misc.swapElements(activePageElement, $(".page.pageSettings"), 250, () => {
-      setPageTransition(false);
-      history.pushState("settings", null, "settings");
-      $(".page.pageSettings").addClass("active");
-      ActivePage.set("pageSettings");
-    });
-    Funbox.activate("none");
-    Settings.fillSettingsPage().then(() => {
-      Settings.update();
-    });
-    // Settings.update();
-    TestConfig.hide();
-    SignOutButton.hide();
-  } else if (page == "account") {
-    if (!firebase.auth().currentUser) {
-      console.log(
-        `current user is ${firebase.auth().currentUser}, going back to login`
-      );
-      changePage("login");
-    } else {
-      setPageTransition(true);
-      TestLogic.restart();
-      Misc.swapElements(activePageElement, $(".page.pageAccount"), 250, () => {
-        setPageTransition(false);
-        history.pushState("account", null, "account");
-        $(".page.pageAccount").addClass("active");
-        ActivePage.set("pageAccount");
-      });
-      Funbox.activate("none");
-      Account.update();
-      TestConfig.hide();
-    }
-  } else if (page == "login") {
-    if (firebase.auth().currentUser != null) {
-      changePage("account");
-    } else {
-      setPageTransition(true);
-      TestLogic.restart();
-      Misc.swapElements(activePageElement, $(".page.pageLogin"), 250, () => {
-        setPageTransition(false);
-        history.pushState("login", null, "login");
-        $(".page.pageLogin").addClass("active");
-        ActivePage.set("pageLogin");
-      });
-      Funbox.activate("none");
-      TestConfig.hide();
-      SignOutButton.hide();
-    }
   }
 }
 
@@ -236,21 +88,6 @@ window.addEventListener("beforeunload", (event) => {
 
 $(window).resize(() => {
   Caret.updatePosition();
-});
-
-$(document).on("click", "#top .logo", (e) => {
-  changePage("test");
-});
-
-$(document).on("click", "#top #menu .icon-button", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    Leaderboards.show();
-  } else {
-    const href = $(e.currentTarget).attr("href");
-    ManualRestart.set();
-    changePage(href.replace("/", ""));
-  }
-  return false;
 });
 
 $(document).ready(() => {

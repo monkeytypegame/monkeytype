@@ -1,5 +1,5 @@
 import * as Funbox from "../test/funbox";
-import * as UI from "../ui";
+import * as PageController from "./../controllers/page-controller";
 import Config from "../config";
 import * as ActivePage from "./../states/active-page";
 
@@ -36,15 +36,15 @@ $(window).on("popstate", (e) => {
   let state = e.originalEvent.state;
   if (state == "" || state == "/") {
     // show test
-    UI.changePage("test");
+    PageController.change("test");
   } else if (state == "about") {
     // show about
-    UI.changePage("about");
+    PageController.change("about");
   } else if (state == "account" || state == "login") {
     if (firebase.auth().currentUser) {
-      UI.changePage("account");
+      PageController.change("account");
     } else {
-      UI.changePage("login");
+      PageController.change("login");
     }
   }
 });

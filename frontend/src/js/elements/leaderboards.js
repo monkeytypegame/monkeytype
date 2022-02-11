@@ -557,6 +557,13 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async (e) => {
   );
 });
 
+$(document).on("click", "#top #menu .icon-button", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    show();
+  }
+  return false;
+});
+
 $(document).keydown((event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
