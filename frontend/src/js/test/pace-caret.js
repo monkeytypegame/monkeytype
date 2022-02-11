@@ -7,7 +7,6 @@ import * as SlowTimer from "./../states/slow-timer";
 import * as Misc from "./../misc";
 import * as TestActive from "./../states/test-active";
 import * as TestState from "./test-state";
-import * as ModesNotice from "./../elements/modes-notice";
 import * as ConfigEvent from "./../observables/config-event";
 
 export let settings = null;
@@ -85,9 +84,7 @@ export async function init() {
     wordsStatus: {},
     timeout: null,
   };
-
   resetCaretPosition();
-  ModesNotice.update();
 }
 
 export function update(expectedStepEnd) {
