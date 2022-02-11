@@ -11,7 +11,6 @@ import * as Replay from "./replay";
 import * as Misc from "../misc";
 import * as PageController from "./../controllers/page-controller";
 import * as SlowTimer from "../states/slow-timer";
-import * as ReportQuotePopup from "../popups/quote-report-popup";
 
 $(document).ready(() => {
   UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
@@ -804,13 +803,6 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
-});
-
-$(".pageTest #reportQuoteButton").click(async (event) => {
-  ReportQuotePopup.show({
-    quoteId: parseInt(TestWords.randomQuote.id),
-    noAnim: false,
-  });
 });
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {

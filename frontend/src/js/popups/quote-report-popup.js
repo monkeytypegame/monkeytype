@@ -3,6 +3,7 @@ import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import Config from "../config";
 import * as Loader from "../elements/loader";
+import * as TestWords from "./../test/test-words";
 
 const CAPTCHA_ID = 1;
 
@@ -137,4 +138,11 @@ $("#quoteReportPopup .comment").on("input", (e) => {
 
 $("#quoteReportPopup .submit").on("click", async (e) => {
   await submitReport();
+});
+
+$(".pageTest #reportQuoteButton").click(async (event) => {
+  show({
+    quoteId: parseInt(TestWords.randomQuote.id),
+    noAnim: false,
+  });
 });
