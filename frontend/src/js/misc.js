@@ -325,8 +325,8 @@ export function migrateFromCookies() {
       let decodedCookie = decodeURIComponent(document.cookie).split(";");
       let value = null;
 
-      for (var i = 0; i < decodedCookie.length; i++) {
-        var c = decodedCookie[i];
+      for (let i = 0; i < decodedCookie.length; i++) {
+        let c = decodedCookie[i];
         while (c.charAt(0) == " ") {
           c = c.substring(1);
         }
@@ -469,18 +469,18 @@ export function roundTo2(num) {
 }
 
 export function findLineByLeastSquares(values_y) {
-  var sum_x = 0;
-  var sum_y = 0;
-  var sum_xy = 0;
-  var sum_xx = 0;
-  var count = 0;
+  let sum_x = 0;
+  let sum_y = 0;
+  let sum_xy = 0;
+  let sum_xx = 0;
+  let count = 0;
 
   /*
-   * We'll use those variables for faster read/write access.
+   * We'll use those letiables for faster read/write access.
    */
-  var x = 0;
-  var y = 0;
-  var values_length = values_y.length;
+  let x = 0;
+  let y = 0;
+  let values_length = values_y.length;
 
   /*
    * Nothing to do.
@@ -492,7 +492,7 @@ export function findLineByLeastSquares(values_y) {
   /*
    * Calculate the sum for each of the parts necessary.
    */
-  for (var v = 0; v < values_length; v++) {
+  for (let v = 0; v < values_length; v++) {
     x = v + 1;
     y = values_y[v];
     sum_x += x;
@@ -506,11 +506,11 @@ export function findLineByLeastSquares(values_y) {
    * Calculate m and b for the formular:
    * y = x * m + b
    */
-  var m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
-  var b = sum_y / count - (m * sum_x) / count;
+  let m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+  let b = sum_y / count - (m * sum_x) / count;
 
-  var returnpoint1 = [1, 1 * m + b];
-  var returnpoint2 = [values_length, values_length * m + b];
+  let returnpoint1 = [1, 1 * m + b];
+  let returnpoint2 = [values_length, values_length * m + b];
   return [returnpoint1, returnpoint2];
 }
 
@@ -628,7 +628,7 @@ export function getPositionString(number) {
 }
 
 export function findGetParameter(parameterName) {
-  var result = null,
+  let result = null,
     tmp = [];
   location.search
     .substr(1)
@@ -641,8 +641,8 @@ export function findGetParameter(parameterName) {
 }
 
 export function objectToQueryString(obj) {
-  var str = [];
-  for (var p in obj)
+  let str = [];
+  for (let p in obj)
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
@@ -705,7 +705,7 @@ export function escapeRegExp(str) {
 }
 
 export function cleanTypographySymbols(textToClean) {
-  var specials = {
+  let specials = {
     "“": '"', // &ldquo;	&#8220;
     "”": '"', // &rdquo;	&#8221;
     "’": "'", // &lsquo;	&#8216;
@@ -786,7 +786,7 @@ export function setCharAt(str, index, chr) {
 
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
 export function regexIndexOf(string, regex, startpos) {
-  var indexOf = string.substring(startpos || 0).search(regex);
+  let indexOf = string.substring(startpos || 0).search(regex);
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
@@ -804,7 +804,7 @@ export function convertRGBtoHEX(rgb) {
 }
 
 String.prototype.lastIndexOfRegex = function (regex) {
-  var match = this.match(regex);
+  let match = this.match(regex);
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;
 };
 
