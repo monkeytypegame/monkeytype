@@ -184,6 +184,8 @@ export declare interface Result {
   wpm: number;
   rawWpm: number;
   charStats: number[];
+  correctChars?: number; // --------------
+  incorrectChars?: number; // legacy results
   acc: number;
   mode: Mode;
   mode2: WordsModes | TimeModes;
@@ -193,10 +195,10 @@ export declare interface Result {
   incompleteTestSeconds: number;
   testDuration: number;
   afkDuration: number;
-  tags: Tag[];
+  tags: string[];
   consistency: number;
   keyConsistency: number;
-  chartData: ChartData;
+  chartData: ChartData | "toolong";
   uid: string;
   keySpacingStats: KeyStats;
   keyDurationStats: KeyStats;
