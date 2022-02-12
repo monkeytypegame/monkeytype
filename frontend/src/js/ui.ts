@@ -1,11 +1,15 @@
+// @ts-ignore
 import Config from "./config";
+// @ts-ignore
 import * as Notifications from "./elements/notifications";
+// @ts-ignore
 import * as Caret from "./test/caret";
+// @ts-ignore
 import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
 import * as ConfigEvent from "./observables/config-event";
 
-export function updateKeytips() {
+export function updateKeytips(): void {
   if (Config.swapEscAndTab) {
     $(".pageSettings .tip").html(`
     tip: You can also change all these settings quickly using the
@@ -39,7 +43,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 */
 
 if (window.location.hostname === "localhost") {
-  window.onerror = function (error) {
+  window.onerror = function (error): void {
     Notifications.add(error, -1);
   };
   $("#top .logo .top").text("localhost");
@@ -56,7 +60,7 @@ if (window.location.hostname === "localhost") {
 
 //stop space scrolling
 window.addEventListener("keydown", function (e) {
-  if (e.keyCode == 32 && e.target == document.body) {
+  if (e.code === "Space" && e.target === document.body) {
     e.preventDefault();
   }
 });
@@ -87,7 +91,8 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-$(window).resize(() => {
+$(window).on("resize", () => {
+  console.log("Updating caret position");
   Caret.updatePosition();
 });
 
