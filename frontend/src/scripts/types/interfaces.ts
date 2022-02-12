@@ -144,17 +144,11 @@ export declare interface PersonalBest {
 
 export declare interface PersonalBests {
   time: {
-    15: PersonalBest[];
-    30: PersonalBest[];
-    60: PersonalBest[];
-    120: PersonalBest[];
+    [key: number]: PersonalBest[];
     custom: PersonalBest[];
   };
   words: {
-    10: PersonalBest[];
-    25: PersonalBest[];
-    50: PersonalBest[];
-    100: PersonalBest[];
+    [key: number]: PersonalBest[];
     custom: PersonalBest[];
   };
   quote: { [quote: string]: PersonalBest[] };
