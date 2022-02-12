@@ -17,6 +17,8 @@ import "./test/caps-warning";
 import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
+import "./popups/edit-preset-popup";
+import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
 import "./pages/about";
