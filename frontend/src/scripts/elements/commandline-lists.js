@@ -18,8 +18,8 @@ import * as Settings from "../pages/settings";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
-import * as ModesNotice from "./../elements/modes-notice";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ModesNotice from "../elements/modes-notice";
+import * as ConfigEvent from "../observables/config-event";
 
 export let current = [];
 

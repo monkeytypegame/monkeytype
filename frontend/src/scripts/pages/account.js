@@ -11,7 +11,7 @@ import * as PbTables from "../account/pb-tables";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
-import * as TodayTracker from "./../test/today-tracker";
+import * as TodayTracker from "../test/today-tracker";
 import Page from "./page";
 
 let filterDebug = false;

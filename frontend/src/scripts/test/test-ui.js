@@ -10,7 +10,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../misc";
 import * as SlowTimer from "../states/slow-timer";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ConfigEvent from "../observables/config-event";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "flipTestColors") flipColors(eventValue);
@@ -721,7 +721,7 @@ export function applyBurstHeatmap() {
 
     if (
       TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
-        .length !== TestWords.words.getCurrent()?.length
+        ?.length !== TestWords.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }

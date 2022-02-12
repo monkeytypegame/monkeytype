@@ -4,7 +4,7 @@ import * as Misc from "../misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
-import * as ModesNotice from "./../elements/modes-notice";
+import * as ModesNotice from "../elements/modes-notice";
 
 let modeSaved = null;
 let memoryTimer = null;

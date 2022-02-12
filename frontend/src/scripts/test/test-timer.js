@@ -13,9 +13,9 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "./../states/test-active";
-import * as Time from "./../states/time";
-import * as TimerEvent from "./../observables/timer-event";
+import * as TestActive from "../states/test-active";
+import * as Time from "../states/time";
+import * as TimerEvent from "../observables/timer-event";
 
 let slowTimerCount = 0;
 let timer = null;

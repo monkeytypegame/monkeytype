@@ -9,7 +9,7 @@ import * as DB from "../db";
 import * as TodayTracker from "./today-tracker";
 import * as PbCrown from "./pb-crown";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
-import * as GlarsesMode from "./../states/glarses-mode";
+import * as GlarsesMode from "../states/glarses-mode";
 import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 

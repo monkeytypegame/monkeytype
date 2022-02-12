@@ -3,7 +3,7 @@ import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import Config from "../config";
 import * as Loader from "../elements/loader";
-import * as TestWords from "./../test/test-words";
+import * as TestWords from "../test/test-words";
 
 const CAPTCHA_ID = 1;
 

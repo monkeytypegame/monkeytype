@@ -2,7 +2,7 @@ import * as Misc from "../misc";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "./../states/test-active";
+import * as TestActive from "../states/test-active";
 
 export let caretAnimating = true;
 

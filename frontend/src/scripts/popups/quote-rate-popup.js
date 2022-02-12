@@ -2,7 +2,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
-import * as TestWords from "./../test/test-words";
+import * as TestWords from "../test/test-words";
 
 let rating = 0;
 

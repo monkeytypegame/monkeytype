@@ -5,8 +5,8 @@ import * as CustomText from "../test/custom-text";
 import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
-import * as ConfigEvent from "./../observables/config-event";
-import * as TestState from "./../test/test-state";
+import * as ConfigEvent from "../observables/config-event";
+import * as TestState from "../test/test-state";
 
 let challengeLoading = false;
 

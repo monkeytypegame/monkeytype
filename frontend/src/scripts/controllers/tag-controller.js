@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import * as ModesNotice from "./../elements/modes-notice";
+import * as ModesNotice from "../elements/modes-notice";
 
 export function saveActiveToLocalStorage() {
   let tags = [];
@@ -58,9 +58,9 @@ export function loadActiveFromLocalStorage() {
   let newTags = window.localStorage.getItem("activeTags");
   if (newTags != undefined && newTags !== "") {
     try {
-      newTags = JSON.parse(newTags);
+      newTags = JSON.parse(newTags) ?? [];
     } catch (e) {
-      newTags = {};
+      newTags = [];
     }
     newTags.forEach((ntag) => {
       toggle(ntag, true);

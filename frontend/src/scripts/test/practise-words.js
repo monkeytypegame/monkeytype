@@ -3,7 +3,7 @@ import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ConfigEvent from "../observables/config-event";
 
 export let before = {
   mode: null,
