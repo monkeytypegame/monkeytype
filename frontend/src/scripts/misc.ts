@@ -106,13 +106,14 @@ export async function getSortedThemesList(): Promise<Theme[]> {
   }
 }
 
-type Funbox = { name: string; type: string; info: string };
-
-let funboxList: Funbox[] = [];
-export async function getFunboxList(): Promise<Funbox[]> {
+let funboxList: Types.FunboxObject[] = [];
+export async function getFunboxList(): Promise<Types.FunboxObject[]> {
   if (funboxList.length === 0) {
     return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (a: Funbox, b: Funbox) {
+      funboxList = data.sort(function (
+        a: Types.FunboxObject,
+        b: Types.FunboxObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -126,8 +127,10 @@ export async function getFunboxList(): Promise<Funbox[]> {
   }
 }
 
-export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
-  const list: Funbox[] = await getFunboxList();
+export async function getFunbox(
+  funbox: string
+): Promise<Types.FunboxObject | undefined> {
+  const list: Types.FunboxObject[] = await getFunboxList();
   return list.find(function (element) {
     return element.name === funbox;
   });

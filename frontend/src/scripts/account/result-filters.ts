@@ -13,7 +13,7 @@ import {
   WordsModes,
   Mode,
   FunboxObject,
-} from "../../../../Types/interfaces";
+} from "../types/interfaces";
 
 export const defaultResultFilters = {
   difficulty: {

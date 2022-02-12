@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../misc";
-import { PersonalBest, PersonalBests } from "../../../../Types/interfaces";
+import { PersonalBest, PersonalBests } from "../types/interfaces";
 
 export function update(): void {
   $(".pageAccount .timePbTable tbody").html(`
