@@ -721,7 +721,7 @@ export function applyBurstHeatmap() {
 
     if (
       TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
-        .length !== TestWords.words.getCurrent()?.length
+        ?.length !== TestWords.words.getCurrent()?.length
     ) {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
