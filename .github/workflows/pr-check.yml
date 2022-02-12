@@ -1,8 +1,6 @@
 name: PR Check
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master, api-overhaul]
 
@@ -32,5 +30,5 @@ jobs:
       - name: Install dependencies
         run: npm run install:all
 
-      - name: Check for lint
-        run: npm run lint
+      - name: Run webpack
+        run: npm run build:live
