@@ -733,9 +733,9 @@ export function cleanTypographySymbols(textToClean: string): string {
     " ": " ",
     " ": " ",
   };
-  // @ts-ignore
   return textToClean.replace(
     /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
+    // @ts-ignore
     (char) => specials[char] || ""
   );
 }
