@@ -28,7 +28,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
 import * as Types from "../types/interfaces";
-import "select2";
 
 //todo remove once settings group is converted to ts
 interface Group {
