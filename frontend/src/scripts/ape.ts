@@ -1,11 +1,25 @@
-import axios from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { Mode, Mode2 } from "./types/interfaces";
 
 const DEV_SERVER_HOST = "http://localhost:5005";
 const PROD_SERVER_HOST = "https://api.monkeytype.com";
 
-// This is an API client.
+interface ApeClientConfig {
+  baseUrl: string;
+  apiPath: string;
+  timeout: number;
+}
+
+interface ApeClientRequestOptions {
+  searchQuery?: Record<string, any>;
+  payload?: any;
+}
+
 class Ape {
-  constructor(clientConfig) {
+  apiUrl: string;
+  axiosClient: AxiosInstance;
+
+  constructor(clientConfig: ApeClientConfig) {
     this.apiUrl = `${clientConfig.baseUrl}${clientConfig.apiPath}`;
     this.axiosClient = axios.create({
       baseURL: this.apiUrl,
@@ -13,7 +27,9 @@ class Ape {
     });
   }
 
-  async buildRequestConfig(config) {
+  async buildRequestConfig(
+    config: ApeClientRequestOptions
+  ): Promise<Partial<AxiosRequestConfig>> {
     const currentUser = firebase.auth().currentUser;
     const idToken = currentUser && (await currentUser.getIdToken());
 
@@ -27,7 +43,7 @@ class Ape {
     };
   }
 
-  async get(endpoint, config = {}) {
+  async get(endpoint: string, config = {}) {
     const requestConfig = await this.buildRequestConfig(config);
     return await this.axiosClient.get(endpoint, requestConfig);
   }
@@ -62,7 +78,7 @@ class Ape {
     return await this.get("/quotes");
   }
 
-  async getQuoteRating(quoteId, language) {
+  async getQuoteRating(quoteId: Mode, language: string) {
     const searchQuery = {
       quoteId,
       language,
@@ -71,7 +87,13 @@ class Ape {
     return await this.get("/quotes/rating", { searchQuery });
   }
 
-  async getLeaderboard(language, mode, mode2, skip = 0, limit = 50) {
+  async getLeaderboard(
+    language: string,
+    mode: Mode,
+    mode2: Mode2,
+    skip = 0,
+    limit = 50
+  ) {
     const searchQuery = {
       language,
       mode,
@@ -83,7 +105,7 @@ class Ape {
     return await this.get("/leaderboard", { searchQuery });
   }
 
-  async getLeaderboardRank(language, mode, mode2) {
+  async getLeaderboardRank(language: string, mode: Mode, mode2: Mode2) {
     const searchQuery = {
       language,
       mode,
