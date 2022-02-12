@@ -4,6 +4,8 @@ export declare type CustomModes = "custom";
 
 export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
 
+export declare type Mode2 = number | "zen" | "custom";
+
 export declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
 
 export declare type WordsModes = NoncustomWordsModes | CustomModes;
@@ -144,12 +146,14 @@ export declare interface PersonalBests {
     30: PersonalBest[];
     60: PersonalBest[];
     120: PersonalBest[];
+    custom: PersonalBest[];
   };
   words: {
     10: PersonalBest[];
     25: PersonalBest[];
     50: PersonalBest[];
     100: PersonalBest[];
+    custom: PersonalBest[];
   };
   quote: { [quote: string]: PersonalBest[] };
   custom: { custom: PersonalBest[] };
