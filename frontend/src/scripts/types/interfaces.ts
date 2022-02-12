@@ -313,14 +313,14 @@ export declare interface Snapshot {
   quoteRatings?: object; // TODO find structure of quoteRatings
   results?: Result[];
   verified?: boolean;
-  personalBests: PersonalBests;
+  personalBests?: PersonalBests;
   name?: string;
-  presets: Preset[];
-  tags: Tag[];
-  favouriteThemes: string[];
+  presets?: Preset[];
+  tags?: Tag[];
+  favouriteThemes?: string[];
   lbMemory?: Leaderboard;
-  globalStats: Stats;
-  quoteMod: boolean;
+  globalStats?: Stats;
+  quoteMod?: boolean;
   discordId?: string;
   config?: Config;
 }
