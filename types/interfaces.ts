@@ -485,6 +485,6 @@ export interface CommandsObject {
   list: Command[];
 }
 
-export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
+// export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
 
-export type ActivePage = `page${Page}` | undefined;
+// export type ActivePage = `page${Page}` | undefined;
