@@ -32,7 +32,7 @@ module.exports = {
     ],
   },
   output: {
-    path: path.resolve(__dirname, "public/scripts/"),
+    path: path.resolve(__dirname, "public/js/"),
     filename: "monkeytype.js",
   },
   plugins: [
