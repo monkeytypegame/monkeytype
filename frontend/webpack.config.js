@@ -15,7 +15,7 @@ module.exports = {
     },
   },
   output: {
-    path: path.resolve(__dirname, "public/js/"),
+    path: path.resolve(__dirname, "public/scripts/"),
     filename: "monkeytype.js",
   },
   plugins: [

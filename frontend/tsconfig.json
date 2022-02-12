@@ -8,5 +8,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["./src/**/*.ts"],
-  "files": ["./src/js/modules.d.ts"]
+  "files": ["src/scripts/modules.d.ts"]
 }

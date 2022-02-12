@@ -22,7 +22,7 @@ task("clean", function () {
 });
 
 task("lint", function () {
-  return src(["./src/js/**/*.js", "./src/js/**/*.ts"])
+  return src(["./src/scripts/**/*.js", "./src/scripts/**/*.ts"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -36,7 +36,7 @@ task("lint-json", function () {
 });
 
 task("copy-src-contents", function () {
-  return src("./src/js/**").pipe(dest("./dist/"));
+  return src("./src/scripts/**").pipe(dest("./dist/"));
 });
 
 task("transpile-ts", function () {
@@ -76,7 +76,7 @@ task("static", function () {
 });
 
 task("sass", function () {
-  return src("./src/sass/*.scss")
+  return src("./src/styles/*.scss")
     .pipe(concat("style.scss"))
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
     .pipe(dest("public/css"));
@@ -144,9 +144,9 @@ task(
 );
 
 task("watch", function () {
-  watch("./src/sass/**/*.scss", series("sass"));
+  watch("./src/styles/**/*.scss", series("sass"));
   watch(
-    ["./src/js/**/*.js", "./src/js/**/*.ts"],
+    ["./src/scripts/**/*.js", "./src/scripts/**/*.ts"],
     series("lint", "copy-src-contents", "transpile-ts", "webpack")
   );
   watch("./static/**/*.*", series("lint-json", "static"));
