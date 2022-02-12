@@ -7,7 +7,6 @@ import * as SlowTimer from "./../states/slow-timer";
 import * as Misc from "./../misc";
 import * as TestActive from "./../states/test-active";
 import * as TestState from "./test-state";
-import * as ModesNotice from "./../elements/modes-notice";
 import * as ConfigEvent from "./../observables/config-event";
 
 export let settings = null;
@@ -85,9 +84,7 @@ export async function init() {
     wordsStatus: {},
     timeout: null,
   };
-
   resetCaretPosition();
-  ModesNotice.update();
 }
 
 export function update(expectedStepEnd) {
@@ -243,8 +240,6 @@ export function start() {
   update(performance.now() + settings.spc * 1000);
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-    if (eventKey === "paceCaret") init(nosave);
-  });
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "paceCaret") init(nosave);
 });

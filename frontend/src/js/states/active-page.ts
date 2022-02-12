@@ -1,9 +1,9 @@
 let activePage = "loading";
 
-export function get() {
+export function get(): string {
   return activePage;
 }
 
-export function set(active) {
+export function set(active: string): void {
   activePage = active;
 }

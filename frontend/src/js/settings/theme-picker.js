@@ -193,7 +193,7 @@ export function updateActiveTab() {
 
 $(".pageSettings .section.themes .tabs .button").click((e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  var $target = $(e.currentTarget);
+  let $target = $(e.currentTarget);
   $target.addClass("active");
   setCustomInputs();
   if ($target.attr("tab") == "preset") {

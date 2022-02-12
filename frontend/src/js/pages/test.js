@@ -13,7 +13,7 @@ export const page = new Page(
   "/",
   async () => {
     TestLogic.restart();
-    Funbox.activate("none");
+    Funbox.clear();
     TestConfig.hide();
     $("#wordsInput").focusout();
   },

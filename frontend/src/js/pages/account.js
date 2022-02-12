@@ -5,26 +5,13 @@ import * as ResultFilters from "../account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
-import * as AccountButton from "../elements/account-button";
-import * as TestLogic from "../test/test-logic";
-import * as PaceCaret from "../test/pace-caret";
-import * as TagController from "../controllers/tag-controller";
-import * as PageController from "./../controllers/page-controller";
-import * as CommandlineLists from "../elements/commandline-lists";
 import * as MiniResultChart from "../account/mini-result-chart";
-import * as ResultTagsPopup from "../popups/result-tags-popup";
-import * as Settings from "./settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as PbTables from "../account/pb-tables";
-import * as AccountController from "../controllers/account-controller";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
-import axiosInstance from "../axios-instance";
 import * as TodayTracker from "./../test/today-tracker";
-import * as ActivePage from "../states/active-page";
-import * as TestActive from "./../states/test-active";
-import * as PageTransition from "./../states/page-transition";
 import Page from "./page";
 
 let filterDebug = false;
@@ -34,223 +21,6 @@ export function toggleFilterDebug() {
   if (filterDebug) {
     console.log("filterDebug is on");
   }
-}
-
-export async function getDataAndInit() {
-  try {
-    console.log("getting account data");
-    if (ActivePage.get() == "loading") {
-      LoadingPage.updateBar(90);
-    } else {
-      LoadingPage.updateBar(45);
-    }
-    LoadingPage.updateText("Downloading user data...");
-    await LoadingPage.showBar();
-    await DB.initSnapshot();
-  } catch (e) {
-    AccountButton.loading(false);
-    if (e?.response?.status === 429) {
-      Notifications.add(
-        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-        0,
-        0
-      );
-      Notifications.add(
-        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-        0,
-        0
-      );
-    }
-    let msg = e?.response?.data?.message ?? e?.response?.data ?? e?.message;
-    Notifications.add("Failed to get user data: " + msg, -1);
-
-    // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
-    $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() == "loading") PageController.change("");
-    AccountController.signOut();
-    return;
-  }
-  if (ActivePage.get() == "loading") {
-    LoadingPage.updateBar(100);
-  } else {
-    LoadingPage.updateBar(45);
-  }
-  LoadingPage.updateText("Applying settings...");
-  let snap = DB.getSnapshot();
-  $("#menu .icon-button.account .text").text(snap.name);
-
-  ResultFilters.loadTags(DB.getSnapshot().tags);
-
-  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-    let languages = values[0];
-    let funboxModes = values[1];
-    languages.forEach((language) => {
-      ResultFilters.defaultResultFilters.language[language] = true;
-    });
-    funboxModes.forEach((funbox) => {
-      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
-    });
-    // filters = defaultResultFilters;
-    ResultFilters.load();
-  });
-
-  let user = firebase.auth().currentUser;
-  if (snap.name == undefined) {
-    //verify username
-    if (Misc.isUsernameValid(user.name)) {
-      //valid, just update
-      snap.name = user.name;
-      DB.setSnapshot(snap);
-      DB.updateName(user.uid, user.name);
-    } else {
-      //invalid, get new
-      // Notifications.add("Invalid name", 0);
-      // let promptVal = null;
-      // let cdnVal = undefined;
-
-      // while (
-      //   promptVal === null ||
-      //   cdnVal === undefined ||
-      //   cdnVal.data.status < 0
-      // ) {
-      //   promptVal = prompt(
-      //     "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
-      //   );
-      //   //TODO update
-      //   axiosInstance
-      //     .post("/updateName", {
-      //       name: promptVal,
-      //     })
-      //     .then((cdnVal) => {
-      //       if (cdnVal.data.status === 1) {
-      //         alert("Name updated", 1);
-      //         location.reload();
-      //       } else if (cdnVal.data.status < 0) {
-      //         alert(cdnVal.data.message, 0);
-      //       }
-      //     });
-      // }
-      let nameGood = false;
-      let name = "";
-
-      while (nameGood === false) {
-        name = await prompt(
-          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-        );
-
-        if (name == null) {
-          AccountController.signOut();
-          return;
-        }
-
-        let response;
-        try {
-          response = await axiosInstance.patch("/user/name", { name });
-        } catch (e) {
-          let msg = e?.response?.data?.message ?? e.message;
-          if (e.response.status >= 500) {
-            Notifications.add("Failed to update name: " + msg, -1);
-            throw e;
-          } else {
-            alert(msg);
-          }
-        }
-        if (response?.status == 200) {
-          nameGood = true;
-          Notifications.add("Name updated", 1);
-          DB.getSnapshot().name = name;
-          $("#menu .icon-button.account .text").text(name);
-        }
-      }
-    }
-  }
-  if (!UpdateConfig.changedBeforeDb) {
-    //config didnt change before db loaded
-    if (Config.localStorageConfig === null) {
-      console.log("no local config, applying db");
-      AccountButton.loading(false);
-      UpdateConfig.apply(DB.getSnapshot().config);
-      Settings.update();
-      UpdateConfig.saveToLocalStorage(true);
-      TestLogic.restart(false, true);
-    } else if (DB.getSnapshot().config !== undefined) {
-      //loading db config, keep for now
-      let configsDifferent = false;
-      Object.keys(Config).forEach((key) => {
-        if (!configsDifferent) {
-          try {
-            if (key !== "resultFilters") {
-              if (Array.isArray(Config[key])) {
-                Config[key].forEach((arrval, index) => {
-                  if (arrval != DB.getSnapshot().config[key][index]) {
-                    configsDifferent = true;
-                    console.log(
-                      `.config is different: ${arrval} != ${
-                        DB.getSnapshot().config[key][index]
-                      }`
-                    );
-                  }
-                });
-              } else {
-                if (Config[key] != DB.getSnapshot().config[key]) {
-                  configsDifferent = true;
-                  console.log(
-                    `..config is different ${key}: ${Config[key]} != ${
-                      DB.getSnapshot().config[key]
-                    }`
-                  );
-                }
-              }
-            }
-          } catch (e) {
-            console.log(e);
-            configsDifferent = true;
-            console.log(`...config is different: ${e.message}`);
-          }
-        }
-      });
-      if (configsDifferent) {
-        console.log("configs are different, applying config from db");
-        AccountButton.loading(false);
-        UpdateConfig.apply(DB.getSnapshot().config);
-        Settings.update();
-        UpdateConfig.saveToLocalStorage(true);
-        if (ActivePage.get() == "test") {
-          TestLogic.restart(false, true);
-        }
-        DB.saveConfig(Config);
-      }
-    }
-    UpdateConfig.setDbConfigLoaded(true);
-  } else {
-    console.log("config changed before db");
-    AccountButton.loading(false);
-  }
-  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestActive.get()) {
-      PaceCaret.init(true);
-    }
-  }
-  // if (
-  //   ActivePage.get() == "login" ||
-  //   window.location.pathname === "/account"
-  // ) {
-  //   PageController.change("account");
-  // }
-  // ThemePicker.refreshButtons();
-  AccountButton.loading(false);
-  ResultFilters.updateTags();
-  CommandlineLists.updateTagCommands();
-  TagController.loadActiveFromLocalStorage();
-  ResultTagsPopup.updateButtons();
-  Settings.showAccountSection();
-  PageTransition.set(false);
-  console.log("account loading finished");
-  // if (ActivePage.get() == "loading") {
-  //   LoadingPage.updateBar(100, true);
-  //   Focus.set(false);
-  //   PageController.change("");
-  // }
 }
 
 let filteredResults = [];
@@ -1076,10 +846,6 @@ export function update() {
       if (d) {
         ResultFilters.updateActive();
         update();
-      } else {
-        setTimeout(() => {
-          PageController.change("");
-        }, 500);
       }
     });
   } else {
@@ -1200,10 +966,6 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   );
 });
 
-$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
-  AccountController.sendVerificationEmail();
-});
-
 $(document).on("click", ".history-wpm-header", (event) => {
   sortAndRefreshHistory("wpm", ".history-wpm-header");
 });
@@ -1236,6 +998,14 @@ $(document).on("click", ".history-date-header", (event) => {
 $(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
   // We want to 'force' descending sort:
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
+});
+
+$(
+  ".pageAccount .topFilters .button, .pageAccount .filterButtons .button "
+).click((e) => {
+  setTimeout(() => {
+    update();
+  }, 0);
 });
 
 export const page = new Page(

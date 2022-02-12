@@ -1,10 +1,10 @@
 let glarsesMode = false;
 
-export function get() {
+export function get(): boolean {
   return glarsesMode;
 }
 
-export function enable() {
+export function enable(): void {
   glarsesMode = true;
   console.log(
     "Glarses Mode On - test result will be hidden. You can check the stats in the console (here)"

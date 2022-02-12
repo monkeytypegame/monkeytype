@@ -13,13 +13,14 @@ const webpackProdConfig = require("./webpack-production.config.js");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = "../.eslintrc.json";
+let tsEslintConfig = "../ts.eslintrc.json";
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
-task("lint-js", function () {
-  return src("./src/js/**/*.js")
+task("lint", function () {
+  return src(["./src/js/**/*.js", "./src/js/**/*.ts"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -72,8 +73,8 @@ task("sass", function () {
 });
 
 task("updateSwCacheName", function () {
-  let date = new Date();
-  let dateString =
+  const date = new Date();
+  const dateString =
     date.getFullYear() +
     "-" +
     (date.getMonth() + 1) +
@@ -85,6 +86,7 @@ task("updateSwCacheName", function () {
     date.getMinutes() +
     "-" +
     date.getSeconds();
+
   return src(["static/sw.js"])
     .pipe(
       replace(
@@ -94,7 +96,7 @@ task("updateSwCacheName", function () {
     )
     .pipe(
       through2.obj(function (file, enc, cb) {
-        var date = new Date();
+        const date = new Date();
         file.stat.atime = date;
         file.stat.mtime = date;
         cb(null, file);
@@ -105,20 +107,13 @@ task("updateSwCacheName", function () {
 
 task(
   "compile",
-  series(
-    "lint-js",
-    "lint-json",
-    "webpack",
-    "static",
-    "sass",
-    "updateSwCacheName"
-  )
+  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
 );
 
 task(
   "compile-production",
   series(
-    "lint-js",
+    "lint",
     "lint-json",
     "webpack-production",
     "static",
@@ -129,7 +124,7 @@ task(
 
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
-  watch("./src/js/**/*.js", series("lint-js", "webpack"));
+  watch(["./src/js/**/*.js", "./src/js/**/*.ts"], series("lint", "webpack"));
   watch("./static/**/*.*", series("lint-json", "static"));
 });
 

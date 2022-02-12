@@ -40,13 +40,13 @@ export let result = new Chart($("#wpmChart"), {
         type: "scatter",
         pointStyle: "crossRot",
         radius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
+          let index = context.dataIndex;
+          let value = context.dataset.data[index];
           return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
+          let index = context.dataIndex;
+          let value = context.dataset.data[index];
           return value <= 0 ? 0 : 5;
         },
       },
@@ -487,13 +487,13 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
         type: "scatter",
         pointStyle: "crossRot",
         radius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
+          let index = context.dataIndex;
+          let value = context.dataset.data[index];
           return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
+          let index = context.dataIndex;
+          let value = context.dataset.data[index];
           return value <= 0 ? 0 : 5;
         },
       },
@@ -756,10 +756,8 @@ export function updateAllChartColors() {
   miniResult.updateColors();
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "chartAccuracy") updateAccuracy();
-    if (eventKey === "chartStyle") updateStyle();
-    if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "chartAccuracy") updateAccuracy();
+  if (eventKey === "chartStyle") updateStyle();
+  if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);
 });

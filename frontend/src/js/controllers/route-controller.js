@@ -25,7 +25,7 @@ export function handleInitialPageClasses(pathname) {
 }
 
 (function (history) {
-  var pushState = history.pushState;
+  let pushState = history.pushState;
   history.pushState = function (state) {
     if (Config.funbox === "memory" && state !== "/") {
       Funbox.resetMemoryTimer();

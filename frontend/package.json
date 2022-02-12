@@ -28,6 +28,8 @@
     "gulp-sass": "^5.0.0",
     "stream-browserify": "^3.0.0",
     "through2": "^4.0.2",
+    "tsify": "^5.0.4",
+    "vinyl-buffer": "^1.0.1",
     "vinyl-paths": "^3.0.1",
     "webpack": "^5.68.0"
   },

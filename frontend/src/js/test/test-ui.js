@@ -12,13 +12,11 @@ import * as Misc from "../misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "./../observables/config-event";
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (eventKey === "flipTestColors") flipColors(eventValue);
-    if (eventKey === "colorfulMode") colorful(eventValue);
-    if (eventKey === "highlightMode") updateWordElement(eventValue);
-    if (eventKey === "burstHeatmap") applyBurstHeatmap();
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "flipTestColors") flipColors(eventValue);
+  if (eventKey === "colorfulMode") colorful(eventValue);
+  if (eventKey === "highlightMode") updateWordElement(eventValue);
+  if (eventKey === "burstHeatmap") applyBurstHeatmap();
 });
 
 export let currentWordElementIndex = 0;
@@ -233,12 +231,12 @@ export async function screenshot() {
   }
   $(".pageTest .buttons").addClass("hidden");
   let src = $("#middle");
-  var sourceX = src.position().left; /*X position from div#target*/
-  var sourceY = src.position().top; /*Y position from div#target*/
-  var sourceWidth = src.outerWidth(
+  let sourceX = src.position().left; /*X position from div#target*/
+  let sourceY = src.position().top; /*Y position from div#target*/
+  let sourceWidth = src.outerWidth(
     true
   ); /*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.outerHeight(
+  let sourceHeight = src.outerHeight(
     true
   ); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
@@ -298,7 +296,7 @@ export function updateWordElement(showError = !Config.blindMode) {
   let currentWord;
   wordAtIndex = document.querySelector("#words .word.active");
   currentWord = TestWords.words.getCurrent();
-  if (!currentWord) return;
+  if (!currentWord && Config.mode !== "zen") return;
 
   let ret = "";
 

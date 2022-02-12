@@ -2,25 +2,28 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
-import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "./../observables/config-event";
+import * as TestState from "./../test/test-state";
 
-export let active = null;
 let challengeLoading = false;
 
 export function clearActive() {
-  if (active && !challengeLoading && !TestUI.testRestarting) {
+  if (
+    TestState.activeChallenge &&
+    !challengeLoading &&
+    !TestUI.testRestarting
+  ) {
     Notifications.add("Challenge cleared", 0);
-    active = null;
+    TestState.setActiveChallenge(null);
   }
 }
 
 export function verify(result) {
   try {
-    if (active) {
+    if (TestState.activeChallenge) {
       let afk = (result.afkDuration / result.testDuration) * 100;
 
       if (afk > 10) {
@@ -28,15 +31,19 @@ export function verify(result) {
         return null;
       }
 
-      if (!active.requirements) {
-        Notifications.add(`${active.display} challenge passed!`, 1);
-        return active.name;
+      if (!TestState.activeChallenge.requirements) {
+        Notifications.add(
+          `${TestState.activeChallenge.display} challenge passed!`,
+          1
+        );
+        return TestState.activeChallenge.name;
       } else {
         let requirementsMet = true;
         let failReasons = [];
-        for (let requirementType in active.requirements) {
+        for (let requirementType in TestState.activeChallenge.requirements) {
           if (requirementsMet == false) return;
-          let requirementValue = active.requirements[requirementType];
+          let requirementValue =
+            TestState.activeChallenge.requirements[requirementType];
           if (requirementType == "wpm") {
             let wpmMode = Object.keys(requirementValue)[0];
             if (wpmMode == "exact") {
@@ -114,18 +121,23 @@ export function verify(result) {
           }
         }
         if (requirementsMet) {
-          if (active.autoRole) {
+          if (TestState.activeChallenge.autoRole) {
             Notifications.add(
               "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
               1,
               5
             );
           }
-          Notifications.add(`${active.display} challenge passed!`, 1);
-          return active.name;
+          Notifications.add(
+            `${TestState.activeChallenge.display} challenge passed!`,
+            1
+          );
+          return TestState.activeChallenge.name;
         } else {
           Notifications.add(
-            `${active.display} challenge failed: ${failReasons.join(", ")}`,
+            `${
+              TestState.activeChallenge.display
+            } challenge failed: ${failReasons.join(", ")}`,
             0
           );
           return null;
@@ -154,12 +166,11 @@ export async function setup(challengeName) {
     if (challenge === undefined) {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
-      TestLogic.restart(false, true);
       setTimeout(() => {
         $("#top .config").removeClass("hidden");
         $(".page.pageTest").removeClass("hidden");
       }, 250);
-      return;
+      return false;
     }
     if (challenge.type === "customTime") {
       UpdateConfig.setTimeConfig(challenge.parameters[0], true);
@@ -226,7 +237,6 @@ export async function setup(challengeName) {
       }
     }
     ManualRestart.set();
-    TestLogic.restart(false, true);
     notitext = challenge.message;
     $("#top .config").removeClass("hidden");
     $(".page.pageTest").removeClass("hidden");
@@ -236,32 +246,31 @@ export async function setup(challengeName) {
     } else {
       Notifications.add("Challenge loaded. " + notitext, 0);
     }
-    active = challenge;
+    TestState.setActiveChallenge(challenge);
     challengeLoading = false;
+    return true;
   } catch (e) {
     Notifications.add("Something went wrong: " + e, -1);
   }
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey) => {
-    if (
-      [
-        "numbers",
-        "punctuation",
-        "mode",
-        "funbox",
-        "paceCaret",
-        "showAllLines",
-        "showLiveWpm",
-        "highlightMode",
-        "time",
-        "words",
-        "keymapMode",
-        "keymapLayout",
-        "layout",
-      ].includes(eventKey)
-    )
-      clearActive();
-  });
+ConfigEvent.subscribe((eventKey) => {
+  if (
+    [
+      "numbers",
+      "punctuation",
+      "mode",
+      "funbox",
+      "paceCaret",
+      "showAllLines",
+      "showLiveWpm",
+      "highlightMode",
+      "time",
+      "words",
+      "keymapMode",
+      "keymapLayout",
+      "layout",
+    ].includes(eventKey)
+  )
+    clearActive();
 });

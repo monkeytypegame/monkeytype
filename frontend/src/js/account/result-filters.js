@@ -267,7 +267,9 @@ export function updateActive() {
   //tags
   chartString += addText("tags");
 
-  $(".pageAccount .group.chart .above").html(chartString);
+  setTimeout(() => {
+    $(".pageAccount .group.chart .above").html(chartString);
+  }, 0);
 }
 
 export function toggle(group, filter) {
@@ -419,7 +421,6 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   filters["date"]["all"] = true;
   updateActive();
   save();
-  console.log(getFilters());
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {

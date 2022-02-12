@@ -156,8 +156,6 @@ export function update(previous, current) {
   );
 }
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue, eventValue2) => {
-    if (eventKey === "mode") update(eventValue, eventValue2);
-  });
+ConfigEvent.subscribe((eventKey, eventValue, eventValue2) => {
+  if (eventKey === "mode") update(eventValue, eventValue2);
 });

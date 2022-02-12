@@ -12,11 +12,11 @@ export class Poem {
   }
 
   cleanUpText() {
-    var count = 0;
-    var scrubbedWords = [];
-    for (var i = 0; i < this.words.length; i++) {
+    let count = 0;
+    let scrubbedWords = [];
+    for (let i = 0; i < this.words.length; i++) {
       let scrubbed = "";
-      for (var j = 0; j < this.words[i].length; j++) {
+      for (let j = 0; j < this.words[i].length; j++) {
         if (!bannedChars.includes(this.words[i][j]))
           scrubbed += this.words[i][j];
       }
@@ -36,7 +36,7 @@ export class Poem {
 export async function getPoem() {
   return new Promise((res, rej) => {
     console.log("Getting poem");
-    var poemReq = new XMLHttpRequest();
+    let poemReq = new XMLHttpRequest();
     poemReq.onload = () => {
       if (poemReq.readyState == 4) {
         if (poemReq.status == 200) {

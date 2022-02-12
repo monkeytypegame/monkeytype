@@ -1,29 +1,26 @@
 import * as PaceCaret from "./../test/pace-caret";
-import * as ChallengeController from "../controllers/challenge-controller";
 import * as TestState from "./../test/test-state";
 import * as DB from "../db";
 import Config from "../config";
 import * as TestWords from "./../test/test-words";
 import * as ConfigEvent from "./../observables/config-event";
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue) => {
-    if (
-      [
-        "difficulty",
-        "blindMode",
-        "stopOnError",
-        "paceCaret",
-        "minWpm",
-        "minAcc",
-        "minBurst",
-        "confidenceMode",
-        "layout",
-      ].includes(eventKey)
-    ) {
-      update();
-    }
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (
+    [
+      "difficulty",
+      "blindMode",
+      "stopOnError",
+      "paceCaret",
+      "minWpm",
+      "minAcc",
+      "minBurst",
+      "confidenceMode",
+      "layout",
+    ].includes(eventKey)
+  ) {
+    update();
+  }
 });
 
 export function update() {
@@ -44,9 +41,9 @@ export function update() {
     );
   }
 
-  if (ChallengeController.active) {
+  if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 

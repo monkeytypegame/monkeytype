@@ -45,6 +45,7 @@ import * as TestState from "./test-state";
 import * as ModesNotice from "./../elements/modes-notice";
 import * as PageTransition from "./../states/page-transition";
 import * as ConfigEvent from "./../observables/config-event";
+import * as TimerEvent from "./../observables/timer-event";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -437,6 +438,17 @@ export function restart(
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
       }
+      if (
+        withSameWordset &&
+        (Config.funbox === "plus_one" || Config.funbox === "plus_two")
+      ) {
+        Notifications.add(
+          "Sorry, this funbox won't work with repeated tests.",
+          0,
+          4
+        );
+        withSameWordset = false;
+      }
       if (!withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
@@ -450,15 +462,6 @@ export function restart(
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
-        if (Config.funbox === "plus_one" || Config.funbox === "plus_two") {
-          Notifications.add(
-            "Sorry, this funbox won't work with repeated tests.",
-            0
-          );
-          await Funbox.activate("none");
-        } else {
-          await Funbox.activate();
-        }
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
           Keymap.highlightKey(
@@ -679,6 +682,10 @@ export async function init() {
 
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
+
+  if (ActivePage.get() == "test") {
+    await Funbox.activate();
+  }
 
   let language = await Misc.getLanguage(Config.language);
   if (language && language.name !== Config.language) {
@@ -950,9 +957,6 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
-  if (ActivePage.get() == "test") {
-    await Funbox.activate();
-  }
   TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
@@ -968,74 +972,6 @@ export async function init() {
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
   // }
-}
-
-export function calculateWpmAndRaw() {
-  let chars = 0;
-  let correctWordChars = 0;
-  let spaces = 0;
-  //check input history
-  for (let i = 0; i < TestInput.input.history.length; i++) {
-    let word =
-      Config.mode == "zen"
-        ? TestInput.input.getHistory(i)
-        : TestWords.words.get(i);
-    if (TestInput.input.getHistory(i) == word) {
-      //the word is correct
-      //+1 for space
-      correctWordChars += word.length;
-      if (
-        i < TestInput.input.history.length - 1 &&
-        Misc.getLastChar(TestInput.input.getHistory(i)) !== "\n"
-      ) {
-        spaces++;
-      }
-    }
-    chars += TestInput.input.getHistory(i).length;
-  }
-  if (TestInput.input.current !== "") {
-    let word =
-      Config.mode == "zen"
-        ? TestInput.input.current
-        : TestWords.words.getCurrent();
-    //check whats currently typed
-    let toAdd = {
-      correct: 0,
-      incorrect: 0,
-      missed: 0,
-    };
-    for (let c = 0; c < word.length; c++) {
-      if (c < TestInput.input.current.length) {
-        //on char that still has a word list pair
-        if (TestInput.input.current[c] == word[c]) {
-          toAdd.correct++;
-        } else {
-          toAdd.incorrect++;
-        }
-      } else {
-        //on char that is extra
-        toAdd.missed++;
-      }
-    }
-    chars += toAdd.correct;
-    chars += toAdd.incorrect;
-    chars += toAdd.missed;
-    if (toAdd.incorrect == 0) {
-      //word is correct so far, add chars
-      correctWordChars += toAdd.correct;
-    }
-  }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
-    spaces = 0;
-  }
-  chars += TestInput.input.current.length;
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
-  let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
-  return {
-    wpm: wpm,
-    raw: raw,
-  };
 }
 
 export async function addWord() {
@@ -1107,7 +1043,7 @@ export async function addWord() {
   }
 }
 
-var retrySaving = {
+let retrySaving = {
   completedEvent: null,
   canRetry: false,
 };
@@ -1131,7 +1067,7 @@ export function retrySavingResult() {
 
   Notifications.add("Retrying to save...");
 
-  var { completedEvent } = retrySaving;
+  let { completedEvent } = retrySaving;
 
   axiosInstance
     .post("/results/add", {
@@ -1252,7 +1188,7 @@ function buildCompletedEvent(difficultyFailed) {
 
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    let wpmAndRaw = calculateWpmAndRaw();
+    let wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
@@ -1370,7 +1306,7 @@ export async function finish(difficultyFailed = false) {
   TimerProgress.hide();
   OutOfFocus.hide();
   TestTimer.clear();
-  Funbox.activate("none", null);
+  Funbox.clear();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
@@ -1716,10 +1652,44 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   restart();
 });
 
-$(document).ready(() => {
-  ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-    if (eventKey === "difficulty" && !nosave) restart(false, nosave);
-    if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
-  });
+$("#practiseWordsPopup .button.missed").click(() => {
+  PractiseWords.hidePopup();
+  PractiseWords.init(true, false);
+  restart(false, false, false, true);
+});
+
+$("#practiseWordsPopup .button.slow").click(() => {
+  PractiseWords.hidePopup();
+  PractiseWords.init(false, true);
+  restart(false, false, false, true);
+});
+
+$("#practiseWordsPopup .button.both").click(() => {
+  PractiseWords.hidePopup();
+  PractiseWords.init(true, true);
+  restart(false, false, false, true);
+});
+
+$(document).on(
+  "click",
+  "#quoteSearchPopup #quoteSearchResults .searchResult",
+  (e) => {
+    if (e.target.classList.contains("report")) {
+      return;
+    }
+    let sid = parseInt($(e.currentTarget).attr("id"));
+    QuoteSearchPopup.setSelectedId(sid);
+    if (QuoteSearchPopup.apply(sid) === true) restart();
+  }
+);
+
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "difficulty" && !nosave) restart(false, nosave);
+  if (eventKey === "showAllLines" && !nosave) restart();
+  if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+});
+
+TimerEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "fail") fail(eventValue);
+  if (eventKey === "finish") finish();
 });
