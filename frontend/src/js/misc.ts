@@ -1,6 +1,6 @@
 // @ts-ignore
 import * as Loader from "./elements/loader";
-import * as Types from "./../../../types/interfaces";
+import * as Types from "../types/interfaces";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
