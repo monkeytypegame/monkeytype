@@ -18,7 +18,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     let idToken: string | null;
-    if (firebase.auth().currentUser !== null) {
+    if (firebase.auth().currentUser != null) {
       idToken = await firebase.auth().currentUser.getIdToken();
     } else {
       idToken = null;

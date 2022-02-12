@@ -33,10 +33,7 @@ async function updateResults(searchText) {
     let quoteId = quote["id"];
     let test2 = reg.test(quoteSource);
     let test3 = reg.test(quoteId);
-    if (
-      (test2 || test3) &&
-      found.filter((q) => q.id === quote.id).length === 0
-    ) {
+    if ((test2 || test3) && found.filter((q) => q.id == quote.id).length == 0) {
       found.push(quote);
     }
   });
@@ -160,7 +157,7 @@ export function apply(val) {
 }
 
 $("#quoteSearchPopup .searchBox").keydown((e) => {
-  if (e.code === "Escape") return;
+  if (e.code == "Escape") return;
   setTimeout(() => {
     let searchText = document.getElementById("searchBox").value;
     searchText = searchText
@@ -203,7 +200,7 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
-  if (len === -2) {
+  if (len == -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     show();
   }
@@ -220,7 +217,7 @@ $(document).keydown((event) => {
 });
 
 // $("#quoteSearchPopup input").keypress((e) => {
-//   if (e.keyCode === 13) {
+//   if (e.keyCode == 13) {
 //     if (!isNaN(document.getElementById("searchBox").value)) {
 //       apply();
 //     } else {

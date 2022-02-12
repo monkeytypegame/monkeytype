@@ -104,7 +104,7 @@ function updateFooter(lb) {
     let num = Misc.roundTo2(
       (currentRank[lb].rank / currentRank[lb].count) * 100
     );
-    if (num === 0) {
+    if (num == 0) {
       num = 0.01;
     }
 
@@ -195,7 +195,7 @@ function fillTable(lb, prepend) {
     }
     if (entry.hidden) return;
     let meClassString = "";
-    if (entry.name === loggedInUserName) {
+    if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
     }
     html += `

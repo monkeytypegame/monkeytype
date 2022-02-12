@@ -22,7 +22,7 @@ async function getLatest() {
 
 export async function show() {
   const latest = await getLatest();
-  if (latest === null || latest.length === 0) {
+  if (latest == null || latest.length == 0) {
     clearMemory();
     return;
   }

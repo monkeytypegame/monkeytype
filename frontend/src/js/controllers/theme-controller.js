@@ -31,7 +31,7 @@ function updateFavicon(size, curveSize) {
       maincolor = bgcolor;
       bgcolor = swap;
     }
-    if (bgcolor === maincolor) {
+    if (bgcolor == maincolor) {
       bgcolor = "#111";
       maincolor = "#eee";
     }
@@ -182,7 +182,7 @@ export function randomizeTheme() {
 
     preview(randomTheme, true);
 
-    if (previousTheme !== randomTheme) {
+    if (previousTheme != randomTheme) {
       // Notifications.add(randomTheme.replace(/_/g, " "), 0);
     }
   });
@@ -193,13 +193,13 @@ export function clearRandom() {
 }
 
 export function applyCustomBackgroundSize() {
-  if (Config.customBackgroundSize === "max") {
+  if (Config.customBackgroundSize == "max") {
     $(".customBackground img").css({
       // width: "calc(100%)",
       // height: "calc(100%)",
       objectFit: "",
     });
-  } else if (Config.customBackgroundSize !== "") {
+  } else if (Config.customBackgroundSize != "") {
     $(".customBackground img").css({
       objectFit: Config.customBackgroundSize,
     });

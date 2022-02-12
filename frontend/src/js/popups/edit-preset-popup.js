@@ -131,7 +131,7 @@ async function apply() {
     } else {
       Notifications.add("Preset updated", 1);
       let preset = DB.getSnapshot().presets.filter(
-        (preset) => preset._id === presetid
+        (preset) => preset._id == presetid
       )[0];
       preset.name = inputVal;
       if (updateConfig === true) preset.config = configChanges;
@@ -176,7 +176,7 @@ $("#presetWrapper #presetEdit .button").click(() => {
 });
 
 $("#presetWrapper #presetEdit input").keypress((e) => {
-  if (e.keyCode === 13) {
+  if (e.keyCode == 13) {
     apply();
   }
 });

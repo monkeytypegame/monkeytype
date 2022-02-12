@@ -236,7 +236,7 @@ list.updateEmail = new SimplePopup(
         }, 1000);
       }
     } catch (e) {
-      if (e.code === "auth/wrong-password") {
+      if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -320,7 +320,7 @@ list.updateName = new SimplePopup(
       }
     } catch (e) {
       Loader.hide();
-      if (e.code === "auth/wrong-password") {
+      if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -380,7 +380,7 @@ list.updatePassword = new SimplePopup(
       }, 1000);
     } catch (e) {
       Loader.hide();
-      if (e.code === "auth/wrong-password") {
+      if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -509,7 +509,7 @@ list.deleteAccount = new SimplePopup(
       }, 3000);
     } catch (e) {
       Loader.hide();
-      if (e.code === "auth/wrong-password") {
+      if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -552,7 +552,7 @@ list.clearTagPb = new SimplePopup(
       })
       .catch((e) => {
         Loader.hide();
-        if (e.code === "auth/wrong-password") {
+        if (e.code == "auth/wrong-password") {
           Notifications.add("Incorrect password", -1);
         } else {
           Notifications.add("Something went wrong: " + e, -1);

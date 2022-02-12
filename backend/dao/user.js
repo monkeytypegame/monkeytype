@@ -104,7 +104,7 @@ class UsersDAO {
     if (!user) throw new MonkeyError(404, "User not found", "edit tag");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t._id === _id).length === 0
+      user.tags.filter((t) => t._id == _id).length === 0
     )
       throw new MonkeyError(404, "Tag not found");
     return await mongoDB()
@@ -123,7 +123,7 @@ class UsersDAO {
     if (!user) throw new MonkeyError(404, "User not found", "remove tag");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t._id === _id).length === 0
+      user.tags.filter((t) => t._id == _id).length === 0
     )
       throw new MonkeyError(404, "Tag not found");
     return await mongoDB()
@@ -142,7 +142,7 @@ class UsersDAO {
     if (!user) throw new MonkeyError(404, "User not found", "remove tag pb");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t._id === _id).length === 0
+      user.tags.filter((t) => t._id == _id).length === 0
     )
       throw new MonkeyError(404, "Tag not found");
     return await mongoDB()
@@ -267,7 +267,7 @@ class UsersDAO {
     let tagsToCheck = [];
     user.tags.forEach((tag) => {
       tags.forEach((resultTag) => {
-        if (resultTag === tag._id) {
+        if (resultTag == tag._id) {
           tagsToCheck.push(tag);
         }
       });

@@ -125,7 +125,7 @@ export async function updateGraphPBLine() {
     result.lazyMode,
     result.funbox
   );
-  if (lpb === 0) return;
+  if (lpb == 0) return;
   let chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(2);
   ChartController.result.options.annotation.annotations.push({
     enabled: false,
@@ -171,7 +171,7 @@ function updateWpmAndAcc() {
     inf = true;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM === false) {
+    if (Config.alwaysShowCPM == false) {
       $("#result .stats .wpm .top .text").text("wpm");
       if (inf) {
         $("#result .stats .wpm .bottom").text("Infinite");
@@ -206,7 +206,7 @@ function updateWpmAndAcc() {
     }
 
     $("#result .stats .acc .bottom").text(
-      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
+      result.acc == 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
     );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
@@ -217,7 +217,7 @@ function updateWpmAndAcc() {
     $("#result .stats .acc .bottom").removeAttr("aria-label");
   } else {
     //not showing decimal places
-    if (Config.alwaysShowCPM === false) {
+    if (Config.alwaysShowCPM == false) {
       $("#result .stats .wpm .top .text").text("wpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -357,7 +357,7 @@ function updateTags(dontSave) {
   } catch (e) {}
 
   $("#result .stats .tags").addClass("hidden");
-  if (activeTags.length === 0) {
+  if (activeTags.length == 0) {
     $("#result .stats .tags").addClass("hidden");
   } else {
     $("#result .stats .tags").removeClass("hidden");
@@ -378,7 +378,7 @@ function updateTags(dontSave) {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
     `);
-    if (Config.mode !== "quote" && !dontSave) {
+    if (Config.mode != "quote" && !dontSave) {
       if (tpb < result.wpm) {
         //new pb for that tag
         DB.saveLocalTagPB(
@@ -460,13 +460,13 @@ function updateTestType() {
   } else {
     testType += Config.mode;
   }
-  if (Config.mode === "time") {
+  if (Config.mode == "time") {
     testType += " " + Config.time;
-  } else if (Config.mode === "words") {
+  } else if (Config.mode == "words") {
     testType += " " + Config.words;
   }
   if (
-    Config.mode !== "custom" &&
+    Config.mode != "custom" &&
     Config.funbox !== "gibberish" &&
     Config.funbox !== "ascii" &&
     Config.funbox !== "58008"
@@ -488,9 +488,9 @@ function updateTestType() {
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ");
   }
-  if (Config.difficulty === "expert") {
+  if (Config.difficulty == "expert") {
     testType += "<br>expert";
-  } else if (Config.difficulty === "master") {
+  } else if (Config.difficulty == "master") {
     testType += "<br>master";
   }
 
@@ -537,7 +537,7 @@ function updateOther(
     otherText += "<br>too short";
   }
 
-  if (otherText === "") {
+  if (otherText == "") {
     $("#result .stats .info").addClass("hidden");
   } else {
     $("#result .stats .info").removeClass("hidden");
@@ -599,7 +599,7 @@ export function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").blur();
   $("#result .stats .time .bottom .afk").text("");
-  if (firebase.auth().currentUser !== null) {
+  if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -654,7 +654,7 @@ export function update(
     $("#middle #result .stats").removeClass("hidden");
     $("#middle #result .chart").removeClass("hidden");
     // $("#middle #result #resultWordsHistory").removeClass("hidden");
-    if (firebase.auth().currentUser === null) {
+    if (firebase.auth().currentUser == null) {
       $("#middle #result .loginTip").removeClass("hidden");
     }
     $("#middle #result #showWordHistoryButton").removeClass("hidden");

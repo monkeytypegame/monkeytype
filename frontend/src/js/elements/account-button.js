@@ -13,7 +13,7 @@ export function loading(truefalse) {
 }
 
 export function update() {
-  if (firebase.auth().currentUser !== null) {
+  if (firebase.auth().currentUser != null) {
     Misc.swapElements(
       $("#menu .icon-button.login"),
       $("#menu .icon-button.account"),

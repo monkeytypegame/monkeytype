@@ -3,7 +3,7 @@ import { capitalizeFirstLetter } from "../misc";
 let list = null;
 
 export async function getList() {
-  if (list === null) {
+  if (list == null) {
     return $.getJSON("languages/britishenglish.json", function (data) {
       list = data;
       return list;

@@ -58,7 +58,7 @@ export function update() {
   if (
     (/_\d+k$/g.test(Config.language) ||
       /code_/g.test(Config.language) ||
-      Config.language === "english_commonly_misspelled") &&
+      Config.language == "english_commonly_misspelled") &&
     Config.mode !== "quote"
   ) {
     $(".pageTest #testModesNotice").append(
@@ -150,7 +150,7 @@ export function update() {
     );
   }
 
-  if (Config.stopOnError !== "off") {
+  if (Config.stopOnError != "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsStopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
     );

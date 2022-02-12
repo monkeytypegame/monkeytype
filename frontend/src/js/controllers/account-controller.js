@@ -44,7 +44,7 @@ export function sendVerificationEmail() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
-    if (ActivePage.get() === "loading") {
+    if (ActivePage.get() == "loading") {
       LoadingPage.updateBar(90);
     } else {
       LoadingPage.updateBar(45);
@@ -70,10 +70,10 @@ export async function getDataAndInit() {
     Notifications.add("Failed to get user data: " + msg, -1);
 
     $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() === "loading") PageController.change("");
+    if (ActivePage.get() == "loading") PageController.change("");
     return false;
   }
-  if (ActivePage.get() === "loading") {
+  if (ActivePage.get() == "loading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -98,7 +98,7 @@ export async function getDataAndInit() {
   });
 
   let user = firebase.auth().currentUser;
-  if (snap.name === undefined) {
+  if (snap.name == undefined) {
     //verify username
     if (Misc.isUsernameValid(user.name)) {
       //valid, just update
@@ -115,7 +115,7 @@ export async function getDataAndInit() {
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
 
-        if (name === null) {
+        if (name == null) {
           return false;
         }
 
@@ -131,7 +131,7 @@ export async function getDataAndInit() {
             alert(msg);
           }
         }
-        if (response?.status === 200) {
+        if (response?.status == 200) {
           nameGood = true;
           Notifications.add("Name updated", 1);
           DB.getSnapshot().name = name;
@@ -158,20 +158,20 @@ export async function getDataAndInit() {
             if (key !== "resultFilters") {
               if (Array.isArray(Config[key])) {
                 Config[key].forEach((arrval, index) => {
-                  if (arrval !== DB.getSnapshot().config[key][index]) {
+                  if (arrval != DB.getSnapshot().config[key][index]) {
                     configsDifferent = true;
                     console.log(
-                      `.config is different: ${arrval} !== ${
+                      `.config is different: ${arrval} != ${
                         DB.getSnapshot().config[key][index]
                       }`
                     );
                   }
                 });
               } else {
-                if (Config[key] !== DB.getSnapshot().config[key]) {
+                if (Config[key] != DB.getSnapshot().config[key]) {
                   configsDifferent = true;
                   console.log(
-                    `..config is different ${key}: ${Config[key]} !== ${
+                    `..config is different ${key}: ${Config[key]} != ${
                       DB.getSnapshot().config[key]
                     }`
                   );
@@ -191,7 +191,7 @@ export async function getDataAndInit() {
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
-        if (ActivePage.get() === "test") {
+        if (ActivePage.get() == "test") {
           TestLogic.restart(false, true);
         }
         DB.saveConfig(Config);
@@ -249,7 +249,7 @@ async function loadUser(user) {
   const diffTime = Math.abs(date2 - date1);
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  text += ` (${diffDays} day${diffDays !== 1 ? "s" : ""} ago)`;
+  text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
 
   $(".pageAccount .group.createdDate").text(text);
 
@@ -264,14 +264,14 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   if (user) {
     await loadUser(user);
   } else {
-    if (window.location.pathname === "/account") {
+    if (window.location.pathname == "/account") {
       window.history.replaceState("", null, "/login");
     }
     PageTransition.set(false);
   }
-  if (window.location.pathname === "/login" && user) {
+  if (window.location.pathname == "/login" && user) {
     PageController.change("account");
-  } else if (window.location.pathname !== "/account") {
+  } else if (window.location.pathname != "/account") {
     PageController.change();
     setTimeout(() => {
       Focus.set(false);
@@ -393,7 +393,7 @@ export async function signInWithGoogle() {
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
 
-        if (name === null) {
+        if (name == null) {
           signOut();
           $(".pageLogin .preloader").addClass("hidden");
           return;
@@ -411,7 +411,7 @@ export async function signInWithGoogle() {
             alert(msg);
           }
         }
-        if (response?.status === 200) {
+        if (response?.status == 200) {
           nameGood = true;
         }
       }
@@ -426,7 +426,7 @@ export async function signInWithGoogle() {
       //   Notifications.add("Failed to create account: " + msg, -1);
       //   return;
       // }
-      if (response.status === 200) {
+      if (response.status == 200) {
         await signedInUser.user.updateProfile({ displayName: name });
         await signedInUser.user.sendEmailVerification();
         AllTimeStats.clear();
@@ -600,14 +600,14 @@ async function signUp() {
   let password = $(".pageLogin .register input")[3].value;
   let passwordVerify = $(".pageLogin .register input")[4].value;
 
-  if (email !== emailVerify) {
+  if (email != emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
-  if (password !== passwordVerify) {
+  if (password != passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
@@ -703,7 +703,7 @@ $(".pageLogin #forgotPasswordButton").click((e) => {
 });
 
 $(".pageLogin .login input").keyup((e) => {
-  if (e.key === "Enter") {
+  if (e.key == "Enter") {
     UpdateConfig.setChangedBeforeDb(false);
     signIn();
   }
@@ -730,7 +730,7 @@ $(".signOut").click((e) => {
 
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key === "Enter") {
+  if (e.key == "Enter") {
     signUp();
   }
 });

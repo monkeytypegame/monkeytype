@@ -41,38 +41,38 @@ export function verify(result) {
         let requirementsMet = true;
         let failReasons = [];
         for (let requirementType in TestState.activeChallenge.requirements) {
-          if (requirementsMet === false) return;
+          if (requirementsMet == false) return;
           let requirementValue =
             TestState.activeChallenge.requirements[requirementType];
-          if (requirementType === "wpm") {
+          if (requirementType == "wpm") {
             let wpmMode = Object.keys(requirementValue)[0];
-            if (wpmMode === "exact") {
-              if (Math.round(result.wpm) !== requirementValue.exact) {
+            if (wpmMode == "exact") {
+              if (Math.round(result.wpm) != requirementValue.exact) {
                 requirementsMet = false;
                 failReasons.push(`WPM not ${requirementValue.exact}`);
               }
-            } else if (wpmMode === "min") {
+            } else if (wpmMode == "min") {
               if (result.wpm < requirementValue.min) {
                 requirementsMet = false;
                 failReasons.push(`WPM below ${requirementValue.min}`);
               }
             }
-          } else if (requirementType === "acc") {
+          } else if (requirementType == "acc") {
             let accMode = Object.keys(requirementValue)[0];
-            if (accMode === "exact") {
-              if (result.acc !== requirementValue.exact) {
+            if (accMode == "exact") {
+              if (result.acc != requirementValue.exact) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy not ${requirementValue.exact}`);
               }
-            } else if (accMode === "min") {
+            } else if (accMode == "min") {
               if (result.acc < requirementValue.min) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy below ${requirementValue.min}`);
               }
             }
-          } else if (requirementType === "afk") {
+          } else if (requirementType == "afk") {
             let afkMode = Object.keys(requirementValue)[0];
-            if (afkMode === "max") {
+            if (afkMode == "max") {
               if (Math.round(afk) > requirementValue.max) {
                 requirementsMet = false;
                 failReasons.push(
@@ -80,40 +80,40 @@ export function verify(result) {
                 );
               }
             }
-          } else if (requirementType === "time") {
+          } else if (requirementType == "time") {
             let timeMode = Object.keys(requirementValue)[0];
-            if (timeMode === "min") {
+            if (timeMode == "min") {
               if (Math.round(result.testDuration) < requirementValue.min) {
                 requirementsMet = false;
                 failReasons.push(`Test time below ${requirementValue.min}`);
               }
             }
-          } else if (requirementType === "funbox") {
+          } else if (requirementType == "funbox") {
             let funboxMode = requirementValue;
-            if (funboxMode !== result.funbox) {
+            if (funboxMode != result.funbox) {
               requirementsMet = false;
               failReasons.push(`${funboxMode} funbox not active`);
             }
-          } else if (requirementType === "raw") {
+          } else if (requirementType == "raw") {
             let rawMode = Object.keys(requirementValue)[0];
-            if (rawMode === "exact") {
-              if (Math.round(result.rawWpm) !== requirementValue.exact) {
+            if (rawMode == "exact") {
+              if (Math.round(result.rawWpm) != requirementValue.exact) {
                 requirementsMet = false;
                 failReasons.push(`Raw WPM not ${requirementValue.exact}`);
               }
             }
-          } else if (requirementType === "con") {
+          } else if (requirementType == "con") {
             let conMode = Object.keys(requirementValue)[0];
-            if (conMode === "exact") {
-              if (Math.round(result.consistency) !== requirementValue.exact) {
+            if (conMode == "exact") {
+              if (Math.round(result.consistency) != requirementValue.exact) {
                 requirementsMet = false;
                 failReasons.push(`Consistency not ${requirementValue.exact}`);
               }
             }
-          } else if (requirementType === "config") {
+          } else if (requirementType == "config") {
             for (let configKey in requirementValue) {
               let configValue = requirementValue[configKey];
-              if (Config[configKey] !== configValue) {
+              if (Config[configKey] != configValue) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
               }
@@ -201,10 +201,10 @@ export async function setup(challengeName) {
       CustomText.setIsWordRandom(false);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
-      if (challenge.parameters[1] !== null) {
+      if (challenge.parameters[1] != null) {
         UpdateConfig.setTheme(challenge.parameters[1]);
       }
-      if (challenge.parameters[2] !== null) {
+      if (challenge.parameters[2] != null) {
         Funbox.activate(challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {

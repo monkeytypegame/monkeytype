@@ -38,12 +38,12 @@ export function hide() {
 }
 
 export function update(previous, current) {
-  if (previous === current) return;
+  if (previous == current) return;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + current + "']").addClass(
     "active"
   );
-  if (current === "time") {
+  if (current == "time") {
     // $("#top .config .wordCount").addClass("hidden");
     // $("#top .config .time").removeClass("hidden");
     // $("#top .config .customText").addClass("hidden");
@@ -53,7 +53,7 @@ export function update(previous, current) {
     // $("#top .config .punctuationMode").removeClass("hidden");
     // $("#top .config .numbersMode").removeClass("hidden");
     // $("#top .config .quoteLength").addClass("hidden");
-  } else if (current === "words") {
+  } else if (current == "words") {
     // $("#top .config .wordCount").removeClass("hidden");
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").addClass("hidden");
@@ -63,7 +63,7 @@ export function update(previous, current) {
     // $("#top .config .punctuationMode").removeClass("hidden");
     // $("#top .config .numbersMode").removeClass("hidden");
     // $("#top .config .quoteLength").addClass("hidden");
-  } else if (current === "custom") {
+  } else if (current == "custom") {
     // $("#top .config .wordCount").addClass("hidden");
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").removeClass("hidden");
@@ -73,7 +73,7 @@ export function update(previous, current) {
     // $("#top .config .punctuationMode").removeClass("hidden");
     // $("#top .config .numbersMode").removeClass("hidden");
     // $("#top .config .quoteLength").addClass("hidden");
-  } else if (current === "quote") {
+  } else if (current == "quote") {
     // $("#top .config .wordCount").addClass("hidden");
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").addClass("hidden");
@@ -84,7 +84,7 @@ export function update(previous, current) {
     // $("#top .config .numbersMode").removeClass("hidden");
     // $("#result .stats .source").removeClass("hidden");
     // $("#top .config .quoteLength").removeClass("hidden");
-  } else if (current === "zen") {
+  } else if (current == "zen") {
     // $("#top .config .wordCount").addClass("hidden");
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").addClass("hidden");
@@ -103,7 +103,7 @@ export function update(previous, current) {
 
   let animTime = 250;
 
-  if (current === "zen") {
+  if (current == "zen") {
     $(`#top .config .${submenu[previous]}`).animate(
       {
         opacity: 0,
@@ -125,7 +125,7 @@ export function update(previous, current) {
     return;
   }
 
-  if (previous === "zen") {
+  if (previous == "zen") {
     setTimeout(() => {
       $(`#top .config .${submenu[current]}`).removeClass("hidden");
       $(`#top .config .${submenu[current]}`)

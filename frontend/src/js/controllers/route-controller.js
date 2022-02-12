@@ -36,13 +36,13 @@ export function handleInitialPageClasses(pathname) {
 
 $(window).on("popstate", (e) => {
   let state = e.originalEvent.state;
-  if (state === "" || state === "/") {
+  if (state == "" || state == "/") {
     // show test
     PageController.change("test");
-  } else if (state === "about") {
+  } else if (state == "about") {
     // show about
     PageController.change("about");
-  } else if (state === "account" || state === "login") {
+  } else if (state == "account" || state == "login") {
     if (firebase.auth().currentUser) {
       PageController.change("account");
     } else {

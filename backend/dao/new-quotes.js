@@ -47,7 +47,7 @@ class NewQuotesDAO {
     } else {
       return { languageError: 1 };
     }
-    if (duplicateId !== -1) {
+    if (duplicateId != -1) {
       return { duplicateId, similarityScore };
     }
     return await mongoDB().collection("new-quotes").insertOne(quote);

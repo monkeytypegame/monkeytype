@@ -42,13 +42,13 @@ export function updateFastOpacity(num) {
   let opacity = mapRange(num, 100, 200, 0, 1);
   $("#monkey .fast").animate({ opacity: opacity }, 1000);
   let animDuration = mapRange(num, 100, 200, 0.5, 0.01);
-  if (animDuration === 0.5) animDuration = 0;
+  if (animDuration == 0.5) animDuration = 0;
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
 export function type() {
   if (!Config.monkey) return;
-  if (!left && last === "right") {
+  if (!left && last == "right") {
     left = true;
     last = "left";
   } else if (!right) {

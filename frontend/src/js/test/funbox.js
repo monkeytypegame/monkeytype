@@ -65,7 +65,7 @@ export function startMemoryTimer() {
   showMemoryTimer();
   memoryInterval = setInterval(() => {
     memoryTimer -= 1;
-    memoryTimer === 0 ? hideMemoryTimer() : updateMemoryTimer(memoryTimer);
+    memoryTimer == 0 ? hideMemoryTimer() : updateMemoryTimer(memoryTimer);
     if (memoryTimer <= 0) {
       resetMemoryTimer();
       $("#wordsWrapper").addClass("hidden");
@@ -114,7 +114,7 @@ export async function activate(funbox) {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   if (await Misc.getCurrentLanguage(Config.language).ligatures) {
-    if (funbox === "choo_choo" || funbox === "earthquake") {
+    if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -124,7 +124,7 @@ export async function activate(funbox) {
       return;
     }
   }
-  if (funbox !== "none" && (Config.mode === "zen" || Config.mode === "quote")) {
+  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
     if (funboxInfo?.affectsWordGeneration === true) {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
@@ -155,7 +155,7 @@ export async function activate(funbox) {
 
   ManualRestart.set();
   if (mode === "style") {
-    if (funbox !== undefined)
+    if (funbox != undefined)
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
 
     if (funbox === "simon_says") {

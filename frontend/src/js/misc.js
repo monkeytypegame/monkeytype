@@ -11,11 +11,11 @@ function hexToHSL(H) {
   let r = 0,
     g = 0,
     b = 0;
-  if (H.length === 4) {
+  if (H.length == 4) {
     r = "0x" + H[1] + H[1];
     g = "0x" + H[2] + H[2];
     b = "0x" + H[3] + H[3];
-  } else if (H.length === 7) {
+  } else if (H.length == 7) {
     r = "0x" + H[1] + H[2];
     g = "0x" + H[3] + H[4];
     b = "0x" + H[5] + H[6];
@@ -31,9 +31,9 @@ function hexToHSL(H) {
     s = 0,
     l = 0;
 
-  if (delta === 0) h = 0;
-  else if (cmax === r) h = ((g - b) / delta) % 6;
-  else if (cmax === g) h = (b - r) / delta + 2;
+  if (delta == 0) h = 0;
+  else if (cmax == r) h = ((g - b) / delta) % 6;
+  else if (cmax == g) h = (b - r) / delta + 2;
   else h = (r - g) / delta + 4;
 
   h = Math.round(h * 60);
@@ -41,7 +41,7 @@ function hexToHSL(H) {
   if (h < 0) h += 360;
 
   l = (cmax + cmin) / 2;
-  s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
   s = +(s * 100).toFixed(1);
   l = +(l * 100).toFixed(1);
 
@@ -55,7 +55,7 @@ function hexToHSL(H) {
 
 let themesList = null;
 export async function getThemesList() {
-  if (themesList === null) {
+  if (themesList == null) {
     return $.getJSON("themes/_list.json", function (data) {
       const list = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
@@ -74,8 +74,8 @@ export async function getThemesList() {
 
 let sortedThemesList = null;
 export async function getSortedThemesList() {
-  if (sortedThemesList === null) {
-    if (themesList === null) {
+  if (sortedThemesList == null) {
+    if (themesList == null) {
       await getThemesList();
     }
     let sorted = [...themesList];
@@ -93,7 +93,7 @@ export async function getSortedThemesList() {
 
 let funboxList = null;
 export async function getFunboxList() {
-  if (funboxList === null) {
+  if (funboxList == null) {
     return $.getJSON("funbox/_list.json", function (data) {
       funboxList = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
@@ -112,7 +112,7 @@ export async function getFunboxList() {
 export async function getFunbox(funbox) {
   let list = await getFunboxList();
   return list.find(function (element) {
-    return element.name === funbox;
+    return element.name == funbox;
   });
 }
 
@@ -172,7 +172,7 @@ export async function getQuotes(language) {
 
 let fontsList = null;
 export async function getFontsList() {
-  if (fontsList === null) {
+  if (fontsList == null) {
     return $.getJSON("fonts/_list.json", function (data) {
       fontsList = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
@@ -190,7 +190,7 @@ export async function getFontsList() {
 
 let supportersList = null;
 export async function getSupportersList() {
-  if (supportersList === null) {
+  if (supportersList == null) {
     return $.getJSON("about/supporters.json", function (data) {
       supportersList = data;
       return supportersList;
@@ -202,7 +202,7 @@ export async function getSupportersList() {
 
 let contributorsList = null;
 export async function getContributorsList() {
-  if (contributorsList === null) {
+  if (contributorsList == null) {
     return $.getJSON("about/contributors.json", function (data) {
       contributorsList = data;
       return contributorsList;
@@ -214,7 +214,7 @@ export async function getContributorsList() {
 
 let languageList = null;
 export async function getLanguageList() {
-  if (languageList === null) {
+  if (languageList == null) {
     return $.getJSON("languages/_list.json", function (data) {
       languageList = data;
       return languageList;
@@ -226,7 +226,7 @@ export async function getLanguageList() {
 
 let languageGroupList = null;
 export async function getLanguageGroups() {
-  if (languageGroupList === null) {
+  if (languageGroupList == null) {
     return $.getJSON("languages/_groups.json", function (data) {
       languageGroupList = data;
       return languageGroupList;
@@ -251,7 +251,7 @@ export async function findCurrentGroup(language) {
 
 let challengeList = null;
 export async function getChallengeList() {
-  if (challengeList === null) {
+  if (challengeList == null) {
     return $.getJSON("challenges/_list.json", function (data) {
       challengeList = data;
       return challengeList;
@@ -297,7 +297,7 @@ export function showNotification(text, time) {
 let currentLanguage;
 export async function getLanguage(lang) {
   try {
-    if (currentLanguage === null || currentLanguage.name !== lang) {
+    if (currentLanguage == null || currentLanguage.name !== lang) {
       console.log("getting language json");
       await $.getJSON(`languages/${lang}.json`, function (data) {
         currentLanguage = data;
@@ -327,10 +327,10 @@ export function migrateFromCookies() {
 
       for (let i = 0; i < decodedCookie.length; i++) {
         let c = decodedCookie[i];
-        while (c.charAt(0) === " ") {
+        while (c.charAt(0) == " ") {
           c = c.substring(1);
         }
-        if (c.indexOf(name + "=") === 0) {
+        if (c.indexOf(name + "=") == 0) {
           value = c.substring(name.length + 1, c.length);
         }
       }
@@ -615,13 +615,13 @@ export function getPositionString(number) {
   let numend = "th";
   let t = number % 10;
   let h = number % 100;
-  if (t === 1 && h !== 11) {
+  if (t == 1 && h != 11) {
     numend = "st";
   }
-  if (t === 2 && h !== 12) {
+  if (t == 2 && h != 12) {
     numend = "nd";
   }
-  if (t === 3 && h !== 13) {
+  if (t == 3 && h != 13) {
     numend = "rd";
   }
   return number + numend;

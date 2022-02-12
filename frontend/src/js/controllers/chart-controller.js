@@ -68,7 +68,7 @@ export let result = new Chart($("#wpmChart"), {
             unique.forEach((wordIndex) => {
               let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
               let input = wordEl.attr("input");
-              if (input !== undefined)
+              if (input != undefined)
                 wordEl.append(
                   `<div class="wordInputAfter">${input
                     .replace(/\t/g, "_")
@@ -223,14 +223,14 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
             "\n\n" +
             `mode: ${resultData.mode} `;
 
-          if (resultData.mode === "time") {
+          if (resultData.mode == "time") {
             label += resultData.mode2;
-          } else if (resultData.mode === "words") {
+          } else if (resultData.mode == "words") {
             label += resultData.mode2;
           }
 
           let diff = resultData.difficulty;
-          if (diff === undefined) {
+          if (diff == undefined) {
             diff = "normal";
           }
           label += "\n" + `difficulty: ${diff}`;
@@ -634,7 +634,7 @@ function updateAccuracy() {
 }
 
 function updateStyle() {
-  if (Config.chartStyle === "scatter") {
+  if (Config.chartStyle == "scatter") {
     accountHistory.data.datasets[0].showLine = false;
     accountHistory.data.datasets[1].showLine = false;
   } else {

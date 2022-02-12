@@ -183,14 +183,14 @@ export function setMode(mode, nosave) {
   }
   let previous = config.mode;
   config.mode = mode;
-  if (config.mode === "custom") {
+  if (config.mode == "custom") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode === "quote") {
+  } else if (config.mode == "quote") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode === "zen") {
-    if (config.paceCaret !== "off") {
+  } else if (config.mode == "zen") {
+    if (config.paceCaret != "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
   }
@@ -199,7 +199,7 @@ export function setMode(mode, nosave) {
 }
 
 export function setPlaySoundOnError(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.playSoundOnError = val;
@@ -208,7 +208,7 @@ export function setPlaySoundOnError(val, nosave) {
 }
 
 export function setPlaySoundOnClick(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = "off";
   }
   config.playSoundOnClick = val;
@@ -217,7 +217,7 @@ export function setPlaySoundOnClick(val, nosave) {
 }
 
 export function setSoundVolume(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = "1.0";
   }
   config.soundVolume = val;
@@ -229,7 +229,7 @@ export function setSoundVolume(val, nosave) {
 export function setDifficulty(diff, nosave) {
   if (
     (diff !== "normal" && diff !== "expert" && diff !== "master") ||
-    diff === undefined
+    diff == undefined
   ) {
     diff = "normal";
   }
@@ -253,7 +253,7 @@ export function setFunbox(funbox, nosave) {
 }
 
 export function setBlindMode(blind, nosave) {
-  if (blind === undefined) {
+  if (blind == undefined) {
     blind = false;
   }
   config.blindMode = blind;
@@ -262,7 +262,7 @@ export function setBlindMode(blind, nosave) {
 }
 
 export function setChartAccuracy(chartAccuracy, nosave) {
-  if (chartAccuracy === undefined) {
+  if (chartAccuracy == undefined) {
     chartAccuracy = true;
   }
   config.chartAccuracy = chartAccuracy;
@@ -271,7 +271,7 @@ export function setChartAccuracy(chartAccuracy, nosave) {
 }
 
 export function setChartStyle(chartStyle, nosave) {
-  if (chartStyle === undefined) {
+  if (chartStyle == undefined) {
     chartStyle = "line";
   }
   config.chartStyle = chartStyle;
@@ -280,7 +280,7 @@ export function setChartStyle(chartStyle, nosave) {
 }
 
 export function setStopOnError(soe, nosave) {
-  if (soe === undefined || soe === true || soe === false) {
+  if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
   config.stopOnError = soe;
@@ -292,7 +292,7 @@ export function setStopOnError(soe, nosave) {
 }
 
 export function setAlwaysShowDecimalPlaces(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.alwaysShowDecimalPlaces = val;
@@ -304,7 +304,7 @@ export function setAlwaysShowDecimalPlaces(val, nosave) {
 }
 
 export function setAlwaysShowCPM(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.alwaysShowCPM = val;
@@ -313,7 +313,7 @@ export function setAlwaysShowCPM(val, nosave) {
 }
 
 export function setShowOutOfFocusWarning(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = true;
   }
   config.showOutOfFocusWarning = val;
@@ -325,7 +325,7 @@ export function setShowOutOfFocusWarning(val, nosave) {
 }
 
 export function setSwapEscAndTab(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.swapEscAndTab = val;
@@ -335,16 +335,16 @@ export function setSwapEscAndTab(val, nosave) {
 
 //pace caret
 export function setPaceCaret(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = "off";
   }
   if (document.readyState === "complete") {
-    if (val === "pb" && firebase.auth().currentUser === null) {
+    if (val == "pb" && firebase.auth().currentUser === null) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return;
     }
   }
-  // if (config.mode === "zen" && val !== "off") {
+  // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
   // }
@@ -355,7 +355,7 @@ export function setPaceCaret(val, nosave) {
 
 export function setPaceCaretCustomSpeed(val, nosave) {
   val = parseInt(val);
-  if (val === undefined || Number.isNaN(val)) {
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
@@ -364,7 +364,7 @@ export function setPaceCaretCustomSpeed(val, nosave) {
 }
 
 export function setRepeatedPace(pace, nosave) {
-  if (pace === undefined) {
+  if (pace == undefined) {
     pace = true;
   }
   config.repeatedPace = pace;
@@ -374,7 +374,7 @@ export function setRepeatedPace(pace, nosave) {
 
 //min wpm
 export function setMinWpm(minwpm, nosave) {
-  if (minwpm === undefined) {
+  if (minwpm == undefined) {
     minwpm = "off";
   }
   config.minWpm = minwpm;
@@ -384,7 +384,7 @@ export function setMinWpm(minwpm, nosave) {
 
 export function setMinWpmCustomSpeed(val, nosave) {
   val = parseInt(val);
-  if (val === undefined || Number.isNaN(val)) {
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
@@ -394,7 +394,7 @@ export function setMinWpmCustomSpeed(val, nosave) {
 
 //min acc
 export function setMinAcc(min, nosave) {
-  if (min === undefined) {
+  if (min == undefined) {
     min = "off";
   }
   config.minAcc = min;
@@ -403,7 +403,7 @@ export function setMinAcc(min, nosave) {
 }
 
 export function setMinAccCustom(val, nosave) {
-  if (val === undefined || Number.isNaN(parseInt(val))) {
+  if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 90;
   }
   config.minAccCustom = val;
@@ -413,7 +413,7 @@ export function setMinAccCustom(val, nosave) {
 
 //min burst
 export function setMinBurst(min, nosave) {
-  if (min === undefined) {
+  if (min == undefined) {
     min = "off";
   }
   config.minBurst = min;
@@ -423,7 +423,7 @@ export function setMinBurst(min, nosave) {
 
 export function setMinBurstCustomSpeed(val, nosave) {
   val = parseInt(val);
-  if (val === undefined || Number.isNaN(val)) {
+  if (val == undefined || Number.isNaN(val)) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
@@ -433,7 +433,7 @@ export function setMinBurstCustomSpeed(val, nosave) {
 
 //always show words history
 export function setAlwaysShowWordsHistory(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.alwaysShowWordsHistory = val;
@@ -451,7 +451,7 @@ export function setSingleListCommandLine(option, nosave) {
 
 //caps lock warning
 export function setCapsLockWarning(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.capsLockWarning = val;
@@ -460,7 +460,7 @@ export function setCapsLockWarning(val, nosave) {
 }
 
 export function setShowAllLines(sal, nosave) {
-  if (sal === undefined) {
+  if (sal == undefined) {
     sal = false;
   }
   config.showAllLines = sal;
@@ -471,7 +471,7 @@ export function setShowAllLines(sal, nosave) {
 }
 
 export function setQuickEnd(qe, nosave) {
-  if (qe === undefined) {
+  if (qe == undefined) {
     qe = false;
   }
   config.quickEnd = qe;
@@ -480,7 +480,7 @@ export function setQuickEnd(qe, nosave) {
 }
 
 export function setEnableAds(val, nosave) {
-  if (val === undefined || val === true || val === false) {
+  if (val == undefined || val === true || val === false) {
     val = "off";
   }
   config.enableAds = val;
@@ -494,7 +494,7 @@ export function setEnableAds(val, nosave) {
 }
 
 export function setRepeatQuotes(val, nosave) {
-  if (val === undefined || val === true || val === false) {
+  if (val == undefined || val === true || val === false) {
     val = "off";
   }
   config.repeatQuotes = val;
@@ -504,7 +504,7 @@ export function setRepeatQuotes(val, nosave) {
 
 //flip colors
 export function setFlipTestColors(flip, nosave) {
-  if (flip === undefined) {
+  if (flip == undefined) {
     flip = false;
   }
   config.flipTestColors = flip;
@@ -514,7 +514,7 @@ export function setFlipTestColors(flip, nosave) {
 
 //extra color
 export function setColorfulMode(extra, nosave) {
-  if (extra === undefined) {
+  if (extra == undefined) {
     extra = false;
   }
   config.colorfulMode = extra;
@@ -524,7 +524,7 @@ export function setColorfulMode(extra, nosave) {
 
 //strict space
 export function setStrictSpace(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = false;
   }
   config.strictSpace = val;
@@ -534,7 +534,7 @@ export function setStrictSpace(val, nosave) {
 
 //opposite shift space
 export function setOppositeShiftMode(val, nosave) {
-  if (val === undefined) {
+  if (val == undefined) {
     val = "off";
   }
   config.oppositeShiftMode = val;
@@ -543,7 +543,7 @@ export function setOppositeShiftMode(val, nosave) {
 }
 
 export function setPageWidth(val, nosave) {
-  if (val === null || val === undefined) {
+  if (val == null || val == undefined) {
     val = "100";
   }
   config.pageWidth = val;
@@ -560,7 +560,7 @@ export function setPageWidth(val, nosave) {
 }
 
 export function setCaretStyle(caretStyle, nosave) {
-  if (caretStyle === null || caretStyle === undefined) {
+  if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
   config.caretStyle = caretStyle;
@@ -572,19 +572,19 @@ export function setCaretStyle(caretStyle, nosave) {
   $("#caret").removeClass("carrot");
   $("#caret").removeClass("banana");
 
-  if (caretStyle === "off") {
+  if (caretStyle == "off") {
     $("#caret").addClass("off");
-  } else if (caretStyle === "default") {
+  } else if (caretStyle == "default") {
     $("#caret").addClass("default");
-  } else if (caretStyle === "block") {
+  } else if (caretStyle == "block") {
     $("#caret").addClass("block");
-  } else if (caretStyle === "outline") {
+  } else if (caretStyle == "outline") {
     $("#caret").addClass("outline");
-  } else if (caretStyle === "underline") {
+  } else if (caretStyle == "underline") {
     $("#caret").addClass("underline");
-  } else if (caretStyle === "carrot") {
+  } else if (caretStyle == "carrot") {
     $("#caret").addClass("carrot");
-  } else if (caretStyle === "banana") {
+  } else if (caretStyle == "banana") {
     $("#caret").addClass("banana");
   }
   if (!nosave) saveToLocalStorage();
@@ -592,7 +592,7 @@ export function setCaretStyle(caretStyle, nosave) {
 }
 
 export function setPaceCaretStyle(caretStyle, nosave) {
-  if (caretStyle === null || caretStyle === undefined) {
+  if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
   config.paceCaretStyle = caretStyle;
@@ -604,17 +604,17 @@ export function setPaceCaretStyle(caretStyle, nosave) {
   $("#paceCaret").removeClass("carrot");
   $("#paceCaret").removeClass("banana");
 
-  if (caretStyle === "default") {
+  if (caretStyle == "default") {
     $("#paceCaret").addClass("default");
-  } else if (caretStyle === "block") {
+  } else if (caretStyle == "block") {
     $("#paceCaret").addClass("block");
-  } else if (caretStyle === "outline") {
+  } else if (caretStyle == "outline") {
     $("#paceCaret").addClass("outline");
-  } else if (caretStyle === "underline") {
+  } else if (caretStyle == "underline") {
     $("#paceCaret").addClass("underline");
-  } else if (caretStyle === "carrot") {
+  } else if (caretStyle == "carrot") {
     $("#paceCaret").addClass("carrot");
-  } else if (caretStyle === "banana") {
+  } else if (caretStyle == "banana") {
     $("#paceCaret").addClass("banana");
   }
   if (!nosave) saveToLocalStorage();
@@ -622,7 +622,7 @@ export function setPaceCaretStyle(caretStyle, nosave) {
 }
 
 export function setShowTimerProgress(timer, nosave) {
-  if (timer === null || timer === undefined) {
+  if (timer == null || timer == undefined) {
     timer = false;
   }
   config.showTimerProgress = timer;
@@ -631,7 +631,7 @@ export function setShowTimerProgress(timer, nosave) {
 }
 
 export function setShowLiveWpm(live, nosave) {
-  if (live === null || live === undefined) {
+  if (live == null || live == undefined) {
     live = false;
   }
   config.showLiveWpm = live;
@@ -640,7 +640,7 @@ export function setShowLiveWpm(live, nosave) {
 }
 
 export function setShowLiveAcc(live, nosave) {
-  if (live === null || live === undefined) {
+  if (live == null || live == undefined) {
     live = false;
   }
   config.showLiveAcc = live;
@@ -649,7 +649,7 @@ export function setShowLiveAcc(live, nosave) {
 }
 
 export function setShowLiveBurst(live, nosave) {
-  if (live === null || live === undefined) {
+  if (live == null || live == undefined) {
     live = false;
   }
   config.showLiveBurst = live;
@@ -670,7 +670,7 @@ export function setHighlightMode(mode, nosave) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
   }
-  if (mode === null || mode === undefined) {
+  if (mode == null || mode == undefined) {
     mode = "letter";
   }
   config.highlightMode = mode;
@@ -679,7 +679,7 @@ export function setHighlightMode(mode, nosave) {
 }
 
 export function setHideExtraLetters(val, nosave) {
-  if (val === null || val === undefined) {
+  if (val == null || val == undefined) {
     val = false;
   }
   config.hideExtraLetters = val;
@@ -688,7 +688,7 @@ export function setHideExtraLetters(val, nosave) {
 }
 
 export function setTimerStyle(style, nosave) {
-  if (style === null || style === undefined) {
+  if (style == null || style == undefined) {
     style = "mini";
   }
   config.timerStyle = style;
@@ -739,7 +739,7 @@ export function setTimerColor(color, nosave) {
   ConfigEvent.dispatch("timerColor", config.timerColor);
 }
 export function setTimerOpacity(opacity, nosave) {
-  if (opacity === null || opacity === undefined) {
+  if (opacity == null || opacity == undefined) {
     opacity = 0.25;
   }
   config.timerOpacity = opacity;
@@ -879,7 +879,7 @@ export function setQuickTabMode(mode, nosave) {
 }
 
 export function previewFontFamily(font) {
-  if (font === undefined) {
+  if (font == undefined) {
     font = "Roboto_Mono";
   }
   document.documentElement.style.setProperty(
@@ -890,7 +890,7 @@ export function previewFontFamily(font) {
 
 //font family
 export function setFontFamily(font, nosave) {
-  if (font === undefined || font === "") {
+  if (font == undefined || font === "") {
     font = "Roboto_Mono";
     Notifications.add(
       "Empty input received, reverted to the default font.",
@@ -919,7 +919,7 @@ export function setFontFamily(font, nosave) {
 
 //freedom
 export function setFreedomMode(freedom, nosave) {
-  if (freedom === null) {
+  if (freedom == null) {
     freedom = false;
   }
   config.freedomMode = freedom;
@@ -931,7 +931,7 @@ export function setFreedomMode(freedom, nosave) {
 }
 
 export function setConfidenceMode(cm, nosave) {
-  if (cm === undefined || !["off", "on", "max"].includes(cm)) {
+  if (cm == undefined || !["off", "on", "max"].includes(cm)) {
     cm = defaultConfig.confidenceMode;
   }
   config.confidenceMode = cm;
@@ -1010,7 +1010,7 @@ export function setCustomThemeColors(colors, nosave) {
 }
 
 export function setLanguage(language, nosave) {
-  if (language === null || language === undefined) {
+  if (language == null || language == undefined) {
     language = "english";
   }
   config.language = language;
@@ -1040,7 +1040,7 @@ export function setMonkey(monkey, nosave) {
 }
 
 export function setKeymapMode(mode, nosave) {
-  if (mode === null || mode === undefined) {
+  if (mode == null || mode == undefined) {
     mode = "off";
   }
   $(".active-key").removeClass("active-key");
@@ -1093,7 +1093,7 @@ export function setKeymapStyle(style, nosave) {
 }
 
 export function setKeymapLayout(layout, nosave) {
-  if (layout === null || layout === undefined) {
+  if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   config.keymapLayout = layout;
@@ -1102,7 +1102,7 @@ export function setKeymapLayout(layout, nosave) {
 }
 
 export function setLayout(layout, nosave) {
-  if (layout === null || layout === undefined) {
+  if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   config.layout = layout;
@@ -1111,7 +1111,7 @@ export function setLayout(layout, nosave) {
 }
 
 // export function setSavedLayout(layout, nosave) {
-//   if (layout === null || layout === undefined) {
+//   if (layout == null || layout == undefined) {
 //     layout = "qwerty";
 //   }
 //   config.savedLayout = layout;
@@ -1119,7 +1119,7 @@ export function setLayout(layout, nosave) {
 // }
 
 export function setFontSize(fontSize, nosave) {
-  if (fontSize === null || fontSize === undefined) {
+  if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }
   config.fontSize = fontSize;
@@ -1143,23 +1143,23 @@ export function setFontSize(fontSize, nosave) {
   $("#miniTimerAndLiveWpm").removeClass("size35");
   $("#miniTimerAndLiveWpm").removeClass("size4");
 
-  if (fontSize === 125) {
+  if (fontSize == 125) {
     $("#words").addClass("size125");
     $("#caret, #paceCaret").addClass("size125");
     $("#miniTimerAndLiveWpm").addClass("size125");
-  } else if (fontSize === 15) {
+  } else if (fontSize == 15) {
     $("#words").addClass("size15");
     $("#caret, #paceCaret").addClass("size15");
     $("#miniTimerAndLiveWpm").addClass("size15");
-  } else if (fontSize === 2) {
+  } else if (fontSize == 2) {
     $("#words").addClass("size2");
     $("#caret, #paceCaret").addClass("size2");
     $("#miniTimerAndLiveWpm").addClass("size2");
-  } else if (fontSize === 3) {
+  } else if (fontSize == 3) {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
-  } else if (fontSize === 4) {
+  } else if (fontSize == 4) {
     $("#words").addClass("size4");
     $("#caret, #paceCaret").addClass("size4");
     $("#miniTimerAndLiveWpm").addClass("size4");
@@ -1169,7 +1169,7 @@ export function setFontSize(fontSize, nosave) {
 }
 
 export function setCustomBackground(value, nosave) {
-  if (value === null || value === undefined) {
+  if (value == null || value == undefined) {
     value = "";
   }
   value = value.trim();
@@ -1178,7 +1178,7 @@ export function setCustomBackground(value, nosave) {
       value
     ) &&
       !/[<>]/.test(value)) ||
-    value === ""
+    value == ""
   ) {
     config.customBackground = value;
     if (!nosave) saveToLocalStorage();
@@ -1189,7 +1189,7 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomLayoutfluid(value, nosave) {
-  if (value === null || value === undefined) {
+  if (value == null || value == undefined) {
     value = "qwerty#dvorak#colemak";
   }
   value = value.replace(/ /g, "#");
@@ -1218,7 +1218,7 @@ export function setCustomLayoutfluid(value, nosave) {
 }
 
 export function setCustomBackgroundSize(value, nosave) {
-  if (value !== "cover" && value !== "contain" && value !== "max") {
+  if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
   }
   config.customBackgroundSize = value;
@@ -1251,7 +1251,7 @@ export function setBurstHeatmap(value, nosave) {
 }
 
 export function apply(configObj) {
-  if (configObj === null || configObj === undefined) {
+  if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
     return;
   }
@@ -1260,7 +1260,7 @@ export function apply(configObj) {
       configObj[configKey] = defaultConfig[configKey];
     }
   });
-  if (configObj && configObj !== null && configObj !== "null") {
+  if (configObj && configObj != null && configObj != "null") {
     setCustomThemeColors(configObj.customThemeColors, true);
     setThemes(configObj.theme, configObj.customTheme, true);
     // setTheme(configObj.theme, true);
@@ -1489,7 +1489,7 @@ export function getConfigChanges() {
   let configChanges = {};
   Object.keys(config)
     .filter((key) => {
-      return config[key] !== defaultConfig[key];
+      return config[key] != defaultConfig[key];
     })
     .forEach((key) => {
       configChanges[key] = config[key];

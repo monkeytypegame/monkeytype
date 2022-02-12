@@ -8,8 +8,8 @@ $(".scrollToTopButton").click((event) => {
 
 $(window).scroll((e) => {
   let page = ActivePage.get();
-  if (page === "test") return;
-  if (page === "about" || page === "settings" || page === "account") {
+  if (page == "test") return;
+  if (page == "about" || page == "settings" || page == "account") {
     let scroll = window.scrollY;
     if (!visible && scroll > 100) {
       $(".scrollToTopButton").removeClass("invisible");

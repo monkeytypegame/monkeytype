@@ -90,20 +90,20 @@ function layoutfluid() {
     index = Math.floor(Time.get() / (Config.time / numLayouts));
 
     if (
-      Time.get() === Math.floor(Config.time / numLayouts) - 3 ||
-      Time.get() === (Config.time / numLayouts) * 2 - 3
+      Time.get() == Math.floor(Config.time / numLayouts) - 3 ||
+      Time.get() == (Config.time / numLayouts) * 2 - 3
     ) {
       Notifications.add("3", 0, 1);
     }
     if (
-      Time.get() === Math.floor(Config.time / numLayouts) - 2 ||
-      Time.get() === Math.floor(Config.time / numLayouts) * 2 - 2
+      Time.get() == Math.floor(Config.time / numLayouts) - 2 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 2
     ) {
       Notifications.add("2", 0, 1);
     }
     if (
-      Time.get() === Math.floor(Config.time / numLayouts) - 1 ||
-      Time.get() === Math.floor(Config.time / numLayouts) * 2 - 1
+      Time.get() == Math.floor(Config.time / numLayouts) - 1 ||
+      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 1
     ) {
       Notifications.add("1", 0, 1);
     }
@@ -148,7 +148,7 @@ function checkIfFailed(wpmAndRaw, acc) {
 function checkIfTimeIsUp() {
   if (timerDebug) console.time("times up check");
   if (
-    Config.mode === "time" ||
+    Config.mode == "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     if (

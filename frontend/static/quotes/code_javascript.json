@@ -134,7 +134,7 @@
       "id": 21
     },
     {
-      "text": "function invert(object) {\n\tconst result = {}\n\tObject.keys(object).forEach((key) => {\n\t\tlet value = object[key]\n\t\tif (value !== null && typeof value.toString !== \"function\") {\n\t\t\tvalue = toString.call(value)\n\t\t}\n\t\tresult[value] = key\n\t})\n\treturn result\n}",
+      "text": "function invert(object) {\n\tconst result = {}\n\tObject.keys(object).forEach((key) => {\n\t\tlet value = object[key]\n\t\tif (value != null && typeof value.toString !== \"function\") {\n\t\t\tvalue = toString.call(value)\n\t\t}\n\t\tresult[value] = key\n\t})\n\treturn result\n}",
       "source": "Lodash - invert sourcecode",
       "length": 252,
       "id": 22

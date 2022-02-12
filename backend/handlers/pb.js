@@ -108,7 +108,7 @@ module.exports = {
     if (
       lbObj &&
       mode === "time" &&
-      (mode2 === "15" || mode2 === "60") &&
+      (mode2 == "15" || mode2 == "60") &&
       !lazyMode
     ) {
       //updating lbpersonalbests object

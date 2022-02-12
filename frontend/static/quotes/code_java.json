@@ -38,7 +38,7 @@
       "length": 202
     },
     {
-      "text": "boolean contains(int[] list, int x) {\n\tfor(int y: list)\n\t\tif (y === x)\n\t\t\treturn true;\n\treturn false;\n}",
+      "text": "boolean contains(int[] list, int x) {\n\tfor(int y: list)\n\t\tif (y == x)\n\t\t\treturn true;\n\treturn false;\n}",
       "id": 6,
       "source": "Check if list contains a value - programming-idioms.org",
       "length": 55

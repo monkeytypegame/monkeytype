@@ -87,7 +87,7 @@ export function setInvalid() {
 export function calculateTestSeconds(now) {
   if (now === undefined) {
     let endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    if ((Config.mode === "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+    if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
       return (TestInput.lastKeypress - start) / 1000;
     } else {
       return (end - start) / 1000;
@@ -104,10 +104,10 @@ export function calculateWpmAndRaw() {
   //check input history
   for (let i = 0; i < TestInput.input.history.length; i++) {
     let word =
-      Config.mode === "zen"
+      Config.mode == "zen"
         ? TestInput.input.getHistory(i)
         : TestWords.words.get(i);
-    if (TestInput.input.getHistory(i) === word) {
+    if (TestInput.input.getHistory(i) == word) {
       //the word is correct
       //+1 for space
       correctWordChars += word.length;
@@ -122,7 +122,7 @@ export function calculateWpmAndRaw() {
   }
   if (TestInput.input.current !== "") {
     let word =
-      Config.mode === "zen"
+      Config.mode == "zen"
         ? TestInput.input.current
         : TestWords.words.getCurrent();
     //check whats currently typed
@@ -134,7 +134,7 @@ export function calculateWpmAndRaw() {
     for (let c = 0; c < word.length; c++) {
       if (c < TestInput.input.current.length) {
         //on char that still has a word list pair
-        if (TestInput.input.current[c] === word[c]) {
+        if (TestInput.input.current[c] == word[c]) {
           toAdd.correct++;
         } else {
           toAdd.incorrect++;
@@ -147,7 +147,7 @@ export function calculateWpmAndRaw() {
     chars += toAdd.correct;
     chars += toAdd.incorrect;
     chars += toAdd.missed;
-    if (toAdd.incorrect === 0) {
+    if (toAdd.incorrect == 0) {
       //word is correct so far, add chars
       correctWordChars += toAdd.correct;
     }
@@ -204,7 +204,7 @@ export function calculateBurst() {
   let wordLength;
   if (Config.mode === "zen") {
     wordLength = TestInput.input.current.length;
-    if (wordLength === 0) {
+    if (wordLength == 0) {
       wordLength = TestInput.input.getHistoryLast().length;
     }
   } else {
@@ -240,14 +240,14 @@ function countChars() {
   let correctspaces = 0;
   for (let i = 0; i < TestInput.input.history.length; i++) {
     let word =
-      Config.mode === "zen"
+      Config.mode == "zen"
         ? TestInput.input.getHistory(i)
         : TestWords.words.get(i);
     if (TestInput.input.getHistory(i) === "") {
       //last word that was not started
       continue;
     }
-    if (TestInput.input.getHistory(i) === word) {
+    if (TestInput.input.getHistory(i) == word) {
       //the word is correct
       correctWordChars += word.length;
       correctChars += word.length;
@@ -262,7 +262,7 @@ function countChars() {
       for (let c = 0; c < TestInput.input.getHistory(i).length; c++) {
         if (c < word.length) {
           //on char that still has a word list pair
-          if (TestInput.input.getHistory(i)[c] === word[c]) {
+          if (TestInput.input.getHistory(i)[c] == word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -282,7 +282,7 @@ function countChars() {
       for (let c = 0; c < word.length; c++) {
         if (c < TestInput.input.getHistory(i).length) {
           //on char that still has a word list pair
-          if (TestInput.input.getHistory(i)[c] === word[c]) {
+          if (TestInput.input.getHistory(i)[c] == word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -294,7 +294,7 @@ function countChars() {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === TestInput.input.history.length - 1 && Config.mode === "time") {
+      if (i === TestInput.input.history.length - 1 && Config.mode == "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
@@ -314,7 +314,7 @@ function countChars() {
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
-      Config.mode === "zen" ? TestInput.accuracy.incorrect : incorrectChars,
+      Config.mode == "zen" ? TestInput.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -325,7 +325,7 @@ export function calculateStats() {
   let testSeconds = calculateTestSeconds();
   console.log((end2 - start2) / 1000);
   console.log(testSeconds);
-  if (Config.mode !== "custom") {
+  if (Config.mode != "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
   }
   let chars = countChars();

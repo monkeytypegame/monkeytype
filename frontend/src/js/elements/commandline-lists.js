@@ -27,18 +27,18 @@ function canBailOut() {
   return (
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
-      (CustomText.word >= 5000 || CustomText.word === 0)) ||
+      (CustomText.word >= 5000 || CustomText.word == 0)) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
       CustomText.text.length >= 5000) ||
     (Config.mode === "custom" &&
       CustomText.isTimeRandom &&
-      (CustomText.time >= 3600 || CustomText.time === 0)) ||
+      (CustomText.time >= 3600 || CustomText.time == 0)) ||
     (Config.mode === "words" && Config.words >= 5000) ||
     Config.words === 0 ||
     (Config.mode === "time" && (Config.time >= 3600 || Config.time === 0)) ||
-    Config.mode === "zen"
+    Config.mode == "zen"
   );
 }
 
@@ -92,7 +92,7 @@ if (Object.keys(layouts).length > 0) {
     },
   });
   Object.keys(layouts).forEach((layout) => {
-    if (layout.toString() !== "default") {
+    if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
         id: "changeKeymapLayout" + Misc.capitalizeFirstLetter(layout),
         display: layout.replace(/_/g, " "),
@@ -3149,17 +3149,17 @@ export function getList(list) {
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "saveToLocalStorage") {
     defaultCommands.list.filter(
-      (command) => command.id === "exportSettingsJSON"
+      (command) => command.id == "exportSettingsJSON"
     )[0].defaultValue = eventValue;
   }
   if (eventKey === "customBackground") {
     defaultCommands.list.filter(
-      (command) => command.id === "changeCustomBackground"
+      (command) => command.id == "changeCustomBackground"
     )[0].defaultValue = eventValue;
   }
   if (eventKey === "customLayoutFluid") {
     defaultCommands.list.filter(
-      (command) => command.id === "changeCustomLayoutfluid"
+      (command) => command.id == "changeCustomLayoutfluid"
     )[0].defaultValue = eventValue?.replace(/#/g, " ");
   }
 });

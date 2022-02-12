@@ -406,7 +406,7 @@ export async function fillSettingsPage() {
   let keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
   Object.keys(layouts).forEach((layout) => {
-    if (layout.toString() !== "default") {
+    if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
       );
@@ -493,13 +493,13 @@ export function hideAccountSection() {
 
 export function updateDiscordSection() {
   //no code and no discord
-  if (firebase.auth().currentUser === null) {
+  if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
-    if (DB.getSnapshot() === null) return;
+    if (DB.getSnapshot() == null) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (DB.getSnapshot().discordId === undefined) {
+    if (DB.getSnapshot().discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -575,7 +575,7 @@ function refreshTagsSettingsSection() {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags.forEach((tag) => {
       // let tagPbString = "No PB found";
-      // if (tag.pb !== undefined && tag.pb > 0) {
+      // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
       // }
       tagsEl.append(`
@@ -880,7 +880,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
-    if (e.keyCode === 13) {
+    if (e.keyCode == 13) {
       UpdateConfig.setCustomBackground(
         $(
           ".pageSettings .section.customBackgroundSize .inputAndButton input"
@@ -902,7 +902,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   (e) => {
-    if (e.keyCode === 13) {
+    if (e.keyCode == 13) {
       UpdateConfig.setCustomLayoutfluid(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"

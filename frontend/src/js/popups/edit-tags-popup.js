@@ -188,7 +188,7 @@ $("#tagsWrapper #tagsEdit .button").click(() => {
 });
 
 $("#tagsWrapper #tagsEdit input").keypress((e) => {
-  if (e.keyCode === 13) {
+  if (e.keyCode == 13) {
     apply();
   }
 });
