@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { firebase } from "./modules.d";
+declare const firebase: typeof import("firebase").default;
 
 const apiPath = "";
 
@@ -20,6 +20,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     let idToken: string | null;
+    console.log(firebase);
     const currentUser = firebase.auth().currentUser;
     if (currentUser !== null) {
       idToken = await currentUser.getIdToken();
