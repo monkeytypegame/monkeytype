@@ -1,0 +1,13 @@
+name: "Close stale issues and PRs"
+on:
+  schedule:
+    - cron: "30 1 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v4
+        with:
+          stale-pr-message: "This PR is stale. Please trigger a re-run of the PR check action."
+          days-before-stale: 7
