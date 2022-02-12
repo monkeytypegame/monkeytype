@@ -6,7 +6,7 @@ let circularImportNum = 0;
 module.exports = {
   mode: "development", // Change to 'production' for production
   devtool: false,
-  entry: path.resolve(__dirname, "dist/index.js"),
+  entry: path.resolve(__dirname, "src/scripts/index.js"),
   resolve: {
     fallback: {
       crypto: require.resolve("crypto-browserify"),
