@@ -1,9 +1,10 @@
 name: "Mark Stale PRs"
 on:
   schedule:
-    - cron: "30 20 * * *"
+    - cron: "30 22 * * *"
 
 permissions:
+  pull-requests: read
   pull-requests: write
 
 jobs:
@@ -12,5 +13,6 @@ jobs:
     steps:
       - uses: actions/stale@v4
         with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-pr-message: "This PR is stale. Please trigger a re-run of the PR check action."
           days-before-stale: 7
