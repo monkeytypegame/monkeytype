@@ -1,13 +1,13 @@
-import * as Misc from "./../misc";
-import * as ActivePage from "./../states/active-page";
-import * as Settings from "./../pages/settings";
-import * as Account from "./../pages/account";
-import * as ManualRestart from "./../test/manual-restart-tracker";
-import * as PageTest from "./../pages/test";
-import * as PageAbout from "./../pages/about";
-import * as PageLogin from "./../pages/login";
-import * as PageLoading from "./../pages/loading";
-import * as PageTransition from "./../states/page-transition";
+import * as Misc from "../misc";
+import * as ActivePage from "../states/active-page";
+import * as Settings from "../pages/settings";
+import * as Account from "../pages/account";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as PageTest from "../pages/test";
+import * as PageAbout from "../pages/about";
+import * as PageLogin from "../pages/login";
+import * as PageLoading from "../pages/loading";
+import * as PageTransition from "../states/page-transition";
 
 export function change(page) {
   if (PageTransition.get()) {

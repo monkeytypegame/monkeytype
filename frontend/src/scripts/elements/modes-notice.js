@@ -1,9 +1,9 @@
-import * as PaceCaret from "./../test/pace-caret";
-import * as TestState from "./../test/test-state";
+import * as PaceCaret from "../test/pace-caret";
+import * as TestState from "../test/test-state";
 import * as DB from "../db";
 import Config from "../config";
-import * as TestWords from "./../test/test-words";
-import * as ConfigEvent from "./../observables/config-event";
+import * as TestWords from "../test/test-words";
+import * as ConfigEvent from "../observables/config-event";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (

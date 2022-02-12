@@ -1,5 +1,5 @@
-import * as ConfigEvent from "./../observables/config-event";
-import * as Misc from "./../misc";
+import * as ConfigEvent from "../observables/config-event";
+import * as Misc from "../misc";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);

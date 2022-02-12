@@ -36,16 +36,16 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
-import * as MonkeyPower from "./../elements/monkey-power";
+import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "./../states/test-active";
+import * as TestActive from "../states/test-active";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
-import * as ModesNotice from "./../elements/modes-notice";
-import * as PageTransition from "./../states/page-transition";
-import * as ConfigEvent from "./../observables/config-event";
-import * as TimerEvent from "./../observables/timer-event";
+import * as ModesNotice from "../elements/modes-notice";
+import * as PageTransition from "../states/page-transition";
+import * as ConfigEvent from "../observables/config-event";
+import * as TimerEvent from "../observables/timer-event";
 
 const objecthash = require("node-object-hash")().hash;
 

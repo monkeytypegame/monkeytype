@@ -1,6 +1,6 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ConfigEvent from "../observables/config-event";
 
 let errorSound = null;
 let clickSounds = null;

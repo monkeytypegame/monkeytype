@@ -28,6 +28,7 @@
     "gulp-eslint-new": "^1.3.0",
     "gulp-sass": "^5.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
+    "moment": "^2.29.1",
     "stream-browserify": "^3.0.0",
     "through2": "^4.0.2",
     "ts-loader": "9.2.6",

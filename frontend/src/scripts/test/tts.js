@@ -1,6 +1,6 @@
 import Config from "../config";
 import * as Misc from "../misc";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ConfigEvent from "../observables/config-event";
 
 let voice;
 

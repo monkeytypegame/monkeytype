@@ -4,7 +4,7 @@ import * as Misc from "../misc";
 import Config from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ConfigEvent from "../observables/config-event";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;

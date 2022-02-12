@@ -1,4 +1,4 @@
-import * as Misc from "./../misc";
+import * as Misc from "../misc";
 import Page from "./page";
 
 export function updateBar(percentage, fast) {
