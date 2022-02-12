@@ -27,7 +27,7 @@ let filteredResults = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex) {
-  if (filteredResults == [] || filteredResults.length == 0) return;
+  if (filteredResults === [] || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -36,10 +36,10 @@ function loadMoreLines(lineIndex) {
   }
   for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
-    if (result == undefined) continue;
+    if (result === undefined) continue;
     let withpunc = "";
     let diff = result.difficulty;
-    if (diff == undefined) {
+    if (diff === undefined) {
       diff = "normal";
     }
 
@@ -48,7 +48,7 @@ function loadMoreLines(lineIndex) {
       raw = Config.alwaysShowCPM
         ? (result.rawWpm * 5).toFixed(2)
         : result.rawWpm.toFixed(2);
-      if (raw == undefined) {
+      if (raw === undefined) {
         raw = "-";
       }
     } catch (e) {
@@ -237,19 +237,19 @@ export function update() {
     $(".pageAccount .history table tbody").empty();
     DB.getSnapshot().results.forEach((result) => {
       let tt = 0;
-      if (result.testDuration == undefined) {
+      if (result.testDuration === undefined) {
         //test finished before testDuration field was introduced - estimate
-        if (result.mode == "time") {
+        if (result.mode === "time") {
           tt = parseFloat(result.mode2);
-        } else if (result.mode == "words") {
+        } else if (result.mode === "words") {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
         tt = parseFloat(result.testDuration);
       }
-      if (result.incompleteTestSeconds != undefined) {
+      if (result.incompleteTestSeconds !== undefined) {
         tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
+      } else if (result.restartCount !== undefined && result.restartCount > 0) {
         tt += (tt / 4) * result.restartCount;
       }
       // totalSeconds += tt;
@@ -257,7 +257,7 @@ export function update() {
       //apply filters
       try {
         let resdiff = result.difficulty;
-        if (resdiff == undefined) {
+        if (resdiff === undefined) {
           resdiff = "normal";
         }
         if (!ResultFilters.getFilter("difficulty", resdiff)) {
@@ -271,7 +271,7 @@ export function update() {
           return;
         }
 
-        if (result.mode == "time") {
+        if (result.mode === "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
@@ -281,7 +281,7 @@ export function update() {
               console.log(`skipping result due to time filter`, result);
             return;
           }
-        } else if (result.mode == "words") {
+        } else if (result.mode === "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
@@ -293,7 +293,7 @@ export function update() {
           }
         }
 
-        if (result.quoteLength != null) {
+        if (result.quoteLength !== null) {
           let filter = null;
           if (result.quoteLength === 0) {
             filter = "short";
@@ -461,11 +461,11 @@ export function update() {
       }
 
       tt = 0;
-      if (result.testDuration == undefined) {
+      if (result.testDuration === undefined) {
         //test finished before testDuration field was introduced - estimate
-        if (result.mode == "time") {
+        if (result.mode === "time") {
           tt = parseFloat(result.mode2);
-        } else if (result.mode == "words") {
+        } else if (result.mode === "words") {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
@@ -474,9 +474,9 @@ export function update() {
 
       tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);
 
-      // if (result.incompleteTestSeconds != undefined) {
+      // if (result.incompleteTestSeconds !== undefined) {
       //   tt += result.incompleteTestSeconds;
-      // } else if (result.restartCount != undefined && result.restartCount > 0) {
+      // } else if (result.restartCount !== undefined && result.restartCount > 0) {
       //   tt += (tt / 4) * result.restartCount;
       // }
       totalSecondsFiltered += tt;
@@ -499,7 +499,7 @@ export function update() {
         }
       }
 
-      if (result.rawWpm != null) {
+      if (result.rawWpm !== null) {
         if (rawWpm.last10Count < 10) {
           rawWpm.last10Count++;
           rawWpm.last10Total += result.rawWpm;
@@ -517,7 +517,7 @@ export function update() {
 
       totalAcc += result.acc;
 
-      if (result.restartCount != undefined) {
+      if (result.restartCount !== undefined) {
         testRestarts += result.restartCount;
       }
 
@@ -549,7 +549,7 @@ export function update() {
           ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
           : "";
         topWpm = result.wpm;
-        if (result.mode == "custom") topMode = result.mode;
+        if (result.mode === "custom") topMode = result.mode;
         else
           topMode =
             result.mode + " " + result.mode2 + puncsctring + numbsctring;
@@ -672,7 +672,7 @@ export function update() {
       ChartController.accountHistory.options.scales.yAxes[0].ticks.min = 0;
     }
 
-    if (chartData == [] || chartData.length == 0) {
+    if (chartData === [] || chartData.length === 0) {
       $(".pageAccount .group.noDataError").removeClass("hidden");
       $(".pageAccount .group.chart").addClass("hidden");
       $(".pageAccount .group.dailyActivityChart").addClass("hidden");
@@ -769,7 +769,7 @@ export function update() {
       Math.round(totalAcc10 / last10) + "%"
     );
 
-    if (totalCons == 0 || totalCons == undefined) {
+    if (totalCons === 0 || totalCons === undefined) {
       $(".pageAccount .avgCons .val").text("-");
       $(".pageAccount .avgCons10 .val").text("-");
     } else {
@@ -870,7 +870,7 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
   if (forceDescending !== null) {
-    if (forceDescending == true) {
+    if (forceDescending === true) {
       $(headerClass).append(
         '<i class="fas fa-sort-down" aria-hidden="true"></i>'
       );
@@ -930,7 +930,7 @@ $(".pageAccount .toggleAccuracyOnChart").click((e) => {
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  if (Config.chartStyle == "line") {
+  if (Config.chartStyle === "line") {
     UpdateConfig.setChartStyle("scatter");
   } else {
     UpdateConfig.setChartStyle("line");

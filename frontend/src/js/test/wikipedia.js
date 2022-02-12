@@ -52,7 +52,7 @@ export async function getSection(language) {
   let randomPostReq = await fetch(randomPostURL);
   let pageid = 0;
 
-  if (randomPostReq.status == 200) {
+  if (randomPostReq.status === 200) {
     let postObj = await randomPostReq.json();
     sectionObj.title = postObj.title;
     sectionObj.author = postObj.author;
@@ -60,7 +60,7 @@ export async function getSection(language) {
   }
 
   return new Promise((res, rej) => {
-    if (randomPostReq.status != 200) {
+    if (randomPostReq.status !== 200) {
       Loader.hide();
       rej(randomPostReq.status);
     }
@@ -69,8 +69,8 @@ export async function getSection(language) {
 
     let sectionReq = new XMLHttpRequest();
     sectionReq.onload = () => {
-      if (sectionReq.readyState == 4) {
-        if (sectionReq.status == 200) {
+      if (sectionReq.readyState === 4) {
+        if (sectionReq.status === 200) {
           let sectionText = JSON.parse(sectionReq.responseText).query.pages[
             pageid.toString()
           ].extract;

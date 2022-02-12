@@ -26,7 +26,7 @@
       "length": 61
     },
     {
-      "text": "def solveSudoku(sudoku, i=0, j=0):\\n\\ti, j = findNextCellToFill(sudoku)\\n\\tif i == -1:\\n\\t\\treturn True\\n\\tfor e in range(1, 10):\\n\\t\\tif isValid(sudoku, i, j, e):\\n\\t\\t\\tsudoku[i][j] = e\\n\\t\\t\\tif solveSudoku(sudoku, i, j):\\n\\t\\t\\t\\treturn True\\n\\t\\t\\tsudoku[i][j] = 0\\n\\treturn False",
+      "text": "def solveSudoku(sudoku, i=0, j=0):\\n\\ti, j = findNextCellToFill(sudoku)\\n\\tif i === -1:\\n\\t\\treturn True\\n\\tfor e in range(1, 10):\\n\\t\\tif isValid(sudoku, i, j, e):\\n\\t\\t\\tsudoku[i][j] = e\\n\\t\\t\\tif solveSudoku(sudoku, i, j):\\n\\t\\t\\t\\treturn True\\n\\t\\t\\tsudoku[i][j] = 0\\n\\treturn False",
       "source": "GitHub - hastagAB/Awesome-Python-Scripts - sudoku solver by ayedaemon",
       "id": 4,
       "length": 285

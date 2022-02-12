@@ -62,10 +62,10 @@ export async function init() {
     console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (TestState.isPaceRepeat == true) {
+  } else if (TestState.isPaceRepeat === true) {
     wpm = TestStats.lastTestWpm;
   }
-  if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
+  if (wpm < 1 || wpm === false || wpm === undefined || Number.isNaN(wpm)) {
     settings = null;
     return;
   }

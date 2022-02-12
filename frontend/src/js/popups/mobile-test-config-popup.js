@@ -95,7 +95,7 @@ $("#top .mobileConfig").click((e) => {
 
 el.find(".wordsGroup .button").on("click", (e) => {
   const wrd = $(e.currentTarget).attr("words");
-  if (wrd == "custom") {
+  if (wrd === "custom") {
     hidePopup();
     CustomWordAmountPopup.show();
   } else {
@@ -107,7 +107,7 @@ el.find(".wordsGroup .button").on("click", (e) => {
 
 el.find(".timeGroup .button").on("click", (e) => {
   let mode = $(e.currentTarget).attr("time");
-  if (mode == "custom") {
+  if (mode === "custom") {
     hidePopup();
     CustomTestDurationPopup.show();
   } else {
@@ -119,12 +119,12 @@ el.find(".timeGroup .button").on("click", (e) => {
 
 el.find(".quoteGroup .button").on("click", (e) => {
   let len = $(e.currentTarget).attr("quote");
-  if (len == -2) {
+  if (len === -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     hidePopup();
     QuoteSearchPopup.show();
   } else {
-    if (len == -1) {
+    if (len === -1) {
       len = [0, 1, 2, 3];
     }
     UpdateConfig.setQuoteLength(len, false, e.shiftKey);

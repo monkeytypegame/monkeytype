@@ -25,7 +25,7 @@ class QuoteRatingsController {
 
     if (quoteRatings === undefined) quoteRatings = {};
     if (quoteRatings[language] === undefined) quoteRatings[language] = {};
-    if (quoteRatings[language][quoteId] == undefined)
+    if (quoteRatings[language][quoteId] === undefined)
       quoteRatings[language][quoteId] = undefined;
 
     const quoteRating = quoteRatings[language][quoteId];

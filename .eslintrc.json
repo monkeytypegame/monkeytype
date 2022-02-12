@@ -39,6 +39,7 @@
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
     "no-var": 2,
+    "eqeqeq": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
     "require-path-exists/exists": [

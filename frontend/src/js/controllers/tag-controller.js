@@ -56,7 +56,7 @@ export function toggle(tagid, nosave = false) {
 export function loadActiveFromLocalStorage() {
   // let newTags = $.cookie("activeTags");
   let newTags = window.localStorage.getItem("activeTags");
-  if (newTags != undefined && newTags !== "") {
+  if (newTags !== undefined && newTags !== "") {
     try {
       newTags = JSON.parse(newTags) ?? {};
     } catch (e) {

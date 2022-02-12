@@ -42,11 +42,11 @@ export async function updatePosition() {
     ? TestInput.input.current.search(Misc.trailingComposeChars) + 1
     : inputLen;
   let currentLetterIndex = inputLen - 1;
-  if (currentLetterIndex == -1) {
+  if (currentLetterIndex === -1) {
     currentLetterIndex = 0;
   }
   //insert temporary character so the caret will work in zen mode
-  let activeWordEmpty = $("#words .active").children().length == 0;
+  let activeWordEmpty = $("#words .active").children().length === 0;
   if (activeWordEmpty) {
     $("#words .active").append('<letter style="opacity: 0;">_</letter>');
   }
@@ -62,7 +62,7 @@ export async function updatePosition() {
     currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
   }
 
-  if (Config.mode != "zen" && $(currentLetter).length == 0) return;
+  if (Config.mode !== "zen" && $(currentLetter).length === 0) return;
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageLeftToRight = currentLanguage.leftToRight;
   let currentLetterPosLeft = isLanguageLeftToRight
@@ -74,7 +74,7 @@ export async function updatePosition() {
   let newLeft = 0;
 
   newTop = currentLetterPosTop - Math.round(letterHeight / 5);
-  if (inputLen == 0) {
+  if (inputLen === 0) {
     newLeft = isLanguageLeftToRight
       ? currentLetterPosLeft - caret.width() / 2
       : currentLetterPosLeft + caret.width() / 2;

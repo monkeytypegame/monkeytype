@@ -113,13 +113,13 @@
       "id": 18,
       "length": 28,
       "source": "Check if list contains a value - programming-idioms.org",
-      "text": "list.iter().any(|v| v == &x)"
+      "text": "list.iter().any(|v| v === &x)"
     },
     {
       "id": 19,
       "length": 36,
       "source": "Check if list contains a value - programming-idioms.org",
-      "text": "(&list).into_iter().any(|v| v == &x)"
+      "text": "(&list).into_iter().any(|v| v === &x)"
     },
     {
       "id": 20,
@@ -173,7 +173,7 @@
       "id": 28,
       "length": 221,
       "source": "Return two values - programming-idioms.org",
-      "text": "fn search<T: Eq>(m: &Vec<Vec<T>>, x: &T) -> Option<(usize, usize)> {\n\tfor (i, row) in m.iter().enumerate() {\n\t\tfor (j, column) in row.iter().enumerate() {\n\t\t\tif *column == *x {\n\t\t\t\treturn Some((i, j));\n\t\t\t}\n\t\t}\n\t}\n\tNone\n}"
+      "text": "fn search<T: Eq>(m: &Vec<Vec<T>>, x: &T) -> Option<(usize, usize)> {\n\tfor (i, row) in m.iter().enumerate() {\n\t\tfor (j, column) in row.iter().enumerate() {\n\t\t\tif *column === *x {\n\t\t\t\treturn Some((i, j));\n\t\t\t}\n\t\t}\n\t}\n\tNone\n}"
     },
     {
       "id": 29,
@@ -287,7 +287,7 @@
       "id": 47,
       "length": 145,
       "source": "Integer exponentiation by squaring - programming-idioms.org",
-      "text": "fn exp(x: u64, n: u64) -> u64 {\n\tmatch n {\n\t\t0 => 1,\n\t\t1 => x,\n\t\ti if i % 2 == 0 => exp(x * x, n / 2),\n\t\t_ => x * exp(x * x, (n - 1) / 2),\n\t}\t \n}"
+      "text": "fn exp(x: u64, n: u64) -> u64 {\n\tmatch n {\n\t\t0 => 1,\n\t\t1 => x,\n\t\ti if i % 2 === 0 => exp(x * x, n / 2),\n\t\t_ => x * exp(x * x, (n - 1) / 2),\n\t}\t \n}"
     },
     {
       "id": 48,
@@ -365,7 +365,7 @@
       "id": 60,
       "length": 103,
       "source": "Continue outer loop - programming-idioms.org",
-      "text": "outer: for va in &a {\n\tfor vb in &b {\n\t\tif va == vb {\n\t\t\tcontinue 'outer;\n\t\t}\n\t}\n\tprintln!(\"{}\", va);\n}"
+      "text": "outer: for va in &a {\n\tfor vb in &b {\n\t\tif va === vb {\n\t\t\tcontinue 'outer;\n\t\t}\n\t}\n\tprintln!(\"{}\", va);\n}"
     },
     {
       "id": 61,
@@ -431,7 +431,7 @@
       "id": 71,
       "length": 84,
       "source": "Check if map contains value - programming-idioms.org",
-      "text": "use std::collections::BTreeMap;\nlet does_contain = m.values().any(|&val| *val == v);"
+      "text": "use std::collections::BTreeMap;\nlet does_contain = m.values().any(|&val| *val === v);"
     },
     {
       "id": 72,
@@ -671,7 +671,7 @@
       "id": 111,
       "length": 155,
       "source": "Handle invalid argument - programming-idioms.org",
-      "text": "enum CustomError { InvalidAnswer }\nfn do_stuff(x: i32) -> Result<i32, CustomError> {\n\tif x != 42 {\n\t\tErr(CustomError::InvalidAnswer)\n\t} else {\n\t\tOk(x)\n\t}\n}"
+      "text": "enum CustomError { InvalidAnswer }\nfn do_stuff(x: i32) -> Result<i32, CustomError> {\n\tif x !== 42 {\n\t\tErr(CustomError::InvalidAnswer)\n\t} else {\n\t\tOk(x)\n\t}\n}"
     },
     {
       "id": 112,
@@ -833,7 +833,7 @@
       "id": 138,
       "length": 15,
       "source": "Test deep equality - programming-idioms.org",
-      "text": "let b = x == y;"
+      "text": "let b = x === y;"
     },
     {
       "id": 139,
@@ -947,13 +947,13 @@
       "id": 157,
       "length": 497,
       "source": "Breadth-first traversing in a graph - programming-idioms.org",
-      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn bft(start: Rc<RefCell<Vertex<V>>>, f: impl Fn(&V)) {\n\t\tlet mut q = vec![start];\n\t\tlet mut i = 0;\n\t\twhile i < q.len() {\n\t\t\tlet v = Rc::clone(&q[i]);\n\t\t\ti += 1;\n\t\t\t(f)(&v.borrow().value);\n\t\t\tfor n in &v.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbour\");\n\t\t\t\tif q.iter().all(|v| v.as_ptr() != n.as_ptr()) {\n\t\t\t\t\tq.push(n);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n}"
+      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn bft(start: Rc<RefCell<Vertex<V>>>, f: impl Fn(&V)) {\n\t\tlet mut q = vec![start];\n\t\tlet mut i = 0;\n\t\twhile i < q.len() {\n\t\t\tlet v = Rc::clone(&q[i]);\n\t\t\ti += 1;\n\t\t\t(f)(&v.borrow().value);\n\t\t\tfor n in &v.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbour\");\n\t\t\t\tif q.iter().all(|v| v.as_ptr() !== n.as_ptr()) {\n\t\t\t\t\tq.push(n);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n}"
     },
     {
       "id": 158,
       "length": 465,
       "source": "Depth-first traversing in a graph - programming-idioms.org",
-      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn dft_helper(start: Rc<RefCell<Vertex<V>>>, f: &impl Fn(&V), s: &mut Vec<*const Vertex<V>>) {\n\t\ts.push(start.as_ptr());\n\t\t(f)(&start.borrow().value);\n\t\tfor n in &start.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbor\");\n\t\t\t\tif s.iter().all(|&p| p != n.as_ptr()) {\n\t\t\t\t\t\tSelf::dft_helper(n, f, s);\n\t\t\t\t}\n\t\t}\n}"
+      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn dft_helper(start: Rc<RefCell<Vertex<V>>>, f: &impl Fn(&V), s: &mut Vec<*const Vertex<V>>) {\n\t\ts.push(start.as_ptr());\n\t\t(f)(&start.borrow().value);\n\t\tfor n in &start.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbor\");\n\t\t\t\tif s.iter().all(|&p| p !== n.as_ptr()) {\n\t\t\t\t\t\tSelf::dft_helper(n, f, s);\n\t\t\t\t}\n\t\t}\n}"
     },
     {
       "id": 159,
@@ -1007,7 +1007,7 @@
       "id": 167,
       "length": 62,
       "source": "Remove all occurrences of a value from a list - programming-idioms.org",
-      "text": "items = items.into_iter().filter(|&item| item != x).collect();"
+      "text": "items = items.into_iter().filter(|&item| item !== x).collect();"
     },
     {
       "id": 168,
@@ -1175,7 +1175,7 @@
       "id": 195,
       "length": 204,
       "source": "Execute procedures depending on options - programming-idioms.org",
-      "text": "if let Some(arg) = ::std::env::args().nth(1) {\n\tif &arg == \"f\" {\n\t\tfox();\n\t} else if &arg = \"b\" {\n\t\tbat();\n\t} else {\n\t\teprintln!(\"invalid argument: {}\", arg),\n\t}\n} else {\n\teprintln!(\"missing argument\");\n}"
+      "text": "if let Some(arg) = ::std::env::args().nth(1) {\n\tif &arg === \"f\" {\n\t\tfox();\n\t} else if &arg = \"b\" {\n\t\tbat();\n\t} else {\n\t\teprintln!(\"invalid argument: {}\", arg),\n\t}\n} else {\n\teprintln!(\"missing argument\");\n}"
     },
     {
       "id": 196,
@@ -1463,7 +1463,7 @@
       "id": 243,
       "length": 168,
       "source": "Case-insensitive string compare - programming-idioms.org",
-      "text": "use itertools::Itertools;\nfor x in strings\n\t.iter()\n\t.combinations(2)\n\t.filter(|x| x[0].to_lowercase() == x[1].to_lowercase())\n{\n\tprintln!(\"{:?} == {:?}\", x[0], x[1])\n}"
+      "text": "use itertools::Itertools;\nfor x in strings\n\t.iter()\n\t.combinations(2)\n\t.filter(|x| x[0].to_lowercase() === x[1].to_lowercase())\n{\n\tprintln!(\"{:?} === {:?}\", x[0], x[1])\n}"
     },
     {
       "id": 244,
@@ -1529,31 +1529,31 @@
       "id": 254,
       "length": 118,
       "source": "Find first index of an element in list - programming-idioms.org",
-      "text": "let opt_i = items.iter().position(|y| *y == x);\nlet i = match opt_i {\n   Some(index) => index as i32,\n   None => -1\n};"
+      "text": "let opt_i = items.iter().position(|y| *y === x);\nlet i = match opt_i {\n   Some(index) => index as i32,\n   None => -1\n};"
     },
     {
       "id": 255,
       "length": 68,
       "source": "Find first index of an element in list - programming-idioms.org",
-      "text": "let i = items.iter().position(|y| *y == x).map_or(-1, |n| n as i32);"
+      "text": "let i = items.iter().position(|y| *y === x).map_or(-1, |n| n as i32);"
     },
     {
       "id": 256,
       "length": 160,
       "source": "for else loop - programming-idioms.org",
-      "text": "let mut found = false;\nfor item in items {\n\tif item == &\"baz\" {\n\t\tprintln!(\"found it\");\n\t\tfound = true;\n\t\tbreak;\n\t}\n}\nif !found {\n\tprintln!(\"never found it\");\n}"
+      "text": "let mut found = false;\nfor item in items {\n\tif item === &\"baz\" {\n\t\tprintln!(\"found it\");\n\t\tfound = true;\n\t\tbreak;\n\t}\n}\nif !found {\n\tprintln!(\"never found it\");\n}"
     },
     {
       "id": 257,
       "length": 101,
       "source": "for else loop - programming-idioms.org",
-      "text": "if let None = items.iter().find(|&&item| item == \"rockstar programmer\") {\n\t\tprintln!(\"NotFound\");\n\t};"
+      "text": "if let None = items.iter().find(|&&item| item === \"rockstar programmer\") {\n\t\tprintln!(\"NotFound\");\n\t};"
     },
     {
       "id": 258,
       "length": 136,
       "source": "for else loop - programming-idioms.org",
-      "text": "items\n\t.iter()\n\t.find(|&&item| item == \"rockstar programmer\")\n\t.or_else(|| {\n\t\tprintln!(\"NotFound\");\n\t\tSome(&\"rockstar programmer\")\n\t});"
+      "text": "items\n\t.iter()\n\t.find(|&&item| item === \"rockstar programmer\")\n\t.or_else(|| {\n\t\tprintln!(\"NotFound\");\n\t\tSome(&\"rockstar programmer\")\n\t});"
     },
     {
       "id": 259,

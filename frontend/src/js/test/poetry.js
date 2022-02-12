@@ -21,12 +21,12 @@ export class Poem {
           scrubbed += this.words[i][j];
       }
 
-      if (scrubbed == "") continue;
+      if (scrubbed === "") continue;
 
       scrubbedWords.push(scrubbed);
       count++;
 
-      if (count == maxWords) break;
+      if (count === maxWords) break;
     }
 
     this.words = scrubbedWords;
@@ -38,8 +38,8 @@ export async function getPoem() {
     console.log("Getting poem");
     let poemReq = new XMLHttpRequest();
     poemReq.onload = () => {
-      if (poemReq.readyState == 4) {
-        if (poemReq.status == 200) {
+      if (poemReq.readyState === 4) {
+        if (poemReq.status === 200) {
           let poemObj = JSON.parse(poemReq.responseText)[0];
           let words = [];
           poemObj.lines.forEach((line) => {

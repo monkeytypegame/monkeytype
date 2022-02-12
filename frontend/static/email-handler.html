@@ -355,7 +355,7 @@
           });
 
           $("#middle .resetPassword input").keypress((e) => {
-            if (e.key == "Enter") handleResetPassword(actionCode, continueUrl);
+            if (e.key === "Enter") handleResetPassword(actionCode, continueUrl);
           });
         } catch (e) {
           $("#middle .preloader .icon").html(

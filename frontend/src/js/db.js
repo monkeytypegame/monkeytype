@@ -49,8 +49,8 @@ export async function initSnapshot() {
   };
   let snap = defaultSnap;
   try {
-    if (firebase.auth().currentUser == null) return false;
-    // if (ActivePage.get() == "loading") {
+    if (firebase.auth().currentUser === null) return false;
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
     //   LoadingPage.updateBar(16);
@@ -88,7 +88,7 @@ export async function initSnapshot() {
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(45);
     // } else {
     //   LoadingPage.updateBar(32);
@@ -97,7 +97,7 @@ export async function initSnapshot() {
     if (configData) {
       snap.config = configData.config;
     }
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
     // } else {
     //   LoadingPage.updateBar(48);
@@ -113,7 +113,7 @@ export async function initSnapshot() {
         return 0;
       }
     });
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(90);
     // } else {
     //   LoadingPage.updateBar(64);
@@ -140,7 +140,7 @@ export async function initSnapshot() {
 
 export async function getUserResults() {
   let user = firebase.auth().currentUser;
-  if (user == null) return false;
+  if (user === null) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
@@ -220,11 +220,11 @@ export async function getUserHighestWpm(
     let topWpm = 0;
     dbSnapshot.results.forEach((result) => {
       if (
-        result.mode == mode &&
-        result.mode2 == mode2 &&
-        result.punctuation == punctuation &&
-        result.language == language &&
-        result.difficulty == difficulty &&
+        result.mode === mode &&
+        result.mode2 === mode2 &&
+        result.punctuation === punctuation &&
+        result.language === language &&
+        result.difficulty === difficulty &&
         (result.lazyMode === lazyMode ||
           (result.lazyMode === undefined && lazyMode === false))
       ) {
@@ -237,7 +237,7 @@ export async function getUserHighestWpm(
   }
 
   let retval;
-  if (dbSnapshot == null || dbSnapshot.results === undefined) {
+  if (dbSnapshot === null || dbSnapshot.results === undefined) {
     retval = 0;
   } else {
     retval = cont();
@@ -268,10 +268,10 @@ export async function getUserAverageWpm10(
     // You have to use every so you can break out of the loop
     dbSnapshot.results.every((result) => {
       if (
-        result.mode == mode &&
-        result.punctuation == punctuation &&
-        result.language == language &&
-        result.difficulty == difficulty &&
+        result.mode === mode &&
+        result.punctuation === punctuation &&
+        result.language === language &&
+        result.difficulty === difficulty &&
         (result.lazyMode === lazyMode ||
           (result.lazyMode === undefined && lazyMode === false)) &&
         ((activeTagIds.length === 0 && result.tags.length === 0) ||
@@ -279,7 +279,7 @@ export async function getUserAverageWpm10(
             result.tags.some((tag) => activeTagIds.includes(tag))))
       ) {
         // Continue if the mode2 doesn't match unless it's a quote.
-        if (result.mode2 != mode2 && mode != "quote") {
+        if (result.mode2 !== mode2 && mode !== "quote") {
           return true;
         }
 
@@ -290,7 +290,7 @@ export async function getUserAverageWpm10(
         }
 
         // Check mode2 matches and append, for quotes this is the quote id.
-        if (result.mode2 == mode2) {
+        if (result.mode2 === mode2) {
           wpmSum += result.wpm;
           count++;
           if (count >= 10) {
@@ -303,7 +303,7 @@ export async function getUserAverageWpm10(
     });
 
     // Return the last 10 average wpm for quote if the current quote id has never been completed before by the user.
-    if (count == 0 && mode == "quote") {
+    if (count === 0 && mode === "quote") {
       return Math.round(last10Wpm / last10Count);
     }
 
@@ -313,7 +313,7 @@ export async function getUserAverageWpm10(
 
   let retval = 0;
 
-  if (dbSnapshot == null) return retval;
+  if (dbSnapshot === null) return retval;
   let dbSnapshotValid = await getUserResults();
   if (dbSnapshotValid === false) {
     return retval;
@@ -340,9 +340,9 @@ export async function getLocalPB(
     try {
       dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
         if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
+          pb.punctuation === punctuation &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
         ) {
@@ -356,7 +356,7 @@ export async function getLocalPB(
   }
 
   let retval;
-  if (dbSnapshot == null) {
+  if (dbSnapshot === null) {
     retval = 0;
   } else {
     retval = cont();
@@ -376,7 +376,7 @@ export async function saveLocalPB(
   raw,
   consistency
 ) {
-  if (mode == "quote") return;
+  if (mode === "quote") return;
   function cont() {
     let found = false;
     if (dbSnapshot.personalBests === undefined) dbSnapshot.personalBests = {};
@@ -387,9 +387,9 @@ export async function saveLocalPB(
 
     dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
       if (
-        pb.punctuation == punctuation &&
-        pb.difficulty == difficulty &&
-        pb.language == language &&
+        pb.punctuation === punctuation &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
         (pb.lazyMode === lazyMode ||
           (pb.lazyMode === undefined && lazyMode === false))
       ) {
@@ -418,7 +418,7 @@ export async function saveLocalPB(
     }
   }
 
-  if (dbSnapshot != null) {
+  if (dbSnapshot !== null) {
     cont();
   }
 }
@@ -438,9 +438,9 @@ export async function getLocalTagPB(
     try {
       filteredtag.personalBests[mode][mode2].forEach((pb) => {
         if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
+          pb.punctuation === punctuation &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
         ) {
@@ -454,7 +454,7 @@ export async function getLocalTagPB(
   }
 
   let retval;
-  if (dbSnapshot == null) {
+  if (dbSnapshot === null) {
     retval = 0;
   } else {
     retval = cont();
@@ -475,7 +475,7 @@ export async function saveLocalTagPB(
   raw,
   consistency
 ) {
-  if (mode == "quote") return;
+  if (mode === "quote") return;
   function cont() {
     let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
@@ -485,9 +485,9 @@ export async function saveLocalTagPB(
       }
       filteredtag.personalBests[mode][mode2].forEach((pb) => {
         if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
+          pb.punctuation === punctuation &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
         ) {
@@ -534,7 +534,7 @@ export async function saveLocalTagPB(
     }
   }
 
-  if (dbSnapshot != null) {
+  if (dbSnapshot !== null) {
     cont();
   }
 }
@@ -547,7 +547,7 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
     dbSnapshot.lbMemory[mode][mode2] = {};
   let current = dbSnapshot.lbMemory[mode][mode2][language];
   dbSnapshot.lbMemory[mode][mode2][language] = rank;
-  if (api && current != rank) {
+  if (api && current !== rank) {
     axiosInstance.patch("/user/leaderboardMemory", {
       mode,
       mode2,
@@ -581,17 +581,17 @@ export function saveLocalResult(result) {
 
 export function updateLocalStats(stats) {
   if (getSnapshot() !== null) {
-    if (getSnapshot().globalStats.time == undefined) {
+    if (getSnapshot().globalStats.time === undefined) {
       getSnapshot().globalStats.time = stats.time;
     } else {
       getSnapshot().globalStats.time += stats.time;
     }
-    if (getSnapshot().globalStats.started == undefined) {
+    if (getSnapshot().globalStats.started === undefined) {
       getSnapshot().globalStats.started = stats.started;
     } else {
       getSnapshot().globalStats.started += stats.started;
     }
-    if (getSnapshot().globalStats.completed == undefined) {
+    if (getSnapshot().globalStats.completed === undefined) {
       getSnapshot().globalStats.completed = 1;
     } else {
       getSnapshot().globalStats.completed += 1;
@@ -604,7 +604,7 @@ export function updateLocalStats(stats) {
 //     let ret = 0;
 //     try {
 //       ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
-//       if (ret == undefined) {
+//       if (ret === undefined) {
 //         ret = 0;
 //       }
 //       return ret;
@@ -614,7 +614,7 @@ export function updateLocalStats(stats) {
 //   }
 
 //   let retval;
-//   if (dbSnapshot != null) {
+//   if (dbSnapshot !== null) {
 //     retval = cont();
 //   }
 //   return retval;
@@ -629,7 +629,7 @@ export function updateLocalStats(stats) {
 //     });
 //   }
 
-//   if (dbSnapshot != null) {
+//   if (dbSnapshot !== null) {
 //     cont();
 //   }
 // }

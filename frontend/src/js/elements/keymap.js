@@ -7,7 +7,7 @@ import * as ConfigEvent from "../observables/config-event";
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
   try {
-    if ($(".active-key") != undefined) {
+    if ($(".active-key") !== undefined) {
       $(".active-key").removeClass("active-key");
     }
 
@@ -62,7 +62,7 @@ export function highlightKey(currentKey) {
 }
 
 export async function flashKey(key, correct) {
-  if (key == undefined) return;
+  if (key === undefined) return;
   switch (key) {
     case "\\":
     case "|":
@@ -103,7 +103,7 @@ export async function flashKey(key, correct) {
       key = `#Key${key.toUpperCase()}`;
   }
 
-  if (key == "#KeySpace") {
+  if (key === "#KeySpace") {
     key = ".key-split-space";
   }
 
@@ -243,7 +243,7 @@ export function refreshKeys(layout) {
           }
         }
 
-        // if (count == 41 && !repeatB) {
+        // if (count === 41 && !repeatB) {
         //   repeatB = true;
         // }else{
         //   repeatB = false;

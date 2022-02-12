@@ -56,7 +56,7 @@ if (window.location.hostname === "localhost") {
 
 //stop space scrolling
 window.addEventListener("keydown", function (e) {
-  if (e.keyCode == 32 && e.target == document.body) {
+  if (e.keyCode === 32 && e.target === document.body) {
     e.preventDefault();
   }
 });
