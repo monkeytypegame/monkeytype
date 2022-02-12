@@ -1,35 +1,43 @@
+// @ts-ignore
 import * as Loader from "./elements/loader";
+import * as Types from "./../../../types/interfaces";
 
-export function getuid() {
+export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
   console.log(firebase.auth().currentUser.uid);
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function hexToHSL(H) {
+function hexToHSL(
+  hex: string
+): { hue: number; sat: number; lgt: number; string: string } {
   // Convert hex to RGB first
-  let r = 0,
-    g = 0,
-    b = 0;
-  if (H.length == 4) {
-    r = "0x" + H[1] + H[1];
-    g = "0x" + H[2] + H[2];
-    b = "0x" + H[3] + H[3];
-  } else if (H.length == 7) {
-    r = "0x" + H[1] + H[2];
-    g = "0x" + H[3] + H[4];
-    b = "0x" + H[5] + H[6];
+  let r: number;
+  let g: number;
+  let b: number;
+  if (hex.length == 4) {
+    r = (("0x" + hex[1] + hex[1]) as unknown) as number;
+    g = (("0x" + hex[2] + hex[2]) as unknown) as number;
+    b = (("0x" + hex[3] + hex[3]) as unknown) as number;
+  } else if (hex.length == 7) {
+    r = (("0x" + hex[1] + hex[2]) as unknown) as number;
+    g = (("0x" + hex[3] + hex[4]) as unknown) as number;
+    b = (("0x" + hex[5] + hex[6]) as unknown) as number;
+  } else {
+    r = 0x00;
+    g = 0x00;
+    b = 0x00;
   }
   // Then to HSL
   r /= 255;
   g /= 255;
   b /= 255;
-  let cmin = Math.min(r, g, b),
-    cmax = Math.max(r, g, b),
-    delta = cmax - cmin,
-    h = 0,
-    s = 0,
-    l = 0;
+  const cmin = Math.min(r, g, b);
+  const cmax = Math.max(r, g, b);
+  const delta = cmax - cmin;
+  let h = 0;
+  let s = 0;
+  let l = 0;
 
   if (delta == 0) h = 0;
   else if (cmax == r) h = ((g - b) / delta) % 6;
@@ -53,11 +61,13 @@ function hexToHSL(H) {
   };
 }
 
-let themesList = null;
-export async function getThemesList() {
-  if (themesList == null) {
+type Theme = { name: string; bgColor: string; mainColor: string };
+
+let themesList: Theme[] = [];
+export async function getThemesList(): Promise<Theme[]> {
+  if (themesList.length == 0) {
     return $.getJSON("themes/_list.json", function (data) {
-      const list = data.sort(function (a, b) {
+      const list = data.sort(function (a: Theme, b: Theme) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -72,16 +82,16 @@ export async function getThemesList() {
   }
 }
 
-let sortedThemesList = null;
-export async function getSortedThemesList() {
-  if (sortedThemesList == null) {
-    if (themesList == null) {
+let sortedThemesList: Theme[] = [];
+export async function getSortedThemesList(): Promise<Theme[]> {
+  if (sortedThemesList.length === 0) {
+    if (themesList.length === 0) {
       await getThemesList();
     }
     let sorted = [...themesList];
     sorted = sorted.sort((a, b) => {
-      let b1 = hexToHSL(a.bgColor);
-      let b2 = hexToHSL(b.bgColor);
+      const b1 = hexToHSL(a.bgColor);
+      const b2 = hexToHSL(b.bgColor);
       return b2.lgt - b1.lgt;
     });
     sortedThemesList = sorted;
@@ -91,11 +101,13 @@ export async function getSortedThemesList() {
   }
 }
 
-let funboxList = null;
-export async function getFunboxList() {
-  if (funboxList == null) {
+type Funbox = { name: string; type: string; info: string };
+
+let funboxList: Funbox[] = [];
+export async function getFunboxList(): Promise<Funbox[]> {
+  if (funboxList.length === 0) {
     return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (a, b) {
+      funboxList = data.sort(function (a: Funbox, b: Funbox) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -109,32 +121,50 @@ export async function getFunboxList() {
   }
 }
 
-export async function getFunbox(funbox) {
-  let list = await getFunboxList();
+export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
+  const list: Funbox[] = await getFunboxList();
   return list.find(function (element) {
     return element.name == funbox;
   });
 }
 
-let quotes = null;
-export async function getQuotes(language) {
-  if (quotes === null || quotes.language !== language.replace(/_\d*k$/g, "")) {
+type Quote = {
+  text: string;
+  source: string;
+  length: number;
+  id: number;
+  group?: number;
+};
+type QuoteCollection = {
+  quotes: Quote[];
+  length?: number;
+  language?: string;
+  groups: number[][] | Quote[][];
+};
+
+let quotes: QuoteCollection;
+export async function getQuotes(language: string): Promise<QuoteCollection> {
+  if (
+    quotes === undefined ||
+    quotes.language !== language.replace(/_\d*k$/g, "")
+  ) {
     Loader.show();
     try {
-      let data = await $.getJSON(`quotes/${language}.json`);
+      const data: QuoteCollection = await $.getJSON(`quotes/${language}.json`);
       Loader.hide();
       if (data.quotes === undefined || data.quotes.length === 0) {
         quotes = {
           quotes: [],
           length: 0,
+          groups: [],
         };
         return quotes;
       }
       quotes = data;
       quotes.length = data.quotes.length;
-      quotes.groups.forEach((qg, i) => {
-        let lower = qg[0];
-        let upper = qg[1];
+      quotes.groups?.forEach((qg, i) => {
+        const lower = qg[0];
+        const upper = qg[1];
         quotes.groups[i] = quotes.quotes.filter((q) => {
           if (q.length >= lower && q.length <= upper) {
             q.group = i;
@@ -150,31 +180,22 @@ export async function getQuotes(language) {
       quotes = {
         quotes: [],
         length: 0,
+        groups: [],
       };
       return quotes;
     }
-
-    // error: (e) => {
-    //   Notifications.add(
-    //     `Error while loading ${language.replace(
-    //       /_\d*k$/g,
-    //       ""
-    //     )} quotes: ${e}`,
-    //     -1
-    //   );
-    //   quotes = [];
-    //   return quotes;
-    // },
   } else {
     return quotes;
   }
 }
 
-let fontsList = null;
-export async function getFontsList() {
-  if (fontsList == null) {
+type Font = { name: string };
+
+let fontsList: Font[] = [];
+export async function getFontsList(): Promise<Font[]> {
+  if (fontsList.length === 0) {
     return $.getJSON("fonts/_list.json", function (data) {
-      fontsList = data.sort(function (a, b) {
+      fontsList = data.sort(function (a: Font, b: Font) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -188,9 +209,9 @@ export async function getFontsList() {
   }
 }
 
-let supportersList = null;
-export async function getSupportersList() {
-  if (supportersList == null) {
+let supportersList: string[] = [];
+export async function getSupportersList(): Promise<string[]> {
+  if (supportersList.length === 0) {
     return $.getJSON("about/supporters.json", function (data) {
       supportersList = data;
       return supportersList;
@@ -200,9 +221,9 @@ export async function getSupportersList() {
   }
 }
 
-let contributorsList = null;
-export async function getContributorsList() {
-  if (contributorsList == null) {
+let contributorsList: string[] = [];
+export async function getContributorsList(): Promise<string[]> {
+  if (contributorsList.length === 0) {
     return $.getJSON("about/contributors.json", function (data) {
       contributorsList = data;
       return contributorsList;
@@ -212,9 +233,9 @@ export async function getContributorsList() {
   }
 }
 
-let languageList = null;
-export async function getLanguageList() {
-  if (languageList == null) {
+let languageList: string[] = [];
+export async function getLanguageList(): Promise<string[]> {
+  if (languageList.length === 0) {
     return $.getJSON("languages/_list.json", function (data) {
       languageList = data;
       return languageList;
@@ -224,9 +245,11 @@ export async function getLanguageList() {
   }
 }
 
-let languageGroupList = null;
-export async function getLanguageGroups() {
-  if (languageGroupList == null) {
+type LanguageGroup = { name: string; languages: string[] };
+
+let languageGroupList: LanguageGroup[] = [];
+export async function getLanguageGroups(): Promise<LanguageGroup[]> {
+  if (languageGroupList.length === 0) {
     return $.getJSON("languages/_groups.json", function (data) {
       languageGroupList = data;
       return languageGroupList;
@@ -236,9 +259,44 @@ export async function getLanguageGroups() {
   }
 }
 
-export async function findCurrentGroup(language) {
-  let retgroup = undefined;
-  let groups = await getLanguageGroups();
+type Language = {
+  name: string;
+  leftToRight: boolean;
+  noLazyMode?: boolean;
+  words: string[];
+};
+
+let currentLanguage: Language;
+export async function getLanguage(lang: string): Promise<Language> {
+  try {
+    if (currentLanguage == undefined || currentLanguage.name !== lang) {
+      console.log("getting language json");
+      await $.getJSON(`languages/${lang}.json`, function (data) {
+        currentLanguage = data;
+      });
+    }
+    return currentLanguage;
+  } catch (e) {
+    console.error(`error getting language`);
+    console.error(e);
+    await $.getJSON(`languages/english.json`, function (data) {
+      currentLanguage = data;
+    });
+    return currentLanguage;
+  }
+}
+
+export async function getCurrentLanguage(
+  languageName: string
+): Promise<Language> {
+  return await getLanguage(languageName);
+}
+
+export async function findCurrentGroup(
+  language: string
+): Promise<LanguageGroup | undefined> {
+  let retgroup: LanguageGroup | undefined;
+  const groups = await getLanguageGroups();
   groups.forEach((group) => {
     if (retgroup === undefined) {
       if (group.languages.includes(language)) {
@@ -249,9 +307,19 @@ export async function findCurrentGroup(language) {
   return retgroup;
 }
 
-let challengeList = null;
-export async function getChallengeList() {
-  if (challengeList == null) {
+type Challenge = {
+  name: string;
+  display: string;
+  autoRole: boolean;
+  type: string;
+  parameters: string | number[];
+  message: string;
+  requirements: object;
+};
+
+let challengeList: Challenge[] = [];
+export async function getChallengeList(): Promise<Challenge[]> {
+  if (challengeList.length === 0) {
     return $.getJSON("challenges/_list.json", function (data) {
       challengeList = data;
       return challengeList;
@@ -261,89 +329,12 @@ export async function getChallengeList() {
   }
 }
 
-export function showNotification(text, time) {
-  let noti = $(".notification");
-  noti.text(text);
-  noti.css("top", `-${noti.outerHeight()}px`);
-  noti.stop(true, false).animate(
-    {
-      top: "1rem",
-    },
-    250,
-    "swing",
-    () => {
-      noti.stop(true, false).animate(
-        {
-          opacity: 1,
-        },
-        time,
-        () => {
-          noti.stop(true, false).animate(
-            {
-              top: `-${noti.outerHeight()}px`,
-            },
-            250,
-            "swing",
-            () => {
-              noti.text("");
-            }
-          );
-        }
-      );
-    }
-  );
-}
-
-let currentLanguage;
-export async function getLanguage(lang) {
-  try {
-    if (currentLanguage == null || currentLanguage.name !== lang) {
-      console.log("getting language json");
-      await $.getJSON(`languages/${lang}.json`, function (data) {
-        currentLanguage = data;
-      });
-    }
-    return currentLanguage;
-  } catch (e) {
-    console.error(`error getting language`);
-    console.error(e);
-    showNotification(`Error getting language: ${e.message}`, 4000);
-    await $.getJSON(`languages/english.json`, function (data) {
-      currentLanguage = data;
-    });
-    return currentLanguage;
-  }
-}
-
-export async function getCurrentLanguage(languageName) {
-  return await getLanguage(languageName);
-}
-
-export function migrateFromCookies() {
-  ["resultFilters", "config", "merchbannerclosed", "activeTags"].forEach(
-    function (name) {
-      let decodedCookie = decodeURIComponent(document.cookie).split(";");
-      let value = null;
-
-      for (let i = 0; i < decodedCookie.length; i++) {
-        let c = decodedCookie[i];
-        while (c.charAt(0) == " ") {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name + "=") == 0) {
-          value = c.substring(name.length + 1, c.length);
-        }
-      }
-
-      if (value) {
-        window.localStorage.setItem(name, value);
-        $.removeCookie(name, { path: "/" });
-      }
-    }
-  );
-}
-
-export function smooth(arr, windowSize, getter = (value) => value, setter) {
+export function smooth(
+  arr: number[],
+  windowSize: number,
+  getter = (value: number): number => value,
+  setter: (index: number, value: number) => number
+): number[] {
   const get = getter;
   const result = [];
 
@@ -365,7 +356,7 @@ export function smooth(arr, windowSize, getter = (value) => value, setter) {
   return result;
 }
 
-export function stdDev(array) {
+export function stdDev(array: number[]): number {
   try {
     const n = array.length;
     const mean = array.reduce((a, b) => a + b) / n;
@@ -377,7 +368,7 @@ export function stdDev(array) {
   }
 }
 
-export function mean(array) {
+export function mean(array: number[]): number {
   try {
     return (
       array.reduce((previous, current) => (current += previous)) / array.length
@@ -388,7 +379,7 @@ export function mean(array) {
 }
 
 //https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
-export function median(arr) {
+export function median(arr: number[]): number {
   try {
     const mid = Math.floor(arr.length / 2),
       nums = [...arr].sort((a, b) => a - b);
@@ -398,14 +389,14 @@ export function median(arr) {
   }
 }
 
-export async function getReleasesFromGitHub() {
+export async function getReleasesFromGitHub(): Promise<object> {
   return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
       $("#bottom .version .text").text(data[0].name);
       $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
-      data.forEach((release) => {
+      data.forEach((release: Types.GithubRelease) => {
         if (!release.draft && !release.prerelease) {
           $("#versionHistory .releases").append(`
           <div class="release">
@@ -435,7 +426,7 @@ export async function getReleasesFromGitHub() {
 //     });
 // }
 
-export function getLastChar(word) {
+export function getLastChar(word: string): string {
   try {
     return word.charAt(word.length - 1);
   } catch {
@@ -443,32 +434,32 @@ export function getLastChar(word) {
   }
 }
 
-export function capitalizeFirstLetter(str) {
+export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function isASCIILetter(c) {
+export function isASCIILetter(c: string): boolean {
   return c.length === 1 && /[a-z]/i.test(c);
 }
 
-export function kogasa(cov) {
+export function kogasa(cov: number): number {
   return (
     100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
   );
 }
 
-export function whorf(speed, wordlen) {
+export function whorf(speed: number, wordlen: number): number {
   return Math.min(
     speed,
     Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3)))
   );
 }
 
-export function roundTo2(num) {
+export function roundTo2(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-export function findLineByLeastSquares(values_y) {
+export function findLineByLeastSquares(values_y: number[]): number[][] {
   let sum_x = 0;
   let sum_y = 0;
   let sum_xy = 0;
@@ -480,7 +471,7 @@ export function findLineByLeastSquares(values_y) {
    */
   let x = 0;
   let y = 0;
-  let values_length = values_y.length;
+  const values_length = values_y.length;
 
   /*
    * Nothing to do.
@@ -506,16 +497,16 @@ export function findLineByLeastSquares(values_y) {
    * Calculate m and b for the formular:
    * y = x * m + b
    */
-  let m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
-  let b = sum_y / count - (m * sum_x) / count;
+  const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+  const b = sum_y / count - (m * sum_x) / count;
 
-  let returnpoint1 = [1, 1 * m + b];
-  let returnpoint2 = [values_length, values_length * m + b];
+  const returnpoint1 = [1, 1 * m + b];
+  const returnpoint2 = [values_length, values_length * m + b];
   return [returnpoint1, returnpoint2];
 }
 
-export function getGibberish() {
-  let randLen = Math.floor(Math.random() * 7) + 1;
+export function getGibberish(): string {
+  const randLen = Math.floor(Math.random() * 7) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
     ret += String.fromCharCode(97 + Math.floor(Math.random() * 26));
@@ -523,7 +514,11 @@ export function getGibberish() {
   return ret;
 }
 
-export function secondsToString(sec, fullMinutes = false, fullHours = false) {
+export function secondsToString(
+  sec: number,
+  fullMinutes = false,
+  fullHours = false
+): string {
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
   const seconds = roundTo2((sec % 3600) % 60);
@@ -543,8 +538,8 @@ export function secondsToString(sec, fullMinutes = false, fullHours = false) {
   return ret;
 }
 
-export function getNumbers(len) {
-  let randLen = Math.floor(Math.random() * len) + 1;
+export function getNumbers(len: number): string {
+  const randLen = Math.floor(Math.random() * len) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
     const randomNum = Math.floor(Math.random() * 10);
@@ -553,10 +548,10 @@ export function getNumbers(len) {
   return ret;
 }
 
-export function getSpecials() {
-  let randLen = Math.floor(Math.random() * 7) + 1;
+export function getSpecials(): string {
+  const randLen = Math.floor(Math.random() * 7) + 1;
   let ret = "";
-  let specials = [
+  const specials = [
     "!",
     "@",
     "#",
@@ -587,8 +582,8 @@ export function getSpecials() {
   return ret;
 }
 
-export function getASCII() {
-  let randLen = Math.floor(Math.random() * 10) + 1;
+export function getASCII(): string {
+  const randLen = Math.floor(Math.random() * 10) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
     ret += String.fromCharCode(33 + Math.floor(Math.random() * 94));
@@ -596,9 +591,9 @@ export function getASCII() {
   return ret;
 }
 
-export function getArrows() {
+export function getArrows(): string {
+  const arrowArray = ["←", "↑", "→", "↓"];
   let arrowWord = "";
-  let arrowArray = ["←", "↑", "→", "↓"];
   let lastchar;
   for (let i = 0; i < 5; i++) {
     let random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
@@ -611,10 +606,10 @@ export function getArrows() {
   return arrowWord;
 }
 
-export function getPositionString(number) {
+export function getPositionString(number: number): string {
   let numend = "th";
-  let t = number % 10;
-  let h = number % 100;
+  const t = number % 10;
+  const h = number % 100;
   if (t == 1 && h != 11) {
     numend = "st";
   }
@@ -627,9 +622,9 @@ export function getPositionString(number) {
   return number + numend;
 }
 
-export function findGetParameter(parameterName) {
-  let result = null,
-    tmp = [];
+export function findGetParameter(parameterName: string): string | null {
+  let result = null;
+  let tmp = [];
   location.search
     .substr(1)
     .split("&")
@@ -640,18 +635,35 @@ export function findGetParameter(parameterName) {
   return result;
 }
 
-export function objectToQueryString(obj) {
-  let str = [];
-  for (let p in obj)
+export function objectToQueryString(obj: object): string {
+  const str = [];
+  for (const p in obj)
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
+      //@ts-ignore //todo help
       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
   return str.join("&");
 }
 
-export function toggleFullscreen(elem) {
-  elem = elem || document.documentElement;
+declare global {
+  interface Document {
+    mozCancelFullScreen?: () => Promise<void>;
+    msRequestFullscreen?: () => Promise<void>;
+    msExitFullscreen?: () => Promise<void>;
+    webkitExitFullscreen?: () => Promise<void>;
+    mozFullScreenElement?: Element;
+    msFullscreenElement?: Element;
+    webkitFullscreenElement?: Element;
+  }
+  interface HTMLElement {
+    msRequestFullscreen?: () => Promise<void>;
+    mozRequestFullScreen?: () => Promise<void>;
+    webkitRequestFullscreen?: () => Promise<void>;
+  }
+}
 
+export function toggleFullscreen(): void {
+  const elem = document.documentElement;
   if (
     !document.fullscreenElement &&
     !document.mozFullScreenElement &&
@@ -665,6 +677,7 @@ export function toggleFullscreen(elem) {
     } else if (elem.mozRequestFullScreen) {
       elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
+      // @ts-ignore
       elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
@@ -680,11 +693,11 @@ export function toggleFullscreen(elem) {
   }
 }
 
-export function getWords() {
+export function getWords(): string {
   const words = [...document.querySelectorAll("#words .word")]
     .map((word) => {
       return [...word.querySelectorAll("letter")]
-        .map((letter) => letter.innerText)
+        .map((letter) => letter.textContent)
         .join("");
     })
     .join(" ");
@@ -693,19 +706,19 @@ export function getWords() {
 }
 
 //credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
-export function remove_non_ascii(str) {
-  if (str === null || str === "") return false;
+export function remove_non_ascii(str: string): string {
+  if (str === null || str === "") return "";
   else str = str.toString();
 
   return str.replace(/[^\x20-\x7E]/g, "");
 }
 
-export function escapeRegExp(str) {
+export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function cleanTypographySymbols(textToClean) {
-  let specials = {
+export function cleanTypographySymbols(textToClean: string): string {
+  const specials = {
     "“": '"', // &ldquo;	&#8220;
     "”": '"', // &rdquo;	&#8221;
     "’": "'", // &lsquo;	&#8216;
@@ -720,13 +733,14 @@ export function cleanTypographySymbols(textToClean) {
     " ": " ",
     " ": " ",
   };
+  // @ts-ignore
   return textToClean.replace(
     /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
     (char) => specials[char] || ""
   );
 }
 
-export function isUsernameValid(name) {
+export function isUsernameValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
   if (/miodec/.test(name.toLowerCase())) return false;
   if (/bitly/.test(name.toLowerCase())) return false;
@@ -735,7 +749,13 @@ export function isUsernameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-export function mapRange(x, in_min, in_max, out_min, out_max) {
+export function mapRange(
+  x: number,
+  in_min: number,
+  in_max: number,
+  out_min: number,
+  out_max: number
+): number {
   let num = ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
   if (out_min > out_max) {
@@ -754,7 +774,12 @@ export function mapRange(x, in_min, in_max, out_min, out_max) {
   return num;
 }
 
-export function canQuickRestart(mode, words, time, CustomText) {
+export function canQuickRestart(
+  mode: string,
+  words: number,
+  time: number,
+  CustomText: Types.CustomText
+): boolean {
   if (
     (mode === "words" && words < 1000) ||
     (mode === "time" && time < 3600) ||
@@ -771,30 +796,35 @@ export function canQuickRestart(mode, words, time, CustomText) {
   }
 }
 
-export function clearTimeouts(timeouts) {
+export function clearTimeouts(timeouts: number[]): void {
   timeouts.forEach((to) => {
     clearTimeout(to);
-    to = null;
   });
 }
 
 //https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
-export function setCharAt(str, index, chr) {
+export function setCharAt(str: string, index: number, chr: string): string {
   if (index > str.length - 1) return str;
   return str.substring(0, index) + chr + str.substring(index + 1);
 }
 
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
-export function regexIndexOf(string, regex, startpos) {
-  let indexOf = string.substring(startpos || 0).search(regex);
+export function regexIndexOf(
+  string: string,
+  regex: RegExp,
+  startpos: number
+): number {
+  const indexOf = string.substring(startpos || 0).search(regex);
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
-export function convertRGBtoHEX(rgb) {
-  rgb = rgb.match(/^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/);
-  if (rgb === null) return;
-  if (rgb.length < 3) return;
-  function hexCode(i) {
+export function convertRGBtoHEX(rgb: string): string | undefined {
+  const match: RegExpMatchArray | null = rgb.match(
+    /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/
+  );
+  if (match === null) return;
+  if (match.length < 3) return;
+  function hexCode(i: string): string {
     // Take the last 2 characters and convert
     // them to Hexadecimal.
 
@@ -803,29 +833,30 @@ export function convertRGBtoHEX(rgb) {
   return "#" + hexCode(rgb[1]) + hexCode(rgb[2]) + hexCode(rgb[3]);
 }
 
-String.prototype.lastIndexOfRegex = function (regex) {
-  let match = this.match(regex);
+// @ts-ignore
+String.prototype.lastIndexOfRegex = function (regex: RegExp): number {
+  const match = this.match(regex);
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
 //https://stackoverflow.com/questions/36532307/rem-px-in-javascript
-export function convertRemToPixels(rem) {
+export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
 export function swapElements(
-  el1,
-  el2,
-  totalDuration,
-  callback = function () {
+  el1: JQuery,
+  el2: JQuery,
+  totalDuration: number,
+  callback = function (): void {
     return;
   },
-  middleCallback = function () {
+  middleCallback = function (): void {
     return;
   }
-) {
+): boolean | undefined {
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
@@ -879,19 +910,19 @@ export function swapElements(
   }
 }
 
-export function getMode2(config, randomQuote) {
-  let mode = config.mode;
+export function getMode2(config: Types.Config, randomQuote: Quote): string {
+  const mode = config.mode;
   let mode2 = "";
   if (mode === "time") {
-    mode2 = config.time;
+    mode2 = config.time.toString();
   } else if (mode === "words") {
-    mode2 = config.words;
+    mode2 = config.words.toString();
   } else if (mode === "custom") {
     mode2 = "custom";
   } else if (mode === "zen") {
     mode2 = "zen";
   } else if (mode === "quote") {
-    mode2 = randomQuote.id;
+    mode2 = randomQuote.id.toString();
   }
   return mode2;
 }
