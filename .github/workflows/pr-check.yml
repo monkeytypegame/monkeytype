@@ -32,3 +32,6 @@ jobs:
 
       - name: Check for lint
         run: npm run lint
+
+      - name: Run webpack
+        run: npm run build:live
