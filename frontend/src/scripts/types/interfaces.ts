@@ -208,7 +208,7 @@ export declare interface Result {
   lazyMode?: boolean;
   difficulty?: Difficulty;
   funbox?: string;
-  language?: string | null;
+  language: string;
   numbers?: boolean;
   punctuation?: boolean;
 }
