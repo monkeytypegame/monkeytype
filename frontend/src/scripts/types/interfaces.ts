@@ -157,6 +157,7 @@ export declare interface PersonalBests {
   };
   quote: { [quote: string]: PersonalBest[] };
   custom: { custom: PersonalBest[] };
+  zen: PersonalBest[];
 }
 
 export declare interface Tag {
