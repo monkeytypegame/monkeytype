@@ -158,7 +158,7 @@ export declare interface PersonalBests {
 export declare interface Tag {
   _id: string;
   name: string;
-  personalBests: PersonalBests;
+  personalBests: PersonalBests | Record<string, never>;
   active: boolean;
 }
 
@@ -485,6 +485,15 @@ export interface CommandsObject {
   title: string;
   configKey?: keyof Config;
   list: Command[];
+}
+
+export interface Quote {
+  text: string;
+  source: string;
+  length: number;
+  id: number;
+  group?: number;
+  language: string;
 }
 
 // export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";

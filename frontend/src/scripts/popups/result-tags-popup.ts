@@ -1,9 +1,13 @@
+//@ts-ignore
 import * as DB from "../db";
+//@ts-ignore
 import * as Loader from "../elements/loader";
+//@ts-ignore
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
+import * as Types from "../types/interfaces";
 
-function show() {
+function show(): void {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
     $("#resultEditTagsPanelWrapper")
       .stop(true, true)
@@ -13,7 +17,7 @@ function show() {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#resultEditTagsPanelWrapper").hasClass("hidden")) {
     $("#resultEditTagsPanelWrapper")
       .stop(true, true)
@@ -23,26 +27,26 @@ function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#resultEditTagsPanelWrapper").addClass("hidden");
         }
       );
   }
 }
 
-export function updateButtons() {
+export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags.forEach((tag) => {
+  DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
     );
   });
 }
 
-function updateActiveButtons(active) {
+function updateActiveButtons(active: string[]): void {
   if (active === []) return;
   $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
-    let tagid = $(obj).attr("tagid");
+    const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {
       $(obj).addClass("active");
     } else {
@@ -53,8 +57,8 @@ function updateActiveButtons(active) {
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   if (DB.getSnapshot().tags.length > 0) {
-    let resultid = $(f.target).parents("span").attr("resultid");
-    let tags = $(f.target).parents("span").attr("tags");
+    const resultid = $(f.target).parents("span").attr("resultid") as string;
+    const tags = $(f.target).parents("span").attr("tags") as string;
     $("#resultEditTagsPanel").attr("resultid", resultid);
     $("#resultEditTagsPanel").attr("tags", tags);
     updateActiveButtons(JSON.parse(tags));
@@ -72,13 +76,13 @@ $("#resultEditTagsPanelWrapper").click((e) => {
   }
 });
 
-$("#resultEditTagsPanel .confirmButton").click((e) => {
-  let resultid = $("#resultEditTagsPanel").attr("resultid");
+$("#resultEditTagsPanel .confirmButton").click(() => {
+  const resultid = $("#resultEditTagsPanel").attr("resultid");
   // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 
-  let newtags = [];
+  const newtags: string[] = [];
   $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
-    let tagid = $(obj).attr("tagid");
+    const tagid = $(obj).attr("tagid") ?? "";
     if ($(obj).hasClass("active")) {
       newtags.push(tagid);
     }
@@ -97,7 +101,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Tags updated.", 1, 2);
-        DB.getSnapshot().results.forEach((result) => {
+        DB.getSnapshot().results.forEach((result: Types.Result) => {
           if (result._id === resultid) {
             result.tags = newtags;
           }
@@ -107,7 +111,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
 
         if (newtags.length > 0) {
           newtags.forEach((tag) => {
-            DB.getSnapshot().tags.forEach((snaptag) => {
+            DB.getSnapshot().tags.forEach((snaptag: Types.Tag) => {
               if (tag === snaptag._id) {
                 tagNames += snaptag.name + ", ";
               }
@@ -150,7 +154,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
     })
     .catch((e) => {
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to update result tags: " + msg, -1);
     });
 });

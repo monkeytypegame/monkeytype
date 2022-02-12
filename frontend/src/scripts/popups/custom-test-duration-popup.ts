@@ -1,14 +1,18 @@
+//@ts-ignore
 import * as UpdateConfig from "../config";
+//@ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
+//@ts-ignore
 import * as Notifications from "../elements/notifications";
+//@ts-ignore
 import * as TestLogic from "../test/test-logic";
 
-function parseInput(input) {
+function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
   const seconds = [...input.toLowerCase().matchAll(re)]
     .map((match) => {
       const part = match[0];
-      const duration = parseFloat(part.replaceAll(/\s+/g, ""));
+      const duration = parseFloat(part.replace(/\s+/g, ""));
 
       if (part.includes("h")) {
         return 3600 * duration;
@@ -23,7 +27,7 @@ function parseInput(input) {
   return Math.floor(seconds);
 }
 
-function format(duration) {
+function format(duration: number): string {
   const hours = Math.floor(duration / 3600);
   const minutes = Math.floor((duration % 3600) / 60);
   const seconds = (duration % 3600) % 60;
@@ -51,8 +55,8 @@ function format(duration) {
   }
 }
 
-function previewDuration() {
-  const input = $("#customTestDurationPopup input").val();
+function previewDuration(): void {
+  const input = $("#customTestDurationPopup input").val() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
@@ -67,13 +71,13 @@ function previewDuration() {
   $("#customTestDurationPopup .preview").text(formattedDuration);
 }
 
-export function show() {
+export function show(): void {
   if ($("#customTestDurationPopupWrapper").hasClass("hidden")) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, 100, () => {
         $("#customTestDurationPopup input").focus().select();
       });
   }
@@ -81,7 +85,7 @@ export function show() {
   previewDuration();
 }
 
-export function hide() {
+export function hide(): void {
   if (!$("#customTestDurationPopupWrapper").hasClass("hidden")) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)
@@ -91,15 +95,15 @@ export function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#customTestDurationPopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-function apply() {
-  let val = parseInput($("#customTestDurationPopup input").val());
+function apply(): void {
+  const val = parseInput($("#customTestDurationPopup input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setTimeConfig(val);
@@ -140,7 +144,7 @@ $("#customTestDurationPopup .button").click(() => {
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
-  let mode = $(e.currentTarget).attr("timeConfig");
+  const mode = $(e.currentTarget).attr("timeConfig");
   if (mode == "custom") {
     show();
   }

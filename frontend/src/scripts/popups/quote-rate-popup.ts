@@ -1,15 +1,35 @@
+// @ts-ignore
 import * as DB from "../db";
+// @ts-ignore
 import * as Loader from "../elements/loader";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
+// @ts-ignore
 import * as TestWords from "../test/test-words";
+import axiosInstance from "../axios-instance";
+import { AxiosError } from "axios";
+import * as Types from "../types/interfaces";
 
 let rating = 0;
 
-let currentQuote = null;
-let quoteStats = null;
+type QuoteStats = {
+  average: number;
+  ratings: number;
+  totalRating: number;
+  quoteId: number;
+  language: string;
+};
 
-function reset() {
+type QuoteRatings = {
+  [language: string]: {
+    [id: string]: number;
+  };
+};
+
+let quoteStats: QuoteStats | null | Record<string, never> = null;
+let currentQuote: Types.Quote | null = null;
+
+function reset(): void {
   $(`#quoteRatePopup .quote .text`).text("-");
   $(`#quoteRatePopup .quote .source .val`).text("-");
   $(`#quoteRatePopup .quote .id .val`).text("-");
@@ -18,16 +38,19 @@ function reset() {
   $("#quoteRatePopup .ratingAverage .val").text("-");
 }
 
-export async function getQuoteStats(quote) {
+export async function getQuoteStats(
+  quote?: Types.Quote
+): Promise<QuoteStats | undefined> {
   if (quote) currentQuote = quote;
   let response;
   try {
     response = await axiosInstance.get("/quotes/rating", {
-      params: { quoteId: currentQuote.id, language: currentQuote.language },
+      params: { quoteId: currentQuote?.id, language: currentQuote?.language },
     });
-  } catch (e) {
+  } catch (error) {
+    const e = error as AxiosError;
     Loader.hide();
-    let msg = e?.response?.data?.message ?? e.message;
+    const msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to get quote ratings: " + msg, -1);
     return;
   }
@@ -44,27 +67,28 @@ export async function getQuoteStats(quote) {
           Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
       }
     }
-    return quoteStats;
+    return quoteStats as QuoteStats;
   }
 }
 
-function refreshStars(force) {
-  let limit = force ? parseInt(force) : rating;
+function refreshStars(force?: number): void {
+  const limit = force ? force : rating;
   $(`#quoteRatePopup .star`).removeClass("active");
   for (let i = 1; i <= limit; i++) {
     $(`#quoteRatePopup .star[rating=${i}]`).addClass("active");
   }
 }
 
-async function updateRatingStats() {
+async function updateRatingStats(): Promise<void> {
   if (!quoteStats) await getQuoteStats();
-  $("#quoteRatePopup .ratingCount .val").text(quoteStats.ratings ?? "0");
+  $("#quoteRatePopup .ratingCount .val").text(quoteStats?.ratings ?? "0");
   $("#quoteRatePopup .ratingAverage .val").text(
-    quoteStats.average?.toFixed(1) ?? "-"
+    quoteStats?.average?.toFixed(1) ?? "-"
   );
 }
 
-function updateData() {
+function updateData(): void {
+  if (!currentQuote) return;
   let lengthDesc;
   if (currentQuote.group == 0) {
     lengthDesc = "short";
@@ -78,11 +102,11 @@ function updateData() {
   $(`#quoteRatePopup .quote .text`).text(currentQuote.text);
   $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
   $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
-  $(`#quoteRatePopup .quote .length .val`).text(lengthDesc);
+  $(`#quoteRatePopup .quote .length .val`).text(lengthDesc as string);
   updateRatingStats();
 }
 
-export function show(quote, shouldReset = true) {
+export function show(quote: Types.Quote, shouldReset = true): void {
   if ($("#quoteRatePopupWrapper").hasClass("hidden")) {
     if (shouldReset) {
       reset();
@@ -90,9 +114,9 @@ export function show(quote, shouldReset = true) {
 
     currentQuote = quote;
     rating = 0;
-    let alreadyRated = DB.getSnapshot().quoteRatings?.[currentQuote.language]?.[
-      currentQuote.id
-    ];
+    const alreadyRated = DB.getSnapshot().quoteRatings?.[
+      currentQuote.language
+    ]?.[currentQuote.id];
     if (alreadyRated) {
       rating = alreadyRated;
     }
@@ -107,7 +131,7 @@ export function show(quote, shouldReset = true) {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#quoteRatePopupWrapper").hasClass("hidden")) {
     $("#quoteRatePopupWrapper")
       .stop(true, true)
@@ -117,33 +141,35 @@ function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#quoteRatePopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-export function clearQuoteStats() {
-  quoteStats = undefined;
+export function clearQuoteStats(): void {
+  quoteStats = null;
 }
 
-async function submit() {
+async function submit(): Promise<void> {
   if (rating == 0) {
     Notifications.add("Please select a rating");
     return;
   }
+  if (!currentQuote) return;
   hide();
   let response;
   try {
     response = await axiosInstance.post("/quotes/rating", {
-      quoteId: currentQuote.id,
+      quoteId: currentQuote?.id,
       rating: rating,
-      language: currentQuote.language,
+      language: currentQuote?.language,
     });
-  } catch (e) {
+  } catch (error) {
+    const e = error as AxiosError;
     Loader.hide();
-    let msg = e?.response?.data?.message ?? e.message;
+    const msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to submit quote rating: " + msg, -1);
     return;
   }
@@ -151,26 +177,26 @@ async function submit() {
   if (response.status !== 200) {
     Notifications.add(response.data.message);
   } else {
-    let quoteRatings = DB.getSnapshot().quoteRatings;
+    let quoteRatings: QuoteRatings = DB.getSnapshot().quoteRatings;
     if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
-      let oldRating = quoteRatings[currentQuote.language][currentQuote.id];
-      let diff = rating - oldRating;
+      const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
+      const diff = rating - oldRating;
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
       quoteStats = {
-        ratings: quoteStats.ratings,
-        totalRating: isNaN(quoteStats.totalRating)
+        ratings: quoteStats?.ratings,
+        totalRating: isNaN(quoteStats?.totalRating as number)
           ? 0
-          : quoteStats.totalRating + diff,
+          : (quoteStats?.totalRating as number) + diff,
         quoteId: currentQuote.id,
         language: currentQuote.language,
-      };
+      } as QuoteStats;
       Notifications.add("Rating updated", 1);
     } else {
       if (quoteRatings === undefined) quoteRatings = {};
       if (quoteRatings[currentQuote.language] === undefined)
         quoteRatings[currentQuote.language] = {};
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
-      if (quoteStats.ratings && quoteStats.totalRating) {
+      if (quoteStats?.ratings && quoteStats.totalRating) {
         quoteStats.ratings++;
         quoteStats.totalRating += rating;
       } else {
@@ -179,7 +205,7 @@ async function submit() {
           totalRating: rating,
           quoteId: currentQuote.id,
           language: currentQuote.language,
-        };
+        } as QuoteStats;
       }
       Notifications.add("Rating submitted", 1);
     }
@@ -200,24 +226,24 @@ $("#quoteRatePopupWrapper").click((e) => {
 });
 
 $("#quoteRatePopup .stars .star").hover((e) => {
-  let ratingHover = $(e.currentTarget).attr("rating");
+  const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
   refreshStars(ratingHover);
 });
 
 $("#quoteRatePopup .stars .star").click((e) => {
-  let ratingHover = $(e.currentTarget).attr("rating");
-  rating = parseInt(ratingHover);
+  const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
+  rating = ratingHover;
 });
 
-$("#quoteRatePopup .stars .star").mouseout((e) => {
+$("#quoteRatePopup .stars .star").mouseout(() => {
   $(`#quoteRatePopup .star`).removeClass("active");
   refreshStars();
 });
 
-$("#quoteRatePopup .submitButton").click((e) => {
+$("#quoteRatePopup .submitButton").click(() => {
   submit();
 });
 
-$(".pageTest #rateQuoteButton").click(async (event) => {
+$(".pageTest #rateQuoteButton").click(async () => {
   show(TestWords.randomQuote);
 });

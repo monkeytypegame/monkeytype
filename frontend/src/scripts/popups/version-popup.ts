@@ -1,4 +1,4 @@
-export function show() {
+export function show(): void {
   $("#versionHistoryWrapper")
     .css("opacity", 0)
     .removeClass("hidden")

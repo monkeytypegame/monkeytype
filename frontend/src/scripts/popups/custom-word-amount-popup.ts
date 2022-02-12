@@ -1,21 +1,25 @@
+// @ts-ignore
 import * as UpdateConfig from "../config";
+// @ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
+// @ts-ignore
 import * as TestLogic from "../test/test-logic";
 
-export function show() {
+export function show(): void {
   if ($("#customWordAmountPopupWrapper").hasClass("hidden")) {
     $("#customWordAmountPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, 100, () => {
         $("#customWordAmountPopup input").focus().select();
       });
   }
 }
 
-export function hide() {
+export function hide(): void {
   if (!$("#customWordAmountPopupWrapper").hasClass("hidden")) {
     $("#customWordAmountPopupWrapper")
       .stop(true, true)
@@ -25,15 +29,15 @@ export function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#customWordAmountPopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-function apply() {
-  let val = parseInt($("#customWordAmountPopup input").val());
+function apply(): void {
+  const val = parseInt($("#customWordAmountPopup input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setWordCount(val);

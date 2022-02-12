@@ -1,11 +1,17 @@
+// @ts-ignore
 import * as Loader from "../elements/loader";
+// @ts-ignore
 import * as DB from "../db";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
-import * as Settings from "../pages/settings";
+// @ts-ignore
 import * as Config from "../config";
 import axiosInstance from "../axios-instance";
+import * as Settings from "../pages/settings";
+import * as Types from "../types/interfaces";
+import { AxiosError } from "axios";
 
-export function show(action, id, name) {
+export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
     $("#presetWrapper #presetEdit").attr("action", "add");
     $("#presetWrapper #presetEdit .title").html("Create new preset");
@@ -13,7 +19,7 @@ export function show(action, id, name) {
     $("#presetWrapper #presetEdit input.text").val("");
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
-  } else if (action === "edit") {
+  } else if (action === "edit" && id && name) {
     $("#presetWrapper #presetEdit").attr("action", "edit");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Edit preset");
@@ -22,7 +28,7 @@ export function show(action, id, name) {
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label input").prop("checked", false);
     $("#presetWrapper #presetEdit label").removeClass("hidden");
-  } else if (action === "remove") {
+  } else if (action === "remove" && id) {
     $("#presetWrapper #presetEdit").attr("action", "remove");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Remove preset " + name);
@@ -44,7 +50,7 @@ export function show(action, id, name) {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#presetWrapper").hasClass("hidden")) {
     $("#presetWrapper #presetEdit").attr("action", "");
     $("#presetWrapper #presetEdit").attr("tagid", "");
@@ -63,19 +69,19 @@ function hide() {
   }
 }
 
-async function apply() {
-  let action = $("#presetWrapper #presetEdit").attr("action");
-  let inputVal = $("#presetWrapper #presetEdit input").val();
-  let presetid = $("#presetWrapper #presetEdit").attr("presetid");
+async function apply(): Promise<void> {
+  const action = $("#presetWrapper #presetEdit").attr("action");
+  const inputVal = $("#presetWrapper #presetEdit input").val() as string;
+  const presetid = $("#presetWrapper #presetEdit").attr("presetid");
 
-  let updateConfig = $("#presetWrapper #presetEdit label input").prop(
+  const updateConfig = $("#presetWrapper #presetEdit label input").prop(
     "checked"
   );
   let configChanges = null;
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges();
-    let activeTagIds = [];
-    DB.getSnapshot().tags.forEach((tag) => {
+    const activeTagIds: string[] = [];
+    DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
       if (tag.active) {
         activeTagIds.push(tag._id);
       }
@@ -92,9 +98,10 @@ async function apply() {
         name: inputVal,
         config: configChanges,
       });
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to add preset: " + msg, -1);
       return;
     }
@@ -119,9 +126,10 @@ async function apply() {
         _id: presetid,
         config: updateConfig === true ? configChanges : null,
       });
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to edit preset: " + msg, -1);
       return;
     }
@@ -130,8 +138,8 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset updated", 1);
-      let preset = DB.getSnapshot().presets.filter(
-        (preset) => preset._id == presetid
+      const preset: Types.Snapshot = DB.getSnapshot().presets.filter(
+        (preset: Types.Preset) => preset._id == presetid
       )[0];
       preset.name = inputVal;
       if (updateConfig === true) preset.config = configChanges;
@@ -144,9 +152,10 @@ async function apply() {
       response = await axiosInstance.post("/presets/remove", {
         _id: presetid,
       });
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to remove preset: " + msg, -1);
       return;
     }
@@ -155,11 +164,13 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset removed", 1);
-      DB.getSnapshot().presets.forEach((preset, index) => {
-        if (preset._id === presetid) {
-          DB.getSnapshot().presets.splice(index, 1);
+      DB.getSnapshot().presets.forEach(
+        (preset: Types.Preset, index: number) => {
+          if (preset._id === presetid) {
+            DB.getSnapshot().presets.splice(index, 1);
+          }
         }
-      });
+      );
       Settings.update();
     }
   }
@@ -184,19 +195,19 @@ $("#presetWrapper #presetEdit input").keypress((e) => {
 $(document).on(
   "click",
   ".pageSettings .section.presets .addPresetButton",
-  (e) => {
+  () => {
     show("add");
   }
 );
 
 $(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
+  const presetid = $(e.currentTarget).parent(".preset").attr("id");
+  const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("edit", presetid, name);
 });
 
 $(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
-  let presetid = $(e.currentTarget).parent(".preset").attr("id");
-  let name = $(e.currentTarget).siblings(".button").children(".title").text();
+  const presetid = $(e.currentTarget).parent(".preset").attr("id");
+  const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("remove", presetid, name);
 });

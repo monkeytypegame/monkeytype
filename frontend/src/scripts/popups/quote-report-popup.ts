@@ -1,24 +1,43 @@
-import * as Misc from "../misc";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
+// @ts-ignore
 import Config from "../config";
+// @ts-ignore
 import * as Loader from "../elements/loader";
+// @ts-ignore
 import * as TestWords from "../test/test-words";
+import axiosInstance from "../axios-instance";
+import * as Misc from "../misc";
+import * as Types from "../types/interfaces";
+import { AxiosError } from "axios";
 
 const CAPTCHA_ID = 1;
 
-const state = {
+type State = {
+  previousPopupShowCallback?: () => void;
+  quoteToReport?: Types.Quote;
+};
+
+type Options = {
+  quoteId: number;
+  previousPopupShowCallback?: () => void;
+  noAnim: boolean;
+};
+
+const state: State = {
   previousPopupShowCallback: undefined,
   quoteToReport: undefined,
 };
 
-const defaultOptions = {
+const defaultOptions: Options = {
   quoteId: -1,
-  previousPopupShowCallback: () => {},
+  previousPopupShowCallback: (): void => {
+    //
+  },
   noAnim: false,
 };
 
-export async function show(options = defaultOptions) {
+export async function show(options = defaultOptions): Promise<void> {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
     const { quoteId, previousPopupShowCallback, noAnim } = options;
 
@@ -29,7 +48,7 @@ export async function show(options = defaultOptions) {
       return quote.id === quoteId;
     });
 
-    $("#quoteReportPopup .quote").text(state.quoteToReport.text);
+    $("#quoteReportPopup .quote").text(state.quoteToReport?.text as string);
     $("#quoteReportPopup .reason").val("Grammatical error");
     $("#quoteReportPopup .comment").val("");
     $("#quoteReportPopup .characterCount").text("-");
@@ -40,15 +59,15 @@ export async function show(options = defaultOptions) {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
+      .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
         $("#quoteReportPopup textarea").focus().select();
       });
   }
 }
 
-export async function hide() {
+export async function hide(): Promise<void> {
   if (!$("#quoteReportPopupWrapper").hasClass("hidden")) {
-    let noAnim = state.previousPopupShowCallback ? true : false;
+    const noAnim = state.previousPopupShowCallback ? true : false;
 
     $("#quoteReportPopupWrapper")
       .stop(true, true)
@@ -58,7 +77,7 @@ export async function hide() {
           opacity: 0,
         },
         noAnim ? 0 : 100,
-        (e) => {
+        () => {
           grecaptcha.reset(CAPTCHA_ID);
           $("#quoteReportPopupWrapper").addClass("hidden");
           if (state.previousPopupShowCallback) {
@@ -69,7 +88,7 @@ export async function hide() {
   }
 }
 
-async function submitReport() {
+async function submitReport(): Promise<void> {
   const captchaResponse = grecaptcha.getResponse(CAPTCHA_ID);
   if (!captchaResponse) {
     Notifications.add("Please complete the captcha.");
@@ -77,10 +96,10 @@ async function submitReport() {
   }
 
   const requestBody = {
-    quoteId: state.quoteToReport.id.toString(),
+    quoteId: state.quoteToReport?.id.toString(),
     quoteLanguage: Config.language,
     reason: $("#quoteReportPopup .reason").val(),
-    comment: $("#quoteReportPopup .comment").val(),
+    comment: $("#quoteReportPopup .comment").val() as string,
     captcha: captchaResponse,
   };
 
@@ -102,9 +121,10 @@ async function submitReport() {
   let response;
   try {
     response = await axiosInstance.post("/quotes/report", requestBody);
-  } catch (e) {
+  } catch (error) {
+    const e = error as AxiosError;
     Loader.hide();
-    let msg = e?.response?.data?.message ?? e.message;
+    const msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to report quote: " + msg, -1);
     return;
   }
@@ -124,9 +144,9 @@ $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#quoteReportPopup .comment").on("input", (e) => {
+$("#quoteReportPopup .comment").on("input", () => {
   setTimeout(() => {
-    const len = $("#quoteReportPopup .comment").val().length;
+    const len = ($("#quoteReportPopup .comment").val() as string).length;
     $("#quoteReportPopup .characterCount").text(len);
     if (len > 250) {
       $("#quoteReportPopup .characterCount").addClass("red");
@@ -136,11 +156,11 @@ $("#quoteReportPopup .comment").on("input", (e) => {
   }, 1);
 });
 
-$("#quoteReportPopup .submit").on("click", async (e) => {
+$("#quoteReportPopup .submit").on("click", async () => {
   await submitReport();
 });
 
-$(".pageTest #reportQuoteButton").click(async (event) => {
+$(".pageTest #reportQuoteButton").click(async () => {
   show({
     quoteId: parseInt(TestWords.randomQuote.id),
     noAnim: false,

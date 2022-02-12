@@ -1,16 +1,21 @@
 import * as CustomText from "../test/custom-text";
+//@ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
-import * as Misc from "../misc";
+//@ts-ignore
 import * as Notifications from "../elements/notifications";
+//@ts-ignore
 import * as TestLogic from "../test/test-logic";
-import * as WordFilterPopup from "./word-filter-popup";
+//@ts-ignore
 import * as ChallengeController from "../controllers/challenge-controller";
+//@ts-ignore
 import Config, * as UpdateConfig from "../config";
+import * as Misc from "../misc";
+import * as WordFilterPopup from "./word-filter-popup";
 
-let wrapper = "#customTextPopupWrapper";
-let popup = "#customTextPopup";
+const wrapper = "#customTextPopupWrapper";
+const popup = "#customTextPopup";
 
-export function show() {
+export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
     if ($(`${popup} .checkbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
@@ -45,8 +50,8 @@ $(`${popup} .delimiterCheck input`).change(() => {
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
   ) {
-    let currentText = $(`${popup} textarea`).val();
-    let currentTextSplit = currentText.split(CustomText.delimiter);
+    const currentText = $(`${popup} textarea`).val() as string;
+    const currentTextSplit = currentText.split(CustomText.delimiter);
     let newtext = currentTextSplit.join(delimiter);
     newtext = newtext.replace(/\n /g, "\n");
     $(`${popup} textarea`).val(newtext);
@@ -58,7 +63,7 @@ $(`${popup} .delimiterCheck input`).change(() => {
   CustomText.setDelimiter(delimiter);
 });
 
-export function hide() {
+export function hide(): void {
   if (!$(wrapper).hasClass("hidden")) {
     $(wrapper)
       .stop(true, true)
@@ -68,14 +73,14 @@ export function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $(wrapper).addClass("hidden");
         }
       );
   }
 }
 
-export function isVisible() {
+export function isVisible(): boolean {
   return !$(wrapper).hasClass("hidden");
 }
 
@@ -99,16 +104,16 @@ $(`${popup} textarea`).keypress((e) => {
   }
 });
 
-$(`${popup} .randomInputFields .wordcount input`).keypress((e) => {
+$(`${popup} .randomInputFields .wordcount input`).keypress(() => {
   $(`${popup} .randomInputFields .time input`).val("");
 });
 
-$(`${popup} .randomInputFields .time input`).keypress((e) => {
+$(`${popup} .randomInputFields .time input`).keypress(() => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
 $("#customTextPopup .apply").click(() => {
-  let text = $("#customTextPopup textarea").val().normalize();
+  let text = ($("#customTextPopup textarea").val() as string).normalize();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -125,10 +130,13 @@ $("#customTextPopup .apply").click(() => {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
-  text = text.split(CustomText.delimiter);
-  CustomText.setText(text);
-  CustomText.setWord(parseInt($("#customTextPopup .wordcount input").val()));
-  CustomText.setTime(parseInt($("#customTextPopup .time input").val()));
+  CustomText.setText(text.split(CustomText.delimiter));
+  CustomText.setWord(
+    parseInt($("#customTextPopup .wordcount input").val() as string)
+  );
+  CustomText.setTime(
+    parseInt($("#customTextPopup .time input").val() as string)
+  );
 
   CustomText.setIsWordRandom(
     $("#customTextPopup .checkbox input").prop("checked") &&
@@ -166,8 +174,8 @@ $("#customTextPopup .apply").click(() => {
   }
 
   if (
-    (CustomText.isWordRandom && parseInt(CustomText.word) === 0) ||
-    (CustomText.isTimeRandom && parseInt(CustomText.time) === 0)
+    (CustomText.isWordRandom && CustomText.word === 0) ||
+    (CustomText.isTimeRandom && CustomText.time === 0)
   ) {
     Notifications.add(
       "Infinite words! Make sure to use Bail Out from the command line to save your result.",

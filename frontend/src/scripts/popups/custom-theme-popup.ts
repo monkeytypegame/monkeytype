@@ -2,7 +2,7 @@
 // import * as Notifications from "./notifications";
 // import * as ThemePicker from "./theme-picker";
 
-export function show(value) {
+export function show(value: string): void {
   if ($("#customThemeShareWrapper").hasClass("hidden")) {
     // let save = [];
     // $.each(
@@ -17,7 +17,7 @@ export function show(value) {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, 100, () => {
         $("#customThemeShare input").focus();
         $("#customThemeShare input").select();
         $("#customThemeShare input").focus();
@@ -25,7 +25,7 @@ export function show(value) {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#customThemeShareWrapper").hasClass("hidden")) {
     // try {
     //   UpdateConfig.setCustomThemeColors(
@@ -49,7 +49,7 @@ function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#customThemeShareWrapper").addClass("hidden");
         }
       );
@@ -62,6 +62,6 @@ $("#customThemeShareWrapper").click((e) => {
   }
 });
 
-$("#customThemeShare .button").click((e) => {
+$("#customThemeShare .button").click(() => {
   hide();
 });

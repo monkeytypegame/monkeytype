@@ -1,32 +1,38 @@
-import * as ResultTagsPopup from "./result-tags-popup";
+// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
+// @ts-ignore
 import * as Loader from "../elements/loader";
+// @ts-ignore
 import * as DB from "../db";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import axiosInstance from "../axios-instance";
+import * as ResultTagsPopup from "./result-tags-popup";
+import * as Types from "../types/interfaces";
+import { AxiosError } from "axios";
 
-export function show(action, id, name) {
+export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
     $("#tagsWrapper #tagsEdit .title").html("Add new tag");
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-plus"></i>`);
     $("#tagsWrapper #tagsEdit input").val("");
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
-  } else if (action === "edit") {
+  } else if (action === "edit" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "edit");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-pen"></i>`);
     $("#tagsWrapper #tagsEdit input").val(name);
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
-  } else if (action === "remove") {
+  } else if (action === "remove" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "remove");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Remove tag " + name);
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
-  } else if (action === "clearPb") {
+  } else if (action === "clearPb" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "clearPb");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Clear PB for tag " + name);
@@ -45,7 +51,7 @@ export function show(action, id, name) {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#tagsWrapper").hasClass("hidden")) {
     $("#tagsWrapper #tagsEdit").attr("action", "");
     $("#tagsWrapper #tagsEdit").attr("tagid", "");
@@ -64,11 +70,11 @@ function hide() {
   }
 }
 
-async function apply() {
+async function apply(): Promise<void> {
   // console.log(DB.getSnapshot());
-  let action = $("#tagsWrapper #tagsEdit").attr("action");
-  let inputVal = $("#tagsWrapper #tagsEdit input").val();
-  let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
+  const action = $("#tagsWrapper #tagsEdit").attr("action");
+  const inputVal = $("#tagsWrapper #tagsEdit input").val() as string;
+  const tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
   hide();
   if (action === "add") {
     Loader.show();
@@ -77,9 +83,10 @@ async function apply() {
       response = await axiosInstance.post("/user/tags", {
         tagName: inputVal,
       });
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to add tag: " + msg, -1);
       return;
     }
@@ -104,9 +111,10 @@ async function apply() {
         tagId: tagid,
         newName: inputVal,
       });
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to edit tag: " + msg, -1);
       return;
     }
@@ -115,7 +123,7 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot().tags.forEach((tag) => {
+      DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
         if (tag._id === tagid) {
           tag.name = inputVal;
         }
@@ -129,9 +137,10 @@ async function apply() {
     let response;
     try {
       response = await axiosInstance.delete(`/user/tags/${tagid}`);
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to remove tag: " + msg, -1);
       return;
     }
@@ -140,7 +149,7 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot().tags.forEach((tag, index) => {
+      DB.getSnapshot().tags.forEach((tag: Types.Tag, index: number) => {
         if (tag._id === tagid) {
           DB.getSnapshot().tags.splice(index, 1);
         }
@@ -154,9 +163,10 @@ async function apply() {
     let response;
     try {
       response = await axiosInstance.delete(`/user/tags/${tagid}/personalBest`);
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to clear tag pb: " + msg, -1);
       return;
     }
@@ -165,7 +175,7 @@ async function apply() {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags.forEach((tag) => {
+      DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
         if (tag._id === tagid) {
           tag.personalBests = {};
         }
@@ -193,7 +203,7 @@ $("#tagsWrapper #tagsEdit input").keypress((e) => {
   }
 });
 
-$(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
+$(document).on("click", ".pageSettings .section.tags .addTagButton", () => {
   show("add");
 });
 
@@ -201,8 +211,8 @@ $(document).on(
   "click",
   ".pageSettings .section.tags .tagsList .tag .editButton",
   (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
+    const tagid = $(e.currentTarget).parent(".tag").attr("id");
+    const name = $(e.currentTarget)
       .siblings(".tagButton")
       .children(".title")
       .text();
@@ -214,8 +224,8 @@ $(document).on(
   "click",
   ".pageSettings .section.tags .tagsList .tag .clearPbButton",
   (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
+    const tagid = $(e.currentTarget).parent(".tag").attr("id");
+    const name = $(e.currentTarget)
       .siblings(".tagButton")
       .children(".title")
       .text();
@@ -227,8 +237,8 @@ $(document).on(
   "click",
   ".pageSettings .section.tags .tagsList .tag .removeButton",
   (e) => {
-    let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget)
+    const tagid = $(e.currentTarget).parent(".tag").attr("id");
+    const name = $(e.currentTarget)
       .siblings(".tagButton")
       .children(".title")
       .text();

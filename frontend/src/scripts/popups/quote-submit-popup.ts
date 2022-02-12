@@ -1,13 +1,17 @@
-import * as Misc from "../misc";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
+// @ts-ignore
 import * as Loader from "../elements/loader";
+// @ts-ignore
 import Config from "../config";
+import * as Misc from "../misc";
+import axiosInstance from "../axios-instance";
+import { AxiosError } from "axios";
 
 let dropdownReady = false;
-async function initDropdown() {
+async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
-  let languages = await Misc.getLanguageList();
+  const languages = await Misc.getLanguageList();
   languages.forEach((language) => {
     if (
       language === "english_commonly_misspelled" ||
@@ -24,8 +28,8 @@ async function initDropdown() {
   dropdownReady = true;
 }
 
-async function submitQuote() {
-  let data = {
+async function submitQuote(): Promise<void> {
+  const data = {
     text: $("#quoteSubmitPopup #submitQuoteText").val(),
     source: $("#quoteSubmitPopup #submitQuoteSource").val(),
     language: $("#quoteSubmitPopup #submitQuoteLanguage").val(),
@@ -41,9 +45,10 @@ async function submitQuote() {
   let response;
   try {
     response = await axiosInstance.post("/quotes", data);
-  } catch (e) {
+  } catch (error) {
+    const e = error as AxiosError;
     Loader.hide();
-    let msg = e?.response?.data?.message ?? e.message;
+    const msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to submit quote: " + msg, -1);
     return;
   }
@@ -60,7 +65,7 @@ async function submitQuote() {
   }
 }
 
-export async function show(noAnim = false) {
+export async function show(noAnim = false): Promise<void> {
   Notifications.add(
     "Quote submission is disabled temporarily due to a large submission queue.",
     0,
@@ -79,13 +84,13 @@ export async function show(noAnim = false) {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
+      .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
         $("#quoteSubmitPopup textarea").focus().select();
       });
   }
 }
 
-export function hide() {
+export function hide(): void {
   if (!$("#quoteSubmitPopupWrapper").hasClass("hidden")) {
     $("#quoteSubmitPopupWrapper")
       .stop(true, true)
@@ -95,7 +100,7 @@ export function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#quoteSubmitPopupWrapper").addClass("hidden");
         }
       );
@@ -108,13 +113,13 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$(document).on("click", "#quoteSubmitPopup #submitQuoteButton", (e) => {
+$(document).on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
   submitQuote();
 });
 
-$("#quoteSubmitPopup textarea").on("input", (e) => {
+$("#quoteSubmitPopup textarea").on("input", () => {
   setTimeout(() => {
-    let len = $("#quoteSubmitPopup textarea").val().length;
+    const len = ($("#quoteSubmitPopup textarea").val() as string)?.length;
     $("#quoteSubmitPopup .characterCount").text(len);
     if (len < 60) {
       $("#quoteSubmitPopup .characterCount").addClass("red");

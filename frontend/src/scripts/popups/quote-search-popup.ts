@@ -1,38 +1,44 @@
-import * as Misc from "../misc";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
+// @ts-ignore
+import * as TestUI from "../test/test-ui";
+// @ts-ignore
 import Config, * as UpdateConfig from "../config";
+// @ts-ignore
+import * as DB from "../db";
+// @ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
-import * as DB from "../db";
-import * as TestUI from "../test/test-ui";
+import * as Misc from "../misc";
+import * as Types from "../types/interfaces";
 
 export let selectedId = 1;
 
-export function setSelectedId(val) {
+export function setSelectedId(val: number): void {
   selectedId = val;
 }
 
-async function updateResults(searchText) {
-  let quotes = await Misc.getQuotes(Config.language);
-  let reg = new RegExp(searchText, "i");
-  let found = [];
+async function updateResults(searchText: string): Promise<void> {
+  const quotes = await Misc.getQuotes(Config.language);
+  const reg = new RegExp(searchText, "i");
+  const found: Types.Quote[] = [];
   quotes.quotes.forEach((quote) => {
-    let quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
-    let test1 = reg.test(quoteText);
+    const quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
+    const test1 = reg.test(quoteText);
     if (test1) {
       found.push(quote);
     }
   });
   quotes.quotes.forEach((quote) => {
-    let quoteSource = quote["source"].replace(
+    const quoteSource = quote["source"].replace(
       /[.,'"/#!$%^&*;:{}=\-_`~()]/g,
       ""
     );
-    let quoteId = quote["id"];
-    let test2 = reg.test(quoteSource);
-    let test3 = reg.test(quoteId);
+    const quoteId = quote["id"];
+    const test2 = reg.test(quoteSource);
+    const test3 = reg.test(quoteId.toString());
     if ((test2 || test3) && found.filter((q) => q.id == quote.id).length == 0) {
       found.push(quote);
     }
@@ -41,7 +47,7 @@ async function updateResults(searchText) {
   $("#quoteSearchPopup").append(
     '<div class="quoteSearchResults" id="quoteSearchResults"></div>'
   );
-  let resultsList = $("#quoteSearchResults");
+  const resultsList = $("#quoteSearchResults");
   let resultListLength = 0;
 
   const isNotAuthed = !firebase.auth().currentUser;
@@ -85,13 +91,13 @@ async function updateResults(searchText) {
   }
 }
 
-export async function show(clearText = true) {
+export async function show(clearText = true): Promise<void> {
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
     if (clearText) {
       $("#quoteSearchPopup input").val("");
     }
 
-    const quoteSearchInputValue = $("#quoteSearchPopup input").val();
+    const quoteSearchInputValue = $("#quoteSearchPopup input").val() as string;
 
     if (!firebase.auth().currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
@@ -109,7 +115,7 @@ export async function show(clearText = true) {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, 100, () => {
         if (clearText) {
           $("#quoteSearchPopup input").focus().select();
         }
@@ -118,7 +124,7 @@ export async function show(clearText = true) {
   }
 }
 
-export function hide(noAnim = false, focusWords = true) {
+export function hide(noAnim = false, focusWords = true): void {
   if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
@@ -128,7 +134,7 @@ export function hide(noAnim = false, focusWords = true) {
           opacity: 0,
         },
         noAnim ? 0 : 100,
-        (e) => {
+        () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
           if (focusWords) {
             TestUI.focusWords();
@@ -138,9 +144,11 @@ export function hide(noAnim = false, focusWords = true) {
   }
 }
 
-export function apply(val) {
+export function apply(val: number): boolean {
   if (isNaN(val)) {
-    val = document.getElementById("searchBox").value;
+    val = parseInt(
+      (<HTMLInputElement>document.getElementById("searchBox")).value as string
+    );
   }
   let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
@@ -159,7 +167,8 @@ export function apply(val) {
 $("#quoteSearchPopup .searchBox").keydown((e) => {
   if (e.code == "Escape") return;
   setTimeout(() => {
-    let searchText = document.getElementById("searchBox").value;
+    let searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+      .value;
     searchText = searchText
       .replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "")
       .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -174,12 +183,12 @@ $("#quoteSearchPopupWrapper").click((e) => {
   }
 });
 
-$(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", (e) => {
+$(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
   hide(true);
   QuoteSubmitPopup.show(true);
 });
 
-$(document).on("click", "#quoteSearchPopup #goToApproveQuotes", (e) => {
+$(document).on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide(true);
   QuoteApprovePopup.show(true);
 });
@@ -199,7 +208,7 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
 });
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
-  let len = $(e.currentTarget).attr("quoteLength");
+  const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
   if (len == -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     show();
