@@ -476,7 +476,7 @@ export function findLineByLeastSquares(values_y) {
   let count = 0;
 
   /*
-   * We'll use those variables for faster read/write access.
+   * We'll use those letiables for faster read/write access.
    */
   let x = 0;
   let y = 0;
