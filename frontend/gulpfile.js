@@ -120,8 +120,8 @@ task(
   series(
     "lint",
     "lint-json",
-    "copy-src-contents",
-    "transpile-ts",
+    // "copy-src-contents",
+    // "transpile-ts",
     "webpack",
     "static",
     "sass",
@@ -134,8 +134,8 @@ task(
   series(
     "lint",
     "lint-json",
-    "copy-src-contents",
-    "transpile-ts",
+    // "copy-src-contents",
+    // "transpile-ts",
     "webpack-production",
     "static",
     "sass",
@@ -147,7 +147,12 @@ task("watch", function () {
   watch("./src/styles/**/*.scss", series("sass"));
   watch(
     ["./src/scripts/**/*.js", "./src/scripts/**/*.ts"],
-    series("lint", "copy-src-contents", "transpile-ts", "webpack")
+    series(
+      "lint",
+      // "copy-src-contents",
+      // "transpile-ts",
+      "webpack"
+    )
   );
   watch("./static/**/*.*", series("lint-json", "static"));
 });
