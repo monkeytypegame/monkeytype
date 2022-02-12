@@ -188,7 +188,7 @@ export declare interface Result {
   incorrectChars?: number; // legacy results
   acc: number;
   mode: Mode;
-  mode2: number | "custom";
+  mode2: number | "custom" | "zen";
   quoteLength: number;
   timestamp: number;
   restartCount: number;
@@ -208,7 +208,7 @@ export declare interface Result {
   lazyMode?: boolean;
   difficulty?: Difficulty;
   funbox?: string;
-  language?: string | null;
+  language: string;
   numbers?: boolean;
   punctuation?: boolean;
 }
