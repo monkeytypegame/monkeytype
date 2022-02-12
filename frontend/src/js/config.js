@@ -820,7 +820,7 @@ export function setWordCount(wordCount, nosave) {
     wordCount < 0 ||
     wordCount > 100000
   ) {
-    wordCount = defaultConfig.wordCount;
+    wordCount = defaultConfig.words;
   }
   // if (!nosave) setMode("words", nosave);
   config.words = wordCount;
