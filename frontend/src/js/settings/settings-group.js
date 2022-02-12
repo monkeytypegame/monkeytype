@@ -53,7 +53,6 @@ export default class SettingsGroup {
     } else {
       this.configFunction(value, ...params);
     }
-    console.log(`${this.configName} set to ${value}`);
     this.updateInput();
     if (this.setCallback !== null) this.setCallback();
   }

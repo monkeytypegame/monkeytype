@@ -10,8 +10,9 @@ Chart.plugins.register(chartAnnotation);
 
 import * as DB from "./db";
 import * as Misc from "./misc";
+import "./controllers/account-controller";
 import Config from "./config";
-import { toggleGlarses } from "./test/test-logic";
+import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./popups/support-popup";
 import "./popups/contact-popup";
@@ -37,7 +38,7 @@ global.snapshot = DB.getSnapshot;
 global.config = Config;
 // global.addnotif = Notifications.add;
 
-global.glarsesMode = toggleGlarses;
+global.glarsesMode = enable;
 
 global.stats = TestStats.getStats;
 

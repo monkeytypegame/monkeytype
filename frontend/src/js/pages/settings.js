@@ -12,7 +12,9 @@ import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
-import * as AccountController from "../controllers/account-controller";
+import * as ConfigEvent from "./../observables/config-event";
+import * as ActivePage from "./../states/active-page";
+import Page from "./page";
 
 export let groups = {};
 async function initGroups() {
@@ -370,6 +372,12 @@ export function reset() {
 }
 
 export async function fillSettingsPage() {
+  if (Config.showKeyTips) {
+    $(".pageSettings .tip").removeClass("hidden");
+  } else {
+    $(".pageSettings .tip").addClass("hidden");
+  }
+
   let languageEl = $(".pageSettings .section.language select").empty();
   const groups = await Misc.getLanguageGroups();
   groups.forEach((group) => {
@@ -468,7 +476,9 @@ export async function fillSettingsPage() {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  setEventDisabled(true);
   await initGroups();
+  setEventDisabled(false);
   await UpdateConfig.loadPromise;
   ThemePicker.refreshButtons();
 }
@@ -807,7 +817,9 @@ $(document).on(
     let target = e.currentTarget;
     let presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
+    configEventDisabled = true;
     PresetController.apply(presetid);
+    configEventDisabled = false;
     update();
   }
 );
@@ -853,17 +865,6 @@ $("#shareCustomThemeButton").click((e) => {
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group"));
-});
-
-$(".pageSettings #addGoogleAuth").on("click", async (e) => {
-  await AccountController.addGoogleAuth();
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
-});
-
-$(".pageSettings #removeGoogleAuth").on("click", (e) => {
-  AccountController.removeGoogleAuth();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
@@ -919,3 +920,33 @@ $(".quickNav .links a").on("click", (e) => {
   );
   isOpen && toggleSettingsGroup(settingsGroup);
 });
+
+let configEventDisabled = false;
+export function setEventDisabled(value) {
+  configEventDisabled = value;
+}
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (configEventDisabled || eventKey === "saveToLocalStorage") return;
+  if (ActivePage.get() === "settings") {
+    update();
+  }
+});
+
+export const page = new Page(
+  "settings",
+  $(".page.pageSettings"),
+  "/settings",
+  () => {
+    //
+  },
+  async () => {
+    reset();
+  },
+  async () => {
+    await fillSettingsPage();
+    update();
+  },
+  () => {
+    //
+  }
+);

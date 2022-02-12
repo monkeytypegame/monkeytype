@@ -13,11 +13,13 @@ import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as Commandline from "./commandline";
 import * as CustomText from "../test/custom-text";
 import * as Settings from "../pages/settings";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as PaceCaret from "../test/pace-caret";
+import * as TestInput from "../test/test-input";
+import * as ModesNotice from "./../elements/modes-notice";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let current = [];
 
@@ -214,7 +216,7 @@ export function updateTagCommands() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        TestUI.updateModesNotice();
+        ModesNotice.update();
         TagController.saveActiveToLocalStorage();
       },
     });
@@ -235,10 +237,11 @@ export function updateTagCommands() {
         sticky: true,
         exec: () => {
           TagController.toggle(tag._id);
-          TestUI.updateModesNotice();
+          ModesNotice.update();
 
           if (Config.paceCaret === "average") {
             PaceCaret.init();
+            ModesNotice.update();
           }
 
           let txt = tag.name;
@@ -248,7 +251,7 @@ export function updateTagCommands() {
           } else {
             txt = '<i class="fas fa-fw"></i>' + txt;
           }
-          if (Commandline.isSingleListCommandLineActive()) {
+          if ($("#commandLine").hasClass("allCommands")) {
             $(
               `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(
@@ -283,9 +286,11 @@ export function updatePresetCommands() {
         id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
+          Settings.setEventDisabled(true);
           PresetController.apply(preset._id);
+          Settings.setEventDisabled(false);
           Settings.update();
-          TestUI.updateModesNotice();
+          ModesNotice.update();
         },
       });
     });
@@ -609,7 +614,7 @@ let commandsOppositeShiftMode = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("off");
-        TestUI.updateModesNotice();
+        ModesNotice.update();
       },
     },
     {
@@ -618,7 +623,7 @@ let commandsOppositeShiftMode = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("on");
-        TestUI.updateModesNotice();
+        ModesNotice.update();
       },
     },
     {
@@ -627,7 +632,7 @@ let commandsOppositeShiftMode = {
       configValue: "keymap",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("keymap");
-        TestUI.updateModesNotice();
+        ModesNotice.update();
       },
     },
   ],
@@ -2327,6 +2332,7 @@ Misc.getChallengeList().then((challenges) => {
       display: challenge.display,
       exec: () => {
         ChallengeController.setup(challenge.name);
+        TestLogic.restart(false, true);
       },
     });
   });
@@ -2969,7 +2975,7 @@ export let defaultCommands = {
             id: "bailOutForSure",
             display: "Yes, I am sure",
             exec: () => {
-              TestLogic.setBailout(true);
+              TestInput.setBailout(true);
               TestLogic.finish();
             },
             available: () => {
@@ -3066,7 +3072,6 @@ export let defaultCommands = {
       subgroup: true,
       exec: () => {
         current.push(commandsCopyWordsToClipboard);
-        Commandline.show();
       },
     },
     {
@@ -3141,22 +3146,20 @@ export function getList(list) {
   return eval(list);
 }
 
-$(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey, eventValue) => {
-    if (eventKey === "saveToLocalStorage") {
-      defaultCommands.list.filter(
-        (command) => command.id == "exportSettingsJSON"
-      )[0].defaultValue = eventValue;
-    }
-    if (eventKey === "customBackground") {
-      defaultCommands.list.filter(
-        (command) => command.id == "changeCustomBackground"
-      )[0].defaultValue = eventValue;
-    }
-    if (eventKey === "customLayoutFluid") {
-      defaultCommands.list.filter(
-        (command) => command.id == "changeCustomLayoutfluid"
-      )[0].defaultValue = eventValue?.replace(/#/g, " ");
-    }
-  });
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "saveToLocalStorage") {
+    defaultCommands.list.filter(
+      (command) => command.id == "exportSettingsJSON"
+    )[0].defaultValue = eventValue;
+  }
+  if (eventKey === "customBackground") {
+    defaultCommands.list.filter(
+      (command) => command.id == "changeCustomBackground"
+    )[0].defaultValue = eventValue;
+  }
+  if (eventKey === "customLayoutFluid") {
+    defaultCommands.list.filter(
+      (command) => command.id == "changeCustomLayoutfluid"
+    )[0].defaultValue = eventValue?.replace(/#/g, " ");
+  }
 });

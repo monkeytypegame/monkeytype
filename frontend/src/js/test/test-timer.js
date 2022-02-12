@@ -8,15 +8,14 @@ import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
-
 import * as Monkey from "./monkey";
 import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
-import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "./../states/test-active";
 import * as Time from "./../states/time";
+import * as TimerEvent from "./../observables/timer-event";
 
 let slowTimerCount = 0;
 let timer = null;
@@ -53,14 +52,14 @@ function updateTimer() {
 
 function calculateWpmRaw() {
   if (timerDebug) console.time("calculate wpm and raw");
-  let wpmAndRaw = TestLogic.calculateWpmAndRaw();
+  let wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
   if (timerDebug) console.time("update live wpm");
   LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
-  TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-  TestStats.pushToRawHistory(wpmAndRaw.raw);
+  TestInput.pushToWpmHistory(wpmAndRaw.wpm);
+  TestInput.pushToRawHistory(wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("push to history");
   return wpmAndRaw;
 }
@@ -127,9 +126,9 @@ function checkIfFailed(wpmAndRaw, acc) {
     TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
-    TestLogic.fail("min wpm");
     SlowTimer.clear();
     slowTimerCount = 0;
+    TimerEvent.dispatch("fail", "min wpm");
     return;
   }
   if (
@@ -138,9 +137,9 @@ function checkIfFailed(wpmAndRaw, acc) {
     TestWords.words.currentIndex > 3
   ) {
     clearTimeout(timer);
-    TestLogic.fail("min accuracy");
     SlowTimer.clear();
     slowTimerCount = 0;
+    TimerEvent.dispatch("fail", "min accuracy");
     return;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -165,9 +164,9 @@ function checkIfTimeIsUp() {
       Caret.hide();
       TestInput.input.pushHistory();
       TestInput.corrected.pushHistory();
-      TestLogic.finish();
       SlowTimer.clear();
       slowTimerCount = 0;
+      TimerEvent.dispatch("finish");
       return;
     }
   }
@@ -225,7 +224,7 @@ export async function start() {
             "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
             -1
           );
-          TestLogic.fail("slow timer");
+          TimerEvent.dispatch("fail", "slow timer");
         }
       }
     }

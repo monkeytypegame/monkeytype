@@ -1,5 +1,4 @@
 import * as UpdateConfig from "../config";
-import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 
 export function show(mode, config) {
@@ -37,7 +36,6 @@ function hide() {
         );
       }
       UpdateConfig.saveToLocalStorage();
-      Settings.update();
     }
     $("#settingsImportWrapper")
       .stop(true, true)

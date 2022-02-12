@@ -1,10 +1,9 @@
-import * as TestStats from "./test-stats";
 import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
-import * as TestLogic from "./test-logic";
 import * as TestInput from "./test-input";
+import * as ConfigEvent from "./../observables/config-event";
 
 export let before = {
   mode: null,
@@ -40,7 +39,7 @@ export function init(missed, slow) {
   let sortableSlowWords = [];
   if (slow) {
     sortableSlowWords = TestWords.words.get().map(function (e, i) {
-      return [e, TestStats.burstHistory[i]];
+      return [e, TestInput.burstHistory[i]];
     });
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
@@ -86,7 +85,6 @@ export function init(missed, slow) {
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
 
-  TestLogic.restart(false, false, false, true);
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;
@@ -140,21 +138,6 @@ $("#practiseWordsPopupWrapper").click((e) => {
   }
 });
 
-$("#practiseWordsPopup .button.missed").click(() => {
-  hidePopup();
-  init(true, false);
-});
-
-$("#practiseWordsPopup .button.slow").click(() => {
-  hidePopup();
-  init(false, true);
-});
-
-$("#practiseWordsPopup .button.both").click(() => {
-  hidePopup();
-  init(true, true);
-});
-
 $("#practiseWordsPopup .button").keypress((e) => {
   if (e.key == "Enter") {
     $(e.currentTarget).click();
@@ -176,8 +159,16 @@ $(document).keydown((event) => {
   }
 });
 
-$(document).ready(() => {
-  UpdateConfig.subscribeToEvent((eventKey) => {
-    if (eventKey === "mode") resetBefore();
-  });
+$(document).on("keypress", "#practiseWordsButton", (event) => {
+  if (event.keyCode == 13) {
+    showPopup(true);
+  }
+});
+
+$(document.body).on("click", "#practiseWordsButton", () => {
+  showPopup();
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "mode") resetBefore();
 });

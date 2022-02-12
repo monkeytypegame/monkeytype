@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "build": "npx gulp build",
+    "build:live": "npx gulp build --option production",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
-    "deploy:live": "npm run build && firebase deploy -P live --only hosting"
+    "deploy:live": "npm run build:live && firebase deploy -P live --only hosting"
   },
   "engines": {
     "npm": "8.1.2"
@@ -27,6 +28,7 @@
     "gulp-sass": "^5.0.0",
     "gulp-uglify": "^3.0.2",
     "through2": "^4.0.2",
+    "tsify": "^5.0.4",
     "vinyl-buffer": "^1.0.1",
     "vinyl-paths": "^3.0.1",
     "vinyl-source-stream": "^2.0.0"

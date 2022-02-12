@@ -871,21 +871,21 @@ const layouts = {
     ],
   },
   whorfmax: {
-    keymapShowTopRow: true,
+    keymapShowTopRow: false,
     keys: [
       "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(",  "0)", "[{", "]}",
       "fF", "lL", "hH", "vV", "kK", "qQ", "wW", "oO", "uU", ",<", "-_", "=+", "\\|",
-      "sS", "rR", "nN", "tT", "kK", "cC", "dD", "aA", "eE", "iI", "/?",
+      "sS", "rR", "nN", "tT", "pP", "cC", "dD", "aA", "eE", "iI", "/?",
       "\\|", "xX", "jJ", "bB", "yY", "zZ", "mM", "gG", "'\"", ";:", ".>",
       " "
     ],
   },
   whorfmax_ortho: {
-    keymapShowTopRow: true,
+    keymapShowTopRow: false,
     keys: [
       "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(",  "0)", "[{", "]}",
       "fF", "lL", "hH", "vV", "zZ", "qQ", "wW", "oO", "uU", ",<", "-_", "=+", "\\|",
-      "sS", "rR", "nN", "tT", "kK", "cC", "dD", "aA", "eE", "iI", "/?",
+      "sS", "rR", "nN", "tT", "pP", "cC", "dD", "aA", "eE", "iI", "/?",
       "\\|", "xX", "jJ", "bB", "yY", "kK", "mM", "gG", "'\"", ";:", ".>",
       " "
     ],

@@ -187,6 +187,10 @@ $("#customTextPopup .wordfilter").click(() => {
   WordFilterPopup.show();
 });
 
+$(document).on("click", "#top .config .customText .text-button", () => {
+  show();
+});
+
 $(document).keydown((event) => {
   if (
     event.key === "Escape" &&

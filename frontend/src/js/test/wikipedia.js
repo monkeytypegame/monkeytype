@@ -48,9 +48,9 @@ export async function getSection(language) {
   urlTLD = await getTLD(currentLanguageGroup);
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
-  var sectionObj = {};
-  var randomPostReq = await fetch(randomPostURL);
-  var pageid = 0;
+  let sectionObj = {};
+  let randomPostReq = await fetch(randomPostURL);
+  let pageid = 0;
 
   if (randomPostReq.status == 200) {
     let postObj = await randomPostReq.json();
@@ -67,7 +67,7 @@ export async function getSection(language) {
 
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
-    var sectionReq = new XMLHttpRequest();
+    let sectionReq = new XMLHttpRequest();
     sectionReq.onload = () => {
       if (sectionReq.readyState == 4) {
         if (sectionReq.status == 200) {
