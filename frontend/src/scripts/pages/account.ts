@@ -1,32 +1,46 @@
+// @ts-ignore
 import * as DB from "../db";
-import * as Misc from "../misc";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
+// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
+// @ts-ignore
 import * as ThemeColors from "../elements/theme-colors";
+// @ts-ignore
 import * as ChartController from "../controllers/chart-controller";
+// @ts-ignore
 import Config, * as UpdateConfig from "../config";
+// @ts-ignore
 import * as MiniResultChart from "../account/mini-result-chart";
+// @ts-ignore
 import * as AllTimeStats from "../account/all-time-stats";
+// @ts-ignore
 import * as PbTables from "../account/pb-tables";
+// @ts-ignore
 import * as LoadingPage from "./loading";
+// @ts-ignore
 import * as Focus from "../test/focus";
+// @ts-ignore
 import * as SignOutButton from "../account/sign-out-button";
+// @ts-ignore
 import * as TodayTracker from "../test/today-tracker";
 import Page from "./page";
+import * as Misc from "../misc";
+import * as Types from "../types/interfaces";
 
 let filterDebug = false;
 //toggle filterdebug
-export function toggleFilterDebug() {
+export function toggleFilterDebug(): void {
   filterDebug = !filterDebug;
   if (filterDebug) {
     console.log("filterDebug is on");
   }
 }
 
-let filteredResults = [];
+let filteredResults: Types.Result[] = [];
 let visibleTableLines = 0;
 
-function loadMoreLines(lineIndex) {
+function loadMoreLines(lineIndex?: number): void {
   if (filteredResults == [] || filteredResults.length == 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
@@ -36,8 +50,7 @@ function loadMoreLines(lineIndex) {
   }
   for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
-    if (result == undefined) continue;
-    let withpunc = "";
+    if (!result) continue;
     let diff = result.difficulty;
     if (diff == undefined) {
       diff = "normal";
@@ -55,7 +68,7 @@ function loadMoreLines(lineIndex) {
       raw = "-";
     }
 
-    let icons = `<span aria-label="${result.language.replace(
+    let icons = `<span aria-label="${result.language?.replace(
       "_",
       " "
     )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
@@ -103,7 +116,7 @@ function loadMoreLines(lineIndex) {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags.forEach((snaptag) => {
+        DB.getSnapshot().tags.forEach((snaptag: Types.Tag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
@@ -129,15 +142,13 @@ function loadMoreLines(lineIndex) {
       }
     }
 
-    let consistency = result.consistency;
+    let consistency = "-";
 
-    if (consistency === undefined) {
-      consistency = "-";
-    } else {
-      consistency = consistency.toFixed(2) + "%";
+    if (result.consistency) {
+      consistency = result.consistency.toFixed(2) + "%";
     }
 
-    let pb = result.isPb;
+    let pb = result.isPb?.toString();
     if (pb) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
@@ -159,7 +170,7 @@ function loadMoreLines(lineIndex) {
     <td>${result.acc.toFixed(2)}%</td>
     <td>${consistency}</td>
     <td>${charStats}</td>
-    <td>${result.mode} ${result.mode2}${withpunc}</td>
+    <td>${result.mode} ${result.mode2}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>
     <td>${moment(result.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
@@ -173,7 +184,7 @@ function loadMoreLines(lineIndex) {
   }
 }
 
-export function reset() {
+export function reset(): void {
   $(".pageAccount .history table tbody").empty();
   ChartController.accountActivity.data.datasets[0].data = [];
   ChartController.accountActivity.data.datasets[1].data = [];
@@ -185,8 +196,8 @@ export function reset() {
 
 let totalSecondsFiltered = 0;
 
-export function update() {
-  function cont() {
+export function update(): void {
+  function cont(): void {
     LoadingPage.updateText("Displaying stats...");
     LoadingPage.updateBar(100);
     console.log("updating account page");
@@ -197,9 +208,27 @@ export function update() {
 
     PbTables.update();
 
-    let chartData = [];
-    let wpmChartData = [];
-    let accChartData = [];
+    type ChartData = {
+      x: number;
+      y: number;
+      acc: number;
+      mode: string;
+      mode2: string | number;
+      punctuation: boolean;
+      language: string;
+      timestamp: number;
+      difficulty: string;
+      raw: number;
+    };
+
+    type AccChartData = {
+      x: number;
+      y: number;
+    };
+
+    const chartData: ChartData[] = [];
+    const wpmChartData: number[] = [];
+    const accChartData: AccChartData[] = [];
     visibleTableLines = 0;
 
     let topWpm = 0;
@@ -215,7 +244,7 @@ export function update() {
     let totalAcc = 0;
     let totalAcc10 = 0;
 
-    let rawWpm = {
+    const rawWpm = {
       total: 0,
       count: 0,
       last10Total: 0,
@@ -231,27 +260,19 @@ export function update() {
     let totalCons10 = 0;
     let consCount = 0;
 
-    let activityChartData = {};
+    type ActivityChartData = {
+      [key: number]: {
+        amount: number;
+        time: number;
+        totalWpm: number;
+      };
+    };
+
+    const activityChartData: ActivityChartData = {};
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results.forEach((result) => {
-      let tt = 0;
-      if (result.testDuration == undefined) {
-        //test finished before testDuration field was introduced - estimate
-        if (result.mode == "time") {
-          tt = parseFloat(result.mode2);
-        } else if (result.mode == "words") {
-          tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
-        }
-      } else {
-        tt = parseFloat(result.testDuration);
-      }
-      if (result.incompleteTestSeconds != undefined) {
-        tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
-        tt += (tt / 4) * result.restartCount;
-      }
+    DB.getSnapshot().results.forEach((result: Types.Result) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -273,8 +294,8 @@ export function update() {
 
         if (result.mode == "time") {
           let timefilter = "custom";
-          if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
-            timefilter = result.mode2;
+          if ([15, 30, 60, 120].includes(result.mode2 as number)) {
+            timefilter = result.mode2.toString();
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
             if (filterDebug)
@@ -283,8 +304,8 @@ export function update() {
           }
         } else if (result.mode == "words") {
           let wordfilter = "custom";
-          if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
-            wordfilter = result.mode2;
+          if ([10, 25, 50, 100, 200].includes(result.mode2 as number)) {
+            wordfilter = result.mode2.toString();
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
             if (filterDebug)
@@ -375,7 +396,9 @@ export function update() {
           }
         } else {
           //tags exist
-          let validTags = DB.getSnapshot().tags.map((t) => t._id);
+          const validTags: string[] = DB.getSnapshot().tags.map(
+            (t: Types.Tag) => t._id
+          );
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
@@ -396,7 +419,7 @@ export function update() {
           return;
         }
 
-        let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
+        const timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
 
         let datehide = true;
 
@@ -435,22 +458,22 @@ export function update() {
       //filters done
       //=======================================
 
-      let resultDate = new Date(result.timestamp);
+      const resultDate = new Date(result.timestamp);
       resultDate.setSeconds(0);
       resultDate.setMinutes(0);
       resultDate.setHours(0);
       resultDate.setMilliseconds(0);
-      resultDate = resultDate.getTime();
+      const resultTimestamp = resultDate.getTime();
 
-      if (Object.keys(activityChartData).includes(String(resultDate))) {
-        activityChartData[resultDate].amount++;
-        activityChartData[resultDate].time +=
+      if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
+        activityChartData[resultTimestamp].amount++;
+        activityChartData[resultTimestamp].time +=
           result.testDuration +
           result.incompleteTestSeconds -
           (result.afkDuration ?? 0);
-        activityChartData[resultDate].totalWpm += result.wpm;
+        activityChartData[resultTimestamp].totalWpm += result.wpm;
       } else {
-        activityChartData[resultDate] = {
+        activityChartData[resultTimestamp] = {
           amount: 1,
           time:
             result.testDuration +
@@ -460,19 +483,26 @@ export function update() {
         };
       }
 
-      tt = 0;
-      if (result.testDuration == undefined) {
+      let tt = 0;
+      if (
+        result.testDuration == undefined &&
+        result.mode2 !== "custom" &&
+        result.mode2 !== "zen"
+      ) {
         //test finished before testDuration field was introduced - estimate
         if (result.mode == "time") {
-          tt = parseFloat(result.mode2);
+          tt = result.mode2;
         } else if (result.mode == "words") {
-          tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
+          tt = (result.mode2 / result.wpm) * 60;
         }
       } else {
-        tt = parseFloat(result.testDuration);
+        tt = result.testDuration;
       }
-
-      tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);
+      if (result.incompleteTestSeconds != undefined) {
+        tt += result.incompleteTestSeconds;
+      } else if (result.restartCount != undefined && result.restartCount > 0) {
+        tt += (tt / 4) * result.restartCount;
+      }
 
       // if (result.incompleteTestSeconds != undefined) {
       //   tt += result.incompleteTestSeconds;
@@ -527,7 +557,7 @@ export function update() {
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
-        punctuation: result.punctuation,
+        punctuation: result.punctuation as boolean,
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
@@ -544,8 +574,8 @@ export function update() {
       });
 
       if (result.wpm > topWpm) {
-        let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
-        let numbsctring = result.numbers
+        const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
+        const numbsctring = result.numbers
           ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
           : "";
         topWpm = result.wpm;
@@ -571,64 +601,34 @@ export function update() {
     loadMoreLines();
     ////////
 
-    let thisDate = new Date(Date.now());
-    thisDate.setSeconds(0);
-    thisDate.setMinutes(0);
-    thisDate.setHours(0);
-    thisDate.setMilliseconds(0);
-    thisDate = thisDate.getTime();
+    type ActivityChartDataPoint = {
+      x: number;
+      y: number;
+      amount?: number;
+    };
 
-    let activityChartData_amount = [];
-    let activityChartData_time = [];
-    let activityChartData_avgWpm = [];
+    const activityChartData_amount: ActivityChartDataPoint[] = [];
+    const activityChartData_time: ActivityChartDataPoint[] = [];
+    const activityChartData_avgWpm: ActivityChartDataPoint[] = [];
     // let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
-      //this was used to fill in empty days between the results before i realised chart js can do it for me
-      // let datecheck;
-      // if (lastTimestamp > 0) {
-      //   datecheck = lastTimestamp;
-      // } else {
-      //   datecheck = thisDate;
-      // }
-
-      // let numDaysBetweenTheDays = (datecheck - date) / 86400000;
-
-      // if (numDaysBetweenTheDays > 1) {
-      //   if (datecheck === thisDate) {
-      //     activityChartData_amount.push({
-      //       x: parseInt(thisDate),
-      //       y: 0,
-      //     });
-      //   }
-
-      //   for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
-      //     activityChartData_amount.push({
-      //       x: parseInt(datecheck) - 86400000 * (i + 1),
-      //       y: 0,
-      //     });
-      //     activityChartData_time.push({
-      //       x: parseInt(datecheck) - 86400000 * (i + 1),
-      //       y: 0,
-      //       amount: 0,
-      //     });
-      //   }
-      // }
-
+      const dateInt = parseInt(date);
       activityChartData_amount.push({
-        x: parseInt(date),
-        y: activityChartData[date].amount,
+        x: dateInt,
+        y: activityChartData[dateInt].amount,
       });
       activityChartData_time.push({
-        x: parseInt(date),
-        y: Misc.roundTo2(activityChartData[date].time),
-        amount: activityChartData[date].amount,
+        x: dateInt,
+        y: Misc.roundTo2(activityChartData[dateInt].time),
+        amount: activityChartData[dateInt].amount,
       });
       activityChartData_avgWpm.push({
-        x: parseInt(date),
+        x: dateInt,
         y: Misc.roundTo2(
           (Config.alwaysShowCPM
-            ? activityChartData[date].totalWpm * 5
-            : activityChartData[date].totalWpm) / activityChartData[date].amount
+            ? activityChartData[dateInt].totalWpm * 5
+            : activityChartData[dateInt].totalWpm) /
+            activityChartData[dateInt].amount
         ),
       });
       // lastTimestamp = date;
@@ -656,9 +656,9 @@ export function update() {
     ChartController.accountHistory.data.datasets[0].data = chartData;
     ChartController.accountHistory.data.datasets[1].data = accChartData;
 
-    let wpms = chartData.map((r) => r.y);
-    let minWpmChartVal = Math.min(...wpms);
-    let maxWpmChartVal = Math.max(...wpms);
+    const wpms = chartData.map((r) => r.y);
+    const minWpmChartVal = Math.min(...wpms);
+    const maxWpmChartVal = Math.max(...wpms);
 
     // let accuracies = accChartData.map((r) => r.y);
     ChartController.accountHistory.options.scales.yAxes[0].ticks.max =
@@ -804,15 +804,15 @@ export function update() {
       ChartController.accountActivity.options.plugins.trendlineLinear = false;
     }
 
-    let wpmPoints = filteredResults.map((r) => r.wpm).reverse();
+    const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
-    let trend = Misc.findLineByLeastSquares(wpmPoints);
+    const trend = Misc.findLineByLeastSquares(wpmPoints);
 
-    let wpmChange = trend[1][1] - trend[0][1];
+    const wpmChange = trend[1][1] - trend[0][1];
 
-    let wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
+    const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
 
-    let plus = wpmChangePerHour > 0 ? "+" : "";
+    const plus = wpmChangePerHour > 0 ? "+" : "";
 
     $(".pageAccount .group.chart .below .text").text(
       `Speed change per hour spent typing: ${
@@ -841,7 +841,7 @@ export function update() {
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (DB.getSnapshot().results === undefined) {
     LoadingPage.updateBar(45, true);
-    DB.getUserResults().then((d) => {
+    DB.getUserResults().then((d: boolean) => {
       TodayTracker.addAllFromToday();
       if (d) {
         ResultFilters.updateActive();
@@ -859,13 +859,21 @@ export function update() {
   }
 }
 
-function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
+function sortAndRefreshHistory(
+  keyString: string,
+  headerClass: string,
+  forceDescending: null | boolean = null
+): void {
   // Removes styling from previous sorting requests:
   $("td").removeClass("header-sorted");
   $("td").children("i").remove();
   $(headerClass).addClass("header-sorted");
 
   if (filteredResults.length < 2) return;
+
+  const key = keyString as keyof typeof filteredResults[0];
+
+  if (typeof filteredResults[0][key] !== "string") return;
 
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
@@ -881,7 +889,8 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
       );
     }
   } else if (
-    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+    parseInt(filteredResults[0][key] as string) <=
+    parseInt(filteredResults[filteredResults.length - 1][key] as string)
   ) {
     descending = true;
     $(headerClass).append(
@@ -892,8 +901,8 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  let temp = [];
-  let parsedIndexes = [];
+  const temp = [];
+  const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {
     let lowest = Number.MAX_VALUE;
@@ -903,13 +912,19 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
     for (let i = 0; i < filteredResults.length; i++) {
       //find the lowest wpm with index not already parsed
       if (!descending) {
-        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
-          lowest = filteredResults[i][key];
+        if (
+          (filteredResults[i][key] as number) <= lowest &&
+          !parsedIndexes.includes(i)
+        ) {
+          lowest = filteredResults[i][key] as number;
           idx = i;
         }
       } else {
-        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
-          highest = filteredResults[i][key];
+        if (
+          (filteredResults[i][key] as number) >= highest &&
+          !parsedIndexes.includes(i)
+        ) {
+          highest = filteredResults[i][key] as number;
           idx = i;
         }
       }
@@ -925,11 +940,11 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
   loadMoreLines();
 }
 
-$(".pageAccount .toggleAccuracyOnChart").click((e) => {
+$(".pageAccount .toggleAccuracyOnChart").click(() => {
   UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
-$(".pageAccount .toggleChartStyle").click((e) => {
+$(".pageAccount .toggleChartStyle").click(() => {
   if (Config.chartStyle == "line") {
     UpdateConfig.setChartStyle("scatter");
   } else {
@@ -937,16 +952,20 @@ $(".pageAccount .toggleChartStyle").click((e) => {
   }
 });
 
-$(".pageAccount .loadMoreButton").click((e) => {
+$(".pageAccount .loadMoreButton").click(() => {
   loadMoreLines();
 });
 
-$(".pageAccount #accountHistoryChart").click((e) => {
-  let index = ChartController.accountHistoryActiveIndex;
+$(".pageAccount #accountHistoryChart").click(() => {
+  const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
+  if (!window) return;
+  const windowHeight = $(window).height() ?? 0;
+  const offset = $(`#result-${index}`).offset()?.top ?? 0;
+  const scrollTo = offset - windowHeight / 2;
   $([document.documentElement, document.body]).animate(
     {
-      scrollTop: $(`#result-${index}`).offset().top - $(window).height() / 2,
+      scrollTop: scrollTo,
     },
     500
   );
@@ -956,53 +975,53 @@ $(".pageAccount #accountHistoryChart").click((e) => {
 
 $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   console.log("updating");
-  let filteredId = $(event.currentTarget).attr("filteredResultsId");
+  const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
-  MiniResultChart.updateData(filteredResults[filteredId].chartData);
+  MiniResultChart.updateData(filteredResults[parseInt(filteredId)].chartData);
   MiniResultChart.show();
   MiniResultChart.updatePosition(
-    event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
+    event.pageX - ($(".pageAccount .miniResultChartWrapper").outerWidth() ?? 0),
     event.pageY + 30
   );
 });
 
-$(document).on("click", ".history-wpm-header", (event) => {
+$(document).on("click", ".history-wpm-header", () => {
   sortAndRefreshHistory("wpm", ".history-wpm-header");
 });
 
-$(document).on("click", ".history-raw-header", (event) => {
+$(document).on("click", ".history-raw-header", () => {
   sortAndRefreshHistory("rawWpm", ".history-raw-header");
 });
 
-$(document).on("click", ".history-acc-header", (event) => {
+$(document).on("click", ".history-acc-header", () => {
   sortAndRefreshHistory("acc", ".history-acc-header");
 });
 
-$(document).on("click", ".history-correct-chars-header", (event) => {
+$(document).on("click", ".history-correct-chars-header", () => {
   sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
 });
 
-$(document).on("click", ".history-incorrect-chars-header", (event) => {
+$(document).on("click", ".history-incorrect-chars-header", () => {
   sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
 });
 
-$(document).on("click", ".history-consistency-header", (event) => {
+$(document).on("click", ".history-consistency-header", () => {
   sortAndRefreshHistory("consistency", ".history-consistency-header");
 });
 
-$(document).on("click", ".history-date-header", (event) => {
+$(document).on("click", ".history-date-header", () => {
   sortAndRefreshHistory("timestamp", ".history-date-header");
 });
 
 // Resets sorting to by date' when applying filers (normal or advanced)
-$(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
+$(document).on("click", ".buttonsAndTitle .buttons .button", () => {
   // We want to 'force' descending sort:
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
 });
 
 $(
   ".pageAccount .topFilters .button, .pageAccount .filterButtons .button "
-).click((e) => {
+).click(() => {
   setTimeout(() => {
     update();
   }, 0);

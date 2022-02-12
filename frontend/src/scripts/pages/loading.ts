@@ -1,7 +1,7 @@
 import * as Misc from "../misc";
 import Page from "./page";
 
-export function updateBar(percentage, fast) {
+export function updateBar(percentage: number, fast?: boolean): void {
   const speed = fast ? 100 : 1000;
   $(".pageLoading .fill, .pageAccount .fill")
     .stop(true, true)
@@ -13,12 +13,12 @@ export function updateBar(percentage, fast) {
     );
 }
 
-export function updateText(text) {
+export function updateText(text: string): void {
   $(".pageLoading .text, .pageAccount .text").text(text);
 }
 
-export function showBar() {
-  return new Promise((resolve, _reject) => {
+export function showBar(): Promise<void> {
+  return new Promise((resolve) => {
     Misc.swapElements(
       $(".pageLoading .icon"),
       $(".pageLoading .barWrapper"),

@@ -1,23 +1,52 @@
+// @ts-ignore
 import SettingsGroup from "../settings/settings-group";
+// @ts-ignore
 import Config, * as UpdateConfig from "../config";
+// @ts-ignore
 import * as Sound from "../controllers/sound-controller";
+// @ts-ignore
 import * as Misc from "../misc";
+// @ts-ignore
 import layouts from "../test/layouts";
+// @ts-ignore
 import * as LanguagePicker from "../settings/language-picker";
+// @ts-ignore
 import * as Notifications from "../elements/notifications";
+// @ts-ignore
 import * as DB from "../db";
+// @ts-ignore
 import * as Funbox from "../test/funbox";
+// @ts-ignore
 import * as TagController from "../controllers/tag-controller";
+// @ts-ignore
 import * as PresetController from "../controllers/preset-controller";
+// @ts-ignore
 import * as ThemePicker from "../settings/theme-picker";
+// @ts-ignore
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
+// @ts-ignore
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
+import * as Types from "../types/interfaces";
 
-export let groups = {};
-async function initGroups() {
+//todo remove once settings group is converted to ts
+type Group = {
+  configName: string;
+  configFunction: () => void;
+  mode: string;
+  setCallback: () => void;
+  updateCallback: () => void;
+  updateInput: () => void;
+};
+
+type Groups = {
+  [key: string]: Group;
+};
+
+export const groups: Groups = {};
+async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
   groups.smoothCaret = new SettingsGroup(
     "smoothCaret",
@@ -222,8 +251,7 @@ async function initGroups() {
   groups.soundVolume = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
-    "button",
-    () => {}
+    "button"
   );
   groups.playSoundOnError = new SettingsGroup(
     "playSoundOnError",
@@ -326,7 +354,7 @@ async function initGroups() {
     "button",
     null,
     () => {
-      let customButton = $(
+      const customButton = $(
         ".pageSettings .section.fontFamily .buttons .custom"
       );
       if (
@@ -360,7 +388,7 @@ async function initGroups() {
   // );
 }
 
-export function reset() {
+export function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
@@ -371,14 +399,14 @@ export function reset() {
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
 
-export async function fillSettingsPage() {
+export async function fillSettingsPage(): Promise<void> {
   if (Config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
   } else {
     $(".pageSettings .tip").addClass("hidden");
   }
 
-  let languageEl = $(".pageSettings .section.language select").empty();
+  const languageEl = $(".pageSettings .section.language select").empty();
   const groups = await Misc.getLanguageGroups();
   groups.forEach((group) => {
     let append = `<optgroup label="${group.name}">`;
@@ -393,7 +421,7 @@ export async function fillSettingsPage() {
   });
   languageEl.select2();
 
-  let layoutEl = $(".pageSettings .section.layout select").empty();
+  const layoutEl = $(".pageSettings .section.layout select").empty();
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
       `<option value='${layout}'>${
@@ -403,7 +431,7 @@ export async function fillSettingsPage() {
   });
   layoutEl.select2();
 
-  let keymapEl = $(".pageSettings .section.keymapLayout select").empty();
+  const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
@@ -414,7 +442,7 @@ export async function fillSettingsPage() {
   });
   keymapEl.select2();
 
-  let funboxEl = $(".pageSettings .section.funbox .buttons").empty();
+  const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
   Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
@@ -442,7 +470,7 @@ export async function fillSettingsPage() {
   });
 
   let isCustomFont = true;
-  let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
   Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
       if (Config.fontFamily === font.name) isCustomFont = false;
@@ -485,13 +513,13 @@ export async function fillSettingsPage() {
 
 // export let settingsFillPromise = fillSettingsPage();
 
-export function hideAccountSection() {
+export function hideAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
   $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
-export function updateDiscordSection() {
+export function updateDiscordSection(): void {
   //no code and no discord
   if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
@@ -516,17 +544,19 @@ export function updateDiscordSection() {
   }
 }
 
-export function updateAuthSections() {
+export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
 
-  let user = firebase.auth().currentUser;
+  const user = firebase.auth().currentUser;
   if (!user) return;
 
-  let passwordProvider = user.providerData.find(
+  const passwordProvider = user.providerData.find(
+    //@ts-ignore todo remove then firebase is initialised in code rather than with a script tag
     (provider) => provider.providerId === "password"
   );
-  let googleProvider = user.providerData.find(
+  const googleProvider = user.providerData.find(
+    //@ts-ignore
     (provider) => provider.providerId === "google.com"
   );
 
@@ -563,17 +593,17 @@ export function updateAuthSections() {
   }
 }
 
-function setActiveFunboxButton() {
+function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
     `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
   ).addClass("active");
 }
 
-function refreshTagsSettingsSection() {
+function refreshTagsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
-    let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags.forEach((tag) => {
+    const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
+    DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -605,10 +635,10 @@ function refreshTagsSettingsSection() {
   }
 }
 
-function refreshPresetsSettingsSection() {
+function refreshPresetsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
-    let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets.forEach((preset) => {
+    const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
+    DB.getSnapshot().presets.forEach((preset: Types.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
@@ -630,7 +660,7 @@ function refreshPresetsSettingsSection() {
   }
 }
 
-export function showAccountSection() {
+export function showAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
   $(`.pageSettings .section.needsAccount`).removeClass("hidden");
@@ -639,7 +669,7 @@ export function showAccountSection() {
   updateDiscordSection();
 }
 
-export function update() {
+export function update(): void {
   Object.keys(groups).forEach((group) => {
     groups[group].updateInput();
   });
@@ -668,7 +698,7 @@ export function update() {
   );
 }
 
-function toggleSettingsGroup(groupName) {
+function toggleSettingsGroup(groupName: string): void {
   $(`.pageSettings .settingsGroup.${groupName}`)
     .stop(true, true)
     .slideToggle(250)
@@ -711,72 +741,88 @@ function toggleSettingsGroup(groupName) {
 $(document).on(
   "focusout",
   ".pageSettings .section.paceCaret input.customPaceCaretSpeed",
-  (e) => {
+  () => {
     UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
-        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
+        $(
+          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+        ).val() as string
       )
     );
   }
 );
 
-$(document).on(
-  "click",
-  ".pageSettings .section.paceCaret .button.save",
-  (e) => {
-    UpdateConfig.setPaceCaretCustomSpeed(
-      parseInt(
-        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
-      )
-    );
-  }
-);
+$(document).on("click", ".pageSettings .section.paceCaret .button.save", () => {
+  UpdateConfig.setPaceCaretCustomSpeed(
+    parseInt(
+      $(
+        ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+      ).val() as string
+    )
+  );
+});
 
 $(document).on(
   "focusout",
   ".pageSettings .section.minWpm input.customMinWpmSpeed",
-  (e) => {
+  () => {
     UpdateConfig.setMinWpmCustomSpeed(
-      parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
+      parseInt(
+        $(
+          ".pageSettings .section.minWpm input.customMinWpmSpeed"
+        ).val() as string
+      )
     );
   }
 );
 
-$(document).on("click", ".pageSettings .section.minWpm .button.save", (e) => {
+$(document).on("click", ".pageSettings .section.minWpm .button.save", () => {
   UpdateConfig.setMinWpmCustomSpeed(
-    parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
+    parseInt(
+      $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
+    )
   );
 });
 
 $(document).on(
   "focusout",
   ".pageSettings .section.minAcc input.customMinAcc",
-  (e) => {
+  () => {
     UpdateConfig.setMinAccCustom(
-      parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
+      parseInt(
+        $(".pageSettings .section.minAcc input.customMinAcc").val() as string
+      )
     );
   }
 );
 
-$(document).on("click", ".pageSettings .section.minAcc .button.save", (e) => {
+$(document).on("click", ".pageSettings .section.minAcc .button.save", () => {
   UpdateConfig.setMinAccCustom(
-    parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
+    parseInt(
+      $(".pageSettings .section.minAcc input.customMinAcc").val() as string
+    )
   );
 });
 
 $(document).on(
   "focusout",
   ".pageSettings .section.minBurst input.customMinBurst",
-  (e) => {
+  () => {
     UpdateConfig.setMinBurstCustomSpeed(
-      parseInt($(".pageSettings .section.minBurst input.customMinBurst").val())
+      parseInt(
+        $(
+          ".pageSettings .section.minBurst input.customMinBurst"
+        ).val() as string
+      )
     );
   }
 );
 
-$(document).on("click", ".pageSettings .section.minBurst .button.save", (e) => {
+$(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
   UpdateConfig.setMinBurstCustomSpeed(
-    parseInt($(".pageSettings .section.minBurst input.customMinBurst").val())
+    parseInt(
+      $(".pageSettings .section.minBurst input.customMinBurst").val() as string
+    )
   );
 });
 
@@ -784,15 +830,15 @@ $(document).on(
   "click",
   ".pageSettings .section.languageGroups .button",
   (e) => {
-    let group = $(e.currentTarget).attr("group");
+    const group = $(e.currentTarget).attr("group");
     LanguagePicker.setActiveGroup(group, true);
   }
 );
 
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
-  let funbox = $(e.currentTarget).attr("funbox");
-  let type = $(e.currentTarget).attr("type");
+  const funbox = $(e.currentTarget).attr("funbox");
+  const type = $(e.currentTarget).attr("type");
   Funbox.setFunbox(funbox, type);
   setActiveFunboxButton();
 });
@@ -802,8 +848,8 @@ $(document).on(
   "click",
   ".pageSettings .section.tags .tagsList .tag .tagButton",
   (e) => {
-    let target = e.currentTarget;
-    let tagid = $(target).parent(".tag").attr("id");
+    const target = e.currentTarget;
+    const tagid = $(target).parent(".tag").attr("id");
     TagController.toggle(tagid);
     $(target).toggleClass("active");
   }
@@ -813,8 +859,8 @@ $(document).on(
   "click",
   ".pageSettings .section.presets .presetsList .preset .presetButton",
   (e) => {
-    let target = e.currentTarget;
-    let presetid = $(target).parent(".preset").attr("id");
+    const target = e.currentTarget;
+    const presetid = $(target).parent(".preset").attr("id");
     console.log("Applying Preset");
     configEventDisabled = true;
     PresetController.apply(presetid);
@@ -823,32 +869,32 @@ $(document).on(
   }
 );
 
-$("#importSettingsButton").click((e) => {
+$("#importSettingsButton").click(() => {
   ImportExportSettingsPopup.show("import");
 });
 
-$("#exportSettingsButton").click((e) => {
-  let configJSON = JSON.stringify(Config);
+$("#exportSettingsButton").click(() => {
+  const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
       Notifications.add("JSON Copied to clipboard", 0);
     },
-    function (err) {
+    function () {
       ImportExportSettingsPopup.show("export");
     }
   );
 });
 
-$("#shareCustomThemeButton").click((e) => {
-  let share = [];
+$("#shareCustomThemeButton").click(() => {
+  const share: string[] = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
     (index, element) => {
-      share.push($(element).attr("value"));
+      share.push($(element).attr("value") as string);
     }
   );
 
-  let url =
+  const url =
     "https://monkeytype.com?" +
     Misc.objectToQueryString({ customTheme: share });
 
@@ -856,19 +902,19 @@ $("#shareCustomThemeButton").click((e) => {
     function () {
       Notifications.add("URL Copied to clipboard", 0);
     },
-    function (err) {
+    function () {
       CustomThemePopup.show(url);
     }
   );
 });
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
-  toggleSettingsGroup($(e.currentTarget).attr("group"));
+  toggleSettingsGroup($(e.currentTarget).attr("group") as string);
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   "click",
-  (e) => {
+  () => {
     UpdateConfig.setCustomBackground(
       $(
         ".pageSettings .section.customBackgroundSize .inputAndButton input"
@@ -891,7 +937,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
-  (e) => {
+  () => {
     UpdateConfig.setCustomLayoutfluid(
       $(".pageSettings .section.customLayoutfluid .inputAndButton input").val()
     );
@@ -921,10 +967,10 @@ $(".quickNav .links a").on("click", (e) => {
 });
 
 let configEventDisabled = false;
-export function setEventDisabled(value) {
+export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey) => {
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings") {
     update();
