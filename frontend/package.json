@@ -4,12 +4,12 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts",
     "build": "npx gulp build",
     "build:live": "npx gulp build-production",
-    "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
-    "deploy:live": "npm run build:live && firebase deploy -P live --only hosting",
     "build:webpack": "webpack --config webpack.config.js",
-    "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts"
+    "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
+    "deploy:live": "npm run build:live && firebase deploy -P live --only hosting"
   },
   "engines": {
     "npm": "8.1.2"
