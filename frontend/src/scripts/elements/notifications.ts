@@ -1,15 +1,25 @@
 import * as Misc from "../misc";
-// const notificationHistory = [];
+
 let id = 0;
 class Notification {
+  id: number;
+  type: string;
+  message: string;
+  level: number;
+  duration: number;
+  customTitle?: string;
+  customIcon?: string;
+  closeCallback: () => void;
   constructor(
-    type,
-    message,
-    level,
-    duration,
-    customTitle,
-    customIcon,
-    closeCallback = () => {}
+    type: string,
+    message: string,
+    level: number,
+    duration: number,
+    customTitle?: string,
+    customIcon?: string,
+    closeCallback = (): void => {
+      //
+    }
   ) {
     this.type = type;
     this.message = message;
@@ -36,7 +46,7 @@ class Notification {
   //0 - notice
   //1 - good
   //-1 - bad
-  show() {
+  show(): void {
     let cls = "notice";
     let icon = `<i class="fas fa-fw fa-exclamation"></i>`;
     let title = "Notice";
@@ -65,7 +75,7 @@ class Notification {
 
     if (this.type === "notification") {
       // moveCurrentToHistory();
-      let oldHeight = $("#notificationCenter .history").height();
+      const oldHeight = $("#notificationCenter .history").height() as number;
       $("#notificationCenter .history").prepend(`
           
           <div class="notif ${cls}" id=${this.id}>
@@ -74,7 +84,7 @@ class Notification {
           </div>     
 
           `);
-      let newHeight = $("#notificationCenter .history").height();
+      const newHeight = $("#notificationCenter .history").height() as number;
       $(`#notificationCenter .notif[id='${this.id}']`).remove();
       $("#notificationCenter .history")
         .css("margin-top", 0)
@@ -119,7 +129,7 @@ class Notification {
     } else if (this.type === "banner") {
       let leftside = `<div class="icon lefticon">${icon}</div>`;
 
-      if (/^images\/.*/.test(this.customIcon)) {
+      if (/^images\/.*/.test(this.customIcon as string)) {
         leftside = `<div class="image" style="background-image: url(${this.customIcon})"></div>`;
       }
 
@@ -142,7 +152,7 @@ class Notification {
         </div>
       </div>
       `);
-      let height = $("#bannerCenter").height();
+      const height = $("#bannerCenter").height() as number;
       $("#centerContent").css(
         "padding-top",
         height + Misc.convertRemToPixels(2) + "px"
@@ -161,7 +171,7 @@ class Notification {
       }, this.duration + 250);
     }
   }
-  hide() {
+  hide(): void {
     if (this.type === "notification") {
       $(`#notificationCenter .notif[id='${this.id}']`)
         .css("opacity", 1)
@@ -184,7 +194,7 @@ class Notification {
         );
     } else if (this.type === "banner") {
       $(`#bannerCenter .banner[id='${this.id}']`).remove();
-      let height = $("#bannerCenter").height();
+      const height = $("#bannerCenter").height() as number;
       $("#centerContent").css(
         "padding-top",
         height + Misc.convertRemToPixels(2) + "px"
@@ -195,13 +205,13 @@ class Notification {
 }
 
 export function add(
-  message,
-  level,
-  duration,
-  customTitle,
-  customIcon,
-  closeCallback
-) {
+  message: string,
+  level: number,
+  duration: number,
+  customTitle: string,
+  customIcon: string,
+  closeCallback: () => void
+): void {
   // notificationHistory.push(
   new Notification(
     "notification",
@@ -216,12 +226,12 @@ export function add(
 }
 
 export function addBanner(
-  message,
+  message: string,
   level = -1,
   customIcon = "bullhorn",
   sticky = false,
-  closeCallback
-) {
+  closeCallback: () => void
+): void {
   // notificationHistory.push(
   new Notification(
     "banner",
