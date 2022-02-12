@@ -7,12 +7,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "./src/**/*.ts",
-    "src/js/account/sign-out-button.js",
-    "src/js/account/pb-tables.js",
-    "src/js/account/mini-result-chart.js",
-    "src/js/account/all-time-stats.js"
-  ],
-  "files": ["./src/js/modules.d.ts"]
+  "include": ["./src/**/*.ts"],
+  "files": ["src/scripts/modules.d.ts"]
 }
