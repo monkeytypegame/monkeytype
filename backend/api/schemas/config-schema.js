@@ -42,13 +42,10 @@ const CONFIG_SCHEMA = joi.object({
   layout: joi.string(),
   funbox: joi.string(),
   confidenceMode: joi.string().valid("off", "on", "max"),
-  indicateTypos: joi
-    .alternatives()
-    .try(
-      joi.boolean(), //todo remove
-      joi.string().valid("off", "below", "replace")
-    )
-    .required(),
+  indicateTypos: joi.alternatives().try(
+    joi.boolean(), //todo remove
+    joi.string().valid("off", "below", "replace")
+  ),
   timerStyle: joi.string().valid("bar", "text", "mini"),
   colorfulMode: joi.boolean(),
   randomTheme: joi.string().valid("off", "on", "fav", "light", "dark"),
