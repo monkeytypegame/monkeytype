@@ -903,7 +903,10 @@ export function swapElements(
   }
 }
 
-export function getMode2(config: Types.Config, randomQuote: Quote): string {
+export function getMode2(
+  config: Types.Config,
+  randomQuote: Types.Quote
+): string {
   const mode = config.mode;
   let mode2 = "";
   if (mode === "time") {
