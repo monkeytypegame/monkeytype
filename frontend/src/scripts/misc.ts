@@ -189,7 +189,7 @@ export async function getQuotes(language: string): Promise<QuoteCollection> {
   }
 }
 
-type Font = { name: string };
+type Font = { name: string; display?: string };
 
 let fontsList: Font[] = [];
 export async function getFontsList(): Promise<Font[]> {
