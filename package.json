@@ -9,9 +9,10 @@
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
-    "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/js/**/*.js'",
-    "pretty": "prettier --check './backend/**/*.{ts,js}' './frontend/src/**/*.{ts,js,scss}' './frontend/static/**/*.{json,html}'",
-    "webpack": "cd frontend && npx webpack --config webpack.config.js"
+    "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
+    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "webpack": "cd frontend && npx webpack --config webpack.config.js",
+    "dep-graph": "madge -c -i \"dep-graph.png\" ./frontend/src/js"
   },
   "engines": {
     "npm": "8.1.2"
@@ -20,6 +21,7 @@
     "@types/jquery": "^3.5.13",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
+    "babel-loader": "^8.2.3",
     "circular-dependency-plugin": "^5.2.2",
     "concurrently": "5.3.0",
     "eslint": "8.8.0",
@@ -30,6 +32,7 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-require-path-exists": "1.1.9",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "husky": "4.3.0",
     "prettier": "^2.5.1",
     "pretty-quick": "3.1.0",
