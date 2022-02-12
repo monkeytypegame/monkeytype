@@ -78,7 +78,7 @@ function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
   colorPicker.find("input[type=color]").attr("value", color);
 }
 
-export function refreshButtons() {
+export async function refreshButtons() {
   let favThemesEl = $(
     ".pageSettings .section.themes .favThemes.buttons"
   ).empty();
@@ -89,42 +89,41 @@ export function refreshButtons() {
     activeThemeName = ThemeController.randomTheme;
   }
 
-  Misc.getSortedThemesList().then((themes) => {
-    //first show favourites
-    if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
-        if (Config.favThemes.includes(theme.name)) {
-          let activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesEl.append(
-            `<div class="theme button ${activeTheme}" theme='${
-              theme.name
-            }' style="color:${theme.mainColor};background:${theme.bgColor}">
-          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-          <div class="text">${theme.name.replace(/_/g, " ")}</div>
-          <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-          );
-        }
-      });
-    } else {
-      favThemesEl.css({ paddingBottom: "0" });
-    }
-    //then the rest
+  const themes = await Misc.getSortedThemesList();
+  //first show favourites
+  if (Config.favThemes.length > 0) {
+    favThemesEl.css({ paddingBottom: "1rem" });
     themes.forEach((theme) => {
-      if (!Config.favThemes.includes(theme.name)) {
+      if (Config.favThemes.includes(theme.name)) {
         let activeTheme = activeThemeName === theme.name ? "active" : "";
-        themesEl.append(
+        favThemesEl.append(
           `<div class="theme button ${activeTheme}" theme='${
             theme.name
           }' style="color:${theme.mainColor};background:${theme.bgColor}">
-          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-          <div class="text">${theme.name.replace(/_/g, " ")}</div>
-          <div class="favButton"><i class="far fa-star"></i></div></div>`
+        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+        <div class="text">${theme.name.replace(/_/g, " ")}</div>
+        <div class="favButton active"><i class="fas fa-star"></i></div></div>`
         );
       }
     });
-    updateActiveButton();
+  } else {
+    favThemesEl.css({ paddingBottom: "0" });
+  }
+  //then the rest
+  themes.forEach((theme) => {
+    if (!Config.favThemes.includes(theme.name)) {
+      let activeTheme = activeThemeName === theme.name ? "active" : "";
+      themesEl.append(
+        `<div class="theme button ${activeTheme}" theme='${
+          theme.name
+        }' style="color:${theme.mainColor};background:${theme.bgColor}">
+        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+        <div class="text">${theme.name.replace(/_/g, " ")}</div>
+        <div class="favButton"><i class="far fa-star"></i></div></div>`
+      );
+    }
   });
+  updateActiveButton();
 }
 
 export function setCustomInputs(noThemeUpdate) {
