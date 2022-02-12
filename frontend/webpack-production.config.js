@@ -12,9 +12,11 @@ module.exports = {
       stream: require.resolve("stream-browserify"),
       buffer: require.resolve("buffer"),
     },
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [
+      { test: /\.tsx?$/, loader: "ts-loader" },
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
