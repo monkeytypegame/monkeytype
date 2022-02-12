@@ -14,7 +14,7 @@ class Notification {
     type: string,
     message: string,
     level: number,
-    duration: number,
+    duration: number | undefined,
     customTitle?: string,
     customIcon?: string,
     closeCallback = (): void => {
@@ -25,7 +25,7 @@ class Notification {
     this.message = message;
     this.level = level;
     if (type === "banner") {
-      this.duration = duration;
+      this.duration = duration as number;
     } else {
       if (duration == undefined) {
         if (level === -1) {
@@ -206,11 +206,11 @@ class Notification {
 
 export function add(
   message: string,
-  level: number,
-  duration: number,
-  customTitle: string,
-  customIcon: string,
-  closeCallback: () => void
+  level = 0,
+  duration?: number,
+  customTitle?: string,
+  customIcon?: string,
+  closeCallback?: () => void
 ): void {
   // notificationHistory.push(
   new Notification(

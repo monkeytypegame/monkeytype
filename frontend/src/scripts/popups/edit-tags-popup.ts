@@ -4,7 +4,6 @@ import * as ResultFilters from "../account/result-filters";
 import * as Loader from "../elements/loader";
 // @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import axiosInstance from "../axios-instance";

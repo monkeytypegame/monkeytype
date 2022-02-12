@@ -1,13 +1,12 @@
 // @ts-ignore
 import * as Loader from "../elements/loader";
 // @ts-ignore
-import * as Notifications from "../elements/notifications";
-// @ts-ignore
 import * as AccountController from "../controllers/account-controller";
 // @ts-ignore
 import * as DB from "../db";
 // @ts-ignore
 import * as UpdateConfig from "../config";
+import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
 import { AxiosError } from "axios";
@@ -675,7 +674,7 @@ list.resetPersonalBests = new SimplePopup(
       }
     } catch (e) {
       Loader.hide();
-      Notifications.add(e, -1);
+      Notifications.add(e as string, -1);
     }
   },
   () => {

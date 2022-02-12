@@ -3,12 +3,11 @@ import * as Loader from "../elements/loader";
 // @ts-ignore
 import * as DB from "../db";
 // @ts-ignore
-import * as Notifications from "../elements/notifications";
-// @ts-ignore
 import * as Config from "../config";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
 import * as Types from "../types/interfaces";
+import * as Notifications from "../elements/notifications";
 import { AxiosError } from "axios";
 
 export function show(action: string, id?: string, name?: string): void {

@@ -1,8 +1,6 @@
 // @ts-ignore
 import * as DB from "../db";
 // @ts-ignore
-import * as Notifications from "../elements/notifications";
-// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
 // @ts-ignore
 import * as ThemeColors from "../elements/theme-colors";
@@ -24,6 +22,7 @@ import * as Focus from "../test/focus";
 import * as SignOutButton from "../account/sign-out-button";
 // @ts-ignore
 import * as TodayTracker from "../test/today-tracker";
+import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
 import * as Types from "../types/interfaces";
