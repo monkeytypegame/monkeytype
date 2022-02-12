@@ -17,8 +17,6 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.13",
-    "@types/select2": "^4.0.55",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "babel-loader": "^8.2.3",
