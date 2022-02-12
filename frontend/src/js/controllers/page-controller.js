@@ -1,13 +1,14 @@
-import * as Misc from "./../misc";
-import * as ActivePage from "./../states/active-page";
-import * as Settings from "./../pages/settings";
-import * as Account from "./../pages/account";
-import * as ManualRestart from "./../test/manual-restart-tracker";
-import * as PageTest from "./../pages/test";
-import * as PageAbout from "./../pages/about";
-import * as PageLogin from "./../pages/login";
-import * as PageLoading from "./../pages/loading";
-import * as PageTransition from "./../states/page-transition";
+import * as Misc from "../misc";
+import * as ActivePage from "../states/active-page";
+import * as Settings from "../pages/settings";
+import * as Account from "../pages/account";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as PageTest from "../pages/test";
+import * as PageAbout from "../pages/about";
+import * as PageLogin from "../pages/login";
+import * as PageLoading from "../pages/loading";
+import * as PageTransition from "../states/page-transition";
+import * as TestLogic from "../test/test-logic";
 
 export function change(page) {
   if (PageTransition.get()) {
@@ -16,7 +17,10 @@ export function change(page) {
   }
   console.log(`change page ${page}`);
 
-  if (page === "") page = "test";
+  if (page === "") {
+    TestLogic.restart();
+    return;
+  }
   if (page == undefined) {
     //use window loacation
     let pages = {
@@ -80,6 +84,8 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   if (!$(e.currentTarget).hasClass("leaderboards")) {
     const href = $(e.currentTarget).attr("href");
     ManualRestart.set();
+    console.log(href);
+    console.log(href.replace("/", ""));
     change(href.replace("/", ""));
   }
   return false;

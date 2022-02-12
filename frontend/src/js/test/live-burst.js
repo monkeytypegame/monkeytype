@@ -1,6 +1,6 @@
 import Config from "../config";
-import * as TestActive from "./../states/test-active";
-import * as ConfigEvent from "./../observables/config-event";
+import * as TestActive from "../states/test-active";
+import * as ConfigEvent from "../observables/config-event";
 
 export function update(burst) {
   let number = burst;

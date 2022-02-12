@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import * as ModesNotice from "./../elements/modes-notice";
+import * as ModesNotice from "../elements/modes-notice";
 
 export function saveActiveToLocalStorage() {
   let tags = [];

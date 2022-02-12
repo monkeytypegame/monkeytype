@@ -2,7 +2,7 @@ import Config, * as UpdateConfig from "../config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
 import * as SlowTimer from "../states/slow-timer";
-import * as ConfigEvent from "./../observables/config-event";
+import * as ConfigEvent from "../observables/config-event";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
