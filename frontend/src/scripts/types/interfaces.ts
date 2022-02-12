@@ -188,7 +188,7 @@ export declare interface Result {
   incorrectChars?: number; // legacy results
   acc: number;
   mode: Mode;
-  mode2: WordsModes | TimeModes;
+  mode2: number | "custom";
   quoteLength: number;
   timestamp: number;
   restartCount: number;
