@@ -10,10 +10,12 @@ const through2 = require("through2");
 const { webpack } = require("webpack");
 const webpackDevConfig = require("./webpack.config.js");
 const webpackProdConfig = require("./webpack-production.config.js");
+const ts = require("gulp-typescript");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = "../.eslintrc.json";
-let tsEslintConfig = "../ts.eslintrc.json";
+let tsProject = ts.createProject("tsconfig.json");
+// console.log(tsProject.src())
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -31,6 +33,14 @@ task("lint-json", function () {
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
+});
+
+task("copy-src-contents", function () {
+  return src("./src/js/**").pipe(dest("./dist/"));
+});
+
+task("transpile-ts", function () {
+  return tsProject.src().pipe(tsProject()).js.pipe(dest("dist"));
 });
 
 task("webpack", async function () {
@@ -107,7 +117,16 @@ task("updateSwCacheName", function () {
 
 task(
   "compile",
-  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
+  series(
+    "lint",
+    "lint-json",
+    "copy-src-contents",
+    "transpile-ts",
+    "webpack",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
 );
 
 task(
@@ -115,6 +134,8 @@ task(
   series(
     "lint",
     "lint-json",
+    "copy-src-contents",
+    "transpile-ts",
     "webpack-production",
     "static",
     "sass",
@@ -124,7 +145,10 @@ task(
 
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
-  watch(["./src/js/**/*.js", "./src/js/**/*.ts"], series("lint", "webpack"));
+  watch(
+    ["./src/js/**/*.js", "./src/js/**/*.ts"],
+    series("lint", "copy-src-contents", "transpile-ts", "webpack")
+  );
   watch("./static/**/*.*", series("lint-json", "static"));
 });
 

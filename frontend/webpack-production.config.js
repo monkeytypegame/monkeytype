@@ -4,8 +4,8 @@ const CircularDependencyPlugin = require("circular-dependency-plugin");
 let circularImportNum = 0;
 
 module.exports = {
-  mode: "production", // Change to 'production' for production
-  entry: path.resolve(__dirname, "src/js/index.js"),
+  mode: "production",
+  entry: path.resolve(__dirname, "dist/index.js"),
   resolve: {
     fallback: {
       crypto: require.resolve("crypto-browserify"),
@@ -22,7 +22,10 @@ module.exports = {
           loader: "babel-loader",
           options: {
             presets: ["@babel/preset-env"],
-            plugins: ["@babel/plugin-transform-runtime"],
+            plugins: [
+              "@babel/plugin-transform-runtime",
+              "@babel/plugin-transform-modules-commonjs",
+            ],
           },
         },
       },
