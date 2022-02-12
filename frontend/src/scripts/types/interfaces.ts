@@ -202,7 +202,7 @@ export declare interface Result {
   uid: string;
   keySpacingStats: KeyStats;
   keyDurationStats: KeyStats;
-  isPb: boolean;
+  isPb?: boolean;
   bailedOut?: boolean;
   blindMode?: boolean;
   lazyMode?: boolean;
