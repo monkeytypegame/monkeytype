@@ -12,7 +12,7 @@ export function apply(_id) {
       TagController.clear(true);
       if (preset.config.tags) {
         preset.config.tags.forEach((tagid) => {
-          TagController.set(tagid, true, true);
+          TagController.set(tagid, true, false);
         });
       }
       TestLogic.restart();
