@@ -58,11 +58,11 @@ export function loadActiveFromLocalStorage() {
   let newTags = window.localStorage.getItem("activeTags");
   if (newTags != undefined && newTags !== "") {
     try {
-      newTags = JSON.parse(newTags) ?? {};
+      newTags = JSON.parse(newTags) ?? [];
     } catch (e) {
-      newTags = {};
+      newTags = [];
     }
-    Object.keys(newTags).forEach((ntag) => {
+    newTags.forEach((ntag) => {
       toggle(ntag, true);
     });
     saveActiveToLocalStorage();

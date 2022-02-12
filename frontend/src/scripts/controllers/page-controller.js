@@ -80,8 +80,6 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   if (!$(e.currentTarget).hasClass("leaderboards")) {
     const href = $(e.currentTarget).attr("href");
     ManualRestart.set();
-    console.log(href);
-    console.log(href.replace("/", ""));
     change(href.replace("/", ""));
   }
   return false;
