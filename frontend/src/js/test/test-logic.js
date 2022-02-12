@@ -1683,6 +1683,12 @@ $(document).on(
   }
 );
 
+$(document).on("click", "#top #menu #startTestButton, #top .logo", (e) => {
+  if (ActivePage.get() === "test") restart();
+});
+
+// ===============================
+
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
   if (eventKey === "showAllLines" && !nosave) restart();

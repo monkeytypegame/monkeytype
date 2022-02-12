@@ -10,7 +10,6 @@ import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 
 ManualRestart.set();
-Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
 
 if (window.location.hostname === "localhost") {

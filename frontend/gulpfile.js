@@ -1,22 +1,21 @@
 const { task, src, dest, series, watch } = require("gulp");
 // const axios = require("axios");
-const browserify = require("browserify");
-const babelify = require("babelify");
 const concat = require("gulp-concat");
 const del = require("del");
-const source = require("vinyl-source-stream");
-const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint-new");
-var sass = require("gulp-sass")(require("dart-sass"));
+const sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
-const uglify = require("gulp-uglify");
 const through2 = require("through2");
-const tsify = require("tsify");
+const { webpack } = require("webpack");
+const webpackDevConfig = require("./webpack.config.js");
+const webpackProdConfig = require("./webpack-production.config.js");
+const ts = require("gulp-typescript");
 // sass.compiler = require("dart-sass");
 
 let eslintConfig = "../.eslintrc.json";
-let tsEslintConfig = "../ts.eslintrc.json";
+let tsProject = ts.createProject("tsconfig.json");
+// console.log(tsProject.src())
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -36,35 +35,40 @@ task("lint-json", function () {
     .pipe(eslint.failAfterError());
 });
 
-task("browserify", function () {
-  const b = browserify({
-    entries: "./src/js/index.js",
-    //a source map isn't very useful right now because
-    //the source files are concatenated together
-    debug: false,
+task("copy-src-contents", function () {
+  return src("./src/js/**").pipe(dest("./dist/"));
+});
+
+task("transpile-ts", function () {
+  return tsProject.src().pipe(tsProject()).js.pipe(dest("dist"));
+});
+
+task("webpack", async function () {
+  return new Promise((resolve, reject) => {
+    webpack(webpackDevConfig, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.hasErrors()) {
+        return reject(new Error(stats.compilation.errors.join("\n")));
+      }
+      resolve();
+    });
   });
-  let ret = b
-    .transform(
-      babelify.configure({
-        presets: ["@babel/preset-env"],
-        plugins: ["@babel/transform-runtime"],
-      })
-    )
-    .plugin(tsify)
-    .bundle()
-    .pipe(source("monkeytype.js"))
-    .pipe(buffer());
+});
 
-  if (process.argv[4] === "production") {
-    ret = ret.pipe(
-      uglify({
-        mangle: false,
-      })
-    );
-  }
-
-  ret = ret.pipe(dest("./public/js"));
-  return ret;
+task("webpack-production", async function () {
+  return new Promise((resolve, reject) => {
+    webpack(webpackProdConfig, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.hasErrors()) {
+        return reject(new Error(stats.compilation.errors.join("\n")));
+      }
+      resolve();
+    });
+  });
 });
 
 task("static", function () {
@@ -116,7 +120,23 @@ task(
   series(
     "lint",
     "lint-json",
-    "browserify",
+    "copy-src-contents",
+    "transpile-ts",
+    "webpack",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
+);
+
+task(
+  "compile-production",
+  series(
+    "lint",
+    "lint-json",
+    "copy-src-contents",
+    "transpile-ts",
+    "webpack-production",
     "static",
     "sass",
     "updateSwCacheName"
@@ -125,8 +145,12 @@ task(
 
 task("watch", function () {
   watch("./src/sass/**/*.scss", series("sass"));
-  watch(["./src/js/**/*.js", "./src/js/**/*.ts"], series("lint", "browserify"));
+  watch(
+    ["./src/js/**/*.js", "./src/js/**/*.ts"],
+    series("lint", "copy-src-contents", "transpile-ts", "webpack")
+  );
   watch("./static/**/*.*", series("lint-json", "static"));
 });
 
 task("build", series("clean", "compile"));
+task("build-production", series("clean", "compile-production"));

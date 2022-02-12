@@ -479,8 +479,8 @@ export async function fillSettingsPage() {
   setEventDisabled(true);
   await initGroups();
   setEventDisabled(false);
+  await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
-  ThemePicker.refreshButtons();
 }
 
 // export let settingsFillPromise = fillSettingsPage();
@@ -652,7 +652,6 @@ export function update() {
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   updateAuthSections();
-  ThemePicker.refreshButtons();
   // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
