@@ -1,7 +1,7 @@
 name: "Mark Stale PRs"
 on:
   schedule:
-    - cron: "30 8 * * *"
+    - cron: "30 20 * * *"
 
 permissions:
   pull-requests: write
