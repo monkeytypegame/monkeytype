@@ -8,7 +8,6 @@ import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageTransition from "../states/page-transition";
-import * as TestLogic from "../test/test-logic";
 
 export function change(page) {
   if (PageTransition.get()) {
@@ -17,10 +16,7 @@ export function change(page) {
   }
   console.log(`change page ${page}`);
 
-  if (page === "") {
-    TestLogic.restart();
-    return;
-  }
+  if (page === "") page = "test";
   if (page == undefined) {
     //use window loacation
     let pages = {
