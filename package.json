@@ -11,9 +11,7 @@
     "install:all": "sh ./bin/install.sh",
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
-    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
-    "webpack": "cd frontend && npx webpack --config webpack.config.js",
-    "dep-graph": "madge -c -i \"dep-graph.png\" ./frontend/src/js"
+    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'"
   },
   "engines": {
     "npm": "8.1.2"
@@ -24,7 +22,6 @@
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "babel-loader": "^8.2.3",
-    "circular-dependency-plugin": "^5.2.2",
     "concurrently": "5.3.0",
     "eslint": "8.8.0",
     "eslint-config-standard": "16.0.3",
@@ -34,11 +31,9 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-require-path-exists": "1.1.9",
-    "gulp-typescript": "^6.0.0-alpha.1",
     "husky": "4.3.0",
     "prettier": "2.1.2",
-    "pretty-quick": "3.1.0",
-    "webpack-cli": "^4.9.2"
+    "pretty-quick": "3.1.0"
   },
   "husky": {
     "hooks": {

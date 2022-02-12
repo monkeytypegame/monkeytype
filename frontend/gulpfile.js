@@ -11,11 +11,9 @@ const { webpack } = require("webpack");
 const webpackDevConfig = require("./webpack.config.js");
 const webpackProdConfig = require("./webpack-production.config.js");
 const ts = require("gulp-typescript");
-// sass.compiler = require("dart-sass");
 
-let eslintConfig = "../.eslintrc.json";
-let tsProject = ts.createProject("tsconfig.json");
-// console.log(tsProject.src())
+const eslintConfig = "../.eslintrc.json";
+const tsProject = ts.createProject("tsconfig.json");
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -117,16 +115,7 @@ task("updateSwCacheName", function () {
 
 task(
   "compile",
-  series(
-    "lint",
-    "lint-json",
-    // "copy-src-contents",
-    // "transpile-ts",
-    "webpack",
-    "static",
-    "sass",
-    "updateSwCacheName"
-  )
+  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
 );
 
 task(
@@ -134,8 +123,6 @@ task(
   series(
     "lint",
     "lint-json",
-    // "copy-src-contents",
-    // "transpile-ts",
     "webpack-production",
     "static",
     "sass",
@@ -147,12 +134,7 @@ task("watch", function () {
   watch("./src/styles/**/*.scss", series("sass"));
   watch(
     ["./src/scripts/**/*.js", "./src/scripts/**/*.ts"],
-    series(
-      "lint",
-      // "copy-src-contents",
-      // "transpile-ts",
-      "webpack"
-    )
+    series("lint", "webpack")
   );
   watch("./static/**/*.*", series("lint-json", "static"));
 });
