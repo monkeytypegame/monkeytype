@@ -128,18 +128,11 @@ export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
   });
 }
 
-type Quote = {
-  text: string;
-  source: string;
-  length: number;
-  id: number;
-  group?: number;
-};
 type QuoteCollection = {
-  quotes: Quote[];
+  quotes: Types.Quote[];
   length?: number;
   language?: string;
-  groups: number[][] | Quote[][];
+  groups: number[][] | Types.Quote[][];
 };
 
 let quotes: QuoteCollection;
