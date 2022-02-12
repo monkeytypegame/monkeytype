@@ -4,8 +4,7 @@ on:
     - cron: "30 22 * * *"
 
 permissions:
-  pull-requests: read
-  pull-requests: write
+  pull-requests: read/write
 
 jobs:
   stale:
