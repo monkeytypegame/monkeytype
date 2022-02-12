@@ -206,7 +206,7 @@ export declare interface Result {
   bailedOut?: boolean;
   blindMode?: boolean;
   lazyMode?: boolean;
-  difficulty?: Difficulty;
+  difficulty: Difficulty;
   funbox?: string;
   language: string;
   numbers?: boolean;
