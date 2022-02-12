@@ -69,6 +69,10 @@ function hide(): void {
   }
 }
 
+interface ConfigChanges extends Types.Config {
+  tags: string[];
+}
+
 async function apply(): Promise<void> {
   const action = $("#presetWrapper #presetEdit").attr("action");
   const inputVal = $("#presetWrapper #presetEdit input").val() as string;
@@ -77,16 +81,18 @@ async function apply(): Promise<void> {
   const updateConfig = $("#presetWrapper #presetEdit label input").prop(
     "checked"
   );
-  let configChanges = null;
+
+  // TODO fix this sometime
+  let configChanges: ConfigChanges = (null as unknown) as ConfigChanges;
   if ((updateConfig && action === "edit") || action === "add") {
-    configChanges = Config.getConfigChanges();
+    configChanges = Config.getConfigChanges() as ConfigChanges;
     const activeTagIds: string[] = [];
     DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
       if (tag.active) {
         activeTagIds.push(tag._id);
       }
     });
-    configChanges.tags = activeTagIds;
+    configChanges.tags = activeTagIds as string[];
   }
 
   hide();

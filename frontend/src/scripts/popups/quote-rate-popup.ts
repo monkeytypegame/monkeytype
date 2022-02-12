@@ -69,6 +69,8 @@ export async function getQuoteStats(
     }
     return quoteStats as QuoteStats;
   }
+
+  return;
 }
 
 function refreshStars(force?: number): void {
@@ -245,5 +247,6 @@ $("#quoteRatePopup .submitButton").click(() => {
 });
 
 $(".pageTest #rateQuoteButton").click(async () => {
-  show(TestWords.randomQuote);
+  // TODO remove this when done with TestWords
+  show((TestWords.randomQuote as unknown) as Types.Quote);
 });
