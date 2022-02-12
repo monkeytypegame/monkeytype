@@ -13,10 +13,14 @@ module.exports = {
       stream: require.resolve("stream-browserify"),
       buffer: require.resolve("buffer"),
     },
+    extensions: [".ts", ".js"],
   },
   output: {
     path: path.resolve(__dirname, "public/js/"),
     filename: "monkeytype.js",
+  },
+  module: {
+    rules: [{ test: /\.tsx?$/, loader: "ts-loader" }],
   },
   plugins: [
     // Ensure that there are no circular dependencies
