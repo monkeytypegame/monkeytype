@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const joi = require("joi");
 const MonkeyError = require("../handlers/error");
+const { handleResponse } = require("../handlers/response");
 
 /**
  * This utility checks that the server's configuration matches
@@ -34,15 +35,9 @@ function asyncHandler(handler) {
   return async (req, res, next) => {
     try {
       const handlerData = await handler(req, res);
+      res.body = handlerData;
 
-      if (!res.headersSent) {
-        if (handlerData) {
-          res.json(handlerData);
-        } else {
-          res.sendStatus(204);
-        }
-      }
-      next();
+      return handleResponse(req, res, next);
     } catch (error) {
       next(error);
     }

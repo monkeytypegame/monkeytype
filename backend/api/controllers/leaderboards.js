@@ -1,5 +1,7 @@
 const _ = require("lodash");
 const LeaderboardsDAO = require("../../dao/leaderboards");
+const { verifyIdToken } = require("../../handlers/auth");
+const { MonkeyResponse } = require("../../handlers/response");
 
 class LeaderboardsController {
   static async get(req, _res) {
@@ -20,20 +22,14 @@ class LeaderboardsController {
         : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
     });
 
-    return normalizedLeaderboard;
+    return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
   }
 
   static async getRank(req, res) {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.ctx.decodedToken;
-
-    if (!uid) {
-      return res.status(400).json({
-        message: "Missing user id.",
-      });
-    }
-
-    return await LeaderboardsDAO.getRank(mode, mode2, language, uid);
+    const data = LeaderboardsDAO.getRank(mode, mode2, language, uid);
+    return new MonkeyResponse("Rank retrieved", data);
   }
 }
 
