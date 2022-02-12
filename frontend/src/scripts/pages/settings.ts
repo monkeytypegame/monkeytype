@@ -39,6 +39,7 @@ type Group = {
   setCallback: () => void;
   updateCallback: () => void;
   updateInput: () => void;
+  setValue: (string: string) => void;
 };
 
 type Groups = {
