@@ -1,1 +1,1 @@
-declare var firebase: any;
+declare let firebase: any;
