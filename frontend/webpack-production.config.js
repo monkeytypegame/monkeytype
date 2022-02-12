@@ -4,8 +4,7 @@ const CircularDependencyPlugin = require("circular-dependency-plugin");
 let circularImportNum = 0;
 
 module.exports = {
-  mode: "development", // Change to 'production' for production
-  devtool: false,
+  mode: "production",
   entry: path.resolve(__dirname, "dist/index.js"),
   resolve: {
     fallback: {
@@ -13,6 +12,24 @@ module.exports = {
       stream: require.resolve("stream-browserify"),
       buffer: require.resolve("buffer"),
     },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"],
+            plugins: [
+              "@babel/plugin-transform-runtime",
+              "@babel/plugin-transform-modules-commonjs",
+            ],
+          },
+        },
+      },
+    ],
   },
   output: {
     path: path.resolve(__dirname, "public/js/"),
@@ -43,6 +60,7 @@ module.exports = {
           coloredImportNum = `\u001b[32m${circularImportNum}\u001b[0m`;
         else coloredImportNum = `\u001b[31m${circularImportNum}\u001b[0m`;
         console.log(`Found ${coloredImportNum} circular imports`);
+        if (circularImportNum > 0) process.exit(1);
       },
     }),
   ],
