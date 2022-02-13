@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as Loader from "./elements/loader";
 import * as Types from "./types/interfaces";
 
@@ -128,18 +127,11 @@ export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
   });
 }
 
-type Quote = {
-  text: string;
-  source: string;
-  length: number;
-  id: number;
-  group?: number;
-};
 type QuoteCollection = {
-  quotes: Quote[];
+  quotes: Types.Quote[];
   length?: number;
   language?: string;
-  groups: number[][] | Quote[][];
+  groups: number[][] | Types.Quote[][];
 };
 
 let quotes: QuoteCollection;
@@ -910,7 +902,10 @@ export function swapElements(
   }
 }
 
-export function getMode2(config: Types.Config, randomQuote: Quote): string {
+export function getMode2(
+  config: Types.Config,
+  randomQuote: Types.Quote
+): string {
   const mode = config.mode;
   let mode2 = "";
   if (mode === "time") {

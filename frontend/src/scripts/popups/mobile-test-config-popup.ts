@@ -1,16 +1,20 @@
+// @ts-ignore
+import * as TestLogic from "../test/test-logic";
+// @ts-ignore
 import Config from "../config";
+// @ts-ignore
+import * as UpdateConfig from "../config";
+// @ts-ignore
+import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount-popup";
 import * as CustomTestDurationPopup from "./custom-test-duration-popup";
-import * as UpdateConfig from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
 
-let el = $("#mobileTestConfigPopup");
+const el = $("#mobileTestConfigPopup");
 
-export function update() {
+export function update(): void {
   el.find(".button").removeClass("active");
 
   el.find(`.modeGroup .button[mode='${Config.mode}']`).addClass("active");
@@ -55,18 +59,18 @@ export function update() {
   }
 }
 
-function showPopup() {
+function showPopup(): void {
   if ($("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
     update();
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {});
+      .animate({ opacity: 1 }, 100);
   }
 }
 
-function hidePopup() {
+function hidePopup(): void {
   if (!$("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
@@ -76,7 +80,7 @@ function hidePopup() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#mobileTestConfigPopupWrapper").addClass("hidden");
         }
       );
@@ -89,7 +93,7 @@ $("#mobileTestConfigPopupWrapper").click((e) => {
   }
 });
 
-$("#top .mobileConfig").click((e) => {
+$("#top .mobileConfig").click(() => {
   showPopup();
 });
 
@@ -106,7 +110,7 @@ el.find(".wordsGroup .button").on("click", (e) => {
 });
 
 el.find(".timeGroup .button").on("click", (e) => {
-  let mode = $(e.currentTarget).attr("time");
+  const mode = $(e.currentTarget).attr("time");
   if (mode == "custom") {
     hidePopup();
     CustomTestDurationPopup.show();
@@ -118,7 +122,8 @@ el.find(".timeGroup .button").on("click", (e) => {
 });
 
 el.find(".quoteGroup .button").on("click", (e) => {
-  let len = $(e.currentTarget).attr("quote");
+  let len: number | number[] = ($(e.currentTarget).attr("quote") ??
+    0) as number;
   if (len == -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     hidePopup();
@@ -133,18 +138,18 @@ el.find(".quoteGroup .button").on("click", (e) => {
   }
 });
 
-el.find(".customChange").on("click", (e) => {
+el.find(".customChange").on("click", () => {
   hidePopup();
   CustomTextPopup.show();
 });
 
-el.find(".punctuation").on("click", (e) => {
+el.find(".punctuation").on("click", () => {
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   TestLogic.restart();
 });
 
-el.find(".numbers").on("click", (e) => {
+el.find(".numbers").on("click", () => {
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   TestLogic.restart();
@@ -158,7 +163,7 @@ el.find(".modeGroup .button").on("click", (e) => {
   TestLogic.restart();
 });
 
-$("#mobileTestConfigPopup .button").click((e) => {
+$("#mobileTestConfigPopup .button").click(() => {
   // hidePopup();
   update();
 });

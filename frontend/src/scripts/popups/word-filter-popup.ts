@@ -3,10 +3,10 @@ import * as CustomText from "../test/custom-text";
 
 let initialised = false;
 
-async function init() {
+async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
-    let LanguageList = await Misc.getLanguageList();
+    const LanguageList = await Misc.getLanguageList();
     LanguageList.forEach((language) => {
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
@@ -18,7 +18,7 @@ async function init() {
   }
 }
 
-export async function show() {
+export async function show(): Promise<void> {
   await init();
   $("#wordFilterPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
@@ -27,34 +27,40 @@ export async function show() {
   });
 }
 
-function hide() {
+function hide(): void {
   $("#wordFilterPopupWrapper").addClass("hidden");
   $("#customTextPopupWrapper").removeClass("hidden");
 }
 
-async function filter(language) {
-  let filterin = $("#wordFilterPopup .wordIncludeInput").val();
-  filterin = Misc.escapeRegExp(filterin.trim());
+async function filter(language: string): Promise<string[]> {
+  let filterin = $("#wordFilterPopup .wordIncludeInput").val() as string;
+  filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
-  let regincl = new RegExp(filterin, "i");
-  let filterout = $("#wordFilterPopup .wordExcludeInput").val();
+  const regincl = new RegExp(filterin, "i");
+  let filterout = $("#wordFilterPopup .wordExcludeInput").val() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
-  let regexcl = new RegExp(filterout, "i");
-  let filteredWords = [];
-  let languageWordList = await Misc.getLanguage(language);
-  let maxLength = $("#wordFilterPopup .wordMaxInput").val();
-  let minLength = $("#wordFilterPopup .wordMinInput").val();
-  if (maxLength == "") {
+  const regexcl = new RegExp(filterout, "i");
+  const filteredWords = [];
+  const languageWordList = await Misc.getLanguage(language);
+  const maxLengthInput = $("#wordFilterPopup .wordMaxInput").val() as string;
+  const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
+  let maxLength;
+  let minLength;
+  if (maxLengthInput == "") {
     maxLength = 999;
+  } else {
+    maxLength = parseInt(maxLengthInput);
   }
-  if (minLength == "") {
+  if (minLengthInput == "") {
     minLength = 1;
+  } else {
+    minLength = parseInt(minLengthInput);
   }
   for (let i = 0; i < languageWordList.words.length; i++) {
-    let word = languageWordList.words[i];
-    let test1 = regincl.test(word);
-    let test2 = regexcl.test(word);
+    const word = languageWordList.words[i];
+    const test1 = regincl.test(word);
+    const test2 = regexcl.test(word);
     if (
       ((test1 && !test2) || (test1 && filterout == "")) &&
       word.length <= maxLength &&
@@ -66,10 +72,10 @@ async function filter(language) {
   return filteredWords;
 }
 
-async function apply(set) {
-  let language = $("#wordFilterPopup .languageInput").val();
-  let filteredWords = await filter(language);
-  let customText = filteredWords.join(CustomText.delimiter);
+async function apply(set: boolean): Promise<void> {
+  const language = $("#wordFilterPopup .languageInput").val() as string;
+  const filteredWords = await filter(language);
+  const customText = filteredWords.join(CustomText.delimiter);
 
   $("#customTextPopup textarea").val(
     (index, val) => (set ? "" : val + " ") + customText
@@ -83,7 +89,7 @@ $("#wordFilterPopupWrapper").mousedown((e) => {
   }
 });
 
-$("#wordFilterPopup .languageInput").one("select2:open", function (e) {
+$("#wordFilterPopup .languageInput").one("select2:open", function () {
   $("input.select2-search__field").prop("placeholder", "search");
 });
 

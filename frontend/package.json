@@ -15,6 +15,8 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.13",
+    "@types/select2": "^4.0.55",
     "@babel/core": "^7.17.2",
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@babel/plugin-transform-runtime": "^7.17.0",

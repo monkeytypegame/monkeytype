@@ -4,6 +4,10 @@ export declare type CustomModes = "custom";
 
 export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
 
+export declare type Mode2<M extends Mode> = keyof PersonalBests[M];
+
+// export declare type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
+
 export declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
 
 export declare type WordsModes = NoncustomWordsModes | CustomModes;
@@ -140,25 +144,22 @@ export declare interface PersonalBest {
 
 export declare interface PersonalBests {
   time: {
-    15: PersonalBest[];
-    30: PersonalBest[];
-    60: PersonalBest[];
-    120: PersonalBest[];
+    [key: number]: PersonalBest[];
+    custom: PersonalBest[];
   };
   words: {
-    10: PersonalBest[];
-    25: PersonalBest[];
-    50: PersonalBest[];
-    100: PersonalBest[];
+    [key: number]: PersonalBest[];
+    custom: PersonalBest[];
   };
   quote: { [quote: string]: PersonalBest[] };
   custom: { custom: PersonalBest[] };
+  zen: PersonalBest[];
 }
 
 export declare interface Tag {
   _id: string;
   name: string;
-  personalBests: PersonalBests;
+  personalBests: PersonalBests | Record<string, never>;
   active: boolean;
 }
 
@@ -313,14 +314,14 @@ export declare interface Snapshot {
   quoteRatings?: object; // TODO find structure of quoteRatings
   results?: Result[];
   verified?: boolean;
-  personalBests: PersonalBests;
+  personalBests?: PersonalBests;
   name?: string;
-  presets: Preset[];
-  tags: Tag[];
-  favouriteThemes: string[];
+  presets?: Preset[];
+  tags?: Tag[];
+  favouriteThemes?: string[];
   lbMemory?: Leaderboard;
-  globalStats: Stats;
-  quoteMod: boolean;
+  globalStats?: Stats;
+  quoteMod?: boolean;
   discordId?: string;
   config?: Config;
 }
@@ -485,6 +486,15 @@ export interface CommandsObject {
   title: string;
   configKey?: keyof Config;
   list: Command[];
+}
+
+export interface Quote {
+  text: string;
+  source: string;
+  length: number;
+  id: number;
+  group?: number;
+  language: string;
 }
 
 // export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";

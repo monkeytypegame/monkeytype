@@ -1,10 +1,8 @@
 // @ts-ignore
 import Config from "./config";
 // @ts-ignore
-import * as Notifications from "./elements/notifications";
-// @ts-ignore
 import * as Caret from "./test/caret";
-// @ts-ignore
+import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
 import * as ConfigEvent from "./observables/config-event";
@@ -44,7 +42,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error): void {
-    Notifications.add(error, -1);
+    Notifications.add(error.toString(), -1);
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");

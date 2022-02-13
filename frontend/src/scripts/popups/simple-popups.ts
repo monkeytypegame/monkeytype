@@ -1,22 +1,45 @@
+// @ts-ignore
+import * as AccountController from "../controllers/account-controller";
+// @ts-ignore
+import * as DB from "../db";
+// @ts-ignore
+import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as AccountController from "../controllers/account-controller";
-import * as DB from "../db";
-import * as Settings from "../pages/settings";
 import axiosInstance from "../axios-instance";
-import * as UpdateConfig from "../config";
+import * as Settings from "../pages/settings";
+import { AxiosError } from "axios";
+import * as Types from "../types/interfaces";
 
-export let list = {};
+type Input = {
+  placeholder: string;
+  type?: string;
+  initVal: string;
+  hidden?: boolean;
+};
+
+export const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
+  parameters: string[];
+  wrapper: JQuery;
+  element: JQuery;
+  id: string;
+  type: string;
+  title: string;
+  inputs: Input[];
+  text: string;
+  buttonText: string;
+  execFn: any;
+  beforeShowFn: any;
   constructor(
-    id,
-    type,
-    title,
-    inputs = [],
+    id: string,
+    type: string,
+    title: string,
+    inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn,
-    beforeShowFn
+    execFn: any,
+    beforeShowFn: any
   ) {
     this.parameters = [];
     this.id = id;
@@ -30,7 +53,7 @@ class SimplePopup {
     this.buttonText = buttonText;
     this.beforeShowFn = beforeShowFn;
   }
-  reset() {
+  reset(): void {
     this.element.html(`
     <div class="title"></div>
     <div class="inputs"></div>
@@ -38,8 +61,8 @@ class SimplePopup {
     <div class="button"></div>`);
   }
 
-  init() {
-    let el = this.element;
+  init(): void {
+    const el = this.element;
     el.find("input").val("");
     // if (el.attr("popupId") !== this.id) {
     this.reset();
@@ -58,8 +81,8 @@ class SimplePopup {
     // }
   }
 
-  initInputs() {
-    let el = this.element;
+  initInputs(): void {
+    const el = this.element;
     if (this.inputs.length > 0) {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
@@ -108,16 +131,17 @@ class SimplePopup {
     }
   }
 
-  exec() {
-    let vals = [];
+  exec(): void {
+    const vals: string[] = [];
     $.each($("#simplePopup input"), (index, el) => {
-      vals.push($(el).val());
+      vals.push($(el).val() as string);
     });
+    // @ts-ignore todo remove
     this.execFn(...vals);
     this.hide();
   }
 
-  show(parameters) {
+  show(parameters: string[] = []): void {
     this.parameters = parameters;
     this.beforeShowFn();
     this.init();
@@ -130,7 +154,7 @@ class SimplePopup {
       });
   }
 
-  hide() {
+  hide(): void {
     this.wrapper
       .stop(true, true)
       .css("opacity", 1)
@@ -141,7 +165,7 @@ class SimplePopup {
   }
 }
 
-export function hide() {
+export function hide(): void {
   $("#simplePopupWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -163,15 +187,15 @@ $("#simplePopupWrapper").mousedown((e) => {
   }
 });
 
-$(document).on("click", "#simplePopupWrapper .button", (e) => {
-  let id = $("#simplePopup").attr("popupId");
+$(document).on("click", "#simplePopupWrapper .button", () => {
+  const id = $("#simplePopup").attr("popupId") ?? "";
   list[id].exec();
 });
 
 $(document).on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    let id = $("#simplePopup").attr("popupId");
+    const id = $("#simplePopup").attr("popupId") ?? "";
     list[id].exec();
   }
 });
@@ -197,7 +221,7 @@ list.updateEmail = new SimplePopup(
   ],
   "",
   "Update",
-  async (password, email, emailConfirm) => {
+  async (password: string, email: string, emailConfirm: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (email !== emailConfirm) {
@@ -219,9 +243,10 @@ list.updateEmail = new SimplePopup(
           previousEmail: user.email,
           newEmail: email,
         });
-      } catch (e) {
+      } catch (error) {
+        const e = error as AxiosError;
         Loader.hide();
-        let msg = e?.response?.data?.message ?? e.message;
+        const msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to update email: " + msg, -1);
         return;
       }
@@ -236,6 +261,7 @@ list.updateEmail = new SimplePopup(
         }, 1000);
       }
     } catch (e) {
+      // @ts-ignore todo help
       if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -245,6 +271,7 @@ list.updateEmail = new SimplePopup(
   },
   () => {
     const user = firebase.auth().currentUser;
+    // @ts-ignore todo remove ignore once firebase is initialised with code
     if (!user.providerData.find((p) => p.providerId === "password")) {
       eval(`this.inputs = []`);
       eval(`this.buttonText = undefined`);
@@ -271,7 +298,7 @@ list.updateName = new SimplePopup(
   ],
   "",
   "Update",
-  async (pass, newName) => {
+  async (pass: string, newName: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -288,9 +315,10 @@ list.updateName = new SimplePopup(
       let response;
       try {
         response = await axiosInstance.get(`/user/checkName/${newName}`);
-      } catch (e) {
+      } catch (error) {
+        const e = error as AxiosError;
         Loader.hide();
-        let msg = e?.response?.data?.message ?? e.message;
+        const msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to check name: " + msg, -1);
         return;
       }
@@ -303,9 +331,10 @@ list.updateName = new SimplePopup(
         response = await axiosInstance.patch("/user/name", {
           name: newName,
         });
-      } catch (e) {
+      } catch (error) {
+        const e = error as AxiosError;
         Loader.hide();
-        let msg = e?.response?.data?.message ?? e.message;
+        const msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to update name: " + msg, -1);
         return;
       }
@@ -320,6 +349,7 @@ list.updateName = new SimplePopup(
       }
     } catch (e) {
       Loader.hide();
+      // @ts-ignore todo remove ignore
       if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -359,7 +389,7 @@ list.updatePassword = new SimplePopup(
   ],
   "",
   "Update",
-  async (previousPass, newPass, newPassConfirm) => {
+  async (previousPass: string, newPass: string, newPassConfirm: string) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -380,6 +410,7 @@ list.updatePassword = new SimplePopup(
       }, 1000);
     } catch (e) {
       Loader.hide();
+      // @ts-ignore todo remove ignore
       if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -389,6 +420,7 @@ list.updatePassword = new SimplePopup(
   },
   () => {
     const user = firebase.auth().currentUser;
+    // @ts-ignore todo remove ignore
     if (!user.providerData.find((p) => p.providerId === "password")) {
       eval(`this.inputs = []`);
       eval(`this.buttonText = undefined`);
@@ -425,7 +457,12 @@ list.addPasswordAuth = new SimplePopup(
   ],
   "",
   "Add",
-  async (email, emailConfirm, pass, passConfirm) => {
+  async (
+    email: string,
+    emailConfirm: string,
+    pass: string,
+    passConfirm: string
+  ) => {
     if (email !== emailConfirm) {
       Notifications.add("Emails don't match", 0);
       return;
@@ -441,7 +478,9 @@ list.addPasswordAuth = new SimplePopup(
       window.location.reload();
     }, 1000);
   },
-  () => {}
+  () => {
+    //
+  }
 );
 
 list.deleteAccount = new SimplePopup(
@@ -457,7 +496,7 @@ list.deleteAccount = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
-  async (password) => {
+  async (password: string) => {
     //
     try {
       const user = firebase.auth().currentUser;
@@ -476,9 +515,10 @@ list.deleteAccount = new SimplePopup(
       let response;
       try {
         response = await axiosInstance.delete("/user");
-      } catch (e) {
+      } catch (error) {
+        const e = error as AxiosError;
         Loader.hide();
-        let msg = e?.response?.data?.message ?? e.message;
+        const msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to delete user stats: " + msg, -1);
         return;
       }
@@ -489,9 +529,10 @@ list.deleteAccount = new SimplePopup(
       Notifications.add("Deleting results...", 0);
       try {
         response = await axiosInstance.post("/results/deleteAll");
-      } catch (e) {
+      } catch (error) {
+        const e = error as AxiosError;
         Loader.hide();
-        let msg = e?.response?.data?.message ?? e.message;
+        const msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to delete user results: " + msg, -1);
         return;
       }
@@ -509,6 +550,7 @@ list.deleteAccount = new SimplePopup(
       }, 3000);
     } catch (e) {
       Loader.hide();
+      // @ts-ignore todo remove ignore
       if (e.code == "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -533,14 +575,16 @@ list.clearTagPb = new SimplePopup(
   `Are you sure you want to clear this tags PB?`,
   "Clear",
   () => {
-    let tagid = eval("this.parameters[0]");
+    const tagid = eval("this.parameters[0]");
     Loader.show();
     axiosInstance
       .delete(`/user/tags/${tagid}/clearPb`)
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
-          let tag = DB.getSnapshot().tags.filter((t) => t.id === tagid)[0];
+          const tag = DB.getSnapshot().tags.filter(
+            (t: Types.Tag) => t._id === tagid
+          )[0];
           tag.pb = 0;
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
@@ -574,11 +618,13 @@ list.applyCustomFont = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying.",
   "Apply",
-  (fontName) => {
+  (fontName: string) => {
     if (fontName === "") return;
     Settings.groups.fontFamily?.setValue(fontName.replace(/\s/g, "_"));
   },
-  () => {}
+  () => {
+    //
+  }
 );
 
 list.resetPersonalBests = new SimplePopup(
@@ -594,7 +640,7 @@ list.resetPersonalBests = new SimplePopup(
   ],
   "",
   "Reset",
-  async (password) => {
+  async (password: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -611,9 +657,10 @@ list.resetPersonalBests = new SimplePopup(
       let response;
       try {
         response = await axiosInstance.delete("/user/personalBests");
-      } catch (e) {
+      } catch (error) {
+        const e = error as AxiosError;
         Loader.hide();
-        let msg = e?.response?.data?.message ?? e.message;
+        const msg = e?.response?.data?.message ?? e.message;
         Notifications.add("Failed to reset personal bests: " + msg, -1);
         return;
       }
@@ -626,7 +673,7 @@ list.resetPersonalBests = new SimplePopup(
       }
     } catch (e) {
       Loader.hide();
-      Notifications.add(e, -1);
+      Notifications.add(e as string, -1);
     }
   },
   () => {
@@ -651,7 +698,9 @@ list.resetSettings = new SimplePopup(
     //   location.reload();
     // }, 1000);
   },
-  () => {}
+  () => {
+    //
+  }
 );
 
 list.unlinkDiscord = new SimplePopup(
@@ -666,9 +715,10 @@ list.unlinkDiscord = new SimplePopup(
     let response;
     try {
       response = await axiosInstance.post("/user/discord/unlink", {});
-    } catch (e) {
+    } catch (error) {
+      const e = error as AxiosError;
       Loader.hide();
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to unlink Discord: " + msg, -1);
       return;
     }
@@ -681,47 +731,49 @@ list.unlinkDiscord = new SimplePopup(
       Settings.updateDiscordSection();
     }
   },
-  () => {}
+  () => {
+    //
+  }
 );
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
-  (e) => {
+  () => {
     list.unlinkDiscord.show();
   }
 );
 
-$("#resetSettingsButton").click((e) => {
+$("#resetSettingsButton").click(() => {
   list.resetSettings.show();
 });
 
-$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
+$(".pageSettings #resetPersonalBestsButton").on("click", () => {
   list.resetPersonalBests.show();
 });
 
-$(".pageSettings #updateAccountName").on("click", (e) => {
+$(".pageSettings #updateAccountName").on("click", () => {
   list.updateName.show();
 });
 
-$(".pageSettings #addPasswordAuth").on("click", (e) => {
+$(".pageSettings #addPasswordAuth").on("click", () => {
   list.addPasswordAuth.show();
 });
 
-$(".pageSettings #emailPasswordAuth").on("click", (e) => {
+$(".pageSettings #emailPasswordAuth").on("click", () => {
   list.updateEmail.show();
 });
 
-$(".pageSettings #passPasswordAuth").on("click", (e) => {
+$(".pageSettings #passPasswordAuth").on("click", () => {
   list.updatePassword.show();
 });
 
-$(".pageSettings #deleteAccount").on("click", (e) => {
+$(".pageSettings #deleteAccount").on("click", () => {
   list.deleteAccount.show();
 });
 
 $(document).on(
   "click",
   ".pageSettings .section.fontFamily .button.custom",
-  (e) => {
+  () => {
     list.applyCustomFont.show([]);
   }
 );
