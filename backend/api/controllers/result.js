@@ -10,7 +10,7 @@ const path = require("path");
 const { config } = require("dotenv");
 config({ path: path.join(__dirname, ".env") });
 const MonkeyError = require("../../handlers/error");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 let validateResult;
 let validateKeys;
@@ -41,7 +41,7 @@ class ResultController {
     return new MonkeyResponse("Result retrieved", results);
   }
 
-  static async deleteAll(req, res) {
+  static async deleteAll(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     await ResultDAO.deleteAll(uid);
@@ -49,7 +49,7 @@ class ResultController {
     return new MonkeyResponse("All results deleted");
   }
 
-  static async updateTags(req, res) {
+  static async updateTags(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tags, resultid } = req.body;
 
@@ -57,7 +57,7 @@ class ResultController {
     return new MonkeyResponse("Result tags updated");
   }
 
-  static async addResult(req, res) {
+  static async addResult(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
