@@ -3,7 +3,7 @@ const MonkeyError = require("../../handlers/error");
 const UserDAO = require("../../dao/user");
 const Logger = require("../../handlers/logger.js");
 const Captcha = require("../../handlers/captcha");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class NewQuotesController {
   static async getQuotes(req, _res) {
@@ -39,7 +39,7 @@ class NewQuotesController {
     return new MonkeyResponse("Quote approved");
   }
 
-  static async refuse(req, res) {
+  static async refuse(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { quoteId } = req.body;
 

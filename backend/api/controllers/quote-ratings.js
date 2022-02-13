@@ -1,7 +1,7 @@
 const QuoteRatingsDAO = require("../../dao/quote-ratings");
 const UserDAO = require("../../dao/user");
 const MonkeyError = require("../../handlers/error");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class QuoteRatingsController {
   static async getRating(req, _res) {
@@ -10,7 +10,7 @@ class QuoteRatingsController {
     return new MonkeyResponse("Rating retrieved", data);
   }
 
-  static async submitRating(req, res) {
+  static async submitRating(req, _res) {
     const { uid } = req.ctx.decodedToken;
     let { quoteId, rating, language } = req.body;
 
