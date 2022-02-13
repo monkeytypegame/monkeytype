@@ -1,6 +1,6 @@
 ### **Table of Contents**
 
-- [Forking Monkeytype](#forking-the-repository)
+- [Forking Monkeytype](#forking-monkeytype)
 - [Creating Languages](#creating-langauges)
 - [Commiting Langauges](#commiting-languages)
 - [Language Guidelines](#language-guidelines)
