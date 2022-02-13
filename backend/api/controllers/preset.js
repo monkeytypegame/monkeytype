@@ -1,5 +1,5 @@
 const PresetDAO = require("../../dao/preset");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class PresetController {
   static async getPresets(req, _res) {
@@ -17,7 +17,7 @@ class PresetController {
     return new MonkeyResponse("Preset updated");
   }
 
-  static async editPreset(req, res) {
+  static async editPreset(req, _res) {
     const { _id, name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
@@ -26,7 +26,7 @@ class PresetController {
     return new MonkeyResponse("Preset updated");
   }
 
-  static async removePreset(req, res) {
+  static async removePreset(req, _res) {
     const { _id } = req.body;
     const { uid } = req.ctx.decodedToken;
 
