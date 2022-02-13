@@ -9,7 +9,7 @@ import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
 import { AxiosError } from "axios";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
 type Input = {
   placeholder: string;
@@ -583,7 +583,7 @@ list["clearTagPb"] = new SimplePopup(
         Loader.hide();
         if (res.data.resultCode === 1) {
           const tag = DB.getSnapshot().tags.filter(
-            (t: Types.Tag) => t._id === tagid
+            (t: MonkeyTypes.Tag) => t._id === tagid
           )[0];
           tag.pb = 0;
           $(
