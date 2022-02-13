@@ -21,7 +21,7 @@ const filters = {
   },
 };
 
-export function getCSS() {
+export function getCSS(): string {
   let ret = "";
   Object.keys(filters).forEach((filterKey) => {
     const key = filterKey as keyof typeof filters;
@@ -34,9 +34,9 @@ export function getCSS() {
   return ret;
 }
 
-export function apply() {
-  let filterCSS = getCSS();
-  let css = {
+export function apply(): void {
+  const filterCSS = getCSS();
+  const css = {
     filter: filterCSS,
     width: `calc(100% + ${filters.blur.value * 4}rem)`,
     height: `calc(100% + ${filters.blur.value * 4}rem)`,
@@ -47,7 +47,7 @@ export function apply() {
   $(".customBackground img").css(css);
 }
 
-function syncSliders() {
+function syncSliders(): void {
   $(".section.customBackgroundFilter .blur input").val(filters["blur"].value);
   $(".section.customBackgroundFilter .brightness input").val(
     filters["brightness"].value
@@ -60,7 +60,7 @@ function syncSliders() {
   );
 }
 
-function updateNumbers() {
+function updateNumbers(): void {
   $(".section.customBackgroundFilter .blur .value").html(
     filters.blur.value.toFixed(1)
   );
@@ -75,7 +75,7 @@ function updateNumbers() {
   );
 }
 
-export function loadConfig(config: number[]) {
+export function loadConfig(config: number[]): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
@@ -84,7 +84,7 @@ export function loadConfig(config: number[]) {
   syncSliders();
 }
 
-$(".section.customBackgroundFilter .blur input").on("input", (e) => {
+$(".section.customBackgroundFilter .blur input").on("input", () => {
   filters["blur"].value = $(
     ".section.customBackgroundFilter .blur input"
   ).val() as number;
@@ -92,7 +92,7 @@ $(".section.customBackgroundFilter .blur input").on("input", (e) => {
   apply();
 });
 
-$(".section.customBackgroundFilter .brightness input").on("input", (e) => {
+$(".section.customBackgroundFilter .brightness input").on("input", () => {
   filters["brightness"].value = $(
     ".section.customBackgroundFilter .brightness input"
   ).val() as number;
@@ -100,7 +100,7 @@ $(".section.customBackgroundFilter .brightness input").on("input", (e) => {
   apply();
 });
 
-$(".section.customBackgroundFilter .saturate input").on("input", (e) => {
+$(".section.customBackgroundFilter .saturate input").on("input", () => {
   filters["saturate"].value = $(
     ".section.customBackgroundFilter .saturate input"
   ).val() as number;
@@ -108,7 +108,7 @@ $(".section.customBackgroundFilter .saturate input").on("input", (e) => {
   apply();
 });
 
-$(".section.customBackgroundFilter .opacity input").on("input", (e) => {
+$(".section.customBackgroundFilter .opacity input").on("input", () => {
   filters["opacity"].value = $(
     ".section.customBackgroundFilter .opacity input"
   ).val() as number;
@@ -116,8 +116,8 @@ $(".section.customBackgroundFilter .opacity input").on("input", (e) => {
   apply();
 });
 
-$(".section.customBackgroundFilter  .save.button").click((e) => {
-  let arr: number[] = [];
+$(".section.customBackgroundFilter  .save.button").click(() => {
+  const arr: number[] = [];
   Object.keys(filters).forEach((filterKey) => {
     arr.push(filters[filterKey as keyof typeof filters].value);
   });
