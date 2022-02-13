@@ -1,15 +1,22 @@
+// @ts-ignore
 import Config from "../config";
 
 export default class SettingsGroup {
+  public configName: string;
+  public configValue: any;
+  public configFunction: (value: any, params?: any[]) => any;
+  public mode: string;
+  public setCallback?: () => any;
+  public updateCallback?: () => any;
   constructor(
-    configName,
-    configFunction,
-    mode,
-    setCallback = null,
-    updateCallback = null
+    configName: string,
+    configFunction: () => any,
+    mode: string,
+    setCallback?: () => any,
+    updateCallback?: () => any
   ) {
     this.configName = configName;
-    this.configValue = Config[configName];
+    this.configValue = Config[configName as keyof typeof Config];
     this.mode = mode;
     this.configFunction = configFunction;
     this.setCallback = setCallback;
@@ -33,32 +40,32 @@ export default class SettingsGroup {
         "click",
         `.pageSettings .section.${this.configName} .button`,
         (e) => {
-          let target = $(e.currentTarget);
+          const target = $(e.currentTarget);
           if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
             return;
-          let value = target.attr(configName);
+          let value: string | boolean = target.attr(configName) as string;
           const params = target.attr("params");
           if (!value && !params) return;
           if (value === "true") value = true;
           if (value === "false") value = false;
-          this.setValue(value, params);
+          this.setValue(value, params as any);
         }
       );
     }
   }
 
-  setValue(value, params = undefined) {
+  setValue(value: any, params?: any[]): void {
     if (params === undefined) {
       this.configFunction(value);
     } else {
       this.configFunction(value, ...params);
     }
     this.updateInput();
-    if (this.setCallback !== null) this.setCallback();
+    if (this.setCallback) this.setCallback();
   }
 
-  updateInput() {
-    this.configValue = Config[this.configName];
+  updateInput(): void {
+    this.configValue = Config[this.configName as keyof typeof Config];
     $(`.pageSettings .section.${this.configName} .button`).removeClass(
       "active"
     );
@@ -71,6 +78,6 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
       ).addClass("active");
     }
-    if (this.updateCallback !== null) this.updateCallback();
+    if (this.updateCallback) this.updateCallback();
   }
 }
