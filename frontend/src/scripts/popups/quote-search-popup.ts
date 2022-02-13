@@ -11,7 +11,7 @@ import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
 import * as Misc from "../misc";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
 export let selectedId = 1;
 
@@ -22,7 +22,7 @@ export function setSelectedId(val: number): void {
 async function updateResults(searchText: string): Promise<void> {
   const quotes = await Misc.getQuotes(Config.language);
   const reg = new RegExp(searchText, "i");
-  const found: Types.Quote[] = [];
+  const found: MonkeyTypes.Quote[] = [];
   quotes.quotes.forEach((quote) => {
     const quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
     const test1 = reg.test(quoteText);

@@ -78,7 +78,7 @@ async function apply(set: boolean): Promise<void> {
   const customText = filteredWords.join(CustomText.delimiter);
 
   $("#customTextPopup textarea").val(
-    (index, val) => (set ? "" : val + " ") + customText
+    (_, val) => (set ? "" : val + " ") + customText
   );
   hide();
 }

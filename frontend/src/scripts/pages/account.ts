@@ -25,7 +25,7 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -36,7 +36,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: Types.Result[] = [];
+let filteredResults: MonkeyTypes.Result[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -115,7 +115,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags.forEach((snaptag: Types.Tag) => {
+        DB.getSnapshot().tags.forEach((snaptag: MonkeyTypes.Tag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
@@ -271,7 +271,7 @@ export function update(): void {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results.forEach((result: Types.Result) => {
+    DB.getSnapshot().results.forEach((result: MonkeyTypes.Result) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -396,7 +396,7 @@ export function update(): void {
         } else {
           //tags exist
           const validTags: string[] = DB.getSnapshot().tags.map(
-            (t: Types.Tag) => t._id
+            (t: MonkeyTypes.Tag) => t._id
           );
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore

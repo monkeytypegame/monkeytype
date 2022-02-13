@@ -1,30 +1,31 @@
 // @ts-ignore
-import Config from "../config";
+
+// import Config from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as Misc from "../misc";
+// import * as Misc from "../misc";
 import axiosInstance from "../axios-instance";
 import { AxiosError } from "axios";
 
-let dropdownReady = false;
-async function initDropdown(): Promise<void> {
-  if (dropdownReady) return;
-  const languages = await Misc.getLanguageList();
-  languages.forEach((language) => {
-    if (
-      language === "english_commonly_misspelled" ||
-      language === "hungarian_2.5k"
-    )
-      return;
-    if (!/_\d*k$/g.test(language)) {
-      $("#quoteSubmitPopup #submitQuoteLanguage").append(
-        `<option value="${language}">${language.replace(/_/g, " ")}</option>`
-      );
-    }
-  });
-  $("#quoteSubmitPopup #submitQuoteLanguage").select2();
-  dropdownReady = true;
-}
+// let dropdownReady = false;
+// async function initDropdown(): Promise<void> {
+//   if (dropdownReady) return;
+//   const languages = await Misc.getLanguageList();
+//   languages.forEach((language) => {
+//     if (
+//       language === "english_commonly_misspelled" ||
+//       language === "hungarian_2.5k"
+//     )
+//       return;
+//     if (!/_\d*k$/g.test(language)) {
+//       $("#quoteSubmitPopup #submitQuoteLanguage").append(
+//         `<option value="${language}">${language.replace(/_/g, " ")}</option>`
+//       );
+//     }
+//   });
+//   $("#quoteSubmitPopup #submitQuoteLanguage").select2();
+//   dropdownReady = true;
+// }
 
 async function submitQuote(): Promise<void> {
   const data = {
@@ -63,6 +64,8 @@ async function submitQuote(): Promise<void> {
   }
 }
 
+// @ts-ignore
+// eslint-disable-next-line
 export async function show(noAnim = false): Promise<void> {
   Notifications.add(
     "Quote submission is disabled temporarily due to a large submission queue.",
@@ -70,22 +73,21 @@ export async function show(noAnim = false): Promise<void> {
     5
   );
   return;
-  // eslint-disable-next-line no-unreachable
-  if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
-    await initDropdown();
-    $("#quoteSubmitPopup #submitQuoteLanguage").val(
-      Config.language.replace(/_\d*k$/g, "")
-    );
-    $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
-    $("#quoteSubmitPopup input").val("");
-    $("#quoteSubmitPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
-        $("#quoteSubmitPopup textarea").focus().select();
-      });
-  }
+  // if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+  //   await initDropdown();
+  //   $("#quoteSubmitPopup #submitQuoteLanguage").val(
+  //     Config.language.replace(/_\d*k$/g, "")
+  //   );
+  //   $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
+  //   $("#quoteSubmitPopup input").val("");
+  //   $("#quoteSubmitPopupWrapper")
+  //     .stop(true, true)
+  //     .css("opacity", 0)
+  //     .removeClass("hidden")
+  //     .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
+  //       $("#quoteSubmitPopup textarea").focus().select();
+  //     });
+  // }
 }
 
 export function hide(): void {
