@@ -28,39 +28,11 @@ import * as ActivePage from "../states/active-page";
 import Page from "./page";
 import * as MonkeyTypes from "../types/interfaces";
 
-//todo remove once settings group is converted to ts
-interface Group {
-  configName: string;
-  configFunction: () => any;
-  mode: string;
-  setCallback: () => any;
-  updateCallback: () => any;
-  updateInput: () => any;
-  setValue: (string: string) => any;
-}
+type SettingsGroups = {
+  [key: string]: SettingsGroup;
+};
 
-interface Groups {
-  [key: string]: Group;
-}
-
-declare class SettingsGroup implements Group {
-  public configName: string;
-  public configFunction: () => any;
-  public mode: string;
-  public setCallback: () => any;
-  public updateCallback: () => any;
-  public updateInput: () => any;
-  public setValue: (string: string) => any;
-  constructor(
-    configName: string,
-    configFunction: () => any,
-    mode: string,
-    setCallback?: (() => any) | null,
-    updateCallback?: (() => any) | null
-  );
-}
-
-export const groups: Groups = {};
+export const groups: SettingsGroups = {};
 async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
@@ -139,7 +111,7 @@ async function initGroups(): Promise<void> {
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button",
-    null,
+    undefined,
     () => {
       if (Config.showKeyTips) {
         $(".pageSettings .tip").removeClass("hidden");
@@ -378,7 +350,7 @@ async function initGroups(): Promise<void> {
     "fontFamily",
     UpdateConfig.setFontFamily,
     "button",
-    null,
+    undefined,
     () => {
       const customButton = $(
         ".pageSettings .section.fontFamily .buttons .custom"
