@@ -42,6 +42,18 @@
       "source": "GitHub - MorvanZhou/easy-scraping-tutorial",
       "id": 6,
       "length": 178
+    },
+    {
+      "text": "def bubbleSort(arr):\\n\\tn = len(arr)\\n\\tfor i in range(n-1):\\n\\t\\tfor j in range(0, n-i-1):\\n\\t\\t\\tif arr[j] > arr[j + 1] :\\n\\t\\t\\t\\tarr[j], arr[j + 1] = arr[j + 1], arr[j]",
+      "source": "geeksforgeeks - Bubble Sort",
+      "id": 7,
+      "length": 140
+    },
+    {
+      "text": "def search(arr, n, x):\\n\\tfor i in range(0, n):\\n\\t\\tif (arr[i] == x):\\n\\t\\t\\treturn i\\n\\treturn -1",
+      "source": "geeksforgeeks - Linear Search",
+      "id": 8,
+      "length": 77
     }
   ]
 }
