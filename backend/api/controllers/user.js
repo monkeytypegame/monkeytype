@@ -5,10 +5,10 @@ const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
 const Logger = require("../../handlers/logger.js");
 const uaparser = require("ua-parser-js");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class UserController {
-  static async createNewUser(req, res) {
+  static async createNewUser(req, _res) {
     const { name } = req.body;
     const { email, uid } = req.ctx.decodedToken;
 
@@ -17,7 +17,7 @@ class UserController {
     return new MonkeyResponse("User created");
   }
 
-  static async deleteUser(req, res) {
+  static async deleteUser(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const userInfo = await UsersDAO.getUser(uid);
 
@@ -26,7 +26,7 @@ class UserController {
     return new MonkeyResponse("User deleted");
   }
 
-  static async updateName(req, res) {
+  static async updateName(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { name } = req.body;
     if (!isUsernameValid(name))
@@ -44,7 +44,7 @@ class UserController {
     return new MonkeyResponse("User's name updated");
   }
 
-  static async clearPb(req, res) {
+  static async clearPb(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     await UsersDAO.clearPb(uid);
@@ -52,7 +52,7 @@ class UserController {
     return new MonkeyResponse("User's PB cleared");
   }
 
-  static async checkName(req, res) {
+  static async checkName(req, _res) {
     const { name } = req.params;
 
     if (!isUsernameValid(name)) {
@@ -67,7 +67,7 @@ class UserController {
     return new MonkeyResponse("Username available");
   }
 
-  static async updateEmail(req, res) {
+  static async updateEmail(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { newEmail } = req.body;
 
@@ -171,7 +171,7 @@ class UserController {
     return new MonkeyResponse("Discord account linked ", did);
   }
 
-  static async unlinkDiscord(req, res) {
+  static async unlinkDiscord(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     let userInfo;
@@ -196,21 +196,21 @@ class UserController {
     return new MonkeyResponse("Tag updated", tag);
   }
 
-  static async clearTagPb(req, res) {
+  static async clearTagPb(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagid } = req.body;
     await UsersDAO.removeTagPb(uid, tagid);
     return new MonkeyResponse("Tag PB cleared");
   }
 
-  static async editTag(req, res) {
+  static async editTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagid, newname } = req.body;
     await UsersDAO.editTag(uid, tagid, newname);
     return new MonkeyResponse("Tag updated");
   }
 
-  static async removeTag(req, res) {
+  static async removeTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagid } = req.body;
     await UsersDAO.removeTag(uid, tagid);
@@ -224,7 +224,7 @@ class UserController {
     return new MonkeyResponse("Tags retrieved", tags);
   }
 
-  static async updateLbMemory(req, res) {
+  static async updateLbMemory(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
 

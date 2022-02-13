@@ -1,6 +1,6 @@
 const ConfigDAO = require("../../dao/config");
 const { validateConfig } = require("../../handlers/validation");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class ConfigController {
   static async getConfig(req, _res) {
@@ -10,7 +10,7 @@ class ConfigController {
     return new MonkeyResponse("Configuration retrieved", data);
   }
 
-  static async saveConfig(req, res) {
+  static async saveConfig(req, _res) {
     const { config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
