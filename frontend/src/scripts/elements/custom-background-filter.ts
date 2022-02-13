@@ -2,7 +2,7 @@ import * as UpdateConfig from "../config";
 import * as Notifications from "./notifications";
 import * as ConfigEvent from "../observables/config-event";
 
-let filters = {
+const filters = {
   blur: {
     value: 0,
     default: 0,
@@ -24,8 +24,9 @@ let filters = {
 export function getCSS() {
   let ret = "";
   Object.keys(filters).forEach((filterKey) => {
-    if (filters[filterKey].value != filters[filterKey].default) {
-      ret += `${filterKey}(${filters[filterKey].value}${
+    const key = filterKey as keyof typeof filters;
+    if (filters[key].value != filters[key].default) {
+      ret += `${filterKey}(${filters[key].value}${
         filterKey == "blur" ? "rem" : ""
       }) `;
     }
@@ -61,20 +62,20 @@ function syncSliders() {
 
 function updateNumbers() {
   $(".section.customBackgroundFilter .blur .value").html(
-    parseFloat(filters.blur.value).toFixed(1)
+    filters.blur.value.toFixed(1)
   );
   $(".section.customBackgroundFilter .brightness .value").html(
-    parseFloat(filters.brightness.value).toFixed(1)
+    filters.brightness.value.toFixed(1)
   );
   $(".section.customBackgroundFilter .saturate .value").html(
-    parseFloat(filters.saturate.value).toFixed(1)
+    filters.saturate.value.toFixed(1)
   );
   $(".section.customBackgroundFilter .opacity .value").html(
-    parseFloat(filters.opacity.value).toFixed(1)
+    filters.opacity.value.toFixed(1)
   );
 }
 
-export function loadConfig(config) {
+export function loadConfig(config: number[]) {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
@@ -86,7 +87,7 @@ export function loadConfig(config) {
 $(".section.customBackgroundFilter .blur input").on("input", (e) => {
   filters["blur"].value = $(
     ".section.customBackgroundFilter .blur input"
-  ).val();
+  ).val() as number;
   updateNumbers();
   apply();
 });
@@ -94,7 +95,7 @@ $(".section.customBackgroundFilter .blur input").on("input", (e) => {
 $(".section.customBackgroundFilter .brightness input").on("input", (e) => {
   filters["brightness"].value = $(
     ".section.customBackgroundFilter .brightness input"
-  ).val();
+  ).val() as number;
   updateNumbers();
   apply();
 });
@@ -102,7 +103,7 @@ $(".section.customBackgroundFilter .brightness input").on("input", (e) => {
 $(".section.customBackgroundFilter .saturate input").on("input", (e) => {
   filters["saturate"].value = $(
     ".section.customBackgroundFilter .saturate input"
-  ).val();
+  ).val() as number;
   updateNumbers();
   apply();
 });
@@ -110,15 +111,15 @@ $(".section.customBackgroundFilter .saturate input").on("input", (e) => {
 $(".section.customBackgroundFilter .opacity input").on("input", (e) => {
   filters["opacity"].value = $(
     ".section.customBackgroundFilter .opacity input"
-  ).val();
+  ).val() as number;
   updateNumbers();
   apply();
 });
 
 $(".section.customBackgroundFilter  .save.button").click((e) => {
-  let arr = [];
+  let arr: number[] = [];
   Object.keys(filters).forEach((filterKey) => {
-    arr.push(filters[filterKey].value);
+    arr.push(filters[filterKey as keyof typeof filters].value);
   });
   UpdateConfig.setCustomBackgroundFilter(arr, false);
   Notifications.add("Custom background filters saved", 1);
@@ -126,7 +127,7 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customBackgroundFilter") {
-    loadConfig(eventValue);
+    loadConfig((eventValue as unknown) as number[]);
     apply();
   }
 });
