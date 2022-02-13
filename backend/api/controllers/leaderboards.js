@@ -1,7 +1,6 @@
 const _ = require("lodash");
 const LeaderboardsDAO = require("../../dao/leaderboards");
-const { verifyIdToken } = require("../../handlers/auth");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class LeaderboardsController {
   static async get(req, _res) {
@@ -25,7 +24,7 @@ class LeaderboardsController {
     return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
   }
 
-  static async getRank(req, res) {
+  static async getRank(req, _res) {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.ctx.decodedToken;
     const data = LeaderboardsDAO.getRank(mode, mode2, language, uid);
