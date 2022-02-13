@@ -160,7 +160,7 @@ $("#quoteReportPopup .submit").on("click", async () => {
 
 $(".pageTest #reportQuoteButton").click(async () => {
   show({
-    quoteId: parseInt(TestWords.randomQuote.id),
+    quoteId: parseInt(TestWords.randomQuote?.id as string),
     noAnim: false,
   });
 });

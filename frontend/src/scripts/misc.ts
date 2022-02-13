@@ -900,6 +900,8 @@ export function swapElements(
   } else {
     callback();
   }
+
+  return;
 }
 
 export function getMode2(

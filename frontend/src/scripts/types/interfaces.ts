@@ -492,7 +492,7 @@ export interface Quote {
   text: string;
   source: string;
   length: number;
-  id: number;
+  id: number | string;
   group?: number;
   language: string;
 }

@@ -29,67 +29,84 @@ import Page from "./page";
 import * as Types from "../types/interfaces";
 
 //todo remove once settings group is converted to ts
-type Group = {
+interface Group {
   configName: string;
-  configFunction: () => void;
+  configFunction: () => any;
   mode: string;
-  setCallback: () => void;
-  updateCallback: () => void;
-  updateInput: () => void;
-  setValue: (string: string) => void;
-};
+  setCallback: () => any;
+  updateCallback: () => any;
+  updateInput: () => any;
+  setValue: (string: string) => any;
+}
 
-type Groups = {
+interface Groups {
   [key: string]: Group;
-};
+}
+
+declare class SettingsGroup implements Group {
+  public configName: string;
+  public configFunction: () => any;
+  public mode: string;
+  public setCallback: () => any;
+  public updateCallback: () => any;
+  public updateInput: () => any;
+  public setValue: (string: string) => any;
+  constructor(
+    configName: string,
+    configFunction: () => any,
+    mode: string,
+    setCallback?: (() => any) | null,
+    updateCallback?: (() => any) | null
+  );
+}
 
 export const groups: Groups = {};
 async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
-  groups.smoothCaret = new SettingsGroup(
+  groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
     "button"
   );
-  groups.difficulty = new SettingsGroup(
+  groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
     "button"
   );
-  groups.quickTab = new SettingsGroup(
+  groups["quickTab"] = new SettingsGroup(
     "quickTab",
     UpdateConfig.setQuickTabMode,
     "button"
   );
-  groups.showLiveWpm = new SettingsGroup(
+  groups["showLiveWpm"] = new SettingsGroup(
     "showLiveWpm",
     UpdateConfig.setShowLiveWpm,
     "button",
     () => {
-      groups.keymapMode.updateInput();
+      groups["keymapMode"].updateInput();
     }
   );
-  groups.showLiveAcc = new SettingsGroup(
+  groups["showLiveAcc"] = new SettingsGroup(
     "showLiveAcc",
     UpdateConfig.setShowLiveAcc,
     "button"
   );
-  groups.showLiveBurst = new SettingsGroup(
+  groups["showLiveBurst"] = new SettingsGroup(
     "showLiveBurst",
     UpdateConfig.setShowLiveBurst,
     "button"
   );
-  groups.showTimerProgress = new SettingsGroup(
+  groups["showTimerProgress"] = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress,
     "button"
   );
-  groups.keymapMode = new SettingsGroup(
+  groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
     "button",
     () => {
-      groups.showLiveWpm.updateInput();
+      groups["showLiveWpm"].updateInput();
     },
     () => {
       if (Config.keymapMode === "off") {
@@ -103,22 +120,22 @@ async function initGroups(): Promise<void> {
       }
     }
   );
-  groups.keymapMatrix = new SettingsGroup(
+  groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
     "button"
   );
-  groups.keymapLayout = new SettingsGroup(
+  groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
     "select"
   );
-  groups.keymapLegendStyle = new SettingsGroup(
+  groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
     "button"
   );
-  groups.showKeyTips = new SettingsGroup(
+  groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button",
@@ -131,127 +148,127 @@ async function initGroups(): Promise<void> {
       }
     }
   );
-  groups.freedomMode = new SettingsGroup(
+  groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
     "button",
     () => {
-      groups.confidenceMode.updateInput();
+      groups["confidenceMode"].updateInput();
     }
   );
-  groups.strictSpace = new SettingsGroup(
+  groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
     "button"
   );
-  groups.oppositeShiftMode = new SettingsGroup(
+  groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
     "button"
   );
-  groups.confidenceMode = new SettingsGroup(
+  groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
     "button",
     () => {
-      groups.freedomMode.updateInput();
-      groups.stopOnError.updateInput();
+      groups["freedomMode"].updateInput();
+      groups["stopOnError"].updateInput();
     }
   );
-  groups.indicateTypos = new SettingsGroup(
+  groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
     "button"
   );
-  groups.hideExtraLetters = new SettingsGroup(
+  groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
     "button"
   );
-  groups.blindMode = new SettingsGroup(
+  groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
     "button"
   );
-  groups.quickEnd = new SettingsGroup(
+  groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
     "button"
   );
-  groups.repeatQuotes = new SettingsGroup(
+  groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
     "button"
   );
-  groups.enableAds = new SettingsGroup(
+  groups["enableAds"] = new SettingsGroup(
     "enableAds",
     UpdateConfig.setEnableAds,
     "button"
   );
-  groups.alwaysShowWordsHistory = new SettingsGroup(
+  groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
     "button"
   );
-  groups.britishEnglish = new SettingsGroup(
+  groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
     "button"
   );
-  groups.singleListCommandLine = new SettingsGroup(
+  groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
     "button"
   );
-  groups.capsLockWarning = new SettingsGroup(
+  groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
     "button"
   );
-  groups.flipTestColors = new SettingsGroup(
+  groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
     "button"
   );
-  groups.swapEscAndTab = new SettingsGroup(
+  groups["swapEscAndTab"] = new SettingsGroup(
     "swapEscAndTab",
     UpdateConfig.setSwapEscAndTab,
     "button"
   );
-  groups.showOutOfFocusWarning = new SettingsGroup(
+  groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
     "button"
   );
-  groups.colorfulMode = new SettingsGroup(
+  groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
     "button"
   );
-  groups.startGraphsAtZero = new SettingsGroup(
+  groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
     "button"
   );
-  groups.randomTheme = new SettingsGroup(
+  groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
     "button"
   );
-  groups.stopOnError = new SettingsGroup(
+  groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
     "button",
     () => {
-      groups.confidenceMode.updateInput();
+      groups["confidenceMode"].updateInput();
     }
   );
-  groups.soundVolume = new SettingsGroup(
+  groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
     "button"
   );
-  groups.playSoundOnError = new SettingsGroup(
+  groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
     "button",
@@ -259,94 +276,105 @@ async function initGroups(): Promise<void> {
       if (Config.playSoundOnError) Sound.playError();
     }
   );
-  groups.playSoundOnClick = new SettingsGroup(
+  groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
     "button",
     () => {
-      if (Config.playSoundOnClick !== "off")
-        Sound.playClick(Config.playSoundOnClick);
+      if (Config.playSoundOnClick !== "off") Sound.playClick();
     }
   );
-  groups.showAllLines = new SettingsGroup(
+  groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
     "button"
   );
-  groups.paceCaret = new SettingsGroup(
+  groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
     "button"
   );
-  groups.repeatedPace = new SettingsGroup(
+  groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
     "button"
   );
-  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, "button");
-  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, "button");
-  groups.minBurst = new SettingsGroup(
+  groups["minWpm"] = new SettingsGroup(
+    "minWpm",
+    UpdateConfig.setMinWpm,
+    "button"
+  );
+  groups["minAcc"] = new SettingsGroup(
+    "minAcc",
+    UpdateConfig.setMinAcc,
+    "button"
+  );
+  groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
     "button"
   );
-  groups.smoothLineScroll = new SettingsGroup(
+  groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
     "button"
   );
-  groups.lazyMode = new SettingsGroup(
+  groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
     "button"
   );
-  groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout, "select");
-  groups.language = new SettingsGroup(
+  groups["layout"] = new SettingsGroup(
+    "layout",
+    UpdateConfig.setLayout,
+    "select"
+  );
+  groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
     "select"
   );
-  groups.fontSize = new SettingsGroup(
+  groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
     "button"
   );
-  groups.pageWidth = new SettingsGroup(
+  groups["pageWidth"] = new SettingsGroup(
     "pageWidth",
     UpdateConfig.setPageWidth,
     "button"
   );
-  groups.caretStyle = new SettingsGroup(
+  groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
     "button"
   );
-  groups.paceCaretStyle = new SettingsGroup(
+  groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
     "button"
   );
-  groups.timerStyle = new SettingsGroup(
+  groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
     "button"
   );
-  groups.highlighteMode = new SettingsGroup(
+  groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
     "button"
   );
-  groups.timerOpacity = new SettingsGroup(
+  groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
     "button"
   );
-  groups.timerColor = new SettingsGroup(
+  groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
     "button"
   );
-  groups.fontFamily = new SettingsGroup(
+  groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
     "button",
@@ -365,17 +393,17 @@ async function initGroups(): Promise<void> {
       }
     }
   );
-  groups.alwaysShowDecimalPlaces = new SettingsGroup(
+  groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
   );
-  groups.alwaysShowCPM = new SettingsGroup(
+  groups["alwaysShowCPM"] = new SettingsGroup(
     "alwaysShowCPM",
     UpdateConfig.setAlwaysShowCPM,
     "button"
   );
-  groups.customBackgroundSize = new SettingsGroup(
+  groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
     "button"
@@ -887,7 +915,7 @@ $("#shareCustomThemeButton").click(() => {
   const share: string[] = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
-    (index, element) => {
+    (_, element) => {
       share.push($(element).attr("value") as string);
     }
   );

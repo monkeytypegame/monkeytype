@@ -43,7 +43,7 @@ export function updateButtons(): void {
 
 function updateActiveButtons(active: string[]): void {
   if (active === []) return;
-  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
+  $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {
       $(obj).addClass("active");
@@ -79,7 +79,7 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
   // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 
   const newtags: string[] = [];
-  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
+  $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid = $(obj).attr("tagid") ?? "";
     if ($(obj).hasClass("active")) {
       newtags.push(tagid);

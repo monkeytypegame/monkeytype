@@ -1,10 +1,15 @@
+import * as MonkeyTypes from "../types/interfaces";
+
 class Words {
+  public list: string[];
+  public length: number;
+  public currentIndex: number;
   constructor() {
     this.list = [];
     this.length = 0;
     this.currentIndex = 0;
   }
-  get(i, raw = false) {
+  get(i: number, raw = false): string | string[] {
     if (i === undefined) {
       return this.list;
     } else {
@@ -15,35 +20,35 @@ class Words {
       }
     }
   }
-  getCurrent() {
+  getCurrent(): string {
     return this.list[this.currentIndex];
   }
-  getLast() {
+  getLast(): string {
     return this.list[this.list.length - 1];
   }
-  push(word) {
+  push(word: string): void {
     this.list.push(word);
     this.length = this.list.length;
   }
-  reset() {
+  reset(): void {
     this.list = [];
     this.currentIndex = 0;
     this.length = this.list.length;
   }
-  resetCurrentIndex() {
+  resetCurrentIndex(): void {
     this.currentIndex = 0;
   }
-  decreaseCurrentIndex() {
+  decreaseCurrentIndex(): void {
     this.currentIndex--;
   }
-  increaseCurrentIndex() {
+  increaseCurrentIndex(): void {
     this.currentIndex++;
   }
-  clean() {
-    for (let s of this.list) {
+  clean(): void {
+    for (const s of this.list) {
       if (/ +/.test(s)) {
-        let id = this.list.indexOf(s);
-        let tempList = s.split(" ");
+        const id = this.list.indexOf(s);
+        const tempList = s.split(" ");
         this.list.splice(id, 1);
         for (let i = 0; i < tempList.length; i++) {
           this.list.splice(id + i, 0, tempList[i]);
@@ -52,14 +57,14 @@ class Words {
     }
   }
 }
-export let words = new Words();
+export const words = new Words();
 export let hasTab = false;
-export let randomQuote = null;
+export let randomQuote = (null as unknown) as MonkeyTypes.Quote;
 
-export function setRandomQuote(rq) {
+export function setRandomQuote(rq: MonkeyTypes.Quote): void {
   randomQuote = rq;
 }
 
-export function setHasTab(tf) {
+export function setHasTab(tf: boolean): void {
   hasTab = tf;
 }
