@@ -7,7 +7,7 @@ const {
 } = require("../../handlers/validation");
 const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
-const Logger = require("./../../handlers/logger.js");
+const Logger = require("../../handlers/logger.js");
 const uaparser = require("ua-parser-js");
 
 class UserController {
