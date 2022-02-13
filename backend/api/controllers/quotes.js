@@ -4,10 +4,10 @@ const UserDAO = require("../../dao/user");
 const MonkeyError = require("../../handlers/error");
 const Captcha = require("../../handlers/captcha");
 const Logger = require("../../handlers/logger");
-const { MonkeyResponse } = require("../../handlers/response");
+const { MonkeyResponse } = require("../../handlers/monkey-response");
 
 class QuotesController {
-  static async reportQuote(req, res) {
+  static async reportQuote(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     const user = await UserDAO.getUser(uid);
