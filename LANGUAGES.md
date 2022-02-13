@@ -1,15 +1,17 @@
 ### **Table of Contents**
 
-- [Forking the Repository](#forking-the-repository)
+- [Forking Monkeytype](#forking-the-repository)
 - [Creating Languages](#creating-langauges)
+- [Commiting Langauges](#commiting-languages)
+- [Language Guidelines](#language-guidelines)
 
-### Forking the Repository
-First you will have to copy the repostiriy also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+### Forking Monkeytype
+First you will have to copy the Monkeytype repository also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
 
 <img width="1552" alt="Screen Shot 2022-01-12 at 11 51 49 AM" src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
 ## Creating Langauges
-Once you have forked the repository you can now add your langauge. (If you haven't already forked the repository, refer to this [section](#forking-the-repository).) Create a file in ```./frontend/static/languages/```. Create a json file with the language name and the amount of words. e.g ```language_1k.json```. It should look something like this: ```language_1k.json```. The inside of the file should look like this:
+Once you have forked the repository you can now add your langauge. (If you haven't already forked the repository, refer to this [section](#forking-the-repository).) Create a file in ```./frontend/static/languages/```. Create a json file with the language name and the amount of words. e.g ```language_1k.json```. The minimum amount of words needed are 200 and if that is the amount of words you chose to add then ignore the ```_1k``` part of the name. Otherwise the name should look something like this: ```language_1k.json```. The inside of the file should look like this:
 ```
 {
   "name": "language",
