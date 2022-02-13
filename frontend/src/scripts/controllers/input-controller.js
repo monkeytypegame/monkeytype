@@ -315,17 +315,9 @@ function isCharCorrect(char, charIndex) {
     }
   }
 
-  if (char === "’" && originalChar == "'") {
-    return true;
-  }
-
-  if (char === "'" && originalChar == "’") {
-    return true;
-  }
-
   if (
-    (char === `’` || char === "'") &&
-    (originalChar == `’` || originalChar === "'")
+    (char === `’` || char === "‘" || char === "'") &&
+    (originalChar == `’` || originalChar === "‘" || originalChar === "'")
   ) {
     return true;
   }
@@ -531,8 +523,9 @@ function handleChar(char, charIndex) {
     }
   }
 
-  let activeWordTopBeforeJump = document.querySelector("#words .word.active")
-    .offsetTop;
+  let activeWordTopBeforeJump = document.querySelector(
+    "#words .word.active"
+  ).offsetTop;
   TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {

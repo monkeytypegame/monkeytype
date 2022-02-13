@@ -1,8 +1,8 @@
 // @ts-ignore
 import * as DB from "../db";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
-function update(mode: Types.Mode): void {
+function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
@@ -15,23 +15,25 @@ function update(mode: Types.Mode): void {
 
   if (!allmode2) return;
 
-  const list: Types.PersonalBest[] = [];
-  (Object.keys(allmode2) as Types.Mode2<Types.Mode>[]).forEach(function (key) {
-    let pbs = allmode2[key];
-    pbs = pbs.sort(function (a, b) {
-      return b.wpm - a.wpm;
-      // if (a.difficulty === b.difficulty) {
-      //   return (a.language < b.language ? -1 : 1);
-      // }
-      // return (a.difficulty < b.difficulty ? -1 : 1)
-    });
-    pbs.forEach(function (pb) {
-      pb.mode2 = key;
-      list.push(pb);
-    });
-  });
+  const list: MonkeyTypes.PersonalBest[] = [];
+  (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]).forEach(
+    function (key) {
+      let pbs = allmode2[key];
+      pbs = pbs.sort(function (a, b) {
+        return b.wpm - a.wpm;
+        // if (a.difficulty === b.difficulty) {
+        //   return (a.language < b.language ? -1 : 1);
+        // }
+        // return (a.difficulty < b.difficulty ? -1 : 1)
+      });
+      pbs.forEach(function (pb) {
+        pb.mode2 = key;
+        list.push(pb);
+      });
+    }
+  );
 
-  let mode2memory: Types.Mode2<Types.Mode>;
+  let mode2memory: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -68,7 +70,7 @@ function update(mode: Types.Mode): void {
   });
 }
 
-function show(mode: Types.Mode): void {
+function show(mode: MonkeyTypes.Mode): void {
   if ($("#pbTablesPopupWrapper").hasClass("hidden")) {
     update(mode);
 

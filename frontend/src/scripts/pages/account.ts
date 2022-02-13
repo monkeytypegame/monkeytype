@@ -25,7 +25,7 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -36,7 +36,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: Types.Result[] = [];
+let filteredResults: MonkeyTypes.Result[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -115,7 +115,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags?.forEach((snaptag: Types.Tag) => {
+        DB.getSnapshot().tags?.forEach((snaptag: MonkeyTypes.Tag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
@@ -271,7 +271,7 @@ export function update(): void {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results?.forEach((result: Types.Result) => {
+    DB.getSnapshot().results?.forEach((result: MonkeyTypes.Result) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -292,9 +292,9 @@ export function update(): void {
         }
 
         if (result.mode == "time") {
-          let timefilter: Types.TimeModes = "custom";
+          let timefilter: MonkeyTypes.TimeModes = "custom";
           if ([15, 30, 60, 120].includes(result.mode2 as number)) {
-            timefilter = result.mode2.toString() as Types.TimeModes;
+            timefilter = result.mode2.toString() as MonkeyTypes.TimeModes;
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
             if (filterDebug)
@@ -302,9 +302,9 @@ export function update(): void {
             return;
           }
         } else if (result.mode == "words") {
-          let wordfilter: Types.WordsModes = "custom";
+          let wordfilter: MonkeyTypes.WordsModes = "custom";
           if ([10, 25, 50, 100, 200].includes(result.mode2 as number)) {
-            wordfilter = result.mode2.toString() as Types.WordsModes;
+            wordfilter = result.mode2.toString() as MonkeyTypes.WordsModes;
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
             if (filterDebug)
@@ -314,7 +314,7 @@ export function update(): void {
         }
 
         if (result.quoteLength != null) {
-          let filter: Types.QuoteModes;
+          let filter: MonkeyTypes.QuoteModes;
           if (result.quoteLength === 0) {
             filter = "short";
           } else if (result.quoteLength === 1) {
@@ -353,7 +353,7 @@ export function update(): void {
           return;
         }
 
-        let puncfilter: Types.Filter<"punctuation"> = "off";
+        let puncfilter: MonkeyTypes.Filter<"punctuation"> = "off";
         if (result.punctuation) {
           puncfilter = "on";
         }
@@ -363,7 +363,7 @@ export function update(): void {
           return;
         }
 
-        let numfilter: Types.Filter<"numbers"> = "off";
+        let numfilter: MonkeyTypes.Filter<"numbers"> = "off";
         if (result.numbers) {
           numfilter = "on";
         }
@@ -397,7 +397,12 @@ export function update(): void {
           }
         } else {
           //tags exist
-          const validTags = DB.getSnapshot().tags?.map((t: Types.Tag) => t._id);
+          const validTags = DB.getSnapshot().tags?.map(
+            (t: MonkeyTypes.Tag) => t._id
+          );
+
+          if (validTags === undefined) return;
+
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
@@ -978,7 +983,7 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
   MiniResultChart.updateData(
-    filteredResults[parseInt(filteredId)].chartData as Types.ChartData
+    filteredResults[parseInt(filteredId)].chartData as MonkeyTypes.ChartData
   );
   MiniResultChart.show();
   MiniResultChart.updatePosition(

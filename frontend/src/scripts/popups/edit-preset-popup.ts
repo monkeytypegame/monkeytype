@@ -5,7 +5,7 @@ import * as Config from "../config";
 import * as Loader from "../elements/loader";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 import * as Notifications from "../elements/notifications";
 import { AxiosError } from "axios";
 
@@ -67,7 +67,7 @@ function hide(): void {
   }
 }
 
-interface ConfigChanges extends Types.Config {
+interface ConfigChanges extends MonkeyTypes.Config {
   tags: string[];
 }
 
@@ -85,7 +85,7 @@ async function apply(): Promise<void> {
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges() as ConfigChanges;
     const activeTagIds: string[] = [];
-    DB.getSnapshot().tags?.forEach((tag: Types.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
       if (tag.active) {
         activeTagIds.push(tag._id);
       }
@@ -143,7 +143,7 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset updated", 1);
       const preset = DB.getSnapshot().presets?.filter(
-        (preset: Types.Preset) => preset._id == presetid
+        (preset: MonkeyTypes.Preset) => preset._id == presetid
       )[0];
 
       if (preset !== undefined) {
@@ -172,7 +172,7 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset removed", 1);
       DB.getSnapshot().presets?.forEach(
-        (preset: Types.Preset, index: number) => {
+        (preset: MonkeyTypes.Preset, index: number) => {
           if (preset._id === presetid) {
             DB.getSnapshot().presets?.splice(index, 1);
           }

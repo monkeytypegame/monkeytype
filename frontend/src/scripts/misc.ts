@@ -1,5 +1,5 @@
 import * as Loader from "./elements/loader";
-import * as Types from "./types/interfaces";
+import * as MonkeyTypes from "./types/interfaces";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -7,21 +7,24 @@ export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function hexToHSL(
-  hex: string
-): { hue: number; sat: number; lgt: number; string: string } {
+function hexToHSL(hex: string): {
+  hue: number;
+  sat: number;
+  lgt: number;
+  string: string;
+} {
   // Convert hex to RGB first
   let r: number;
   let g: number;
   let b: number;
   if (hex.length == 4) {
-    r = (("0x" + hex[1] + hex[1]) as unknown) as number;
-    g = (("0x" + hex[2] + hex[2]) as unknown) as number;
-    b = (("0x" + hex[3] + hex[3]) as unknown) as number;
+    r = ("0x" + hex[1] + hex[1]) as unknown as number;
+    g = ("0x" + hex[2] + hex[2]) as unknown as number;
+    b = ("0x" + hex[3] + hex[3]) as unknown as number;
   } else if (hex.length == 7) {
-    r = (("0x" + hex[1] + hex[2]) as unknown) as number;
-    g = (("0x" + hex[3] + hex[4]) as unknown) as number;
-    b = (("0x" + hex[5] + hex[6]) as unknown) as number;
+    r = ("0x" + hex[1] + hex[2]) as unknown as number;
+    g = ("0x" + hex[3] + hex[4]) as unknown as number;
+    b = ("0x" + hex[5] + hex[6]) as unknown as number;
   } else {
     r = 0x00;
     g = 0x00;
@@ -128,10 +131,10 @@ export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
 }
 
 type QuoteCollection = {
-  quotes: Types.Quote[];
+  quotes: MonkeyTypes.Quote[];
   length?: number;
   language?: string;
-  groups: number[][] | Types.Quote[][];
+  groups: number[][] | MonkeyTypes.Quote[][];
 };
 
 let quotes: QuoteCollection;
@@ -388,7 +391,7 @@ export async function getReleasesFromGitHub(): Promise<object> {
       $("#bottom .version .text").text(data[0].name);
       $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
-      data.forEach((release: Types.GithubRelease) => {
+      data.forEach((release: MonkeyTypes.GithubRelease) => {
         if (!release.draft && !release.prerelease) {
           $("#versionHistory .releases").append(`
           <div class="release">
@@ -770,7 +773,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: Types.CustomText
+  CustomText: MonkeyTypes.CustomText
 ): boolean {
   if (
     (mode === "words" && words < 1000) ||
@@ -905,8 +908,8 @@ export function swapElements(
 }
 
 export function getMode2(
-  config: Types.Config,
-  randomQuote: Types.Quote
+  config: MonkeyTypes.Config,
+  randomQuote: MonkeyTypes.Quote
 ): string {
   const mode = config.mode;
   let mode2 = "";
