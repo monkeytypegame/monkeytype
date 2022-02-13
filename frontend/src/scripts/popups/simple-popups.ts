@@ -582,9 +582,11 @@ list["clearTagPb"] = new SimplePopup(
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
-          const tag = DB.getSnapshot().tags.filter(
+          const tag = DB.getSnapshot().tags?.filter(
             (t: Types.Tag) => t._id === tagid
           )[0];
+
+          if (tag === undefined) return;
           tag.pb = 0;
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
@@ -669,7 +671,13 @@ list["resetPersonalBests"] = new SimplePopup(
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Personal bests have been reset", 1);
-        DB.getSnapshot().personalBests = {};
+        DB.getSnapshot().personalBests = {
+          time: {},
+          words: {},
+          quote: {},
+          custom: {},
+          zen: {},
+        };
       }
     } catch (e) {
       Loader.hide();

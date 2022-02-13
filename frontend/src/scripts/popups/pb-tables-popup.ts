@@ -2,33 +2,21 @@
 import * as DB from "../db";
 import * as Types from "../types/interfaces";
 
-function update(mode: string): void {
+function update(mode: Types.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
-  type PersonalBests = {
-    [key: string]: PersonalBest[];
-  };
+  const snapshot = DB.getSnapshot();
 
-  type PersonalBest = {
-    acc: number;
-    consistency: number;
-    difficulty: Types.Difficulty;
-    lazyMode: boolean;
-    language: string;
-    punctuation: boolean;
-    raw: number;
-    wpm: number;
-    timestamp: number;
-    mode2?: string;
-  };
-
-  const allmode2: PersonalBests = DB.getSnapshot().personalBests[mode];
+  const allmode2 =
+    snapshot.personalBests === undefined
+      ? undefined
+      : snapshot.personalBests[mode];
 
   if (!allmode2) return;
 
-  const list: PersonalBest[] = [];
-  Object.keys(allmode2).forEach(function (key) {
+  const list: Types.PersonalBest[] = [];
+  (Object.keys(allmode2) as Types.Mode2<Types.Mode>[]).forEach(function (key) {
     let pbs = allmode2[key];
     pbs = pbs.sort(function (a, b) {
       return b.wpm - a.wpm;
@@ -43,7 +31,7 @@ function update(mode: string): void {
     });
   });
 
-  let mode2memory: string;
+  let mode2memory: Types.Mode2<Types.Mode>;
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -76,11 +64,11 @@ function update(mode: string): void {
         <td>${dateText}</td>
       </tr>
     `);
-    mode2memory = pb.mode2 as string;
+    mode2memory = pb.mode2 as never;
   });
 }
 
-function show(mode: string): void {
+function show(mode: Types.Mode): void {
   if ($("#pbTablesPopupWrapper").hasClass("hidden")) {
     update(mode);
 

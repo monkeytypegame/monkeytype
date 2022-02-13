@@ -74,7 +74,7 @@
         "@typescript-eslint/no-var-requires": "error"
       },
       "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": ["./tsconfig.json"]
       }
     }
   ]

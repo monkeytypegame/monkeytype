@@ -2,8 +2,9 @@ import * as Misc from "../misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import * as MonkeyTypes from "../types/interfaces";
 
-export let defaultResultFilters = {
+export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   difficulty: {
     normal: true,
     expert: true,
@@ -63,15 +64,15 @@ export let defaultResultFilters = {
 
 export let filters = defaultResultFilters;
 
-function save() {
+function save(): void {
   window.localStorage.setItem("resultFilters", JSON.stringify(filters));
 }
 
-export function load() {
+export function load(): void {
   // let newTags = $.cookie("activeTags");
   console.log("loading filters");
   try {
-    let newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters");
     if (
       newResultFilters != undefined &&
       newResultFilters !== "" &&
@@ -85,7 +86,12 @@ export function load() {
       // save();
     }
 
-    let newTags = {};
+    const newTags: {
+      [tag: string]: boolean | any[] | undefined;
+      none?: boolean | undefined;
+      all?: boolean | undefined;
+      array?: (string | number)[] | undefined;
+    } = { none: false };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
@@ -105,11 +111,13 @@ export function load() {
   }
 }
 
-export function getFilters() {
+export function getFilters(): MonkeyTypes.ResultFilters {
   return filters;
 }
 
-export function getGroup(group) {
+export function getGroup<G extends MonkeyTypes.Group>(
+  group: G
+): MonkeyTypes.ResultFilters[G] {
   return filters[group];
 }
 
@@ -117,7 +125,10 @@ export function getGroup(group) {
 //   filters[group][filter] = value;
 // }
 
-export function getFilter(group, filter) {
+export function getFilter<G extends MonkeyTypes.Group>(
+  group: G,
+  filter: MonkeyTypes.Filter<G>
+): MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
   return filters[group][filter];
 }
 
@@ -125,30 +136,34 @@ export function getFilter(group, filter) {
 //   filters[group][filter] = !filters[group][filter];
 // }
 
-export function loadTags(tags) {
+export function loadTags(tags: MonkeyTypes.Tag[]): void {
   console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
 
-export function reset() {
+export function reset(): void {
   filters = defaultResultFilters;
   save();
 }
 
-export function updateActive() {
-  let aboveChartDisplay = {};
-  Object.keys(getFilters()).forEach((group) => {
+export function updateActive(): void {
+  const aboveChartDisplay = {} as MonkeyTypes.ResultFilters;
+  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
-    Object.keys(getGroup(group)).forEach((filter) => {
+    (
+      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
+    ).forEach((filter) => {
+      const groupAboveChartDisplay = aboveChartDisplay[group];
       if (getFilter(group, filter)) {
-        aboveChartDisplay[group].array.push(filter);
+        groupAboveChartDisplay["array"]?.push(filter);
       } else {
-        aboveChartDisplay[group].all = false;
+        if (groupAboveChartDisplay["all"] !== undefined)
+          groupAboveChartDisplay["all"] = false;
       }
       let buttonEl;
       if (group === "date") {
@@ -168,7 +183,7 @@ export function updateActive() {
     });
   });
 
-  function addText(group) {
+  function addText(group: MonkeyTypes.Group): string {
     let ret = "";
     ret += "<div class='group'>";
     if (group == "difficulty") {
@@ -206,16 +221,17 @@ export function updateActive() {
     } else {
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
-          .map((id) => {
+          ?.map((id) => {
             if (id == "none") return id;
-            let name = DB.getSnapshot().tags.filter((t) => t._id == id)[0];
+            const name = DB.getSnapshot().tags?.filter((t) => t._id == id)[0];
             if (name !== undefined) {
-              return DB.getSnapshot().tags.filter((t) => t._id == id)[0].name;
+              return DB.getSnapshot().tags?.filter((t) => t._id == id)[0].name;
             }
+            return name;
           })
           .join(", ");
       } else {
-        ret += aboveChartDisplay[group].array.join(", ").replace(/_/g, " ");
+        ret += aboveChartDisplay[group].array?.join(", ").replace(/_/g, " ");
       }
     }
     ret += "</span></div>";
@@ -233,13 +249,13 @@ export function updateActive() {
   chartString += `<div class="spacer"></div>`;
 
   //time
-  if (aboveChartDisplay.mode.array.includes("time")) {
+  if (aboveChartDisplay.mode.array?.includes("time")) {
     chartString += addText("time");
     chartString += `<div class="spacer"></div>`;
   }
 
   //words
-  if (aboveChartDisplay.mode.array.includes("words")) {
+  if (aboveChartDisplay.mode.array?.includes("words")) {
     chartString += addText("words");
     chartString += `<div class="spacer"></div>`;
   }
@@ -272,14 +288,19 @@ export function updateActive() {
   }, 0);
 }
 
-export function toggle(group, filter) {
+export function toggle<G extends MonkeyTypes.Group>(
+  group: G,
+  filter: MonkeyTypes.Filter<G>
+): void {
   try {
     if (group === "date") {
       Object.keys(getGroup("date")).forEach((date) => {
         filters["date"][date] = false;
       });
     }
-    filters[group][filter] = !filters[group][filter];
+    filters[group][filter] = !filters[group][
+      filter
+    ] as unknown as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
     save();
   } catch (e) {
     Notifications.add(
@@ -293,18 +314,18 @@ export function toggle(group, filter) {
   }
 }
 
-export function updateTags() {
+export function updateTags(): void {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
-  if (DB.getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot().tags?.length || 0 > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    DB.getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
@@ -319,33 +340,44 @@ export function updateTags() {
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
 ).click(".button", (e) => {
-  const filter = $(e.target).attr("filter");
-  const group = $(e.target).parents(".buttons").attr("group");
+  const group = $(e.target)
+    .parents(".buttons")
+    .attr("group") as MonkeyTypes.Group;
+  const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    Object.keys(getFilters()).forEach((group) => {
-      Object.keys(getGroup(group)).forEach((filter) => {
+    (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+      (
+        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
+      ).forEach((filter) => {
         if (group === "date") {
-          filters[group][filter] = false;
-        } else {
-          filters[group][filter] = true;
+          // TODO figure out how to fix this
+          filters[group][filter] = false as boolean & (string | number)[];
+        } else if (filters[group] !== undefined) {
+          filters[group][filter] = true as boolean & (string | number)[];
         }
       });
     });
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.keys(getFilters()).forEach((group) => {
+    (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
       if (group !== "date") {
-        Object.keys(getGroup(group)).forEach((filter) => {
-          filters[group][filter] = false;
+        (
+          Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
+        ).forEach((filter) => {
+          // TODO figure out how to fix this
+          filters[group][filter] = false as boolean & (string | number)[];
         });
       }
     });
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      Object.keys(getGroup(group)).forEach((filter) => {
-        filters[group][filter] = false;
+      (
+        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
+      ).forEach((filter) => {
+        // TODO figure out how to fix this
+        filters[group][filter] = false as boolean & (string | number)[];
       });
-      filters[group][filter] = true;
+      filters[group][filter] = true as boolean & (string | number)[];
     } else {
       toggle(group, filter);
       // filters[group][filter] = !filters[group][filter];
@@ -355,13 +387,16 @@ $(
   save();
 });
 
-$(".pageAccount .topFilters .button.allFilters").click((e) => {
-  Object.keys(getFilters()).forEach((group) => {
-    Object.keys(getGroup(group)).forEach((filter) => {
+$(".pageAccount .topFilters .button.allFilters").click(() => {
+  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    (
+      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
+    ).forEach((filter) => {
       if (group === "date") {
-        filters[group][filter] = false;
+        // TODO figure out how to fix this
+        filters[group][filter] = false as boolean & (string | number)[];
       } else {
-        filters[group][filter] = true;
+        filters[group][filter] = true as boolean & (string | number)[];
       }
     });
   });
@@ -370,10 +405,13 @@ $(".pageAccount .topFilters .button.allFilters").click((e) => {
   save();
 });
 
-$(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  Object.keys(getFilters()).forEach((group) => {
-    Object.keys(getGroup(group)).forEach((filter) => {
-      filters[group][filter] = false;
+$(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
+  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    (
+      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
+    ).forEach((filter) => {
+      // TODO figure out how to fix this
+      filters[group][filter] = false as boolean & (string | number)[];
     });
   });
 
@@ -384,8 +422,14 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   } else if (Config.mode === "words") {
     filters["words"][Config.words] = true;
   } else if (Config.mode === "quote") {
-    Object.keys(getGroup("quoteLength")).forEach((ql) => {
-      filters["quoteLength"][ql] = true;
+    (
+      Object.keys(
+        getGroup("quoteLength")
+      ) as MonkeyTypes.Filter<"quoteLength">[]
+    ).forEach((ql) => {
+      // TODO figure out how to fix this
+      filters["quoteLength"][ql] = true as boolean &
+        ("all" | "array" | "short" | "medium" | "long" | "thicc")[];
     });
   }
   if (Config.punctuation) {
@@ -411,7 +455,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   }
 
   filters["tags"]["none"] = true;
-  DB.getSnapshot().tags.forEach((tag) => {
+  DB.getSnapshot().tags?.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
       filters["tags"][tag._id] = true;
@@ -423,7 +467,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   save();
 });
 
-$(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
+$(".pageAccount .topFilters .button.toggleAdvancedFilters").click(() => {
   $(".pageAccount .filterButtons").slideToggle(250);
   $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
     "active"

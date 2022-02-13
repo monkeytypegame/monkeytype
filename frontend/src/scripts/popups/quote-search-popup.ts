@@ -151,7 +151,7 @@ export function apply(val: number): boolean {
   }
   let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
-    UpdateConfig.setQuoteLength(-2, false);
+    UpdateConfig.setQuoteLength(-2 as Types.QuoteLength, false);
     selectedId = val;
     ManualRestart.set();
     ret = true;

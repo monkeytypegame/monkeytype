@@ -93,9 +93,11 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag added", 1);
-      DB.getSnapshot().tags.push({
+      DB.getSnapshot().tags?.push({
         name: response.data.name,
         _id: response.data._id,
+        personalBests: {} as Types.PersonalBests,
+        active: true,
       });
       ResultTagsPopup.updateButtons();
       Settings.update();
@@ -121,7 +123,7 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+      DB.getSnapshot().tags?.forEach((tag: Types.Tag) => {
         if (tag._id === tagid) {
           tag.name = inputVal;
         }
@@ -147,9 +149,9 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot().tags.forEach((tag: Types.Tag, index: number) => {
+      DB.getSnapshot().tags?.forEach((tag: Types.Tag, index: number) => {
         if (tag._id === tagid) {
-          DB.getSnapshot().tags.splice(index, 1);
+          DB.getSnapshot().tags?.splice(index, 1);
         }
       });
       ResultTagsPopup.updateButtons();
@@ -173,9 +175,15 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+      DB.getSnapshot().tags?.forEach((tag: Types.Tag) => {
         if (tag._id === tagid) {
-          tag.personalBests = {};
+          tag.personalBests = {
+            time: {},
+            words: {},
+            custom: {},
+            zen: {},
+            quote: {},
+          };
         }
       });
       ResultTagsPopup.updateButtons();

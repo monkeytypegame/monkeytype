@@ -115,7 +115,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags.forEach((snaptag: Types.Tag) => {
+        DB.getSnapshot().tags?.forEach((snaptag: Types.Tag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
@@ -271,7 +271,7 @@ export function update(): void {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results.forEach((result: Types.Result) => {
+    DB.getSnapshot().results?.forEach((result: Types.Result) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -292,9 +292,9 @@ export function update(): void {
         }
 
         if (result.mode == "time") {
-          let timefilter = "custom";
+          let timefilter: Types.TimeModes = "custom";
           if ([15, 30, 60, 120].includes(result.mode2 as number)) {
-            timefilter = result.mode2.toString();
+            timefilter = result.mode2.toString() as Types.TimeModes;
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
             if (filterDebug)
@@ -302,9 +302,9 @@ export function update(): void {
             return;
           }
         } else if (result.mode == "words") {
-          let wordfilter = "custom";
+          let wordfilter: Types.WordsModes = "custom";
           if ([10, 25, 50, 100, 200].includes(result.mode2 as number)) {
-            wordfilter = result.mode2.toString();
+            wordfilter = result.mode2.toString() as Types.WordsModes;
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
             if (filterDebug)
@@ -314,7 +314,7 @@ export function update(): void {
         }
 
         if (result.quoteLength != null) {
-          let filter = null;
+          let filter: Types.QuoteModes;
           if (result.quoteLength === 0) {
             filter = "short";
           } else if (result.quoteLength === 1) {
@@ -323,6 +323,8 @@ export function update(): void {
             filter = "long";
           } else if (result.quoteLength === 3) {
             filter = "thicc";
+          } else {
+            filter = "medium";
           }
           if (
             filter !== null &&
@@ -351,7 +353,7 @@ export function update(): void {
           return;
         }
 
-        let puncfilter = "off";
+        let puncfilter: Types.Filter<"punctuation"> = "off";
         if (result.punctuation) {
           puncfilter = "on";
         }
@@ -361,7 +363,7 @@ export function update(): void {
           return;
         }
 
-        let numfilter = "off";
+        let numfilter: Types.Filter<"numbers"> = "off";
         if (result.numbers) {
           numfilter = "on";
         }
@@ -388,21 +390,19 @@ export function update(): void {
         let tagHide = true;
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
-          if (DB.getSnapshot().tags.length > 0) {
+          if (DB.getSnapshot().tags?.length || 0 > 0) {
             if (ResultFilters.getFilter("tags", "none")) tagHide = false;
           } else {
             tagHide = false;
           }
         } else {
           //tags exist
-          const validTags: string[] = DB.getSnapshot().tags.map(
-            (t: Types.Tag) => t._id
-          );
+          const validTags = DB.getSnapshot().tags?.map((t: Types.Tag) => t._id);
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
             //check if tag is valid
-            if (validTags.includes(tag)) {
+            if (validTags?.includes(tag)) {
               //tag valid, check if filter is on
               if (ResultFilters.getFilter("tags", tag)) tagHide = false;
             } else {
@@ -641,8 +641,10 @@ export function update(): void {
         "Average Wpm";
     }
 
-    ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
-    ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
+    ChartController.accountActivity.data.datasets[0].data =
+      activityChartData_time;
+    ChartController.accountActivity.data.datasets[1].data =
+      activityChartData_avgWpm;
 
     if (Config.alwaysShowCPM) {
       ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
@@ -664,9 +666,8 @@ export function update(): void {
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
     if (!Config.startGraphsAtZero) {
-      ChartController.accountHistory.options.scales.yAxes[0].ticks.min = Math.floor(
-        minWpmChartVal
-      );
+      ChartController.accountHistory.options.scales.yAxes[0].ticks.min =
+        Math.floor(minWpmChartVal);
     } else {
       ChartController.accountHistory.options.scales.yAxes[0].ticks.min = 0;
     }
@@ -976,7 +977,9 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   console.log("updating");
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
-  MiniResultChart.updateData(filteredResults[parseInt(filteredId)].chartData);
+  MiniResultChart.updateData(
+    filteredResults[parseInt(filteredId)].chartData as Types.ChartData
+  );
   MiniResultChart.show();
   MiniResultChart.updatePosition(
     event.pageX - ($(".pageAccount .miniResultChartWrapper").outerWidth() ?? 0),

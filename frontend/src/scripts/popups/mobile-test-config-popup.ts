@@ -11,6 +11,7 @@ import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
+import * as MonkeyTypes from "../types/interfaces";
 
 const el = $("#mobileTestConfigPopup");
 
@@ -103,7 +104,7 @@ el.find(".wordsGroup .button").on("click", (e) => {
     hidePopup();
     CustomWordAmountPopup.show();
   } else {
-    UpdateConfig.setWordCount(wrd);
+    UpdateConfig.setWordCount(wrd as MonkeyTypes.WordsModes);
     ManualRestart.set();
     TestLogic.restart();
   }
@@ -115,7 +116,7 @@ el.find(".timeGroup .button").on("click", (e) => {
     hidePopup();
     CustomTestDurationPopup.show();
   } else {
-    UpdateConfig.setTimeConfig(mode);
+    UpdateConfig.setTimeConfig(mode as MonkeyTypes.TimeModes);
     ManualRestart.set();
     TestLogic.restart();
   }
@@ -132,7 +133,11 @@ el.find(".quoteGroup .button").on("click", (e) => {
     if (len == -1) {
       len = [0, 1, 2, 3];
     }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
+    UpdateConfig.setQuoteLength(
+      len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLengthArray,
+      false,
+      e.shiftKey
+    );
     ManualRestart.set();
     TestLogic.restart();
   }
@@ -158,7 +163,7 @@ el.find(".numbers").on("click", () => {
 el.find(".modeGroup .button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = $(e.currentTarget).attr("mode");
-  UpdateConfig.setMode(mode);
+  UpdateConfig.setMode(mode as MonkeyTypes.Mode);
   ManualRestart.set();
   TestLogic.restart();
 });

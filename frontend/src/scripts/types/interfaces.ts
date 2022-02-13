@@ -1,12 +1,12 @@
+export declare type CustomLayoutFluid = `${string}#${string}#${string}`;
+
+export declare type CustomLayoutFluidSpaces =
+  | CustomLayoutFluid
+  | `${string} ${string} ${string}`;
+
 export declare type Difficulty = "normal" | "expert" | "master";
 
 export declare type CustomModes = "custom";
-
-export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
-
-export declare type Mode2<M extends Mode> = keyof PersonalBests[M];
-
-// export declare type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
 
 export declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
 
@@ -109,6 +109,8 @@ export declare type MinimumBurst = "off" | "fixed" | "flex";
 
 export declare type FunboxObjectType = "script" | "style";
 
+export declare type IndicateTypos = "off" | "below" | "replace";
+
 export declare interface FunboxObject {
   name: string;
   type: FunboxObjectType;
@@ -130,6 +132,10 @@ export declare interface Preset {
   config: Config;
 }
 
+export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
+
+export declare type Mode2<M extends Mode> = keyof PersonalBests[M];
+
 export declare interface PersonalBest {
   acc: number;
   consistency: number;
@@ -140,26 +146,30 @@ export declare interface PersonalBest {
   raw: number;
   wpm: number;
   timestamp: number;
+  mode2?: Mode2<Mode>;
 }
 
 export declare interface PersonalBests {
   time: {
     [key: number]: PersonalBest[];
-    custom: PersonalBest[];
+    custom?: PersonalBest[];
   };
   words: {
     [key: number]: PersonalBest[];
-    custom: PersonalBest[];
+    custom?: PersonalBest[];
   };
   quote: { [quote: string]: PersonalBest[] };
-  custom: { custom: PersonalBest[] };
-  zen: PersonalBest[];
+  custom: { custom?: PersonalBest[] };
+  zen: {
+    zen?: PersonalBest[];
+  };
 }
 
 export declare interface Tag {
+  pb?: number;
   _id: string;
   name: string;
-  personalBests: PersonalBests | Record<string, never>;
+  personalBests: PersonalBests;
   active: boolean;
 }
 
@@ -243,7 +253,7 @@ export declare interface Config {
   layout: string;
   funbox: string;
   confidenceMode: ConfidenceMode;
-  indicateTypos: boolean;
+  indicateTypos: IndicateTypos;
   timerStyle: TimerStyle;
   colorfulMode: boolean;
   randomTheme: RandomTheme;
@@ -290,7 +300,7 @@ export declare interface Config {
   customBackground: string;
   customBackgroundSize: CustomBackgroundSize;
   customBackgroundFilter: CustomBackgroundFilter;
-  customLayoutfluid: string;
+  customLayoutfluid: CustomLayoutFluid;
   monkeyPowerLevel: MonkeyPowerLevel;
   minBurst: MinimumBurst;
   minBurstCustomSpeed: number;
@@ -299,19 +309,21 @@ export declare interface Config {
   lazyMode: boolean;
 }
 
-export declare interface DefaultConfig extends Config {
-  wordCount: WordsModes;
-}
-
 // TODO find structure of Leaderboard
 export declare interface Leaderboard {
   [key: string]: any;
 }
 
+export declare interface QuoteRatings {
+  [language: string]: {
+    [id: string]: number;
+  };
+}
+
 export declare interface Snapshot {
   banned?: boolean;
   emailVerified?: boolean;
-  quoteRatings?: object; // TODO find structure of quoteRatings
+  quoteRatings?: QuoteRatings; // TODO find structure of quoteRatings
   results?: Result[];
   verified?: boolean;
   personalBests?: PersonalBests;

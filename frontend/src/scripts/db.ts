@@ -2,21 +2,24 @@ import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
 import * as LoadingPage from "./pages/loading";
+import * as MonkeyTypes from "./types/interfaces";
 
-let dbSnapshot = null;
+let dbSnapshot: MonkeyTypes.Snapshot;
 
-export function updateName(uid, name) {
+export function updateName(uid: string, name: string): void {
   //TODO update
   axiosInstance.patch("/user/name", {
     name,
   });
+
+  name = uid; // this is just so that typescript is happy; Remove once this function is updated.
 }
 
-export function getSnapshot() {
+export function getSnapshot(): MonkeyTypes.Snapshot {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot) {
+export function setSnapshot(newSnapshot: MonkeyTypes.Snapshot): void {
   try {
     delete newSnapshot.banned;
   } catch {}
@@ -26,11 +29,13 @@ export function setSnapshot(newSnapshot) {
   dbSnapshot = newSnapshot;
 }
 
-export async function initSnapshot() {
+export async function initSnapshot(): Promise<
+  MonkeyTypes.Snapshot | number | boolean
+> {
   //send api request with token that returns tags, presets, and data needed for snap
-  let defaultSnap = {
+  const defaultSnap: MonkeyTypes.Snapshot = {
     results: undefined,
-    personalBests: {},
+    personalBests: { time: {}, words: {}, zen: {}, quote: {}, custom: {} },
     name: undefined,
     presets: [],
     tags: [],
@@ -47,7 +52,7 @@ export async function initSnapshot() {
     quoteRatings: undefined,
     quoteMod: false,
   };
-  let snap = defaultSnap;
+  const snap = defaultSnap;
   try {
     if (firebase.auth().currentUser == null) return false;
     // if (ActivePage.get() == "loading") {
@@ -56,16 +61,16 @@ export async function initSnapshot() {
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    let promises = await Promise.all([
+    const promises = await Promise.all([
       axiosInstance.get("/user"),
       axiosInstance.get("/config"),
       axiosInstance.get("/user/tags"),
       axiosInstance.get("/presets"),
     ]);
-    let userData = promises[0].data;
-    let configData = promises[1].data;
-    let tagsData = promises[2].data;
-    let presetsData = promises[3].data;
+    const userData = promises[0].data;
+    const configData = promises[1].data;
+    const tagsData = promises[2].data;
+    const presetsData = promises[3].data;
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -104,7 +109,7 @@ export async function initSnapshot() {
     // }
     // LoadingPage.updateText("Downloading tags...");
     snap.tags = tagsData;
-    snap.tags = snap.tags.sort((a, b) => {
+    snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
       } else if (a.name < b.name) {
@@ -120,7 +125,7 @@ export async function initSnapshot() {
     // }
     // LoadingPage.updateText("Downloading presets...");
     snap.presets = presetsData;
-    snap.presets = snap.presets.sort((a, b) => {
+    snap.presets = snap.presets?.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
       } else if (a.name < b.name) {
@@ -138,8 +143,8 @@ export async function initSnapshot() {
   }
 }
 
-export async function getUserResults() {
-  let user = firebase.auth().currentUser;
+export async function getUserResults(): Promise<boolean> {
+  const user = firebase.auth().currentUser;
   if (user == null) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
@@ -148,8 +153,11 @@ export async function getUserResults() {
     try {
       LoadingPage.updateText("Downloading results...");
       LoadingPage.updateBar(90);
-      let results = await axiosInstance.get("/results");
-      results.data.forEach((result) => {
+      const resultsData = await axiosInstance.get("/results");
+
+      let results = resultsData.data as MonkeyTypes.Result[];
+
+      results.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
         if (result.blindMode === undefined) result.blindMode = false;
         if (result.lazyMode === undefined) result.lazyMode = false;
@@ -160,12 +168,10 @@ export async function getUserResults() {
         if (result.numbers === undefined) result.numbers = false;
         if (result.punctuation === undefined) result.punctuation = false;
       });
-      results.data = results.data.sort((a, b) => {
-        return a.timestamp < b.timestamp;
-      });
-      dbSnapshot.results = results.data;
+      results = results.sort((a, b) => a.timestamp - b.timestamp);
+      dbSnapshot.results = results;
       return true;
-    } catch (e) {
+    } catch (e: any) {
       Notifications.add("Error getting results: " + e.message, -1);
       return false;
     }
@@ -208,17 +214,18 @@ export async function getUserResults() {
   */
 }
 
-export async function getUserHighestWpm(
-  mode,
-  mode2,
-  punctuation,
-  language,
-  difficulty,
-  lazyMode
-) {
-  function cont() {
+export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  function cont(): number {
     let topWpm = 0;
-    dbSnapshot.results.forEach((result) => {
+
+    dbSnapshot.results?.forEach((result) => {
       if (
         result.mode == mode &&
         result.mode2 == mode2 &&
@@ -236,25 +243,22 @@ export async function getUserHighestWpm(
     return topWpm;
   }
 
-  let retval;
-  if (dbSnapshot == null || dbSnapshot.results === undefined) {
-    retval = 0;
-  } else {
-    retval = cont();
-  }
+  const retval =
+    dbSnapshot === null || dbSnapshot.results === undefined ? 0 : cont();
+
   return retval;
 }
 
-export async function getUserAverageWpm10(
-  mode,
-  mode2,
-  punctuation,
-  language,
-  difficulty,
-  lazyMode
-) {
-  function cont() {
-    let activeTagIds = [];
+export async function getUserAverageWpm10<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  function cont(): number {
+    const activeTagIds: string[] = [];
     getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
@@ -266,7 +270,7 @@ export async function getUserAverageWpm10(
     let last10Wpm = 0;
     let last10Count = 0;
     // You have to use every so you can break out of the loop
-    dbSnapshot.results.every((result) => {
+    dbSnapshot.results?.every((result) => {
       if (
         result.mode == mode &&
         result.punctuation == punctuation &&
@@ -311,34 +315,35 @@ export async function getUserAverageWpm10(
     return Math.round(wpmSum / count);
   }
 
-  let retval = 0;
+  const retval =
+    dbSnapshot === null || (await getUserResults()) === false ? 0 : cont();
 
-  if (dbSnapshot == null) return retval;
-  let dbSnapshotValid = await getUserResults();
-  if (dbSnapshotValid === false) {
-    return retval;
-  }
-  retval = cont();
   return retval;
 }
 
-export async function getLocalPB(
-  mode,
-  mode2,
-  punctuation,
-  language,
-  difficulty,
-  lazyMode,
-  funbox
-) {
+export async function getLocalPB<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean,
+  funbox: string
+): Promise<number> {
   if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
     return 0;
   }
 
-  function cont() {
+  function cont(): number {
     let ret = 0;
     try {
-      dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
+      if (!dbSnapshot.personalBests) return ret;
+
+      (
+        dbSnapshot.personalBests[mode][
+          mode2
+        ] as unknown as MonkeyTypes.PersonalBest[]
+      ).forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -349,43 +354,54 @@ export async function getLocalPB(
           ret = pb.wpm;
         }
       });
+
       return ret;
     } catch (e) {
       return ret;
     }
   }
 
-  let retval;
-  if (dbSnapshot == null) {
-    retval = 0;
-  } else {
-    retval = cont();
-  }
+  const retval = dbSnapshot === null ? 0 : cont();
+
   return retval;
 }
 
-export async function saveLocalPB(
-  mode,
-  mode2,
-  punctuation,
-  language,
-  difficulty,
-  lazyMode,
-  wpm,
-  acc,
-  raw,
-  consistency
-) {
+export async function saveLocalPB<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean,
+  wpm: number,
+  acc: number,
+  raw: number,
+  consistency: number
+): Promise<void> {
   if (mode == "quote") return;
-  function cont() {
+  function cont(): void {
     let found = false;
-    if (dbSnapshot.personalBests === undefined) dbSnapshot.personalBests = {};
-    if (dbSnapshot.personalBests[mode] === undefined)
+    if (dbSnapshot.personalBests === undefined)
+      dbSnapshot.personalBests = {
+        time: {},
+        words: {},
+        quote: {},
+        custom: {},
+        zen: {},
+      };
+    if (dbSnapshot.personalBests[mode] === undefined) {
       dbSnapshot.personalBests[mode] = {};
-    if (dbSnapshot.personalBests[mode][mode2] === undefined)
-      dbSnapshot.personalBests[mode][mode2] = [];
+    }
 
-    dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
+    if (dbSnapshot.personalBests[mode][mode2] === undefined)
+      dbSnapshot.personalBests[mode][mode2] =
+        [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+
+    (
+      dbSnapshot.personalBests[mode][
+        mode2
+      ] as unknown as MonkeyTypes.PersonalBest[]
+    ).forEach((pb) => {
       if (
         pb.punctuation == punctuation &&
         pb.difficulty == difficulty &&
@@ -404,7 +420,11 @@ export async function saveLocalPB(
     });
     if (!found) {
       //nothing found
-      dbSnapshot.personalBests[mode][mode2].push({
+      (
+        dbSnapshot.personalBests[mode][
+          mode2
+        ] as unknown as MonkeyTypes.PersonalBest[]
+      ).push({
         language: language,
         difficulty: difficulty,
         lazyMode: lazyMode,
@@ -423,20 +443,23 @@ export async function saveLocalPB(
   }
 }
 
-export async function getLocalTagPB(
-  tagId,
-  mode,
-  mode2,
-  punctuation,
-  language,
-  difficulty,
-  lazyMode
-) {
-  function cont() {
+export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
+  tagId: string,
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  function cont(): number {
     let ret = 0;
-    let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
+    const filteredtag = dbSnapshot.tags?.filter((t) => t._id === tagId)[0];
     try {
-      filteredtag.personalBests[mode][mode2].forEach((pb) => {
+      const personalBests = filteredtag?.personalBests[mode][
+        mode2
+      ] as unknown as MonkeyTypes.PersonalBest[];
+      personalBests.forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -453,37 +476,40 @@ export async function getLocalTagPB(
     return ret;
   }
 
-  let retval;
-  if (dbSnapshot == null) {
-    retval = 0;
-  } else {
-    retval = cont();
-  }
+  const retval = dbSnapshot === null ? 0 : cont();
+
   return retval;
 }
 
-export async function saveLocalTagPB(
-  tagId,
-  mode,
-  mode2,
-  punctuation,
-  language,
-  difficulty,
-  lazyMode,
-  wpm,
-  acc,
-  raw,
-  consistency
-) {
+export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
+  tagId: string,
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean,
+  wpm: number,
+  acc: number,
+  raw: number,
+  consistency: number
+): Promise<number | undefined> {
   if (mode == "quote") return;
-  function cont() {
-    let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
+  function cont(): void {
+    const filteredtag = dbSnapshot.tags?.filter(
+      (t) => t._id === tagId
+    )[0] as MonkeyTypes.Tag;
     try {
       let found = false;
       if (filteredtag.personalBests[mode][mode2] === undefined) {
-        filteredtag.personalBests[mode][mode2] = [];
+        filteredtag.personalBests[mode][mode2] =
+          [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
       }
-      filteredtag.personalBests[mode][mode2].forEach((pb) => {
+      (
+        filteredtag.personalBests[mode][
+          mode2
+        ] as unknown as MonkeyTypes.PersonalBest[]
+      ).forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -502,7 +528,11 @@ export async function saveLocalTagPB(
       });
       if (!found) {
         //nothing found
-        filteredtag.personalBests[mode][mode2].push({
+        (
+          filteredtag.personalBests[mode][
+            mode2
+          ] as unknown as MonkeyTypes.PersonalBest[]
+        ).push({
           language: language,
           difficulty: difficulty,
           lazyMode: lazyMode,
@@ -516,7 +546,13 @@ export async function saveLocalTagPB(
       }
     } catch (e) {
       //that mode or mode2 is not found
-      filteredtag.personalBests = {};
+      filteredtag.personalBests = {
+        time: {},
+        words: {},
+        quote: {},
+        custom: {},
+        zen: {},
+      };
       filteredtag.personalBests[mode] = {};
       filteredtag.personalBests[mode][mode2] = [
         {
@@ -530,22 +566,30 @@ export async function saveLocalTagPB(
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ];
+      ] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
     }
   }
 
   if (dbSnapshot != null) {
     cont();
   }
+
+  return;
 }
 
-export function updateLbMemory(mode, mode2, language, rank, api = false) {
+export function updateLbMemory<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  language: string,
+  rank: number,
+  api = false
+): void {
   //could dbSnapshot just be used here instead of getSnapshot()
   if (dbSnapshot.lbMemory === undefined) dbSnapshot.lbMemory = {};
   if (dbSnapshot.lbMemory[mode] === undefined) dbSnapshot.lbMemory[mode] = {};
   if (dbSnapshot.lbMemory[mode][mode2] === undefined)
     dbSnapshot.lbMemory[mode][mode2] = {};
-  let current = dbSnapshot.lbMemory[mode][mode2][language];
+  const current = dbSnapshot.lbMemory[mode][mode2][language];
   dbSnapshot.lbMemory[mode][mode2][language] = rank;
   if (api && current != rank) {
     axiosInstance.patch("/user/leaderboardMemory", {
@@ -557,15 +601,15 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
   }
 }
 
-export async function saveConfig(config) {
+export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
     try {
       await axiosInstance.post("/config/save", { config });
-    } catch (e) {
+    } catch (e: any) {
       AccountButton.loading(false);
 
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to save config: " + msg, -1);
       return;
     }
@@ -573,30 +617,39 @@ export async function saveConfig(config) {
   }
 }
 
-export function saveLocalResult(result) {
-  if (getSnapshot() !== null && getSnapshot().results !== undefined) {
-    getSnapshot().results.unshift(result);
+export function saveLocalResult(result: MonkeyTypes.Result): void {
+  const snapshot = getSnapshot();
+
+  if (snapshot !== null && snapshot.results !== undefined) {
+    snapshot.results.unshift(result);
+
+    setSnapshot(snapshot);
   }
 }
 
-export function updateLocalStats(stats) {
-  if (getSnapshot() !== null) {
-    if (getSnapshot().globalStats.time == undefined) {
-      getSnapshot().globalStats.time = stats.time;
+export function updateLocalStats(stats: MonkeyTypes.Stats): void {
+  const snapshot = getSnapshot();
+  if (snapshot.globalStats === undefined)
+    snapshot.globalStats = {} as MonkeyTypes.Stats;
+  if (snapshot !== null && snapshot.globalStats !== undefined) {
+    if (snapshot.globalStats.time == undefined) {
+      snapshot.globalStats.time = stats.time;
     } else {
-      getSnapshot().globalStats.time += stats.time;
+      snapshot.globalStats.time += stats.time;
     }
-    if (getSnapshot().globalStats.started == undefined) {
-      getSnapshot().globalStats.started = stats.started;
+    if (snapshot.globalStats.started == undefined) {
+      snapshot.globalStats.started = stats.started;
     } else {
-      getSnapshot().globalStats.started += stats.started;
+      snapshot.globalStats.started += stats.started;
     }
-    if (getSnapshot().globalStats.completed == undefined) {
-      getSnapshot().globalStats.completed = 1;
+    if (snapshot.globalStats.completed == undefined) {
+      snapshot.globalStats.completed = 1;
     } else {
-      getSnapshot().globalStats.completed += 1;
+      snapshot.globalStats.completed += 1;
     }
   }
+
+  setSnapshot(snapshot);
 }
 
 // export async function DB.getLocalTagPB(tagId) {
@@ -613,10 +666,8 @@ export function updateLocalStats(stats) {
 //     }
 //   }
 
-//   let retval;
-//   if (dbSnapshot != null) {
-//     retval = cont();
-//   }
+//   const retval = dbSnapshot !== null ? cont() : undefined;
+
 //   return retval;
 // }
 

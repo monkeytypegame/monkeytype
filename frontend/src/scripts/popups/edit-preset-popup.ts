@@ -81,11 +81,11 @@ async function apply(): Promise<void> {
   );
 
   // TODO fix this sometime
-  let configChanges: ConfigChanges = (null as unknown) as ConfigChanges;
+  let configChanges: ConfigChanges = null as unknown as ConfigChanges;
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges() as ConfigChanges;
     const activeTagIds: string[] = [];
-    DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag: Types.Tag) => {
       if (tag.active) {
         activeTagIds.push(tag._id);
       }
@@ -114,7 +114,7 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset added", 1, 2);
-      DB.getSnapshot().presets.push({
+      DB.getSnapshot().presets?.push({
         name: inputVal,
         config: configChanges,
         _id: response.data.insertedId,
@@ -142,12 +142,15 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset updated", 1);
-      const preset: Types.Snapshot = DB.getSnapshot().presets.filter(
+      const preset = DB.getSnapshot().presets?.filter(
         (preset: Types.Preset) => preset._id == presetid
       )[0];
-      preset.name = inputVal;
-      if (updateConfig === true) preset.config = configChanges;
-      Settings.update();
+
+      if (preset !== undefined) {
+        preset.name = inputVal;
+        if (updateConfig === true) preset.config = configChanges;
+        Settings.update();
+      }
     }
   } else if (action === "remove") {
     Loader.show();
@@ -168,10 +171,10 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Preset removed", 1);
-      DB.getSnapshot().presets.forEach(
+      DB.getSnapshot().presets?.forEach(
         (preset: Types.Preset, index: number) => {
           if (preset._id === presetid) {
-            DB.getSnapshot().presets.splice(index, 1);
+            DB.getSnapshot().presets?.splice(index, 1);
           }
         }
       );

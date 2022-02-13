@@ -53,7 +53,7 @@ declare class SettingsGroup implements Group {
   public setValue: (string: string) => any;
   constructor(
     configName: string,
-    configFunction: () => any,
+    configFunction: (...values: any[]) => any,
     mode: string,
     setCallback?: (() => any) | null,
     updateCallback?: (() => any) | null
@@ -629,7 +629,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag: Types.Tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -664,7 +664,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets.forEach((preset: Types.Preset) => {
+    DB.getSnapshot().presets?.forEach((preset: Types.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
@@ -944,7 +944,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
     UpdateConfig.setCustomBackground(
       $(
         ".pageSettings .section.customBackgroundSize .inputAndButton input"
-      ).val()
+      ).val() as string
     );
   }
 );
@@ -955,7 +955,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
       UpdateConfig.setCustomBackground(
         $(
           ".pageSettings .section.customBackgroundSize .inputAndButton input"
-        ).val()
+        ).val() as string
       );
     }
   }
@@ -965,7 +965,9 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   () => {
     UpdateConfig.setCustomLayoutfluid(
-      $(".pageSettings .section.customLayoutfluid .inputAndButton input").val()
+      $(
+        ".pageSettings .section.customLayoutfluid .inputAndButton input"
+      ).val() as Types.CustomLayoutFluidSpaces
     );
     Notifications.add("Custom layoutfluid saved", 1);
   }
@@ -977,7 +979,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
       UpdateConfig.setCustomLayoutfluid(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
-        ).val()
+        ).val() as Types.CustomLayoutFluidSpaces
       );
       Notifications.add("Custom layoutfluid saved", 1);
     }

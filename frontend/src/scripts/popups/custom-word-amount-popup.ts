@@ -5,6 +5,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 // @ts-ignore
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
+import { WordsModes } from "../types/interfaces";
 
 export function show(): void {
   if ($("#customWordAmountPopupWrapper").hasClass("hidden")) {
@@ -39,7 +40,7 @@ function apply(): void {
   const val = parseInt($("#customWordAmountPopup input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0) {
-    UpdateConfig.setWordCount(val);
+    UpdateConfig.setWordCount(val as WordsModes);
     ManualRestart.set();
     TestLogic.restart();
     if (val > 2000) {
