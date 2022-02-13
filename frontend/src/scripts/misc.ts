@@ -1,5 +1,5 @@
 import * as Loader from "./elements/loader";
-import * as Types from "./types/interfaces";
+import * as MonkeyTypes from "./types/interfaces";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -128,10 +128,10 @@ export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
 }
 
 type QuoteCollection = {
-  quotes: Types.Quote[];
+  quotes: MonkeyTypes.Quote[];
   length?: number;
   language?: string;
-  groups: number[][] | Types.Quote[][];
+  groups: number[][] | MonkeyTypes.Quote[][];
 };
 
 let quotes: QuoteCollection;
@@ -388,7 +388,7 @@ export async function getReleasesFromGitHub(): Promise<object> {
       $("#bottom .version .text").text(data[0].name);
       $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
-      data.forEach((release: Types.GithubRelease) => {
+      data.forEach((release: MonkeyTypes.GithubRelease) => {
         if (!release.draft && !release.prerelease) {
           $("#versionHistory .releases").append(`
           <div class="release">
@@ -770,7 +770,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: Types.CustomText
+  CustomText: MonkeyTypes.CustomText
 ): boolean {
   if (
     (mode === "words" && words < 1000) ||
@@ -905,8 +905,8 @@ export function swapElements(
 }
 
 export function getMode2(
-  config: Types.Config,
-  randomQuote: Types.Quote
+  config: MonkeyTypes.Config,
+  randomQuote: MonkeyTypes.Quote
 ): string {
   const mode = config.mode;
   let mode2 = "";

@@ -1,6 +1,6 @@
 // @ts-ignore
 import * as DB from "../db";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
 function update(mode: string): void {
   $("#pbTablesPopup table tbody").empty();
@@ -13,7 +13,7 @@ function update(mode: string): void {
   type PersonalBest = {
     acc: number;
     consistency: number;
-    difficulty: Types.Difficulty;
+    difficulty: MonkeyTypes.Difficulty;
     lazyMode: boolean;
     language: string;
     punctuation: boolean;

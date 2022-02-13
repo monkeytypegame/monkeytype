@@ -26,7 +26,7 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
-import * as Types from "../types/interfaces";
+import * as MonkeyTypes from "../types/interfaces";
 
 //todo remove once settings group is converted to ts
 interface Group {
@@ -629,7 +629,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -664,7 +664,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets.forEach((preset: Types.Preset) => {
+    DB.getSnapshot().presets.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
