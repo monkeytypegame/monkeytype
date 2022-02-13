@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const joi = require("joi");
 const MonkeyError = require("../handlers/error");
-const { handleResponse } = require("../handlers/response");
+const { handleMonkeyResponse } = require("../handlers/monkey-response");
 
 /**
  * This utility checks that the server's configuration matches
@@ -10,7 +10,7 @@ const { handleResponse } = require("../handlers/response");
 function validateConfiguration(options) {
   const { criteria, invalidMessage } = options;
 
-  return (req, res, next) => {
+  return (req, _res, next) => {
     const configuration = req.ctx.configuration;
 
     const validated = criteria(configuration);
@@ -35,9 +35,7 @@ function asyncHandler(handler) {
   return async (req, res, next) => {
     try {
       const handlerData = await handler(req, res);
-      res.body = handlerData;
-
-      return handleResponse(req, res, next);
+      return handleMonkeyResponse(handlerData, res);
     } catch (error) {
       next(error);
     }
@@ -63,7 +61,7 @@ function validateRequest(validationSchema) {
     "validationErrorMessage"
   );
 
-  return (req, res, next) => {
+  return (req, _res, next) => {
     _.each(normalizedValidationSchema, (schema, key) => {
       const joiSchema = joi.object().keys(schema);
 
