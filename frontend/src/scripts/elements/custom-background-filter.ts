@@ -85,33 +85,33 @@ export function loadConfig(config: number[]): void {
 }
 
 $(".section.customBackgroundFilter .blur input").on("input", () => {
-  filters["blur"].value = $(
-    ".section.customBackgroundFilter .blur input"
-  ).val() as number;
+  filters["blur"].value = parseFloat(
+    $(".section.customBackgroundFilter .blur input").val() as string
+  );
   updateNumbers();
   apply();
 });
 
 $(".section.customBackgroundFilter .brightness input").on("input", () => {
-  filters["brightness"].value = $(
-    ".section.customBackgroundFilter .brightness input"
-  ).val() as number;
+  filters["brightness"].value = parseFloat(
+    $(".section.customBackgroundFilter .brightness input").val() as string
+  );
   updateNumbers();
   apply();
 });
 
 $(".section.customBackgroundFilter .saturate input").on("input", () => {
-  filters["saturate"].value = $(
-    ".section.customBackgroundFilter .saturate input"
-  ).val() as number;
+  filters["saturate"].value = parseFloat(
+    $(".section.customBackgroundFilter .saturate input").val() as string
+  );
   updateNumbers();
   apply();
 });
 
 $(".section.customBackgroundFilter .opacity input").on("input", () => {
-  filters["opacity"].value = $(
-    ".section.customBackgroundFilter .opacity input"
-  ).val() as number;
+  filters["opacity"].value = parseFloat(
+    $(".section.customBackgroundFilter .opacity input").val() as string
+  );
   updateNumbers();
   apply();
 });
