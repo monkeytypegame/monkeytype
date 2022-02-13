@@ -6,7 +6,6 @@ const {
   MonkeyResponse,
   handleMonkeyResponse,
 } = require("../handlers/monkey-response");
-const { MongoError } = require("mongodb");
 
 async function errorHandlingMiddleware(error, req, res, _next) {
   const monkeyResponse = new MonkeyResponse();
