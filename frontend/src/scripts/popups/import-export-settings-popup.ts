@@ -1,6 +1,5 @@
 // @ts-ignore
 import * as UpdateConfig from "../config";
-// @ts-ignore
 import * as Notifications from "../elements/notifications";
 
 export function show(mode: string, config?: string): void {
