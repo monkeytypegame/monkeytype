@@ -9,7 +9,7 @@ class MonkeyResponse {
 function handleMonkeyResponse(handlerData, res) {
   const isMonkeyResponse = handlerData instanceof MonkeyResponse;
   const monkeyResponse = !isMonkeyResponse
-    ? new MonkeyResponse("Ok", handlerData)
+    ? new MonkeyResponse("ok", handlerData)
     : handlerData;
   const { message, data, status } = monkeyResponse;
 
