@@ -1,11 +1,9 @@
 // @ts-ignore
 import * as ResultFilters from "../account/result-filters";
 // @ts-ignore
-import * as Loader from "../elements/loader";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as Notifications from "../elements/notifications";
+import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import axiosInstance from "../axios-instance";
 import * as ResultTagsPopup from "./result-tags-popup";

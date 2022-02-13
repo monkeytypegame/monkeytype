@@ -1,12 +1,10 @@
 // @ts-ignore
 import * as DB from "../db";
 // @ts-ignore
-import * as Loader from "../elements/loader";
-// @ts-ignore
-import * as Notifications from "../elements/notifications";
-// @ts-ignore
 import * as TestWords from "../test/test-words";
+import * as Loader from "../elements/loader";
 import axiosInstance from "../axios-instance";
+import * as Notifications from "../elements/notifications";
 import { AxiosError } from "axios";
 import * as Types from "../types/interfaces";
 

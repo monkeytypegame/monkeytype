@@ -1,7 +1,5 @@
-// @ts-ignore
-import * as Notifications from "../elements/notifications";
-// @ts-ignore
 import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import { AxiosError } from "axios";
 

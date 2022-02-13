@@ -3,9 +3,8 @@ import * as UpdateConfig from "../config";
 //@ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
 //@ts-ignore
-import * as Notifications from "../elements/notifications";
-//@ts-ignore
 import * as TestLogic from "../test/test-logic";
+import * as Notifications from "../elements/notifications";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;

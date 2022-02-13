@@ -123,6 +123,8 @@ Before submitting a theme make sure...
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
+(If you want to contribute languages but don't know how to, check [LANGUAGES.md](https://github.com/teddinotteddy/monkeytype/blob/30f77fdc271c52743e8541d3bd2d27e23a4f5fab/LANGUAGES.md))
+
 #### Quote Guidelines
 
 - Do not include content that contains any libelous or otherwise unlawful, abusive or obscene text.
