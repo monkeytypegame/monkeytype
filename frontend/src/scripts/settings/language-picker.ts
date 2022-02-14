@@ -1,30 +1,41 @@
 import * as Misc from "../misc";
+// @ts-ignore
 import Config, * as UpdateConfig from "../config";
+import * as Types from "../types/interfaces";
 
-export async function setActiveGroup(groupName, clicked = false) {
-  let currentGroup;
+export async function setActiveGroup(
+  groupName: string | undefined,
+  clicked: boolean | undefined = false
+): Promise<void> {
+  let currentGroup: Types.LanguageGroup | undefined;
+
   if (groupName === undefined) {
     currentGroup = await Misc.findCurrentGroup(Config.language);
   } else {
-    let groups = await Misc.getLanguageGroups();
-    groups.forEach((g) => {
+    const groups: Types.LanguageGroup[] = await Misc.getLanguageGroups();
+    groups.forEach((g: Types.LanguageGroup) => {
       if (g.name === groupName) {
         currentGroup = g;
       }
     });
   }
+
   $(`.pageSettings .section.languageGroups .button`).removeClass("active");
+
+  if (currentGroup === undefined) return;
+
   $(
     `.pageSettings .section.languageGroups .button[group='${currentGroup.name}']`
   ).addClass("active");
 
-  let langEl = $(".pageSettings .section.language .buttons").empty();
-  currentGroup.languages.forEach((language) => {
-    langEl.append(
-      `<div class="language button" language='${language}'>${language.replace(
-        /_/g,
-        " "
-      )}</div>`
+  const langElement: JQuery<HTMLElement> = $(
+    ".pageSettings .section.language .buttons"
+  ).empty();
+  currentGroup.languages.forEach((langName: string) => {
+    langElement.append(
+      `<div class="language button" language='${langName}'>
+        ${langName.replace(/_/g, " ")}
+      </div>`
     );
   });
 
