@@ -2,21 +2,19 @@
 
 ### **Table of Contents**
 
-- [Contributing](#contributing)
-  - [**Table of Contents**](#table-of-contents)
-  - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-    - [Text Editor](#text-editor)
-    - [Git](#git)
-    - [NodeJS and NPM](#nodejs-and-npm)
-    - [Firebase](#firebase)
-    - [Mongo Setup](#mongo-setup)
-  - [Building and Running Monkeytype](#building-and-running-monkeytype)
-  - [Standards and Guidelines](#standards-and-guidelines)
-    - [Theme Guidelines](#theme-guidelines)
-    - [Language Guidelines](#language-guidelines)
-    - [Quote Guidelines](#quote-guidelines)
-  - [Questions](#questions)
+- [Getting Started](#getting-started)
+- [Prerequisites](#prerequisites)
+  - [Text Editor](#text-editor)
+  - [Git](#git)
+  - [NodeJS and NPM](#nodejs-and-npm)
+  - [Firebase](#firebase)
+  - [Mongo Setup](#mongo-setup)
+- [Building and Running Monkeytype](#building-and-running-monkeytype)
+- [Standards and Guidelines](#standards-and-guidelines)
+  - [Theme Guidelines](#theme-guidelines)
+  - [Language Guidelines](#language-guidelines)
+  - [Quote Guidelines](#quote-guidelines)
+- [Questions](#questions)
 
 ## Getting Started
 
