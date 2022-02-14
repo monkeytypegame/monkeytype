@@ -237,8 +237,10 @@ export async function getLanguageList(): Promise<string[]> {
   }
 }
 
-let languageGroupList: Types.LanguageGroup[] = [];
-export async function getLanguageGroups(): Promise<Types.LanguageGroup[]> {
+let languageGroupList: MonkeyTypes.LanguageGroup[] = [];
+export async function getLanguageGroups(): Promise<
+  MonkeyTypes.LanguageGroup[]
+> {
   if (languageGroupList.length === 0) {
     return $.getJSON("languages/_groups.json", function (data) {
       languageGroupList = data;
@@ -284,8 +286,8 @@ export async function getCurrentLanguage(
 
 export async function findCurrentGroup(
   language: string
-): Promise<Types.LanguageGroup | undefined> {
-  let retgroup: Types.LanguageGroup | undefined;
+): Promise<MonkeyTypes.LanguageGroup | undefined> {
+  let retgroup: MonkeyTypes.LanguageGroup | undefined;
   const groups = await getLanguageGroups();
   groups.forEach((group) => {
     if (retgroup === undefined) {
