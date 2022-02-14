@@ -53,21 +53,12 @@ export function update() {
     );
   }
 
-  // /^[0-9a-zA-Z_.-]+$/.test(name);
-
-  if (
-    (/_\d+k$/g.test(Config.language) ||
-      /code_/g.test(Config.language) ||
-      Config.language == "english_commonly_misspelled") &&
-    Config.mode !== "quote"
-  ) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  }
+  $(".pageTest #testModesNotice").append(
+    `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
+      /_/g,
+      " "
+    )}</div>`
+  );
 
   if (Config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(
