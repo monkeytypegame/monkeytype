@@ -72,10 +72,10 @@
         "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/no-var-requires": "error"
-      },
-      "parserOptions": {
-        "project": "./tsconfig.json"
       }
+      // "parserOptions": {
+      //   "project": "./tsconfig.json"
+      // }
     }
   ]
 }
