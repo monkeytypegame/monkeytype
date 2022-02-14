@@ -100,23 +100,27 @@ $("#top .mobileConfig").click(() => {
 
 el.find(".wordsGroup .button").on("click", (e) => {
   const wrd = $(e.currentTarget).attr("words");
+
   if (wrd == "custom") {
     hidePopup();
     CustomWordAmountPopup.show();
-  } else {
-    UpdateConfig.setWordCount(wrd as MonkeyTypes.WordsModes);
+  } else if (wrd !== undefined) {
+    const wrdNum = parseInt(wrd);
+    UpdateConfig.setWordCount(wrdNum);
     ManualRestart.set();
     TestLogic.restart();
   }
 });
 
 el.find(".timeGroup .button").on("click", (e) => {
-  const mode = $(e.currentTarget).attr("time");
-  if (mode == "custom") {
+  const time = $(e.currentTarget).attr("time");
+
+  if (time == "custom") {
     hidePopup();
     CustomTestDurationPopup.show();
-  } else {
-    UpdateConfig.setTimeConfig(mode as MonkeyTypes.TimeModes);
+  } else if (time !== undefined) {
+    const timeNum = parseInt(time);
+    UpdateConfig.setTimeConfig(timeNum);
     ManualRestart.set();
     TestLogic.restart();
   }

@@ -378,12 +378,8 @@ export function setPaceCaret(
   ConfigEvent.dispatch("paceCaret", config.paceCaret);
 }
 
-export function setPaceCaretCustomSpeed(
-  val: number | string,
-  nosave?: boolean
-): void {
-  val = parseInt(val.toString());
-  if (val == undefined || Number.isNaN(val)) {
+export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
+  if (val == undefined) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
@@ -413,12 +409,8 @@ export function setMinWpm(
   ConfigEvent.dispatch("minWpm", config.minWpm);
 }
 
-export function setMinWpmCustomSpeed(
-  val: number | string,
-  nosave?: boolean
-): void {
-  val = parseInt(val.toString());
-  if (val == undefined || Number.isNaN(val)) {
+export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
+  if (val == undefined) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
@@ -439,11 +431,10 @@ export function setMinAcc(
   ConfigEvent.dispatch("minAcc", config.minAcc);
 }
 
-export function setMinAccCustom(val: number | string, nosave?: boolean): void {
-  if (val === undefined || isNaN(parseInt(val.toString()))) {
+export function setMinAccCustom(val: number, nosave?: boolean): void {
+  if (val === undefined) {
     val = 90;
   }
-  val = parseInt(val.toString());
   config.minAccCustom = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
@@ -462,12 +453,8 @@ export function setMinBurst(
   ConfigEvent.dispatch("minBurst", config.minBurst);
 }
 
-export function setMinBurstCustomSpeed(
-  val: number | string,
-  nosave?: boolean
-): void {
-  val = parseInt(val.toString());
-  if (val == undefined || Number.isNaN(val)) {
+export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
+  if (val == undefined) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
@@ -840,23 +827,21 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
 }
 
 //mode
-export function setTimeConfig(
-  time: MonkeyTypes.TimeModes,
-  nosave?: boolean
-): void {
-  if (time === null || isNaN(parseInt(time.toString())) || time < 0) {
-    time = 15;
-  }
-  time = parseInt(time.toString()) as MonkeyTypes.TimeModes;
-  // if (!nosave) setMode("time", nosave);
-  config.time = time;
+export function setTimeConfig(time: MonkeyTypes.Time, nosave?: boolean): void {
+  const newTime =
+    time === null || time === undefined || isNaN(time) || time < 0
+      ? defaultConfig.time
+      : time;
+
   $("#top .config .time .text-button").removeClass("active");
-  if (![15, 30, 60, 120].includes(parseInt(time.toString()))) {
-    time = "custom";
-  }
-  $("#top .config .time .text-button[timeConfig='" + time + "']").addClass(
-    "active"
-  );
+
+  const timeCustom = ![15, 30, 60, 120].includes(newTime) ? "custom" : newTime;
+
+  config.time = newTime;
+
+  $(
+    "#top .config .time .text-button[timeConfig='" + timeCustom + "']"
+  ).addClass("active");
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("time", config.time);
 }
@@ -900,27 +885,28 @@ export function setQuoteLength(
 }
 
 export function setWordCount(
-  wordCount: MonkeyTypes.WordsModes,
+  wordCount: MonkeyTypes.Words,
   nosave?: boolean
 ): void {
-  wordCount = parseInt(wordCount.toString()) as MonkeyTypes.WordsModes;
-  if (
+  const newWordCount =
     wordCount === null ||
-    isNaN(parseInt(wordCount.toString())) ||
+    wordCount === undefined ||
     wordCount < 0 ||
     wordCount > 100000
-  ) {
-    wordCount = defaultConfig.words;
-  }
-  // if (!nosave) setMode("words", nosave);
-  config.words = wordCount;
+      ? defaultConfig.words
+      : wordCount;
+
   $("#top .config .wordCount .text-button").removeClass("active");
-  if (![10, 25, 50, 100, 200].includes(parseInt(wordCount.toString()))) {
-    wordCount = "custom";
-  }
-  $(`#top .config .wordCount .text-button[wordCount='${wordCount}']`).addClass(
-    "active"
-  );
+
+  const wordCustom = ![10, 25, 50, 100, 200].includes(newWordCount)
+    ? "custom"
+    : newWordCount;
+
+  config.words = newWordCount;
+
+  $(
+    "#top .config .wordCount .text-button[wordCount='" + wordCustom + "']"
+  ).addClass("active");
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("words", config.words);
 }

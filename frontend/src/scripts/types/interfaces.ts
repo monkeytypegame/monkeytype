@@ -8,13 +8,13 @@ export declare type Difficulty = "normal" | "expert" | "master";
 
 export declare type CustomModes = "custom";
 
-export declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
+export declare type Words = number;
 
-export declare type WordsModes = NoncustomWordsModes | CustomModes;
+export declare type Time = number;
 
-export declare type NoncustomTimeModes = 15 | 30 | 60 | 120;
+export declare type DefaultWords = 10 | 25 | 50 | 100 | 200;
 
-export declare type TimeModes = NoncustomTimeModes | CustomModes;
+export declare type DefaultTime = 15 | 30 | 60 | 120;
 
 export declare type QuoteModes = "short" | "medium" | "long" | "thicc";
 
@@ -236,8 +236,8 @@ export declare interface Config {
   quickTab: boolean;
   punctuation: boolean;
   numbers: boolean;
-  words: WordsModes;
-  time: TimeModes;
+  words: Words;
+  time: Time;
   mode: Mode;
   quoteLength: QuoteLengthArray;
   language: string;

@@ -418,9 +418,15 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   filters["difficulty"][Config.difficulty] = true;
   filters["mode"][Config.mode] = true;
   if (Config.mode === "time") {
-    filters["time"][Config.time] = true;
+    if ([15, 30, 60, 120].includes(Config.time)) {
+      const configTime = Config.time as MonkeyTypes.DefaultTime;
+      filters["time"][configTime] = true;
+    }
   } else if (Config.mode === "words") {
-    filters["words"][Config.words] = true;
+    if ([10, 25, 50, 100, 200].includes(Config.time)) {
+      const configWords = Config.words as MonkeyTypes.DefaultWords;
+      filters["words"][configWords] = true;
+    }
   } else if (Config.mode === "quote") {
     (
       Object.keys(
