@@ -822,7 +822,7 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
 
     return ("0" + parseInt(i).toString(16)).slice(-2);
   }
-  return "#" + hexCode(rgb[1]) + hexCode(rgb[2]) + hexCode(rgb[3]);
+  return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
 }
 
 // @ts-ignore
