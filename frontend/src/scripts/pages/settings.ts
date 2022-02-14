@@ -9,8 +9,6 @@ import * as Misc from "../misc";
 // @ts-ignore
 import layouts from "../test/layouts";
 // @ts-ignore
-import * as LanguagePicker from "../settings/language-picker";
-// @ts-ignore
 import * as DB from "../db";
 // @ts-ignore
 import * as Funbox from "../test/funbox";
@@ -28,39 +26,12 @@ import * as ActivePage from "../states/active-page";
 import Page from "./page";
 import * as MonkeyTypes from "../types/interfaces";
 
-//todo remove once settings group is converted to ts
-interface Group {
-  configName: string;
-  configFunction: () => any;
-  mode: string;
-  setCallback: () => any;
-  updateCallback: () => any;
-  updateInput: () => any;
-  setValue: (string: string) => any;
-}
+type SettingsGroups = {
+  [key: string]: SettingsGroup;
+};
 
-interface Groups {
-  [key: string]: Group;
-}
+export const groups: SettingsGroups = {};
 
-declare class SettingsGroup implements Group {
-  public configName: string;
-  public configFunction: () => any;
-  public mode: string;
-  public setCallback: () => any;
-  public updateCallback: () => any;
-  public updateInput: () => any;
-  public setValue: (string: string) => any;
-  constructor(
-    configName: string,
-    configFunction: () => any,
-    mode: string,
-    setCallback?: (() => any) | null,
-    updateCallback?: (() => any) | null
-  );
-}
-
-export const groups: Groups = {};
 async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
   groups["smoothCaret"] = new SettingsGroup(
@@ -139,7 +110,7 @@ async function initGroups(): Promise<void> {
     "showKeyTips",
     UpdateConfig.setKeyTips,
     "button",
-    null,
+    undefined,
     () => {
       if (Config.showKeyTips) {
         $(".pageSettings .tip").removeClass("hidden");
@@ -378,7 +349,7 @@ async function initGroups(): Promise<void> {
     "fontFamily",
     UpdateConfig.setFontFamily,
     "button",
-    null,
+    undefined,
     () => {
       const customButton = $(
         ".pageSettings .section.fontFamily .buttons .custom"
@@ -432,18 +403,18 @@ export async function fillSettingsPage(): Promise<void> {
     $(".pageSettings .tip").addClass("hidden");
   }
 
+  // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
   const groups = await Misc.getLanguageGroups();
   groups.forEach((group) => {
-    let append = `<optgroup label="${group.name}">`;
-    group.languages.forEach((language) => {
-      append += `<option value="${language}">${language.replace(
-        /_/g,
-        " "
-      )}</option>`;
+    let langComboBox = `<optgroup label="${group.name}">`;
+    group.languages.forEach((language: string) => {
+      langComboBox += `<option value="${language}">
+        ${language.replace(/_/g, " ")}
+      </option>`;
     });
-    append += `</optgroup>`;
-    languageEl.append(append);
+    langComboBox += `</optgroup>`;
+    languageEl.append(langComboBox);
   });
   languageEl.select2();
 
@@ -702,7 +673,7 @@ export function update(): void {
 
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
-  LanguagePicker.setActiveGroup();
+  // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs(true);
@@ -852,14 +823,16 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
   );
 });
 
-$(document).on(
-  "click",
-  ".pageSettings .section.languageGroups .button",
-  (e) => {
-    const group = $(e.currentTarget).attr("group");
-    LanguagePicker.setActiveGroup(group, true);
-  }
-);
+// Commented because started using combo-box for choosing languages instead of grouped buttons
+// languages
+// $(document).on(
+//   "click",
+//   ".pageSettings .section.languageGroups .button",
+//   (e) => {
+//     const group = $(e.currentTarget).attr("group");
+//     LanguagePicker.setActiveGroup(group, true);
+//   }
+// );
 
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {

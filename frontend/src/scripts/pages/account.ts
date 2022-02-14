@@ -293,7 +293,7 @@ export function update(): void {
 
         if (result.mode == "time") {
           let timefilter = "custom";
-          if ([15, 30, 60, 120].includes(result.mode2 as number)) {
+          if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
             timefilter = result.mode2.toString();
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
@@ -303,7 +303,9 @@ export function update(): void {
           }
         } else if (result.mode == "words") {
           let wordfilter = "custom";
-          if ([10, 25, 50, 100, 200].includes(result.mode2 as number)) {
+          if (
+            [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
+          ) {
             wordfilter = result.mode2.toString();
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {

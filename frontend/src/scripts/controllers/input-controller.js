@@ -315,17 +315,9 @@ function isCharCorrect(char, charIndex) {
     }
   }
 
-  if (char === "’" && originalChar == "'") {
-    return true;
-  }
-
-  if (char === "'" && originalChar == "’") {
-    return true;
-  }
-
   if (
-    (char === `’` || char === "'") &&
-    (originalChar == `’` || originalChar === "'")
+    (char === `’` || char === "‘" || char === "'") &&
+    (originalChar == `’` || originalChar === "‘" || originalChar === "'")
   ) {
     return true;
   }
