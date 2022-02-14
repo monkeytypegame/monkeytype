@@ -6,6 +6,8 @@ export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
 
 export declare type Mode2<M extends Mode> = keyof PersonalBests[M];
 
+export declare type LanguageGroup = { name: string; languages: string[] };
+
 // export declare type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
 
 export declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
