@@ -2,19 +2,21 @@
 
 ### **Table of Contents**
 
-- [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
-  - [Text Editor](#text-editor)
-  - [Git ](#git)
-  - [NodeJS and NPM](#nodejs-and-npm)
-  - [Firebase](#firebase)
-  - [Mongo Setup](#mongo-setup)
-- [Building and Running Monkeytype](#building-and-running-monkeytype)
-- [Standards and Guidelines](#standards-and-guidelines)
-  - [Theme Guidelines](#theme-guidelines)
-  - [Language Guidelines](#language-guidelines)
-  - [Quote Guidelines](#quote-guidelines)
-- [Questions](#questions)
+- [Contributing](#contributing)
+  - [**Table of Contents**](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+    - [Text Editor](#text-editor)
+    - [Git](#git)
+    - [NodeJS and NPM](#nodejs-and-npm)
+    - [Firebase](#firebase)
+    - [Mongo Setup](#mongo-setup)
+  - [Building and Running Monkeytype](#building-and-running-monkeytype)
+  - [Standards and Guidelines](#standards-and-guidelines)
+    - [Theme Guidelines](#theme-guidelines)
+    - [Language Guidelines](#language-guidelines)
+    - [Quote Guidelines](#quote-guidelines)
+  - [Questions](#questions)
 
 ## Getting Started
 
@@ -123,7 +125,7 @@ Before submitting a theme make sure...
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
-(If you want to contribute languages but don't know how to, check [LANGUAGES.md](https://github.com/teddinotteddy/monkeytype/blob/30f77fdc271c52743e8541d3bd2d27e23a4f5fab/LANGUAGES.md))
+(If you want to contribute languages but don't know how to, check [LANGUAGES.md](https://github.com/Miodec/monkeytype/blob/master/LANGUAGES.md))
 
 #### Quote Guidelines
 
