@@ -10,7 +10,7 @@
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
     "lint": "run-script-os",
-    "lint:windows": ".\\node_modules\\.bin\\eslint './backend/**/*.{ts,js}' './frontend/src/scripts/**/*.{ts,js}'"
+    "lint:windows": ".\\node_modules\\.bin\\eslint './backend/**/*.{ts,js}' './frontend/src/scripts/**/*.{ts,js}'",
     "lint:default": "./node_modules/.bin/eslint './backend/**/*.{ts,js}' './frontend/src/scripts/**/*.{ts,js}'",
     "build:live": "cd ./frontend && npm run build:live",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'"
