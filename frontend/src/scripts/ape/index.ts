@@ -36,7 +36,7 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
   return async (
     endpoint: string,
     options: Ape.RequestOptions = {}
-  ): Promise<Ape.Response> => {
+  ): Ape.EndpointData => {
     try {
       const requestOptions = await adaptRequestOptions(options);
       const response = await clientMethod(endpoint, requestOptions);

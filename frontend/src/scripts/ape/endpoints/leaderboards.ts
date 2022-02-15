@@ -9,7 +9,7 @@ export default function getLeaderboardsEndpoints(
     mode2: string | number,
     skip = 0,
     limit = 50
-  ): Promise<Ape.Response> {
+  ): Ape.EndpointData {
     const searchQuery = {
       language,
       mode,
@@ -25,7 +25,7 @@ export default function getLeaderboardsEndpoints(
     language: string,
     mode: MonkeyTypes.Mode,
     mode2: string | number
-  ): Promise<Ape.Response> {
+  ): Ape.EndpointData {
     const searchQuery = {
       language,
       mode,
