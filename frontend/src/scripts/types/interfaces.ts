@@ -518,6 +518,13 @@ export interface Quote {
   language: string;
 }
 
+export interface PSA {
+  sticky?: boolean;
+  message: string;
+  _id: string;
+  level?: number;
+}
+
 // export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
 
 // export type ActivePage = `page${Page}` | undefined;
