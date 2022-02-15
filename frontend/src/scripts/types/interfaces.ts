@@ -525,6 +525,18 @@ export interface PSA {
   level?: number;
 }
 
+export interface ThemeColors {
+  bg: string;
+  main: string;
+  caret: string;
+  sub: string;
+  text: string;
+  error: string;
+  errorExtra: string;
+  colorfulError: string;
+  colorfulErrorExtra: string;
+}
+
 // export type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
 
 // export type ActivePage = `page${Page}` | undefined;
