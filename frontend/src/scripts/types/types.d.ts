@@ -1,33 +1,33 @@
 declare namespace MonkeyTypes {
-  declare type Difficulty = "normal" | "expert" | "master";
+  type Difficulty = "normal" | "expert" | "master";
 
-  declare type CustomModes = "custom";
+  type CustomModes = "custom";
 
-  declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
+  type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
 
-  declare type Mode2<M extends Mode> = keyof PersonalBests[M];
+  type Mode2<M extends Mode> = keyof PersonalBests[M];
 
-  declare type LanguageGroup = { name: string; languages: string[] };
+  type LanguageGroup = { name: string; languages: string[] };
 
-  //  declare type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
+  //   type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
 
-  declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
+  type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
 
-  declare type WordsModes = NoncustomWordsModes | CustomModes;
+  type WordsModes = NoncustomWordsModes | CustomModes;
 
-  declare type NoncustomTimeModes = 15 | 30 | 60 | 120;
+  type NoncustomTimeModes = 15 | 30 | 60 | 120;
 
-  declare type TimeModes = NoncustomTimeModes | CustomModes;
+  type TimeModes = NoncustomTimeModes | CustomModes;
 
-  declare type QuoteModes = "short" | "medium" | "long" | "thicc";
+  type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  declare type QuoteLength = -1 | 0 | 1 | 2 | 3;
+  type QuoteLength = -1 | 0 | 1 | 2 | 3;
 
-  declare type QuoteLengthArray = QuoteLength[];
+  type QuoteLengthArray = QuoteLength[];
 
-  declare type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
+  type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
 
-  declare type CaretStyle =
+  type CaretStyle =
     | "off"
     | "default"
     | "block"
@@ -36,32 +36,32 @@ declare namespace MonkeyTypes {
     | "carrot"
     | "banana";
 
-  declare type ConfidenceMode = "off" | "on" | "max";
+  type ConfidenceMode = "off" | "on" | "max";
 
-  declare type TimerStyle = "bar" | "text" | "mini";
+  type TimerStyle = "bar" | "text" | "mini";
 
-  declare type RandomTheme = "off" | "on" | "favorite" | "light" | "dark";
+  type RandomTheme = "off" | "on" | "favorite" | "light" | "dark";
 
-  declare type TimerColor = "black" | "sub" | "text" | "main";
+  type TimerColor = "black" | "sub" | "text" | "main";
 
-  declare type TimerOpacity = "0.25" | "0.5" | "0.75" | "1";
+  type TimerOpacity = "0.25" | "0.5" | "0.75" | "1";
 
-  declare type StopOnError = "off" | "word" | "letter";
+  type StopOnError = "off" | "word" | "letter";
 
-  declare type KeymapMode = "off" | "static" | "react" | "next";
+  type KeymapMode = "off" | "static" | "react" | "next";
 
-  declare type KeymapStyle =
+  type KeymapStyle =
     | "staggered"
     | "alice"
     | "matrix"
     | "split"
     | "split_matrix";
 
-  declare type KeymapLegendStyle = "lowercase" | "uppercase" | "blank";
+  type KeymapLegendStyle = "lowercase" | "uppercase" | "blank";
 
-  declare type SingleListCommandLine = "manual" | "on";
+  type SingleListCommandLine = "manual" | "on";
 
-  declare type PlaySoundOnClick =
+  type PlaySoundOnClick =
     | "off"
     | "click"
     | "beep"
@@ -71,48 +71,43 @@ declare namespace MonkeyTypes {
     | "osu"
     | "hitmarker";
 
-  declare type SoundVolume = "0.1" | "0.5" | "1.0";
+  type SoundVolume = "0.1" | "0.5" | "1.0";
 
-  declare type PaceCaret = "off" | "average" | "pb" | "custom";
+  type PaceCaret = "off" | "average" | "pb" | "custom";
 
-  declare type PageWidth = "100" | "125" | "150" | "200" | "max";
+  type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  declare type ChartStyle = "line" | "scatter";
+  type ChartStyle = "line" | "scatter";
 
-  declare type MinimumWordsPerMinute = "off" | "custom";
+  type MinimumWordsPerMinute = "off" | "custom";
 
-  declare type HighlightMode = "off" | "letter" | "word";
+  type HighlightMode = "off" | "letter" | "word";
 
-  declare type EnableAds = "off" | "on" | "sellout";
+  type EnableAds = "off" | "on" | "sellout";
 
-  declare type MinimumAccuracy = "off" | "custom";
+  type MinimumAccuracy = "off" | "custom";
 
-  declare type RepeatQuotes = "off" | "typing";
+  type RepeatQuotes = "off" | "typing";
 
-  declare type OppositeShiftMode = "off" | "on" | "keymap";
+  type OppositeShiftMode = "off" | "on" | "keymap";
 
-  declare type CustomBackgroundSize = "cover" | "contain" | "max";
+  type CustomBackgroundSize = "cover" | "contain" | "max";
 
-  declare type CustomBackgroundFilter = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
+  type CustomBackgroundFilter = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
 
-  declare type MonkeyPowerLevel =
-    | "off"
-    | "mellow"
-    | "high"
-    | "ultra"
-    | "over_9000";
+  type MonkeyPowerLevel = "off" | "mellow" | "high" | "ultra" | "over_9000";
 
-  declare type MinimumBurst = "off" | "fixed" | "flex";
+  type MinimumBurst = "off" | "fixed" | "flex";
 
-  declare type FunboxObjectType = "script" | "style";
+  type FunboxObjectType = "script" | "style";
 
-  declare interface FunboxObject {
+  interface FunboxObject {
     name: string;
     type: FunboxObjectType;
     info: string;
   }
 
-  declare interface CustomText {
+  interface CustomText {
     text: string[];
     isWordRandom: boolean;
     isTimeRandom: boolean;
@@ -121,13 +116,13 @@ declare namespace MonkeyTypes {
     delimiter: string;
   }
 
-  declare interface Preset {
+  interface Preset {
     _id: string;
     name: string;
     config: Config;
   }
 
-  declare interface PersonalBest {
+  interface PersonalBest {
     acc: number;
     consistency: number;
     difficulty: Difficulty;
@@ -139,7 +134,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
   }
 
-  declare interface PersonalBests {
+  interface PersonalBests {
     time: {
       [key: number]: PersonalBest[];
       custom: PersonalBest[];
@@ -153,31 +148,31 @@ declare namespace MonkeyTypes {
     zen: PersonalBest[];
   }
 
-  declare interface Tag {
+  interface Tag {
     _id: string;
     name: string;
     personalBests: PersonalBests | Record<string, never>;
     active: boolean;
   }
 
-  declare interface Stats {
+  interface Stats {
     time: number;
     started: number;
     completed: number;
   }
 
-  declare interface ChartData {
+  interface ChartData {
     wpm: number[];
     raw: number[];
     err: number[];
   }
 
-  declare interface KeyStats {
+  interface KeyStats {
     average: number;
     sd: number;
   }
 
-  declare interface Result {
+  interface Result {
     _id: string;
     wpm: number;
     rawWpm: number;
@@ -211,7 +206,7 @@ declare namespace MonkeyTypes {
     punctuation?: boolean;
   }
 
-  declare interface Config {
+  interface Config {
     theme: string;
     customTheme: boolean;
     customThemeColors: string[];
@@ -296,17 +291,17 @@ declare namespace MonkeyTypes {
     lazyMode: boolean;
   }
 
-  declare interface DefaultConfig extends Config {
+  interface DefaultConfig extends Config {
     wordCount: WordsModes;
   }
 
-  declare interface Leaderboards {
+  interface Leaderboards {
     time: {
       [key in 15 | 60]: LeaderboardEntry[];
     };
   }
 
-  declare interface LeaderboardEntry {
+  interface LeaderboardEntry {
     _id: string;
     difficulty: string;
     timestamp: number;
@@ -324,7 +319,7 @@ declare namespace MonkeyTypes {
     hidden?: boolean;
   }
 
-  declare interface Snapshot {
+  interface Snapshot {
     banned?: boolean;
     emailVerified?: boolean;
     quoteRatings?: object; // TODO find structure of quoteRatings
@@ -342,7 +337,7 @@ declare namespace MonkeyTypes {
     config?: Config;
   }
 
-  declare interface ResultFilters {
+  interface ResultFilters {
     difficulty: {
       normal?: boolean;
       expert?: boolean;
@@ -426,18 +421,18 @@ declare namespace MonkeyTypes {
     };
   }
 
-  declare type Group = keyof ResultFilters;
+  type Group = keyof ResultFilters;
 
-  declare type Filter<G extends Group> = keyof ResultFilters[G];
+  type Filter<G extends Group> = keyof ResultFilters[G];
 
-  declare interface TimerStats {
+  interface TimerStats {
     dateNow: number;
     now: number;
     expected: number;
     nextDelay: number;
   }
 
-  declare interface GithubRelease {
+  interface GithubRelease {
     url: string;
     assets_url: string;
     upload_url: string;
