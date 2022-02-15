@@ -305,9 +305,28 @@ export declare interface DefaultConfig extends Config {
   wordCount: WordsModes;
 }
 
-// TODO find structure of Leaderboard
-export declare interface Leaderboard {
-  [key: string]: any;
+export declare interface Leaderboards {
+  time: {
+    [key in 15 | 60]: LeaderboardEntry[];
+  };
+}
+
+export declare interface LeaderboardEntry {
+  _id: string;
+  difficulty: string;
+  timestamp: number;
+  language: string;
+  wpm: number;
+  consistency: number | "-";
+  punctuation: boolean;
+  acc: number;
+  raw: number;
+  uid?: string;
+  name: string;
+  discordId?: string;
+  rank: number;
+  count?: number;
+  hidden?: boolean;
 }
 
 export declare interface Snapshot {
@@ -321,7 +340,7 @@ export declare interface Snapshot {
   presets?: Preset[];
   tags?: Tag[];
   favouriteThemes?: string[];
-  lbMemory?: Leaderboard;
+  lbMemory?: Leaderboards;
   globalStats?: Stats;
   quoteMod?: boolean;
   discordId?: string;
