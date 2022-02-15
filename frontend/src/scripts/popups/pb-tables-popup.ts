@@ -1,6 +1,5 @@
 // @ts-ignore
 import * as DB from "../db";
-import * as MonkeyTypes from "../types/interfaces";
 
 function update(mode: string): void {
   $("#pbTablesPopup table tbody").empty();

@@ -332,7 +332,7 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
   setTimeout(async () => {
     ChartController.updateAllChartColors();
 
-    let themecolors = await ThemeColors.get();
+    let themecolors = await ThemeColors.getAll();
 
     ThemeController.colorVars.forEach((colorName) => {
       let color;

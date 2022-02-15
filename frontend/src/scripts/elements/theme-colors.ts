@@ -13,10 +13,12 @@ let colors = {
 type ColorName = keyof typeof colors;
 
 export async function get(color: ColorName): Promise<string> {
+  if (!colors[color]) update();
   return colors[color];
 }
 
 export async function getAll(): Promise<typeof colors> {
+  if (!colors.bg) update();
   return colors;
 }
 

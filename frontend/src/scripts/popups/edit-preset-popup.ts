@@ -5,7 +5,7 @@ import * as Config from "../config";
 import * as Loader from "../elements/loader";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
-import * as MonkeyTypes from "../types/interfaces";
+
 import * as Notifications from "../elements/notifications";
 import { AxiosError } from "axios";
 

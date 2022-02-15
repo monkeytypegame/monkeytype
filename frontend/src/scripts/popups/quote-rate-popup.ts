@@ -6,7 +6,6 @@ import * as Loader from "../elements/loader";
 import axiosInstance from "../axios-instance";
 import * as Notifications from "../elements/notifications";
 import { AxiosError } from "axios";
-import * as MonkeyTypes from "../types/interfaces";
 
 let rating = 0;
 

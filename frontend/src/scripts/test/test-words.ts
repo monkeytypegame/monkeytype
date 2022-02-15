@@ -1,5 +1,3 @@
-import * as MonkeyTypes from "../types/interfaces";
-
 class Words {
   public list: string[];
   public length: number;
