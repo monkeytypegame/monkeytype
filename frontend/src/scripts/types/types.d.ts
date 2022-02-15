@@ -7,6 +7,8 @@ declare namespace MonkeyTypes {
 
   declare type Mode2<M extends Mode> = keyof PersonalBests[M];
 
+  declare type LanguageGroup = { name: string; languages: string[] };
+
   // declare type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
 
   declare type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
@@ -298,6 +300,30 @@ declare namespace MonkeyTypes {
     wordCount: WordsModes;
   }
 
+  declare interface Leaderboards {
+    time: {
+      [key in 15 | 60]: LeaderboardEntry[];
+    };
+  }
+
+  declare interface LeaderboardEntry {
+    _id: string;
+    difficulty: string;
+    timestamp: number;
+    language: string;
+    wpm: number;
+    consistency: number | "-";
+    punctuation: boolean;
+    acc: number;
+    raw: number;
+    uid?: string;
+    name: string;
+    discordId?: string;
+    rank: number;
+    count?: number;
+    hidden?: boolean;
+  }
+
   // TODO find structure of Leaderboard
   declare interface Leaderboard {
     [key: string]: any;
@@ -314,7 +340,7 @@ declare namespace MonkeyTypes {
     presets?: Preset[];
     tags?: Tag[];
     favouriteThemes?: string[];
-    lbMemory?: Leaderboard;
+    lbMemory?: Leaderboards;
     globalStats?: Stats;
     quoteMod?: boolean;
     discordId?: string;
@@ -464,20 +490,26 @@ declare namespace MonkeyTypes {
   // eslint-disable-next-line no-unused-vars
   declare type ExecFunction = (input?: any) => any;
 
-  declare interface Command {
+  export interface Command {
     id: string;
     display: string;
-    subgroup: CommandsObject;
-    icon: string;
+    subgroup?: CommandsGroup | boolean;
+    icon?: string;
+    noIcon?: boolean;
+    sticky?: boolean;
     alias?: string;
     input?: boolean;
     visible?: boolean;
-    defaultValue?: boolean;
+    defaultValue?: string;
+    configValue?: string | number | boolean | number[];
+    configValueMode?: string;
     exec?: ExecFunction;
+    hover?: ExecFunction;
     available?: () => void;
+    beforeSubgroup?: () => void;
   }
 
-  declare interface CommandsObject {
+  export interface CommandsGroup {
     title: string;
     configKey?: keyof Config;
     list: Command[];
@@ -495,4 +527,23 @@ declare namespace MonkeyTypes {
   // declare type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
 
   // declare type ActivePage = `page${Page}` | undefined;
+
+  declare interface PSA {
+    sticky?: boolean;
+    message: string;
+    _id: string;
+    level?: number;
+  }
+
+  declare interface ThemeColors {
+    bg: string;
+    main: string;
+    caret: string;
+    sub: string;
+    text: string;
+    error: string;
+    errorExtra: string;
+    colorfulError: string;
+    colorfulErrorExtra: string;
+  }
 }

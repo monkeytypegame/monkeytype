@@ -4,7 +4,6 @@ import * as DB from "../db";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
-import * as MonkeyTypes from "../types/interfaces";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
