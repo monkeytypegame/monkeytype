@@ -1,4 +1,3 @@
-//@ts-ignore
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";

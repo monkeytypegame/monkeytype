@@ -1,6 +1,4 @@
-// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
-// @ts-ignore
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";

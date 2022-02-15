@@ -1,6 +1,4 @@
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import axiosInstance from "../axios-instance";

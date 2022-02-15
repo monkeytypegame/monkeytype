@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 

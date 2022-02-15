@@ -1,10 +1,6 @@
-// @ts-ignore
 import * as TestUI from "../test/test-ui";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit-popup";

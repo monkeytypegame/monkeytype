@@ -1,26 +1,14 @@
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
-// @ts-ignore
 import * as ThemeColors from "../elements/theme-colors";
-// @ts-ignore
 import * as ChartController from "../controllers/chart-controller";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
-// @ts-ignore
 import * as MiniResultChart from "../account/mini-result-chart";
-// @ts-ignore
 import * as AllTimeStats from "../account/all-time-stats";
-// @ts-ignore
 import * as PbTables from "../account/pb-tables";
-// @ts-ignore
 import * as LoadingPage from "./loading";
-// @ts-ignore
 import * as Focus from "../test/focus";
-// @ts-ignore
 import * as SignOutButton from "../account/sign-out-button";
-// @ts-ignore
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";

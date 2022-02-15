@@ -1,5 +1,4 @@
 import * as Misc from "../misc";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
 
 export async function setActiveGroup(

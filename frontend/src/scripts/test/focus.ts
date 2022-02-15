@@ -1,6 +1,4 @@
-// @ts-ignore
 import * as Caret from "./caret";
-// @ts-ignore
 import * as ActivePage from "../states/active-page";
 
 let state = false;

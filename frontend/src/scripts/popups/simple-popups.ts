@@ -1,8 +1,5 @@
-// @ts-ignore
 import * as AccountController from "../controllers/account-controller";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";

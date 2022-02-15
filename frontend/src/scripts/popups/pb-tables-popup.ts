@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as DB from "../db";
 
 function update(mode: string): void {
