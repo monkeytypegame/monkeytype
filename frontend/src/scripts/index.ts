@@ -41,12 +41,16 @@ import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
+import * as Account from "./pages/account";
 
 // @ts-ignore
 global.snapshot = DB.getSnapshot;
 
 // @ts-ignore
 global.config = Config;
+
+// @ts-ignore
+global.toggleFilterDebug = Account.toggleFilterDebug;
 
 // @ts-ignore
 global.glarsesMode = enable;

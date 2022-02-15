@@ -1,15 +1,15 @@
 import * as Notifications from "./notifications";
 // import * as VersionPopup from "./version-popup";
 
-function setMemory(v) {
+function setMemory(v: string): void {
   window.localStorage.setItem("lastSeenVersion", v);
 }
 
-function getMemory() {
+function getMemory(): string {
   return window.localStorage.getItem("lastSeenVersion") ?? "";
 }
 
-export async function show(version) {
+export async function show(version: string): Promise<void> {
   const memory = await getMemory();
   if (memory === "") {
     setMemory(version);
@@ -20,12 +20,12 @@ export async function show(version) {
     window.location.hostname === "127.0.0.1"
   ) {
     caches.keys().then(function (names) {
-      for (let name of names) caches.delete(name);
+      for (const name of names) caches.delete(name);
     });
   }
   if (memory === version) return;
   caches.keys().then(function (names) {
-    for (let name of names) caches.delete(name);
+    for (const name of names) caches.delete(name);
   });
   Notifications.addBanner(
     `Version ${version} has been released. Click the version number in the bottom right to view the changelog.`,

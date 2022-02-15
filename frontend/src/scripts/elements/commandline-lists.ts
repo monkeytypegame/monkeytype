@@ -20,10 +20,11 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
+import * as MonkeyTypes from "../types/interfaces";
 
-export let current = [];
+export let current: MonkeyTypes.CommandsGroup[] = [];
 
-function canBailOut() {
+function canBailOut(): boolean {
   return (
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
@@ -42,7 +43,7 @@ function canBailOut() {
   );
 }
 
-let commandsLayouts = {
+const commandsLayouts: MonkeyTypes.CommandsGroup = {
   title: "Layout emulator...",
   configKey: "layout",
   list: [
@@ -60,7 +61,7 @@ if (Object.keys(layouts).length > 0) {
       id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
       display: layout === "default" ? "off" : layout.replace(/_/g, " "),
       configValue: layout,
-      exec: () => {
+      exec: (): void => {
         // UpdateConfig.setSavedLayout(layout);
         UpdateConfig.setLayout(layout);
         TestLogic.restart();
@@ -69,7 +70,7 @@ if (Object.keys(layouts).length > 0) {
   });
 }
 
-export let commandsKeymapLayouts = {
+export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
   title: "Change keymap layout...",
   configKey: "keymapLayout",
   list: [
@@ -86,7 +87,7 @@ if (Object.keys(layouts).length > 0) {
     id: "changeKeymapLayoutOverrideSync",
     display: "emulator sync",
     configValue: "overrideSync",
-    exec: () => {
+    exec: (): void => {
       UpdateConfig.setKeymapLayout("overrideSync");
       TestLogic.restart();
     },
@@ -97,7 +98,7 @@ if (Object.keys(layouts).length > 0) {
         id: "changeKeymapLayout" + Misc.capitalizeFirstLetter(layout),
         display: layout.replace(/_/g, " "),
         configValue: layout,
-        exec: () => {
+        exec: (): void => {
           UpdateConfig.setKeymapLayout(layout);
           TestLogic.restart();
         },
@@ -106,7 +107,7 @@ if (Object.keys(layouts).length > 0) {
   });
 }
 
-let commandsLanguages = {
+const commandsLanguages: MonkeyTypes.CommandsGroup = {
   title: "Language...",
   configKey: "language",
   list: [
@@ -124,7 +125,7 @@ Misc.getLanguageList().then((languages) => {
       id: "changeLanguage" + Misc.capitalizeFirstLetter(language),
       display: language.replace(/_/g, " "),
       configValue: language,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setLanguage(language);
         TestLogic.restart();
       },
@@ -132,7 +133,7 @@ Misc.getLanguageList().then((languages) => {
   });
 });
 
-let commandsFunbox = {
+const commandsFunbox: MonkeyTypes.CommandsGroup = {
   title: "Funbox...",
   configKey: "funbox",
   list: [
@@ -141,7 +142,7 @@ let commandsFunbox = {
       display: "none",
       configValue: "none",
       alias: "off",
-      exec: () => {
+      exec: (): void => {
         if (Funbox.setFunbox("none", null)) {
           TestLogic.restart();
         }
@@ -156,7 +157,7 @@ Misc.getFunboxList().then((funboxes) => {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       configValue: funbox.name,
-      exec: () => {
+      exec: (): void => {
         if (Funbox.setFunbox(funbox.name, funbox.type)) {
           TestLogic.restart();
         }
@@ -165,7 +166,7 @@ Misc.getFunboxList().then((funboxes) => {
   });
 });
 
-let commandsFonts = {
+const commandsFonts: MonkeyTypes.CommandsGroup = {
   title: "Font family...",
   configKey: "fontFamily",
   list: [],
@@ -177,10 +178,10 @@ Misc.getFontsList().then((fonts) => {
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
       configValue: font.name,
-      hover: () => {
+      hover: (): void => {
         UpdateConfig.previewFontFamily(font.name);
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontFamily(font.name.replace(/ /g, "_"));
       },
     });
@@ -189,7 +190,7 @@ Misc.getFontsList().then((fonts) => {
     id: "setFontFamilyCustom",
     display: "custom...",
     input: true,
-    hover: () => {
+    hover: (): void => {
       UpdateConfig.previewFontFamily(Config.fontFamily);
     },
     exec: (name) => {
@@ -199,12 +200,12 @@ Misc.getFontsList().then((fonts) => {
   });
 });
 
-let commandsTags = {
+const commandsTags: MonkeyTypes.CommandsGroup = {
   title: "Change tags...",
   list: [],
 };
 
-export function updateTagCommands() {
+export function updateTagCommands(): void {
   if (DB.getSnapshot()?.tags?.length > 0) {
     commandsTags.list = [];
 
@@ -212,8 +213,8 @@ export function updateTagCommands() {
       id: "clearTags",
       display: `Clear tags`,
       icon: "fa-times",
-      exec: () => {
-        DB.getSnapshot().tags.forEach((tag) => {
+      exec: (): void => {
+        DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
           tag.active = false;
         });
         ModesNotice.update();
@@ -221,7 +222,7 @@ export function updateTagCommands() {
       },
     });
 
-    DB.getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {
@@ -235,7 +236,7 @@ export function updateTagCommands() {
         noIcon: true,
         display: dis,
         sticky: true,
-        exec: () => {
+        exec: (): void => {
           TagController.toggle(tag._id);
           ModesNotice.update();
 
@@ -270,22 +271,22 @@ export function updateTagCommands() {
   }
 }
 
-let commandsPresets = {
+const commandsPresets: MonkeyTypes.CommandsGroup = {
   title: "Presets...",
   list: [],
 };
 
-export function updatePresetCommands() {
+export function updatePresetCommands(): void {
   if (DB.getSnapshot()?.presets?.length > 0) {
     commandsPresets.list = [];
 
-    DB.getSnapshot().presets.forEach((preset) => {
-      let dis = preset.name;
+    DB.getSnapshot().presets.forEach((preset: MonkeyTypes.Preset) => {
+      const dis = preset.name;
 
       commandsPresets.list.push({
         id: "applyPreset" + preset._id,
         display: dis,
-        exec: () => {
+        exec: (): void => {
           Settings.setEventDisabled(true);
           PresetController.apply(preset._id);
           Settings.setEventDisabled(false);
@@ -297,7 +298,7 @@ export function updatePresetCommands() {
   }
 }
 
-let commandsRepeatQuotes = {
+const commandsRepeatQuotes: MonkeyTypes.CommandsGroup = {
   title: "Repeat quotes...",
   configKey: "repeatQuotes",
   list: [
@@ -305,7 +306,7 @@ let commandsRepeatQuotes = {
       id: "setRepeatQuotesOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRepeatQuotes("off");
       },
     },
@@ -313,14 +314,14 @@ let commandsRepeatQuotes = {
       id: "setRepeatQuotesTyping",
       display: "typing",
       configValue: "typing",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRepeatQuotes("typing");
       },
     },
   ],
 };
 
-let commandsLiveWpm = {
+const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
   title: "Live WPM...",
   configKey: "showLiveWpm",
   list: [
@@ -328,7 +329,7 @@ let commandsLiveWpm = {
       id: "setLiveWpmOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowLiveWpm(false);
       },
     },
@@ -336,14 +337,14 @@ let commandsLiveWpm = {
       id: "setLiveWpmOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowLiveWpm(true);
       },
     },
   ],
 };
 
-let commandsLiveAcc = {
+const commandsLiveAcc: MonkeyTypes.CommandsGroup = {
   title: "Live accuracy...",
   configKey: "showLiveAcc",
   list: [
@@ -351,7 +352,7 @@ let commandsLiveAcc = {
       id: "setLiveAccOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowLiveAcc(false);
       },
     },
@@ -359,14 +360,14 @@ let commandsLiveAcc = {
       id: "setLiveAccOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowLiveAcc(true);
       },
     },
   ],
 };
 
-let commandsLiveBurst = {
+const commandsLiveBurst: MonkeyTypes.CommandsGroup = {
   title: "Live burst...",
   configKey: "showLiveBurst",
   list: [
@@ -374,7 +375,7 @@ let commandsLiveBurst = {
       id: "setLiveBurstOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowLiveBurst(false);
       },
     },
@@ -382,14 +383,14 @@ let commandsLiveBurst = {
       id: "setLiveBurstOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowLiveBurst(true);
       },
     },
   ],
 };
 
-let commandsShowTimer = {
+const commandsShowTimer: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress...",
   configKey: "showTimerProgress",
   list: [
@@ -397,7 +398,7 @@ let commandsShowTimer = {
       id: "setTimerProgressOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowTimerProgress(false);
       },
     },
@@ -405,14 +406,14 @@ let commandsShowTimer = {
       id: "setTimerProgressOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowTimerProgress(true);
       },
     },
   ],
 };
 
-let commandsKeyTips = {
+const commandsKeyTips: MonkeyTypes.CommandsGroup = {
   title: "Key tips...",
   configKey: "showKeyTips",
   list: [
@@ -420,7 +421,7 @@ let commandsKeyTips = {
       id: "setKeyTipsOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeyTips(false);
       },
     },
@@ -428,14 +429,14 @@ let commandsKeyTips = {
       id: "setKeyTipsOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeyTips(true);
       },
     },
   ],
 };
 
-let commandsFreedomMode = {
+const commandsFreedomMode: MonkeyTypes.CommandsGroup = {
   title: "Freedom mode...",
   configKey: "freedomMode",
   list: [
@@ -443,7 +444,7 @@ let commandsFreedomMode = {
       id: "setfreedomModeOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFreedomMode(false);
       },
     },
@@ -451,14 +452,14 @@ let commandsFreedomMode = {
       id: "setfreedomModeOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFreedomMode(true);
       },
     },
   ],
 };
 
-let commandsStrictSpace = {
+const commandsStrictSpace: MonkeyTypes.CommandsGroup = {
   title: "Strict space...",
   configKey: "strictSpace",
   list: [
@@ -466,7 +467,7 @@ let commandsStrictSpace = {
       id: "setStrictSpaceOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStrictSpace(false);
       },
     },
@@ -474,14 +475,14 @@ let commandsStrictSpace = {
       id: "setStrictSpaceOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStrictSpace(true);
       },
     },
   ],
 };
 
-let commandsBlindMode = {
+const commandsBlindMode: MonkeyTypes.CommandsGroup = {
   title: "Blind mode...",
   configKey: "blindMode",
   list: [
@@ -489,7 +490,7 @@ let commandsBlindMode = {
       id: "setBlindModeOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setBlindMode(false);
       },
     },
@@ -497,14 +498,14 @@ let commandsBlindMode = {
       id: "setBlindModeOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setBlindMode(true);
       },
     },
   ],
 };
 
-let commandsShowWordsHistory = {
+const commandsShowWordsHistory: MonkeyTypes.CommandsGroup = {
   title: "Always show words history...",
   configKey: "alwaysShowWordsHistory",
   list: [
@@ -512,7 +513,7 @@ let commandsShowWordsHistory = {
       id: "setAlwaysShowWordsHistoryOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setAlwaysShowWordsHistory(false);
       },
     },
@@ -520,14 +521,14 @@ let commandsShowWordsHistory = {
       id: "setAlwaysShowWordsHistoryOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setAlwaysShowWordsHistory(true);
       },
     },
   ],
 };
 
-let commandsIndicateTypos = {
+const commandsIndicateTypos: MonkeyTypes.CommandsGroup = {
   title: "Indicate typos...",
   configKey: "indicateTypos",
   list: [
@@ -535,7 +536,7 @@ let commandsIndicateTypos = {
       id: "setIndicateTyposOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setIndicateTypos("off");
       },
     },
@@ -543,7 +544,7 @@ let commandsIndicateTypos = {
       id: "setIndicateTyposBelow",
       display: "below",
       configValue: "below",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setIndicateTypos("below");
       },
     },
@@ -551,14 +552,14 @@ let commandsIndicateTypos = {
       id: "setIndicateTyposReplace",
       display: "replace",
       configValue: "replace",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setIndicateTypos("replace");
       },
     },
   ],
 };
 
-let commandsHideExtraLetters = {
+const commandsHideExtraLetters: MonkeyTypes.CommandsGroup = {
   title: "Hide extra letters...",
   configKey: "hideExtraLetters",
   list: [
@@ -566,7 +567,7 @@ let commandsHideExtraLetters = {
       id: "setHideExtraLettersOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setHideExtraLetters(false);
       },
     },
@@ -574,14 +575,14 @@ let commandsHideExtraLetters = {
       id: "setHideExtraLettersOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setHideExtraLetters(true);
       },
     },
   ],
 };
 
-let commandsQuickEnd = {
+const commandsQuickEnd: MonkeyTypes.CommandsGroup = {
   title: "Quick end...",
   configKey: "quickEnd",
   list: [
@@ -589,7 +590,7 @@ let commandsQuickEnd = {
       id: "setQuickEndOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setQuickEnd(false);
       },
     },
@@ -597,14 +598,14 @@ let commandsQuickEnd = {
       id: "setQuickEndOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setQuickEnd(true);
       },
     },
   ],
 };
 
-let commandsOppositeShiftMode = {
+const commandsOppositeShiftMode: MonkeyTypes.CommandsGroup = {
   title: "Change opposite shift mode...",
   configKey: "oppositeShiftMode",
   list: [
@@ -612,7 +613,7 @@ let commandsOppositeShiftMode = {
       id: "setOppositeShiftModeOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setOppositeShiftMode("off");
         ModesNotice.update();
       },
@@ -621,7 +622,7 @@ let commandsOppositeShiftMode = {
       id: "setOppositeShiftModeOn",
       display: "on",
       configValue: "on",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setOppositeShiftMode("on");
         ModesNotice.update();
       },
@@ -630,7 +631,7 @@ let commandsOppositeShiftMode = {
       id: "setOppositeShiftModeKeymap",
       display: "keymap",
       configValue: "keymap",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setOppositeShiftMode("keymap");
         ModesNotice.update();
       },
@@ -638,7 +639,7 @@ let commandsOppositeShiftMode = {
   ],
 };
 
-let commandsSoundOnError = {
+const commandsSoundOnError: MonkeyTypes.CommandsGroup = {
   title: "Sound on error...",
   configKey: "playSoundOnError",
   list: [
@@ -646,7 +647,7 @@ let commandsSoundOnError = {
       id: "setPlaySoundOnErrorOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnError(false);
       },
     },
@@ -654,7 +655,7 @@ let commandsSoundOnError = {
       id: "setPlaySoundOnErrorOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnError(true);
         Sound.playError();
       },
@@ -662,7 +663,7 @@ let commandsSoundOnError = {
   ],
 };
 
-let commandsSoundVolume = {
+const commandsSoundVolume: MonkeyTypes.CommandsGroup = {
   title: "Sound volume...",
   configKey: "soundVolume",
   list: [
@@ -670,7 +671,7 @@ let commandsSoundVolume = {
       id: "setSoundVolume0.1",
       display: "quiet",
       configValue: "0.1",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSoundVolume("0.1");
         Sound.playClick();
       },
@@ -679,7 +680,7 @@ let commandsSoundVolume = {
       id: "setSoundVolume0.5",
       display: "medium",
       configValue: "0.5",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSoundVolume("0.5");
         Sound.playClick();
       },
@@ -688,7 +689,7 @@ let commandsSoundVolume = {
       id: "setSoundVolume1.0",
       display: "loud",
       configValue: "1.0",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSoundVolume("1.0");
         Sound.playClick();
       },
@@ -696,7 +697,7 @@ let commandsSoundVolume = {
   ],
 };
 
-let commandsFlipTestColors = {
+const commandsFlipTestColors: MonkeyTypes.CommandsGroup = {
   title: "Flip test colors...",
   configKey: "flipTestColors",
   list: [
@@ -704,7 +705,7 @@ let commandsFlipTestColors = {
       id: "setFlipTestColorsOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFlipTestColors(false);
       },
     },
@@ -712,14 +713,14 @@ let commandsFlipTestColors = {
       id: "setFlipTestColorsOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFlipTestColors(true);
       },
     },
   ],
 };
 
-let commandsSmoothLineScroll = {
+const commandsSmoothLineScroll: MonkeyTypes.CommandsGroup = {
   title: "Smooth line scroll...",
   configKey: "smoothLineScroll",
   list: [
@@ -727,7 +728,7 @@ let commandsSmoothLineScroll = {
       id: "setSmoothLineScrollOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSmoothLineScroll(false);
       },
     },
@@ -735,14 +736,14 @@ let commandsSmoothLineScroll = {
       id: "setSmoothLineScrollOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSmoothLineScroll(true);
       },
     },
   ],
 };
 
-let commandsAlwaysShowDecimal = {
+const commandsAlwaysShowDecimal: MonkeyTypes.CommandsGroup = {
   title: "Always show decimal places...",
   configKey: "alwaysShowDecimalPlaces",
   list: [
@@ -750,7 +751,7 @@ let commandsAlwaysShowDecimal = {
       id: "setAlwaysShowDecimalPlacesOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setAlwaysShowDecimalPlaces(false);
       },
     },
@@ -758,14 +759,14 @@ let commandsAlwaysShowDecimal = {
       id: "setAlwaysShowDecimalPlacesOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setAlwaysShowDecimalPlaces(true);
       },
     },
   ],
 };
 
-let commandsAlwaysShowCPM = {
+const commandsAlwaysShowCPM: MonkeyTypes.CommandsGroup = {
   title: "Always show CPM...",
   configKey: "alwaysShowCPM",
   list: [
@@ -773,7 +774,7 @@ let commandsAlwaysShowCPM = {
       id: "setAlwaysShowCPMOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setAlwaysShowCPM(false);
       },
     },
@@ -781,14 +782,14 @@ let commandsAlwaysShowCPM = {
       id: "setAlwaysShowCPMOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setAlwaysShowCPM(true);
       },
     },
   ],
 };
 
-let commandsStartGraphsAtZero = {
+const commandsStartGraphsAtZero: MonkeyTypes.CommandsGroup = {
   title: "Start graphs at zero...",
   configKey: "startGraphsAtZero",
   list: [
@@ -796,7 +797,7 @@ let commandsStartGraphsAtZero = {
       id: "setStartGraphsAtZeroOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStartGraphsAtZero(false);
       },
     },
@@ -804,14 +805,14 @@ let commandsStartGraphsAtZero = {
       id: "setStartGraphsAtZeroOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStartGraphsAtZero(true);
       },
     },
   ],
 };
 
-let commandsLazyMode = {
+const commandsLazyMode: MonkeyTypes.CommandsGroup = {
   title: "Lazy mode...",
   configKey: "lazyMode",
   list: [
@@ -819,7 +820,7 @@ let commandsLazyMode = {
       id: "setLazyModeOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setLazyMode(false);
         TestLogic.restart();
       },
@@ -828,7 +829,7 @@ let commandsLazyMode = {
       id: "setLazyModeOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setLazyMode(true);
         TestLogic.restart();
       },
@@ -836,7 +837,7 @@ let commandsLazyMode = {
   ],
 };
 
-let commandsSwapEscAndTab = {
+const commandsSwapEscAndTab: MonkeyTypes.CommandsGroup = {
   title: "Swap esc and tab...",
   configKey: "swapEscAndTab",
   list: [
@@ -844,7 +845,7 @@ let commandsSwapEscAndTab = {
       id: "setSwapEscAndTabOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSwapEscAndTab(false);
       },
     },
@@ -852,14 +853,14 @@ let commandsSwapEscAndTab = {
       id: "setSwapEscAndTabOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSwapEscAndTab(true);
       },
     },
   ],
 };
 
-let commandsShowAllLines = {
+const commandsShowAllLines: MonkeyTypes.CommandsGroup = {
   title: "Show all lines...",
   configKey: "showAllLines",
   list: [
@@ -867,7 +868,7 @@ let commandsShowAllLines = {
       id: "setShowAllLinesOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowAllLines(false);
       },
     },
@@ -875,14 +876,14 @@ let commandsShowAllLines = {
       id: "setShowAllLinesOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowAllLines(true);
       },
     },
   ],
 };
 
-let commandsColorfulMode = {
+const commandsColorfulMode: MonkeyTypes.CommandsGroup = {
   title: "Colorful mode...",
   configKey: "colorfulMode",
   list: [
@@ -890,7 +891,7 @@ let commandsColorfulMode = {
       id: "setColorfulModeOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setColorfulMode(false);
       },
     },
@@ -898,14 +899,14 @@ let commandsColorfulMode = {
       id: "setColorfulModeOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setColorfulMode(true);
       },
     },
   ],
 };
 
-let commandsOutOfFocusWarning = {
+const commandsOutOfFocusWarning: MonkeyTypes.CommandsGroup = {
   title: "Colorful mode...",
   configKey: "showOutOfFocusWarning",
   list: [
@@ -913,7 +914,7 @@ let commandsOutOfFocusWarning = {
       id: "setShowOutOfFocusWarningOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowOutOfFocusWarning(false);
       },
     },
@@ -921,14 +922,14 @@ let commandsOutOfFocusWarning = {
       id: "setShowOutOfFocusWarningOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setShowOutOfFocusWarning(true);
       },
     },
   ],
 };
 
-let commandsKeymapMode = {
+const commandsKeymapMode: MonkeyTypes.CommandsGroup = {
   title: "Keymap mode...",
   configKey: "keymapMode",
   list: [
@@ -936,7 +937,7 @@ let commandsKeymapMode = {
       id: "setKeymapModeOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapMode("off");
       },
     },
@@ -944,7 +945,7 @@ let commandsKeymapMode = {
       id: "setKeymapModeStatic",
       display: "static",
       configValue: "static",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapMode("static");
       },
     },
@@ -952,7 +953,7 @@ let commandsKeymapMode = {
       id: "setKeymapModeNext",
       display: "next",
       configValue: "next",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapMode("next");
       },
     },
@@ -960,14 +961,14 @@ let commandsKeymapMode = {
       id: "setKeymapModeReact",
       display: "react",
       configValue: "react",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapMode("react");
       },
     },
   ],
 };
 
-let commandsSoundOnClick = {
+const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
   title: "Sound on click...",
   configKey: "playSoundOnClick",
   list: [
@@ -975,7 +976,7 @@ let commandsSoundOnClick = {
       id: "setSoundOnClickOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("off");
       },
     },
@@ -983,90 +984,90 @@ let commandsSoundOnClick = {
       id: "setSoundOnClick1",
       display: "click",
       configValue: "1",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("1");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("1");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
     {
       id: "setSoundOnClick2",
       display: "beep",
       configValue: "2",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("2");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("2");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
     {
       id: "setSoundOnClick3",
       display: "pop",
       configValue: "3",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("3");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("3");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
     {
       id: "setSoundOnClick4",
       display: "nk creams",
       configValue: "4",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("4");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("4");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
     {
       id: "setSoundOnClick5",
       display: "typewriter",
       configValue: "5",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("5");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("5");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
     {
       id: "setSoundOnClick6",
       display: "osu",
       configValue: "6",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("6");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("6");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
     {
       id: "setSoundOnClick7",
       display: "hitmarker",
       configValue: "7",
-      hover: () => {
+      hover: (): void => {
         Sound.previewClick("7");
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("7");
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       },
     },
   ],
 };
 
-let commandsRandomTheme = {
+const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
   title: "Random theme...",
   configKey: "randomTheme",
   list: [
@@ -1074,7 +1075,7 @@ let commandsRandomTheme = {
       id: "setRandomOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRandomTheme("off");
       },
     },
@@ -1082,7 +1083,7 @@ let commandsRandomTheme = {
       id: "setRandomOn",
       display: "on",
       configValue: "on",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRandomTheme("on");
       },
     },
@@ -1090,7 +1091,7 @@ let commandsRandomTheme = {
       id: "setRandomFav",
       display: "fav",
       configValue: "fav",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRandomTheme("fav");
       },
     },
@@ -1098,7 +1099,7 @@ let commandsRandomTheme = {
       id: "setRandomLight",
       display: "light",
       configValue: "light",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRandomTheme("light");
       },
     },
@@ -1106,14 +1107,14 @@ let commandsRandomTheme = {
       id: "setRandomDark",
       display: "dark",
       configValue: "dark",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRandomTheme("dark");
       },
     },
   ],
 };
 
-let commandsDifficulty = {
+const commandsDifficulty: MonkeyTypes.CommandsGroup = {
   title: "Difficulty...",
   configKey: "difficulty",
   list: [
@@ -1121,7 +1122,7 @@ let commandsDifficulty = {
       id: "setDifficultyNormal",
       display: "normal",
       configValue: "normal",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setDifficulty("normal");
       },
     },
@@ -1129,7 +1130,7 @@ let commandsDifficulty = {
       id: "setDifficultyExpert",
       display: "expert",
       configValue: "expert",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setDifficulty("expert");
       },
     },
@@ -1137,14 +1138,14 @@ let commandsDifficulty = {
       id: "setDifficultyMaster",
       display: "master",
       configValue: "master",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setDifficulty("master");
       },
     },
   ],
 };
 
-export let commandsEnableAds = {
+export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
   title: "Set enable ads...",
   configKey: "enableAds",
   list: [
@@ -1152,7 +1153,7 @@ export let commandsEnableAds = {
       id: "setEnableAdsOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setEnableAds("off");
       },
     },
@@ -1160,7 +1161,7 @@ export let commandsEnableAds = {
       id: "setEnableAdsOn",
       display: "on",
       configValue: "on",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setEnableAds("on");
       },
     },
@@ -1168,14 +1169,14 @@ export let commandsEnableAds = {
       id: "setEnableMax",
       display: "sellout",
       configValue: "max",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setEnableAds("max");
       },
     },
   ],
 };
 
-let commandsCustomTheme = {
+const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
   title: "Custom theme...",
   configKey: "customTheme",
   list: [
@@ -1183,7 +1184,7 @@ let commandsCustomTheme = {
       id: "setCustomThemeOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCustomTheme(false);
       },
     },
@@ -1191,14 +1192,14 @@ let commandsCustomTheme = {
       id: "setCustomThemeOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCustomTheme(true);
       },
     },
   ],
 };
 
-let commandsCaretStyle = {
+const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
   title: "Change caret style...",
   configKey: "caretStyle",
   list: [
@@ -1206,7 +1207,7 @@ let commandsCaretStyle = {
       id: "setCaretStyleOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("off");
       },
     },
@@ -1214,7 +1215,7 @@ let commandsCaretStyle = {
       id: "setCaretStyleDefault",
       display: "line",
       configValue: "default",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("default");
       },
     },
@@ -1222,7 +1223,7 @@ let commandsCaretStyle = {
       id: "setCaretStyleBlock",
       display: "block",
       configValue: "block",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("block");
       },
     },
@@ -1230,7 +1231,7 @@ let commandsCaretStyle = {
       id: "setCaretStyleOutline",
       display: "outline-block",
       configValue: "outline",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("outline");
       },
     },
@@ -1238,7 +1239,7 @@ let commandsCaretStyle = {
       id: "setCaretStyleUnderline",
       display: "underline",
       configValue: "underline",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("underline");
       },
     },
@@ -1247,7 +1248,7 @@ let commandsCaretStyle = {
       display: "carrot",
       configValue: "carrot",
       visible: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("carrot");
       },
     },
@@ -1256,14 +1257,14 @@ let commandsCaretStyle = {
       display: "banana",
       configValue: "banana",
       visible: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCaretStyle("banana");
       },
     },
   ],
 };
 
-let commandsPaceCaretStyle = {
+const commandsPaceCaretStyle: MonkeyTypes.CommandsGroup = {
   title: "Change pace caret style...",
   configKey: "paceCaretStyle",
   list: [
@@ -1271,7 +1272,7 @@ let commandsPaceCaretStyle = {
       id: "setPaceCaretStyleDefault",
       display: "line",
       configValue: "default",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaretStyle("default");
       },
     },
@@ -1279,7 +1280,7 @@ let commandsPaceCaretStyle = {
       id: "setPaceCaretStyleBlock",
       display: "block",
       configValue: "block",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaretStyle("block");
       },
     },
@@ -1287,7 +1288,7 @@ let commandsPaceCaretStyle = {
       id: "setPaceCaretStyleOutline",
       display: "outline-block",
       configValue: "outline",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaretStyle("outline");
       },
     },
@@ -1295,7 +1296,7 @@ let commandsPaceCaretStyle = {
       id: "setPaceCaretStyleUnderline",
       display: "underline",
       configValue: "underline",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaretStyle("underline");
       },
     },
@@ -1304,7 +1305,7 @@ let commandsPaceCaretStyle = {
       display: "carrot",
       configValue: "carrot",
       visible: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaretStyle("carrot");
       },
     },
@@ -1313,14 +1314,14 @@ let commandsPaceCaretStyle = {
       display: "banana",
       configValue: "banana",
       visible: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaretStyle("banana");
       },
     },
   ],
 };
 
-let commandsRepeatedPace = {
+const commandsRepeatedPace: MonkeyTypes.CommandsGroup = {
   title: "Repeated pace...",
   configKey: "repeatedPace",
   list: [
@@ -1328,7 +1329,7 @@ let commandsRepeatedPace = {
       id: "setRepeatedPaceOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRepeatedPace(false);
       },
     },
@@ -1336,14 +1337,14 @@ let commandsRepeatedPace = {
       id: "setRepeatedPaceOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setRepeatedPace(true);
       },
     },
   ],
 };
 
-let commandsPaceCaret = {
+const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
   title: "Pace caret mode...",
   configKey: "paceCaret",
   list: [
@@ -1351,7 +1352,7 @@ let commandsPaceCaret = {
       id: "setPaceCaretOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaret("off");
         TestLogic.restart();
       },
@@ -1360,7 +1361,7 @@ let commandsPaceCaret = {
       id: "setPaceCaretPb",
       display: "pb",
       configValue: "pb",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaret("pb");
         TestLogic.restart();
       },
@@ -1369,7 +1370,7 @@ let commandsPaceCaret = {
       id: "setPaceCaretAverage",
       display: "average",
       configValue: "average",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPaceCaret("average");
         TestLogic.restart();
       },
@@ -1379,7 +1380,7 @@ let commandsPaceCaret = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setPaceCaretCustomSpeed(input);
         UpdateConfig.setPaceCaret("custom");
         TestLogic.restart();
@@ -1388,7 +1389,7 @@ let commandsPaceCaret = {
   ],
 };
 
-let commandsMinWpm = {
+const commandsMinWpm: MonkeyTypes.CommandsGroup = {
   title: "Change min wpm mode...",
   configKey: "minWpm",
   list: [
@@ -1396,7 +1397,7 @@ let commandsMinWpm = {
       id: "setMinWpmOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMinWpm("off");
       },
     },
@@ -1405,7 +1406,7 @@ let commandsMinWpm = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setMinWpmCustomSpeed(input);
         UpdateConfig.setMinWpm("custom");
       },
@@ -1413,7 +1414,7 @@ let commandsMinWpm = {
   ],
 };
 
-let commandsMinAcc = {
+const commandsMinAcc: MonkeyTypes.CommandsGroup = {
   title: "Change min accuracy mode...",
   configKey: "minAcc",
   list: [
@@ -1421,7 +1422,7 @@ let commandsMinAcc = {
       id: "setMinAccOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMinAcc("off");
       },
     },
@@ -1430,7 +1431,7 @@ let commandsMinAcc = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setMinAccCustom(input);
         UpdateConfig.setMinAcc("custom");
       },
@@ -1438,7 +1439,7 @@ let commandsMinAcc = {
   ],
 };
 
-let commandsMinBurst = {
+const commandsMinBurst: MonkeyTypes.CommandsGroup = {
   title: "Change min burst mode...",
   configKey: "minBurst",
   list: [
@@ -1446,7 +1447,7 @@ let commandsMinBurst = {
       id: "setMinBurstOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMinBurst("off");
       },
     },
@@ -1455,7 +1456,7 @@ let commandsMinBurst = {
       display: "fixed...",
       configValue: "fixed",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setMinBurst("fixed");
         UpdateConfig.setMinBurstCustomSpeed(input);
       },
@@ -1465,7 +1466,7 @@ let commandsMinBurst = {
       display: "flex...",
       configValue: "flex",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setMinBurst("flex");
         UpdateConfig.setMinBurstCustomSpeed(input);
       },
@@ -1473,7 +1474,7 @@ let commandsMinBurst = {
   ],
 };
 
-let commandsKeymapStyle = {
+const commandsKeymapStyle: MonkeyTypes.CommandsGroup = {
   title: "Keymap style...",
   configKey: "keymapStyle",
   list: [
@@ -1481,7 +1482,7 @@ let commandsKeymapStyle = {
       id: "setKeymapStyleStaggered",
       display: "staggered",
       configValue: "staggered",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapStyle("staggered");
       },
     },
@@ -1489,7 +1490,7 @@ let commandsKeymapStyle = {
       id: "setKeymapStyleAlice",
       display: "alice",
       configValue: "alice",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapStyle("alice");
       },
     },
@@ -1497,7 +1498,7 @@ let commandsKeymapStyle = {
       id: "setKeymapStyleMatrix",
       display: "matrix",
       configValue: "matrix",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapStyle("matrix");
       },
     },
@@ -1505,7 +1506,7 @@ let commandsKeymapStyle = {
       id: "setKeymapStyleSplit",
       display: "split",
       configValue: "split",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapStyle("split");
       },
     },
@@ -1513,14 +1514,14 @@ let commandsKeymapStyle = {
       id: "setKeymapStyleSplitMatrix",
       display: "split matrix",
       configValue: "split_matrix",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapStyle("split_matrix");
       },
     },
   ],
 };
 
-let commandsKeymapLegendStyle = {
+const commandsKeymapLegendStyle: MonkeyTypes.CommandsGroup = {
   title: "Keymap legend style...",
   configKey: "keymapLegendStyle",
   list: [
@@ -1528,7 +1529,7 @@ let commandsKeymapLegendStyle = {
       id: "setKeymapLegendStyleLowercase",
       display: "lowercase",
       configValue: "lowercase",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapLegendStyle("lowercase");
       },
     },
@@ -1536,7 +1537,7 @@ let commandsKeymapLegendStyle = {
       id: "setKeymapLegendStyleUppercase",
       display: "uppercase",
       configValue: "uppercase",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapLegendStyle("uppercase");
       },
     },
@@ -1544,14 +1545,14 @@ let commandsKeymapLegendStyle = {
       id: "setKeymapLegendStyleBlank",
       display: "blank",
       configValue: "blank",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setKeymapLegendStyle("blank");
       },
     },
   ],
 };
 
-let commandsBritishEnglish = {
+const commandsBritishEnglish: MonkeyTypes.CommandsGroup = {
   title: "British english...",
   configKey: "britishEnglish",
   list: [
@@ -1559,7 +1560,7 @@ let commandsBritishEnglish = {
       id: "setBritishEnglishOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setBritishEnglish(false);
         TestLogic.restart();
       },
@@ -1568,7 +1569,7 @@ let commandsBritishEnglish = {
       id: "setBritishEnglishOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setBritishEnglish(true);
         TestLogic.restart();
       },
@@ -1576,7 +1577,7 @@ let commandsBritishEnglish = {
   ],
 };
 
-let commandsHighlightMode = {
+const commandsHighlightMode: MonkeyTypes.CommandsGroup = {
   title: "Highlight mode...",
   configKey: "highlightMode",
   list: [
@@ -1584,7 +1585,7 @@ let commandsHighlightMode = {
       id: "setHighlightModeOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setHighlightMode("off");
       },
     },
@@ -1592,7 +1593,7 @@ let commandsHighlightMode = {
       id: "setHighlightModeLetter",
       display: "letter",
       configValue: "letter",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setHighlightMode("letter");
       },
     },
@@ -1600,14 +1601,14 @@ let commandsHighlightMode = {
       id: "setHighlightModeWord",
       display: "word",
       configValue: "word",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setHighlightMode("word");
       },
     },
   ],
 };
 
-let commandsTimerStyle = {
+const commandsTimerStyle: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress style...",
   configKey: "timerStyle",
   list: [
@@ -1615,7 +1616,7 @@ let commandsTimerStyle = {
       id: "setTimerStyleBar",
       display: "bar",
       configValue: "bar",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerStyle("bar");
       },
     },
@@ -1623,7 +1624,7 @@ let commandsTimerStyle = {
       id: "setTimerStyleText",
       display: "text",
       configValue: "text",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerStyle("text");
       },
     },
@@ -1631,14 +1632,14 @@ let commandsTimerStyle = {
       id: "setTimerStyleMini",
       display: "mini",
       configValue: "mini",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerStyle("mini");
       },
     },
   ],
 };
 
-let commandsTimerColor = {
+const commandsTimerColor: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress color...",
   configKey: "timerColor",
   list: [
@@ -1646,7 +1647,7 @@ let commandsTimerColor = {
       id: "setTimerColorBlack",
       display: "black",
       configValue: "black",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerColor("bar");
       },
     },
@@ -1654,7 +1655,7 @@ let commandsTimerColor = {
       id: "setTimerColorSub",
       display: "sub",
       configValue: "sub",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerColor("sub");
       },
     },
@@ -1662,7 +1663,7 @@ let commandsTimerColor = {
       id: "setTimerColorText",
       display: "text",
       configValue: "text",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerColor("text");
       },
     },
@@ -1670,14 +1671,14 @@ let commandsTimerColor = {
       id: "setTimerColorMain",
       display: "main",
       configValue: "main",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerColor("main");
       },
     },
   ],
 };
 
-let commandsSingleListCommandLine = {
+const commandsSingleListCommandLine: MonkeyTypes.CommandsGroup = {
   title: "Single list command line...",
   configKey: "singleListCommandLine",
   list: [
@@ -1685,7 +1686,7 @@ let commandsSingleListCommandLine = {
       id: "singleListCommandLineManual",
       display: "manual",
       configValue: "manual",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSingleListCommandLine("manual");
       },
     },
@@ -1693,14 +1694,14 @@ let commandsSingleListCommandLine = {
       id: "singleListCommandLineOn",
       display: "on",
       configValue: "on",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSingleListCommandLine("on");
       },
     },
   ],
 };
 
-let commandsCapsLockWarning = {
+const commandsCapsLockWarning: MonkeyTypes.CommandsGroup = {
   title: "Caps lock warning...",
   configKey: "capsLockWarning",
   list: [
@@ -1708,7 +1709,7 @@ let commandsCapsLockWarning = {
       id: "capsLockWarningOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCapsLockWarning(true);
       },
     },
@@ -1716,14 +1717,14 @@ let commandsCapsLockWarning = {
       id: "capsLockWarningOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setCapsLockWarning(false);
       },
     },
   ],
 };
 
-let commandsTimerOpacity = {
+const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress opacity...",
   configKey: "timerOpacity",
   list: [
@@ -1731,7 +1732,7 @@ let commandsTimerOpacity = {
       id: "setTimerOpacity.25",
       display: ".25",
       configValue: 0.25,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerOpacity(0.25);
       },
     },
@@ -1739,7 +1740,7 @@ let commandsTimerOpacity = {
       id: "setTimerOpacity.5",
       display: ".5",
       configValue: 0.5,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerOpacity(0.5);
       },
     },
@@ -1747,7 +1748,7 @@ let commandsTimerOpacity = {
       id: "setTimerOpacity.75",
       display: ".75",
       configValue: 0.75,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerOpacity(0.75);
       },
     },
@@ -1755,14 +1756,14 @@ let commandsTimerOpacity = {
       id: "setTimerOpacity1",
       display: "1",
       configValue: 1,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTimerOpacity(1);
       },
     },
   ],
 };
 
-let commandsWordCount = {
+const commandsWordCount: MonkeyTypes.CommandsGroup = {
   title: "Change word count...",
   configKey: "words",
   list: [
@@ -1770,7 +1771,7 @@ let commandsWordCount = {
       id: "changeWordCount10",
       display: "10",
       configValue: 10,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("10");
         TestLogic.restart();
@@ -1780,7 +1781,7 @@ let commandsWordCount = {
       id: "changeWordCount25",
       display: "25",
       configValue: 25,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("25");
         TestLogic.restart();
@@ -1790,7 +1791,7 @@ let commandsWordCount = {
       id: "changeWordCount50",
       display: "50",
       configValue: 50,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("50");
         TestLogic.restart();
@@ -1800,7 +1801,7 @@ let commandsWordCount = {
       id: "changeWordCount100",
       display: "100",
       configValue: 100,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("100");
         TestLogic.restart();
@@ -1810,7 +1811,7 @@ let commandsWordCount = {
       id: "changeWordCount200",
       display: "200",
       configValue: 200,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("200");
         TestLogic.restart();
@@ -1820,7 +1821,7 @@ let commandsWordCount = {
       id: "changeWordCountCustom",
       display: "custom...",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount(input);
         TestLogic.restart();
@@ -1829,7 +1830,7 @@ let commandsWordCount = {
   ],
 };
 
-let commandsQuoteLengthConfig = {
+const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
   title: "Change quote length...",
   configKey: "quoteLength",
   list: [
@@ -1837,7 +1838,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthAll",
       display: "all",
       configValue: [0, 1, 2, 3],
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength([0, 1, 2, 3]);
         TestLogic.restart();
@@ -1848,7 +1849,7 @@ let commandsQuoteLengthConfig = {
       display: "short",
       configValue: 0,
       configValueMode: "include",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(0);
         TestLogic.restart();
@@ -1859,7 +1860,7 @@ let commandsQuoteLengthConfig = {
       display: "medium",
       configValue: 1,
       configValueMode: "include",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(1);
         TestLogic.restart();
@@ -1870,7 +1871,7 @@ let commandsQuoteLengthConfig = {
       display: "long",
       configValue: 2,
       configValueMode: "include",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(2);
         TestLogic.restart();
@@ -1881,7 +1882,7 @@ let commandsQuoteLengthConfig = {
       display: "thicc",
       configValue: 3,
       configValueMode: "include",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(3);
         TestLogic.restart();
@@ -1890,7 +1891,7 @@ let commandsQuoteLengthConfig = {
   ],
 };
 
-let commandsPunctuation = {
+const commandsPunctuation: MonkeyTypes.CommandsGroup = {
   title: "Change punctuation...",
   configKey: "punctuation",
   list: [
@@ -1898,7 +1899,7 @@ let commandsPunctuation = {
       id: "changePunctuationOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPunctuation(true);
         TestLogic.restart();
       },
@@ -1907,7 +1908,7 @@ let commandsPunctuation = {
       id: "changePunctuationOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPunctuation(false);
         TestLogic.restart();
       },
@@ -1915,7 +1916,7 @@ let commandsPunctuation = {
   ],
 };
 
-let commandsNumbers = {
+const commandsNumbers: MonkeyTypes.CommandsGroup = {
   title: "Numbers...",
   configKey: "numbers",
   list: [
@@ -1923,7 +1924,7 @@ let commandsNumbers = {
       id: "changeNumbersOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setNumbers(true);
         TestLogic.restart();
       },
@@ -1932,7 +1933,7 @@ let commandsNumbers = {
       id: "changeNumbersOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setNumbers(false);
         TestLogic.restart();
       },
@@ -1940,7 +1941,7 @@ let commandsNumbers = {
   ],
 };
 
-let commandsSmoothCaret = {
+const commandsSmoothCaret: MonkeyTypes.CommandsGroup = {
   title: "Smooth caret...",
   configKey: "smoothCaret",
   list: [
@@ -1948,7 +1949,7 @@ let commandsSmoothCaret = {
       id: "changeSmoothCaretOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSmoothCaret(true);
       },
     },
@@ -1956,14 +1957,14 @@ let commandsSmoothCaret = {
       id: "changeSmoothCaretOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setSmoothCaret(false);
       },
     },
   ],
 };
 
-let commandsQuickTab = {
+const commandsQuickTab: MonkeyTypes.CommandsGroup = {
   title: "Quick tab...",
   configKey: "quickTab",
   list: [
@@ -1971,7 +1972,7 @@ let commandsQuickTab = {
       id: "changeQuickTabOn",
       display: "on",
       configValue: true,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setQuickTabMode(true);
       },
     },
@@ -1979,14 +1980,14 @@ let commandsQuickTab = {
       id: "changeQuickTabOff",
       display: "off",
       configValue: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setQuickTabMode(false);
       },
     },
   ],
 };
 
-let commandsMode = {
+const commandsMode: MonkeyTypes.CommandsGroup = {
   title: "Change mode...",
   configKey: "mode",
   list: [
@@ -1994,7 +1995,7 @@ let commandsMode = {
       id: "changeModeTime",
       display: "time",
       configValue: "time",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("time");
         TestLogic.restart();
       },
@@ -2003,7 +2004,7 @@ let commandsMode = {
       id: "changeModeWords",
       display: "words",
       configValue: "words",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("words");
         TestLogic.restart();
       },
@@ -2012,7 +2013,7 @@ let commandsMode = {
       id: "changeModeQuote",
       display: "quote",
       configValue: "quote",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("quote");
         TestLogic.restart();
       },
@@ -2021,7 +2022,7 @@ let commandsMode = {
       id: "changeModeCustom",
       display: "custom",
       configValue: "custom",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("custom");
         TestLogic.restart();
       },
@@ -2030,7 +2031,7 @@ let commandsMode = {
       id: "changeModeZen",
       display: "zen",
       configValue: "zen",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("zen");
         ManualRestart.set();
         TestLogic.restart();
@@ -2039,7 +2040,7 @@ let commandsMode = {
   ],
 };
 
-let commandsTimeConfig = {
+const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
   title: "Change time config...",
   configKey: "time",
   list: [
@@ -2047,7 +2048,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig15",
       display: "15",
       configValue: 15,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("15");
         TestLogic.restart();
@@ -2057,7 +2058,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig30",
       display: "30",
       configValue: 30,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("30");
         TestLogic.restart();
@@ -2067,7 +2068,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig60",
       display: "60",
       configValue: 60,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("60");
         TestLogic.restart();
@@ -2077,7 +2078,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig120",
       display: "120",
       configValue: 120,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("120");
         TestLogic.restart();
@@ -2087,7 +2088,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfigCustom",
       display: "custom...",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig(input);
         TestLogic.restart();
@@ -2096,7 +2097,7 @@ let commandsTimeConfig = {
   ],
 };
 
-let commandsConfidenceMode = {
+const commandsConfidenceMode: MonkeyTypes.CommandsGroup = {
   title: "Confidence mode...",
   configKey: "confidenceMode",
   list: [
@@ -2104,7 +2105,7 @@ let commandsConfidenceMode = {
       id: "changeConfidenceModeOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setConfidenceMode("off");
       },
     },
@@ -2112,7 +2113,7 @@ let commandsConfidenceMode = {
       id: "changeConfidenceModeOn",
       display: "on",
       configValue: "on",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setConfidenceMode("on");
       },
     },
@@ -2120,14 +2121,14 @@ let commandsConfidenceMode = {
       id: "changeConfidenceModeMax",
       display: "max",
       configValue: "max",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setConfidenceMode("max");
       },
     },
   ],
 };
 
-let commandsStopOnError = {
+const commandsStopOnError: MonkeyTypes.CommandsGroup = {
   title: "Stop on error...",
   configKey: "stopOnError",
   list: [
@@ -2135,7 +2136,7 @@ let commandsStopOnError = {
       id: "changeStopOnErrorOff",
       display: "off",
       configValue: "off",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStopOnError("off");
       },
     },
@@ -2143,7 +2144,7 @@ let commandsStopOnError = {
       id: "changeStopOnErrorLetter",
       display: "letter",
       configValue: "letter",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStopOnError("letter");
       },
     },
@@ -2151,14 +2152,14 @@ let commandsStopOnError = {
       id: "changeStopOnErrorWord",
       display: "word",
       configValue: "word",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setStopOnError("word");
       },
     },
   ],
 };
 
-let commandsFontSize = {
+const commandsFontSize: MonkeyTypes.CommandsGroup = {
   title: "Font size...",
   configKey: "fontSize",
   list: [
@@ -2166,7 +2167,7 @@ let commandsFontSize = {
       id: "changeFontSize1",
       display: "1x",
       configValue: 1,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontSize(1);
         TestLogic.restart();
       },
@@ -2175,7 +2176,7 @@ let commandsFontSize = {
       id: "changeFontSize125",
       display: "1.25x",
       configValue: 125,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontSize(125);
         TestLogic.restart();
       },
@@ -2184,7 +2185,7 @@ let commandsFontSize = {
       id: "changeFontSize15",
       display: "1.5x",
       configValue: 15,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontSize(15);
         TestLogic.restart();
       },
@@ -2193,7 +2194,7 @@ let commandsFontSize = {
       id: "changeFontSize2",
       display: "2x",
       configValue: 2,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontSize(2);
         TestLogic.restart();
       },
@@ -2202,7 +2203,7 @@ let commandsFontSize = {
       id: "changeFontSize3",
       display: "3x",
       configValue: 3,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontSize(3);
         TestLogic.restart();
       },
@@ -2211,7 +2212,7 @@ let commandsFontSize = {
       id: "changeFontSize4",
       display: "4x",
       configValue: 4,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setFontSize(4);
         TestLogic.restart();
       },
@@ -2219,7 +2220,7 @@ let commandsFontSize = {
   ],
 };
 
-let commandsPageWidth = {
+const commandsPageWidth: MonkeyTypes.CommandsGroup = {
   title: "Page width...",
   configKey: "pageWidth",
   list: [
@@ -2227,7 +2228,7 @@ let commandsPageWidth = {
       id: "setPageWidth100",
       display: "100",
       configValue: "100",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPageWidth("100");
       },
     },
@@ -2235,7 +2236,7 @@ let commandsPageWidth = {
       id: "setPageWidth125",
       display: "125",
       configValue: "125",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPageWidth("125");
       },
     },
@@ -2243,7 +2244,7 @@ let commandsPageWidth = {
       id: "setPageWidth150",
       display: "150",
       configValue: "150",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPageWidth("150");
       },
     },
@@ -2251,7 +2252,7 @@ let commandsPageWidth = {
       id: "setPageWidth200",
       display: "200",
       configValue: "200",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPageWidth("200");
       },
     },
@@ -2259,21 +2260,21 @@ let commandsPageWidth = {
       id: "setPageWidthMax",
       display: "max",
       configValue: "max",
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setPageWidth("max");
       },
     },
   ],
 };
 
-let commandsPractiseWords = {
+const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
   title: "Practice words...",
   list: [
     {
       id: "practiseWordsMissed",
       display: "missed",
       noIcon: true,
-      exec: () => {
+      exec: (): void => {
         PractiseWords.init(true, false);
       },
     },
@@ -2281,7 +2282,7 @@ let commandsPractiseWords = {
       id: "practiseWordsSlow",
       display: "slow",
       noIcon: true,
-      exec: () => {
+      exec: (): void => {
         PractiseWords.init(false, true);
       },
     },
@@ -2289,14 +2290,14 @@ let commandsPractiseWords = {
       id: "practiseWordsBoth",
       display: "both",
       noIcon: true,
-      exec: () => {
+      exec: (): void => {
         PractiseWords.init(true, true);
       },
     },
   ],
 };
 
-export let themeCommands = {
+export const themeCommands: MonkeyTypes.CommandsGroup = {
   title: "Theme...",
   configKey: "theme",
   list: [],
@@ -2308,18 +2309,18 @@ Misc.getThemesList().then((themes) => {
       id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
       display: theme.name.replace(/_/g, " "),
       configValue: theme.name,
-      hover: () => {
+      hover: (): void => {
         // previewTheme(theme.name);
         ThemeController.preview(theme.name);
       },
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setTheme(theme.name);
       },
     });
   });
 });
 
-export let commandsChallenges = {
+export const commandsChallenges: MonkeyTypes.CommandsGroup = {
   title: "Load challenge...",
   list: [],
 };
@@ -2330,7 +2331,7 @@ Misc.getChallengeList().then((challenges) => {
       id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
       noIcon: true,
       display: challenge.display,
-      exec: () => {
+      exec: (): void => {
         ChallengeController.setup(challenge.name);
         TestLogic.restart(false, true);
       },
@@ -2339,33 +2340,33 @@ Misc.getChallengeList().then((challenges) => {
 });
 
 // export function showFavouriteThemesAtTheTop() {
-export function updateThemeCommands() {
+export function updateThemeCommands(): void {
   if (Config.favThemes.length > 0) {
     themeCommands.list = [];
-    Config.favThemes.forEach((theme) => {
+    Config.favThemes.forEach((theme: string) => {
       themeCommands.list.push({
         id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
         display: theme.replace(/_/g, " "),
-        hover: () => {
+        hover: (): void => {
           // previewTheme(theme);
           ThemeController.preview(theme);
         },
-        exec: () => {
+        exec: (): void => {
           UpdateConfig.setTheme(theme);
         },
       });
     });
     Misc.getThemesList().then((themes) => {
       themes.forEach((theme) => {
-        if (Config.favThemes.includes(theme.name)) return;
+        if ((Config.favThemes as string[]).includes(theme.name)) return;
         themeCommands.list.push({
           id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
           display: theme.name.replace(/_/g, " "),
-          hover: () => {
+          hover: (): void => {
             // previewTheme(theme.name);
             ThemeController.preview(theme.name);
           },
-          exec: () => {
+          exec: (): void => {
             UpdateConfig.setTheme(theme.name);
           },
         });
@@ -2374,18 +2375,17 @@ export function updateThemeCommands() {
   }
 }
 
-let commandsCopyWordsToClipboard = {
+const commandsCopyWordsToClipboard: MonkeyTypes.CommandsGroup = {
   title: "Are you sure...",
   list: [
     {
       id: "copyNo",
       display: "Nevermind",
-      exec: () => {},
     },
     {
       id: "copyYes",
       display: "Yes, I am sure",
-      exec: () => {
+      exec: (): void => {
         const words = Misc.getWords();
 
         navigator.clipboard.writeText(words).then(
@@ -2401,7 +2401,7 @@ let commandsCopyWordsToClipboard = {
   ],
 };
 
-let commandsMonkeyPowerLevel = {
+const commandsMonkeyPowerLevel: MonkeyTypes.CommandsGroup = {
   title: "Power mode...",
   configKey: "monkeyPowerLevel",
   list: [
@@ -2409,36 +2409,36 @@ let commandsMonkeyPowerLevel = {
       id: "monkeyPowerLevelOff",
       display: "off",
       configValue: "off",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
+      exec: (): void => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
       id: "monkeyPowerLevel1",
       display: "mellow",
       configValue: "1",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
+      exec: (): void => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
       display: "high",
       configValue: "2",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
+      exec: (): void => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
       display: "ultra",
       configValue: "3",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
+      exec: (): void => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
       display: "over 9000",
       configValue: "4",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
+      exec: (): void => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
 };
 
-export let defaultCommands = {
+export const defaultCommands: MonkeyTypes.CommandsGroup = {
   title: "",
   list: [
     {
@@ -2479,10 +2479,10 @@ export let defaultCommands = {
       display: "Tags...",
       icon: "fa-tag",
       subgroup: commandsTags,
-      beforeSubgroup: () => {
+      beforeSubgroup: (): void => {
         updateTagCommands();
       },
-      // exec: () => {
+      // exec: (): void => {
       //   updateTagCommands();
       //   current.push();
       //   Commandline.show();
@@ -2494,10 +2494,10 @@ export let defaultCommands = {
       display: "Presets...",
       icon: "fa-sliders-h",
       subgroup: commandsPresets,
-      beforeSubgroup: () => {
+      beforeSubgroup: (): void => {
         updatePresetCommands();
       },
-      // exec: () => {
+      // exec: (): void => {
       //   updatePresetCommands();
       //   current.push(commandsPresets);
       //   Commandline.show();
@@ -2755,7 +2755,7 @@ export let defaultCommands = {
       id: "randomizeTheme",
       display: "Next random theme",
       icon: "fa-random",
-      exec: () => ThemeController.randomizeTheme(),
+      exec: (): void => ThemeController.randomizeTheme(),
     },
     {
       id: "changeDifficulty",
@@ -2817,7 +2817,7 @@ export let defaultCommands = {
       icon: "fa-image",
       defaultValue: "",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setCustomBackground(input);
       },
     },
@@ -2880,7 +2880,7 @@ export let defaultCommands = {
       defaultValue: "qwerty dvorak colemak",
       input: true,
       icon: "fa-tint",
-      exec: (input) => {
+      exec: (input): void => {
         UpdateConfig.setCustomLayoutfluid(input);
         if (Config.funbox === "layoutfluid") TestLogic.restart();
         // UpdateConfig.setLayout(
@@ -2918,41 +2918,50 @@ export let defaultCommands = {
       display: "View Typing Page",
       alias: "start begin type test",
       icon: "fa-keyboard",
-      exec: () => $("#top #menu .icon-button.view-start").click(),
+      exec: (): void => {
+        $("#top #menu .icon-button.view-start").click();
+      },
     },
     {
       id: "viewLeaderboards",
       display: "View Leaderboards Page",
       icon: "fa-crown",
-      exec: () => $("#top #menu .icon-button.view-leaderboards").click(),
+      exec: (): void => {
+        $("#top #menu .icon-button.view-leaderboards").click();
+      },
     },
     {
       id: "viewAbout",
       display: "View About Page",
       icon: "fa-info",
-      exec: () => $("#top #menu .icon-button.view-about").click(),
+      exec: (): void => {
+        $("#top #menu .icon-button.view-about").click();
+      },
     },
     {
       id: "viewSettings",
       display: "View Settings Page",
       icon: "fa-cog",
-      exec: () => $("#top #menu .icon-button.view-settings").click(),
+      exec: (): void => {
+        $("#top #menu .icon-button.view-settings").click();
+      },
     },
     {
       id: "viewAccount",
       display: "View Account Page",
       icon: "fa-user",
       alias: "stats",
-      exec: () =>
+      exec: (): void => {
         $("#top #menu .icon-button.view-account").hasClass("hidden")
           ? $("#top #menu .icon-button.view-login").click()
-          : $("#top #menu .icon-button.view-account").click(),
+          : $("#top #menu .icon-button.view-account").click();
+      },
     },
     {
       id: "toggleFullscreen",
       display: "Toggle Fullscreen",
       icon: "fa-expand",
-      exec: () => {
+      exec: (): void => {
         Misc.toggleFullscreen();
       },
     },
@@ -2966,26 +2975,25 @@ export let defaultCommands = {
           {
             id: "bailOutNo",
             display: "Nevermind",
-            exec: () => {},
-            available: () => {
+            available: (): boolean => {
               return canBailOut();
             },
           },
           {
             id: "bailOutForSure",
             display: "Yes, I am sure",
-            exec: () => {
+            exec: (): void => {
               TestInput.setBailout(true);
               TestLogic.finish();
             },
-            available: () => {
+            available: (): boolean => {
               return canBailOut();
             },
           },
         ],
       },
       visible: false,
-      available: () => {
+      available: (): boolean => {
         return canBailOut();
       },
     },
@@ -2999,7 +3007,7 @@ export let defaultCommands = {
       id: "joinDiscord",
       display: "Join the Discord server",
       icon: "fa-users",
-      exec: () => {
+      exec: (): void => {
         window.open("https://discord.gg/monkeytype");
       },
     },
@@ -3007,10 +3015,10 @@ export let defaultCommands = {
       id: "repeatTest",
       display: "Repeat test",
       icon: "fa-sync-alt",
-      exec: () => {
+      exec: (): void => {
         TestLogic.restart(true);
       },
-      available: () => {
+      available: (): boolean => {
         return TestUI.resultVisible;
       },
     },
@@ -3019,7 +3027,7 @@ export let defaultCommands = {
       display: "Practice words...",
       icon: "fa-exclamation-triangle",
       subgroup: commandsPractiseWords,
-      available: () => {
+      available: (): boolean => {
         return TestUI.resultVisible;
       },
     },
@@ -3027,10 +3035,10 @@ export let defaultCommands = {
       id: "toggleWordHistory",
       display: "Toggle word history",
       icon: "fa-align-left",
-      exec: () => {
+      exec: (): void => {
         TestUI.toggleResultWords();
       },
-      available: () => {
+      available: (): boolean => {
         return TestUI.resultVisible;
       },
     },
@@ -3039,12 +3047,12 @@ export let defaultCommands = {
       display: "Save screenshot",
       icon: "fa-image",
       alias: "ss picture",
-      exec: () => {
+      exec: (): void => {
         setTimeout(() => {
           TestUI.screenshot();
         }, 500);
       },
-      available: () => {
+      available: (): boolean => {
         return TestUI.resultVisible;
       },
     },
@@ -3052,7 +3060,7 @@ export let defaultCommands = {
       id: "changeCustomModeText",
       display: "Change custom text",
       icon: "fa-align-left",
-      exec: () => {
+      exec: (): void => {
         CustomTextPopup.show();
       },
     },
@@ -3061,7 +3069,7 @@ export let defaultCommands = {
       display: "Toggle Monkey",
       icon: "fa-egg",
       visible: false,
-      exec: () => {
+      exec: (): void => {
         UpdateConfig.setMonkey(!Config.monkey);
       },
     },
@@ -3070,7 +3078,7 @@ export let defaultCommands = {
       display: "Copy words to clipboard",
       icon: "fa-copy",
       subgroup: true,
-      exec: () => {
+      exec: (): void => {
         current.push(commandsCopyWordsToClipboard);
       },
     },
@@ -3079,7 +3087,7 @@ export let defaultCommands = {
       display: "Import settings JSON",
       icon: "fa-cog",
       input: true,
-      exec: (input) => {
+      exec: (input): void => {
         try {
           UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveToLocalStorage();
@@ -3099,7 +3107,6 @@ export let defaultCommands = {
       icon: "fa-cog",
       input: true,
       defaultValue: "",
-      exec: () => {},
     },
     {
       id: "monkeyPower",
@@ -3113,19 +3120,19 @@ export let defaultCommands = {
       id: "clearSwCache",
       display: "Clear SW cache",
       icon: "fa-cog",
-      exec: async () => {
-        let clist = await caches.keys();
-        for (let name of clist) {
+      exec: async (): Promise<void> => {
+        const clist = await caches.keys();
+        for (const name of clist) {
           await caches.delete(name);
         }
-        window.location.reload(true);
+        window.location.reload();
       },
     },
     {
       id: "getSwCache",
       display: "Get SW cache",
       icon: "fa-cog",
-      exec: async () => {
+      exec: async (): Promise<void> => {
         alert(await caches.keys());
       },
     },
@@ -3134,15 +3141,15 @@ export let defaultCommands = {
 
 current = [defaultCommands];
 
-export function setCurrent(val) {
+export function setCurrent(val: MonkeyTypes.CommandsGroup[]): void {
   current = val;
 }
 
-export function pushCurrent(val) {
+export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
   current.push(val);
 }
 
-export function getList(list) {
+export function getList(list: string): MonkeyTypes.CommandsGroup {
   return eval(list);
 }
 
