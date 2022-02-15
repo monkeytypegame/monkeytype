@@ -25,7 +25,6 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
-import * as MonkeyTypes from "../types/interfaces";
 
 let filterDebug = false;
 //toggle filterdebug

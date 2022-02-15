@@ -20,7 +20,7 @@ task("clean", function () {
 });
 
 task("lint", function () {
-  return src(["./src/scripts/**/*.js", "./src/scripts/**/*.ts"])
+  return src(["./src/scripts/**/*.js"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());

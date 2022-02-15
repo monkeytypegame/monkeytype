@@ -1,5 +1,4 @@
 import * as Loader from "./elements/loader";
-import * as MonkeyTypes from "./types/interfaces";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");

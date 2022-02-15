@@ -9,7 +9,8 @@
     "build:live": "npx gulp build-production",
     "build:webpack": "webpack --config webpack.config.js",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
-    "deploy:live": "npm run build:live && firebase deploy -P live --only hosting"
+    "deploy:live": "npm run build:live && firebase deploy -P live --only hosting",
+    "tsc": "tsc"
   },
   "engines": {
     "npm": "8.1.2"

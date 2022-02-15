@@ -6,7 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Misc from "../misc";
-import * as MonkeyTypes from "../types/interfaces";
+
 import { AxiosError } from "axios";
 
 const CAPTCHA_ID = 1;
