@@ -144,19 +144,13 @@ export async function refreshButtons(): Promise<void> {
 export function setCustomInputs(noThemeUpdate = false): void {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
-  ).each((_, element: HTMLElement) => {
+  ).each((_index, element: HTMLElement) => {
     const currentColor =
       Config.customThemeColors[
         ThemeController.colorVars.indexOf(
-          // @ts-ignore TODO: Remove this before merging
-          $(element).find("input[type=color]").attr("id")
+          $(element).find("input[type=color]").attr("id") as string
         )
       ];
-
-    //todo check if needed
-    // $(index).find("input[type=color]").val(currentColor);
-    // $(index).find("input[type=color]").attr("value", currentColor);
-    // $(index).find("input[type=text]").val(currentColor);
     updateColors($(element), currentColor, false, noThemeUpdate);
   });
 }
@@ -182,22 +176,10 @@ export function updateActiveTab(): void {
     $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
       "active"
     );
-
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   250
-    // );
   } else {
     $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
       "active"
     );
-
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   250
-    // );
   }
 }
 
@@ -210,22 +192,8 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
     UpdateConfig.setCustomTheme(false);
-    // ThemeController.set(Config.theme);
-    // applyCustomThemeColors();
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   250
-    // );
   } else {
     UpdateConfig.setCustomTheme(true);
-    // ThemeController.set("custom");
-    // applyCustomThemeColors();
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   250
-    // );
   }
 });
 
@@ -246,7 +214,6 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton")) {
     UpdateConfig.setTheme(theme);
-    // ThemePicker.refreshButtons();
     updateActiveButton();
   }
 });
@@ -254,57 +221,19 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("input", (e) => {
-  // UpdateConfig.setCustomTheme(true, true);
   const $colorVar = $(e.currentTarget).attr("id") as string;
   const $pickedColor = $(e.currentTarget).val() as string;
 
   updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor, true);
-  //todo check if needed
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
-  // });
-
-  // $(
-  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
-  // ).on("input", (e) => {
-  //   // UpdateConfig.setCustomTheme(true, true);
-  //   const $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
-  //   const $pickedColor = $(e.currentTarget).val();
-
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
 });
 
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("change", (e) => {
-  // UpdateConfig.setCustomTheme(true, true);
   const $colorVar = $(e.currentTarget).attr("id") as string;
   const $pickedColor = $(e.currentTarget).val() as string;
 
   updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
-  //todo check if needed
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
-  // });
-
-  // $(
-  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
-  // ).on("input", (e) => {
-  //   // UpdateConfig.setCustomTheme(true, true);
-  //   const $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
-  //   const $pickedColor = $(e.currentTarget).val();
-
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
 });
 
 $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
@@ -329,7 +258,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", () => {
   const save: Array<string> = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
-    (_, element) => {
+    (_index, element) => {
       save.push($(element).attr("value") as string);
     }
   );
