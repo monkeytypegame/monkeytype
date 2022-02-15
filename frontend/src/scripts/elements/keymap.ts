@@ -4,7 +4,7 @@ import layouts from "../test/layouts";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 
-export function highlightKey(currentKey) {
+export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   try {
     if ($(".active-key") != undefined) {
@@ -57,11 +57,13 @@ export function highlightKey(currentKey) {
       $("#KeySpace2").addClass("active-key");
     }
   } catch (e) {
-    console.log("could not update highlighted keymap key: " + e.message);
+    if (e instanceof Error) {
+      console.log("could not update highlighted keymap key: " + e.message);
+    }
   }
 }
 
-export async function flashKey(key, correct) {
+export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == undefined) return;
   switch (key) {
     case "\\":
@@ -107,7 +109,7 @@ export async function flashKey(key, correct) {
     key = ".key-split-space";
   }
 
-  let themecolors = await ThemeColors.get();
+  const themecolors = await ThemeColors.get();
 
   try {
     if (correct || Config.blindMode) {
@@ -148,29 +150,29 @@ export async function flashKey(key, correct) {
   } catch (e) {}
 }
 
-export function hide() {
+export function hide(): void {
   $(".keymap").addClass("hidden");
 }
 
-export function show() {
+export function show(): void {
   $(".keymap").removeClass("hidden");
 }
 
-export function refreshKeys(layout) {
+export function refreshKeys(layout: string): void {
   try {
-    let lts = layouts[layout]; //layout to show
+    let lts = layouts[layout as keyof typeof layouts]; //layout to show
     let layoutString = layout;
     if (Config.keymapLayout === "overrideSync") {
       if (Config.layout === "default") {
         lts = layouts["qwerty"];
         layoutString = "default";
       } else {
-        lts = layouts[Config.layout];
+        lts = layouts[Config.layout as keyof typeof layouts];
         layoutString = Config.layout;
       }
     }
 
-    if (lts.keymapShowTopRow) {
+    if ((lts as typeof layouts["qwerty"]).keymapShowTopRow) {
       $(".keymap .r1").removeClass("hidden");
     } else {
       $(".keymap .r1").addClass("hidden");
@@ -186,21 +188,23 @@ export function refreshKeys(layout) {
       layoutString.replace(/_/g, " ")
     );
 
-    if (lts.iso) {
+    if ((lts as any).iso) {
       $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
     } else {
       $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
     }
 
-    let toReplace = lts.keys.slice(1, 48);
+    const toReplace = (lts as typeof layouts["qwerty"]).keys.slice(1, 48);
     let count = 0;
 
     // let repeatB = false;
     $(".keymap .keymap-key .letter")
       .map(function () {
         if (count < toReplace.length) {
-          let key = toReplace[count].charAt(0);
+          const key = toReplace[count].charAt(0);
           this.innerHTML = key;
+
+          if (!this.parentElement) return;
 
           switch (key) {
             case "\\":
@@ -256,15 +260,17 @@ export function refreshKeys(layout) {
       })
       .get();
   } catch (e) {
-    console.log(
-      "something went wrong when changing layout, resettings: " + e.message
-    );
-    UpdateConfig.setKeymapLayout("qwerty", true);
+    if (e instanceof Error) {
+      console.log(
+        "something went wrong when changing layout, resettings: " + e.message
+      );
+      UpdateConfig.setKeymapLayout("qwerty", true);
+    }
   }
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
     refreshKeys(Config.keymapLayout);
-  if (eventKey === "keymapLayout") refreshKeys(eventValue);
+  if (eventKey === "keymapLayout") refreshKeys(eventValue as string);
 });
