@@ -115,7 +115,7 @@ async function updateGraph() {
 }
 
 export async function updateGraphPBLine() {
-  let themecolors = await ThemeColors.get();
+  let themecolors = await ThemeColors.getAll();
   let lpb = await DB.getLocalPB(
     result.mode,
     result.mode2,
@@ -403,7 +403,7 @@ function updateTags(dontSave) {
         );
         // console.log("new pb for tag " + tag.name);
       } else {
-        let themecolors = await ThemeColors.get();
+        let themecolors = await ThemeColors.getAll();
         ChartController.result.options.annotation.annotations.push({
           enabled: false,
           type: "line",
