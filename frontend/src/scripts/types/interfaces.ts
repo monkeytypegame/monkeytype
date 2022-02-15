@@ -493,17 +493,23 @@ export type ExecFunction = (input?: any) => any;
 export interface Command {
   id: string;
   display: string;
-  subgroup: CommandsObject;
-  icon: string;
+  subgroup?: CommandsGroup | boolean;
+  icon?: string;
+  noIcon?: boolean;
+  sticky?: boolean;
   alias?: string;
   input?: boolean;
   visible?: boolean;
-  defaultValue?: boolean;
+  defaultValue?: string;
+  configValue?: string | number | boolean | number[];
+  configValueMode?: string;
   exec?: ExecFunction;
+  hover?: ExecFunction;
   available?: () => void;
+  beforeSubgroup?: () => void;
 }
 
-export interface CommandsObject {
+export interface CommandsGroup {
   title: string;
   configKey?: keyof Config;
   list: Command[];
