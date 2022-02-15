@@ -2,15 +2,15 @@ import * as ActivePage from "../states/active-page";
 
 let visible = false;
 
-$(".scrollToTopButton").click((event) => {
+$(".scrollToTopButton").click(() => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-$(window).scroll((e) => {
-  let page = ActivePage.get();
+$(window).scroll(() => {
+  const page = ActivePage.get();
   if (page == "test") return;
   if (page == "about" || page == "settings" || page == "account") {
-    let scroll = window.scrollY;
+    const scroll = window.scrollY;
     if (!visible && scroll > 100) {
       $(".scrollToTopButton").removeClass("invisible");
       visible = true;
