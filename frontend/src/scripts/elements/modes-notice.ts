@@ -4,8 +4,9 @@ import * as DB from "../db";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
+import * as MonkeyTypes from "../types/interfaces";
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey) => {
   if (
     [
       "difficulty",
@@ -23,7 +24,7 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   }
 });
 
-export function update() {
+export function update(): void {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -43,7 +44,10 @@ export function update() {
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
+      // remove as any once test state is in ts
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${
+        (TestState.activeChallenge as any).display
+      }</div>`
     );
   }
 
@@ -88,7 +92,7 @@ export function update() {
   ) {
     let speed = "";
     try {
-      speed = ` (${Math.round(PaceCaret.settings.wpm)} wpm)`;
+      speed = ` (${Math.round((PaceCaret.settings as any).wpm)} wpm)`; //remove as any once pace caret is ts
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
@@ -166,7 +170,7 @@ export function update() {
 
   let tagsString = "";
   try {
-    DB.getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
       if (tag.active === true) {
         tagsString += tag.name + ", ";
       }
