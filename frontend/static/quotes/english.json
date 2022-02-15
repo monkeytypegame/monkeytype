@@ -34968,6 +34968,18 @@
       "source": "The Simpsons",
       "length": 130,
       "id": 5909
+    },
+    {
+      "text": "so much depends upon a red wheel barrow glazed with rain water right beside the white chickens.",
+      "source": "William Carlos Williams",
+      "length": 89,
+      "id": 5910
+    },
+    {
+        "text": "Oh! Hush thee, my baby, the night is behind us, and black are the waters that sparkled so green. The moon, o'er the combers, looks downward to find us at rest in the hollows that rustle between. Where billow meets billow, there soft be thy pillow; Ah, weary wee flipperling, curl at thy ease! The storm shall not wake thee, nor shark overtake thee. Asleep in the arms of the slow-swinging seas.",
+      "source": "Rudyard Kipling",
+      "length": 349,
+      "id": 5911
     }
   ]
 }
