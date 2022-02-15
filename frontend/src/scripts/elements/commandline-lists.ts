@@ -20,7 +20,6 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
-import * as MonkeyTypes from "../types/interfaces";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 

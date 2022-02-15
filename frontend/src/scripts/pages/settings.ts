@@ -24,7 +24,6 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
-import * as MonkeyTypes from "../types/interfaces";
 
 type SettingsGroups = {
   [key: string]: SettingsGroup;

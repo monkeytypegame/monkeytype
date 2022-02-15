@@ -4,7 +4,6 @@ import * as DB from "../db";
 import axiosInstance from "../axios-instance";
 import * as Misc from "../misc";
 import Config from "../config";
-import * as MonkeyTypes from "./../types/interfaces";
 
 const currentLeaderboard = "time_15";
 

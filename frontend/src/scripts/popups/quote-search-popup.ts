@@ -11,7 +11,6 @@ import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
 import * as Misc from "../misc";
-import * as MonkeyTypes from "../types/interfaces";
 
 export let selectedId = 1;
 

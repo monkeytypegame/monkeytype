@@ -1,6 +1,5 @@
 import axiosInstance from "../axios-instance";
 import * as Notifications from "./notifications";
-import * as MonkeyTypes from "../types/interfaces";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
