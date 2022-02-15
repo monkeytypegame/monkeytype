@@ -109,7 +109,7 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
     key = ".key-split-space";
   }
 
-  const themecolors = await ThemeColors.get();
+  const themecolors = await ThemeColors.getAll();
 
   try {
     if (correct || Config.blindMode) {
