@@ -79,6 +79,9 @@ body:
     attributes:
       value: |
         ## Issue details
+        ```
+        Please provide a detailed decription of whats happening, and most importantly - solid steps to reproduce the issue. This will help us find it quicker.
+        ```
 
   - type: textarea
     attributes:
