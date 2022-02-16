@@ -537,4 +537,36 @@ declare namespace MonkeyTypes {
   //  type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
 
   //  type ActivePage = `page${Page}` | undefined;
+
+  interface Layouts {
+    [layout: string]: {
+      keymapShowTopRow: boolean;
+      iso?: true;
+      keys: KeysISO | KeysANSI | KeysOrtho;
+    };
+  }
+
+  interface KeysISO {
+    row1: string[]; //13
+    row2: string[]; //12
+    row3: string[]; //12
+    row4: string[]; //11
+    row5: string[]; //1
+  }
+
+  interface KeysANSI {
+    row1: string[]; //13
+    row2: string[]; //13
+    row3: string[]; //11
+    row4: string[]; //10
+    row5: string[]; //1
+  }
+
+  interface KeysOrtho {
+    row1: string[]; //10
+    row2: string[]; //10
+    row3: string[]; //10
+    row4: string[]; //10
+    row5: string[]; //1
+  }
 }
