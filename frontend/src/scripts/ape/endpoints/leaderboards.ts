@@ -2,8 +2,8 @@ const BASE_PATH = "/leaderboards";
 
 export default function getLeaderboardsEndpoints(
   apeClient: Ape.Client
-): Ape.Endpoints.Leaderboards {
-  async function getLeaderboard(
+): Ape.Endpoints["leaderboards"] {
+  async function get(
     language: string,
     mode: MonkeyTypes.Mode,
     mode2: string | number,
@@ -21,7 +21,7 @@ export default function getLeaderboardsEndpoints(
     return await apeClient.get(BASE_PATH, { searchQuery });
   }
 
-  async function getLeaderboardRank(
+  async function getRank(
     language: string,
     mode: MonkeyTypes.Mode,
     mode2: string | number
@@ -35,5 +35,5 @@ export default function getLeaderboardsEndpoints(
     return await apeClient.get(`${BASE_PATH}/rank`, { searchQuery });
   }
 
-  return { getLeaderboard, getLeaderboardRank };
+  return { get, getRank };
 }

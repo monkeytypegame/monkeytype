@@ -27,10 +27,10 @@ class PresetController {
   }
 
   static async removePreset(req, _res) {
-    const { _id } = req.body;
+    const { presetId } = req.body;
     const { uid } = req.ctx.decodedToken;
 
-    await PresetDAO.removePreset(uid, _id);
+    await PresetDAO.removePreset(uid, presetId);
 
     return new MonkeyResponse("Preset deleted");
   }
