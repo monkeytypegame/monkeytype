@@ -17,8 +17,8 @@ router.get(
   asyncHandler(ConfigController.getConfig)
 );
 
-router.post(
-  "/save",
+router.patch(
+  "/",
   RateLimit.configUpdate,
   authenticateRequest(),
   validateRequest({
