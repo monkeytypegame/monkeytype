@@ -2,10 +2,10 @@ const BASE_PATH = "/psas";
 
 export default function getPsasEndpoints(
   apeClient: Ape.Client
-): Ape.Endpoints.Psas {
-  async function getPsas(): Ape.EndpointData {
+): Ape.Endpoints["psas"] {
+  async function get(): Ape.EndpointData {
     return await apeClient.get(BASE_PATH);
   }
 
-  return { getPsas };
+  return { get };
 }
