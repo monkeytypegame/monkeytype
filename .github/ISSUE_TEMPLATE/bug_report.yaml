@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## Welcome
+        # Welcome
         Thanks for taking the time to fill out this bug! If you need real-time help, join us on Discord: discord.gg/monkeytype
         
   
@@ -30,7 +30,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## Basic debugging
+        # Basic debugging
         Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
          
   - type: dropdown
