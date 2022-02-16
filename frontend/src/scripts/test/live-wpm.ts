@@ -2,10 +2,12 @@ import Config from "../config";
 import * as TestActive from "../states/test-active";
 import * as ConfigEvent from "../observables/config-event";
 
-let liveWpmElement = document.querySelector("#liveWpm");
-let miniLiveWpmElement = document.querySelector("#miniTimerAndLiveWpm .wpm");
+const liveWpmElement = document.querySelector("#liveWpm") as Element;
+const miniLiveWpmElement = document.querySelector(
+  "#miniTimerAndLiveWpm .wpm"
+) as Element;
 
-export function update(wpm, raw) {
+export function update(wpm: number, raw: number): void {
   // if (!TestActive.get() || !Config.showLiveWpm) {
   //   hideLiveWpm();
   // } else {
@@ -18,11 +20,11 @@ export function update(wpm, raw) {
   if (Config.alwaysShowCPM) {
     number = Math.round(number * 5);
   }
-  miniLiveWpmElement.innerHTML = number;
-  liveWpmElement.innerHTML = number;
+  miniLiveWpmElement.innerHTML = number.toString();
+  liveWpmElement.innerHTML = number.toString();
 }
 
-export function show() {
+export function show(): void {
   if (!Config.showLiveWpm) return;
   if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
@@ -49,7 +51,7 @@ export function show() {
   }
 }
 
-export function hide() {
+export function hide(): void {
   $("#liveWpm").animate(
     {
       opacity: Config.timerOpacity,

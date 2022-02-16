@@ -2,16 +2,20 @@ import Config from "../config";
 import * as TestActive from "../states/test-active";
 import * as ConfigEvent from "../observables/config-event";
 
-export function update(burst) {
+export function update(burst: number): void {
   let number = burst;
   if (Config.blindMode) {
     number = 0;
   }
-  document.querySelector("#miniTimerAndLiveWpm .burst").innerHTML = number;
-  document.querySelector("#liveBurst").innerHTML = number;
+  (document.querySelector(
+    "#miniTimerAndLiveWpm .burst"
+  ) as Element).innerHTML = number.toString();
+  (document.querySelector(
+    "#liveBurst"
+  ) as Element).innerHTML = number.toString();
 }
 
-export function show() {
+export function show(): void {
   if (!Config.showLiveBurst) return;
   if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
@@ -36,7 +40,7 @@ export function show() {
   }
 }
 
-export function hide() {
+export function hide(): void {
   $("#liveBurst").animate(
     {
       opacity: Config.timerOpacity,
