@@ -5,7 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 
-export function updateActiveButton() {
+export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
   if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
     activeThemeName = ThemeController.randomTheme;
@@ -16,12 +16,18 @@ export function updateActiveButton() {
   );
 }
 
-function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
+function updateColors(
+  colorPicker: JQuery<HTMLElement>,
+  color: string,
+  onlyStyle = false,
+  noThemeUpdate = false
+): void {
   if (onlyStyle) {
-    let colorid = colorPicker.find("input[type=color]").attr("id");
-    if (!noThemeUpdate)
-      document.documentElement.style.setProperty(colorid, color);
-    let pickerButton = colorPicker.find("label");
+    const colorID = colorPicker.find("input[type=color]").attr("id");
+    if (colorID === undefined) console.error("Could not find color ID!");
+    if (!noThemeUpdate && colorID !== undefined)
+      document.documentElement.style.setProperty(colorID, color);
+    const pickerButton = colorPicker.find("label");
     pickerButton.val(color);
     pickerButton.attr("value", color);
     if (pickerButton.attr("for") !== "--bg-color")
@@ -30,7 +36,7 @@ function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
     colorPicker.find("input[type=color]").attr("value", color);
     return;
   }
-  let colorREGEX = [
+  const colorREGEX = [
     {
       rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
       start: "rgb(",
@@ -50,7 +56,7 @@ function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
 
   color = color.replace("°", "");
 
-  for (let regex of colorREGEX) {
+  for (const regex of colorREGEX) {
     if (color.match(regex.rule)) {
       color = regex.start + color + regex.end;
       break;
@@ -58,17 +64,22 @@ function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
   }
 
   $(".colorConverter").css("color", color);
-  color = Misc.convertRGBtoHEX($(".colorConverter").css("color"));
-  if (!color) {
+  const hexColor: string | undefined = Misc.convertRGBtoHEX(
+    $(".colorConverter").css("color")
+  );
+  if (hexColor === undefined) {
     return;
   }
 
-  let colorid = colorPicker.find("input[type=color]").attr("id");
+  color = hexColor;
 
-  if (!noThemeUpdate)
-    document.documentElement.style.setProperty(colorid, color);
+  const colorID = colorPicker.find("input[type=color]").attr("id");
 
-  let pickerButton = colorPicker.find("label");
+  if (colorID === undefined) console.error("Could not find color ID!");
+  if (!noThemeUpdate && colorID !== undefined)
+    document.documentElement.style.setProperty(colorID, color);
+
+  const pickerButton = colorPicker.find("label");
 
   pickerButton.val(color);
   pickerButton.attr("value", color);
@@ -78,11 +89,13 @@ function updateColors(colorPicker, color, onlyStyle, noThemeUpdate = false) {
   colorPicker.find("input[type=color]").attr("value", color);
 }
 
-export async function refreshButtons() {
-  let favThemesEl = $(
+export async function refreshButtons(): Promise<void> {
+  const favThemesEl = $(
     ".pageSettings .section.themes .favThemes.buttons"
   ).empty();
-  let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
+  const themesEl = $(
+    ".pageSettings .section.themes .allThemes.buttons"
+  ).empty();
 
   let activeThemeName = Config.theme;
   if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
@@ -94,8 +107,9 @@ export async function refreshButtons() {
   if (Config.favThemes.length > 0) {
     favThemesEl.css({ paddingBottom: "1rem" });
     themes.forEach((theme) => {
+      // @ts-ignore TODO: Remove this comment once the config.js is converted to ts
       if (Config.favThemes.includes(theme.name)) {
-        let activeTheme = activeThemeName === theme.name ? "active" : "";
+        const activeTheme = activeThemeName === theme.name ? "active" : "";
         favThemesEl.append(
           `<div class="theme button ${activeTheme}" theme='${
             theme.name
@@ -111,8 +125,9 @@ export async function refreshButtons() {
   }
   //then the rest
   themes.forEach((theme) => {
+    // @ts-ignore TODO: Remove this comment once the config.js is converted to ts
     if (!Config.favThemes.includes(theme.name)) {
-      let activeTheme = activeThemeName === theme.name ? "active" : "";
+      const activeTheme = activeThemeName === theme.name ? "active" : "";
       themesEl.append(
         `<div class="theme button ${activeTheme}" theme='${
           theme.name
@@ -126,93 +141,59 @@ export async function refreshButtons() {
   updateActiveButton();
 }
 
-export function setCustomInputs(noThemeUpdate) {
+export function setCustomInputs(noThemeUpdate = false): void {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
-  ).each((n, index) => {
-    let currentColor =
+  ).each((_index, element: HTMLElement) => {
+    const currentColor =
       Config.customThemeColors[
         ThemeController.colorVars.indexOf(
-          $(index).find("input[type=color]").attr("id")
+          $(element).find("input[type=color]").attr("id") as string
         )
       ];
-
-    //todo check if needed
-    // $(index).find("input[type=color]").val(currentColor);
-    // $(index).find("input[type=color]").attr("value", currentColor);
-    // $(index).find("input[type=text]").val(currentColor);
-    updateColors($(index), currentColor, false, noThemeUpdate);
+    updateColors($(element), currentColor, false, noThemeUpdate);
   });
 }
 
-function toggleFavourite(themename) {
-  if (Config.favThemes.includes(themename)) {
-    //already favourite, remove
-    UpdateConfig.setFavThemes(
-      Config.favThemes.filter((t) => {
-        if (t !== themename) {
-          return t;
-        }
-      })
-    );
+function toggleFavourite(themeName: string): void {
+  // @ts-ignore TODO: Remove this comment once config.js is converted to typescript
+  if (Config.favThemes.includes(themeName)) {
+    // already favourite, remove
+    UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
   } else {
-    //add to favourites
-    let newlist = Config.favThemes;
-    newlist.push(themename);
-    UpdateConfig.setFavThemes(newlist);
+    // add to favourites
+    const newList: Array<string> = Config.favThemes;
+    newList.push(themeName);
+    UpdateConfig.setFavThemes(newList);
   }
   UpdateConfig.saveToLocalStorage();
   refreshButtons();
 }
 
-export function updateActiveTab() {
+export function updateActiveTab(): void {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   if (!Config.customTheme) {
     $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
       "active"
     );
-
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   250
-    // );
   } else {
     $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
       "active"
     );
-
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   250
-    // );
   }
 }
 
-$(".pageSettings .section.themes .tabs .button").click((e) => {
+// Add events to the DOM
+
+$(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  let $target = $(e.currentTarget);
+  const $target = $(e.currentTarget);
   $target.addClass("active");
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
     UpdateConfig.setCustomTheme(false);
-    // ThemeController.set(Config.theme);
-    // applyCustomThemeColors();
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   250
-    // );
   } else {
     UpdateConfig.setCustomTheme(true);
-    // ThemeController.set("custom");
-    // applyCustomThemeColors();
-    // Misc.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   250
-    // );
   }
 });
 
@@ -220,16 +201,19 @@ $(document).on(
   "click",
   ".pageSettings .section.themes .theme .favButton",
   (e) => {
-    let theme = $(e.currentTarget).parents(".theme.button").attr("theme");
-    toggleFavourite(theme);
+    const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
+    if (theme !== undefined) toggleFavourite(theme);
+    else
+      console.error(
+        "Could not find the theme attribute attached to the button clicked!"
+      );
   }
 );
 
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
-  let theme = $(e.currentTarget).attr("theme");
+  const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton")) {
     UpdateConfig.setTheme(theme);
-    // ThemePicker.refreshButtons();
     updateActiveButton();
   }
 });
@@ -237,83 +221,45 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("input", (e) => {
-  // UpdateConfig.setCustomTheme(true, true);
-  let $colorVar = $(e.currentTarget).attr("id");
-  let $pickedColor = $(e.currentTarget).val();
+  const $colorVar = $(e.currentTarget).attr("id") as string;
+  const $pickedColor = $(e.currentTarget).val() as string;
 
-  //todo check if needed
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
-  // });
-
-  // $(
-  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
-  // ).on("input", (e) => {
-  //   // UpdateConfig.setCustomTheme(true, true);
-  //   let $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
-  //   let $pickedColor = $(e.currentTarget).val();
-
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
   updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor, true);
 });
 
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("change", (e) => {
-  // UpdateConfig.setCustomTheme(true, true);
-  let $colorVar = $(e.currentTarget).attr("id");
-  let $pickedColor = $(e.currentTarget).val();
+  const $colorVar = $(e.currentTarget).attr("id") as string;
+  const $pickedColor = $(e.currentTarget).val() as string;
 
-  //todo check if needed
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
-  // });
-
-  // $(
-  //   ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
-  // ).on("input", (e) => {
-  //   // UpdateConfig.setCustomTheme(true, true);
-  //   let $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
-  //   let $pickedColor = $(e.currentTarget).val();
-
-  //   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  //   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  //   $(".colorPicker #" + $colorVar).val($pickedColor);
-  //   $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
   updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
 });
 
 $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
   .on("blur", (e) => {
-    let $colorVar = $(e.currentTarget).attr("id");
-    let $pickedColor = $(e.currentTarget).val();
+    const $colorVar = $(e.currentTarget).attr("id") as string;
+    const $pickedColor = $(e.currentTarget).val() as string;
 
     updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
   })
   .on("keypress", function (e) {
-    if (e.which === 13) {
+    if (e.code === "Enter") {
       $(this).attr("disabled", "disabled");
-      let $colorVar = $(e.currentTarget).attr("id");
-      let $pickedColor = $(e.currentTarget).val();
+      const $colorVar = $(e.currentTarget).attr("id") as string;
+      const $pickedColor = $(e.currentTarget).val() as string;
 
       updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
       $(this).removeAttr("disabled");
     }
   });
 
-$(".pageSettings .saveCustomThemeButton").click((e) => {
-  let save = [];
+$(".pageSettings .saveCustomThemeButton").on("click", () => {
+  const save: Array<string> = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
-    (index, element) => {
-      save.push($(element).attr("value"));
+    (_index, element) => {
+      save.push($(element).attr("value") as string);
     }
   );
   UpdateConfig.setCustomThemeColors(save);
@@ -321,7 +267,7 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
   Notifications.add("Custom theme colors saved", 1);
 });
 
-$(".pageSettings #loadCustomColorsFromPreset").click((e) => {
+$(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
   // previewTheme(Config.theme);
   $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
 
@@ -332,31 +278,31 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
   setTimeout(async () => {
     ChartController.updateAllChartColors();
 
-    let themecolors = await ThemeColors.getAll();
+    const themeColors = await ThemeColors.getAll();
 
     ThemeController.colorVars.forEach((colorName) => {
       let color;
       if (colorName === "--bg-color") {
-        color = themecolors.bg;
+        color = themeColors.bg;
       } else if (colorName === "--main-color") {
-        color = themecolors.main;
+        color = themeColors.main;
       } else if (colorName === "--sub-color") {
-        color = themecolors.sub;
+        color = themeColors.sub;
       } else if (colorName === "--caret-color") {
-        color = themecolors.caret;
+        color = themeColors.caret;
       } else if (colorName === "--text-color") {
-        color = themecolors.text;
+        color = themeColors.text;
       } else if (colorName === "--error-color") {
-        color = themecolors.error;
+        color = themeColors.error;
       } else if (colorName === "--error-extra-color") {
-        color = themecolors.errorExtra;
+        color = themeColors.errorExtra;
       } else if (colorName === "--colorful-error-color") {
-        color = themecolors.colorfulError;
+        color = themeColors.colorfulError;
       } else if (colorName === "--colorful-error-extra-color") {
-        color = themecolors.colorfulErrorExtra;
+        color = themeColors.colorfulErrorExtra;
       }
 
-      updateColors($(".colorPicker #" + colorName).parent(), color);
+      updateColors($(".colorPicker #" + colorName).parent(), color as string);
     });
   }, 250);
 });
