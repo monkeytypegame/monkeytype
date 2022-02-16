@@ -8,7 +8,9 @@ body:
     attributes:
       value: |
         # Welcome
+        ```
         Thanks for taking the time to fill out this bug! If you need real-time help, join us on Discord: discord.gg/monkeytype
+        ```
         
   
   - type: checkboxes
@@ -31,7 +33,9 @@ body:
     attributes:
       value: |
         # Basic debugging
+        ```
         Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
+        ```
          
   - type: dropdown
     attributes:
