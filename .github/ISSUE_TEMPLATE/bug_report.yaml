@@ -27,14 +27,14 @@ body:
       
   - type: dropdown
     attributes:
-      label: Does the issue happen in **incognito mode** when logged in?
+      label: Does the issue happen in incognito mode when logged in?
       options: ["Yes", "No"]
     validations:
       required: true
       
   - type: dropdown
     attributes:
-      label: Does the issue happen in **incognito mode** when logged out?
+      label: Does the issue happen in incognito mode when logged out?
       options: ["Yes", "No"]
     validations:
       required: true
