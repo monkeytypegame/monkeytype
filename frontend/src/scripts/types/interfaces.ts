@@ -6,15 +6,17 @@ export declare type CustomLayoutFluidSpaces =
 
 export declare type Difficulty = "normal" | "expert" | "master";
 
-export declare type CustomModes = "custom";
+export declare type CustomMode = "custom";
 
 export declare type Words = number;
 
-export declare type Time = number;
-
 export declare type DefaultWords = 10 | 25 | 50 | 100 | 200;
 
+export declare type Time = number;
+
 export declare type DefaultTime = 15 | 30 | 60 | 120;
+
+export declare type LanguageGroup = { name: string; languages: string[] };
 
 export declare type QuoteModes = "short" | "medium" | "long" | "thicc";
 
@@ -132,7 +134,7 @@ export declare interface Preset {
   config: Config;
 }
 
-export declare type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
+export declare type Mode = "time" | "words" | "quote" | "zen" | CustomMode;
 
 export declare type Mode2<M extends Mode> = keyof PersonalBests[M];
 
@@ -199,7 +201,7 @@ export declare interface Result {
   incorrectChars?: number; // legacy results
   acc: number;
   mode: Mode;
-  mode2: number | "custom" | "zen";
+  mode2: Mode2<Mode>;
   quoteLength: number;
   timestamp: number;
   restartCount: number;

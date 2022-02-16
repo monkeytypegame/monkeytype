@@ -292,9 +292,9 @@ export function update(): void {
         }
 
         if (result.mode == "time") {
-          let timefilter: MonkeyTypes.DefaultTime | "custom" = "custom";
-          if ([15, 30, 60, 120].includes(result.mode2 as number)) {
-            timefilter = result.mode2 as MonkeyTypes.DefaultTime;
+          let timefilter: MonkeyTypes.Mode2<"time"> = "custom";
+          if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
+            timefilter = result.mode2;
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
             if (filterDebug)
@@ -302,9 +302,11 @@ export function update(): void {
             return;
           }
         } else if (result.mode == "words") {
-          let wordfilter: MonkeyTypes.DefaultWords | "custom" = "custom";
-          if ([10, 25, 50, 100, 200].includes(result.mode2 as number)) {
-            wordfilter = result.mode2 as MonkeyTypes.DefaultWords;
+          let wordfilter: MonkeyTypes.Mode2<"words"> = "custom";
+          if (
+            [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
+          ) {
+            wordfilter = result.mode2;
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
             if (filterDebug)
