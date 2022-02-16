@@ -1,5 +1,4 @@
 import ResultController from "../controllers/result";
-
 import resultSchema from "../schemas/result-schema";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";

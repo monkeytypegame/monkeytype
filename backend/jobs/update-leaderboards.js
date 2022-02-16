@@ -1,5 +1,4 @@
 import { CronJob } from "cron";
-
 import BotDAO from "../dao/bot";
 import LeaderboardsDAO from "../dao/leaderboards";
 

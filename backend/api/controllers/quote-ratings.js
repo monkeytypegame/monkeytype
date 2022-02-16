@@ -1,5 +1,4 @@
 import MonkeyError from "../../handlers/error";
-
 import UserDAO from "../../dao/user";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
 

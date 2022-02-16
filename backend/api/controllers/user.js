@@ -1,7 +1,6 @@
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import { isUsernameValid } from "../../handlers/validation";
-
 import MonkeyError from "../../handlers/error";
 import fetch from "node-fetch";
 import Logger from "./../../handlers/logger.js";

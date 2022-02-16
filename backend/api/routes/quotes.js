@@ -1,8 +1,6 @@
 import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
-
 import { Router } from "express";
-
 import NewQuotesController from "../controllers/new-quotes";
 import QuoteRatingsController from "../controllers/quote-ratings";
 import QuotesController from "../controllers/quotes";
@@ -12,7 +10,6 @@ import {
   validateConfiguration,
   validateRequest,
 } from "../../middlewares/api-utils";
-
 import SUPPORTED_QUOTE_LANGUAGES from "../../constants/quote-languages";
 
 const quotesRouter = Router();

@@ -1,5 +1,4 @@
 import path from "path";
-
 import serviceAccount from "./credentials/serviceAccountKey.json";
 import admin, { ServiceAccount } from "firebase-admin";
 import db from "./init/db";

@@ -3,9 +3,7 @@ import UserDAO from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
 import { validateObjectValues } from "../../handlers/validation";
-
 import { roundTo2, stdDev } from "../../handlers/misc";
-
 import node_object_hash from "node-object-hash";
 import Logger from "../../handlers/logger";
 import "dotenv/config";

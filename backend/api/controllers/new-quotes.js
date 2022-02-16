@@ -1,5 +1,4 @@
 import NewQuotesDao from "../../dao/new-quotes";
-
 const { get, add, approve: _approve, refuse: _refuse } = NewQuotesDao;
 import MonkeyError from "../../handlers/error";
 import UsersDAO from "../../dao/user";
