@@ -1,19 +1,17 @@
-// @ts-ignore
 import Config from "../config";
-// @ts-ignore
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Misc from "../misc";
-import * as Types from "../types/interfaces";
+
 import { AxiosError } from "axios";
 
 const CAPTCHA_ID = 1;
 
 type State = {
   previousPopupShowCallback?: () => void;
-  quoteToReport?: Types.Quote;
+  quoteToReport?: MonkeyTypes.Quote;
 };
 
 type Options = {
@@ -160,7 +158,7 @@ $("#quoteReportPopup .submit").on("click", async () => {
 
 $(".pageTest #reportQuoteButton").click(async () => {
   show({
-    quoteId: parseInt(TestWords.randomQuote.id),
+    quoteId: parseInt(TestWords.randomQuote?.id as string),
     noAnim: false,
   });
 });

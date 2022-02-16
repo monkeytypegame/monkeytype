@@ -1,6 +1,4 @@
-// @ts-ignore
 import * as Commandline from "../elements/commandline";
-// @ts-ignore
 import * as CommandlineLists from "../elements/commandline-lists";
 
 $(document.body).on("click", "#supportMeButton", () => {

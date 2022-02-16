@@ -1,15 +1,11 @@
-// @ts-ignore
 import * as AccountController from "../controllers/account-controller";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
 import { AxiosError } from "axios";
-import * as Types from "../types/interfaces";
 
 type Input = {
   placeholder: string;
@@ -133,7 +129,7 @@ class SimplePopup {
 
   exec(): void {
     const vals: string[] = [];
-    $.each($("#simplePopup input"), (index, el) => {
+    $.each($("#simplePopup input"), (_, el) => {
       vals.push($(el).val() as string);
     });
     // @ts-ignore todo remove
@@ -200,7 +196,7 @@ $(document).on("keyup", "#simplePopupWrapper input", (e) => {
   }
 });
 
-list.updateEmail = new SimplePopup(
+list["updateEmail"] = new SimplePopup(
   "updateEmail",
   "text",
   "Update Email",
@@ -280,7 +276,7 @@ list.updateEmail = new SimplePopup(
   }
 );
 
-list.updateName = new SimplePopup(
+list["updateName"] = new SimplePopup(
   "updateName",
   "text",
   "Update Name",
@@ -366,7 +362,7 @@ list.updateName = new SimplePopup(
   }
 );
 
-list.updatePassword = new SimplePopup(
+list["updatePassword"] = new SimplePopup(
   "updatePassword",
   "text",
   "Update Password",
@@ -429,7 +425,7 @@ list.updatePassword = new SimplePopup(
   }
 );
 
-list.addPasswordAuth = new SimplePopup(
+list["addPasswordAuth"] = new SimplePopup(
   "addPasswordAuth",
   "text",
   "Add Password Authentication",
@@ -483,7 +479,7 @@ list.addPasswordAuth = new SimplePopup(
   }
 );
 
-list.deleteAccount = new SimplePopup(
+list["deleteAccount"] = new SimplePopup(
   "deleteAccount",
   "text",
   "Delete Account",
@@ -567,7 +563,7 @@ list.deleteAccount = new SimplePopup(
   }
 );
 
-list.clearTagPb = new SimplePopup(
+list["clearTagPb"] = new SimplePopup(
   "clearTagPb",
   "text",
   "Clear Tag PB",
@@ -583,7 +579,7 @@ list.clearTagPb = new SimplePopup(
         Loader.hide();
         if (res.data.resultCode === 1) {
           const tag = DB.getSnapshot().tags.filter(
-            (t: Types.Tag) => t._id === tagid
+            (t: MonkeyTypes.Tag) => t._id === tagid
           )[0];
           tag.pb = 0;
           $(
@@ -611,7 +607,7 @@ list.clearTagPb = new SimplePopup(
   }
 );
 
-list.applyCustomFont = new SimplePopup(
+list["applyCustomFont"] = new SimplePopup(
   "applyCustomFont",
   "text",
   "Custom font",
@@ -620,14 +616,14 @@ list.applyCustomFont = new SimplePopup(
   "Apply",
   (fontName: string) => {
     if (fontName === "") return;
-    Settings.groups.fontFamily?.setValue(fontName.replace(/\s/g, "_"));
+    Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
   },
   () => {
     //
   }
 );
 
-list.resetPersonalBests = new SimplePopup(
+list["resetPersonalBests"] = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
@@ -685,7 +681,7 @@ list.resetPersonalBests = new SimplePopup(
   }
 );
 
-list.resetSettings = new SimplePopup(
+list["resetSettings"] = new SimplePopup(
   "resetSettings",
   "text",
   "Reset Settings",
@@ -703,7 +699,7 @@ list.resetSettings = new SimplePopup(
   }
 );
 
-list.unlinkDiscord = new SimplePopup(
+list["unlinkDiscord"] = new SimplePopup(
   "unlinkDiscord",
   "text",
   "Unlink Discord",
@@ -738,43 +734,43 @@ list.unlinkDiscord = new SimplePopup(
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   () => {
-    list.unlinkDiscord.show();
+    list["unlinkDiscord"].show();
   }
 );
 
 $("#resetSettingsButton").click(() => {
-  list.resetSettings.show();
+  list["resetSettings"].show();
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
-  list.resetPersonalBests.show();
+  list["resetPersonalBests"].show();
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
-  list.updateName.show();
+  list["updateName"].show();
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
-  list.addPasswordAuth.show();
+  list["addPasswordAuth"].show();
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
-  list.updateEmail.show();
+  list["updateEmail"].show();
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
-  list.updatePassword.show();
+  list["updatePassword"].show();
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
-  list.deleteAccount.show();
+  list["deleteAccount"].show();
 });
 
 $(document).on(
   "click",
   ".pageSettings .section.fontFamily .button.custom",
   () => {
-    list.applyCustomFont.show([]);
+    list["applyCustomFont"].show([]);
   }
 );
 

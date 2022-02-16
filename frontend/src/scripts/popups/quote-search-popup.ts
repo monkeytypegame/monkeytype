@@ -1,17 +1,12 @@
-// @ts-ignore
 import * as TestUI from "../test/test-ui";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
 import * as Misc from "../misc";
-import * as Types from "../types/interfaces";
 
 export let selectedId = 1;
 
@@ -22,7 +17,7 @@ export function setSelectedId(val: number): void {
 async function updateResults(searchText: string): Promise<void> {
   const quotes = await Misc.getQuotes(Config.language);
   const reg = new RegExp(searchText, "i");
-  const found: Types.Quote[] = [];
+  const found: MonkeyTypes.Quote[] = [];
   quotes.quotes.forEach((quote) => {
     const quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
     const test1 = reg.test(quoteText);

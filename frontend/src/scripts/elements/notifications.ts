@@ -230,7 +230,7 @@ export function addBanner(
   level = -1,
   customIcon = "bullhorn",
   sticky = false,
-  closeCallback: () => void
+  closeCallback?: () => void
 ): void {
   // notificationHistory.push(
   new Notification(

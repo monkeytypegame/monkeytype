@@ -2,6 +2,26 @@ import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 
+type Particle = {
+  x: number;
+  y: number;
+  color: string;
+  alpha: number;
+  prev: { x: number; y: number };
+  vel: { x: number; y: number };
+};
+
+type CTX = {
+  particles: Particle[];
+  caret?: any;
+  canvas?: HTMLCanvasElement;
+  context2d?: CanvasRenderingContext2D;
+  rendering: boolean;
+  lastFrame?: number;
+  deltaTime?: number;
+  resetTimeOut?: number;
+};
+
 /**
  * @typedef {{ x: number, y: number }} vec2
  * @typedef {vec2 & { prev: vec2, vel: vec2, alpha: number, color: string }} Particle
@@ -11,7 +31,7 @@ import Config from "../config";
 /**
  * @type {CTX} ctx
  */
-const ctx = {
+const ctx: CTX = {
   particles: [],
   rendering: false,
 };
@@ -24,7 +44,7 @@ const particleBounceMod = 0.3;
 const particleCreateCount = [6, 3];
 const shakeAmount = 10;
 
-function createCanvas() {
+function createCanvas(): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.style.cssText =
     "position:fixed;top:0;left:0;pointer-events:none;z-index:999999";
@@ -47,7 +67,7 @@ function createCanvas() {
  * @param {string} color
  * @returns {Particle}
  */
-function createParticle(x, y, color) {
+function createParticle(x: number, y: number, color: string): Particle {
   return {
     x,
     y,
@@ -64,12 +84,14 @@ function createParticle(x, y, color) {
 /**
  * @param {Particle} particle
  */
-function updateParticle(particle) {
+function updateParticle(particle: Particle): void {
+  if (!ctx.canvas || !ctx.deltaTime) return;
+
   particle.prev.x = particle.x;
   particle.prev.y = particle.y;
   // Update pos
-  particle.x += particle.vel.x * ctx.deltaTime;
-  particle.y += particle.vel.y * ctx.deltaTime;
+  particle.x += particle.vel.x * (ctx.deltaTime as number);
+  particle.y += particle.vel.y * (ctx.deltaTime as number);
 
   if (particle.x > ctx.canvas.width) {
     particle.vel.x *= -particleBounceMod;
@@ -94,13 +116,14 @@ function updateParticle(particle) {
   particle.alpha *= 1 - particleFade * ctx.deltaTime;
 }
 
-export function init() {
+export function init(): void {
   ctx.caret = $("#caret");
   ctx.canvas = createCanvas();
-  ctx.context2d = ctx.canvas.getContext("2d");
+  ctx.context2d = ctx.canvas.getContext("2d") as CanvasRenderingContext2D;
 }
 
-function render() {
+function render(): void {
+  if (!ctx.lastFrame || !ctx.context2d || !ctx.canvas) return;
   ctx.rendering = true;
   const time = Date.now();
   ctx.deltaTime = (time - ctx.lastFrame) / 1000;
@@ -139,7 +162,7 @@ function render() {
   }
 }
 
-export function reset(immediate = false) {
+export function reset(immediate = false): void {
   if (!ctx.resetTimeOut) return;
   delete ctx.resetTimeOut;
 
@@ -157,14 +180,14 @@ export function reset(immediate = false) {
   );
 }
 
-function startRender() {
+function startRender(): void {
   if (!ctx.rendering) {
     ctx.lastFrame = Date.now();
     render();
   }
 }
 
-function randomColor() {
+function randomColor(): string {
   const r = Math.floor(Math.random() * 256).toString(16);
   const g = Math.floor(Math.random() * 256).toString(16);
   const b = Math.floor(Math.random() * 256).toString(16);
@@ -174,7 +197,7 @@ function randomColor() {
 /**
  * @param {boolean} good Good power or not?
  */
-export async function addPower(good = true, extra = false) {
+export async function addPower(good = true, extra = false): Promise<void> {
   if (Config.monkeyPowerLevel === "off" || SlowTimer.get()) return;
 
   // Shake
@@ -189,7 +212,7 @@ export async function addPower(good = true, extra = false) {
       `translate(${shake[0]}px, ${shake[1]}px)`
     );
     if (ctx.resetTimeOut) clearTimeout(ctx.resetTimeOut);
-    ctx.resetTimeOut = setTimeout(reset, 2000);
+    ctx.resetTimeOut = (setTimeout(reset, 2000) as unknown) as number;
   }
 
   // Sparks
@@ -209,7 +232,9 @@ export async function addPower(good = true, extra = false) {
       : good
       ? await ThemeColors.get("caret")
       : await ThemeColors.get("error");
-    ctx.particles.push(createParticle(...coords, color));
+    ctx.particles.push(
+      createParticle(...(coords as [x: number, y: number]), color)
+    );
   }
 
   startRender();

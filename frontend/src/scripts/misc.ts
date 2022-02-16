@@ -1,5 +1,4 @@
 import * as Loader from "./elements/loader";
-import * as Types from "./types/interfaces";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -128,10 +127,10 @@ export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
 }
 
 type QuoteCollection = {
-  quotes: Types.Quote[];
+  quotes: MonkeyTypes.Quote[];
   length?: number;
   language?: string;
-  groups: number[][] | Types.Quote[][];
+  groups: number[][] | MonkeyTypes.Quote[][];
 };
 
 let quotes: QuoteCollection;
@@ -237,10 +236,10 @@ export async function getLanguageList(): Promise<string[]> {
   }
 }
 
-type LanguageGroup = { name: string; languages: string[] };
-
-let languageGroupList: LanguageGroup[] = [];
-export async function getLanguageGroups(): Promise<LanguageGroup[]> {
+let languageGroupList: MonkeyTypes.LanguageGroup[] = [];
+export async function getLanguageGroups(): Promise<
+  MonkeyTypes.LanguageGroup[]
+> {
   if (languageGroupList.length === 0) {
     return $.getJSON("languages/_groups.json", function (data) {
       languageGroupList = data;
@@ -286,8 +285,8 @@ export async function getCurrentLanguage(
 
 export async function findCurrentGroup(
   language: string
-): Promise<LanguageGroup | undefined> {
-  let retgroup: LanguageGroup | undefined;
+): Promise<MonkeyTypes.LanguageGroup | undefined> {
+  let retgroup: MonkeyTypes.LanguageGroup | undefined;
   const groups = await getLanguageGroups();
   groups.forEach((group) => {
     if (retgroup === undefined) {
@@ -388,7 +387,7 @@ export async function getReleasesFromGitHub(): Promise<object> {
       $("#bottom .version .text").text(data[0].name);
       $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
-      data.forEach((release: Types.GithubRelease) => {
+      data.forEach((release: MonkeyTypes.GithubRelease) => {
         if (!release.draft && !release.prerelease) {
           $("#versionHistory .releases").append(`
           <div class="release">
@@ -631,7 +630,7 @@ export function objectToQueryString(obj: object): string {
   const str = [];
   for (const p in obj)
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
-      //@ts-ignore //todo help
+      // @ts-ignore //todo help
       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
   return str.join("&");
@@ -770,7 +769,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: Types.CustomText
+  CustomText: MonkeyTypes.CustomText
 ): boolean {
   if (
     (mode === "words" && words < 1000) ||
@@ -822,7 +821,7 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
 
     return ("0" + parseInt(i).toString(16)).slice(-2);
   }
-  return "#" + hexCode(rgb[1]) + hexCode(rgb[2]) + hexCode(rgb[3]);
+  return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
 }
 
 // @ts-ignore
@@ -900,11 +899,13 @@ export function swapElements(
   } else {
     callback();
   }
+
+  return;
 }
 
 export function getMode2(
-  config: Types.Config,
-  randomQuote: Types.Quote
+  config: MonkeyTypes.Config,
+  randomQuote: MonkeyTypes.Quote
 ): string {
   const mode = config.mode;
   let mode2 = "";

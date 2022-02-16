@@ -1,13 +1,11 @@
-// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
-// @ts-ignore
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import axiosInstance from "../axios-instance";
 import * as ResultTagsPopup from "./result-tags-popup";
-import * as Types from "../types/interfaces";
+
 import { AxiosError } from "axios";
 
 export function show(action: string, id?: string, name?: string): void {
@@ -121,7 +119,7 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+      DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
         if (tag._id === tagid) {
           tag.name = inputVal;
         }
@@ -147,7 +145,7 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot().tags.forEach((tag: Types.Tag, index: number) => {
+      DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag, index: number) => {
         if (tag._id === tagid) {
           DB.getSnapshot().tags.splice(index, 1);
         }
@@ -173,7 +171,7 @@ async function apply(): Promise<void> {
       Notifications.add(response.data.message);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+      DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
         if (tag._id === tagid) {
           tag.personalBests = {};
         }

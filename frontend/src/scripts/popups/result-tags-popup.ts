@@ -1,9 +1,7 @@
-//@ts-ignore
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
-import * as Types from "../types/interfaces";
 
 function show(): void {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
@@ -34,7 +32,7 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags.forEach((tag: Types.Tag) => {
+  DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
     );
@@ -43,7 +41,7 @@ export function updateButtons(): void {
 
 function updateActiveButtons(active: string[]): void {
   if (active === []) return;
-  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
+  $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {
       $(obj).addClass("active");
@@ -79,7 +77,7 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
   // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 
   const newtags: string[] = [];
-  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
+  $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid = $(obj).attr("tagid") ?? "";
     if ($(obj).hasClass("active")) {
       newtags.push(tagid);
@@ -99,7 +97,7 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Tags updated.", 1, 2);
-        DB.getSnapshot().results.forEach((result: Types.Result) => {
+        DB.getSnapshot().results.forEach((result: MonkeyTypes.Result) => {
           if (result._id === resultid) {
             result.tags = newtags;
           }
@@ -109,7 +107,7 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
 
         if (newtags.length > 0) {
           newtags.forEach((tag) => {
-            DB.getSnapshot().tags.forEach((snaptag: Types.Tag) => {
+            DB.getSnapshot().tags.forEach((snaptag: MonkeyTypes.Tag) => {
               if (tag === snaptag._id) {
                 tagNames += snaptag.name + ", ";
               }

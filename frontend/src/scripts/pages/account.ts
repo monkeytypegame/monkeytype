@@ -1,31 +1,18 @@
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as ResultFilters from "../account/result-filters";
-// @ts-ignore
 import * as ThemeColors from "../elements/theme-colors";
-// @ts-ignore
 import * as ChartController from "../controllers/chart-controller";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
-// @ts-ignore
 import * as MiniResultChart from "../account/mini-result-chart";
-// @ts-ignore
 import * as AllTimeStats from "../account/all-time-stats";
-// @ts-ignore
 import * as PbTables from "../account/pb-tables";
-// @ts-ignore
 import * as LoadingPage from "./loading";
-// @ts-ignore
 import * as Focus from "../test/focus";
-// @ts-ignore
 import * as SignOutButton from "../account/sign-out-button";
-// @ts-ignore
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
-import * as Types from "../types/interfaces";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -36,7 +23,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: Types.Result[] = [];
+let filteredResults: MonkeyTypes.Result[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -115,7 +102,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags.forEach((snaptag: Types.Tag) => {
+        DB.getSnapshot().tags.forEach((snaptag: MonkeyTypes.Tag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
@@ -271,7 +258,7 @@ export function update(): void {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results.forEach((result: Types.Result) => {
+    DB.getSnapshot().results.forEach((result: MonkeyTypes.Result) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -293,7 +280,7 @@ export function update(): void {
 
         if (result.mode == "time") {
           let timefilter = "custom";
-          if ([15, 30, 60, 120].includes(result.mode2 as number)) {
+          if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
             timefilter = result.mode2.toString();
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
@@ -303,7 +290,9 @@ export function update(): void {
           }
         } else if (result.mode == "words") {
           let wordfilter = "custom";
-          if ([10, 25, 50, 100, 200].includes(result.mode2 as number)) {
+          if (
+            [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
+          ) {
             wordfilter = result.mode2.toString();
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
@@ -396,7 +385,7 @@ export function update(): void {
         } else {
           //tags exist
           const validTags: string[] = DB.getSnapshot().tags.map(
-            (t: Types.Tag) => t._id
+            (t: MonkeyTypes.Tag) => t._id
           );
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore

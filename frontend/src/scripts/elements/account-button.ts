@@ -1,6 +1,6 @@
 import * as Misc from "../misc";
 
-export function loading(truefalse) {
+export function loading(truefalse: boolean): void {
   if (truefalse) {
     $("#top #menu .account .icon").html(
       '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
@@ -12,7 +12,7 @@ export function loading(truefalse) {
   }
 }
 
-export function update() {
+export function update(): void {
   if (firebase.auth().currentUser != null) {
     Misc.swapElements(
       $("#menu .icon-button.login"),

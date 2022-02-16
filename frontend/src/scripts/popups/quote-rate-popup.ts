@@ -1,12 +1,9 @@
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import axiosInstance from "../axios-instance";
 import * as Notifications from "../elements/notifications";
 import { AxiosError } from "axios";
-import * as Types from "../types/interfaces";
 
 let rating = 0;
 
@@ -25,7 +22,7 @@ type QuoteRatings = {
 };
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
-let currentQuote: Types.Quote | null = null;
+let currentQuote: MonkeyTypes.Quote | null = null;
 
 function reset(): void {
   $(`#quoteRatePopup .quote .text`).text("-");
@@ -37,7 +34,7 @@ function reset(): void {
 }
 
 export async function getQuoteStats(
-  quote?: Types.Quote
+  quote?: MonkeyTypes.Quote
 ): Promise<QuoteStats | undefined> {
   if (quote) currentQuote = quote;
   let response;
@@ -67,6 +64,8 @@ export async function getQuoteStats(
     }
     return quoteStats as QuoteStats;
   }
+
+  return;
 }
 
 function refreshStars(force?: number): void {
@@ -104,7 +103,7 @@ function updateData(): void {
   updateRatingStats();
 }
 
-export function show(quote: Types.Quote, shouldReset = true): void {
+export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
   if ($("#quoteRatePopupWrapper").hasClass("hidden")) {
     if (shouldReset) {
       reset();
@@ -243,5 +242,6 @@ $("#quoteRatePopup .submitButton").click(() => {
 });
 
 $(".pageTest #rateQuoteButton").click(async () => {
-  show(TestWords.randomQuote);
+  // TODO remove this when done with TestWords
+  show((TestWords.randomQuote as unknown) as MonkeyTypes.Quote);
 });
