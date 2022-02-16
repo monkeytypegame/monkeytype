@@ -9,7 +9,7 @@ import * as Misc from "../misc";
 //   $("#top .config").css("opacity", 0).addClass("hidden");
 // }
 
-export function show() {
+export function show(): void {
   $("#top .config")
     .stop(true, true)
     .removeClass("hidden")
@@ -22,7 +22,7 @@ export function show() {
     );
 }
 
-export function hide() {
+export function hide(): void {
   $("#top .config")
     .stop(true, true)
     .css("opacity", 1)
@@ -37,7 +37,10 @@ export function hide() {
     );
 }
 
-export function update(previous, current) {
+export function update(
+  previous: MonkeyTypes.Mode,
+  current: MonkeyTypes.Mode
+): void {
   if (previous == current) return;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + current + "']").addClass(
@@ -93,7 +96,7 @@ export function update(previous, current) {
     // $("#top .config .quoteLength").addClass("hidden");
   }
 
-  let submenu = {
+  const submenu = {
     time: "time",
     words: "wordCount",
     custom: "customText",
@@ -101,7 +104,7 @@ export function update(previous, current) {
     zen: "",
   };
 
-  let animTime = 250;
+  const animTime = 250;
 
   if (current == "zen") {
     $(`#top .config .${submenu[previous]}`).animate(
