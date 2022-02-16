@@ -75,9 +75,8 @@ export function updateActiveElement(backspace) {
     active.classList.remove("active");
   }
   try {
-    let activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ];
+    let activeWord =
+      document.querySelectorAll("#words .word")[currentWordElementIndex];
     activeWord.classList.add("active");
     activeWord.classList.remove("error");
     activeWordTop = document.querySelector("#words .active").offsetTop;
@@ -242,12 +241,10 @@ export async function screenshot() {
   let src = $("#middle");
   var sourceX = src.position().left; /*X position from div#target*/
   var sourceY = src.position().top; /*Y position from div#target*/
-  var sourceWidth = src.outerWidth(
-    true
-  ); /*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.outerHeight(
-    true
-  ); /*clientHeight/offsetHeight from div#target*/
+  var sourceWidth =
+    src.outerWidth(true); /*clientWidth/offsetWidth from div#target*/
+  var sourceHeight =
+    src.outerHeight(true); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");

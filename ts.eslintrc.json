@@ -28,16 +28,31 @@
   "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
-    "indent": ["off"], //handled by prettier
+    "eqeqeq": 1,
+    "indent": ["off"],
+    //handled by prettier
     "linebreak-style": ["error", "unix"],
     "quotes": [
       "error",
       "double",
-      { "allowTemplateLiterals": true, "avoidEscape": true }
+      {
+        "allowTemplateLiterals": true,
+        "avoidEscape": true
+      }
     ],
     "semi": ["error", "always"],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
-    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^(_|e|event)"
+      }
+    ],
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
     "no-var": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
@@ -47,6 +62,7 @@
         "extensions": [
           "",
           ".js",
+          ".d.ts",
           ".ts",
           ".tsx",
           ".es.ts",

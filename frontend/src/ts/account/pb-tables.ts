@@ -1,9 +1,9 @@
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../misc";
-import { PersonalBest, PersonalBests } from "../declarations/interfaces";
+import { PersonalBest, PersonalBests } from ".../../../Typings/interfaces";
 
-export function update(): void {
+export function update() {
   $(".pageAccount .timePbTable tbody").html(`
   <tr>
     <td>15</td>

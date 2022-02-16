@@ -43,7 +43,7 @@ import {
   Snapshot,
   Stats,
   TimerStats,
-} from "./declarations/interfaces";
+} from "../../../Typings/interfaces";
 
 //these exports are just for debugging in the browser
 

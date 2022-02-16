@@ -2431,12 +2431,6 @@ export let defaultCommands = {
       display: "Punctuation...",
       subgroup: commandsPunctuation,
       icon: "!?",
-      shift: {
-        display: "Toggle punctuation",
-        exec: () => {
-          UpdateConfig.togglePunctuation();
-        },
-      },
     },
     {
       id: "changeMode",

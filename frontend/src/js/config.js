@@ -341,7 +341,8 @@ export function setBlindMode(blind, nosave) {
 }
 
 function updateChartAccuracy() {
-  ChartController.accountHistory.data.datasets[1].hidden = !config.chartAccuracy;
+  ChartController.accountHistory.data.datasets[1].hidden =
+    !config.chartAccuracy;
   ChartController.accountHistory.options.scales.yAxes[1].display =
     config.chartAccuracy;
   ChartController.accountHistory.update();

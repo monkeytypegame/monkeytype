@@ -838,8 +838,10 @@ export function update() {
         "Average Wpm";
     }
 
-    ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
-    ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
+    ChartController.accountActivity.data.datasets[0].data =
+      activityChartData_time;
+    ChartController.accountActivity.data.datasets[1].data =
+      activityChartData_avgWpm;
 
     if (Config.alwaysShowCPM) {
       ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
@@ -861,9 +863,8 @@ export function update() {
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
     if (!Config.startGraphsAtZero) {
-      ChartController.accountHistory.options.scales.yAxes[0].ticks.min = Math.floor(
-        minWpmChartVal
-      );
+      ChartController.accountHistory.options.scales.yAxes[0].ticks.min =
+        Math.floor(minWpmChartVal);
     } else {
       ChartController.accountHistory.options.scales.yAxes[0].ticks.min = 0;
     }

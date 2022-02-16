@@ -1,5 +1,13 @@
 {
   "tabWidth": 2,
   "useTabs": false,
-  "htmlWhitespaceSensitivity": "ignore"
+  "htmlWhitespaceSensitivity": "ignore",
+  "overrides": [
+    {
+      "files": ["frontend/src/ts/**.*.ts"],
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ]
 }

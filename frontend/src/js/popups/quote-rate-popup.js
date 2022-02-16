@@ -89,9 +89,8 @@ export function show(quote, shouldReset = true) {
 
     currentQuote = quote;
     rating = 0;
-    let alreadyRated = DB.getSnapshot().quoteRatings?.[currentQuote.language]?.[
-      currentQuote.id
-    ];
+    let alreadyRated =
+      DB.getSnapshot().quoteRatings?.[currentQuote.language]?.[currentQuote.id];
     if (alreadyRated) {
       rating = alreadyRated;
     }

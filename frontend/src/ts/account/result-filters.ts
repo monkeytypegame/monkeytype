@@ -6,15 +6,17 @@ import * as Account from "../pages/account";
 import {
   Difficulty,
   Filter,
-  FunboxJSON,
   Group,
-  Language,
   Mode,
   ResultFilters,
   Tag,
   TimeModes,
   WordsModes,
-} from "../declarations/interfaces";
+} from ".../../../Typings/interfaces";
+
+import { Language } from ".../../../Typings/Language";
+
+import { FunboxJSON } from ".../../../Typings/Funbox";
 
 const defaultResultFilters: ResultFilters = {
   difficulty: {
@@ -85,7 +87,7 @@ function load() {
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
     if (
-      newResultFilters != undefined &&
+      newResultFilters !== undefined &&
       newResultFilters !== "" &&
       Object.keys(JSON.parse(newResultFilters)).length >=
         Object.keys(defaultResultFilters).length
@@ -137,18 +139,18 @@ export function getFilter<G extends Group>(group: G, filter: Filter<G>) {
 //   filters[group][filter] = !filters[group][filter];
 // }
 
-export function loadTags(tags: Tag[]): void {
+export function loadTags(tags: Tag[]) {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
 }
 
-export function reset(): void {
+export function reset() {
   filters = defaultResultFilters;
   save();
 }
 
-export function updateActive(): void {
+export function updateActive() {
   const aboveChartDisplay = {} as ResultFilters;
   (Object.keys(getFilters()) as Group[]).forEach((group) => {
     // eslint-disable-next-line
@@ -191,34 +193,34 @@ export function updateActive(): void {
   function addText(group: Group): string {
     let ret = "";
     ret += "<div class='group'>";
-    if (group == "difficulty") {
+    if (group === "difficulty") {
       ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-    } else if (group == "mode") {
+    } else if (group === "mode") {
       ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-    } else if (group == "punctuation") {
+    } else if (group === "punctuation") {
       ret += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
       width: 1.25rem;
       text-align: center;
       display: inline-block;
       letter-spacing: -.1rem;">!?</span>`;
-    } else if (group == "numbers") {
+    } else if (group === "numbers") {
       ret += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
         width: 1.25rem;
         text-align: center;
         margin-right: .1rem;
         display: inline-block;
         letter-spacing: -.1rem;">15</span>`;
-    } else if (group == "words") {
+    } else if (group === "words") {
       ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-    } else if (group == "time") {
+    } else if (group === "time") {
       ret += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-    } else if (group == "date") {
+    } else if (group === "date") {
       ret += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-    } else if (group == "tags") {
+    } else if (group === "tags") {
       ret += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-    } else if (group == "language") {
+    } else if (group === "language") {
       ret += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-    } else if (group == "funbox") {
+    } else if (group === "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
     if (aboveChartDisplay[group].all) {
@@ -227,14 +229,14 @@ export function updateActive(): void {
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
           ?.map((id) => {
-            if (id == "none") return id;
+            if (id === "none") return id;
             // TODO delete Tag when db gets done
             const name = DB.getSnapshot().tags.filter(
-              (t: Tag) => t._id == id
+              (t: Tag) => t._id === id
             )[0];
             if (name !== undefined) {
               // TODO delete Tag when db gets done
-              return DB.getSnapshot().tags.filter((t: Tag) => t._id == id)[0]
+              return DB.getSnapshot().tags.filter((t: Tag) => t._id === id)[0]
                 .name;
             }
           })
@@ -366,9 +368,9 @@ $(
   } else if ($(e.target).hasClass("noFilters")) {
     (Object.keys(getFilters()) as Group[]).forEach((group) => {
       if (group !== "date") {
-        (Object.keys(
-          getGroup(group)
-        ) as (keyof ResultFilters[typeof group])[]).forEach((filter) => {
+        (
+          Object.keys(getGroup(group)) as (keyof ResultFilters[typeof group])[]
+        ).forEach((filter) => {
           // eslint-disable-next-line
           // @ts-ignore TODO fix this stuff
           filters[group][filter] = false;
@@ -377,9 +379,9 @@ $(
     });
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      (Object.keys(
-        getGroup(group)
-      ) as (keyof ResultFilters[typeof group])[]).forEach((filter) => {
+      (
+        Object.keys(getGroup(group)) as (keyof ResultFilters[typeof group])[]
+      ).forEach((filter) => {
         // eslint-disable-next-line
         // @ts-ignore TODO fix this stuff
         filters[group][filter] = false;
@@ -398,9 +400,9 @@ $(
 
 $(".pageAccount .topFilters .button.allFilters").click(() => {
   (Object.keys(getFilters()) as Group[]).forEach((group) => {
-    (Object.keys(
-      getGroup(group)
-    ) as (keyof ResultFilters[typeof group])[]).forEach((filter) => {
+    (
+      Object.keys(getGroup(group)) as (keyof ResultFilters[typeof group])[]
+    ).forEach((filter) => {
       if (group === "date") {
         // eslint-disable-next-line
         // @ts-ignore TODO fix this stuff
@@ -419,9 +421,9 @@ $(".pageAccount .topFilters .button.allFilters").click(() => {
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   (Object.keys(getFilters()) as Group[]).forEach((group) => {
-    (Object.keys(
-      getGroup(group)
-    ) as (keyof ResultFilters[typeof group])[]).forEach((filter) => {
+    (
+      Object.keys(getGroup(group)) as (keyof ResultFilters[typeof group])[]
+    ).forEach((filter) => {
       // eslint-disable-next-line
       // @ts-ignore TODO fix this stuff
       filters[group][filter] = false;
@@ -439,9 +441,11 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
     // TODO delete WordsModes when Config is done
     filters["words"][Config.words as WordsModes] = true;
   } else if (Config.mode === "quote") {
-    (Object.keys(
-      getGroup("quoteLength")
-    ) as (keyof ResultFilters["quoteLength"])[]).forEach((ql) => {
+    (
+      Object.keys(
+        getGroup("quoteLength")
+      ) as (keyof ResultFilters["quoteLength"])[]
+    ).forEach((ql) => {
       // eslint-disable-next-line
       // @ts-ignore TODO fix this stuff
       filters["quoteLength"][ql] = true;

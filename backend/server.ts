@@ -82,7 +82,7 @@ app.listen(PORT, async () => {
 
   admin.initializeApp({
     credential: admin.credential.cert(
-      (serviceAccount as unknown) as ServiceAccount
+      serviceAccount as unknown as ServiceAccount
     ),
   });
 

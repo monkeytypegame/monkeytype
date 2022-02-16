@@ -30,20 +30,16 @@ export function updateData(data) {
 
   let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
   let minChartVal = Math.min(...[Math.min(...data.wpm), Math.min(...data.raw)]);
-  ChartController.miniResult.options.scales.yAxes[0].ticks.max = Math.round(
-    maxChartVal
-  );
-  ChartController.miniResult.options.scales.yAxes[1].ticks.max = Math.round(
-    maxChartVal
-  );
+  ChartController.miniResult.options.scales.yAxes[0].ticks.max =
+    Math.round(maxChartVal);
+  ChartController.miniResult.options.scales.yAxes[1].ticks.max =
+    Math.round(maxChartVal);
 
   if (!Config.startGraphsAtZero) {
-    ChartController.miniResult.options.scales.yAxes[0].ticks.min = Math.round(
-      minChartVal
-    );
-    ChartController.miniResult.options.scales.yAxes[1].ticks.min = Math.round(
-      minChartVal
-    );
+    ChartController.miniResult.options.scales.yAxes[0].ticks.min =
+      Math.round(minChartVal);
+    ChartController.miniResult.options.scales.yAxes[1].ticks.min =
+      Math.round(minChartVal);
   } else {
     ChartController.miniResult.options.scales.yAxes[0].ticks.min = 0;
     ChartController.miniResult.options.scales.yAxes[1].ticks.min = 0;

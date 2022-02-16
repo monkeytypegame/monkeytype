@@ -11,7 +11,7 @@ async function main() {
   await db.connect();
   await admin.initializeApp({
     credential: admin.credential.cert(
-      (serviceAccount as unknown) as ServiceAccount
+      serviceAccount as unknown as ServiceAccount
     ),
   });
   console.log("Database Connected");
