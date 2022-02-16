@@ -3,6 +3,16 @@ description: Create a report to help us improve
 title: "<title>"
 labels: [bug]
 body:
+  
+
+- type: markdown
+  value: "## Welcome!"
+  
+- type: markdown
+  attributes:
+    value: |
+      Thanks for taking the time to fill out this bug! If you need real-time help, join us on Discord: discord.gg/monkeytype
+
   - type: checkboxes
     attributes:
       label: Did you clear cache before opening an issue?
@@ -10,7 +20,7 @@ body:
       options:
         - label: I have cleared my cache
           required: true
-          
+            
   - type: checkboxes
     attributes:
       label: Is there an existing issue for this?
@@ -18,6 +28,12 @@ body:
       options:
         - label: I have searched the existing issues
           required: true
+          
+  - type: markdown
+    attributes:
+    value: |
+      Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
+        
           
   - type: dropdown
     attributes:
