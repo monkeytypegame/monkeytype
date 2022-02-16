@@ -4,7 +4,7 @@ const { MonkeyResponse } = require("../../handlers/monkey-response");
 class PsaController {
   static async get(_req, _res) {
     let data = await PsaDAO.get();
-    return new MonkeyResponse("PSA retrieved", data);
+    return new MonkeyResponse("PSAs retrieved", data);
   }
 }
 
