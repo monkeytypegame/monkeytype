@@ -23,6 +23,8 @@ body:
   - type: markdown
     attributes:
       value: |
+        --
+        ## Basic debugging
         Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
         
           
