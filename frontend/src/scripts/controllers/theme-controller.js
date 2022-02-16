@@ -126,7 +126,7 @@ export function apply(themeName, isPreview = false) {
       console.log("Analytics unavailable");
     }
     if (!isPreview) {
-      ThemeColors.get().then((colors) => {
+      ThemeColors.getAll().then((colors) => {
         $(".current-theme .text").text(themeName.replace(/_/g, " "));
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();

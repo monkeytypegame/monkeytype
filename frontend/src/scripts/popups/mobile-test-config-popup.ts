@@ -1,10 +1,6 @@
-// @ts-ignore
 import * as TestLogic from "../test/test-logic";
-// @ts-ignore
 import Config from "../config";
-// @ts-ignore
 import * as UpdateConfig from "../config";
-// @ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount-popup";
 import * as CustomTestDurationPopup from "./custom-test-duration-popup";

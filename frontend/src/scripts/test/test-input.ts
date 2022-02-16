@@ -1,52 +1,77 @@
 import * as TestWords from "./test-words";
 
+type Keypress = {
+  count: number;
+  errors: number;
+  words: string[];
+  afk: boolean;
+};
+
+type KeypressTimings = {
+  spacing: {
+    current: number;
+    array: number[] | "toolong";
+  };
+  duration: {
+    current: number;
+    array: number[] | "toolong";
+  };
+};
+
 class Input {
+  current: string;
+  history: string[];
+  historyLength: number;
+  length: number;
   constructor() {
     this.current = "";
     this.history = [];
+    this.historyLength = 0;
     this.length = 0;
   }
 
-  reset() {
+  reset(): void {
     this.current = "";
     this.history = [];
     this.length = 0;
   }
 
-  resetHistory() {
+  resetHistory(): void {
     this.history = [];
     this.length = 0;
   }
 
-  setCurrent(val) {
+  setCurrent(val: string): void {
     this.current = val;
     this.length = this.current.length;
   }
 
-  appendCurrent(val) {
+  appendCurrent(val: string): void {
     this.current += val;
     this.length = this.current.length;
   }
 
-  resetCurrent() {
+  resetCurrent(): void {
     this.current = "";
   }
 
-  getCurrent() {
+  getCurrent(): string {
     return this.current;
   }
 
-  pushHistory() {
+  pushHistory(): void {
     this.history.push(this.current);
     this.historyLength = this.history.length;
     this.resetCurrent();
   }
 
-  popHistory() {
-    return this.history.pop();
+  popHistory(): string {
+    const ret = this.history.pop() ?? "";
+    this.historyLength = this.history.length;
+    return ret;
   }
 
-  getHistory(i) {
+  getHistory(i: number): string | string[] {
     if (i === undefined) {
       return this.history;
     } else {
@@ -54,69 +79,73 @@ class Input {
     }
   }
 
-  getHistoryLast() {
+  getHistoryLast(): string {
     return this.history[this.history.length - 1];
   }
 }
 
 class Corrected {
+  current: string;
+  history: string[];
   constructor() {
     this.current = "";
     this.history = [];
   }
-  setCurrent(val) {
+  setCurrent(val: string): void {
     this.current = val;
   }
 
-  appendCurrent(val) {
+  appendCurrent(val: string): void {
     this.current += val;
   }
 
-  resetCurrent() {
+  resetCurrent(): void {
     this.current = "";
   }
 
-  resetHistory() {
+  resetHistory(): void {
     this.history = [];
   }
 
-  reset() {
+  reset(): void {
     this.resetCurrent();
     this.resetHistory();
   }
 
-  getHistory(i) {
+  getHistory(i: number): string {
     return this.history[i];
   }
 
-  popHistory() {
-    return this.history.pop();
+  popHistory(): string {
+    return this.history.pop() ?? "";
   }
 
-  pushHistory() {
+  pushHistory(): void {
     this.history.push(this.current);
     this.current = "";
   }
 }
 
-export let input = new Input();
-export let corrected = new Corrected();
+export const input = new Input();
+export const corrected = new Corrected();
 
-export let keypressPerSecond = [];
-export let currentKeypress = {
+export let keypressPerSecond: Keypress[] = [];
+export let currentKeypress: Keypress = {
   count: 0,
   errors: 0,
   words: [],
   afk: true,
 };
-export let lastKeypress;
+export let lastKeypress: number;
 export let currentBurstStart = 0;
-export let missedWords = {};
+export let missedWords: {
+  [word: string]: number;
+} = {};
 export let accuracy = {
   correct: 0,
   incorrect: 0,
 };
-export let keypressTimings = {
+export let keypressTimings: KeypressTimings = {
   spacing: {
     current: -1,
     array: [],
@@ -126,45 +155,45 @@ export let keypressTimings = {
     array: [],
   },
 };
-export let wpmHistory = [];
-export let rawHistory = [];
-export let burstHistory = [];
+export let wpmHistory: number[] = [];
+export let rawHistory: number[] = [];
+export let burstHistory: number[] = [];
 export let bailout = false;
-export function setBailout(tf) {
+export function setBailout(tf: boolean): void {
   bailout = tf;
 }
 
 export let spacingDebug = false;
-export function enableSpacingDebug() {
+export function enableSpacingDebug(): void {
   spacingDebug = true;
   console.clear();
 }
 
-export function updateLastKeypress() {
+export function updateLastKeypress(): void {
   lastKeypress = performance.now();
 }
 
-export function incrementKeypressCount() {
+export function incrementKeypressCount(): void {
   currentKeypress.count++;
 }
 
-export function setKeypressNotAfk() {
+export function setKeypressNotAfk(): void {
   currentKeypress.afk = false;
 }
 
-export function incrementKeypressErrors() {
+export function incrementKeypressErrors(): void {
   currentKeypress.errors++;
 }
 
-export function pushKeypressWord(word) {
+export function pushKeypressWord(word: string): void {
   currentKeypress.words.push(word);
 }
 
-export function setBurstStart(time) {
+export function setBurstStart(time: number): void {
   currentBurstStart = time;
 }
 
-export function pushKeypressesToHistory() {
+export function pushKeypressesToHistory(): void {
   keypressPerSecond.push(currentKeypress);
   currentKeypress = {
     count: 0,
@@ -174,7 +203,7 @@ export function pushKeypressesToHistory() {
   };
 }
 
-export function incrementAccuracy(correctincorrect) {
+export function incrementAccuracy(correctincorrect: boolean): void {
   if (correctincorrect) {
     accuracy.correct++;
   } else {
@@ -182,30 +211,30 @@ export function incrementAccuracy(correctincorrect) {
   }
 }
 
-export function setKeypressTimingsTooLong() {
+export function setKeypressTimingsTooLong(): void {
   keypressTimings.spacing.array = "toolong";
   keypressTimings.duration.array = "toolong";
 }
 
-export function pushKeypressDuration(val) {
-  keypressTimings.duration.array.push(val);
+export function pushKeypressDuration(val: number): void {
+  (keypressTimings.duration.array as number[]).push(val);
 }
 
-export function setKeypressDuration(val) {
+export function setKeypressDuration(val: number): void {
   keypressTimings.duration.current = val;
 }
 
-function pushKeypressSpacing(val) {
-  keypressTimings.spacing.array.push(val);
+function pushKeypressSpacing(val: number): void {
+  (keypressTimings.spacing.array as number[]).push(val);
 }
 
-function setKeypressSpacing(val) {
+function setKeypressSpacing(val: number): void {
   keypressTimings.spacing.current = val;
 }
 
-export function recordKeypressSpacing() {
-  let now = performance.now();
-  let diff = Math.abs(keypressTimings.spacing.current - now);
+export function recordKeypressSpacing(): void {
+  const now = performance.now();
+  const diff = Math.abs(keypressTimings.spacing.current - now);
   if (keypressTimings.spacing.current !== -1) {
     pushKeypressSpacing(diff);
     if (spacingDebug)
@@ -235,7 +264,7 @@ export function recordKeypressSpacing() {
     );
 }
 
-export function resetKeypressTimings() {
+export function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
       current: performance.now(),
@@ -249,7 +278,7 @@ export function resetKeypressTimings() {
   if (spacingDebug) console.clear();
 }
 
-export function pushMissedWord(word) {
+export function pushMissedWord(word: string): void {
   if (!Object.keys(missedWords).includes(word)) {
     missedWords[word] = 1;
   } else {
@@ -257,15 +286,15 @@ export function pushMissedWord(word) {
   }
 }
 
-export function pushToWpmHistory(word) {
-  wpmHistory.push(word);
+export function pushToWpmHistory(wpm: number): void {
+  wpmHistory.push(wpm);
 }
 
-export function pushToRawHistory(word) {
-  rawHistory.push(word);
+export function pushToRawHistory(raw: number): void {
+  rawHistory.push(raw);
 }
 
-export function pushBurstToHistory(speed) {
+export function pushBurstToHistory(speed: number): void {
   if (burstHistory[TestWords.words.currentIndex] === undefined) {
     burstHistory.push(speed);
   } else {
@@ -274,7 +303,7 @@ export function pushBurstToHistory(speed) {
   }
 }
 
-export function restart() {
+export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
   burstHistory = [];

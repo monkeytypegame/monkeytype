@@ -1,5 +1,3 @@
-import * as MonkeyTypes from "../types/interfaces";
-
 class Words {
   public list: string[];
   public length: number;
@@ -59,7 +57,7 @@ class Words {
 }
 export const words = new Words();
 export let hasTab = false;
-export let randomQuote = (null as unknown) as MonkeyTypes.Quote;
+export let randomQuote = null as unknown as MonkeyTypes.Quote;
 
 export function setRandomQuote(rq: MonkeyTypes.Quote): void {
   randomQuote = rq;

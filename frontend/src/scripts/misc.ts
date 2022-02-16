@@ -1,5 +1,4 @@
 import * as Loader from "./elements/loader";
-import * as MonkeyTypes from "./types/interfaces";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -634,7 +633,7 @@ export function objectToQueryString(obj: object): string {
   const str = [];
   for (const p in obj)
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
-      //@ts-ignore //todo help
+      // @ts-ignore //todo help
       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
   return str.join("&");

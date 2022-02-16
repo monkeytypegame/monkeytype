@@ -1,15 +1,11 @@
-// @ts-ignore
 import * as AccountController from "../controllers/account-controller";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
 import { AxiosError } from "axios";
-import * as MonkeyTypes from "../types/interfaces";
 
 type Input = {
   placeholder: string;

@@ -1,5 +1,3 @@
-// @ts-ignore
-
 // import Config from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";

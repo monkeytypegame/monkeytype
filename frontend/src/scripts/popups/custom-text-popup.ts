@@ -1,11 +1,7 @@
 import * as CustomText from "../test/custom-text";
-//@ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
-//@ts-ignore
 import * as TestLogic from "../test/test-logic";
-//@ts-ignore
 import * as ChallengeController from "../controllers/challenge-controller";
-//@ts-ignore
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../misc";
 import * as WordFilterPopup from "./word-filter-popup";
