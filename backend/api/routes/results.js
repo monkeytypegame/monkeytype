@@ -19,7 +19,7 @@ router.get(
 );
 
 router.post(
-  "/add",
+  "/",
   RateLimit.resultsAdd,
   authenticateRequest(),
   validateRequest({
@@ -30,21 +30,21 @@ router.post(
   asyncHandler(ResultController.addResult)
 );
 
-router.post(
-  "/updateTags",
+router.patch(
+  "/tags",
   RateLimit.resultsTagsUpdate,
   authenticateRequest(),
   validateRequest({
     body: {
-      tags: joi.array().items(joi.string()).required(),
-      resultid: joi.string().required(),
+      tagIds: joi.array().items(joi.string()).required(),
+      resultIds: joi.string().required(),
     },
   }),
   asyncHandler(ResultController.updateTags)
 );
 
-router.post(
-  "/deleteAll",
+router.delete(
+  "/",
   RateLimit.resultsDeleteAll,
   authenticateRequest(),
   asyncHandler(ResultController.deleteAll)

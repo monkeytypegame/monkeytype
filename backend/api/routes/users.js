@@ -96,7 +96,6 @@ router.patch(
   authenticateRequest(),
   validateRequest({
     body: {
-      uid: joi.string().required(),
       newEmail: joi.string().email().required(),
       previousEmail: joi.string().email().required(),
     },
