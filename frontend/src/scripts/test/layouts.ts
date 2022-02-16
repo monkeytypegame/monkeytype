@@ -1,4 +1,18 @@
-const layouts = {
+const layouts: MonkeyTypes.Layouts = {
+  qwerty: {
+    keymapShowTopRow: false,
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      row2: ["qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "[{", "]}", "\\|"],
+      row3: ["aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", ";:", "'\""],
+      row4: ["zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?"],
+      row5: [" "]
+    } as MonkeyTypes.KeysANSI
+  }
+};
+
+// @ts-ignore
+const layouts2 = {
   default: {},
   qwerty: {
     keymapShowTopRow: false,
