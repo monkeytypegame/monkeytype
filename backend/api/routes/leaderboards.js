@@ -1,10 +1,8 @@
 import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
-
 import LeaderboardsController from "../controllers/leaderboards";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
-
 import { Router } from "express";
 
 const router = Router();

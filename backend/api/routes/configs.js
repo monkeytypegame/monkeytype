@@ -1,9 +1,6 @@
 import { Router } from "express";
-
 import { authenticateRequest } from "../../middlewares/auth";
-
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
-
 import configSchema from "../schemas/config-schema";
 import ConfigController from "../controllers/config";
 import * as RateLimit from "../../middlewares/rate-limit";

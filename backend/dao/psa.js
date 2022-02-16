@@ -1,8 +1,8 @@
-import { mongoDB } from "../init/mongodb";
+import db from "../init/db";
 
 class PsaDAO {
   static async get(_uid, _config) {
-    return await mongoDB().collection("psa").find().toArray();
+    return await db.collection("psa").find().toArray();
   }
 }
 

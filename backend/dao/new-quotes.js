@@ -1,12 +1,10 @@
 import simpleGit from "simple-git";
-
 import Mongo from "mongodb";
-
 const { ObjectID } = Mongo;
 import stringSimilarity from "string-similarity";
 import path from "path";
 import fs from "fs";
-import { mongoDB } from "../init/mongodb";
+import db from "../init/db";
 import MonkeyError from "../handlers/error";
 
 let git;
@@ -54,12 +52,12 @@ class NewQuotesDAO {
     if (duplicateId != -1) {
       return { duplicateId, similarityScore };
     }
-    return await mongoDB().collection("new-quotes").insertOne(quote);
+    return await db.collection("new-quotes").insertOne(quote);
   }
 
   static async get() {
     if (!git) throw new MonkeyError(500, "Git not available.");
-    return await mongoDB()
+    return await db
       .collection("new-quotes")
       .find({ approved: false })
       .sort({ timestamp: 1 })
@@ -70,7 +68,7 @@ class NewQuotesDAO {
   static async approve(quoteId, editQuote, editSource) {
     if (!git) throw new MonkeyError(500, "Git not available.");
     //check mod status
-    let quote = await mongoDB()
+    let quote = await db
       .collection("new-quotes")
       .findOne({ _id: ObjectID(quoteId) });
     if (!quote) {
@@ -127,15 +125,13 @@ class NewQuotesDAO {
     await git.add([`static/quotes/${language}.json`]);
     await git.commit(`Added quote to ${language}.json`);
     await git.push("origin", "master");
-    await mongoDB()
-      .collection("new-quotes")
-      .deleteOne({ _id: ObjectID(quoteId) });
+    await db.collection("new-quotes").deleteOne({ _id: ObjectID(quoteId) });
     return { quote, message };
   }
 
   static async refuse(quoteId) {
     if (!git) throw new MonkeyError(500, "Git not available.");
-    return await mongoDB()
+    return await db
       .collection("new-quotes")
       .deleteOne({ _id: ObjectID(quoteId) });
   }

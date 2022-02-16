@@ -1,7 +1,7 @@
-import { mongoDB } from "../init/mongodb";
+import db from "../init/db";
 
 async function addCommand(command, commandArguments) {
-  return await mongoDB().collection("bot-commands").insertOne({
+  return await db.collection("bot-commands").insertOne({
     command,
     arguments: commandArguments,
     executed: false,
@@ -23,9 +23,7 @@ async function addCommands(commands, commandArguments) {
     };
   });
 
-  return await mongoDB()
-    .collection("bot-commands")
-    .insertMany(normalizedCommands);
+  return await db.collection("bot-commands").insertMany(normalizedCommands);
 }
 
 class BotDAO {
