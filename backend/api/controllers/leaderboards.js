@@ -27,7 +27,7 @@ class LeaderboardsController {
   static async getRank(req, _res) {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.ctx.decodedToken;
-    const data = LeaderboardsDAO.getRank(mode, mode2, language, uid);
+    const data = await LeaderboardsDAO.getRank(mode, mode2, language, uid);
     return new MonkeyResponse("Rank retrieved", data);
   }
 }
