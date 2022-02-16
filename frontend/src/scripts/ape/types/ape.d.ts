@@ -26,55 +26,96 @@ declare namespace Ape {
   type EndpointData = Promise<Response>;
   type Endpoint = () => EndpointData;
 
-  namespace Endpoints {
-    interface Configs {
-      getConfig: Endpoint;
-    }
+  interface Endpoints {
+    configs: {
+      get: Endpoint;
+      save: (config: MonkeyTypes.Config) => EndpointData;
+    };
 
-    interface Leaderboards {
-      getLeaderboard: (
+    leaderboards: {
+      get: (
         language: string,
         mode: MonkeyTypes.Mode,
         mode2: string | number,
         skip: number,
         limit: number
       ) => EndpointData;
-      getLeaderboardRank: (
+      getRank: (
         language: string,
         mode: MonkeyTypes.Mode,
         mode2: string | number
       ) => EndpointData;
-    }
+    };
 
-    interface Presets {
-      getPresets: Endpoint;
-    }
+    presets: {
+      get: Endpoint;
+      add: (preset: MonkeyTypes.Preset) => EndpointData;
+      edit: (preset: MonkeyTypes.Preset) => EndpointData;
+      delete: (presetId: string) => EndpointData;
+    };
 
-    interface Psas {
-      getPsas: Endpoint;
-    }
+    psas: {
+      get: Endpoint;
+    };
 
-    interface Quotes {
-      getQuotes: Endpoint;
-      getQuoteRating: (quote: MonkeyTypes.Quote) => EndpointData;
-    }
+    quotes: {
+      get: Endpoint;
+      submit: (
+        text: string,
+        source: string,
+        language: string,
+        captcha: string
+      ) => EndpointData;
+      getRating: (quote: MonkeyTypes.Quote) => EndpointData;
+      approveSubmission: (
+        quoteSubmissionId: string,
+        editText: string,
+        editSource: string
+      ) => EndpointData;
+      rejectSubmission: (quoteSubmissionId: string) => EndpointData;
+      getRating: (quote: MonkeyTypes.Quote) => EndpointData;
+      addRating: (quote: MonkeyTypes.Quote, rating: number) => EndpointData;
+      report: (
+        quoteId: string,
+        quoteLanguage: string,
+        reason: string,
+        comment: string,
+        captcha: string
+      ) => EndpointData;
+    };
 
-    interface Users {
-      getUserData: Endpoint;
-      getUserTags: Endpoint;
+    users: {
+      getData: Endpoint;
+      create: (name: string, email: string, uid: string) => EndpointData;
       getNameAvailability: (name: string) => EndpointData;
-    }
+      delete: Endpoint;
+      updateName: (name: string) => EndpointData;
+      updateLeaderboardMemory: (
+        mode: string,
+        mode2: string | number,
+        language: string,
+        rank: number
+      ) => EndpointData;
+      updateEmail: (newEmail: string, previousEmail: string) => EndpointData;
+      deletePersonalBests: Endpoint;
+      getTags: Endpoint;
+      createTag: (tagName: string) => EndpointData;
+      editTag: (tagId: string, newName: string) => EndpointData;
+      deleteTag: (tagId: string) => EndpointData;
+      deleteTagPersonalBest: (tagId: string) => EndpointData;
+      linkDiscord: (data: {
+        tokenType: string;
+        accessToken: string;
+        uid: string;
+      }) => EndpointData;
+      unlinkDiscord: Endpoint;
+    };
 
-    interface Results {
-      getResults: Endpoint;
-    }
+    results: {
+      get: Endpoint;
+      save: (result: MonkeyTypes.Result) => EndpointData;
+      updateTags: (resultId: string, tagIds: string[]) => EndpointData;
+      deleteAll: Endpoint;
+    };
   }
-
-  type AllEndpoints = Endpoints.Configs &
-    Endpoints.Leaderboards &
-    Endpoints.Presets &
-    Endpoints.Psas &
-    Endpoints.Quotes &
-    Endpoints.Users &
-    Endpoints.Results;
 }

@@ -51,9 +51,9 @@ class ResultController {
 
   static async updateTags(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { tags, resultid } = req.body;
+    const { tagIds, resultId } = req.body;
 
-    await ResultDAO.updateTags(uid, resultid, tags);
+    await ResultDAO.updateTags(uid, resultId, tagIds);
     return new MonkeyResponse("Result tags updated");
   }
 
