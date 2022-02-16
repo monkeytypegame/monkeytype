@@ -8,7 +8,7 @@
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
-    "start": "node --experimental-specifier-resolution=node ./build/server.js",
+    "start": "npm run build && node --experimental-specifier-resolution=node ./build/server.js",
     "dev": "nodemon --experimental-specifier-resolution=node --watch build/server.js ./build/server.js",
     "start:dev": "concurrently \"npm run watch\" \"npm run dev\""
   },
