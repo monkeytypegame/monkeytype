@@ -18,6 +18,7 @@ async function adaptRequestOptions(
 
   return {
     params: options.searchQuery,
+    data: options.payload,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -83,10 +84,10 @@ const apeClient: Ape.Client = {
 // API Endpoints
 
 export default {
-  ...endpoints.getUsersEndpoints(apeClient),
-  ...endpoints.getConfigsEndpoints(apeClient),
-  ...endpoints.getResultsEndpoints(apeClient),
-  ...endpoints.getPsasEndpoints(apeClient),
-  ...endpoints.getQuotesEndpoints(apeClient),
-  ...endpoints.getLeaderboardsEndpoints(apeClient),
-} as Ape.AllEndpoints;
+  users: endpoints.getUsersEndpoints(apeClient),
+  configs: endpoints.getConfigsEndpoints(apeClient),
+  results: endpoints.getResultsEndpoints(apeClient),
+  psas: endpoints.getPsasEndpoints(apeClient),
+  quotes: endpoints.getQuotesEndpoints(apeClient),
+  leaderboards: endpoints.getLeaderboardsEndpoints(apeClient),
+} as Ape.Endpoints;

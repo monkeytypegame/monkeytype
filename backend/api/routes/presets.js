@@ -30,7 +30,7 @@ router.get(
 );
 
 router.post(
-  "/add",
+  "/",
   RateLimit.presetsAdd,
   authenticateRequest(),
   validateRequest({
@@ -44,8 +44,8 @@ router.post(
   asyncHandler(PresetController.addPreset)
 );
 
-router.post(
-  "/edit",
+router.patch(
+  "/",
   RateLimit.presetsEdit,
   authenticateRequest(),
   validateRequest({
@@ -62,13 +62,13 @@ router.post(
   asyncHandler(PresetController.editPreset)
 );
 
-router.post(
-  "/remove",
+router.delete(
+  "/:presetId",
   RateLimit.presetsRemove,
   authenticateRequest(),
   validateRequest({
-    body: {
-      _id: joi.string().required(),
+    params: {
+      presetId: joi.string().required(),
     },
   }),
   asyncHandler(PresetController.removePreset)
