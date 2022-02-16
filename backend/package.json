@@ -6,9 +6,11 @@
   "type": "module",
   "scripts": {
     "build": "tsc --build",
-    "start": "node --experimental-specifier-resolution=node ./build/server.js",
     "watch": "tsc --build --watch",
-    "clean": "tsc --build --clean"
+    "clean": "tsc --build --clean",
+    "start": "node --experimental-specifier-resolution=node ./build/server.js",
+    "dev": "nodemon --experimental-specifier-resolution=node --watch build/server.js ./build/server.js",
+    "start:dev": "concurrently \"npm run watch\" \"npm run dev\""
   },
   "engines": {
     "node": "16.13.2",
@@ -35,8 +37,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@types/node": "^17.0.16",
-    "@types/uuid": "^8.3.4",
-    "ts-node": "^10.5.0"
+    "@types/node": "17.0.18",
+    "@types/uuid": "8.3.4"
   }
 }
