@@ -95,8 +95,9 @@ body:
       required: false
   - type: textarea
     attributes:
-      label: Config
-      description: To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
-      placeholder: '{"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}'
+      label: Account name
+      description: If your issue only happens when logged in, please provide your account name and config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
+      placeholder: 'Miodec
+      {"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}'
     validations:
       required: false
