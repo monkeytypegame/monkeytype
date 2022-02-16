@@ -7,6 +7,6 @@ export async function verifyIdToken(idToken) {
 export async function updateAuthEmail(uid, email) {
   return await admin.auth().updateUser(uid, {
     email,
-    emailVerified: false
+    emailVerified: false,
   });
 }

@@ -10,7 +10,7 @@ const router = Router();
 router.get(
   "/",
   RateLimit.leaderboardsGet,
-  authenticateRequest({ isPublic: true }),
+  authenticateRequest({ isPublic: true, acceptMonkeyTokens: false }),
   validateRequest({
     query: {
       language: joi.string().required(),

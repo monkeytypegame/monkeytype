@@ -20,7 +20,7 @@ const API_ROUTE_MAP = {
   "/presets": presets,
   "/psas": psas,
   "/leaderboards": leaderboards,
-  "/quotes": quotes
+  "/quotes": quotes,
 };
 
 function addApiRoutes(app) {

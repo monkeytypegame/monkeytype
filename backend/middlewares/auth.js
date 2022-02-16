@@ -3,7 +3,7 @@ import { verifyIdToken } from "../handlers/auth";
 
 const DEFAULT_OPTIONS = {
   isPublic: false,
-  acceptMonkeyTokens: false
+  acceptMonkeyTokens: false,
 };
 
 function authenticateRequest(options = DEFAULT_OPTIONS) {

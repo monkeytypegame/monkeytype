@@ -171,7 +171,7 @@ class ResultController {
       lastResultTimestamp &&
       (lastResultTimestamp + testDurationMilis > result.timestamp ||
         lastResultTimestamp + testDurationMilis >
-        Math.round(Date.now() / 1000) * 1000)
+          Math.round(Date.now() / 1000) * 1000)
     ) {
       Logger.log(
         "invalid_result_spacing",
