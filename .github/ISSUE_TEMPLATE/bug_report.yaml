@@ -4,13 +4,6 @@ title: "<title>"
 labels: [bug]
 body:
   
-
-  - type: markdown
-    value: "## Welcome!"
-  
-  - type: markdown
-    value: "Thanks for taking the time to fill out this bug! If you need real-time help, join us on Discord: discord.gg/monkeytype"
-
   - type: checkboxes
     attributes:
       label: Did you clear cache before opening an issue?
@@ -29,8 +22,8 @@ body:
           
   - type: markdown
     attributes:
-    value: |
-      Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
+      value: |
+        Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
         
           
   - type: dropdown
