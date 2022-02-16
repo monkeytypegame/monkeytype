@@ -1,8 +1,5 @@
-//@ts-ignore
 import * as UpdateConfig from "../config";
-//@ts-ignore
 import * as ManualRestart from "../test/manual-restart-tracker";
-//@ts-ignore
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
 

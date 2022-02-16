@@ -1,19 +1,17 @@
 import * as Misc from "../misc";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
-import * as Types from "../types/interfaces";
 
 export async function setActiveGroup(
   groupName: string | undefined,
   clicked: boolean | undefined = false
 ): Promise<void> {
-  let currentGroup: Types.LanguageGroup | undefined;
+  let currentGroup: MonkeyTypes.LanguageGroup | undefined;
 
   if (groupName === undefined) {
     currentGroup = await Misc.findCurrentGroup(Config.language);
   } else {
-    const groups: Types.LanguageGroup[] = await Misc.getLanguageGroups();
-    groups.forEach((g: Types.LanguageGroup) => {
+    const groups: MonkeyTypes.LanguageGroup[] = await Misc.getLanguageGroups();
+    groups.forEach((g: MonkeyTypes.LanguageGroup) => {
       if (g.name === groupName) {
         currentGroup = g;
       }

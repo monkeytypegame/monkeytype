@@ -1,9 +1,9 @@
 import { capitalizeFirstLetter } from "../misc";
 
-let list = null;
+let list: string[] = [];
 
-export async function getList() {
-  if (list == null) {
+export async function getList(): Promise<string[]> {
+  if (list.length === 0) {
     return $.getJSON("languages/britishenglish.json", function (data) {
       list = data;
       return list;
@@ -13,9 +13,9 @@ export async function getList() {
   }
 }
 
-export async function replace(word) {
-  let list = await getList();
-  let replacement = list.find((a) =>
+export async function replace(word: string): Promise<string> {
+  const list = await getList();
+  const replacement = list.find((a) =>
     word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
   );
   return replacement

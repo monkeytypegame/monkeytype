@@ -6,7 +6,7 @@ import * as TestActive from "../states/test-active";
 
 export let caretAnimating = true;
 
-export function stopAnimation() {
+export function stopAnimation(): void {
   if (caretAnimating === true) {
     $("#caret").css("animation-name", "none");
     $("#caret").css("opacity", "1");
@@ -14,7 +14,7 @@ export function stopAnimation() {
   }
 }
 
-export function startAnimation() {
+export function startAnimation(): void {
   if (caretAnimating === false) {
     if (Config.smoothCaret && !SlowTimer.get()) {
       $("#caret").css("animation-name", "caretFlashSmooth");
@@ -25,17 +25,17 @@ export function startAnimation() {
   }
 }
 
-export function hide() {
+export function hide(): void {
   $("#caret").addClass("hidden");
 }
 
-export async function updatePosition() {
+export async function updatePosition(): Promise<void> {
   if ($("#wordsWrapper").hasClass("hidden")) return;
   // if ($("#caret").hasClass("off")) {
   //   return;
   // }
 
-  let caret = $("#caret");
+  const caret = $("#caret");
 
   let inputLen = TestInput.input.current.length;
   inputLen = Misc.trailingComposeChars.test(TestInput.input.current)
@@ -46,42 +46,50 @@ export async function updatePosition() {
     currentLetterIndex = 0;
   }
   //insert temporary character so the caret will work in zen mode
-  let activeWordEmpty = $("#words .active").children().length == 0;
+  const activeWordEmpty = $("#words .active").children().length == 0;
   if (activeWordEmpty) {
     $("#words .active").append('<letter style="opacity: 0;">_</letter>');
   }
 
-  let currentWordNodeList = document
+  const currentWordNodeList = document
     ?.querySelector("#words .active")
     ?.querySelectorAll("letter");
 
   if (!currentWordNodeList) return;
 
-  let currentLetter = currentWordNodeList[currentLetterIndex];
+  let currentLetter: HTMLElement = currentWordNodeList[
+    currentLetterIndex
+  ] as HTMLElement;
   if (inputLen > currentWordNodeList.length) {
-    currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
+    currentLetter = currentWordNodeList[
+      currentWordNodeList.length - 1
+    ] as HTMLElement;
   }
 
   if (Config.mode != "zen" && $(currentLetter).length == 0) return;
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageLeftToRight = currentLanguage.leftToRight;
-  let currentLetterPosLeft = isLanguageLeftToRight
+  const currentLetterPosLeft = isLanguageLeftToRight
     ? currentLetter.offsetLeft
-    : currentLetter.offsetLeft + $(currentLetter).width();
-  let currentLetterPosTop = currentLetter.offsetTop;
-  let letterHeight = $(currentLetter).height();
+    : currentLetter.offsetLeft + ($(currentLetter).width() ?? 0);
+  const currentLetterPosTop = currentLetter.offsetTop;
+  const letterHeight = $(currentLetter).height() as number;
   let newTop = 0;
   let newLeft = 0;
 
   newTop = currentLetterPosTop - Math.round(letterHeight / 5);
   if (inputLen == 0) {
     newLeft = isLanguageLeftToRight
-      ? currentLetterPosLeft - caret.width() / 2
-      : currentLetterPosLeft + caret.width() / 2;
+      ? currentLetterPosLeft - (caret.width() as number) / 2
+      : currentLetterPosLeft + (caret.width() as number) / 2;
   } else {
     newLeft = isLanguageLeftToRight
-      ? currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2
-      : currentLetterPosLeft - $(currentLetter).width() + caret.width() / 2;
+      ? currentLetterPosLeft +
+        ($(currentLetter).width() as number) -
+        (caret.width() as number) / 2
+      : currentLetterPosLeft -
+        ($(currentLetter).width() as number) +
+        (caret.width() as number) / 2;
   }
 
   let smoothlinescroll = $("#words .smoothScroller").height();
@@ -106,16 +114,17 @@ export async function updatePosition() {
   }
 
   if (Config.showAllLines) {
-    let browserHeight = window.innerHeight;
-    let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
-    let contentHeight = document.body.scrollHeight;
+    const browserHeight = window.innerHeight;
+    const middlePos =
+      browserHeight / 2 - ($("#caret").outerHeight() as number) / 2;
+    const contentHeight = document.body.scrollHeight;
 
     if (
       newTop >= middlePos &&
       contentHeight > browserHeight &&
       TestActive.get()
     ) {
-      let newscrolltop = newTop - middlePos / 2;
+      const newscrolltop = newTop - middlePos / 2;
       // console.log('---------');
       // console.log(newTop);
       // console.log(middlePos);
@@ -133,7 +142,7 @@ export async function updatePosition() {
   }
 }
 
-export function show() {
+export function show(): void {
   if ($("#result").hasClass("hidden")) {
     updatePosition();
     $("#caret").removeClass("hidden");

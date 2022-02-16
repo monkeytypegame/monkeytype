@@ -11,19 +11,12 @@ import chartAnnotation from "chartjs-plugin-annotation";
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
-// @ts-ignore
 import * as DB from "./db";
-// @ts-ignore
 import Config from "./config";
-// @ts-ignore
 import * as TestStats from "./test/test-stats";
-// @ts-ignore
 import * as Replay from "./test/replay";
-// @ts-ignore
 import * as TestTimer from "./test/test-timer";
-// @ts-ignore
 import * as Result from "./test/result";
-// @ts-ignore
 import * as TestInput from "./test/test-input";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";

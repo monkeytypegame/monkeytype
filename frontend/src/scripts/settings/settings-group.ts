@@ -1,4 +1,3 @@
-// @ts-ignore
 import Config from "../config";
 
 export default class SettingsGroup {

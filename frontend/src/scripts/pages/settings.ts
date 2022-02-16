@@ -1,22 +1,12 @@
-// @ts-ignore
 import SettingsGroup from "../settings/settings-group";
-// @ts-ignore
 import Config, * as UpdateConfig from "../config";
-// @ts-ignore
 import * as Sound from "../controllers/sound-controller";
-// @ts-ignore
 import * as Misc from "../misc";
-// @ts-ignore
 import layouts from "../test/layouts";
-// @ts-ignore
 import * as DB from "../db";
-// @ts-ignore
 import * as Funbox from "../test/funbox";
-// @ts-ignore
 import * as TagController from "../controllers/tag-controller";
-// @ts-ignore
 import * as PresetController from "../controllers/preset-controller";
-// @ts-ignore
 import * as ThemePicker from "../settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
@@ -24,7 +14,6 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
-import * as MonkeyTypes from "../types/interfaces";
 
 type SettingsGroups = {
   [key: string]: SettingsGroup;

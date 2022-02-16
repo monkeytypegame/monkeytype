@@ -1,6 +1,4 @@
-// @ts-ignore
 import Config from "./config";
-// @ts-ignore
 import * as Caret from "./test/caret";
 import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";

@@ -278,7 +278,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
   setTimeout(async () => {
     ChartController.updateAllChartColors();
 
-    const themeColors = await ThemeColors.get();
+    let themeColors = await ThemeColors.getAll();
 
     ThemeController.colorVars.forEach((colorName) => {
       let color;
@@ -302,7 +302,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
         color = themeColors.colorfulErrorExtra;
       }
 
-      updateColors($(".colorPicker #" + colorName).parent(), color);
+      updateColors($(".colorPicker #" + colorName).parent(), color as string);
     });
   }, 250);
 });

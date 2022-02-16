@@ -100,3 +100,6 @@ backend/anticheat
 
 # Madge
 dep-graph.png
+
+# TypeScript
+built/
