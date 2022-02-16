@@ -1,6 +1,6 @@
 const db = require("../init/db");
 const { v4: uuidv4 } = require("uuid");
-const Logger = require("../handlers/logger.js");
+const Logger = require("../handlers/logger");
 const MonkeyError = require("../handlers/error");
 const {
   MonkeyResponse,
