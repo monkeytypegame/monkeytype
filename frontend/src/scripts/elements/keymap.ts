@@ -6,56 +6,24 @@ import * as ConfigEvent from "../observables/config-event";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
+  if (currentKey === "") currentKey = " ";
   try {
     if ($(".active-key") != undefined) {
       $(".active-key").removeClass("active-key");
     }
 
     let highlightKey;
-    switch (currentKey) {
-      case "\\":
-      case "|":
-        highlightKey = "#KeyBackslash";
-        break;
-      case "}":
-      case "]":
-        highlightKey = "#KeyRightBracket";
-        break;
-      case "{":
-      case "[":
-        highlightKey = "#KeyLeftBracket";
-        break;
-      case '"':
-      case "'":
-        highlightKey = "#KeyQuote";
-        break;
-      case ":":
-      case ";":
-        highlightKey = "#KeySemicolon";
-        break;
-      case "<":
-      case ",":
-        highlightKey = "#KeyComma";
-        break;
-      case ">":
-      case ".":
-        highlightKey = "#KeyPeriod";
-        break;
-      case "?":
-      case "/":
-        highlightKey = "#KeySlash";
-        break;
-      case "":
-        highlightKey = "#KeySpace";
-        break;
-      default:
-        highlightKey = `#Key${currentKey}`;
+    if (currentKey == " ") {
+      highlightKey = "#keymap .key-space, #keymap .key-split-space";
+    } else if (currentKey == '"') {
+      highlightKey = `#keymap .keymap-key[data-key*='${currentKey}']`;
+    } else {
+      highlightKey = `#keymap .keymap-key[data-key*="${currentKey}"]`;
     }
 
+    console.log("highlighting", highlightKey);
+
     $(highlightKey).addClass("active-key");
-    if (highlightKey === "#KeySpace") {
-      $("#KeySpace2").addClass("active-key");
-    }
   } catch (e) {
     if (e instanceof Error) {
       console.log("could not update highlighted keymap key: " + e.message);
@@ -67,7 +35,7 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == undefined) return;
 
   if (key == " ") {
-    key = ".key-split-space";
+    key = "#keymap .key-space, #keymap .key-split-space";
   } else if (key == '"') {
     key = `#keymap .keymap-key[data-key*='${key}']`;
   } else {
