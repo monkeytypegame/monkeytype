@@ -162,13 +162,29 @@ export function refresh(layout: string = Config.layout): void {
             Config.keymapStyle === "split_matrix" ||
             Config.keymapStyle === "alice"
           ) {
-            if (i === 5) {
-              splitSpacer += `<div class="keymap-split-spacer"></div>`;
+            if (
+              row === "row4" &&
+              (Config.keymapStyle === "split" ||
+                Config.keymapStyle === "alice") &&
+              lts.type === "iso"
+            ) {
+              if (i === 6) {
+                splitSpacer += `<div class="keymap-split-spacer"></div>`;
+              }
+            } else {
+              if (i === 5) {
+                splitSpacer += `<div class="keymap-split-spacer"></div>`;
+              }
             }
           }
 
-          if (Config.keymapStyle === "alice" && i === 5 && row === "row4") {
-            splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
+          if (Config.keymapStyle === "alice" && row === "row4") {
+            if (
+              (lts.type === "iso" && i === 6) ||
+              (lts.type !== "iso" && i === 5)
+            ) {
+              splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
+            }
           }
 
           rowElement += splitSpacer + keyElement;
