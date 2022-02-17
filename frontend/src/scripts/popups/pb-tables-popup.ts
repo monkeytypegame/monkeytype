@@ -1,19 +1,24 @@
 import * as DB from "../db";
 
+interface PersonalBest extends MonkeyTypes.PersonalBest {
+  mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+}
+
 function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
   const snapshot = DB.getSnapshot();
 
-  const allmode2 =
+  const allmode2 = (
     snapshot.personalBests === undefined
       ? undefined
-      : snapshot.personalBests[mode];
+      : snapshot.personalBests[mode]
+  ) as { [quote: string]: PersonalBest[] } | undefined;
 
-  if (!allmode2) return;
+  if (allmode2 === undefined) return;
 
-  const list: MonkeyTypes.PersonalBest[] = [];
+  const list: PersonalBest[] = [];
   (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]).forEach(
     function (key) {
       let pbs = allmode2[key];

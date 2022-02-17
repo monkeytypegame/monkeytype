@@ -583,7 +583,13 @@ list["clearTagPb"] = new SimplePopup(
           )[0];
 
           if (tag === undefined) return;
-          tag.pb = 0;
+          tag.personalBests = {
+            time: { custom: [] },
+            words: { custom: [] },
+            zen: { zen: [] },
+            quote: { custom: [] },
+            custom: { custom: [] },
+          };
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
           ).attr("aria-label", "No PB found");
@@ -668,11 +674,11 @@ list["resetPersonalBests"] = new SimplePopup(
       } else {
         Notifications.add("Personal bests have been reset", 1);
         DB.getSnapshot().personalBests = {
-          time: {},
-          words: {},
-          quote: {},
-          custom: {},
-          zen: {},
+          time: { custom: [] },
+          words: { custom: [] },
+          zen: { zen: [] },
+          quote: { custom: [] },
+          custom: { custom: [] },
         };
       }
     } catch (e) {

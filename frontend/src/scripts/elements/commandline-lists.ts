@@ -205,7 +205,7 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateTagCommands(): void {
-  if (DB.getSnapshot()?.tags?.length > 0) {
+  if (DB.getSnapshot()?.tags?.length || 0 > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
@@ -213,7 +213,7 @@ export function updateTagCommands(): void {
       display: `Clear tags`,
       icon: "fa-times",
       exec: (): void => {
-        DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+        DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
           tag.active = false;
         });
         ModesNotice.update();
@@ -221,7 +221,7 @@ export function updateTagCommands(): void {
       },
     });
 
-    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {
@@ -276,10 +276,10 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 };
 
 export function updatePresetCommands(): void {
-  if (DB.getSnapshot()?.presets?.length > 0) {
+  if (DB.getSnapshot()?.presets?.length || 0 > 0) {
     commandsPresets.list = [];
 
-    DB.getSnapshot().presets.forEach((preset: MonkeyTypes.Preset) => {
+    DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
       const dis = preset.name;
 
       commandsPresets.list.push({
@@ -1091,7 +1091,7 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
       display: "fav",
       configValue: "fav",
       exec: (): void => {
-        UpdateConfig.setRandomTheme("fav");
+        UpdateConfig.setRandomTheme("favorite");
       },
     },
     {
@@ -1647,7 +1647,7 @@ const commandsTimerColor: MonkeyTypes.CommandsGroup = {
       display: "black",
       configValue: "black",
       exec: (): void => {
-        UpdateConfig.setTimerColor("bar");
+        UpdateConfig.setTimerColor("black");
       },
     },
     {
@@ -1732,7 +1732,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: ".25",
       configValue: 0.25,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(0.25);
+        UpdateConfig.setTimerOpacity("0.25");
       },
     },
     {
@@ -1740,7 +1740,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: ".5",
       configValue: 0.5,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(0.5);
+        UpdateConfig.setTimerOpacity("0.5");
       },
     },
     {
@@ -1748,7 +1748,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: ".75",
       configValue: 0.75,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(0.75);
+        UpdateConfig.setTimerOpacity("0.75");
       },
     },
     {
@@ -1756,7 +1756,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: "1",
       configValue: 1,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(1);
+        UpdateConfig.setTimerOpacity("1");
       },
     },
   ],
@@ -1772,7 +1772,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 10,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("10");
+        UpdateConfig.setWordCount(10);
         TestLogic.restart();
       },
     },
@@ -1782,7 +1782,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 25,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("25");
+        UpdateConfig.setWordCount(25);
         TestLogic.restart();
       },
     },
@@ -1792,7 +1792,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 50,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("50");
+        UpdateConfig.setWordCount(50);
         TestLogic.restart();
       },
     },
@@ -1802,7 +1802,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 100,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("100");
+        UpdateConfig.setWordCount(100);
         TestLogic.restart();
       },
     },
@@ -1812,7 +1812,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 200,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("200");
+        UpdateConfig.setWordCount(200);
         TestLogic.restart();
       },
     },
@@ -2049,7 +2049,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 15,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("15");
+        UpdateConfig.setTimeConfig(15);
         TestLogic.restart();
       },
     },
@@ -2059,7 +2059,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 30,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("30");
+        UpdateConfig.setTimeConfig(30);
         TestLogic.restart();
       },
     },
@@ -2069,7 +2069,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 60,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("60");
+        UpdateConfig.setTimeConfig(60);
         TestLogic.restart();
       },
     },
@@ -2079,7 +2079,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 120,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("120");
+        UpdateConfig.setTimeConfig(120);
         TestLogic.restart();
       },
     },

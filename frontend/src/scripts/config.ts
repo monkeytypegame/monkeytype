@@ -3,7 +3,6 @@ import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import LayoutList from "./test/layouts";
 import * as ConfigEvent from "./observables/config-event";
-import * as MonkeyTypes from "./types/interfaces";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -827,7 +826,10 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
 }
 
 //mode
-export function setTimeConfig(time: MonkeyTypes.Time, nosave?: boolean): void {
+export function setTimeConfig(
+  time: MonkeyTypes.TimeModes,
+  nosave?: boolean
+): void {
   const newTime =
     time === null || time === undefined || isNaN(time) || time < 0
       ? defaultConfig.time
@@ -885,7 +887,7 @@ export function setQuoteLength(
 }
 
 export function setWordCount(
-  wordCount: MonkeyTypes.Words,
+  wordCount: MonkeyTypes.WordsModes,
   nosave?: boolean
 ): void {
   const newWordCount =
@@ -1474,7 +1476,7 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
       //   addemo = true;
       // }
 
-      if (config.enableAds === "sellout" || config.enableAds === "on") {
+      if (config.enableAds === "max" || config.enableAds === "on") {
         $("head").append(`
           <script
           src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
@@ -1486,7 +1488,7 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
           ></script>
         `);
 
-        if (config.enableAds === "sellout") {
+        if (config.enableAds === "max") {
           //
 
           $("#ad_rich_media").removeClass("hidden");

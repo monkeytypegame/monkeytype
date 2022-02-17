@@ -2,7 +2,6 @@ import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
 import * as LoadingPage from "./pages/loading";
-import * as MonkeyTypes from "./types/interfaces";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
 
@@ -35,7 +34,13 @@ export async function initSnapshot(): Promise<
   //send api request with token that returns tags, presets, and data needed for snap
   const defaultSnap: MonkeyTypes.Snapshot = {
     results: undefined,
-    personalBests: { time: {}, words: {}, zen: {}, quote: {}, custom: {} },
+    personalBests: {
+      time: { custom: [] },
+      words: { custom: [] },
+      zen: { zen: [] },
+      quote: { custom: [] },
+      custom: { custom: [] },
+    },
     name: undefined,
     presets: [],
     tags: [],
@@ -43,7 +48,7 @@ export async function initSnapshot(): Promise<
     banned: undefined,
     verified: undefined,
     emailVerified: undefined,
-    lbMemory: {},
+    lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
     globalStats: {
       time: 0,
       started: 0,
@@ -89,7 +94,7 @@ export async function initSnapshot(): Promise<
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format
-      snap.lbMemory = {};
+      snap.lbMemory = {} as MonkeyTypes.LeaderboardMemory;
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
@@ -155,7 +160,7 @@ export async function getUserResults(): Promise<boolean> {
       LoadingPage.updateBar(90);
       const resultsData = await axiosInstance.get("/results");
 
-      let results = resultsData.data as MonkeyTypes.Result[];
+      let results = resultsData.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
 
       results.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
@@ -383,14 +388,21 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     let found = false;
     if (dbSnapshot.personalBests === undefined)
       dbSnapshot.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        custom: {},
-        zen: {},
+        time: { custom: [] },
+        words: { custom: [] },
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
       };
+
     if (dbSnapshot.personalBests[mode] === undefined) {
-      dbSnapshot.personalBests[mode] = {};
+      if (mode === "zen") {
+        dbSnapshot.personalBests["zen"] = { zen: [] };
+      } else {
+        dbSnapshot.personalBests[mode as Exclude<typeof mode, "zen">] = {
+          custom: [],
+        };
+      }
     }
 
     if (dbSnapshot.personalBests[mode][mode2] === undefined)
@@ -547,13 +559,19 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     } catch (e) {
       //that mode or mode2 is not found
       filteredtag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        custom: {},
-        zen: {},
+        time: { custom: [] },
+        words: { custom: [] },
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
       };
-      filteredtag.personalBests[mode] = {};
+      if (mode === "zen") {
+        filteredtag.personalBests["zen"] = { zen: [] };
+      } else {
+        filteredtag.personalBests[mode as Exclude<typeof mode, "zen">] = {
+          custom: [],
+        };
+      }
       filteredtag.personalBests[mode][mode2] = [
         {
           language: language,
@@ -585,19 +603,32 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
   api = false
 ): void {
   //could dbSnapshot just be used here instead of getSnapshot()
-  if (dbSnapshot.lbMemory === undefined) dbSnapshot.lbMemory = {};
-  if (dbSnapshot.lbMemory[mode] === undefined) dbSnapshot.lbMemory[mode] = {};
-  if (dbSnapshot.lbMemory[mode][mode2] === undefined)
-    dbSnapshot.lbMemory[mode][mode2] = {};
-  const current = dbSnapshot.lbMemory[mode][mode2][language];
-  dbSnapshot.lbMemory[mode][mode2][language] = rank;
-  if (api && current != rank) {
-    axiosInstance.patch("/user/leaderboardMemory", {
-      mode,
-      mode2,
-      language,
-      rank,
-    });
+
+  if (mode === "time") {
+    const timeMode = mode as "time",
+      timeMode2 = mode2 as 15 | 60;
+
+    const snapshot = getSnapshot();
+    if (snapshot.lbMemory === undefined)
+      snapshot.lbMemory = { time: { 15: { english: 0 }, 60: { english: 0 } } };
+    if (snapshot.lbMemory[timeMode] === undefined)
+      snapshot.lbMemory[timeMode] = {
+        15: { english: 0 },
+        60: { english: 0 },
+      };
+    if (snapshot.lbMemory[timeMode][timeMode2] === undefined)
+      snapshot.lbMemory[timeMode][timeMode2] = {};
+    const current = snapshot.lbMemory[timeMode][timeMode2][language];
+    snapshot.lbMemory[timeMode][timeMode2][language] = rank;
+    if (api && current != rank) {
+      axiosInstance.patch("/user/leaderboardMemory", {
+        mode,
+        mode2,
+        language,
+        rank,
+      });
+    }
+    setSnapshot(snapshot);
   }
 }
 
@@ -617,7 +648,9 @@ export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: MonkeyTypes.Result): void {
+export function saveLocalResult(
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): void {
   const snapshot = getSnapshot();
 
   if (snapshot !== null && snapshot.results !== undefined) {

@@ -97,11 +97,13 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Tags updated.", 1, 2);
-        DB.getSnapshot().results?.forEach((result: MonkeyTypes.Result) => {
-          if (result._id === resultid) {
-            result.tags = newtags;
+        DB.getSnapshot().results?.forEach(
+          (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+            if (result._id === resultid) {
+              result.tags = newtags;
+            }
           }
-        });
+        );
 
         let tagNames = "";
 

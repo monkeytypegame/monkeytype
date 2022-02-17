@@ -7,7 +7,6 @@ import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
-import * as MonkeyTypes from "../types/interfaces";
 
 const el = $("#mobileTestConfigPopup");
 

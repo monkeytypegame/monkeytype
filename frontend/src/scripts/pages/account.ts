@@ -23,7 +23,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: MonkeyTypes.Result[] = [];
+let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -258,328 +258,336 @@ export function update(): void {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results?.forEach((result: MonkeyTypes.Result) => {
-      // totalSeconds += tt;
+    DB.getSnapshot().results?.forEach(
+      (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+        // totalSeconds += tt;
 
-      //apply filters
-      try {
-        let resdiff = result.difficulty;
-        if (resdiff == undefined) {
-          resdiff = "normal";
-        }
-        if (!ResultFilters.getFilter("difficulty", resdiff)) {
-          if (filterDebug)
-            console.log(`skipping result due to difficulty filter`, result);
-          return;
-        }
-        if (!ResultFilters.getFilter("mode", result.mode)) {
-          if (filterDebug)
-            console.log(`skipping result due to mode filter`, result);
-          return;
-        }
-
-        if (result.mode == "time") {
-          let timefilter: MonkeyTypes.Mode2<"time"> = "custom";
-          if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
-            timefilter = result.mode2;
+        //apply filters
+        try {
+          let resdiff = result.difficulty;
+          if (resdiff == undefined) {
+            resdiff = "normal";
           }
-          if (!ResultFilters.getFilter("time", timefilter)) {
+          if (!ResultFilters.getFilter("difficulty", resdiff)) {
             if (filterDebug)
-              console.log(`skipping result due to time filter`, result);
+              console.log(`skipping result due to difficulty filter`, result);
             return;
           }
-        } else if (result.mode == "words") {
-          let wordfilter: MonkeyTypes.Mode2<"words"> = "custom";
-          if (
-            [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
-          ) {
-            wordfilter = result.mode2;
-          }
-          if (!ResultFilters.getFilter("words", wordfilter)) {
+          if (!ResultFilters.getFilter("mode", result.mode)) {
             if (filterDebug)
-              console.log(`skipping result due to word filter`, result);
+              console.log(`skipping result due to mode filter`, result);
             return;
           }
-        }
 
-        if (result.quoteLength != null) {
-          let filter: MonkeyTypes.QuoteModes;
-          if (result.quoteLength === 0) {
-            filter = "short";
-          } else if (result.quoteLength === 1) {
-            filter = "medium";
-          } else if (result.quoteLength === 2) {
-            filter = "long";
-          } else if (result.quoteLength === 3) {
-            filter = "thicc";
-          } else {
-            filter = "medium";
+          if (result.mode == "time") {
+            let timefilter: MonkeyTypes.Mode2<"time"> = "custom";
+            if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
+              timefilter = result.mode2;
+            }
+            if (!ResultFilters.getFilter("time", timefilter)) {
+              if (filterDebug)
+                console.log(`skipping result due to time filter`, result);
+              return;
+            }
+          } else if (result.mode == "words") {
+            let wordfilter: MonkeyTypes.Mode2<"words"> = "custom";
+            if (
+              [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
+            ) {
+              wordfilter = result.mode2;
+            }
+            if (!ResultFilters.getFilter("words", wordfilter)) {
+              if (filterDebug)
+                console.log(`skipping result due to word filter`, result);
+              return;
+            }
           }
-          if (
-            filter !== null &&
-            !ResultFilters.getFilter("quoteLength", filter)
-          ) {
-            if (filterDebug)
-              console.log(`skipping result due to quoteLength filter`, result);
-            return;
+
+          if (result.quoteLength != null) {
+            let filter: MonkeyTypes.QuoteModes;
+            if (result.quoteLength === 0) {
+              filter = "short";
+            } else if (result.quoteLength === 1) {
+              filter = "medium";
+            } else if (result.quoteLength === 2) {
+              filter = "long";
+            } else if (result.quoteLength === 3) {
+              filter = "thicc";
+            } else {
+              filter = "medium";
+            }
+            if (
+              filter !== null &&
+              !ResultFilters.getFilter("quoteLength", filter)
+            ) {
+              if (filterDebug)
+                console.log(
+                  `skipping result due to quoteLength filter`,
+                  result
+                );
+              return;
+            }
           }
-        }
 
-        let langFilter = ResultFilters.getFilter(
-          "language",
-          result.language ?? "english"
-        );
-
-        if (
-          result.language === "english_expanded" &&
-          ResultFilters.getFilter("language", "english_1k")
-        ) {
-          langFilter = true;
-        }
-        if (!langFilter) {
-          if (filterDebug)
-            console.log(`skipping result due to language filter`, result);
-          return;
-        }
-
-        let puncfilter: MonkeyTypes.Filter<"punctuation"> = "off";
-        if (result.punctuation) {
-          puncfilter = "on";
-        }
-        if (!ResultFilters.getFilter("punctuation", puncfilter)) {
-          if (filterDebug)
-            console.log(`skipping result due to punctuation filter`, result);
-          return;
-        }
-
-        let numfilter: MonkeyTypes.Filter<"numbers"> = "off";
-        if (result.numbers) {
-          numfilter = "on";
-        }
-        if (!ResultFilters.getFilter("numbers", numfilter)) {
-          if (filterDebug)
-            console.log(`skipping result due to numbers filter`, result);
-          return;
-        }
-
-        if (result.funbox === "none" || result.funbox === undefined) {
-          if (!ResultFilters.getFilter("funbox", "none")) {
-            if (filterDebug)
-              console.log(`skipping result due to funbox filter`, result);
-            return;
-          }
-        } else {
-          if (!ResultFilters.getFilter("funbox", result.funbox)) {
-            if (filterDebug)
-              console.log(`skipping result due to funbox filter`, result);
-            return;
-          }
-        }
-
-        let tagHide = true;
-        if (result.tags === undefined || result.tags.length === 0) {
-          //no tags, show when no tag is enabled
-          if (DB.getSnapshot().tags?.length || 0 > 0) {
-            if (ResultFilters.getFilter("tags", "none")) tagHide = false;
-          } else {
-            tagHide = false;
-          }
-        } else {
-          //tags exist
-          const validTags = DB.getSnapshot().tags?.map(
-            (t: MonkeyTypes.Tag) => t._id
+          let langFilter = ResultFilters.getFilter(
+            "language",
+            result.language ?? "english"
           );
 
-          if (validTags === undefined) return;
+          if (
+            result.language === "english_expanded" &&
+            ResultFilters.getFilter("language", "english_1k")
+          ) {
+            langFilter = true;
+          }
+          if (!langFilter) {
+            if (filterDebug)
+              console.log(`skipping result due to language filter`, result);
+            return;
+          }
 
-          result.tags.forEach((tag) => {
-            //check if i even need to check tags anymore
-            if (!tagHide) return;
-            //check if tag is valid
-            if (validTags?.includes(tag)) {
-              //tag valid, check if filter is on
-              if (ResultFilters.getFilter("tags", tag)) tagHide = false;
-            } else {
-              //tag not found in valid tags, meaning probably deleted
-              if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+          let puncfilter: MonkeyTypes.Filter<"punctuation"> = "off";
+          if (result.punctuation) {
+            puncfilter = "on";
+          }
+          if (!ResultFilters.getFilter("punctuation", puncfilter)) {
+            if (filterDebug)
+              console.log(`skipping result due to punctuation filter`, result);
+            return;
+          }
+
+          let numfilter: MonkeyTypes.Filter<"numbers"> = "off";
+          if (result.numbers) {
+            numfilter = "on";
+          }
+          if (!ResultFilters.getFilter("numbers", numfilter)) {
+            if (filterDebug)
+              console.log(`skipping result due to numbers filter`, result);
+            return;
+          }
+
+          if (result.funbox === "none" || result.funbox === undefined) {
+            if (!ResultFilters.getFilter("funbox", "none")) {
+              if (filterDebug)
+                console.log(`skipping result due to funbox filter`, result);
+              return;
             }
-          });
+          } else {
+            if (!ResultFilters.getFilter("funbox", result.funbox)) {
+              if (filterDebug)
+                console.log(`skipping result due to funbox filter`, result);
+              return;
+            }
+          }
+
+          let tagHide = true;
+          if (result.tags === undefined || result.tags.length === 0) {
+            //no tags, show when no tag is enabled
+            if (DB.getSnapshot().tags?.length || 0 > 0) {
+              if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+            } else {
+              tagHide = false;
+            }
+          } else {
+            //tags exist
+            const validTags = DB.getSnapshot().tags?.map(
+              (t: MonkeyTypes.Tag) => t._id
+            );
+
+            if (validTags === undefined) return;
+
+            result.tags.forEach((tag) => {
+              //check if i even need to check tags anymore
+              if (!tagHide) return;
+              //check if tag is valid
+              if (validTags?.includes(tag)) {
+                //tag valid, check if filter is on
+                if (ResultFilters.getFilter("tags", tag)) tagHide = false;
+              } else {
+                //tag not found in valid tags, meaning probably deleted
+                if (ResultFilters.getFilter("tags", "none")) tagHide = false;
+              }
+            });
+          }
+
+          if (tagHide) {
+            if (filterDebug)
+              console.log(`skipping result due to tag filter`, result);
+            return;
+          }
+
+          const timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
+
+          let datehide = true;
+
+          if (
+            ResultFilters.getFilter("date", "all") ||
+            (ResultFilters.getFilter("date", "last_day") &&
+              timeSinceTest <= 86400) ||
+            (ResultFilters.getFilter("date", "last_week") &&
+              timeSinceTest <= 604800) ||
+            (ResultFilters.getFilter("date", "last_month") &&
+              timeSinceTest <= 2592000) ||
+            (ResultFilters.getFilter("date", "last_3months") &&
+              timeSinceTest <= 7776000)
+          ) {
+            datehide = false;
+          }
+
+          if (datehide) {
+            if (filterDebug)
+              console.log(`skipping result due to date filter`, result);
+            return;
+          }
+
+          filteredResults.push(result);
+        } catch (e) {
+          Notifications.add(
+            "Something went wrong when filtering. Resetting filters.",
+            0
+          );
+          console.log(result);
+          console.error(e);
+          ResultFilters.reset();
+          ResultFilters.updateActive();
+          update();
         }
+        //filters done
+        //=======================================
 
-        if (tagHide) {
-          if (filterDebug)
-            console.log(`skipping result due to tag filter`, result);
-          return;
-        }
+        const resultDate = new Date(result.timestamp);
+        resultDate.setSeconds(0);
+        resultDate.setMinutes(0);
+        resultDate.setHours(0);
+        resultDate.setMilliseconds(0);
+        const resultTimestamp = resultDate.getTime();
 
-        const timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
-
-        let datehide = true;
-
-        if (
-          ResultFilters.getFilter("date", "all") ||
-          (ResultFilters.getFilter("date", "last_day") &&
-            timeSinceTest <= 86400) ||
-          (ResultFilters.getFilter("date", "last_week") &&
-            timeSinceTest <= 604800) ||
-          (ResultFilters.getFilter("date", "last_month") &&
-            timeSinceTest <= 2592000) ||
-          (ResultFilters.getFilter("date", "last_3months") &&
-            timeSinceTest <= 7776000)
-        ) {
-          datehide = false;
-        }
-
-        if (datehide) {
-          if (filterDebug)
-            console.log(`skipping result due to date filter`, result);
-          return;
-        }
-
-        filteredResults.push(result);
-      } catch (e) {
-        Notifications.add(
-          "Something went wrong when filtering. Resetting filters.",
-          0
-        );
-        console.log(result);
-        console.error(e);
-        ResultFilters.reset();
-        ResultFilters.updateActive();
-        update();
-      }
-      //filters done
-      //=======================================
-
-      const resultDate = new Date(result.timestamp);
-      resultDate.setSeconds(0);
-      resultDate.setMinutes(0);
-      resultDate.setHours(0);
-      resultDate.setMilliseconds(0);
-      const resultTimestamp = resultDate.getTime();
-
-      if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
-        activityChartData[resultTimestamp].amount++;
-        activityChartData[resultTimestamp].time +=
-          result.testDuration +
-          result.incompleteTestSeconds -
-          (result.afkDuration ?? 0);
-        activityChartData[resultTimestamp].totalWpm += result.wpm;
-      } else {
-        activityChartData[resultTimestamp] = {
-          amount: 1,
-          time:
+        if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
+          activityChartData[resultTimestamp].amount++;
+          activityChartData[resultTimestamp].time +=
             result.testDuration +
             result.incompleteTestSeconds -
-            (result.afkDuration ?? 0),
-          totalWpm: result.wpm,
-        };
-      }
-
-      let tt = 0;
-      if (
-        result.testDuration == undefined &&
-        result.mode2 !== "custom" &&
-        result.mode2 !== "zen"
-      ) {
-        //test finished before testDuration field was introduced - estimate
-        if (result.mode == "time") {
-          tt = result.mode2;
-        } else if (result.mode == "words") {
-          tt = (result.mode2 / result.wpm) * 60;
+            (result.afkDuration ?? 0);
+          activityChartData[resultTimestamp].totalWpm += result.wpm;
+        } else {
+          activityChartData[resultTimestamp] = {
+            amount: 1,
+            time:
+              result.testDuration +
+              result.incompleteTestSeconds -
+              (result.afkDuration ?? 0),
+            totalWpm: result.wpm,
+          };
         }
-      } else {
-        tt = result.testDuration;
-      }
-      if (result.incompleteTestSeconds != undefined) {
-        tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
-        tt += (tt / 4) * result.restartCount;
-      }
 
-      // if (result.incompleteTestSeconds != undefined) {
-      //   tt += result.incompleteTestSeconds;
-      // } else if (result.restartCount != undefined && result.restartCount > 0) {
-      //   tt += (tt / 4) * result.restartCount;
-      // }
-      totalSecondsFiltered += tt;
-
-      if (last10 < 10) {
-        last10++;
-        wpmLast10total += result.wpm;
-        totalAcc10 += result.acc;
-        result.consistency !== undefined
-          ? (totalCons10 += result.consistency)
-          : 0;
-      }
-      testCount++;
-
-      if (result.consistency !== undefined) {
-        consCount++;
-        totalCons += result.consistency;
-        if (result.consistency > topCons) {
-          topCons = result.consistency;
+        let tt = 0;
+        if (
+          result.testDuration == undefined &&
+          result.mode2 !== "custom" &&
+          result.mode2 !== "zen"
+        ) {
+          //test finished before testDuration field was introduced - estimate
+          if (result.mode == "time") {
+            tt = result.mode2;
+          } else if (result.mode == "words") {
+            tt = (result.mode2 / result.wpm) * 60;
+          }
+        } else {
+          tt = result.testDuration;
         }
-      }
-
-      if (result.rawWpm != null) {
-        if (rawWpm.last10Count < 10) {
-          rawWpm.last10Count++;
-          rawWpm.last10Total += result.rawWpm;
+        if (result.incompleteTestSeconds != undefined) {
+          tt += result.incompleteTestSeconds;
+        } else if (
+          result.restartCount != undefined &&
+          result.restartCount > 0
+        ) {
+          tt += (tt / 4) * result.restartCount;
         }
-        rawWpm.total += result.rawWpm;
-        rawWpm.count++;
-        if (result.rawWpm > rawWpm.max) {
-          rawWpm.max = result.rawWpm;
+
+        // if (result.incompleteTestSeconds != undefined) {
+        //   tt += result.incompleteTestSeconds;
+        // } else if (result.restartCount != undefined && result.restartCount > 0) {
+        //   tt += (tt / 4) * result.restartCount;
+        // }
+        totalSecondsFiltered += tt;
+
+        if (last10 < 10) {
+          last10++;
+          wpmLast10total += result.wpm;
+          totalAcc10 += result.acc;
+          result.consistency !== undefined
+            ? (totalCons10 += result.consistency)
+            : 0;
         }
+        testCount++;
+
+        if (result.consistency !== undefined) {
+          consCount++;
+          totalCons += result.consistency;
+          if (result.consistency > topCons) {
+            topCons = result.consistency;
+          }
+        }
+
+        if (result.rawWpm != null) {
+          if (rawWpm.last10Count < 10) {
+            rawWpm.last10Count++;
+            rawWpm.last10Total += result.rawWpm;
+          }
+          rawWpm.total += result.rawWpm;
+          rawWpm.count++;
+          if (result.rawWpm > rawWpm.max) {
+            rawWpm.max = result.rawWpm;
+          }
+        }
+
+        if (result.acc > topAcc) {
+          topAcc = result.acc;
+        }
+
+        totalAcc += result.acc;
+
+        if (result.restartCount != undefined) {
+          testRestarts += result.restartCount;
+        }
+
+        chartData.push({
+          x: result.timestamp,
+          y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
+          acc: result.acc,
+          mode: result.mode,
+          mode2: result.mode2,
+          punctuation: result.punctuation as boolean,
+          language: result.language,
+          timestamp: result.timestamp,
+          difficulty: result.difficulty,
+          raw: Config.alwaysShowCPM
+            ? Misc.roundTo2(result.rawWpm * 5)
+            : result.rawWpm,
+        });
+
+        wpmChartData.push(result.wpm);
+
+        accChartData.push({
+          x: result.timestamp,
+          y: 100 - result.acc,
+        });
+
+        if (result.wpm > topWpm) {
+          const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
+          const numbsctring = result.numbers
+            ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
+            : "";
+          topWpm = result.wpm;
+          if (result.mode == "custom") topMode = result.mode;
+          else
+            topMode =
+              result.mode + " " + result.mode2 + puncsctring + numbsctring;
+        }
+
+        totalWpm += result.wpm;
       }
-
-      if (result.acc > topAcc) {
-        topAcc = result.acc;
-      }
-
-      totalAcc += result.acc;
-
-      if (result.restartCount != undefined) {
-        testRestarts += result.restartCount;
-      }
-
-      chartData.push({
-        x: result.timestamp,
-        y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
-        acc: result.acc,
-        mode: result.mode,
-        mode2: result.mode2,
-        punctuation: result.punctuation as boolean,
-        language: result.language,
-        timestamp: result.timestamp,
-        difficulty: result.difficulty,
-        raw: Config.alwaysShowCPM
-          ? Misc.roundTo2(result.rawWpm * 5)
-          : result.rawWpm,
-      });
-
-      wpmChartData.push(result.wpm);
-
-      accChartData.push({
-        x: result.timestamp,
-        y: 100 - result.acc,
-      });
-
-      if (result.wpm > topWpm) {
-        const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
-        const numbsctring = result.numbers
-          ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
-          : "";
-        topWpm = result.wpm;
-        if (result.mode == "custom") topMode = result.mode;
-        else
-          topMode =
-            result.mode + " " + result.mode2 + puncsctring + numbsctring;
-      }
-
-      totalWpm += result.wpm;
-    });
+    );
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .group.history table thead tr td:nth-child(2)").text(

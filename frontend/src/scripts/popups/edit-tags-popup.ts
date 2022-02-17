@@ -176,11 +176,11 @@ async function apply(): Promise<void> {
       DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
         if (tag._id === tagid) {
           tag.personalBests = {
-            time: {},
-            words: {},
-            custom: {},
-            zen: {},
-            quote: {},
+            time: { custom: [] },
+            words: { custom: [] },
+            custom: { custom: [] },
+            zen: { zen: [] },
+            quote: { custom: [] },
           };
         }
       });

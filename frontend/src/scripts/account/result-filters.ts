@@ -2,7 +2,6 @@ import * as Misc from "../misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
-import * as MonkeyTypes from "../types/interfaces";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   difficulty: {
@@ -223,9 +222,10 @@ export function updateActive(): void {
         ret += aboveChartDisplay.tags.array
           ?.map((id) => {
             if (id == "none") return id;
-            const name = DB.getSnapshot().tags?.filter((t) => t._id == id)[0];
+            const snapshot = DB.getSnapshot();
+            const name = snapshot.tags?.filter((t) => t._id == id)[0];
             if (name !== undefined) {
-              return DB.getSnapshot().tags?.filter((t) => t._id == id)[0].name;
+              return snapshot.tags?.filter((t) => t._id == id)[0].name;
             }
             return name;
           })
@@ -318,14 +318,17 @@ export function updateTags(): void {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
-  if (DB.getSnapshot().tags?.length || 0 > 0) {
+
+  const snapshot = DB.getSnapshot();
+
+  if (snapshot.tags?.length || 0 > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    DB.getSnapshot().tags?.forEach((tag) => {
+    snapshot.tags?.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
@@ -419,12 +422,12 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   filters["mode"][Config.mode] = true;
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
-      const configTime = Config.time as MonkeyTypes.DefaultTime;
+      const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
       filters["time"][configTime] = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.time)) {
-      const configWords = Config.words as MonkeyTypes.DefaultWords;
+      const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
       filters["words"][configWords] = true;
     }
   } else if (Config.mode === "quote") {
@@ -461,6 +464,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   }
 
   filters["tags"]["none"] = true;
+
   DB.getSnapshot().tags?.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
