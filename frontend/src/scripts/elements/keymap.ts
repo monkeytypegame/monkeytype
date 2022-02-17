@@ -172,93 +172,128 @@ export function refreshKeys(layout: string): void {
       }
     }
 
-    if ((lts as typeof layouts["qwerty"]).keymapShowTopRow) {
-      $(".keymap .r1").removeClass("hidden");
-    } else {
-      $(".keymap .r1").addClass("hidden");
-    }
+    const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
 
-    if (Config.keymapStyle === "alice") {
-      $(".keymap .extraKey").removeClass("hidden");
-    } else {
-      $(".keymap .extraKey").addClass("hidden");
-    }
+    // if (Config.keymapStyle === "alice") {
+    //   $(".keymap .extraKey").removeClass("hidden");
+    // } else {
+    //   $(".keymap .extraKey").addClass("hidden");
+    // }
 
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(
-      layoutString.replace(/_/g, " ")
-    );
+    // $($(".keymap .r5 .keymap-key .letter")[0]).text(
+    //   layoutString.replace(/_/g, " ")
+    // );
 
-    if ((lts as any).iso) {
-      $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
-    } else {
-      $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
-    }
+    // if (lts.iso) {
+    //   $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
+    // } else {
+    //   $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
+    // }
+    // const layoutKeys = (lts as typeof layouts["qwerty"]).keys;
+    // const toReplace = layoutKeys.row1.slice(1,layoutKeys.row1.length).concat(layoutKeys.row2).concat(layoutKeys.row3).concat(layoutKeys.row4).concat(layoutKeys.row5);
+    // let count = 0;
 
-    const toReplace = (lts as typeof layouts["qwerty"]).keys.slice(1, 48);
-    let count = 0;
+    let keymapElement = "";
+
+    Object.keys(lts.keys).forEach((row, index) => {
+      const rowKeys = lts.keys[row];
+      let rowElement = "";
+      if (row === "row1" && !showTopRow) {
+        return;
+      }
+
+      if (row === "row2" || row === "row3" || row === "row4") {
+        rowElement += "<div></div>";
+      }
+
+      if (row === "row4" && lts.iso === undefined) {
+        rowElement += "<div></div>";
+      }
+
+      if (row === "row5") {
+        rowElement += "<div></div>";
+        rowElement += `<div class="keymap-key key-space">
+          <div class="letter">${layoutString.replace(/_/g, " ")}</div>
+        </div>`;
+      } else {
+        for (let i = 0; i < rowKeys.length; i++) {
+          if (row === "row2" && i === 12) continue;
+          const key = rowKeys[i];
+          const keyElement = `<div class="keymap-key" data-key="${key}">
+              <div class="letter">${key[0]}</div>
+          </div>`;
+          rowElement += keyElement;
+        }
+      }
+
+      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+    });
+
+    $(".keymap").html(keymapElement);
 
     // let repeatB = false;
-    $(".keymap .keymap-key .letter")
-      .map(function () {
-        if (count < toReplace.length) {
-          const key = toReplace[count].charAt(0);
-          this.innerHTML = key;
+    // $(".keymap .keymap-key .letter")
+    //   .map(function (_index, element) {
+    //     if ($(element).hasClass("iso-key") && lts.iso === undefined) return;
+    //     if (count < toReplace.length) {
+    //       const key = toReplace[count].charAt(0);
+    //       this.innerHTML = key;
 
-          if (!this.parentElement) return;
+    //       if (!this.parentElement) return;
 
-          switch (key) {
-            case "\\":
-            case "|":
-              this.parentElement.id = "KeyBackslash";
-              break;
-            case "}":
-            case "]":
-              this.parentElement.id = "KeyRightBracket";
-              break;
-            case "{":
-            case "[":
-              this.parentElement.id = "KeyLeftBracket";
-              break;
-            case '"':
-            case "'":
-              this.parentElement.id = "KeyQuote";
-              break;
-            case ":":
-            case ";":
-              this.parentElement.id = "KeySemicolon";
-              break;
-            case "<":
-            case ",":
-              this.parentElement.id = "KeyComma";
-              break;
-            case ">":
-            case ".":
-              this.parentElement.id = "KeyPeriod";
-              break;
-            case "?":
-            case "/":
-              this.parentElement.id = "KeySlash";
-              break;
-            case "":
-              this.parentElement.id = "KeySpace";
-              break;
-            default:
-              this.parentElement.id = `Key${key.toUpperCase()}`;
-          }
-        }
+    //       switch (key) {
+    //         case "\\":
+    //         case "|":
+    //           this.parentElement.id = "KeyBackslash";
+    //           break;
+    //         case "}":
+    //         case "]":
+    //           this.parentElement.id = "KeyRightBracket";
+    //           break;
+    //         case "{":
+    //         case "[":
+    //           this.parentElement.id = "KeyLeftBracket";
+    //           break;
+    //         case '"':
+    //         case "'":
+    //           this.parentElement.id = "KeyQuote";
+    //           break;
+    //         case ":":
+    //         case ";":
+    //           this.parentElement.id = "KeySemicolon";
+    //           break;
+    //         case "<":
+    //         case ",":
+    //           this.parentElement.id = "KeyComma";
+    //           break;
+    //         case ">":
+    //         case ".":
+    //           this.parentElement.id = "KeyPeriod";
+    //           break;
+    //         case "?":
+    //         case "/":
+    //           this.parentElement.id = "KeySlash";
+    //           break;
+    //         case "":
+    //           this.parentElement.id = "KeySpace";
+    //           break;
+    //         default:
+    //           this.parentElement.id = `Key${key.toUpperCase()}`;
+    //       }
+    //     }
 
-        // if (count == 41 && !repeatB) {
-        //   repeatB = true;
-        // }else{
-        //   repeatB = false;
-        //   count++;
-        // }
+    //     // if (count == 41 && !repeatB) {
+    //     //   repeatB = true;
+    //     // }else{
+    //     //   repeatB = false;
+    //     //   count++;
+    //     // }
 
-        count++;
+    //     count++;
 
-        // }
-      })
-      .get();
+    //     // }
+    //   })
+    //   .get();
   } catch (e) {
     if (e instanceof Error) {
       console.log(
