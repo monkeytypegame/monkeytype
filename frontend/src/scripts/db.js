@@ -1,3 +1,4 @@
+import ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
@@ -7,7 +8,7 @@ let dbSnapshot = null;
 
 export function updateName(uid, name) {
   //TODO update
-  axiosInstance.patch("/user/name", {
+  axiosInstance.patch("/users/name", {
     name,
   });
 }
@@ -56,16 +57,12 @@ export async function initSnapshot() {
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    let promises = await Promise.all([
-      axiosInstance.get("/user"),
-      axiosInstance.get("/config"),
-      axiosInstance.get("/user/tags"),
-      axiosInstance.get("/presets"),
-    ]);
-    let userData = promises[0].data;
-    let configData = promises[1].data;
-    let tagsData = promises[2].data;
-    let presetsData = promises[3].data;
+    const [userData, configData, tagsData, presetsData] = await Promise.all([
+      ape.users.getData(),
+      ape.configs.get(),
+      ape.users.getTags(),
+      ape.presets.get(),
+    ]).map((response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -560,15 +557,12 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    try {
-      await axiosInstance.post("/config/save", { config });
-    } catch (e) {
-      AccountButton.loading(false);
 
-      let msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to save config: " + msg, -1);
-      return;
+    const response = await ape.configs.save(config);
+    if (response.status !== 200) {
+      Notifications.add("Failed to save config: " + response.message, -1);
     }
+
     AccountButton.loading(false);
   }
 }
