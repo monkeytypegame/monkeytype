@@ -1,4 +1,4 @@
-import ape from "../ape";
+import Ape from "../ape";
 import * as DB from "../db";
 import * as Config from "../config";
 import * as Loader from "../elements/loader";
@@ -91,7 +91,7 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    const response = await ape.presets.add(presetName, configChanges);
+    const response = await Ape.presets.add(presetName, configChanges);
 
     if (response.status !== 200) {
       Notifications.add("Failed to add preset: " + response.message, -1);
@@ -104,7 +104,7 @@ async function apply(): Promise<void> {
       });
     }
   } else if (action === "edit") {
-    const response = await ape.presets.edit(
+    const response = await Ape.presets.edit(
       presetId,
       presetName,
       configChanges
@@ -123,7 +123,7 @@ async function apply(): Promise<void> {
       }
     }
   } else if (action === "remove") {
-    const response = await ape.presets.delete(presetId);
+    const response = await Ape.presets.delete(presetId);
 
     if (response.status !== 200) {
       Notifications.add("Failed to remove preset: " + response.message, -1);
