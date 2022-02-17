@@ -8,7 +8,7 @@ const layouts: MonkeyTypes.Layouts = {
       row3: ["aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", ";:", "'\""],
       row4: ["zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?"],
       row5: [" "]
-    } as MonkeyTypes.KeysANSI
+    }
   }
 };
 
@@ -946,4 +946,7 @@ const layouts2 = {
     ]
   },
 };
+
+console.log(layouts2);
+
 export default layouts;
