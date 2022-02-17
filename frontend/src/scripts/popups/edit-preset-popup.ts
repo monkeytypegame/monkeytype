@@ -105,7 +105,7 @@ async function apply(): Promise<void> {
     }
   } else if (action === "edit") {
     const response = await ape.presets.edit(
-      presetId!,
+      presetId,
       presetName,
       configChanges
     );
