@@ -543,31 +543,14 @@ declare namespace MonkeyTypes {
       keymapShowTopRow: boolean;
       iso?: true;
       type: "iso" | "ansi" | "ortho";
-      keys: KeysISO | KeysANSI | KeysOrtho;
+      keys: Keys;
     };
   }
-
-  interface KeysISO {
-    row1: string[]; //13
-    row2: string[]; //12
-    row3: string[]; //12
-    row4: string[]; //11
-    row5: string[]; //1
-  }
-
-  interface KeysANSI {
-    row1: string[]; //13
-    row2: string[]; //13
-    row3: string[]; //11
-    row4: string[]; //10
-    row5: string[]; //1
-  }
-
-  interface KeysOrtho {
-    row1: string[]; //10
-    row2: string[]; //10
-    row3: string[]; //10
-    row4: string[]; //10
-    row5: string[]; //1
+  interface Keys {
+    [row1: string]: string[];
+    [row2: string]: string[];
+    [row3: string]: string[];
+    [row4: string]: string[];
+    [row5: string]: string[];
   }
 }
