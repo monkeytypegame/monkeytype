@@ -258,7 +258,7 @@ function handleSpace() {
   } //end of line wrap
 
   if (Config.keymapMode === "react") {
-    Keymap.flashKey("Space", true);
+    Keymap.flashKey(" ", true);
   }
   if (
     Config.mode === "words" ||
@@ -523,8 +523,9 @@ function handleChar(char, charIndex) {
     }
   }
 
-  let activeWordTopBeforeJump = document.querySelector("#words .word.active")
-    .offsetTop;
+  let activeWordTopBeforeJump = document.querySelector(
+    "#words .word.active"
+  ).offsetTop;
   TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
