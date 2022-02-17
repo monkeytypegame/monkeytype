@@ -9,7 +9,18 @@ const layouts: MonkeyTypes.Layouts = {
       row4: ["zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?"],
       row5: [" "]
     }
-  }
+  },
+  colemak_dh_iso: {
+    keymapShowTopRow: false,
+    type: "iso",
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      row2: ["qQ", "wW", "fF", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "[{", "]}" ],
+      row3: ["aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\"", "\\|"],
+      row4: ["zZ", "xX", "cC", "dD", "vV", "\\|", "kK", "hH", ",<", ".>", "/?"],
+      row5: [" "]
+    }
+  },
 };
 
 // @ts-ignore
