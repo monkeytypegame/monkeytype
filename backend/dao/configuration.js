@@ -1,7 +1,7 @@
-const _ = require("lodash");
-const db = require("../init/db");
-const BASE_CONFIGURATION = require("../constants/base-configuration");
-const Logger = require("../handlers/logger.js");
+import _ from "lodash";
+import db from "../init/db";
+import BASE_CONFIGURATION from "../constants/base-configuration";
+import Logger from "../handlers/logger.js";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
@@ -113,4 +113,4 @@ class ConfigurationDAO {
   }
 }
 
-module.exports = ConfigurationDAO;
+export default ConfigurationDAO;

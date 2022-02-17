@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+import MongoClient from "mongodb/lib/mongo_client.js";
 
 class DatabaseClient {
   static mongoClient = null;
@@ -72,4 +72,4 @@ class DatabaseClient {
   }
 }
 
-module.exports = DatabaseClient;
+export default DatabaseClient;

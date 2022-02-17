@@ -1,9 +1,9 @@
-const { mongoDB } = require("../init/mongodb");
+import db from "../init/db";
 
 class PsaDAO {
   static async get(_uid, _config) {
-    return await mongoDB().collection("psa").find().toArray();
+    return await db.collection("psa").find().toArray();
   }
 }
 
-module.exports = PsaDAO;
+export default PsaDAO;

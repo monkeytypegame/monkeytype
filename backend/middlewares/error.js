@@ -1,11 +1,11 @@
-const db = require("../init/db");
-const { v4: uuidv4 } = require("uuid");
-const Logger = require("../handlers/logger");
-const MonkeyError = require("../handlers/error");
-const {
+import db from "../init/db";
+import { v4 as uuidv4 } from "uuid";
+import Logger from "../handlers/logger";
+import MonkeyError from "../handlers/error";
+import {
   MonkeyResponse,
   handleMonkeyResponse,
-} = require("../handlers/monkey-response");
+} from "../handlers/monkey-response";
 
 async function errorHandlingMiddleware(error, req, res, _next) {
   const monkeyResponse = new MonkeyResponse();
@@ -55,4 +55,4 @@ async function errorHandlingMiddleware(error, req, res, _next) {
   return handleMonkeyResponse(monkeyResponse, res);
 }
 
-module.exports = errorHandlingMiddleware;
+export default errorHandlingMiddleware;

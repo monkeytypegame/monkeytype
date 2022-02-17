@@ -1,16 +1,17 @@
-const { config } = require("dotenv");
-const path = require("path");
-config({ path: path.join(__dirname, ".env") });
+import path from "path";
+import serviceAccount from "./credentials/serviceAccountKey.json";
+import admin, { ServiceAccount } from "firebase-admin";
+import db from "./init/db";
+import { config } from "dotenv";
 
-const db = require("./init/db");
-const admin = require("firebase-admin");
-// eslint-disable-next-line
-const serviceAccount = require("./credentials/serviceAccountKey.json");
+config({ path: path.join(__dirname, ".env") });
 
 async function main() {
   await db.connect();
   await admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(
+      (serviceAccount as unknown) as ServiceAccount
+    ),
   });
   console.log("Database Connected!!");
   refactor();
