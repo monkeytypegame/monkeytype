@@ -180,25 +180,6 @@ export function refresh(layout: string = Config.layout): void {
 
     const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
 
-    // if (Config.keymapStyle === "alice") {
-    //   $("#keymap .extraKey").removeClass("hidden");
-    // } else {
-    //   $("#keymap .extraKey").addClass("hidden");
-    // }
-
-    // $($("#keymap .r5 .keymap-key .letter")[0]).text(
-    //   layoutString.replace(/_/g, " ")
-    // );
-
-    // if (lts.iso) {
-    //   $("#keymap .r4 .keymap-key.first").removeClass("hidden-key");
-    // } else {
-    //   $("#keymap .r4 .keymap-key.first").addClass("hidden-key");
-    // }
-    // const layoutKeys = (lts as typeof layouts["qwerty"]).keys;
-    // const toReplace = layoutKeys.row1.slice(1,layoutKeys.row1.length).concat(layoutKeys.row2).concat(layoutKeys.row3).concat(layoutKeys.row4).concat(layoutKeys.row5);
-    // let count = 0;
-
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
 
