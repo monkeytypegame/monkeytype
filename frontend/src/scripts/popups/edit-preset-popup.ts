@@ -115,7 +115,7 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset updated", 1);
       const preset: MonkeyTypes.Preset = snapshotPresets.filter(
-        (preset: MonkeyTypes.Preset) => preset._id == presetId
+        (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
       preset.name = presetName;
       if (updateConfig) {
@@ -154,7 +154,7 @@ $("#presetWrapper #presetEdit .button").click(() => {
 });
 
 $("#presetWrapper #presetEdit input").keypress((e) => {
-  if (e.keyCode == 13) {
+  if (e.keyCode === 13) {
     apply();
   }
 });
