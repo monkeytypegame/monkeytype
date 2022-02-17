@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "../test/layouts";
 import * as SlowTimer from "../states/slow-timer";
@@ -158,7 +158,8 @@ export function show(): void {
   $("#keymap").removeClass("hidden");
 }
 
-export function refresh(layout: string): void {
+export function refresh(layout: string = Config.layout): void {
+  if (!layout) return;
   try {
     let lts = layouts[layout as keyof typeof layouts]; //layout to show
     let layoutString = layout;
@@ -170,6 +171,11 @@ export function refresh(layout: string): void {
         lts = layouts[Config.layout as keyof typeof layouts];
         layoutString = Config.layout;
       }
+    }
+
+    if (layout === "default") {
+      lts = layouts["qwerty"];
+      layoutString = "default";
     }
 
     const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
@@ -193,6 +199,9 @@ export function refresh(layout: string): void {
     // const toReplace = layoutKeys.row1.slice(1,layoutKeys.row1.length).concat(layoutKeys.row2).concat(layoutKeys.row3).concat(layoutKeys.row4).concat(layoutKeys.row5);
     // let count = 0;
 
+    const isMatrix =
+      Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
+
     let keymapElement = "";
 
     Object.keys(lts.keys).forEach((row, index) => {
@@ -202,11 +211,11 @@ export function refresh(layout: string): void {
         return;
       }
 
-      if (row === "row2" || row === "row3" || row === "row4") {
+      if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
         rowElement += "<div></div>";
       }
 
-      if (row === "row4" && lts.iso === undefined) {
+      if (row === "row4" && lts.iso === undefined && !isMatrix) {
         rowElement += "<div></div>";
       }
 
@@ -214,6 +223,10 @@ export function refresh(layout: string): void {
         rowElement += "<div></div>";
         rowElement += `<div class="keymap-key key-space">
           <div class="letter">${layoutString.replace(/_/g, " ")}</div>
+        </div>`;
+        rowElement += `<div class="key-split-spacer"></div>`;
+        rowElement += `<div class="keymap-key key-split-space">
+          <div class="letter"></div>
         </div>`;
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
@@ -225,10 +238,23 @@ export function refresh(layout: string): void {
           )
             continue;
           const key = rowKeys[i];
-          const keyElement = `<div class="keymap-key" data-key="${key}">
+          const bump = row === "row3" && (i === 3 || i === 7) ? true : false;
+          const keyElement = `<div class="keymap-key ${bump}" data-key="${key}">
               <div class="letter">${key[0]}</div>
+              ${bump ? "<div class='bump'></div>" : ""}
           </div>`;
-          rowElement += keyElement;
+
+          let splitSpacer = "";
+          if (
+            Config.keymapStyle === "split" ||
+            Config.keymapStyle === "split_matrix"
+          ) {
+            if (i === 5) {
+              splitSpacer += `<div class="key-split-spacer"></div>`;
+            }
+          }
+
+          rowElement += splitSpacer + keyElement;
         }
       }
 
@@ -311,13 +337,13 @@ export function refresh(layout: string): void {
       console.log(
         "something went wrong when changing layout, resettings: " + e.message
       );
-      UpdateConfig.setKeymapLayout("qwerty", true);
+      // UpdateConfig.setKeymapLayout("qwerty", true);
     }
   }
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
     refresh(Config.keymapLayout);
-  if (eventKey === "keymapLayout") refresh(eventValue as string);
+  if (eventKey === "keymapLayout" || eventKey === "keymapStyle") refresh();
 });
