@@ -11,7 +11,8 @@
     "install:all": "sh ./bin/install.sh",
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
-    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'"
+    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "validate-json-schema": "cd frontend && npx gulp validate-json-schema"
   },
   "engines": {
     "npm": "8.1.2"
@@ -30,6 +31,7 @@
     "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "4.3.0",
+    "jsonschema": "^1.4.0",
     "prettier": "2.1.2",
     "pretty-quick": "3.1.0"
   },
