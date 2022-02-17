@@ -151,11 +151,11 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
 }
 
 export function hide(): void {
-  $(".keymap").addClass("hidden");
+  $("#keymap").addClass("hidden");
 }
 
 export function show(): void {
-  $(".keymap").removeClass("hidden");
+  $("#keymap").removeClass("hidden");
 }
 
 export function refreshKeys(layout: string): void {
@@ -175,19 +175,19 @@ export function refreshKeys(layout: string): void {
     const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
 
     // if (Config.keymapStyle === "alice") {
-    //   $(".keymap .extraKey").removeClass("hidden");
+    //   $("#keymap .extraKey").removeClass("hidden");
     // } else {
-    //   $(".keymap .extraKey").addClass("hidden");
+    //   $("#keymap .extraKey").addClass("hidden");
     // }
 
-    // $($(".keymap .r5 .keymap-key .letter")[0]).text(
+    // $($("#keymap .r5 .keymap-key .letter")[0]).text(
     //   layoutString.replace(/_/g, " ")
     // );
 
     // if (lts.iso) {
-    //   $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
+    //   $("#keymap .r4 .keymap-key.first").removeClass("hidden-key");
     // } else {
-    //   $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
+    //   $("#keymap .r4 .keymap-key.first").addClass("hidden-key");
     // }
     // const layoutKeys = (lts as typeof layouts["qwerty"]).keys;
     // const toReplace = layoutKeys.row1.slice(1,layoutKeys.row1.length).concat(layoutKeys.row2).concat(layoutKeys.row3).concat(layoutKeys.row4).concat(layoutKeys.row5);
@@ -229,10 +229,10 @@ export function refreshKeys(layout: string): void {
       keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
     });
 
-    $(".keymap").html(keymapElement);
+    $("#keymap").html(keymapElement);
 
     // let repeatB = false;
-    // $(".keymap .keymap-key .letter")
+    // $("#keymap .keymap-key .letter")
     //   .map(function (_index, element) {
     //     if ($(element).hasClass("iso-key") && lts.iso === undefined) return;
     //     if (count < toReplace.length) {
