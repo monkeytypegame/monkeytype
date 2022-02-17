@@ -154,9 +154,9 @@ export function updateActive(): void {
       all: true,
       array: [],
     };
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+    (Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+      typeof group
+    >[]).forEach((filter) => {
       const groupAboveChartDisplay = aboveChartDisplay[group];
       if (getFilter(group, filter)) {
         groupAboveChartDisplay["array"]?.push(filter);
@@ -298,9 +298,9 @@ export function toggle<G extends MonkeyTypes.Group>(
         filters["date"][date] = false;
       });
     }
-    filters[group][filter] = !filters[group][
+    filters[group][filter] = (!filters[group][
       filter
-    ] as unknown as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
+    ] as unknown) as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
     save();
   } catch (e) {
     Notifications.add(
@@ -349,9 +349,9 @@ $(
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
     (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
-      (
-        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-      ).forEach((filter) => {
+      (Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+        typeof group
+      >[]).forEach((filter) => {
         if (group === "date") {
           // TODO figure out how to fix this
           filters[group][filter] = false as boolean & (string | number)[];
@@ -364,9 +364,9 @@ $(
   } else if ($(e.target).hasClass("noFilters")) {
     (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
       if (group !== "date") {
-        (
-          Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-        ).forEach((filter) => {
+        (Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+          typeof group
+        >[]).forEach((filter) => {
           // TODO figure out how to fix this
           filters[group][filter] = false as boolean & (string | number)[];
         });
@@ -374,9 +374,9 @@ $(
     });
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      (
-        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-      ).forEach((filter) => {
+      (Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+        typeof group
+      >[]).forEach((filter) => {
         // TODO figure out how to fix this
         filters[group][filter] = false as boolean & (string | number)[];
       });
@@ -392,9 +392,9 @@ $(
 
 $(".pageAccount .topFilters .button.allFilters").click(() => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+    (Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+      typeof group
+    >[]).forEach((filter) => {
       if (group === "date") {
         // TODO figure out how to fix this
         filters[group][filter] = false as boolean & (string | number)[];
@@ -410,9 +410,9 @@ $(".pageAccount .topFilters .button.allFilters").click(() => {
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+    (Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+      typeof group
+    >[]).forEach((filter) => {
       // TODO figure out how to fix this
       filters[group][filter] = false as boolean & (string | number)[];
     });
@@ -426,16 +426,14 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
       filters["time"][configTime] = true;
     }
   } else if (Config.mode === "words") {
-    if ([10, 25, 50, 100, 200].includes(Config.time)) {
+    if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
       filters["words"][configWords] = true;
     }
   } else if (Config.mode === "quote") {
-    (
-      Object.keys(
-        getGroup("quoteLength")
-      ) as MonkeyTypes.Filter<"quoteLength">[]
-    ).forEach((ql) => {
+    (Object.keys(getGroup("quoteLength")) as MonkeyTypes.Filter<
+      "quoteLength"
+    >[]).forEach((ql) => {
       // TODO figure out how to fix this
       filters["quoteLength"][ql] = true as boolean &
         ("all" | "array" | "short" | "medium" | "long" | "thicc")[];
