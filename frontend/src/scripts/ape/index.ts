@@ -51,12 +51,10 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.data) {
-          return error.response.data as Ape.Response;
-        }
         return {
-          status: 500,
-          message: error.message,
+          status: error.response?.status ?? 500,
+          message: "Something went wrong",
+          ...(error.response?.data ?? {}),
         };
       }
     }
