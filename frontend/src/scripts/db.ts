@@ -173,7 +173,7 @@ export async function getUserResults(): Promise<boolean> {
         if (result.numbers === undefined) result.numbers = false;
         if (result.punctuation === undefined) result.punctuation = false;
       });
-      results = results.sort((a, b) => a.timestamp - b.timestamp);
+      results = results.sort((a, b) => b.timestamp - a.timestamp);
       dbSnapshot.results = results;
       return true;
     } catch (e: any) {
@@ -344,11 +344,9 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
     try {
       if (!dbSnapshot.personalBests) return ret;
 
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as MonkeyTypes.PersonalBest[]
-      ).forEach((pb) => {
+      ((dbSnapshot.personalBests[mode][
+        mode2
+      ] as unknown) as MonkeyTypes.PersonalBest[]).forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -406,14 +404,13 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     }
 
     if (dbSnapshot.personalBests[mode][mode2] === undefined)
-      dbSnapshot.personalBests[mode][mode2] =
-        [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
-
-    (
       dbSnapshot.personalBests[mode][
         mode2
-      ] as unknown as MonkeyTypes.PersonalBest[]
-    ).forEach((pb) => {
+      ] = ([] as unknown) as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+
+    ((dbSnapshot.personalBests[mode][
+      mode2
+    ] as unknown) as MonkeyTypes.PersonalBest[]).forEach((pb) => {
       if (
         pb.punctuation == punctuation &&
         pb.difficulty == difficulty &&
@@ -432,11 +429,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     });
     if (!found) {
       //nothing found
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as MonkeyTypes.PersonalBest[]
-      ).push({
+      ((dbSnapshot.personalBests[mode][
+        mode2
+      ] as unknown) as MonkeyTypes.PersonalBest[]).push({
         language: language,
         difficulty: difficulty,
         lazyMode: lazyMode,
@@ -468,9 +463,9 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
     let ret = 0;
     const filteredtag = dbSnapshot.tags?.filter((t) => t._id === tagId)[0];
     try {
-      const personalBests = filteredtag?.personalBests[mode][
+      const personalBests = (filteredtag?.personalBests[mode][
         mode2
-      ] as unknown as MonkeyTypes.PersonalBest[];
+      ] as unknown) as MonkeyTypes.PersonalBest[];
       personalBests.forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
@@ -514,14 +509,13 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     try {
       let found = false;
       if (filteredtag.personalBests[mode][mode2] === undefined) {
-        filteredtag.personalBests[mode][mode2] =
-          [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
-      }
-      (
         filteredtag.personalBests[mode][
           mode2
-        ] as unknown as MonkeyTypes.PersonalBest[]
-      ).forEach((pb) => {
+        ] = ([] as unknown) as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+      }
+      ((filteredtag.personalBests[mode][
+        mode2
+      ] as unknown) as MonkeyTypes.PersonalBest[]).forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -540,11 +534,9 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
       });
       if (!found) {
         //nothing found
-        (
-          filteredtag.personalBests[mode][
-            mode2
-          ] as unknown as MonkeyTypes.PersonalBest[]
-        ).push({
+        ((filteredtag.personalBests[mode][
+          mode2
+        ] as unknown) as MonkeyTypes.PersonalBest[]).push({
           language: language,
           difficulty: difficulty,
           lazyMode: lazyMode,
@@ -572,7 +564,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
           custom: [],
         };
       }
-      filteredtag.personalBests[mode][mode2] = [
+      filteredtag.personalBests[mode][mode2] = ([
         {
           language: language,
           difficulty: difficulty,
@@ -584,7 +576,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+      ] as unknown) as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
     }
   }
 
