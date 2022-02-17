@@ -542,6 +542,7 @@ declare namespace MonkeyTypes {
     [layout: string]: {
       keymapShowTopRow: boolean;
       iso?: true;
+      type: "iso" | "ansi" | "ortho";
       keys: KeysISO | KeysANSI | KeysOrtho;
     };
   }

@@ -1,6 +1,7 @@
 const layouts: MonkeyTypes.Layouts = {
   qwerty: {
     keymapShowTopRow: false,
+    type: "ansi",
     keys: {
       row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
       row2: ["qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "[{", "]}", "\\|"],
