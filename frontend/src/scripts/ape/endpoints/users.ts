@@ -9,8 +9,8 @@ export default function getUsersEndpoints(
 
   async function create(
     name: string,
-    email: string,
-    uid: string
+    email?: string,
+    uid?: string
   ): Ape.EndpointData {
     const payload = {
       email,

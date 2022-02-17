@@ -49,8 +49,15 @@ declare namespace Ape {
 
     presets: {
       get: Endpoint;
-      add: (preset: MonkeyTypes.Preset) => EndpointData;
-      edit: (preset: MonkeyTypes.Preset) => EndpointData;
+      add: (
+        presetName: string,
+        configChanges: MonkeyTypes.ConfigChanges
+      ) => EndpointData;
+      edit: (
+        presetId: string,
+        presetName: string,
+        configChanges: MonkeyTypes.ConfigChanges
+      ) => EndpointData;
       delete: (presetId: string) => EndpointData;
     };
 
@@ -86,7 +93,7 @@ declare namespace Ape {
 
     users: {
       getData: Endpoint;
-      create: (name: string, email: string, uid: string) => EndpointData;
+      create: (name: string, email?: string, uid?: string) => EndpointData;
       getNameAvailability: (name: string) => EndpointData;
       delete: Endpoint;
       updateName: (name: string) => EndpointData;
