@@ -116,12 +116,6 @@
       "id": 18
     },
     {
-      "text": "Moi j'aime les moches. Parce qu'on se les fait pas piquer. J'aime les moches. On se sent plus beau à côté. Moi j'aime les moches. Et j'ai du mal à m'en passer. J'aime les moches.",
-      "source": "Max Boublil \"J'aime les moches\"",
-      "length": 178,
-      "id": 19
-    },
-    {
       "text": "La principale critique vient du fait que l’arrangement AZERTY provient du QWERTY, lui-même optimisé pour pallier les contraintes mécaniques des premières machines à écrire et non pas pour la langue anglaise. L’origine de l’AZERTY est plutôt sombre mais il est clair qu’il n’a pas été pensé pour la langue française.",
       "source": "Wikipedia - AZERTY",
       "length": 315,
@@ -678,6 +672,12 @@
       "source": "La Rivière du sixième jour de Norman Maclean",
       "length": 426,
       "id": 111
+    },
+    {
+      "text": "Moi j'aime les moches. Parce qu'on se les fait pas piquer. J'aime les moches. On se sent plus beau à côté. Moi j'aime les moches. Et j'ai du mal à m'en passer. J'aime les moches.",
+      "source": "Max Boublil \"J'aime les moches\"",
+      "length": 178,
+      "id": 112
     }
   ]
 }
