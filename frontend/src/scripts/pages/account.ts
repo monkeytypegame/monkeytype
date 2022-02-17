@@ -304,7 +304,7 @@ export function update(): void {
           }
 
           if (result.quoteLength != null) {
-            let filter: MonkeyTypes.QuoteModes;
+            let filter: MonkeyTypes.QuoteModes | undefined = undefined;
             if (result.quoteLength === 0) {
               filter = "short";
             } else if (result.quoteLength === 1) {
@@ -313,11 +313,9 @@ export function update(): void {
               filter = "long";
             } else if (result.quoteLength === 3) {
               filter = "thicc";
-            } else {
-              filter = "medium";
             }
             if (
-              filter !== null &&
+              filter !== undefined &&
               !ResultFilters.getFilter("quoteLength", filter)
             ) {
               if (filterDebug)
@@ -643,10 +641,8 @@ export function update(): void {
         "Average Wpm";
     }
 
-    ChartController.accountActivity.data.datasets[0].data =
-      activityChartData_time;
-    ChartController.accountActivity.data.datasets[1].data =
-      activityChartData_avgWpm;
+    ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
+    ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
 
     if (Config.alwaysShowCPM) {
       ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
@@ -655,6 +651,12 @@ export function update(): void {
       ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
         "Words per Minute";
     }
+
+    console.log(
+      chartData.map((a) => {
+        return { x: a.x, ts: a.timestamp };
+      })
+    );
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
     ChartController.accountHistory.data.datasets[1].data = accChartData;
@@ -668,8 +670,9 @@ export function update(): void {
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
     if (!Config.startGraphsAtZero) {
-      ChartController.accountHistory.options.scales.yAxes[0].ticks.min =
-        Math.floor(minWpmChartVal);
+      ChartController.accountHistory.options.scales.yAxes[0].ticks.min = Math.floor(
+        minWpmChartVal
+      );
     } else {
       ChartController.accountHistory.options.scales.yAxes[0].ticks.min = 0;
     }
