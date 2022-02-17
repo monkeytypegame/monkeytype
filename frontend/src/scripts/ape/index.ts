@@ -58,7 +58,7 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
       if (axios.isAxiosError(typedError)) {
         return {
           status: typedError.response?.status ?? 500,
-          message: otherErrorMessage, // If provided, this message will be overwritten by the message sent back by the response.
+          message: otherErrorMessage, // If provided, this message will be overwritten by the message sent back by the server.
           ...typedError.response?.data,
         };
       }
