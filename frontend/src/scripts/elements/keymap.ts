@@ -196,7 +196,7 @@ export function refresh(layout: string = Config.layout): void {
         rowElement += "<div></div>";
       }
 
-      if (row === "row4" && lts.iso === undefined && !isMatrix) {
+      if (row === "row4" && lts.type !== "iso" && !isMatrix) {
         rowElement += "<div></div>";
       }
 
