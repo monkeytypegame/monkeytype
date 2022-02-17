@@ -20,10 +20,9 @@
       "id": 2
     },
     {
-      "text" "asd",
-      "source" "asdf",
-      "length": 1,
-      "id": 3
+      "text": "asd",
+      "source": "asdf",
+      "length": 1
     }
   ]
 }
