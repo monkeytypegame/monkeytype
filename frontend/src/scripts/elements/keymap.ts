@@ -65,48 +65,13 @@ export function highlightKey(currentKey: string): void {
 
 export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == undefined) return;
-  switch (key) {
-    case "\\":
-    case "|":
-      key = "#KeyBackslash";
-      break;
-    case "}":
-    case "]":
-      key = "#KeyRightBracket";
-      break;
-    case "{":
-    case "[":
-      key = "#KeyLeftBracket";
-      break;
-    case '"':
-    case "'":
-      key = "#KeyQuote";
-      break;
-    case ":":
-    case ";":
-      key = "#KeySemicolon";
-      break;
-    case "<":
-    case ",":
-      key = "#KeyComma";
-      break;
-    case ">":
-    case ".":
-      key = "#KeyPeriod";
-      break;
-    case "?":
-    case "/":
-      key = "#KeySlash";
-      break;
-    case "" || "Space":
-      key = "#KeySpace";
-      break;
-    default:
-      key = `#Key${key.toUpperCase()}`;
-  }
 
-  if (key == "#KeySpace") {
+  if (key == " ") {
     key = ".key-split-space";
+  } else if (key == '"') {
+    key = `#keymap .keymap-key[data-key*='${key}']`;
+  } else {
+    key = `#keymap .keymap-key[data-key*="${key}"]`;
   }
 
   const themecolors = await ThemeColors.getAll();
@@ -171,11 +136,9 @@ export function refresh(layout: string = Config.layout): void {
         lts = layouts[Config.layout as keyof typeof layouts];
         layoutString = Config.layout;
       }
-    }
-
-    if (layout === "default") {
-      lts = layouts["qwerty"];
-      layoutString = "default";
+    } else {
+      lts = layouts[Config.keymapLayout as keyof typeof layouts];
+      layoutString = Config.keymapLayout;
     }
 
     const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
