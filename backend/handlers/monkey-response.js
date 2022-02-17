@@ -1,4 +1,4 @@
-class MonkeyResponse {
+export class MonkeyResponse {
   constructor(message, data, status = 200) {
     this.message = message;
     this.data = data ?? null;
@@ -6,7 +6,7 @@ class MonkeyResponse {
   }
 }
 
-function handleMonkeyResponse(handlerData, res) {
+export function handleMonkeyResponse(handlerData, res) {
   const isMonkeyResponse = handlerData instanceof MonkeyResponse;
   const monkeyResponse = !isMonkeyResponse
     ? new MonkeyResponse("ok", handlerData)
@@ -21,8 +21,3 @@ function handleMonkeyResponse(handlerData, res) {
 
   res.json({ message, data });
 }
-
-module.exports = {
-  MonkeyResponse,
-  handleMonkeyResponse,
-};

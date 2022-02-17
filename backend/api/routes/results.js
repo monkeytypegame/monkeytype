@@ -1,13 +1,10 @@
-const joi = require("joi");
-const { authenticateRequest } = require("../../middlewares/auth");
-const { Router } = require("express");
-const ResultController = require("../controllers/result");
-const RateLimit = require("../../middlewares/rate-limit");
-const {
-  asyncHandler,
-  validateRequest,
-} = require("../../middlewares/api-utils");
-const resultSchema = require("../schemas/result-schema");
+import ResultController from "../controllers/result";
+import resultSchema from "../schemas/result-schema";
+import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { Router } from "express";
+import { authenticateRequest } from "../../middlewares/auth";
+import joi from "joi";
 
 const router = Router();
 
@@ -50,4 +47,4 @@ router.delete(
   asyncHandler(ResultController.deleteAll)
 );
 
-module.exports = router;
+export default router;

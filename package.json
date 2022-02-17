@@ -12,6 +12,9 @@
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "start:dev-ts": "concurrently --kill-others \"cd ./frontend && npm run start:dev-ts\" \"cd ./backend && npm run start:dev\"",
+    "start:dev:fe-ts": "cd frontend && npm run start:dev-ts",
+    "deploy:live-ts": "cd frontend && npm run deploy:live-ts",
     "pr-check-json": "cd frontend && npx gulp pr-check-json",
     "pr-check-scss": "cd frontend && npx gulp pr-check-scss",
     "pr-check-ts": "cd frontend && npx gulp pr-check-ts"
@@ -35,7 +38,8 @@
     "husky": "4.3.0",
     "jsonschema": "^1.4.0",
     "prettier": "2.1.2",
-    "pretty-quick": "3.1.0"
+    "pretty-quick": "3.1.0",
+    "typescript": "^4.5.5"
   },
   "husky": {
     "hooks": {

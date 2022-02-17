@@ -1,9 +1,9 @@
-const { mongoDB } = require("../init/mongodb");
+import db from "../init/db";
 
 class QuoteRatingsDAO {
   static async submit(quoteId, language, rating, update) {
     if (update) {
-      await mongoDB()
+      await db
         .collection("quote-rating")
         .updateOne(
           { quoteId, language },
@@ -11,7 +11,7 @@ class QuoteRatingsDAO {
           { upsert: true }
         );
     } else {
-      await mongoDB()
+      await db
         .collection("quote-rating")
         .updateOne(
           { quoteId, language },
@@ -27,16 +27,14 @@ class QuoteRatingsDAO {
       ).toFixed(1)
     );
 
-    return await mongoDB()
+    return await db
       .collection("quote-rating")
       .updateOne({ quoteId, language }, { $set: { average } });
   }
 
   static async get(quoteId, language) {
-    return await mongoDB()
-      .collection("quote-rating")
-      .findOne({ quoteId, language });
+    return await db.collection("quote-rating").findOne({ quoteId, language });
   }
 }
 
-module.exports = QuoteRatingsDAO;
+export default QuoteRatingsDAO;

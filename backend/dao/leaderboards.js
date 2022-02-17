@@ -1,6 +1,6 @@
-const { mongoDB } = require("../init/mongodb");
-const Logger = require("../handlers/logger");
-const { performance } = require("perf_hooks");
+import { mongoDB } from "../init/mongodb";
+import Logger from "../handlers/logger";
+import { performance } from "perf_hooks";
 
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 50) {
@@ -11,7 +11,7 @@ class LeaderboardsDAO {
       .find()
       .sort({ rank: 1 })
       .skip(parseInt(skip))
-      .limit(parseInt(limit))
+      .limit(parseInt(limit.toString()))
       .toArray();
     return preset;
   }
@@ -131,4 +131,4 @@ class LeaderboardsDAO {
   }
 }
 
-module.exports = LeaderboardsDAO;
+export default LeaderboardsDAO;

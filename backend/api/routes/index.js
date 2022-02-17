@@ -1,5 +1,12 @@
-const { asyncHandler } = require("../../middlewares/api-utils");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import users from "./users";
+import configs from "./configs";
+import results from "./results";
+import presets from "./presets";
+import psas from "./psas";
+import leaderboards from "./leaderboards";
+import quotes from "./quotes";
+import { asyncHandler } from "../../middlewares/api-utils";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -7,13 +14,13 @@ const APP_START_TIME = Date.now();
 let requestsProcessed = 0;
 
 const API_ROUTE_MAP = {
-  "/users": require("./users"),
-  "/configs": require("./configs"),
-  "/results": require("./results"),
-  "/presets": require("./presets"),
-  "/psas": require("./psas"),
-  "/leaderboards": require("./leaderboards"),
-  "/quotes": require("./quotes"),
+  "/users": users,
+  "/configs": configs,
+  "/results": results,
+  "/presets": presets,
+  "/psas": psas,
+  "/leaderboards": leaderboards,
+  "/quotes": quotes,
 };
 
 function addApiRoutes(app) {
@@ -48,4 +55,4 @@ function addApiRoutes(app) {
   });
 }
 
-module.exports = addApiRoutes;
+export default addApiRoutes;
