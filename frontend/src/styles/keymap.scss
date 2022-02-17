@@ -47,19 +47,16 @@
       }
     }
 
-    &#KeySpace {
+    &.key-space {
+      width: 100%;
       &:hover {
         cursor: pointer;
         color: var(--main-color);
       }
     }
 
-    &#KeySpace,
-    &#KeySpace2 {
+    &.key-split-space {
       width: 100%;
-    }
-
-    &#KeySpace2 {
       opacity: 0;
     }
 
