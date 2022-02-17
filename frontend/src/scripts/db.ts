@@ -1,3 +1,4 @@
+import ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
@@ -7,7 +8,7 @@ let dbSnapshot: MonkeyTypes.Snapshot;
 
 export function updateName(uid: string, name: string): void {
   //TODO update
-  axiosInstance.patch("/user/name", {
+  axiosInstance.patch("/users/name", {
     name,
   });
 
@@ -66,16 +67,12 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const promises = await Promise.all([
-      axiosInstance.get("/user"),
-      axiosInstance.get("/config"),
-      axiosInstance.get("/user/tags"),
-      axiosInstance.get("/presets"),
-    ]);
-    const userData = promises[0].data;
-    const configData = promises[1].data;
-    const tagsData = promises[2].data;
-    const presetsData = promises[3].data;
+    const [userData, configData, tagsData, presetsData] = (await Promise.all([
+      ape.users.getData(),
+      ape.configs.get(),
+      ape.users.getTags(),
+      ape.presets.get(),
+    ])).map((response: Ape.Response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -662,17 +659,12 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    try {
-      await axiosInstance.post("/config/save", { config });
-    } catch (e: any) {
-      AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
-      if (e.response.status === 429) {
-        msg = "Too many requests. Please try again later.";
-      }
-      Notifications.add("Failed to save config: " + msg, -1);
-      return;
+
+    const response = await ape.configs.save(config);
+    if (response.status !== 200) {
+      Notifications.add("Failed to save config: " + response.message, -1);
     }
+
     AccountButton.loading(false);
   }
 }

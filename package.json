@@ -12,7 +12,7 @@
     "install:windows": ".\\bin\\install.cmd",
     "lint": "run-script-os",
     "lint:windows": ".\\node_modules\\.bin\\eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
-    "lint:default": "./node_modules/.bin/eslint './backend/**/*.{ts,js}' './frontend/src/scripts/**/*.{ts,js}'",
+    "lint:default": "eslint --ignore-pattern '**/build/**' './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
     "start:dev-ts": "concurrently --kill-others \"cd ./frontend && npm run start:dev-ts\" \"cd ./backend && npm run start:dev\"",

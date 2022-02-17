@@ -7,17 +7,30 @@ export default function getPresetsEndpoints(
     return await apeClient.get(BASE_PATH);
   }
 
-  async function add(preset: MonkeyTypes.Preset): Ape.EndpointData {
+  async function add(
+    presetName: string,
+    configChanges: MonkeyTypes.ConfigChanges
+  ): Ape.EndpointData {
     const payload = {
-      name: preset.name,
-      config: preset.config,
+      name: presetName,
+      config: configChanges,
     };
 
     return await apeClient.post(BASE_PATH, { payload });
   }
 
-  async function edit(preset: MonkeyTypes.Preset): Ape.EndpointData {
-    return await apeClient.patch(BASE_PATH, { payload: preset });
+  async function edit(
+    presetId: string,
+    presetName: string,
+    configChanges: MonkeyTypes.ConfigChanges
+  ): Ape.EndpointData {
+    const payload = {
+      _id: presetId,
+      name: presetName,
+      config: configChanges,
+    };
+
+    return await apeClient.patch(BASE_PATH, { payload });
   }
 
   async function _delete(presetId: string): Ape.EndpointData {
