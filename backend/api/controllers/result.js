@@ -1,22 +1,22 @@
-const ResultDAO = require("../../dao/result");
-const UserDAO = require("../../dao/user");
-const PublicStatsDAO = require("../../dao/public-stats");
-const BotDAO = require("../../dao/bot");
-const { validateObjectValues } = require("../../handlers/validation");
-const { stdDev, roundTo2 } = require("../../handlers/misc");
-const objecthash = require("node-object-hash")().hash;
-const Logger = require("../../handlers/logger");
-const path = require("path");
-const { config } = require("dotenv");
-config({ path: path.join(__dirname, ".env") });
-const MonkeyError = require("../../handlers/error");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import ResultDAO from "../../dao/result";
+import UserDAO from "../../dao/user";
+import PublicStatsDAO from "../../dao/public-stats";
+import BotDAO from "../../dao/bot";
+import { validateObjectValues } from "../../handlers/validation";
+import { roundTo2, stdDev } from "../../handlers/misc";
+import node_object_hash from "node-object-hash";
+import Logger from "../../handlers/logger";
+import "dotenv/config";
+import { MonkeyResponse } from "../../handlers/monkey-response";
+import MonkeyError from "../../handlers/error";
+
+const objecthash = node_object_hash().hash;
 
 let validateResult;
 let validateKeys;
 try {
   // eslint-disable-next-line
-  let module = require("../../anticheat/anticheat");
+  let module = require("anticheat");
   validateResult = module.validateResult;
   validateKeys = module.validateKeys;
   if (!validateResult || !validateKeys) throw new Error("undefined");
@@ -327,4 +327,4 @@ class ResultController {
   }
 }
 
-module.exports = ResultController;
+export default ResultController;

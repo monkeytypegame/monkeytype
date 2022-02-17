@@ -1,16 +1,18 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const fs = require("fs");
-const simpleGit = require("simple-git");
-const path = require("path");
+import simpleGit from "simple-git";
+import Mongo from "mongodb";
+const { ObjectID } = Mongo;
+import stringSimilarity from "string-similarity";
+import path from "path";
+import fs from "fs";
+import db from "../init/db";
+import MonkeyError from "../handlers/error";
+
 let git;
 try {
   git = simpleGit(path.join(__dirname, "../../../monkeytype-new-quotes"));
 } catch (e) {
   git = undefined;
 }
-const stringSimilarity = require("string-similarity");
-const { ObjectID } = require("mongodb");
 
 class NewQuotesDAO {
   static async add(text, source, language, uid) {
@@ -50,12 +52,12 @@ class NewQuotesDAO {
     if (duplicateId != -1) {
       return { duplicateId, similarityScore };
     }
-    return await mongoDB().collection("new-quotes").insertOne(quote);
+    return await db.collection("new-quotes").insertOne(quote);
   }
 
   static async get() {
     if (!git) throw new MonkeyError(500, "Git not available.");
-    return await mongoDB()
+    return await db
       .collection("new-quotes")
       .find({ approved: false })
       .sort({ timestamp: 1 })
@@ -66,7 +68,7 @@ class NewQuotesDAO {
   static async approve(quoteId, editQuote, editSource) {
     if (!git) throw new MonkeyError(500, "Git not available.");
     //check mod status
-    let quote = await mongoDB()
+    let quote = await db
       .collection("new-quotes")
       .findOne({ _id: ObjectID(quoteId) });
     if (!quote) {
@@ -86,21 +88,21 @@ class NewQuotesDAO {
     await git.pull("upstream", "master");
     if (fs.existsSync(fileDir)) {
       let quoteFile = fs.readFileSync(fileDir);
-      quoteFile = JSON.parse(quoteFile.toString());
-      quoteFile.quotes.every((old) => {
+      const quoteObject = JSON.parse(quoteFile.toString());
+      quoteObject.quotes.every((old) => {
         if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.8) {
           throw new MonkeyError(409, "Duplicate quote");
         }
       });
       let maxid = 0;
-      quoteFile.quotes.map(function (q) {
+      quoteObject.quotes.map(function (q) {
         if (q.id > maxid) {
           maxid = q.id;
         }
       });
       quote.id = maxid + 1;
-      quoteFile.quotes.push(quote);
-      fs.writeFileSync(fileDir, JSON.stringify(quoteFile, null, 2));
+      quoteObject.quotes.push(quote);
+      fs.writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
       message = `Added quote to ${language}.json.`;
     } else {
       //file doesnt exist, create it
@@ -123,18 +125,16 @@ class NewQuotesDAO {
     await git.add([`static/quotes/${language}.json`]);
     await git.commit(`Added quote to ${language}.json`);
     await git.push("origin", "master");
-    await mongoDB()
-      .collection("new-quotes")
-      .deleteOne({ _id: ObjectID(quoteId) });
+    await db.collection("new-quotes").deleteOne({ _id: ObjectID(quoteId) });
     return { quote, message };
   }
 
   static async refuse(quoteId) {
     if (!git) throw new MonkeyError(500, "Git not available.");
-    return await mongoDB()
+    return await db
       .collection("new-quotes")
       .deleteOne({ _id: ObjectID(quoteId) });
   }
 }
 
-module.exports = NewQuotesDAO;
+export default NewQuotesDAO;

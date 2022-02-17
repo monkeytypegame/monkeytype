@@ -1,12 +1,9 @@
-const { Router } = require("express");
-const { authenticateRequest } = require("../../middlewares/auth");
-const {
-  asyncHandler,
-  validateRequest,
-} = require("../../middlewares/api-utils");
-const configSchema = require("../schemas/config-schema");
-const ConfigController = require("../controllers/config");
-const RateLimit = require("../../middlewares/rate-limit");
+import { Router } from "express";
+import { authenticateRequest } from "../../middlewares/auth";
+import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import configSchema from "../schemas/config-schema";
+import ConfigController from "../controllers/config";
+import * as RateLimit from "../../middlewares/rate-limit";
 
 const router = Router();
 
@@ -29,4 +26,4 @@ router.patch(
   asyncHandler(ConfigController.saveConfig)
 );
 
-module.exports = router;
+export default router;

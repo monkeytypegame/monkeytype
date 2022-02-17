@@ -1,6 +1,6 @@
-const _ = require("lodash");
-const LeaderboardsDAO = require("../../dao/leaderboards");
-const { MonkeyResponse } = require("../../handlers/monkey-response");
+import { MonkeyResponse } from "../../handlers/monkey-response";
+import _ from "lodash";
+import LeaderboardsDAO from "../../dao/leaderboards";
 
 class LeaderboardsController {
   static async get(req, _res) {
@@ -32,4 +32,4 @@ class LeaderboardsController {
   }
 }
 
-module.exports = LeaderboardsController;
+export default LeaderboardsController;

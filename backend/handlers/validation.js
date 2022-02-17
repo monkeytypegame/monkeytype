@@ -1,6 +1,6 @@
-const MonkeyError = require("./error");
+import MonkeyError from "./error";
 
-function isUsernameValid(name) {
+export function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
   if (/.*miodec.*/.test(name.toLowerCase())) return false;
   //sorry for the bad words
@@ -15,7 +15,7 @@ function isUsernameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-function isTagPresetNameValid(name) {
+export function isTagPresetNameValid(name) {
   if (name === null || name === undefined || name === "") return false;
   if (name.length > 16) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -27,7 +27,7 @@ function isConfigKeyValid(name) {
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
 
-function validateConfig(config) {
+export function validateConfig(config) {
   Object.keys(config).forEach((key) => {
     if (!isConfigKeyValid(key)) {
       throw new MonkeyError(500, `Invalid config: ${key} failed regex check`);
@@ -66,7 +66,7 @@ function validateConfig(config) {
   return true;
 }
 
-function validateObjectValues(val) {
+export function validateObjectValues(val) {
   let errCount = 0;
   if (val === null || val === undefined) {
     //
@@ -87,10 +87,3 @@ function validateObjectValues(val) {
   }
   return errCount;
 }
-
-module.exports = {
-  isUsernameValid,
-  isTagPresetNameValid,
-  validateConfig,
-  validateObjectValues,
-};
