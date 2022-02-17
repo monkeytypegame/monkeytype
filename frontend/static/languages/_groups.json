@@ -284,7 +284,9 @@
       "code_ruby",
       "code_r",
       "code_swift",
-      "code_bash"
+      "code_bash",
+      "code_lua",
+      "code_luau"
     ]
   },
   {
