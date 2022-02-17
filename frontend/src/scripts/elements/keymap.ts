@@ -158,7 +158,7 @@ export function show(): void {
   $("#keymap").removeClass("hidden");
 }
 
-export function refreshKeys(layout: string): void {
+export function refresh(layout: string): void {
   try {
     let lts = layouts[layout as keyof typeof layouts]; //layout to show
     let layoutString = layout;
@@ -218,6 +218,12 @@ export function refreshKeys(layout: string): void {
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
           if (row === "row2" && i === 12) continue;
+          if (
+            (Config.keymapStyle === "matrix" ||
+              Config.keymapStyle === "split_matrix") &&
+            i >= 10
+          )
+            continue;
           const key = rowKeys[i];
           const keyElement = `<div class="keymap-key" data-key="${key}">
               <div class="letter">${key[0]}</div>
@@ -235,7 +241,7 @@ export function refreshKeys(layout: string): void {
     $("#keymap").removeClass("split");
     $("#keymap").removeClass("split_matrix");
     $("#keymap").removeClass("alice");
-    $("#keymap").addClass(style);
+    $("#keymap").addClass(Config.keymapStyle);
 
     // let repeatB = false;
     // $("#keymap .keymap-key .letter")
@@ -312,6 +318,6 @@ export function refreshKeys(layout: string): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
-    refreshKeys(Config.keymapLayout);
-  if (eventKey === "keymapLayout") refreshKeys(eventValue as string);
+    refresh(Config.keymapLayout);
+  if (eventKey === "keymapLayout") refresh(eventValue as string);
 });
