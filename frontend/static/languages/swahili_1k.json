@@ -1,7 +1,7 @@
 {
   "name": "swahili_1k",
   "_comment": "Source from: https://1000mostcommonwords.com/1000-most-common-swahili-words/.",
-  "leftToRight": "true",
+  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "kama",
