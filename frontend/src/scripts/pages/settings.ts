@@ -408,11 +408,10 @@ export async function fillSettingsPage(): Promise<void> {
   languageEl.select2();
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
+  layoutEl.append(`<option value='default'>off</option>`);
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
-      `<option value='${layout}'>${
-        layout === "default" ? "off" : layout.replace(/_/g, " ")
-      }</option>`
+      `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
   });
   layoutEl.select2();

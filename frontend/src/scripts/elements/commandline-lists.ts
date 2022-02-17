@@ -55,6 +55,15 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
 
 if (Object.keys(layouts).length > 0) {
   commandsLayouts.list = [];
+  commandsLayouts.list.push({
+    id: "changeLayoutDefault",
+    display: "off",
+    configValue: "default",
+    exec: (): void => {
+      UpdateConfig.setLayout("default");
+      TestLogic.restart();
+    },
+  });
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
