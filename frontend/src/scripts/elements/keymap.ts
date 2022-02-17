@@ -231,6 +231,12 @@ export function refreshKeys(layout: string): void {
 
     $("#keymap").html(keymapElement);
 
+    $("#keymap").removeClass("matrix");
+    $("#keymap").removeClass("split");
+    $("#keymap").removeClass("split_matrix");
+    $("#keymap").removeClass("alice");
+    $("#keymap").addClass(style);
+
     // let repeatB = false;
     // $("#keymap .keymap-key .letter")
     //   .map(function (_index, element) {

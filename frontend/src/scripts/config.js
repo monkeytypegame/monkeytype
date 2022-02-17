@@ -1080,13 +1080,7 @@ export function setKeymapLegendStyle(style, nosave) {
 }
 
 export function setKeymapStyle(style, nosave) {
-  $(".keymap").removeClass("matrix");
-  $(".keymap").removeClass("split");
-  $(".keymap").removeClass("split_matrix");
-  $(".keymap").removeClass("alice");
   style = style || "staggered";
-
-  $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
