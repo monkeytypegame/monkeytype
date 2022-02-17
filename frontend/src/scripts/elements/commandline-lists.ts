@@ -968,6 +968,7 @@ const commandsKeymapMode: MonkeyTypes.CommandsGroup = {
     {
       id: "setKeymapModeReact",
       display: "react",
+      alias: "flash",
       configValue: "react",
       exec: (): void => {
         UpdateConfig.setKeymapMode("react");
