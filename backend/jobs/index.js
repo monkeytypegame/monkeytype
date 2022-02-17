@@ -1,4 +1,4 @@
-const updateLeaderboards = require("./update-leaderboards");
-const deleteOldLogs = require("./delete-old-logs");
+import updateLeaderboards from "./update-leaderboards";
+import deleteOldLogs from "./delete-old-logs";
 
-module.exports = [updateLeaderboards, deleteOldLogs];
+export default [updateLeaderboards, deleteOldLogs];

@@ -1,14 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const addApiRoutes = require("./api/routes");
-const contextMiddleware = require("./middlewares/context");
-const errorHandlingMiddleware = require("./middlewares/error");
+import express, { urlencoded, json } from "express";
+import cors from "cors";
+import addApiRoutes from "./api/routes";
+import contextMiddleware from "./middlewares/context";
+import errorHandlingMiddleware from "./middlewares/error";
 
 function buildApp() {
   const app = express();
 
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.json());
+  app.use(urlencoded({ extended: true }));
+  app.use(json());
   app.use(cors());
 
   app.set("trust proxy", 1);
@@ -22,4 +22,4 @@ function buildApp() {
   return app;
 }
 
-module.exports = buildApp();
+export default buildApp();

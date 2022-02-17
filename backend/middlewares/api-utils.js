@@ -1,7 +1,7 @@
-const _ = require("lodash");
-const joi = require("joi");
-const MonkeyError = require("../handlers/error");
-const { handleMonkeyResponse } = require("../handlers/monkey-response");
+import _ from "lodash";
+import joi from "joi";
+import MonkeyError from "../handlers/error";
+import { handleMonkeyResponse } from "../handlers/monkey-response";
 
 /**
  * This utility checks that the server's configuration matches
@@ -80,8 +80,4 @@ function validateRequest(validationSchema) {
   };
 }
 
-module.exports = {
-  validateConfiguration,
-  asyncHandler,
-  validateRequest,
-};
+export { validateConfiguration, asyncHandler, validateRequest };
