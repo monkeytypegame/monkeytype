@@ -38,7 +38,7 @@ declare namespace MonkeyTypes {
 
   type TimerStyle = "bar" | "text" | "mini";
 
-  type RandomTheme = "off" | "on" | "favorite" | "light" | "dark";
+  type RandomTheme = "off" | "on" | "fav" | "light" | "dark";
 
   type TimerColor = "black" | "sub" | "text" | "main";
 
