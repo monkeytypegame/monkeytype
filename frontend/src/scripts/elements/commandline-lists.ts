@@ -205,7 +205,7 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateTagCommands(): void {
-  if (DB.getSnapshot()?.tags?.length || 0 > 0) {
+  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
@@ -276,7 +276,7 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 };
 
 export function updatePresetCommands(): void {
-  if (DB.getSnapshot()?.presets?.length || 0 > 0) {
+  if (DB.getSnapshot()?.presets?.length ?? 0 > 0) {
     commandsPresets.list = [];
 
     DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
@@ -1091,7 +1091,7 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
       display: "fav",
       configValue: "fav",
       exec: (): void => {
-        UpdateConfig.setRandomTheme("favorite");
+        UpdateConfig.setRandomTheme("fav");
       },
     },
     {
