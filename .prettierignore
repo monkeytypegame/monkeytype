@@ -7,3 +7,4 @@ sound/*
 node_modules
 css/balloon.css
 _list.json
+backend/build
