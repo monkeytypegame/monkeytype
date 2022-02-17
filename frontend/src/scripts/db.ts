@@ -1,4 +1,4 @@
-import ape from "./ape";
+import Ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import axiosInstance from "./axios-instance";
@@ -68,10 +68,10 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading user...");
     const [userData, configData, tagsData, presetsData] = (await Promise.all([
-      ape.users.getData(),
-      ape.configs.get(),
-      ape.users.getTags(),
-      ape.presets.get(),
+      Ape.users.getData(),
+      Ape.configs.get(),
+      Ape.users.getTags(),
+      Ape.presets.get(),
     ])).map((response: Ape.Response) => response.data);
 
     snap.name = userData.name;
@@ -660,7 +660,7 @@ export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
 
-    const response = await ape.configs.save(config);
+    const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
     }
