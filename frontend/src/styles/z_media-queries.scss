@@ -362,7 +362,7 @@
 }
 
 @media only screen and (max-width: 550px) {
-  .keymap {
+  #keymap {
     .row {
       height: 1.25rem;
     }
@@ -582,7 +582,7 @@
 }
 
 @media only screen and (max-width: 350px) {
-  .keymap {
+  #keymap {
     display: none !important;
   }
   .pageLogin .side input {
