@@ -119,7 +119,7 @@ declare namespace MonkeyTypes {
   interface Preset {
     _id: string;
     name: string;
-    config: Config;
+    config: ConfigChanges;
   }
 
   interface PersonalBest {
@@ -289,6 +289,10 @@ declare namespace MonkeyTypes {
     burstHeatmap: boolean;
     britishEnglish: boolean;
     lazyMode: boolean;
+  }
+
+  interface ConfigChanges extends Partial<MonkeyTypes.Config> {
+    tags?: string[];
   }
 
   interface DefaultConfig extends Config {
