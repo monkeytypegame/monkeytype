@@ -1,4 +1,4 @@
-import ape from "../ape";
+import Ape from "../ape";
 import * as Notifications from "./notifications";
 
 function clearMemory(): void {
@@ -16,7 +16,7 @@ function setMemory(id: string): void {
 }
 
 async function getLatest(): Promise<MonkeyTypes.PSA[]> {
-  const response = await ape.psas.get();
+  const response = await Ape.psas.get();
   return response.data as MonkeyTypes.PSA[];
 }
 
