@@ -34976,10 +34976,28 @@
       "id": 5910
     },
     {
-        "text": "Oh! Hush thee, my baby, the night is behind us, and black are the waters that sparkled so green. The moon, o'er the combers, looks downward to find us at rest in the hollows that rustle between. Where billow meets billow, there soft be thy pillow; Ah, weary wee flipperling, curl at thy ease! The storm shall not wake thee, nor shark overtake thee. Asleep in the arms of the slow-swinging seas.",
+      "text": "Oh! Hush thee, my baby, the night is behind us, and black are the waters that sparkled so green. The moon, o'er the combers, looks downward to find us at rest in the hollows that rustle between. Where billow meets billow, there soft be thy pillow; Ah, weary wee flipperling, curl at thy ease! The storm shall not wake thee, nor shark overtake thee. Asleep in the arms of the slow-swinging seas.",
       "source": "Rudyard Kipling",
       "length": 349,
       "id": 5911
+    },
+    {
+      "text": "Proximity to power deludes some into thinking they wield it.",
+      "source": "House of Cards",
+      "length": 60,
+      "id": 5912
+    },
+    {
+      "text": "Time is too slow for those who wait, too swift for those who fear, too long for those who grieve, too short for those who rejoice, but for those who love, time is eternity.",
+      "source": "Henry Van Dyke",
+      "length": 172,
+      "id": 5913
+    },
+    {
+      "text": "Death does not concern us, because as long as we exist, death is not here. And when it does come, we no longer exist.",
+      "source": "Epicurus",
+      "length": 117,
+      "id": 5914
     }
   ]
 }
