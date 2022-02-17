@@ -1,6 +1,6 @@
 import ConfigurationDAO from "../dao/configuration";
 
-async function contextMiddleware(req, res, next) {
+async function contextMiddleware(req, _res, next) {
   const configuration = await ConfigurationDAO.getCachedConfiguration(true);
 
   req.ctx = {
