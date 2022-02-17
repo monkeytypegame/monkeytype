@@ -1,20 +1,16 @@
-const joi = require("joi");
-const { authenticateRequest } = require("../../middlewares/auth");
-const LeaderboardsController = require("../controllers/leaderboards");
-const RateLimit = require("../../middlewares/rate-limit");
-const {
-  asyncHandler,
-  validateRequest,
-} = require("../../middlewares/api-utils");
-
-const { Router } = require("express");
+import joi from "joi";
+import { authenticateRequest } from "../../middlewares/auth";
+import LeaderboardsController from "../controllers/leaderboards";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import { Router } from "express";
 
 const router = Router();
 
 router.get(
   "/",
   RateLimit.leaderboardsGet,
-  authenticateRequest({ isPublic: true }),
+  authenticateRequest({ isPublic: true, acceptMonkeyTokens: false }),
   validateRequest({
     query: {
       language: joi.string().required(),
@@ -43,4 +39,4 @@ router.get(
   asyncHandler(LeaderboardsController.getRank)
 );
 
-module.exports = router;
+export default router;

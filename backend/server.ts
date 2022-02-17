@@ -1,14 +1,10 @@
-const { config } = require("dotenv");
-const path = require("path");
-config({ path: path.join(__dirname, ".env") });
-
-const app = require("./app");
-const jobs = require("./jobs");
-const db = require("./init/db");
-const admin = require("firebase-admin");
-const ConfigurationDAO = require("./dao/configuration");
-// eslint-disable-next-line
-const serviceAccount = require("./credentials/serviceAccountKey.json");
+import "dotenv/config";
+import admin, { ServiceAccount } from "firebase-admin";
+import serviceAccount from "./credentials/serviceAccountKey.json";
+import db from "./init/db.js";
+import jobs from "./jobs/index.js";
+import ConfigurationDAO from "./dao/configuration.js";
+import app from "./app";
 
 async function bootServer(port) {
   try {
@@ -18,7 +14,9 @@ async function bootServer(port) {
 
     console.log("Initializing Firebase app instance...");
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+      credential: admin.credential.cert(
+        serviceAccount as unknown as ServiceAccount
+      )
     });
     console.log("Firebase app initialized");
 
