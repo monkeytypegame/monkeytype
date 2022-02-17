@@ -224,7 +224,7 @@ export function refresh(layout: string = Config.layout): void {
         rowElement += `<div class="keymap-key key-space">
           <div class="letter">${layoutString.replace(/_/g, " ")}</div>
         </div>`;
-        rowElement += `<div class="key-split-spacer"></div>`;
+        rowElement += `<div class="keymap-split-spacer"></div>`;
         rowElement += `<div class="keymap-key key-split-space">
           <div class="letter"></div>
         </div>`;
@@ -239,19 +239,24 @@ export function refresh(layout: string = Config.layout): void {
             continue;
           const key = rowKeys[i];
           const bump = row === "row3" && (i === 3 || i === 7) ? true : false;
-          const keyElement = `<div class="keymap-key ${bump}" data-key="${key}">
-              <div class="letter">${key[0]}</div>
+          const keyElement = `<div class="keymap-key" data-key="${key}">
+              <span class="letter">${key[0]}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;
 
           let splitSpacer = "";
           if (
             Config.keymapStyle === "split" ||
-            Config.keymapStyle === "split_matrix"
+            Config.keymapStyle === "split_matrix" ||
+            Config.keymapStyle === "alice"
           ) {
             if (i === 5) {
-              splitSpacer += `<div class="key-split-spacer"></div>`;
+              splitSpacer += `<div class="keymap-split-spacer"></div>`;
             }
+          }
+
+          if (Config.keymapStyle === "alice" && i === 5 && row === "row4") {
+            splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
           }
 
           rowElement += splitSpacer + keyElement;
@@ -263,6 +268,7 @@ export function refresh(layout: string = Config.layout): void {
 
     $("#keymap").html(keymapElement);
 
+    $("#keymap").removeClass("staggered");
     $("#keymap").removeClass("matrix");
     $("#keymap").removeClass("split");
     $("#keymap").removeClass("split_matrix");
