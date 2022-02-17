@@ -8,22 +8,16 @@
   ],
   "quotes": [
     {
-      "text": "A mulher põe no mundo toda a poesia e toda a doçura.",
-      "source": "Alphonse Daudet",
-      "length": 52,
-      "id": 1
-    },
-    {
       "text": "O homem é o único animal que não aprende nada sem ser ensinado: não sabe falar, nem caminhar, nem comer, enfim, não sabe fazer nada no estado natural, a não ser chorar.",
       "source": "Plinio",
       "length": 168,
-      "id": 2
+      "id": 1
     },
     {
       "text": "Esquecer é uma necessidade. A vida é uma lousa, em que o destino, para escrever um novo caso, precisa de apagar o caso escrito.",
       "source": "Machado de Assis",
       "length": 127,
-      "id": 3
+      "id": 2
     },
     {
       "text": "Minha Pátria é minha língua. Pouco se me dá que Portugal seja invadido, desde que não mexam comigo.",
@@ -348,6 +342,12 @@
       "source": "Fernando Birri",
       "length": 254,
       "id": 56
+    },
+    {
+      "text": "A mulher põe no mundo toda a poesia e toda a doçura.",
+      "source": "Alphonse Daudet",
+      "length": 52,
+      "id": 57
     }
   ]
 }
