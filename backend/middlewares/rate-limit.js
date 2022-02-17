@@ -1,4 +1,4 @@
-const rateLimit = require("express-rate-limit");
+import rateLimit from "express-rate-limit";
 
 const getAddress = (req) =>
   req.headers["cf-connecting-ip"] ||
@@ -9,14 +9,14 @@ const message = "Too many requests, please try again later";
 const multiplier = process.env.MODE === "dev" ? 100 : 1;
 
 // Config Routing
-exports.configUpdate = rateLimit({
+export const configUpdate = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 500 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.configGet = rateLimit({
+export const configGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 120 * multiplier,
   message,
@@ -24,7 +24,7 @@ exports.configGet = rateLimit({
 });
 
 // Leaderboards Routing
-exports.leaderboardsGet = rateLimit({
+export const leaderboardsGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
@@ -32,21 +32,21 @@ exports.leaderboardsGet = rateLimit({
 });
 
 // New Quotes Routing
-exports.newQuotesGet = rateLimit({
+export const newQuotesGet = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 500 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.newQuotesAdd = rateLimit({
+export const newQuotesAdd = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.newQuotesAction = rateLimit({
+export const newQuotesAction = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 500 * multiplier,
   message,
@@ -54,14 +54,14 @@ exports.newQuotesAction = rateLimit({
 });
 
 // Quote Ratings Routing
-exports.quoteRatingsGet = rateLimit({
+export const quoteRatingsGet = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 500 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.quoteRatingsSubmit = rateLimit({
+export const quoteRatingsSubmit = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 500 * multiplier,
   message,
@@ -69,7 +69,7 @@ exports.quoteRatingsSubmit = rateLimit({
 });
 
 // Quote reporting
-exports.quoteReportSubmit = rateLimit({
+export const quoteReportSubmit = rateLimit({
   windowMs: 30 * 60 * 1000, // 30 min
   max: 50 * multiplier,
   message,
@@ -77,28 +77,28 @@ exports.quoteReportSubmit = rateLimit({
 });
 
 // Presets Routing
-exports.presetsGet = rateLimit({
+export const presetsGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.presetsAdd = rateLimit({
+export const presetsAdd = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.presetsRemove = rateLimit({
+export const presetsRemove = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.presetsEdit = rateLimit({
+export const presetsEdit = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
@@ -106,7 +106,7 @@ exports.presetsEdit = rateLimit({
 });
 
 // PSA (Public Service Announcement) Routing
-exports.psaGet = rateLimit({
+export const psaGet = rateLimit({
   windowMs: 60 * 1000,
   max: 60 * multiplier,
   message,
@@ -114,42 +114,42 @@ exports.psaGet = rateLimit({
 });
 
 // Results Routing
-exports.resultsGet = rateLimit({
+export const resultsGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.resultsAdd = rateLimit({
+export const resultsAdd = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 500 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.resultsTagsUpdate = rateLimit({
+export const resultsTagsUpdate = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 30 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.resultsDeleteAll = rateLimit({
+export const resultsDeleteAll = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 10 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.resultsLeaderboardGet = rateLimit({
+export const resultsLeaderboardGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.resultsLeaderboardQualificationGet = rateLimit({
+export const resultsLeaderboardQualificationGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
@@ -157,105 +157,107 @@ exports.resultsLeaderboardQualificationGet = rateLimit({
 });
 
 // Users Routing
-exports.userGet = rateLimit({
+export const userGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userSignup = rateLimit({
+export const userSignup = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 3 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userDelete = rateLimit({
+export const userDelete = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 3 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userCheckName = rateLimit({
+export const userCheckName = rateLimit({
   windowMs: 60 * 1000,
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userUpdateName = rateLimit({
+export const userUpdateName = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day
   max: 3 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userUpdateLBMemory = rateLimit({
+export const userUpdateLBMemory = rateLimit({
   windowMs: 60 * 1000,
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userUpdateEmail = rateLimit({
+export const userUpdateEmail = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userClearPB = rateLimit({
+export const userClearPB = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userTagsGet = rateLimit({
+export const userTagsGet = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userTagsRemove = rateLimit({
+export const userTagsRemove = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 30 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userTagsClearPB = rateLimit({
+export const userTagsClearPB = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 60 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userTagsEdit = rateLimit({
+export const userTagsEdit = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 30 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userTagsAdd = rateLimit({
+export const userTagsAdd = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 30 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userDiscordLink = exports.usersTagsEdit = rateLimit({
+export const userDiscordLink = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 15 * multiplier,
   message,
   keyGenerator: getAddress,
 });
 
-exports.userDiscordUnlink = exports.usersTagsEdit = rateLimit({
+export const usersTagsEdit = userDiscordLink;
+
+export const userDiscordUnlink = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 min
   max: 15 * multiplier,
   message,

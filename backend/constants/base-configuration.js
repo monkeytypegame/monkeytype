@@ -18,4 +18,4 @@ const BASE_CONFIGURATION = Object.freeze({
   },
 });
 
-module.exports = BASE_CONFIGURATION;
+export default BASE_CONFIGURATION;

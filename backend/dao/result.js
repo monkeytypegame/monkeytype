@@ -1,7 +1,9 @@
-const { ObjectID } = require("mongodb");
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-const UserDAO = require("./user");
+import Mongo from "mongodb";
+const { ObjectID } = Mongo;
+import MonkeyError from "../handlers/error";
+import db from "../init/db";
+
+import UserDAO from "./user";
 
 class ResultDAO {
   static async addResult(uid, result) {
@@ -14,18 +16,18 @@ class ResultDAO {
     if (!user) throw new MonkeyError(404, "User not found", "add result");
     if (result.uid === undefined) result.uid = uid;
     // result.ir = true;
-    let res = await mongoDB().collection("results").insertOne(result);
+    let res = await db.collection("results").insertOne(result);
     return {
       insertedId: res.insertedId,
     };
   }
 
   static async deleteAll(uid) {
-    return await mongoDB().collection("results").deleteMany({ uid });
+    return await db.collection("results").deleteMany({ uid });
   }
 
   static async updateTags(uid, resultid, tags) {
-    const result = await mongoDB()
+    const result = await db
       .collection("results")
       .findOne({ _id: ObjectID(resultid), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
@@ -37,13 +39,13 @@ class ResultDAO {
     });
     if (!validTags)
       throw new MonkeyError(400, "One of the tag id's is not valid");
-    return await mongoDB()
+    return await db
       .collection("results")
       .updateOne({ _id: ObjectID(resultid), uid }, { $set: { tags } });
   }
 
   static async getResult(uid, id) {
-    const result = await mongoDB()
+    const result = await db
       .collection("results")
       .findOne({ _id: ObjectID(id), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
@@ -51,7 +53,7 @@ class ResultDAO {
   }
 
   static async getLastResult(uid) {
-    let result = await mongoDB()
+    let result = await db
       .collection("results")
       .find({ uid })
       .sort({ timestamp: -1 })
@@ -63,13 +65,13 @@ class ResultDAO {
   }
 
   static async getResultByTimestamp(uid, timestamp) {
-    return await mongoDB().collection("results").findOne({ uid, timestamp });
+    return await db.collection("results").findOne({ uid, timestamp });
   }
 
   static async getResults(uid, start, end) {
     start = start ?? 0;
     end = end ?? 1000;
-    const result = await mongoDB()
+    const result = await db
       .collection("results")
       .find({ uid })
       .sort({ timestamp: -1 })
@@ -81,4 +83,4 @@ class ResultDAO {
   }
 }
 
-module.exports = ResultDAO;
+export default ResultDAO;
