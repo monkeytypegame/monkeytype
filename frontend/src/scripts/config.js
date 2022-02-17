@@ -1480,7 +1480,7 @@ export function loadFromLocalStorage() {
 }
 
 export function getConfigChanges() {
-  let configChanges = {};
+  const configChanges = {};
   Object.keys(config)
     .filter((key) => {
       return config[key] != defaultConfig[key];
