@@ -38,11 +38,16 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
     endpoint: string,
     options: Ape.RequestOptions = {}
   ): Ape.EndpointData => {
-    let otherErrorMessage = "Something went wrong";
+    let errorMessage = "Something went wrong";
 
     try {
-      const requestOptions = await adaptRequestOptions(options);
-      const response = await clientMethod(endpoint, requestOptions);
+      const requestOptions: AxiosRequestConfig = await adaptRequestOptions(
+        options
+      );
+      const response: AxiosResponse = await clientMethod(
+        endpoint,
+        requestOptions
+      );
 
       const { message, data } = response.data;
 
@@ -52,13 +57,15 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
         data,
       };
     } catch (error) {
+      console.error(error);
+
       const typedError = error as Error;
-      otherErrorMessage = typedError.message;
+      errorMessage = typedError.message;
 
       if (axios.isAxiosError(typedError)) {
         return {
           status: typedError.response?.status ?? 500,
-          message: otherErrorMessage, // If provided, this message will be overwritten by the message sent back by the server.
+          message: typedError.message,
           ...typedError.response?.data,
         };
       }
@@ -66,7 +73,7 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
 
     return {
       status: 500,
-      message: otherErrorMessage,
+      message: errorMessage,
     };
   };
 }

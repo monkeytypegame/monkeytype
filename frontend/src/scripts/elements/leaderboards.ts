@@ -280,18 +280,19 @@ async function update(): Promise<void> {
     );
   }
 
-  const [lb15Data, lb60Data, lb15Rank, lb60Rank] = (
-    await Promise.all(leaderboardRequests)
-  ).map((response) => {
-    if (response.status !== 200) {
-      Notifications.add(
-        "Failed to load leaderboard data: " + response.message,
-        -1
-      );
-      return null;
-    }
-    return response.data;
-  });
+  const responses = await Promise.all(leaderboardRequests);
+
+  const failedResponse = responses.find((response) => response.status !== 200);
+  if (failedResponse) {
+    Notifications.add(
+      "Failed to load leaderboards: " + failedResponse.message,
+      -1
+    );
+  }
+
+  const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
+    (response) => response.data
+  );
 
   currentData[15] = lb15Data;
   currentData[60] = lb60Data;
