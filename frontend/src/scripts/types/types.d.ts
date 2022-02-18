@@ -355,12 +355,14 @@ declare namespace MonkeyTypes {
       25: boolean;
       50: boolean;
       100: boolean;
+      custom: boolean;
     };
     time: {
       15: boolean;
       30: boolean;
       60: boolean;
       120: boolean;
+      custom: boolean;
     };
     quoteLength: {
       short: boolean;
