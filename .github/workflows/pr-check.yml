@@ -35,6 +35,8 @@ jobs:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
 
+      - run: echo ${{ steps.filter.changes.outputs }}
+
       - name: Cache node modules
         if: steps.filter.changes.outputs != '[]'
         uses: actions/cache@v2
