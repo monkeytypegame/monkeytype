@@ -102,4 +102,4 @@ backend/anticheat
 dep-graph.png
 
 # TypeScript
-built/
+build/

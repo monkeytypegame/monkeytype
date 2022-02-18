@@ -1,9 +1,8 @@
-// import Config from "../config";
+import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+// import Config from "../config";
 // import * as Misc from "../misc";
-import axiosInstance from "../axios-instance";
-import { AxiosError } from "axios";
 
 // let dropdownReady = false;
 // async function initDropdown(): Promise<void> {
@@ -26,40 +25,29 @@ import { AxiosError } from "axios";
 // }
 
 async function submitQuote(): Promise<void> {
-  const data = {
-    text: $("#quoteSubmitPopup #submitQuoteText").val(),
-    source: $("#quoteSubmitPopup #submitQuoteSource").val(),
-    language: $("#quoteSubmitPopup #submitQuoteLanguage").val(),
-    captcha: $("#quoteSubmitPopup #g-recaptcha-response").val(),
-  };
+  const text = $("#quoteSubmitPopup #submitQuoteText").val() as string;
+  const source = $("#quoteSubmitPopup #submitQuoteSource").val() as string;
+  const language = $("#quoteSubmitPopup #submitQuoteLanguage").val() as string;
+  const captcha = $("#quoteSubmitPopup #g-recaptcha-response").val() as string;
 
-  if (!data.text || !data.source || !data.language) {
-    Notifications.add("Please fill in all fields", 0);
-    return;
+  if (!text || !source || !language) {
+    return Notifications.add("Please fill in all fields", 0);
   }
 
   Loader.show();
-  let response;
-  try {
-    response = await axiosInstance.post("/quotes", data);
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to submit quote: " + msg, -1);
-    return;
-  }
+  const response = await Ape.quotes.submit(text, source, language, captcha);
   Loader.hide();
+
   if (response.status !== 200) {
-    Notifications.add(response.data.message);
-  } else {
-    Notifications.add("Quote submitted.", 1);
-    $("#quoteSubmitPopup #submitQuoteText").val("");
-    $("#quoteSubmitPopup #submitQuoteSource").val("");
-    $("#quoteSubmitPopup .characterCount").removeClass("red");
-    $("#quoteSubmitPopup .characterCount").text("-");
-    grecaptcha.reset();
+    return Notifications.add("Failed to submit quote: " + response.message, -1);
   }
+
+  Notifications.add("Quote submitted.", 1);
+  $("#quoteSubmitPopup #submitQuoteText").val("");
+  $("#quoteSubmitPopup #submitQuoteSource").val("");
+  $("#quoteSubmitPopup .characterCount").removeClass("red");
+  $("#quoteSubmitPopup .characterCount").text("-");
+  grecaptcha.reset();
 }
 
 // @ts-ignore
