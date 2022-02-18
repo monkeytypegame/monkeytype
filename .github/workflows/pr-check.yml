@@ -10,6 +10,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            json:
+              - 'frontend/**/*.json'
+            scss:
+              - 'frontend/**/*.scss'
+            ts:
+              - 'frontend/**/*.js'
+              - 'frontend/**/*.ts'
+
       - name: Cache node modules
         uses: actions/cache@v2
         env:
@@ -30,5 +42,17 @@ jobs:
       - name: Install dependencies
         run: npm run install:all
 
-      - name: Run webpack
-        run: npm run build:live
+      # - name: Run webpack
+      #   run: npm run build:live
+
+      - name: Lint and validate JSON
+        if: steps.filter.outputs.json == 'true'
+        run: npm run pr-check-json
+
+      - name: Lint and compile SCSS
+        if: steps.filter.outputs.scss == 'true'
+        run: npm run pr-check-scss
+
+      - name: Lint source code and run webpack
+        if: steps.filter.outputs.scss == 'true'
+        run: npm run pr-check-ts
