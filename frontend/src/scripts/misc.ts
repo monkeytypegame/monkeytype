@@ -180,6 +180,27 @@ export async function getQuotes(language: string): Promise<QuoteCollection> {
   }
 }
 
+let layoutsList: MonkeyTypes.Layouts = {};
+export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+  if (Object.keys(layoutsList).length === 0) {
+    return $.getJSON("layouts/_list.json", function (data) {
+      layoutsList = data;
+      return layoutsList;
+    });
+  } else {
+    return layoutsList;
+  }
+}
+
+export async function getLayout(
+  layoutName: keyof MonkeyTypes.Layouts & string
+): Promise<MonkeyTypes.Layout> {
+  if (Object.keys(layoutsList).length === 0) {
+    await getLayoutsList();
+  }
+  return layoutsList[layoutName];
+}
+
 type Font = { name: string; display?: string };
 
 let fontsList: Font[] = [];
@@ -426,7 +447,10 @@ export function getLastChar(word: string): string {
 }
 
 export function capitalizeFirstLetterOfEachWord(str: string): string {
-  return str.split(/ +/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
+  return str
+    .split(/ +/)
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ");
 }
 
 export function isASCIILetter(c: string): boolean {

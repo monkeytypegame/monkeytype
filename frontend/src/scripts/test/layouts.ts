@@ -1,45 +1,69 @@
-const layouts = {
-  default: {},
+const layouts: MonkeyTypes.Layouts = {
   qwerty: {
     keymapShowTopRow: false,
-    keys: [
-      "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-      "qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "[{", "]}", "\\|",
-      "aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", ";:", "'\"",
-      "\\|", "zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?",
-      " "
-    ]
+    type: "ansi",
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      row2: ["qQ", "wW", "eE", "rR", "tT", "yY", "uU", "iI", "oO", "pP", "[{", "]}", "\\|"],
+      row3: ["aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", ";:", "'\""],
+      row4: ["zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?"],
+      row5: [" "]
+    }
   },
   dvorak: {
     keymapShowTopRow: false,
-    keys: [
-      "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "[{", "]}",
-      "'\"", ",<", ".>", "pP", "yY", "fF", "gG", "cC", "rR", "lL", "/?", "=+", "\\|",
-      "aA", "oO", "eE", "uU", "iI", "dD", "hH", "tT", "nN", "sS", "-_",
-      "\\|", ";:", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "zZ",
-      " "
-    ],
+    type: "ansi",
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "[{", "]}"],
+      row2: ["'\"", ",<", ".>", "pP", "yY", "fF", "gG", "cC", "rR", "lL", "/?", "=+", "\\|"],
+      row3: ["aA", "oO", "eE", "uU", "iI", "dD", "hH", "tT", "nN", "sS", "-_"],
+      row4: [";:", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "zZ"],
+      row5: [" "]
+    },
   },
   colemak: {
     keymapShowTopRow: false,
-    keys: [
-      "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-      "qQ", "wW", "fF", "pP", "gG", "jJ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|",
-      "aA", "rR", "sS", "tT", "dD", "hH", "nN", "eE", "iI", "oO", "'\"",
-      "\\|", "zZ", "xX", "cC", "vV", "bB", "kK", "mM", ",<", ".>", "/?",
-      " "
-    ]
+    type: "ansi",
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      row2: ["qQ", "wW", "fF", "pP", "gG", "jJ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|"],
+      row3: ["aA", "rR", "sS", "tT", "dD", "hH", "nN", "eE", "iI", "oO", "'\""],
+      row4: ["zZ", "xX", "cC", "vV", "bB", "kK", "mM", ",<", ".>", "/?"],
+      row5: [" "]
+    }
   },
   colemak_dh: {
     keymapShowTopRow: false,
-    keys: [
-      "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-      "qQ", "wW", "fF", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|",
-      "aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\"",
-      "\\|", "xX", "cC", "dD", "vV", "zZ", "kK", "hH", ",<", ".>", "/?",
-      " "
-    ],
+    type: "ansi",
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      row2: ["qQ", "wW", "fF", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|"],
+      row3: ["aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\""],
+      row4: ["xX", "cC", "dD", "vV", "zZ", "kK", "hH", ",<", ".>", "/?"],
+      row5: [" "]
+    }
   },
+  colemak_dh_iso: {
+    keymapShowTopRow: false,
+    type: "iso",
+    keys: {
+      row1: ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      row2: ["qQ", "wW", "fF", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "[{", "]}" ],
+      row3: ["aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\"", "\\|"],
+      row4: ["zZ", "xX", "cC", "dD", "vV", "\\|", "kK", "hH", ",<", ".>", "/?"],
+      row5: [" "]
+    }
+  },
+  
+};
+
+// @ts-ignore
+const layouts2 = {
+  default: {},
+
+  
+  
+  
   colemak_dh_wide: {
     keymapShowTopRow: false,
     keys: [
@@ -70,17 +94,15 @@ const layouts = {
       " "
     ],
   },
-  colemak_dh_iso: {
-    keymapShowTopRow: false,
-    iso: true,
-    keys: [
-      "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-      "qQ", "wW", "fF", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|",
-      "aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\"",
-      "zZ", "xX", "cC", "dD", "vV", "\\|", "kK", "hH", ",<", ".>", "/?",
-      " "
-    ],
-  },
+
+
+
+
+
+
+
+
+
   colemak_dhk_iso: {
     keymapShowTopRow: false,
     iso: true,
@@ -931,4 +953,7 @@ const layouts = {
     ]
   },
 };
+
+console.log(layouts2);
+
 export default layouts;

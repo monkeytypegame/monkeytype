@@ -2,7 +2,6 @@ import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../misc";
-import layouts from "../test/layouts";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -408,18 +407,17 @@ export async function fillSettingsPage(): Promise<void> {
   languageEl.select2();
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
-  Object.keys(layouts).forEach((layout) => {
+  layoutEl.append(`<option value='default'>off</option>`);
+  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
     layoutEl.append(
-      `<option value='${layout}'>${
-        layout === "default" ? "off" : layout.replace(/_/g, " ")
-      }</option>`
+      `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
   });
   layoutEl.select2();
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(layouts).forEach((layout) => {
+  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`

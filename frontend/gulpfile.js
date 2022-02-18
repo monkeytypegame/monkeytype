@@ -409,6 +409,128 @@ task("validate-json-schema", function () {
       return reject(new Error(challengesValidator.errors));
     }
 
+    //layouts
+    const layoutsSchema = {
+      ansi: {
+        type: "object",
+        properties: {
+          keymapShowTopRow: { type: "boolean" },
+          type: { type: "string", pattern: "^ansi$" },
+          keys: {
+            type: "object",
+            properties: {
+              row1: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 13,
+                maxItems: 13,
+              },
+              row2: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 13,
+                maxItems: 13,
+              },
+              row3: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 11,
+                maxItems: 11,
+              },
+              row4: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 10,
+                maxItems: 10,
+              },
+              row5: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 1 },
+                minItems: 1,
+                maxItems: 1,
+              },
+            },
+            required: ["row1", "row2", "row3", "row4", "row5"],
+          },
+        },
+        required: ["keymapShowTopRow", "type", "keys"],
+      },
+      iso: {
+        type: "object",
+        properties: {
+          keymapShowTopRow: { type: "boolean" },
+          type: { type: "string", pattern: "^iso$" },
+          keys: {
+            type: "object",
+            properties: {
+              row1: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 13,
+                maxItems: 13,
+              },
+              row2: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 12,
+                maxItems: 12,
+              },
+              row3: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 12,
+                maxItems: 12,
+              },
+              row4: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 2 },
+                minItems: 11,
+                maxItems: 11,
+              },
+              row5: {
+                type: "array",
+                items: { type: "string", minLength: 1, maxLength: 1 },
+                minItems: 1,
+                maxItems: 1,
+              },
+            },
+            required: ["row1", "row2", "row3", "row4", "row5"],
+          },
+        },
+        required: ["keymapShowTopRow", "type", "keys"],
+      },
+    };
+    const layoutsData = JSON.parse(
+      fs.readFileSync("./static/layouts/_list.json", {
+        encoding: "utf8",
+        flag: "r",
+      })
+    );
+
+    let layoutsAllGood = true;
+    let layoutsErrors;
+    Object.keys(layoutsData).forEach((layoutName) => {
+      const layoutData = layoutsData[layoutName];
+
+      const layoutsValidator = JSONValidator.validate(
+        layoutData,
+        layoutsSchema[layoutData.type]
+      );
+      if (!layoutsValidator.valid) {
+        console.log(
+          `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
+        );
+        layoutsAllGood = false;
+        layoutsErrors = layoutsValidator.errors;
+      }
+    });
+    if (layoutsAllGood) {
+      console.log(`Layout JSON schemas are \u001b[32mvalid\u001b[0m`);
+    } else {
+      console.log(`Layout JSON schemas are \u001b[31minvalid\u001b[0m`);
+      return reject(new Error(layoutsErrors));
+    }
+
     resolve();
   });
 });

@@ -1,7 +1,7 @@
 import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import LayoutList from "./test/layouts";
+import * as Misc from "./misc";
 import * as ConfigEvent from "./observables/config-event";
 
 export let localStorageConfig = null;
@@ -1080,13 +1080,7 @@ export function setKeymapLegendStyle(style, nosave) {
 }
 
 export function setKeymapStyle(style, nosave) {
-  $(".keymap").removeClass("matrix");
-  $(".keymap").removeClass("split");
-  $(".keymap").removeClass("split_matrix");
-  $(".keymap").removeClass("alice");
   style = style || "staggered";
-
-  $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
@@ -1188,7 +1182,7 @@ export function setCustomBackground(value, nosave) {
   }
 }
 
-export function setCustomLayoutfluid(value, nosave) {
+export async function setCustomLayoutfluid(value, nosave) {
   if (value == null || value == undefined) {
     value = "qwerty#dvorak#colemak";
   }
@@ -1196,9 +1190,9 @@ export function setCustomLayoutfluid(value, nosave) {
 
   //validate the layouts
   let allGood = true;
-  let list = Object.keys(LayoutList);
-  value.split("#").forEach((customLayout) => {
-    if (!list.includes(customLayout)) allGood = false;
+  await value.split("#").forEach(async (customLayout) => {
+    const lay = await Misc.getLayout(customLayout);
+    if (!lay) allGood = false;
   });
   if (!allGood) {
     Notifications.add(

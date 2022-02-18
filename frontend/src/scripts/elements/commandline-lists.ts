@@ -1,6 +1,5 @@
 import * as DB from "../db";
 import * as Misc from "../misc";
-import layouts from "../test/layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "../controllers/sound-controller";
 import * as ThemeController from "../controllers/theme-controller";
@@ -53,8 +52,17 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-if (Object.keys(layouts).length > 0) {
+Misc.getLayoutsList().then((layouts) => {
   commandsLayouts.list = [];
+  commandsLayouts.list.push({
+    id: "changeLayoutDefault",
+    display: "off",
+    configValue: "default",
+    exec: (): void => {
+      UpdateConfig.setLayout("default");
+      TestLogic.restart();
+    },
+  });
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
@@ -67,7 +75,7 @@ if (Object.keys(layouts).length > 0) {
       },
     });
   });
-}
+});
 
 export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
   title: "Change keymap layout...",
@@ -79,8 +87,7 @@ export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
-
-if (Object.keys(layouts).length > 0) {
+Misc.getLayoutsList().then((layouts) => {
   commandsKeymapLayouts.list = [];
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
@@ -104,7 +111,7 @@ if (Object.keys(layouts).length > 0) {
       });
     }
   });
-}
+});
 
 const commandsLanguages: MonkeyTypes.CommandsGroup = {
   title: "Language...",
@@ -959,6 +966,7 @@ const commandsKeymapMode: MonkeyTypes.CommandsGroup = {
     {
       id: "setKeymapModeReact",
       display: "react",
+      alias: "flash",
       configValue: "react",
       exec: (): void => {
         UpdateConfig.setKeymapMode("react");
@@ -2330,7 +2338,8 @@ export const commandsChallenges: MonkeyTypes.CommandsGroup = {
 Misc.getChallengeList().then((challenges) => {
   challenges.forEach((challenge) => {
     commandsChallenges.list.push({
-      id: "loadChallenge" + Misc.capitalizeFirstLetterOfEachWord(challenge.name),
+      id:
+        "loadChallenge" + Misc.capitalizeFirstLetterOfEachWord(challenge.name),
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
