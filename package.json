@@ -12,7 +12,9 @@
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
-    "validate-json-schema": "cd frontend && npx gulp validate-json-schema"
+    "pr-check-json": "cd frontend && npx gulp pr-check-json",
+    "pr-check-scss": "cd frontend && npx gulp pr-check-scss",
+    "pr-check-ts": "cd frontend && npx gulp pr-check-ts"
   },
   "engines": {
     "npm": "8.1.2"

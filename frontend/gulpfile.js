@@ -147,4 +147,11 @@ task("watch", function () {
 });
 
 task("build", series("clean", "compile"));
+
 task("build-production", series("clean", "compile-production"));
+
+task("pr-check-json", series("lint-json", "validate-json-schema"));
+
+task("pr-check-scss", series("lint", "sass"));
+
+task("pr-check-ts", series("lint", "webpack-production"));
