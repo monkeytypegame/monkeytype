@@ -35,7 +35,7 @@ jobs:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
 
-      - run: echo ${{ steps.filter.outputs.changed_files }}
+      - run: echo ${{ steps.filter.outputs.changes }}
 
       - name: Cache node modules
         if: steps.filter.changes.length != 0
