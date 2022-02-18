@@ -21,7 +21,6 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
     25: true,
     50: true,
     100: true,
-    200: true,
     custom: true,
   },
   time: {

@@ -85,7 +85,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
 
-      word = Misc.capitalizeFirstLetter(word);
+      word = Misc.capitalizeFirstLetterOfEachWord(word);
 
       if (currentLanguage == "spanish" || currentLanguage == "catalan") {
         let rand = Math.random();
@@ -580,7 +580,7 @@ function applyFunboxesToWord(word, wordset) {
     }
     word = randomcaseword;
   } else if (Config.funbox === "capitals") {
-    word = Misc.capitalizeFirstLetter(word);
+    word = Misc.capitalizeFirstLetterOfEachWord(word);
   } else if (Config.funbox === "gibberish") {
     word = Misc.getGibberish();
   } else if (Config.funbox === "arrows") {
