@@ -15,7 +15,7 @@ jobs:
         with:
           filters: |
             json:
-              - 'frontend/**/*.json'
+              - 'frontend/static/quotes/**'
             scss:
               - 'frontend/**/*.scss'
             ts:
