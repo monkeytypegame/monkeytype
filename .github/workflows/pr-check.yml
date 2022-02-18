@@ -36,6 +36,7 @@ jobs:
               - 'frontend/**/*.ts'
 
       - name: Cache node modules
+        if: steps.filter.changes.length != 0
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
@@ -48,40 +49,42 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node.js
+        if: steps.filter.changes.length != 0
         uses: actions/setup-node@v1
         with:
           node-version: "16.13.2"
 
       - name: Install dependencies
+        if: steps.filter.changes.length != 0
         run: npm run install:all
 
       # - name: Run webpack
       #   run: npm run build:live
 
       - name: Lint JSON
-        if: steps.filter.outputs.any-json == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.any-json == 'true'
         run: npm run pr-check-lint-json
 
       - name: Validate languages JSON
-        if: steps.filter.outputs.language-json == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.language-json == 'true'
         run: npm run pr-check-language-json
 
       - name: Validate quotes JSON
-        if: steps.filter.outputs.quotes-json == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.quotes-json == 'true'
         run: npm run pr-check-quote-json
 
       - name: Validate other JSON
-        if: steps.filter.outputs.other-json == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
 
       - name: Lint
-        if: steps.filter.outputs.any-tsscss == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.any-tsscss == 'true'
         run: npm run pr-check-lint-json
 
       - name: Compile SCSS
-        if: steps.filter.outputs.scss == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.scss == 'true'
         run: npm run pr-check-scss
 
       - name: Run webpack
-        if: steps.filter.outputs.ts == 'true'
+        if: steps.filter.changes.length != 0 && steps.filter.outputs.ts == 'true'
         run: npm run pr-check-ts
