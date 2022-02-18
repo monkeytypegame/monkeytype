@@ -538,12 +538,14 @@ declare namespace MonkeyTypes {
 
   //  type ActivePage = `page${Page}` | undefined;
 
+  interface Layout {
+    keymapShowTopRow: boolean;
+    type: "iso" | "ansi" | "ortho";
+    keys: Keys;
+  }
+
   interface Layouts {
-    [layout: string]: {
-      keymapShowTopRow: boolean;
-      type: "iso" | "ansi" | "ortho";
-      keys: Keys;
-    };
+    [layout: string]: Layout;
   }
   interface Keys {
     [row1: string]: string[];
