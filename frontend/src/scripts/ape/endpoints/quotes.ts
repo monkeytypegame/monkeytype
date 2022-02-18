@@ -25,8 +25,8 @@ export default function getQuotesEndpoints(
 
   async function approveSubmission(
     quoteSubmissionId: string,
-    editText: string,
-    editSource: string
+    editText?: string,
+    editSource?: string
   ): Ape.EndpointData {
     const payload = {
       quoteId: quoteSubmissionId,

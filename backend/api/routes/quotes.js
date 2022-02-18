@@ -51,8 +51,8 @@ quotesRouter.post(
   validateRequest({
     body: {
       quoteId: joi.string().required(),
-      editText: joi.string().required(),
-      editSource: joi.string().required(),
+      editText: joi.string().allow(null, undefined),
+      editSource: joi.string().allow(null, undefined),
     },
     validationErrorMessage: "Please fill all the fields",
   }),

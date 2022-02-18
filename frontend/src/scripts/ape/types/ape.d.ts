@@ -73,11 +73,10 @@ declare namespace Ape {
         language: string,
         captcha: string
       ) => EndpointData;
-      getRating: (quote: MonkeyTypes.Quote) => EndpointData;
       approveSubmission: (
         quoteSubmissionId: string,
-        editText: string,
-        editSource: string
+        editText?: string,
+        editSource?: string
       ) => EndpointData;
       rejectSubmission: (quoteSubmissionId: string) => EndpointData;
       getRating: (quote: MonkeyTypes.Quote) => EndpointData;
