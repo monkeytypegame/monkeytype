@@ -284,7 +284,7 @@ async function update(): Promise<void> {
 
   const failedResponse = responses.find((response) => response.status !== 200);
   if (failedResponse) {
-    Notifications.add(
+    return Notifications.add(
       "Failed to load leaderboards: " + failedResponse.message,
       -1
     );
