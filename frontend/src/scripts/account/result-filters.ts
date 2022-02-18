@@ -21,14 +21,12 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
     25: true,
     50: true,
     100: true,
-    custom: true,
   },
   time: {
     15: true,
     30: true,
     60: true,
     120: true,
-    custom: true,
   },
   quoteLength: {
     short: true,
@@ -85,10 +83,7 @@ export function load(): void {
     }
 
     const newTags: {
-      [tag: string]: boolean | any[] | undefined;
-      none?: boolean | undefined;
-      all?: boolean | undefined;
-      array?: (string | number)[] | undefined;
+      [tag: string]: boolean;
     } = { none: false };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
