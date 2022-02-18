@@ -36,7 +36,7 @@ task("lint-json", function () {
 });
 
 task("validate-json-schema", function () {
-  return JSONValidation.validate();
+  return JSONValidation.validateAll();
 });
 
 task("copy-src-contents", function () {
@@ -150,7 +150,26 @@ task("build", series("clean", "compile"));
 
 task("build-production", series("clean", "compile-production"));
 
-task("pr-check-json", series("lint-json", "validate-json-schema"));
+//PR CHECK
+
+task("validate-quote-json-schema", function () {
+  return JSONValidation.validateQuotes();
+});
+
+task("validate-language-json-schema", function () {
+  return JSONValidation.validateLanguages();
+});
+
+task("validate-other-json-schema", function () {
+  return JSONValidation.validateOthers();
+});
+
+task("pr-check-quote-json", series("lint-json", "validate-quote-json-schema"));
+task(
+  "pr-check-language-json",
+  series("lint-json", "validate-language-json-schema")
+);
+task("pr-check-other-json", series("lint-json", "validate-other-json-schema"));
 
 task("pr-check-scss", series("lint", "sass"));
 
