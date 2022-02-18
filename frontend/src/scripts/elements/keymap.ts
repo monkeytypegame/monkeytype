@@ -1,8 +1,8 @@
 import Config from "../config";
 import * as ThemeColors from "./theme-colors";
-import layouts from "../test/layouts";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
+import * as Misc from "../misc";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
@@ -91,11 +91,14 @@ export function show(): void {
   $("#keymap").removeClass("hidden");
 }
 
-export function refresh(layout: string = Config.layout): void {
-  if (!layout) return;
+export async function refresh(
+  layoutName: string = Config.layout
+): Promise<void> {
+  if (!layoutName) return;
   try {
-    let lts = layouts[layout as keyof typeof layouts]; //layout to show
-    let layoutString = layout;
+    const layouts = await Misc.getLayoutsList();
+    let lts = layouts[layoutName]; //layout to show
+    let layoutString = layoutName;
     if (Config.keymapLayout === "overrideSync") {
       if (Config.layout === "default") {
         lts = layouts["qwerty"];

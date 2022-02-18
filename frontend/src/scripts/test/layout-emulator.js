@@ -1,6 +1,5 @@
 import Config from "../config";
 import * as Misc from "../misc";
-import Layouts from "./layouts";
 
 export function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
@@ -10,9 +9,11 @@ export function getCharFromEvent(event) {
     return event.shiftKey;
   }
 
+  const layout = Misc.getLayout(Config.layout);
+
   let keyEventCodes = [];
 
-  if (Layouts[Config.layout].type === "ansi") {
+  if (layout.type === "ansi") {
     keyEventCodes = [
       "Backquote",
       "Digit1",
@@ -63,7 +64,7 @@ export function getCharFromEvent(event) {
       "Slash",
       "Space",
     ];
-  } else if (Layouts[Config.layout].type === "iso") {
+  } else if (layout.type === "iso") {
     keyEventCodes = [
       "Backquote",
       "Digit1",
@@ -115,7 +116,7 @@ export function getCharFromEvent(event) {
       "Slash",
       "Space",
     ];
-  } else if (Layouts[Config.layout].type === "matrix") {
+  } else if (layout.type === "matrix") {
     keyEventCodes = [
       "Backquote",
       "Digit1",
@@ -168,7 +169,7 @@ export function getCharFromEvent(event) {
     ];
   }
 
-  const layoutKeys = Layouts[Config.layout].keys;
+  const layoutKeys = layout.keys;
   const layoutMap = layoutKeys["row1"]
     .concat(layoutKeys["row2"])
     .concat(layoutKeys["row3"])

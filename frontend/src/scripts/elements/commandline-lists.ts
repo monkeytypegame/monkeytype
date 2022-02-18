@@ -1,6 +1,5 @@
 import * as DB from "../db";
 import * as Misc from "../misc";
-import layouts from "../test/layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "../controllers/sound-controller";
 import * as ThemeController from "../controllers/theme-controller";
@@ -53,7 +52,7 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-if (Object.keys(layouts).length > 0) {
+Misc.getLayoutsList().then((layouts) => {
   commandsLayouts.list = [];
   commandsLayouts.list.push({
     id: "changeLayoutDefault",
@@ -76,7 +75,7 @@ if (Object.keys(layouts).length > 0) {
       },
     });
   });
-}
+});
 
 export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
   title: "Change keymap layout...",
@@ -88,8 +87,7 @@ export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
-
-if (Object.keys(layouts).length > 0) {
+Misc.getLayoutsList().then((layouts) => {
   commandsKeymapLayouts.list = [];
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
@@ -113,7 +111,7 @@ if (Object.keys(layouts).length > 0) {
       });
     }
   });
-}
+});
 
 const commandsLanguages: MonkeyTypes.CommandsGroup = {
   title: "Language...",

@@ -1,7 +1,7 @@
 import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import LayoutList from "./test/layouts";
+import * as Misc from "./misc";
 import * as ConfigEvent from "./observables/config-event";
 
 export let localStorageConfig = null;
@@ -1190,9 +1190,9 @@ export function setCustomLayoutfluid(value, nosave) {
 
   //validate the layouts
   let allGood = true;
-  let list = Object.keys(LayoutList);
-  value.split("#").forEach((customLayout) => {
-    if (!list.includes(customLayout)) allGood = false;
+  value.split("#").forEach(async (customLayout) => {
+    const lay = Misc.getLayout(customLayout);
+    if (!lay) allGood = false;
   });
   if (!allGood) {
     Notifications.add(

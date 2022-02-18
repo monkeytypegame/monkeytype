@@ -1,5 +1,5 @@
 import Config from "../config";
-import Layouts from "./layouts";
+import * as Misc from "../misc";
 
 export let leftState = false;
 export let rightState = false;
@@ -13,7 +13,7 @@ let keymapStrings = {
 function buildKeymapStrings() {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
-  let layout = Layouts[Config.keymapLayout]?.keys;
+  let layout = Misc.getLayout(Config.keymapLayout).keys;
 
   if (!layout) {
     keymapStrings = {
