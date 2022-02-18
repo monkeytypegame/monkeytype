@@ -13,7 +13,6 @@ export function update(wpm: number, raw: number): void {
   // } else {
   //   showLiveWpm();
   // }
-
   let number = wpm;
   if (Config.blindMode) {
     number = raw;
