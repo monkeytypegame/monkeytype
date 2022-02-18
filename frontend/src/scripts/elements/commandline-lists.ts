@@ -2283,6 +2283,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
     {
@@ -2291,6 +2292,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
     {
@@ -2299,6 +2301,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
   ],
