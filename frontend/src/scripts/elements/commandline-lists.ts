@@ -213,15 +213,21 @@ export function updateTagCommands(): void {
       display: `Clear tags`,
       icon: "fa-times",
       exec: (): void => {
-        DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
+        const snapshot = DB.getSnapshot();
+
+        snapshot.tags = snapshot.tags?.map((tag) => {
           tag.active = false;
+
+          return tag;
         });
+
+        DB.setSnapshot(snapshot);
         ModesNotice.update();
         TagController.saveActiveToLocalStorage();
       },
     });
 
-    DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {
@@ -276,10 +282,12 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 };
 
 export function updatePresetCommands(): void {
-  if (DB.getSnapshot()?.presets?.length || 0 > 0) {
+  const snapshot = DB.getSnapshot();
+
+  if (snapshot.presets !== undefined && snapshot.presets.length > 0) {
     commandsPresets.list = [];
 
-    DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
+    snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
       const dis = preset.name;
 
       commandsPresets.list.push({

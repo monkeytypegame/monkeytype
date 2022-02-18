@@ -32,7 +32,7 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
+  DB.getSnapshot().tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
     );
@@ -109,7 +109,7 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
 
         if (newtags.length > 0) {
           newtags.forEach((tag) => {
-            DB.getSnapshot().tags?.forEach((snaptag: MonkeyTypes.Tag) => {
+            DB.getSnapshot().tags?.forEach((snaptag) => {
               if (tag === snaptag._id) {
                 tagNames += snaptag.name + ", ";
               }

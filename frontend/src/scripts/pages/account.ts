@@ -102,7 +102,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags?.forEach((snaptag: MonkeyTypes.Tag) => {
+        DB.getSnapshot().tags?.forEach((snaptag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
@@ -390,9 +390,7 @@ export function update(): void {
             }
           } else {
             //tags exist
-            const validTags = DB.getSnapshot().tags?.map(
-              (t: MonkeyTypes.Tag) => t._id
-            );
+            const validTags = DB.getSnapshot().tags?.map((t) => t._id);
 
             if (validTags === undefined) return;
 

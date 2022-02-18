@@ -83,7 +83,7 @@ async function apply(): Promise<void> {
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges() as ConfigChanges;
     const activeTagIds: string[] = [];
-    DB.getSnapshot().tags?.forEach((tag: MonkeyTypes.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active) {
         activeTagIds.push(tag._id);
       }

@@ -24,7 +24,11 @@ export function saveActiveToLocalStorage() {
 export function clear(nosave = false) {
   const snapshot = DB.getSnapshot();
 
-  snapshot.tags = snapshot.tags.map((tag) => ({ ...tag, active: false }));
+  snapshot.tags = snapshot.tags.map((tag) => {
+    tag.active = false;
+
+    return tag;
+  });
 
   DB.setSnapshot(snapshot);
   ModesNotice.update();

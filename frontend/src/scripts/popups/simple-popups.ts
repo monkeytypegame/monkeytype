@@ -578,9 +578,7 @@ list["clearTagPb"] = new SimplePopup(
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
-          const tag = DB.getSnapshot().tags?.filter(
-            (t: MonkeyTypes.Tag) => t._id === tagid
-          )[0];
+          const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagid)[0];
 
           if (tag === undefined) return;
           tag.personalBests = {
