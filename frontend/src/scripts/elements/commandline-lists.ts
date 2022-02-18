@@ -66,7 +66,7 @@ if (Object.keys(layouts).length > 0) {
   });
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
-      id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
+      id: "changeLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
       display: layout === "default" ? "off" : layout.replace(/_/g, " "),
       configValue: layout,
       exec: (): void => {
@@ -103,7 +103,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
-        id: "changeKeymapLayout" + Misc.capitalizeFirstLetter(layout),
+        id: "changeKeymapLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
         display: layout.replace(/_/g, " "),
         configValue: layout,
         exec: (): void => {
@@ -130,7 +130,7 @@ commandsLanguages.list = [];
 Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     commandsLanguages.list.push({
-      id: "changeLanguage" + Misc.capitalizeFirstLetter(language),
+      id: "changeLanguage" + Misc.capitalizeFirstLetterOfEachWord(language),
       display: language.replace(/_/g, " "),
       configValue: language,
       exec: (): void => {
@@ -2285,6 +2285,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
     {
@@ -2293,6 +2294,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
     {
@@ -2301,6 +2303,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
   ],
@@ -2315,7 +2318,7 @@ export const themeCommands: MonkeyTypes.CommandsGroup = {
 Misc.getThemesList().then((themes) => {
   themes.forEach((theme) => {
     themeCommands.list.push({
-      id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
+      id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
       display: theme.name.replace(/_/g, " "),
       configValue: theme.name,
       hover: (): void => {
@@ -2337,7 +2340,8 @@ export const commandsChallenges: MonkeyTypes.CommandsGroup = {
 Misc.getChallengeList().then((challenges) => {
   challenges.forEach((challenge) => {
     commandsChallenges.list.push({
-      id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
+      id:
+        "loadChallenge" + Misc.capitalizeFirstLetterOfEachWord(challenge.name),
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
@@ -2354,7 +2358,7 @@ export function updateThemeCommands(): void {
     themeCommands.list = [];
     Config.favThemes.forEach((theme: string) => {
       themeCommands.list.push({
-        id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
+        id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme),
         display: theme.replace(/_/g, " "),
         hover: (): void => {
           // previewTheme(theme);
@@ -2369,7 +2373,7 @@ export function updateThemeCommands(): void {
       themes.forEach((theme) => {
         if ((Config.favThemes as string[]).includes(theme.name)) return;
         themeCommands.list.push({
-          id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
+          id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
           display: theme.name.replace(/_/g, " "),
           hover: (): void => {
             // previewTheme(theme.name);
