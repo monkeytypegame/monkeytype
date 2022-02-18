@@ -523,9 +523,8 @@ function handleChar(char, charIndex) {
     }
   }
 
-  let activeWordTopBeforeJump = document.querySelector(
-    "#words .word.active"
-  ).offsetTop;
+  let activeWordTopBeforeJump = document.querySelector("#words .word.active")
+    .offsetTop;
   TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
@@ -651,7 +650,7 @@ function handleTab(event) {
   }
 }
 
-$(document).keydown((event) => {
+$(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
@@ -773,7 +772,8 @@ $(document).keydown((event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
+    correctShiftUsed =
+      (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
   if (Config.funbox === "arrows") {
     let char = event.key;
@@ -794,7 +794,7 @@ $(document).keydown((event) => {
       (event.altKey && window.navigator.platform.search("Linux") > -1)
     )
   ) {
-    const char = LayoutEmulator.getCharFromEvent(event);
+    const char = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
       handleChar(char, TestInput.input.current.length);

@@ -1182,7 +1182,7 @@ export function setCustomBackground(value, nosave) {
   }
 }
 
-export function setCustomLayoutfluid(value, nosave) {
+export async function setCustomLayoutfluid(value, nosave) {
   if (value == null || value == undefined) {
     value = "qwerty#dvorak#colemak";
   }
@@ -1190,8 +1190,8 @@ export function setCustomLayoutfluid(value, nosave) {
 
   //validate the layouts
   let allGood = true;
-  value.split("#").forEach(async (customLayout) => {
-    const lay = Misc.getLayout(customLayout);
+  await value.split("#").forEach(async (customLayout) => {
+    const lay = await Misc.getLayout(customLayout);
     if (!lay) allGood = false;
   });
   if (!allGood) {

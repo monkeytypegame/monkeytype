@@ -192,13 +192,11 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   }
 }
 
-export function getLayout(
+export async function getLayout(
   layoutName: keyof MonkeyTypes.Layouts & string
-): MonkeyTypes.Layout {
+): Promise<MonkeyTypes.Layout> {
   if (Object.keys(layoutsList).length === 0) {
-    getLayoutsList().then(() => {
-      return layoutsList[layoutName];
-    });
+    await getLayoutsList();
   }
   return layoutsList[layoutName];
 }

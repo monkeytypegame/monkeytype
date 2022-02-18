@@ -1,7 +1,7 @@
 import Config from "../config";
 import * as Misc from "../misc";
 
-export function getCharFromEvent(event) {
+export async function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
     const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
     if (isCapsLockHeld)
@@ -9,7 +9,7 @@ export function getCharFromEvent(event) {
     return event.shiftKey;
   }
 
-  const layout = Misc.getLayout(Config.layout);
+  const layout = await Misc.getLayout(Config.layout);
 
   let keyEventCodes = [];
 
