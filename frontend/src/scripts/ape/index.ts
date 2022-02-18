@@ -22,7 +22,7 @@ async function adaptRequestOptions(
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: idToken && `Bearer ${idToken}`,
+      ...(idToken && { Authorization: `Bearer ${idToken}` }),
     },
   };
 }
@@ -38,9 +38,16 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
     endpoint: string,
     options: Ape.RequestOptions = {}
   ): Ape.EndpointData => {
+    let errorMessage = "Something went wrong";
+
     try {
-      const requestOptions = await adaptRequestOptions(options);
-      const response = await clientMethod(endpoint, requestOptions);
+      const requestOptions: AxiosRequestConfig = await adaptRequestOptions(
+        options
+      );
+      const response: AxiosResponse = await clientMethod(
+        endpoint,
+        requestOptions
+      );
 
       const { message, data } = response.data;
 
@@ -50,18 +57,23 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
         data,
       };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      console.error(error);
+
+      const typedError = error as Error;
+      errorMessage = typedError.message;
+
+      if (axios.isAxiosError(typedError)) {
         return {
-          status: error.response?.status ?? 500,
-          message: "Something went wrong",
-          ...(error.response?.data ?? {}),
+          status: typedError.response?.status ?? 500,
+          message: typedError.message,
+          ...typedError.response?.data,
         };
       }
     }
 
     return {
       status: 500,
-      message: "Something went wrong",
+      message: errorMessage,
     };
   };
 }
