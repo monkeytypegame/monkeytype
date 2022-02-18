@@ -36,7 +36,7 @@ class NewQuotesController {
     const data = await NewQuotesDao.approve(quoteId, editText, editSource);
     Logger.log("system_quote_approved", data, uid);
 
-    return new MonkeyResponse("Quote approved");
+    return new MonkeyResponse(data.message, data.quote);
   }
 
   static async refuse(req, _res) {
