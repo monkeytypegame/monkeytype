@@ -425,8 +425,8 @@ export function getLastChar(word: string): string {
   }
 }
 
-export function capitalizeFirstLetter(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+export function capitalizeFirstLetterOfEachWord(str: string): string {
+  return str.split(/ +/).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" ");
 }
 
 export function isASCIILetter(c: string): boolean {
