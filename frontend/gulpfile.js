@@ -169,6 +169,7 @@ task("pr-check-quote-json", series("validate-quote-json-schema"));
 task("pr-check-language-json", series("validate-language-json-schema"));
 task("pr-check-other-json", series("validate-other-json-schema"));
 
-task("pr-check-scss", series("lint", "sass"));
+task("pr-check-lint", series("lint"));
+task("pr-check-scss", series("sass"));
 
-task("pr-check-ts", series("lint", "webpack-production"));
+task("pr-check-ts", series("webpack-production"));

@@ -25,6 +25,10 @@ jobs:
               - 'frontend/fonts/*.json'
               - 'frontend/themes/*.json'
               - 'frontend/challenges/*.json'
+            any-tsscss:
+              - 'frontend/**/*.scss'
+              - 'frontend/**/*.js'
+              - 'frontend/**/*.ts'
             scss:
               - 'frontend/**/*.scss'
             ts:
@@ -70,10 +74,14 @@ jobs:
         if: steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
 
-      - name: Lint and compile SCSS
+      - name: Lint
+        if: steps.filter.outputs.any-tsscss == 'true'
+        run: npm run pr-check-lint-json
+
+      - name: Compile SCSS
         if: steps.filter.outputs.scss == 'true'
         run: npm run pr-check-scss
 
-      - name: Lint source code and run webpack
-        if: steps.filter.outputs.scss == 'true'
+      - name: Run webpack
+        if: steps.filter.outputs.ts == 'true'
         run: npm run pr-check-ts
