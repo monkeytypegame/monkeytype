@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter } from "../misc";
+import { capitalizeFirstLetterOfEachWord } from "../misc";
 
 let list: string[] = [];
 
@@ -26,7 +26,7 @@ export async function replace(word: string): Promise<string> {
           ($2.charAt(0) === $2.charAt(0).toUpperCase()
             ? $2 === $2.toUpperCase()
               ? replacement[1].toUpperCase()
-              : capitalizeFirstLetter(replacement[1])
+              : capitalizeFirstLetterOfEachWord(replacement[1])
             : replacement[1]) +
           $3
       )

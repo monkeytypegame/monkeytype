@@ -127,7 +127,7 @@ export async function activate(funbox) {
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
     if (funboxInfo?.affectsWordGeneration === true) {
       Notifications.add(
-        `${Misc.capitalizeFirstLetter(
+        `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
         )} mode does not support the ${funbox} funbox`,
         0
