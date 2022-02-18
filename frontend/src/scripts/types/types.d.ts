@@ -13,7 +13,7 @@ declare namespace MonkeyTypes {
 
   type TimeModes = number;
 
-  type DefaultWordsModes = 10 | 25 | 50 | 100 | 200;
+  type DefaultWordsModes = 10 | 25 | 50 | 100;
 
   type DefaultTimeModes = 15 | 30 | 60 | 120;
 
@@ -38,7 +38,7 @@ declare namespace MonkeyTypes {
 
   type TimerStyle = "bar" | "text" | "mini";
 
-  type RandomTheme = "off" | "on" | "favorite" | "light" | "dark";
+  type RandomTheme = "off" | "on" | "fav" | "light" | "dark";
 
   type TimerColor = "black" | "sub" | "text" | "main";
 

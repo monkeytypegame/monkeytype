@@ -426,7 +426,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
       filters["time"][configTime] = true;
     }
   } else if (Config.mode === "words") {
-    if ([10, 25, 50, 100, 200].includes(Config.time)) {
+    if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
       filters["words"][configWords] = true;
     }

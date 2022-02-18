@@ -304,7 +304,7 @@ export function update(): void {
           }
 
           if (result.quoteLength != null) {
-            let filter: MonkeyTypes.QuoteModes;
+            let filter: MonkeyTypes.QuoteModes | undefined = undefined;
             if (result.quoteLength === 0) {
               filter = "short";
             } else if (result.quoteLength === 1) {
@@ -313,11 +313,9 @@ export function update(): void {
               filter = "long";
             } else if (result.quoteLength === 3) {
               filter = "thicc";
-            } else {
-              filter = "medium";
             }
             if (
-              filter !== null &&
+              filter !== undefined &&
               !ResultFilters.getFilter("quoteLength", filter)
             ) {
               if (filterDebug)
@@ -653,6 +651,12 @@ export function update(): void {
       ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
         "Words per Minute";
     }
+
+    console.log(
+      chartData.map((a) => {
+        return { x: a.x, ts: a.timestamp };
+      })
+    );
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
     ChartController.accountHistory.data.datasets[1].data = accChartData;

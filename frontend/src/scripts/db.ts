@@ -173,7 +173,7 @@ export async function getUserResults(): Promise<boolean> {
         if (result.numbers === undefined) result.numbers = false;
         if (result.punctuation === undefined) result.punctuation = false;
       });
-      results = results.sort((a, b) => a.timestamp - b.timestamp);
+      results = results.sort((a, b) => b.timestamp - a.timestamp);
       dbSnapshot.results = results;
       return true;
     } catch (e: any) {
