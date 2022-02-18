@@ -35,7 +35,10 @@ jobs:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
 
+      - run: echo ${{ steps.filter.outputs.changes }}
+
       - name: Cache node modules
+        if: steps.filter.outputs.changes != '[]'
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
@@ -48,11 +51,13 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node.js
+        if: steps.filter.outputs.changes != '[]'
         uses: actions/setup-node@v1
         with:
           node-version: "16.13.2"
 
       - name: Install dependencies
+        if: steps.filter.outputs.changes != '[]'
         run: npm run install:all
 
       # - name: Run webpack
