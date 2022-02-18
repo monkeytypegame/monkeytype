@@ -14,8 +14,17 @@ jobs:
         id: filter
         with:
           filters: |
-            json:
+            any-json:
               - 'frontend/**/*.json'
+            language-json:
+              - 'frontend/static/languages/*.json'
+            quotes-json:
+              - 'frontend/static/quotes/*.json'
+            other-json:
+              - 'frontend/funbox/*.json'
+              - 'frontend/fonts/*.json'
+              - 'frontend/themes/*.json'
+              - 'frontend/challenges/*.json'
             scss:
               - 'frontend/**/*.scss'
             ts:
@@ -45,9 +54,21 @@ jobs:
       # - name: Run webpack
       #   run: npm run build:live
 
-      - name: Lint and validate JSON
-        if: steps.filter.outputs.json == 'true'
-        run: npm run pr-check-json
+      - name: Lint JSON
+        if: steps.filter.outputs.any-json == 'true'
+        run: npm run pr-check-lint-json
+
+      - name: Validate languages JSON
+        if: steps.filter.outputs.language-json == 'true'
+        run: npm run pr-check-language-json
+
+      - name: Validate quotes JSON
+        if: steps.filter.outputs.quotes-json == 'true'
+        run: npm run pr-check-quote-json
+
+      - name: Validate other JSON
+        if: steps.filter.outputs.other-json == 'true'
+        run: npm run pr-check-other-json
 
       - name: Lint and compile SCSS
         if: steps.filter.outputs.scss == 'true'

@@ -164,12 +164,10 @@ task("validate-other-json-schema", function () {
   return JSONValidation.validateOthers();
 });
 
-task("pr-check-quote-json", series("lint-json", "validate-quote-json-schema"));
-task(
-  "pr-check-language-json",
-  series("lint-json", "validate-language-json-schema")
-);
-task("pr-check-other-json", series("lint-json", "validate-other-json-schema"));
+task("pr-check-lint-json", series("lint-json"));
+task("pr-check-quote-json", series("validate-quote-json-schema"));
+task("pr-check-language-json", series("validate-language-json-schema"));
+task("pr-check-other-json", series("validate-other-json-schema"));
 
 task("pr-check-scss", series("lint", "sass"));
 
