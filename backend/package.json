@@ -21,7 +21,7 @@
     "cron": "1.8.2",
     "dotenv": "10.0.0",
     "express": "4.17.1",
-    "express-rate-limit": "5.3.0",
+    "express-rate-limit": "6.2.1",
     "firebase-admin": "9.11.0",
     "helmet": "4.6.0",
     "joi": "17.6.0",

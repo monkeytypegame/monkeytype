@@ -1,3 +1,5 @@
+type ExpressRequest = import("express").Request;
+
 declare namespace MonkeyTypes {
   interface Configuration {
     maintenance: boolean;
@@ -24,7 +26,7 @@ declare namespace MonkeyTypes {
     };
   }
 
-  interface Request extends Express.Request {
+  interface Request extends ExpressRequest {
     ctx: Context;
   }
 }
