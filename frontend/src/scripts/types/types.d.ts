@@ -339,85 +339,59 @@ declare namespace MonkeyTypes {
 
   interface ResultFilters {
     difficulty: {
-      normal?: boolean;
-      expert?: boolean;
-      master?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["difficulty"])[];
+      normal: boolean;
+      expert: boolean;
+      master: boolean;
     };
     mode: {
-      words?: boolean;
-      time?: boolean;
-      quote?: boolean;
-      zen?: boolean;
-      custom?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["mode"])[];
+      words: boolean;
+      time: boolean;
+      quote: boolean;
+      zen: boolean;
+      custom: boolean;
     };
     words: {
-      10?: boolean;
-      25?: boolean;
-      50?: boolean;
-      100?: boolean;
-      200?: boolean;
-      custom?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["words"])[];
+      10: boolean;
+      25: boolean;
+      50: boolean;
+      100: boolean;
     };
     time: {
-      15?: boolean;
-      30?: boolean;
-      60?: boolean;
-      120?: boolean;
-      custom?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["time"])[];
+      15: boolean;
+      30: boolean;
+      60: boolean;
+      120: boolean;
     };
     quoteLength: {
-      short?: boolean;
-      medium?: boolean;
-      long?: boolean;
-      thicc?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["quoteLength"])[];
+      short: boolean;
+      medium: boolean;
+      long: boolean;
+      thicc: boolean;
     };
     punctuation: {
-      on?: boolean;
-      off?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["punctuation"])[];
+      on: boolean;
+      off: boolean;
     };
     numbers: {
-      on?: boolean;
-      off?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["numbers"])[];
+      on: boolean;
+      off: boolean;
     };
     date: {
-      last_day?: boolean;
-      last_week?: boolean;
-      last_month?: boolean;
-      last_3months?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["date"])[];
-      [date: string]: boolean | any[] | undefined;
+      last_day: boolean;
+      last_week: boolean;
+      last_month: boolean;
+      last_3months: boolean;
+      all: boolean;
     };
     tags: {
-      none?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["tags"])[];
-      [tag: string]: boolean | any[] | undefined;
+      [tagId: string]: boolean;
     };
     language: {
-      all?: boolean;
-      array?: (keyof ResultFilters["language"])[];
-      [language: string]: boolean | any[] | undefined;
+      [language: string]: boolean;
     };
     funbox: {
       none?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["funbox"])[];
-      [funbox: string]: boolean | any[] | undefined;
+      [funbox: string]: boolean;
     };
   }
 
