@@ -38,7 +38,7 @@ declare namespace Ape {
         mode: MonkeyTypes.Mode,
         mode2: string | number,
         skip: number,
-        limit: number
+        limit?: number
       ) => EndpointData;
       getRank: (
         language: string,
