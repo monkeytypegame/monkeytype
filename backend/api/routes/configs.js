@@ -20,7 +20,7 @@ router.patch(
   authenticateRequest(),
   validateRequest({
     body: {
-      config: configSchema,
+      config: configSchema.required(),
     },
   }),
   asyncHandler(ConfigController.saveConfig)
