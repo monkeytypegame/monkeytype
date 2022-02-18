@@ -11,11 +11,24 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: dorny/paths-filter@v2
-        id: changes
+        id: filter
         with:
           filters: |
-            json:
+            any-json:
               - 'frontend/**/*.json'
+            language-json:
+              - 'frontend/static/languages/*.json'
+            quotes-json:
+              - 'frontend/static/quotes/*.json'
+            other-json:
+              - 'frontend/funbox/*.json'
+              - 'frontend/fonts/*.json'
+              - 'frontend/themes/*.json'
+              - 'frontend/challenges/*.json'
+            any-tsscss:
+              - 'frontend/**/*.scss'
+              - 'frontend/**/*.js'
+              - 'frontend/**/*.ts'
             scss:
               - 'frontend/**/*.scss'
             ts:
@@ -45,14 +58,30 @@ jobs:
       # - name: Run webpack
       #   run: npm run build:live
 
-      - name: Lint and validate JSON
-        if: steps.filter.outputs.json == 'true'
-        run: npm run pr-check-json
+      - name: Lint JSON
+        if: steps.filter.outputs.any-json == 'true'
+        run: npm run pr-check-lint-json
 
-      - name: Lint and compile SCSS
+      - name: Validate languages JSON
+        if: steps.filter.outputs.language-json == 'true'
+        run: npm run pr-check-language-json
+
+      - name: Validate quotes JSON
+        if: steps.filter.outputs.quotes-json == 'true'
+        run: npm run pr-check-quote-json
+
+      - name: Validate other JSON
+        if: steps.filter.outputs.other-json == 'true'
+        run: npm run pr-check-other-json
+
+      - name: Lint
+        if: steps.filter.outputs.any-tsscss == 'true'
+        run: npm run pr-check-lint-json
+
+      - name: Compile SCSS
         if: steps.filter.outputs.scss == 'true'
         run: npm run pr-check-scss
 
-      - name: Lint source code and run webpack
-        if: steps.filter.outputs.scss == 'true'
+      - name: Run webpack
+        if: steps.filter.outputs.ts == 'true'
         run: npm run pr-check-ts
