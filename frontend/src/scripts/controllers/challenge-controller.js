@@ -159,6 +159,8 @@ export function verify(result) {
 export async function setup(challengeName) {
   challengeLoading = true;
 
+  UpdateConfig.setFunbox("none");
+
   let list = await Misc.getChallengeList();
   let challenge = list.filter((c) => c.name === challengeName)[0];
   let notitext;
