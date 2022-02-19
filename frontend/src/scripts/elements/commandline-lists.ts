@@ -3181,7 +3181,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       },
     },
     {
-      id: "chooseQuote",
+      id: "quoteChoice",
       display: "Choose Quote...",
       icon: "fa-bars",
       subgroup: quoteChoice,
