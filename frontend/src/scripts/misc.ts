@@ -814,9 +814,10 @@ export function canQuickRestart(
   }
 }
 
-export function clearTimeouts(timeouts: number[]): void {
+export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   timeouts.forEach((to) => {
-    clearTimeout(to);
+    if (typeof to === "number") clearTimeout(to);
+    else clearTimeout(to);
   });
 }
 
