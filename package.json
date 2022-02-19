@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/howler": "^2.2.5",
+    "@types/tinycolor2": "^1.4.3",
     "@typescript-eslint/eslint-plugin": "^5.11.0",
     "@typescript-eslint/parser": "^5.11.0",
     "babel-loader": "^8.2.3",
