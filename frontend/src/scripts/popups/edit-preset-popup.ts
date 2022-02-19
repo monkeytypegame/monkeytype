@@ -65,10 +65,6 @@ function hide(): void {
   }
 }
 
-interface ConfigChanges extends MonkeyTypes.Config {
-  tags: string[];
-}
-
 async function apply(): Promise<void> {
   const action = $("#presetWrapper #presetEdit").attr("action");
   const inputVal = $("#presetWrapper #presetEdit input").val() as string;
@@ -79,9 +75,10 @@ async function apply(): Promise<void> {
   );
 
   // TODO fix this sometime
-  let configChanges: ConfigChanges = null as unknown as ConfigChanges;
+  let configChanges: MonkeyTypes.PresetConfig =
+    null as unknown as MonkeyTypes.PresetConfig;
   if ((updateConfig && action === "edit") || action === "add") {
-    configChanges = Config.getConfigChanges() as ConfigChanges;
+    configChanges = Config.getConfigChanges();
     const activeTagIds: string[] = [];
     DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active) {

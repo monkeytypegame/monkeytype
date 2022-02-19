@@ -1607,8 +1607,8 @@ export function loadFromLocalStorage(): void {
   loadDone();
 }
 
-export function getConfigChanges(): MonkeyTypes.Config {
-  const configChanges = {} as MonkeyTypes.Config;
+export function getConfigChanges(): MonkeyTypes.PresetConfig {
+  const configChanges = {} as MonkeyTypes.PresetConfig;
   (Object.keys(config) as (keyof MonkeyTypes.Config)[])
     .filter((key) => {
       return config[key] != defaultConfig[key];

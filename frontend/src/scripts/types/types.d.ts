@@ -133,10 +133,14 @@ declare namespace MonkeyTypes {
     delimiter: string;
   }
 
+  interface PresetConfig extends MonkeyTypes.Config {
+    tags: string[];
+  }
+
   interface Preset {
     _id: string;
     name: string;
-    config: Config;
+    config: PresetConfig;
   }
 
   interface PersonalBest {
