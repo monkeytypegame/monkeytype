@@ -50,10 +50,10 @@ export function change(page) {
   const previousPage = pages[ActivePage.get()];
   const nextPage = pages[page];
 
-  ActivePage.set(undefined);
-  $(".page").removeClass("active");
   previousPage?.beforeHide();
   PageTransition.set(true);
+  ActivePage.set(undefined);
+  $(".page").removeClass("active");
   Misc.swapElements(
     previousPage.element,
     nextPage.element,
