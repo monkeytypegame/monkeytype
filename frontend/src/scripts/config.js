@@ -996,7 +996,7 @@ export function setLazyMode(val, nosave) {
   }
   config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("lazyMode", config.lazyMode);
+  ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 }
 
 export function setCustomThemeColors(colors, nosave) {
