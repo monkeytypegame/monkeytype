@@ -266,16 +266,18 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }
     PageTransition.set(false);
   }
-  if (window.location.pathname == "/login" && user) {
-    PageController.change("account");
-  } else if (window.location.pathname != "/account") {
-    PageController.change();
-    setTimeout(() => {
-      Focus.set(false);
-    }, 125 / 2);
-  } else {
-    Account.update();
-    // SignOutButton.show();
+  if (user) {
+    if (window.location.pathname == "/login") {
+      PageController.change("account");
+    } else if (window.location.pathname != "/account") {
+      PageController.change();
+      setTimeout(() => {
+        Focus.set(false);
+      }, 125 / 2);
+    } else {
+      Account.update();
+      // SignOutButton.show();
+    }
   }
 
   let theme = Misc.findGetParameter("customTheme");
