@@ -2449,6 +2449,39 @@ const commandsMonkeyPowerLevel: MonkeyTypes.CommandsGroup = {
   ],
 };
 
+export const quoteChoice: MonkeyTypes.CommandsGroup = {
+  title: "Quote...",
+  list: [
+    {
+      id: "fatalerror",
+      display: "Loading quotes...",
+    },
+  ],
+};
+
+Misc.getQuotes(Config.language).then((result) => {
+  quoteChoice.list = result.quotes.map((quote) => {
+    const quoteId = quote.id;
+    const commandId = `quoteChoice-${quoteId}`;
+
+    const quoteText = quote.text;
+    const quoteSource = quote.source;
+    const commandDisplay = `${quoteText} [${quoteSource}]`;
+
+    const quoteWords = quoteText.split(" ");
+
+    return {
+      id: commandId,
+      display: commandDisplay,
+      exec: (): void => {
+        UpdateConfig.setMode("custom");
+        CustomText.setText(quoteWords);
+        TestLogic.restart();
+      },
+    } as MonkeyTypes.Command;
+  });
+});
+
 export const defaultCommands: MonkeyTypes.CommandsGroup = {
   title: "",
   list: [
@@ -3146,6 +3179,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       exec: async (): Promise<void> => {
         alert(await caches.keys());
       },
+    },
+    {
+      id: "chooseQuote",
+      display: "Choose Quote...",
+      icon: "fa-bars",
+      subgroup: quoteChoice,
     },
   ],
 };
