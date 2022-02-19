@@ -835,7 +835,7 @@ $(document).on(
   ".pageSettings .section.tags .tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
-    const tagid = $(target).parent(".tag").attr("id");
+    const tagid = $(target).parent(".tag").attr("id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
   }
