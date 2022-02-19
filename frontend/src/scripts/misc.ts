@@ -102,13 +102,14 @@ export async function getSortedThemesList(): Promise<Theme[]> {
   }
 }
 
-type Funbox = { name: string; type: string; info: string };
-
-let funboxList: Funbox[] = [];
-export async function getFunboxList(): Promise<Funbox[]> {
+let funboxList: MonkeyTypes.FunboxObject[] = [];
+export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
   if (funboxList.length === 0) {
     return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (a: Funbox, b: Funbox) {
+      funboxList = data.sort(function (
+        a: MonkeyTypes.FunboxObject,
+        b: MonkeyTypes.FunboxObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -122,8 +123,10 @@ export async function getFunboxList(): Promise<Funbox[]> {
   }
 }
 
-export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
-  const list: Funbox[] = await getFunboxList();
+export async function getFunbox(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObject | undefined> {
+  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
   return list.find(function (element) {
     return element.name == funbox;
   });
@@ -274,15 +277,10 @@ export async function getLanguageGroups(): Promise<
   }
 }
 
-type Language = {
-  name: string;
-  leftToRight: boolean;
-  noLazyMode?: boolean;
-  words: string[];
-};
-
-let currentLanguage: Language;
-export async function getLanguage(lang: string): Promise<Language> {
+let currentLanguage: MonkeyTypes.LanguageObject;
+export async function getLanguage(
+  lang: string
+): Promise<MonkeyTypes.LanguageObject> {
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
       console.log("getting language json");
@@ -303,7 +301,7 @@ export async function getLanguage(lang: string): Promise<Language> {
 
 export async function getCurrentLanguage(
   languageName: string
-): Promise<Language> {
+): Promise<MonkeyTypes.LanguageObject> {
   return await getLanguage(languageName);
 }
 

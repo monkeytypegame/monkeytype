@@ -122,6 +122,7 @@ declare namespace MonkeyTypes {
     name: string;
     type: FunboxObjectType;
     info: string;
+    affectsWordGeneration?: boolean;
   }
 
   interface CustomText {
@@ -163,6 +164,14 @@ declare namespace MonkeyTypes {
     zen: {
       zen: PersonalBest[];
     };
+  }
+
+  interface LanguageObject {
+    name: string;
+    leftToRight: boolean;
+    noLazyMode?: boolean;
+    ligatures?: boolean;
+    words: string[];
   }
 
   interface Tag {
