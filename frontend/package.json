@@ -16,6 +16,8 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
+    "@types/howler": "^2.2.5",
+    "@types/tinycolor2": "^1.4.3",
     "@types/jquery": "^3.5.13",
     "@types/select2": "^4.0.55",
     "@babel/core": "^7.17.2",
