@@ -7,7 +7,7 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 
 let isPreviewingTheme = false;
-export let randomTheme = null;
+export let randomTheme: string | null = null;
 
 export const colorVars = [
   "--bg-color",
@@ -21,13 +21,13 @@ export const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-function updateFavicon(size, curveSize) {
+async function updateFavicon(size: number, curveSize: number): Promise<void> {
   setTimeout(async () => {
     let maincolor, bgcolor;
     bgcolor = await ThemeColors.get("bg");
     maincolor = await ThemeColors.get("main");
     if (window.location.hostname === "localhost") {
-      let swap = maincolor;
+      const swap = maincolor;
       maincolor = bgcolor;
       bgcolor = swap;
     }
@@ -35,10 +35,10 @@ function updateFavicon(size, curveSize) {
       bgcolor = "#111";
       maincolor = "#eee";
     }
-    let canvas = document.createElement("canvas");
+    const canvas = document.createElement("canvas");
     canvas.width = size;
     canvas.height = size;
-    let ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     ctx.beginPath();
     ctx.moveTo(0, curveSize);
     //top left
@@ -61,29 +61,29 @@ function updateFavicon(size, curveSize) {
   }, 125);
 }
 
-function clearCustomTheme() {
+function clearCustomTheme(): void {
   colorVars.forEach((e) => {
     document.documentElement.style.setProperty(e, "");
   });
 }
 
-let loadStyle = function (name) {
+const loadStyle = async function (name: string): Promise<void> {
   return new Promise((resolve) => {
-    let link = document.createElement("link");
+    const link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
     link.id = "currentTheme";
-    link.onload = () => {
+    link.onload = (): void => {
       resolve();
     };
     link.href = `themes/${name}.css`;
 
-    let headScript = document.querySelector("#currentTheme");
+    const headScript = document.querySelector("#currentTheme") as Element;
     headScript.replaceWith(link);
   });
 };
 
-export function apply(themeName, isPreview = false) {
+export function apply(themeName: string, isPreview = false): void {
   clearCustomTheme();
 
   let name = "serika_dark";
@@ -137,16 +137,16 @@ export function apply(themeName, isPreview = false) {
   });
 }
 
-export function preview(themeName, randomTheme = false) {
+export function preview(themeName: string, randomTheme = false): void {
   isPreviewingTheme = true;
   apply(themeName, true && !randomTheme);
 }
 
-export function set(themeName) {
+export function set(themeName: string): void {
   apply(themeName);
 }
 
-export function clearPreview() {
+export function clearPreview(): void {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
@@ -158,7 +158,7 @@ export function clearPreview() {
   }
 }
 
-export function randomizeTheme() {
+export function randomizeTheme(): void {
   let randomList;
   Misc.getThemesList().then((themes) => {
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
@@ -188,25 +188,25 @@ export function randomizeTheme() {
   });
 }
 
-export function clearRandom() {
+export function clearRandom(): void {
   randomTheme = null;
 }
 
-export function applyCustomBackgroundSize() {
+export function applyCustomBackgroundSize(): void {
   if (Config.customBackgroundSize == "max") {
     $(".customBackground img").css({
       // width: "calc(100%)",
       // height: "calc(100%)",
       objectFit: "",
     });
-  } else if (Config.customBackgroundSize != "") {
+  } else {
     $(".customBackground img").css({
       objectFit: Config.customBackgroundSize,
     });
   }
 }
 
-export function applyCustomBackground() {
+export function applyCustomBackground(): void {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
@@ -218,10 +218,7 @@ export function applyCustomBackground() {
   } else {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
-    let $img = $("<img>", {
-      src: Config.customBackground,
-    });
-    $(".customBackground").html($img);
+    $(".customBackground").html(`<img src="${Config.customBackground}" />`);
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
