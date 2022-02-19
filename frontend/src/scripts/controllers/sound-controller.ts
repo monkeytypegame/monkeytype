@@ -3,7 +3,7 @@ import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 
 type ClickSounds = {
-  [key: number]: {
+  [key: string]: {
     sounds: Howler.Howl[];
     counter: number;
   }[];
@@ -226,7 +226,7 @@ export function init(): void {
   };
 }
 
-export function previewClick(val: number): void {
+export function previewClick(val: string): void {
   if (clickSounds === null) init();
   (clickSounds as ClickSounds)[val][0].sounds[0].seek(0);
   (clickSounds as ClickSounds)[val][0].sounds[0].play();
@@ -255,7 +255,7 @@ export function playError(): void {
   (errorSound as Howler.Howl).play();
 }
 
-export function setVolume(val: number): void {
+export function setVolume(val: string): void {
   // not sure why it complains but it works
   // @ts-ignore
   Howler.Howler.volume(val);
