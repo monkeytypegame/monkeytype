@@ -541,6 +541,7 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
+      ModesNotice.update();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -558,7 +559,6 @@ export function restart(
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
             // ChartController.result.update();
-            ModesNotice.update();
             PageTransition.set(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
