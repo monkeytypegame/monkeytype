@@ -466,11 +466,26 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
 ): Promise<number> {
   function cont(): number {
     let ret = 0;
-    const filteredtag = dbSnapshot.tags?.filter((t) => t._id === tagId)[0];
+
+    const filteredtag = (getSnapshot().tags ?? []).filter(
+      (t) => t._id === tagId
+    )[0];
+
+    if (filteredtag.personalBests === undefined) {
+      filteredtag.personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
+    }
+
     try {
-      const personalBests = filteredtag?.personalBests?.[mode][
-        mode2
-      ] as unknown as MonkeyTypes.PersonalBest[];
+      // TODO figure out how to fix this
+      const personalBests = (filteredtag.personalBests[mode][mode2] ??
+        []) as unknown as MonkeyTypes.PersonalBest[];
+
       personalBests.forEach((pb) => {
         if (
           pb.punctuation == punctuation &&
