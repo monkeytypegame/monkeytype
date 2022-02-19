@@ -669,6 +669,7 @@ async function getNextWord(wordset, language, wordsBound) {
   return randomWord;
 }
 
+let rememberLazyMode;
 export async function init() {
   TestActive.set(false);
   MonkeyPower.reset();
@@ -698,8 +699,15 @@ export async function init() {
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
+    rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0);
-    UpdateConfig.setLazyMode(false);
+    UpdateConfig.setLazyMode(false, true);
+  } else if (rememberLazyMode === true && !language.noLazyMode) {
+    UpdateConfig.setLazyMode(true, true);
+  }
+
+  if (Config.lazyMode === false && !language.noLazyMode) {
+    rememberLazyMode = false;
   }
 
   let wordsBound = 100;
@@ -1693,6 +1701,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
   if (eventKey === "showAllLines" && !nosave) restart();
   if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+  if (eventKey === "lazyMode" && eventValue === false && !nosave)
+    rememberLazyMode = false;
 });
 
 TimerEvent.subscribe((eventKey, eventValue) => {
