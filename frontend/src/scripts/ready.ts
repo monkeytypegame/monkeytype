@@ -58,7 +58,10 @@ $(document).ready(() => {
           });
           history.replaceState("/", "", "/");
         }
-        const page = window.location.pathname.replace("/", "");
+        const page = window.location.pathname.replace(
+          "/",
+          ""
+        ) as MonkeyTypes.Page;
         PageController.change(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
