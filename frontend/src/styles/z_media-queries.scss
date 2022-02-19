@@ -1,12 +1,34 @@
-@media only screen and (max-width: 1200px) {
-  #leaderboardsWrapper {
-    #leaderboards {
-      .tables {
-        grid-template-columns: unset;
+@media only screen and (max-width: 1250px) {
+  #leaderboardsWrapper #leaderboards {
+    grid-template-rows: 1.5rem auto;
+    padding: 1rem;
+    gap: 1rem;
+    .mainTitle {
+      font-size: 2rem;
+      line-height: 2rem;
+    }
+    .title {
+      font-size: 1rem;
+    }
+    .leaderboardsTop {
+      .buttonGroup {
+        gap: 0.1rem !important;
+
+        .button {
+          padding: 0.4rem !important;
+          font-size: 0.7rem !important;
+        }
       }
-      .tables .rightTableWrapper,
-      .tables .leftTableWrapper {
-        height: calc(50vh - 12rem);
+    }
+    .tables table {
+      tr td:first-child {
+        padding-left: 0.25rem;
+      }
+      tr td:last-child {
+        padding-right: 0.25rem;
+      }
+      td {
+        padding: 0.25rem 0.5rem;
       }
     }
   }
@@ -58,6 +80,13 @@
         display: grid;
         grid-template-rows: 1fr 1fr;
         gap: 0.25rem 1rem;
+      }
+    }
+  }
+  #leaderboardsWrapper #leaderboards {
+    .tables table {
+      tr td:nth-child(5) {
+        display: none;
       }
     }
   }
@@ -173,17 +202,19 @@
   #commandLineInput {
     width: 600px !important;
   }
-}
-
-@media only screen and (max-width: 700px) {
-  #leaderboardsWrapper {
-    #leaderboards {
-      .leaderboardsTop {
-        flex-direction: column;
-        align-items: baseline;
+  #leaderboardsWrapper #leaderboards {
+    .tables table {
+      tr td:nth-child(4) {
+        display: none;
+      }
+      tr td:last-child {
+        width: 30%;
       }
     }
   }
+}
+
+@media only screen and (max-width: 700px) {
   .pageAccount {
     .triplegroup {
       grid-template-columns: 1fr 1fr;
@@ -265,6 +296,23 @@
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr;
   }
+
+  #leaderboardsWrapper {
+    #leaderboards {
+      grid-template-rows: 2.5rem auto;
+      .leaderboardsTop {
+        flex-direction: column;
+        align-items: baseline;
+      }
+      .tables {
+        grid-template-columns: unset;
+      }
+      .tables .rightTableWrapper,
+      .tables .leftTableWrapper {
+        height: calc(50vh - 8rem);
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -314,38 +362,7 @@
       }
     }
   }
-  #leaderboardsWrapper #leaderboards {
-    padding: 1rem;
-    gap: 1rem;
-    .mainTitle {
-      font-size: 2rem;
-      line-height: 2rem;
-    }
-    .title {
-      font-size: 1rem;
-    }
-    .leaderboardsTop {
-      .buttonGroup {
-        gap: 0.1rem !important;
 
-        .button {
-          padding: 0.4rem !important;
-          font-size: 0.7rem !important;
-        }
-      }
-    }
-    .tables table {
-      tr td:first-child {
-        padding-left: 0.25rem;
-      }
-      tr td:last-child {
-        padding-right: 0.25rem;
-      }
-      td {
-        padding: 0.25rem;
-      }
-    }
-  }
   .pageAccount {
     .group.history {
       table {
@@ -518,26 +535,11 @@
   #commandLineInput {
     width: 400px !important;
   }
-
   #leaderboardsWrapper #leaderboards {
-    .tables .titleAndTable .titleAndButtons {
-      grid-template-columns: unset;
-    }
-    .tables table {
-      thead,
-      tbody,
-      tfoot {
-        font-size: 0.5rem;
-      }
-      tr td:first-child {
-        padding-left: 0.25rem;
-      }
-      tr td:last-child {
-        padding-right: 0.25rem;
-      }
-      td {
-        padding: 0.25rem;
-      }
+    width: 85vw;
+    .tables .rightTableWrapper,
+    .tables .leftTableWrapper {
+      height: calc(50vh - 7rem);
     }
   }
 }
@@ -578,6 +580,31 @@
   #commandLine,
   #commandLineInput {
     width: 300px !important;
+  }
+  #leaderboardsWrapper #leaderboards {
+    .tables .titleAndTable .titleAndButtons {
+      grid-template-columns: unset;
+    }
+    .tables table {
+      thead,
+      tbody,
+      tfoot {
+        // font-size: 0.5rem;
+      }
+      tr td:first-child {
+        padding-left: 0.25rem;
+      }
+      tr td:last-child {
+        padding-right: 0.25rem;
+      }
+      td {
+        padding: 0.25rem;
+      }
+    }
+    .tables .rightTableWrapper,
+    .tables .leftTableWrapper {
+      height: calc(50vh - 9rem);
+    }
   }
 }
 
