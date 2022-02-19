@@ -2,15 +2,22 @@ import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 
-let errorSound = null;
-let clickSounds = null;
+type ClickSounds = {
+  [key: number]: {
+    sounds: Howler.Howl[];
+    counter: number;
+  }[];
+};
 
-export function initErrorSound() {
+let errorSound: Howler.Howl | null = null;
+let clickSounds: ClickSounds | null = null;
+
+export function initErrorSound(): void {
   if (errorSound !== null) return;
   errorSound = new Howl({ src: ["../sound/error.wav"] });
 }
 
-export function init() {
+export function init(): void {
   if (clickSounds !== null) return;
   clickSounds = {
     1: [
@@ -219,34 +226,38 @@ export function init() {
   };
 }
 
-export function previewClick(val) {
+export function previewClick(val: number): void {
   if (clickSounds === null) init();
-  clickSounds[val][0].sounds[0].seek(0);
-  clickSounds[val][0].sounds[0].play();
+  (clickSounds as ClickSounds)[val][0].sounds[0].seek(0);
+  (clickSounds as ClickSounds)[val][0].sounds[0].play();
 }
 
-export function playClick() {
+export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
   if (clickSounds === null) init();
 
-  let rand = Math.floor(
-    Math.random() * clickSounds[Config.playSoundOnClick].length
+  const rand = Math.floor(
+    Math.random() * (clickSounds as ClickSounds)[Config.playSoundOnClick].length
   );
-  let randomSound = clickSounds[Config.playSoundOnClick][rand];
+  const randomSound = (clickSounds as ClickSounds)[Config.playSoundOnClick][
+    rand
+  ];
   randomSound.counter++;
   if (randomSound.counter === 2) randomSound.counter = 0;
   randomSound.sounds[randomSound.counter].seek(0);
   randomSound.sounds[randomSound.counter].play();
 }
 
-export function playError() {
+export function playError(): void {
   if (!Config.playSoundOnError) return;
   if (errorSound === null) initErrorSound();
-  errorSound.seek(0);
-  errorSound.play();
+  (errorSound as Howler.Howl).seek(0);
+  (errorSound as Howler.Howl).play();
 }
 
-export function setVolume(val) {
+export function setVolume(val: number): void {
+  // not sure why it complains but it works
+  // @ts-ignore
   Howler.Howler.volume(val);
 }
 
