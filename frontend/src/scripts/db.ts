@@ -471,6 +471,8 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
       (t) => t._id === tagId
     )[0];
 
+    if (filteredtag === undefined) return ret;
+
     if (filteredtag.personalBests === undefined) {
       filteredtag.personalBests = {
         time: {},
