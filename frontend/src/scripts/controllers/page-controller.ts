@@ -9,7 +9,7 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageTransition from "../states/page-transition";
 
-export function change(page) {
+export function change(page: MonkeyTypes.Page | ""): void {
   if (PageTransition.get()) {
     console.log(`change page ${page} stopped`);
     return;
@@ -19,14 +19,16 @@ export function change(page) {
   if (page === "") page = "test";
   if (page == undefined) {
     //use window loacation
-    let pages = {
+    const pages: {
+      [key: string]: MonkeyTypes.Page;
+    } = {
       "/": "test",
       "/login": "login",
       "/settings": "settings",
       "/about": "about",
       "/account": "account",
     };
-    let path = pages[window.location.pathname];
+    let path = pages[window.location.pathname as keyof typeof pages];
     if (!path) {
       path = "test";
     }
@@ -47,7 +49,7 @@ export function change(page) {
     login: PageLogin.page,
   };
 
-  const previousPage = pages[ActivePage.get()];
+  const previousPage = pages[ActivePage.get() as MonkeyTypes.Page];
   const nextPage = pages[page];
 
   previousPage?.beforeHide();
@@ -63,7 +65,7 @@ export function change(page) {
       ActivePage.set(nextPage.name);
       previousPage?.afterHide();
       nextPage.element.addClass("active");
-      history.pushState(nextPage.pathname, null, nextPage.pathname);
+      history.pushState(nextPage.pathname, "", nextPage.pathname);
       nextPage?.afterShow();
     },
     async () => {
@@ -72,19 +74,19 @@ export function change(page) {
   );
 }
 
-$(document).on("click", "#top .logo", (e) => {
+$(document).on("click", "#top .logo", () => {
   change("test");
 });
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if (!$(e.currentTarget).hasClass("leaderboards")) {
-    const href = $(e.currentTarget).attr("href");
+    const href = $(e.currentTarget).attr("href") as string;
     ManualRestart.set();
-    change(href.replace("/", ""));
+    change(href.replace("/", "") as MonkeyTypes.Page);
   }
   return false;
 });
 
-$(".pageTest .loginTip .link").click(async (event) => {
+$(".pageTest .loginTip .link").click(async () => {
   change("login");
 });
