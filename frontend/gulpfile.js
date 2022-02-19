@@ -140,10 +140,15 @@ task(
 task("watch", function () {
   watch("./src/styles/*.scss", series("sass"));
   watch(
-    ["./src/scripts/**/*.js", "./src/scripts/**/*.ts"],
+    [
+      "./src/scripts/**/*.js",
+      "./src/scripts/**/*.ts",
+      "./src/scripts/*.js",
+      "./src/scripts/*.ts",
+    ],
     series("lint", "webpack")
   );
-  watch("./static/**/*.*", series("lint-json", "static"));
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
 });
 
 task("build", series("clean", "compile"));
