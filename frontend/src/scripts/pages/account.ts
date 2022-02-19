@@ -861,8 +861,6 @@ function sortAndRefreshHistory(
 
   const key = keyString as keyof typeof filteredResults[0];
 
-  if (typeof filteredResults[0][key] !== "string") return;
-
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
   if (forceDescending !== null) {
