@@ -560,7 +560,7 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
-    type: "iso" | "ansi" | "ortho";
+    type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }
 

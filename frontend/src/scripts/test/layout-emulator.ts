@@ -1,9 +1,14 @@
 import Config from "../config";
 import * as Misc from "../misc";
 
-export async function getCharFromEvent(event) {
-  function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
-    const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
+export async function getCharFromEvent(
+  event: JQuery.KeyDownEvent
+): Promise<string | null> {
+  function emulatedLayoutShouldShiftKey(
+    event: JQuery.KeyDownEvent,
+    newKeyPreview: string
+  ): boolean {
+    const isCapsLockHeld = event.originalEvent?.getModifierState("CapsLock");
     if (isCapsLockHeld)
       return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
@@ -11,7 +16,7 @@ export async function getCharFromEvent(event) {
 
   const layout = await Misc.getLayout(Config.layout);
 
-  let keyEventCodes = [];
+  let keyEventCodes: string[] = [];
 
   if (layout.type === "ansi") {
     keyEventCodes = [
