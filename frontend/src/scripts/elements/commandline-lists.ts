@@ -3183,7 +3183,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
     {
       id: "quoteChoice",
       display: "Choose Quote...",
-      icon: "fa-bars",
+      icon: "fa-align-left",
       subgroup: quoteChoice,
     },
   ],
