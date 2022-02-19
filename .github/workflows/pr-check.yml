@@ -21,10 +21,11 @@ jobs:
             quotes-json:
               - 'frontend/static/quotes/*.json'
             other-json:
-              - 'frontend/funbox/*.json'
-              - 'frontend/fonts/*.json'
-              - 'frontend/themes/*.json'
-              - 'frontend/challenges/*.json'
+              - 'frontend/static/funbox/*.json'
+              - 'frontend/static/fonts/*.json'
+              - 'frontend/static/themes/*.json'
+              - 'frontend/static/challenges/*.json'
+              - 'frontend/static/layouts/*.json'
             any-tsscss:
               - 'frontend/**/*.scss'
               - 'frontend/**/*.js'
