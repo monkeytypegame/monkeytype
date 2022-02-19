@@ -278,6 +278,11 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       Account.update();
       // SignOutButton.show();
     }
+  } else {
+    PageController.change();
+    setTimeout(() => {
+      Focus.set(false);
+    }, 125 / 2);
   }
 
   let theme = Misc.findGetParameter("customTheme");
