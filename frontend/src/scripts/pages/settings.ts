@@ -846,7 +846,7 @@ $(document).on(
   ".pageSettings .section.presets .presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
-    const presetid = $(target).parent(".preset").attr("id");
+    const presetid = $(target).parent(".preset").attr("id") as string;
     console.log("Applying Preset");
     configEventDisabled = true;
     PresetController.apply(presetid);
