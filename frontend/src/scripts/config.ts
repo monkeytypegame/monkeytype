@@ -1,7 +1,7 @@
 import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import LayoutList from "./test/layouts";
+import * as Misc from "./misc";
 import * as ConfigEvent from "./observables/config-event";
 
 export let localStorageConfig: MonkeyTypes.Config;
@@ -1180,13 +1180,7 @@ export function setKeymapStyle(
   style: MonkeyTypes.KeymapStyle,
   nosave?: boolean
 ): void {
-  $(".keymap").removeClass("matrix");
-  $(".keymap").removeClass("split");
-  $(".keymap").removeClass("split_matrix");
-  $(".keymap").removeClass("alice");
   style = style || "staggered";
-
-  $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
@@ -1291,10 +1285,10 @@ export function setCustomBackground(value: string, nosave?: boolean): void {
   }
 }
 
-export function setCustomLayoutfluid(
+export async function setCustomLayoutfluid(
   value: MonkeyTypes.CustomLayoutFluidSpaces,
   nosave?: boolean
-): void {
+): Promise<void> {
   if (value == null || value == undefined) {
     value = "qwerty#dvorak#colemak";
   }
@@ -1304,11 +1298,12 @@ export function setCustomLayoutfluid(
   ) as MonkeyTypes.CustomLayoutFluid;
 
   //validate the layouts
-  let allGood = true;
-  const list = Object.keys(LayoutList);
-  customLayoutfluid.split("#").forEach((customLayout) => {
-    if (!list.includes(customLayout)) allGood = false;
-  });
+  const allGood = (
+    await Promise.all(
+      value.split("#").map((customLayout) => Misc.getLayout(customLayout))
+    )
+  ).every((customLayout) => customLayout);
+
   if (!allGood) {
     Notifications.add(
       "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",

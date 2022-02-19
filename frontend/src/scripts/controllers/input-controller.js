@@ -258,7 +258,7 @@ function handleSpace() {
   } //end of line wrap
 
   if (Config.keymapMode === "react") {
-    Keymap.flashKey("Space", true);
+    Keymap.flashKey(" ", true);
   }
   if (
     Config.mode === "words" ||
@@ -651,7 +651,7 @@ function handleTab(event) {
   }
 }
 
-$(document).keydown((event) => {
+$(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
@@ -773,7 +773,8 @@ $(document).keydown((event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
+    correctShiftUsed =
+      (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
   if (Config.funbox === "arrows") {
     let char = event.key;
@@ -794,7 +795,7 @@ $(document).keydown((event) => {
       (event.altKey && window.navigator.platform.search("Linux") > -1)
     )
   ) {
-    const char = LayoutEmulator.getCharFromEvent(event);
+    const char = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
       handleChar(char, TestInput.input.current.length);

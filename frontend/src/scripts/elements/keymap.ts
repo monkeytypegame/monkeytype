@@ -1,61 +1,29 @@
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as ThemeColors from "./theme-colors";
-import layouts from "../test/layouts";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
+import * as Misc from "../misc";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
+  if (currentKey === "") currentKey = " ";
   try {
     if ($(".active-key") != undefined) {
       $(".active-key").removeClass("active-key");
     }
 
     let highlightKey;
-    switch (currentKey) {
-      case "\\":
-      case "|":
-        highlightKey = "#KeyBackslash";
-        break;
-      case "}":
-      case "]":
-        highlightKey = "#KeyRightBracket";
-        break;
-      case "{":
-      case "[":
-        highlightKey = "#KeyLeftBracket";
-        break;
-      case '"':
-      case "'":
-        highlightKey = "#KeyQuote";
-        break;
-      case ":":
-      case ";":
-        highlightKey = "#KeySemicolon";
-        break;
-      case "<":
-      case ",":
-        highlightKey = "#KeyComma";
-        break;
-      case ">":
-      case ".":
-        highlightKey = "#KeyPeriod";
-        break;
-      case "?":
-      case "/":
-        highlightKey = "#KeySlash";
-        break;
-      case "":
-        highlightKey = "#KeySpace";
-        break;
-      default:
-        highlightKey = `#Key${currentKey}`;
+    if (currentKey == " ") {
+      highlightKey = "#keymap .key-space, #keymap .key-split-space";
+    } else if (currentKey == '"') {
+      highlightKey = `#keymap .keymap-key[data-key*='${currentKey}']`;
+    } else {
+      highlightKey = `#keymap .keymap-key[data-key*="${currentKey}"]`;
     }
 
+    console.log("highlighting", highlightKey);
+
     $(highlightKey).addClass("active-key");
-    if (highlightKey === "#KeySpace") {
-      $("#KeySpace2").addClass("active-key");
-    }
   } catch (e) {
     if (e instanceof Error) {
       console.log("could not update highlighted keymap key: " + e.message);
@@ -65,48 +33,13 @@ export function highlightKey(currentKey: string): void {
 
 export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == undefined) return;
-  switch (key) {
-    case "\\":
-    case "|":
-      key = "#KeyBackslash";
-      break;
-    case "}":
-    case "]":
-      key = "#KeyRightBracket";
-      break;
-    case "{":
-    case "[":
-      key = "#KeyLeftBracket";
-      break;
-    case '"':
-    case "'":
-      key = "#KeyQuote";
-      break;
-    case ":":
-    case ";":
-      key = "#KeySemicolon";
-      break;
-    case "<":
-    case ",":
-      key = "#KeyComma";
-      break;
-    case ">":
-    case ".":
-      key = "#KeyPeriod";
-      break;
-    case "?":
-    case "/":
-      key = "#KeySlash";
-      break;
-    case "" || "Space":
-      key = "#KeySpace";
-      break;
-    default:
-      key = `#Key${key.toUpperCase()}`;
-  }
 
-  if (key == "#KeySpace") {
-    key = ".key-split-space";
+  if (key == " ") {
+    key = "#keymap .key-space, #keymap .key-split-space";
+  } else if (key == '"') {
+    key = `#keymap .keymap-key[data-key*='${key}']`;
+  } else {
+    key = `#keymap .keymap-key[data-key*="${key}"]`;
   }
 
   const themecolors = await ThemeColors.getAll();
@@ -151,17 +84,21 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
 }
 
 export function hide(): void {
-  $(".keymap").addClass("hidden");
+  $("#keymap").addClass("hidden");
 }
 
 export function show(): void {
-  $(".keymap").removeClass("hidden");
+  $("#keymap").removeClass("hidden");
 }
 
-export function refreshKeys(layout: string): void {
+export async function refresh(
+  layoutName: string = Config.layout
+): Promise<void> {
+  if (!layoutName) return;
   try {
-    let lts = layouts[layout as keyof typeof layouts]; //layout to show
-    let layoutString = layout;
+    const layouts = await Misc.getLayoutsList();
+    let lts = layouts[layoutName]; //layout to show
+    let layoutString = layoutName;
     if (Config.keymapLayout === "overrideSync") {
       if (Config.layout === "default") {
         lts = layouts["qwerty"];
@@ -170,107 +107,116 @@ export function refreshKeys(layout: string): void {
         lts = layouts[Config.layout as keyof typeof layouts];
         layoutString = Config.layout;
       }
-    }
-
-    if ((lts as typeof layouts["qwerty"]).keymapShowTopRow) {
-      $(".keymap .r1").removeClass("hidden");
     } else {
-      $(".keymap .r1").addClass("hidden");
+      lts = layouts[Config.keymapLayout as keyof typeof layouts];
+      layoutString = Config.keymapLayout;
     }
 
-    if (Config.keymapStyle === "alice") {
-      $(".keymap .extraKey").removeClass("hidden");
-    } else {
-      $(".keymap .extraKey").addClass("hidden");
-    }
+    const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
 
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(
-      layoutString.replace(/_/g, " ")
-    );
+    const isMatrix =
+      Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
 
-    if ((lts as any).iso) {
-      $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
-    } else {
-      $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
-    }
+    let keymapElement = "";
 
-    const toReplace = (lts as typeof layouts["qwerty"]).keys.slice(1, 48);
-    let count = 0;
+    Object.keys(lts.keys).forEach((row, index) => {
+      const rowKeys = lts.keys[row];
+      let rowElement = "";
+      if (row === "row1" && !showTopRow) {
+        return;
+      }
 
-    // let repeatB = false;
-    $(".keymap .keymap-key .letter")
-      .map(function () {
-        if (count < toReplace.length) {
-          const key = toReplace[count].charAt(0);
-          this.innerHTML = key;
+      if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
+        rowElement += "<div></div>";
+      }
 
-          if (!this.parentElement) return;
+      if (row === "row4" && lts.type !== "iso" && !isMatrix) {
+        rowElement += "<div></div>";
+      }
 
-          switch (key) {
-            case "\\":
-            case "|":
-              this.parentElement.id = "KeyBackslash";
-              break;
-            case "}":
-            case "]":
-              this.parentElement.id = "KeyRightBracket";
-              break;
-            case "{":
-            case "[":
-              this.parentElement.id = "KeyLeftBracket";
-              break;
-            case '"':
-            case "'":
-              this.parentElement.id = "KeyQuote";
-              break;
-            case ":":
-            case ";":
-              this.parentElement.id = "KeySemicolon";
-              break;
-            case "<":
-            case ",":
-              this.parentElement.id = "KeyComma";
-              break;
-            case ">":
-            case ".":
-              this.parentElement.id = "KeyPeriod";
-              break;
-            case "?":
-            case "/":
-              this.parentElement.id = "KeySlash";
-              break;
-            case "":
-              this.parentElement.id = "KeySpace";
-              break;
-            default:
-              this.parentElement.id = `Key${key.toUpperCase()}`;
+      if (row === "row5") {
+        rowElement += "<div></div>";
+        rowElement += `<div class="keymap-key key-space">
+          <div class="letter">${layoutString.replace(/_/g, " ")}</div>
+        </div>`;
+        rowElement += `<div class="keymap-split-spacer"></div>`;
+        rowElement += `<div class="keymap-key key-split-space">
+          <div class="letter"></div>
+        </div>`;
+      } else {
+        for (let i = 0; i < rowKeys.length; i++) {
+          if (row === "row2" && i === 12) continue;
+          if (
+            (Config.keymapStyle === "matrix" ||
+              Config.keymapStyle === "split_matrix") &&
+            i >= 10
+          )
+            continue;
+          const key = rowKeys[i];
+          const bump = row === "row3" && (i === 3 || i === 7) ? true : false;
+          const keyElement = `<div class="keymap-key" data-key="${key}">
+              <span class="letter">${key[0]}</span>
+              ${bump ? "<div class='bump'></div>" : ""}
+          </div>`;
+
+          let splitSpacer = "";
+          if (
+            Config.keymapStyle === "split" ||
+            Config.keymapStyle === "split_matrix" ||
+            Config.keymapStyle === "alice"
+          ) {
+            if (
+              row === "row4" &&
+              (Config.keymapStyle === "split" ||
+                Config.keymapStyle === "alice") &&
+              lts.type === "iso"
+            ) {
+              if (i === 6) {
+                splitSpacer += `<div class="keymap-split-spacer"></div>`;
+              }
+            } else {
+              if (i === 5) {
+                splitSpacer += `<div class="keymap-split-spacer"></div>`;
+              }
+            }
           }
+
+          if (Config.keymapStyle === "alice" && row === "row4") {
+            if (
+              (lts.type === "iso" && i === 6) ||
+              (lts.type !== "iso" && i === 5)
+            ) {
+              splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
+            }
+          }
+
+          rowElement += splitSpacer + keyElement;
         }
+      }
 
-        // if (count == 41 && !repeatB) {
-        //   repeatB = true;
-        // }else{
-        //   repeatB = false;
-        //   count++;
-        // }
+      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+    });
 
-        count++;
+    $("#keymap").html(keymapElement);
 
-        // }
-      })
-      .get();
+    $("#keymap").removeClass("staggered");
+    $("#keymap").removeClass("matrix");
+    $("#keymap").removeClass("split");
+    $("#keymap").removeClass("split_matrix");
+    $("#keymap").removeClass("alice");
+    $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
       console.log(
         "something went wrong when changing layout, resettings: " + e.message
       );
-      UpdateConfig.setKeymapLayout("qwerty", true);
+      // UpdateConfig.setKeymapLayout("qwerty", true);
     }
   }
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
-    refreshKeys(Config.keymapLayout);
-  if (eventKey === "keymapLayout") refreshKeys(eventValue as string);
+    refresh(Config.keymapLayout);
+  if (eventKey === "keymapLayout" || eventKey === "keymapStyle") refresh();
 });

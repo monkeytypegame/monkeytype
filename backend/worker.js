@@ -12,7 +12,7 @@ async function main() {
   await admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
-  console.log("Database Connected");
+  console.log("Database Connected!!");
   refactor();
 }
 

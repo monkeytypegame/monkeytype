@@ -648,7 +648,7 @@ $(document).on("click", "#commandLineMobileButton", () => {
   show();
 });
 
-$(document).on("click", ".keymap .r5 #KeySpace", () => {
+$(document).on("click", "#keymap .r5 .key-space", () => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   show();
 });

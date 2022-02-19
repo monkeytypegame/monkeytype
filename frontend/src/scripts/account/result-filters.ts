@@ -141,8 +141,13 @@ export function reset(): void {
   save();
 }
 
+type AboveChartDisplay = MonkeyTypes.PartialRecord<
+  MonkeyTypes.Group,
+  { all: boolean; array?: (string | boolean)[] }
+>;
+
 export function updateActive(): void {
-  const aboveChartDisplay = {} as MonkeyTypes.ResultFilters;
+  const aboveChartDisplay: AboveChartDisplay = {};
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
@@ -152,6 +157,9 @@ export function updateActive(): void {
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
     ).forEach((filter) => {
       const groupAboveChartDisplay = aboveChartDisplay[group];
+
+      if (groupAboveChartDisplay === undefined) return;
+
       if (getFilter(group, filter)) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
@@ -209,11 +217,11 @@ export function updateActive(): void {
     } else if (group == "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
-    if (aboveChartDisplay[group].all) {
+    if (aboveChartDisplay[group]?.all) {
       ret += "all";
     } else {
       if (group === "tags") {
-        ret += aboveChartDisplay.tags.array
+        ret += aboveChartDisplay.tags?.array
           ?.map((id) => {
             if (id == "none") return id;
             const snapshot = DB.getSnapshot();
@@ -225,7 +233,7 @@ export function updateActive(): void {
           })
           .join(", ");
       } else {
-        ret += aboveChartDisplay[group].array?.join(", ").replace(/_/g, " ");
+        ret += aboveChartDisplay[group]?.array?.join(", ").replace(/_/g, " ");
       }
     }
     ret += "</span></div>";
@@ -243,13 +251,13 @@ export function updateActive(): void {
   chartString += `<div class="spacer"></div>`;
 
   //time
-  if (aboveChartDisplay.mode.array?.includes("time")) {
+  if (aboveChartDisplay.mode?.array?.includes("time")) {
     chartString += addText("time");
     chartString += `<div class="spacer"></div>`;
   }
 
   //words
-  if (aboveChartDisplay.mode.array?.includes("words")) {
+  if (aboveChartDisplay.mode?.array?.includes("words")) {
     chartString += addText("words");
     chartString += `<div class="spacer"></div>`;
   }
@@ -288,9 +296,11 @@ export function toggle<G extends MonkeyTypes.Group>(
 ): void {
   try {
     if (group === "date") {
-      Object.keys(getGroup("date")).forEach((date) => {
-        filters["date"][date] = false;
-      });
+      (Object.keys(getGroup("date")) as MonkeyTypes.Filter<"date">[]).forEach(
+        (date) => {
+          filters["date"][date] = false;
+        }
+      );
     }
     filters[group][filter] = !filters[group][
       filter
@@ -347,10 +357,12 @@ $(
         Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
       ).forEach((filter) => {
         if (group === "date") {
-          // TODO figure out how to fix this
-          filters[group][filter] = false as boolean & (string | number)[];
+          // TODO figure out why "filter" is never
+          // @ts-ignore
+          filters[group][filter] = false;
         } else if (filters[group] !== undefined) {
-          filters[group][filter] = true as boolean & (string | number)[];
+          // @ts-ignore
+          filters[group][filter] = true;
         }
       });
     });
@@ -361,8 +373,9 @@ $(
         (
           Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
         ).forEach((filter) => {
-          // TODO figure out how to fix this
-          filters[group][filter] = false as boolean & (string | number)[];
+          // TODO figure out why "filter" is never
+          // @ts-ignore
+          filters[group][filter] = false;
         });
       }
     });
@@ -371,10 +384,13 @@ $(
       (
         Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
       ).forEach((filter) => {
-        // TODO figure out how to fix this
-        filters[group][filter] = false as boolean & (string | number)[];
+        // TODO figure out why "filter" is never
+        // @ts-ignore
+        filters[group][filter] = false;
       });
-      filters[group][filter] = true as boolean & (string | number)[];
+      // TODO figure out why "filter" is never
+      // @ts-ignore
+      filters[group][filter] = true;
     } else {
       toggle(group, filter);
       // filters[group][filter] = !filters[group][filter];
@@ -390,10 +406,13 @@ $(".pageAccount .topFilters .button.allFilters").click(() => {
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
     ).forEach((filter) => {
       if (group === "date") {
-        // TODO figure out how to fix this
-        filters[group][filter] = false as boolean & (string | number)[];
+        // TODO figure out why "filter" is never
+        // @ts-ignore
+        filters[group][filter] = false;
       } else {
-        filters[group][filter] = true as boolean & (string | number)[];
+        // TODO figure out why "filter" is never
+        // @ts-ignore
+        filters[group][filter] = true;
       }
     });
   });
@@ -407,8 +426,9 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
     ).forEach((filter) => {
-      // TODO figure out how to fix this
-      filters[group][filter] = false as boolean & (string | number)[];
+      // TODO figure out why "filter" is never
+      // @ts-ignore
+      filters[group][filter] = false;
     });
   });
 
@@ -431,8 +451,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
       ) as MonkeyTypes.Filter<"quoteLength">[]
     ).forEach((ql) => {
       // TODO figure out how to fix this
-      filters["quoteLength"][ql] = true as boolean &
-        ("all" | "array" | "short" | "medium" | "long" | "thicc")[];
+      filters["quoteLength"][ql] = true;
     });
   }
   if (Config.punctuation) {

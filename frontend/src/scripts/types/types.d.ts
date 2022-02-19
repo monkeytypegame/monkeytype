@@ -368,6 +368,10 @@ declare namespace MonkeyTypes {
     config?: Config;
   }
 
+  type PartialRecord<K extends keyof any, T> = {
+    [P in K]?: T;
+  };
+
   interface ResultFilters {
     difficulty: {
       normal: boolean;
@@ -386,12 +390,14 @@ declare namespace MonkeyTypes {
       25: boolean;
       50: boolean;
       100: boolean;
+      custom?: boolean;
     };
     time: {
       15: boolean;
       30: boolean;
       60: boolean;
       120: boolean;
+      custom?: boolean;
     };
     quoteLength: {
       short: boolean;
@@ -542,4 +548,21 @@ declare namespace MonkeyTypes {
   //  type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
 
   //  type ActivePage = `page${Page}` | undefined;
+
+  interface Layout {
+    keymapShowTopRow: boolean;
+    type: "iso" | "ansi" | "ortho";
+    keys: Keys;
+  }
+
+  interface Layouts {
+    [layout: string]: Layout;
+  }
+  interface Keys {
+    [row1: string]: string[];
+    [row2: string]: string[];
+    [row3: string]: string[];
+    [row4: string]: string[];
+    [row5: string]: string[];
+  }
 }
