@@ -6,21 +6,24 @@ export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function hexToHSL(
-  hex: string
-): { hue: number; sat: number; lgt: number; string: string } {
+function hexToHSL(hex: string): {
+  hue: number;
+  sat: number;
+  lgt: number;
+  string: string;
+} {
   // Convert hex to RGB first
   let r: number;
   let g: number;
   let b: number;
   if (hex.length == 4) {
-    r = (("0x" + hex[1] + hex[1]) as unknown) as number;
-    g = (("0x" + hex[2] + hex[2]) as unknown) as number;
-    b = (("0x" + hex[3] + hex[3]) as unknown) as number;
+    r = ("0x" + hex[1] + hex[1]) as unknown as number;
+    g = ("0x" + hex[2] + hex[2]) as unknown as number;
+    b = ("0x" + hex[3] + hex[3]) as unknown as number;
   } else if (hex.length == 7) {
-    r = (("0x" + hex[1] + hex[2]) as unknown) as number;
-    g = (("0x" + hex[3] + hex[4]) as unknown) as number;
-    b = (("0x" + hex[5] + hex[6]) as unknown) as number;
+    r = ("0x" + hex[1] + hex[2]) as unknown as number;
+    g = ("0x" + hex[3] + hex[4]) as unknown as number;
+    b = ("0x" + hex[5] + hex[6]) as unknown as number;
   } else {
     r = 0x00;
     g = 0x00;

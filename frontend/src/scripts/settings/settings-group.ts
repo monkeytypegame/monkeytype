@@ -9,7 +9,7 @@ export default class SettingsGroup {
   public updateCallback?: () => any;
   constructor(
     configName: string,
-    configFunction: () => any,
+    configFunction: (...values: any[]) => any,
     mode: string,
     setCallback?: () => any,
     updateCallback?: () => any

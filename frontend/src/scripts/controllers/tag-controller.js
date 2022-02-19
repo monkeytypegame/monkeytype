@@ -22,19 +22,31 @@ export function saveActiveToLocalStorage() {
 }
 
 export function clear(nosave = false) {
-  DB.getSnapshot().tags.forEach((tag) => {
+  const snapshot = DB.getSnapshot();
+
+  snapshot.tags = snapshot.tags.map((tag) => {
     tag.active = false;
+
+    return tag;
   });
+
+  DB.setSnapshot(snapshot);
   ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 
 export function set(tagid, state, nosave = false) {
-  DB.getSnapshot().tags.forEach((tag) => {
+  const snapshot = DB.getSnapshot();
+
+  snapshot.tags = snapshot.tags.map((tag) => {
     if (tag._id === tagid) {
       tag.active = state;
     }
+
+    return tag;
   });
+
+  DB.setSnapshot(snapshot);
   ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }

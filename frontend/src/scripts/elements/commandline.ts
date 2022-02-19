@@ -320,7 +320,7 @@ function useSingleListCommandLine(sshow = true): void {
   // } else if (Config.singleListCommandLine == "on") {
   CommandlineLists.setCurrent([allCommands]);
   // }
-  if (Config.singleListCommandLine != "off")
+  if (Config.singleListCommandLine != "manual")
     $("#commandLine").addClass("allCommands");
   if (sshow) show();
 }
