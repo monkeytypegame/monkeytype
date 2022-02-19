@@ -484,9 +484,8 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
     }
 
     try {
-      // TODO figure out how to fix this
       const personalBests = (filteredtag.personalBests[mode][mode2] ??
-        []) as unknown as MonkeyTypes.PersonalBest[];
+        []) as MonkeyTypes.PersonalBest[];
 
       personalBests.forEach((pb) => {
         if (
