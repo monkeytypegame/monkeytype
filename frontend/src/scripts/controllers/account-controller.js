@@ -251,7 +251,7 @@ async function loadUser(user) {
   $(".pageAccount .group.createdDate").text(text);
 
   if (VerificationController.data !== null) {
-    VerificationController.verify(user);
+    VerificationController.verify(user.uid);
   }
 }
 

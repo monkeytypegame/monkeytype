@@ -50,8 +50,8 @@ $(document).ready(() => {
       if (window.location.pathname === "/verify") {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         if (fragment.has("access_token")) {
-          const accessToken = fragment.get("access_token");
-          const tokenType = fragment.get("token_type");
+          const accessToken = fragment.get("access_token") as string;
+          const tokenType = fragment.get("token_type") as string;
           VerificationController.set({
             accessToken: accessToken,
             tokenType: tokenType,
