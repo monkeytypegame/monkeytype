@@ -404,7 +404,9 @@ export function median(arr: number[]): number {
   }
 }
 
-export async function getReleasesFromGitHub(): Promise<object> {
+export async function getReleasesFromGitHub(): Promise<
+  MonkeyTypes.GithubRelease[]
+> {
   return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
