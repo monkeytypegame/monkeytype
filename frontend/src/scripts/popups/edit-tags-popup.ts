@@ -94,8 +94,6 @@ async function apply(): Promise<void> {
       DB.getSnapshot().tags?.push({
         name: response.data.name,
         _id: response.data._id,
-        personalBests: {} as MonkeyTypes.PersonalBests,
-        active: true,
       });
       ResultTagsPopup.updateButtons();
       Settings.update();
@@ -176,8 +174,8 @@ async function apply(): Promise<void> {
       DB.getSnapshot().tags?.forEach((tag) => {
         if (tag._id === tagid) {
           tag.personalBests = {
-            time: { custom: [] },
-            words: { custom: [] },
+            time: {},
+            words: {},
             custom: { custom: [] },
             zen: { zen: [] },
             quote: { custom: [] },

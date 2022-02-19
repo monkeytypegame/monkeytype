@@ -35,8 +35,8 @@ export async function initSnapshot(): Promise<
   const defaultSnap: MonkeyTypes.Snapshot = {
     results: undefined,
     personalBests: {
-      time: { custom: [] },
-      words: { custom: [] },
+      time: {},
+      words: {},
       zen: { zen: [] },
       quote: { custom: [] },
       custom: { custom: [] },
@@ -388,8 +388,8 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     let found = false;
     if (dbSnapshot.personalBests === undefined)
       dbSnapshot.personalBests = {
-        time: { custom: [] },
-        words: { custom: [] },
+        time: {},
+        words: {},
         zen: { zen: [] },
         quote: { custom: [] },
         custom: { custom: [] },
@@ -468,7 +468,7 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
     let ret = 0;
     const filteredtag = dbSnapshot.tags?.filter((t) => t._id === tagId)[0];
     try {
-      const personalBests = filteredtag?.personalBests[mode][
+      const personalBests = filteredtag?.personalBests?.[mode][
         mode2
       ] as unknown as MonkeyTypes.PersonalBest[];
       personalBests.forEach((pb) => {
@@ -511,6 +511,17 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     const filteredtag = dbSnapshot.tags?.filter(
       (t) => t._id === tagId
     )[0] as MonkeyTypes.Tag;
+
+    if (!filteredtag.personalBests) {
+      filteredtag.personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
+    }
+
     try {
       let found = false;
       if (filteredtag.personalBests[mode][mode2] === undefined) {
@@ -559,8 +570,8 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     } catch (e) {
       //that mode or mode2 is not found
       filteredtag.personalBests = {
-        time: { custom: [] },
-        words: { custom: [] },
+        time: {},
+        words: {},
         zen: { zen: [] },
         quote: { custom: [] },
         custom: { custom: [] },

@@ -135,6 +135,7 @@ export async function getDataAndInit() {
           nameGood = true;
           Notifications.add("Name updated", 1);
           snapshot.name = name;
+          DB.setSnapshot(snapshot);
           $("#menu .icon-button.account .text").text(name);
         }
       }

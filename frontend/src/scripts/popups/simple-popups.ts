@@ -582,8 +582,8 @@ list["clearTagPb"] = new SimplePopup(
 
           if (tag === undefined) return;
           tag.personalBests = {
-            time: { custom: [] },
-            words: { custom: [] },
+            time: {},
+            words: {},
             zen: { zen: [] },
             quote: { custom: [] },
             custom: { custom: [] },
@@ -672,8 +672,8 @@ list["resetPersonalBests"] = new SimplePopup(
       } else {
         Notifications.add("Personal bests have been reset", 1);
         DB.getSnapshot().personalBests = {
-          time: { custom: [] },
-          words: { custom: [] },
+          time: {},
+          words: {},
           zen: { zen: [] },
           quote: { custom: [] },
           custom: { custom: [] },

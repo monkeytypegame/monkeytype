@@ -145,7 +145,7 @@ export function reset(): void {
 
 type AboveChartDisplay = MonkeyTypes.PartialRecord<
   MonkeyTypes.Group,
-  { all: boolean; array?: (string | boolean)[] }
+  { all: boolean; array?: string[] }
 >;
 
 export function updateActive(): void {

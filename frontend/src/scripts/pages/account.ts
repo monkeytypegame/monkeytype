@@ -280,7 +280,7 @@ export function update(): void {
           }
 
           if (result.mode == "time") {
-            let timefilter: MonkeyTypes.Mode2<"time"> = "custom";
+            let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
             if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
               timefilter = result.mode2;
             }
@@ -290,7 +290,7 @@ export function update(): void {
               return;
             }
           } else if (result.mode == "words") {
-            let wordfilter: MonkeyTypes.Mode2<"words"> = "custom";
+            let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
             if (
               [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
             ) {
@@ -651,12 +651,6 @@ export function update(): void {
       ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
         "Words per Minute";
     }
-
-    console.log(
-      chartData.map((a) => {
-        return { x: a.x, ts: a.timestamp };
-      })
-    );
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
     ChartController.accountHistory.data.datasets[1].data = accChartData;
