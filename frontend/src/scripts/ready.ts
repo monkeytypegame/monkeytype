@@ -38,7 +38,7 @@ $(document).ready(() => {
       "images/merchdropwebsite2.png",
       false,
       () => {
-        window.localStorage.setItem("merchbannerclosed", true);
+        window.localStorage.setItem("merchbannerclosed", "true");
       }
     );
   }
@@ -56,9 +56,9 @@ $(document).ready(() => {
             accessToken: accessToken,
             tokenType: tokenType,
           });
-          history.replaceState("/", null, "/");
+          history.replaceState("/", "", "/");
         }
-        let page = window.location.pathname.replace("/", "");
+        const page = window.location.pathname.replace("/", "");
         PageController.change(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
