@@ -1294,6 +1294,9 @@ export function setIndicateTypos(
 }
 
 export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(boolean, ["boolean"]))
+    return invalid("auto switch theme", boolean);
+
   boolean = boolean ?? defaultConfig.autoSwitchTheme;
   config.autoSwitchTheme = boolean;
   if (!nosave) saveToLocalStorage();
@@ -1319,12 +1322,17 @@ export function setTheme(name: string, nosave?: boolean): void {
 }
 
 export function setThemeLight(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"]))
+    return invalid("theme light", name);
+
   config.themeLight = name;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
 }
 
 export function setThemeDark(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"])) return invalid("theme dark", name);
+
   config.themeDark = name;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
