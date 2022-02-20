@@ -218,6 +218,7 @@
           gap: 0.5rem;
           .smoothing {
             display: grid;
+            gap: 0.25rem;
             grid-template-columns: 1fr auto;
             grid-template-rows: auto auto;
             justify-items: start;
