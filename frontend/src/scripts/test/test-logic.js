@@ -1613,7 +1613,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd != "custom") {
-    UpdateConfig.setWordCount(wrd);
+    UpdateConfig.setWordCount(parseInt(wrd));
     ManualRestart.set();
     restart();
   }
@@ -1622,7 +1622,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 $(document).on("click", "#top .config .time .text-button", (e) => {
   let mode = $(e.currentTarget).attr("timeConfig");
   if (mode != "custom") {
-    UpdateConfig.setTimeConfig(mode);
+    UpdateConfig.setTimeConfig(parseInt(mode));
     ManualRestart.set();
     restart();
   }
