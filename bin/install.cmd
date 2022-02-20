@@ -1,7 +1,7 @@
-npm ci
+call npm ci
 cd .\frontend
-npm ci
+call npm ci
 cd ..\backend
-npm ci
+call npm ci
 cd ..\
 PAUSE
