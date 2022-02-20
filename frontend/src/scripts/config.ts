@@ -184,7 +184,7 @@ function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
 
 function invalid(key: string, val: any): void {
   Notifications.add(
-    `A config key was invalid, tried setting ${key} to ${val.toString()}`,
+    `A config value was invalid, tried setting "${key}" to "${val.toString()}", type "${typeof val}"`,
     -1
   );
 }
@@ -941,7 +941,8 @@ export function setHighlightMode(
 }
 
 export function setHideExtraLetters(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, [])) return invalid("", val);
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("hide extra letters", val);
 
   if (val == null || val == undefined) {
     val = false;
@@ -1604,11 +1605,10 @@ export async function setCustomLayoutfluid(
   ) as MonkeyTypes.CustomLayoutFluid;
 
   //validate the layouts
+
   const allGood = (
-    await Promise.all(
-      value.split("#").map((customLayout) => Misc.getLayout(customLayout))
-    )
-  ).every((customLayout) => customLayout);
+    await Promise.all(customLayoutfluid.split("#").map(Misc.getLayout))
+  ).every((customLayout) => !!customLayout);
 
   if (!allGood) {
     Notifications.add(
