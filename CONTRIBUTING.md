@@ -49,7 +49,8 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
-1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+  - If you are on Windows, run `git config --global core.autocrlf false` to prevent CRLF errors.
+3. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -73,7 +74,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
-   - Click on `Google`, add a support email and save
+   - Click on `Google`, adFd a support email and save
 
 #### Mongo Setup
 
