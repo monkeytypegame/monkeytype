@@ -67,12 +67,14 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const [userData, configData, tagsData, presetsData] = (await Promise.all([
-      Ape.users.getData(),
-      Ape.configs.get(),
-      Ape.users.getTags(),
-      Ape.presets.get(),
-    ])).map((response: Ape.Response) => response.data);
+    const [userData, configData, tagsData, presetsData] = (
+      await Promise.all([
+        Ape.users.getData(),
+        Ape.configs.get(),
+        Ape.users.getTags(),
+        Ape.presets.get(),
+      ])
+    ).map((response: Ape.Response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -152,70 +154,32 @@ export async function getUserResults(): Promise<boolean> {
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
-    try {
-      LoadingPage.updateText("Downloading results...");
-      LoadingPage.updateBar(90);
-      const resultsData = await axiosInstance.get("/results");
+    LoadingPage.updateText("Downloading results...");
+    LoadingPage.updateBar(90);
 
-      let results = resultsData.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+    const response = await Ape.results.get();
 
-      results.forEach((result) => {
-        if (result.bailedOut === undefined) result.bailedOut = false;
-        if (result.blindMode === undefined) result.blindMode = false;
-        if (result.lazyMode === undefined) result.lazyMode = false;
-        if (result.difficulty === undefined) result.difficulty = "normal";
-        if (result.funbox === undefined) result.funbox = "none";
-        if (result.language === undefined || result.language === null)
-          result.language = "english";
-        if (result.numbers === undefined) result.numbers = false;
-        if (result.punctuation === undefined) result.punctuation = false;
-      });
-      results = results.sort((a, b) => b.timestamp - a.timestamp);
-      dbSnapshot.results = results;
-      return true;
-    } catch (e: any) {
-      Notifications.add("Error getting results: " + e.message, -1);
+    if (response.status !== 200) {
+      Notifications.add("Error getting results: " + response.message, -1);
       return false;
     }
-  }
-  /*
-    try {
-      return await db
-        .collection(`users/${user.uid}/results/`)
-        .orderBy("timestamp", "desc")
-        .limit(1000)
-        .get()
-        .then(async (data) => {
-          dbSnapshot.results = [];
-          data.docs.forEach((doc) => {
-            let result = doc.data();
-            result.id = doc.id;
 
-            //this should be done server-side
-            if (result.bailedOut === undefined) result.bailedOut = false;
-            if (result.blindMode === undefined) result.blindMode = false;
-            if (result.difficulty === undefined) result.difficulty = "normal";
-            if (result.funbox === undefined) result.funbox = "none";
-            if (result.language === undefined) result.language = "english";
-            if (result.numbers === undefined) result.numbers = false;
-            if (result.punctuation === undefined) result.punctuation = false;
-
-            dbSnapshot.results.push(result);
-          });
-          await TodayTracker.addAllFromToday();
-          return true;
-        })
-        .catch((e) => {
-          throw e;
-        });
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+    results.forEach((result) => {
+      if (result.bailedOut === undefined) result.bailedOut = false;
+      if (result.blindMode === undefined) result.blindMode = false;
+      if (result.lazyMode === undefined) result.lazyMode = false;
+      if (result.difficulty === undefined) result.difficulty = "normal";
+      if (result.funbox === undefined) result.funbox = "none";
+      if (result.language === undefined || result.language === null)
+        result.language = "english";
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.punctuation === undefined) result.punctuation = false;
+    });
+    dbSnapshot.results = results.sort((a, b) => b.timestamp - a.timestamp);
+    return true;
   }
-  */
 }
-
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
