@@ -344,6 +344,8 @@ function validateQuotes() {
     let quoteFilesErrors;
     let quoteIdsAllGood = true;
     let quoteIdsErrors;
+    let quoteLengthsAllGood = true;
+    let quoteLengthErrors = [];
     const quotesFiles = fs.readdirSync("./static/quotes/");
     quotesFiles.forEach((quotefilename) => {
       quotefilename = quotefilename.split(".")[0];
@@ -375,6 +377,22 @@ function validateQuotes() {
         quoteIdsAllGood = false;
         quoteIdsErrors = quoteIdsValidator.errors;
       }
+      const incorrectQuoteLength = quoteData.quotes
+        .filter((quote) => quote.text.length !== quote.length)
+        .map((quote) => quote.id);
+      if (incorrectQuoteLength.length !== 0) {
+        console.log(
+          `Quote ${quotefilename} ID(s) ${incorrectQuoteLength.join(
+            ","
+          )} length fields are \u001b[31mincorrect\u001b[0m`
+        );
+        quoteFilesAllGood = false;
+        incorrectQuoteLength.map((id) => {
+          quoteLengthErrors.push(
+            `${quotefilename} ${id} length field is incorrect`
+          );
+        });
+      }
     });
     if (quoteFilesAllGood) {
       console.log(`Quote file JSON schemas are \u001b[32mvalid\u001b[0m`);
@@ -387,6 +405,12 @@ function validateQuotes() {
     } else {
       console.log(`Quote IDs are \u001b[31mnot unique\u001b[0m`);
       return reject(new Error(quoteIdsErrors));
+    }
+    if (quoteLengthsAllGood) {
+      console.log(`Quote length fields are \u001b[32mcorrect\u001b[0m`);
+    } else {
+      console.log(`Quote length fields are \u001b[31mincorrect\u001b[0m`);
+      return reject(new Error(quoteLengthErrors));
     }
     resolve();
   });
