@@ -224,7 +224,18 @@ export function applyCustomBackground(): void {
   }
 }
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (event) => {
+    if (!Config.autoSwitchTheme || Config.customTheme) return;
+    if (event.matches) {
+      set(Config.themeDark);
+    } else {
+      set(Config.themeLight);
+    }
+  });
+
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "customTheme")
     eventValue ? set("custom") : set(Config.theme);
   if (eventKey === "theme") {
@@ -236,10 +247,55 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
     if (eventValue) {
       set("custom");
     } else {
-      set(Config.theme);
+      if (Config.autoSwitchTheme) {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          set(Config.themeDark);
+        } else {
+          set(Config.themeLight);
+        }
+      } else {
+        set(Config.theme);
+      }
     }
   }
   if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
+  if (eventKey === "autoSwitchTheme") {
+    if (eventValue) {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        set(Config.themeDark);
+      } else {
+        set(Config.themeLight);
+      }
+    } else {
+      set(Config.theme);
+    }
+  }
+  if (
+    eventKey === "themeLight" &&
+    Config.autoSwitchTheme &&
+    !(
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) &&
+    !nosave
+  ) {
+    set(Config.themeLight);
+  }
+  if (
+    eventKey === "themeDark" &&
+    Config.autoSwitchTheme &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches &&
+    !nosave
+  ) {
+    set(Config.themeDark);
+  }
 });

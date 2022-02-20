@@ -11,13 +11,13 @@
       "text": "public class Main {\\npublic static void main(String[] args) {\\n\\tSystem.out.println(\"Hello World\");\\n\\t}\\n}",
       "source": "W3Schools - Java Getting Started",
       "id": 1,
-      "length": 87
+      "length": 107
     },
     {
       "text": "void finish(String name){\n\tSystem.out.println(\"My job here is done. Goodbye \" + name);\n}",
       "source": "Create a procedure - programming-idioms.org",
       "id": 2,
-      "length": 89
+      "length": 88
     },
     {
       "text": "int square(int x){\n\treturn x*x;\n}",
@@ -29,19 +29,19 @@
       "text": "for (int i=0; i<items.length; i++) {\n\tdoSomething(items[i]);\n}",
       "source": "Iterate over list values - programming-idioms.org",
       "id": 4,
-      "length": 33
+      "length": 62
     },
     {
       "text": "public enum OperatingSystem {\n\tOSX, WIndows, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\",\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
       "id": 5,
       "source": "Community contribution",
-      "length": 202
+      "length": 201
     },
     {
       "text": "boolean contains(int[] list, int x) {\n\tfor(int y: list)\n\t\tif (y == x)\n\t\t\treturn true;\n\treturn false;\n}",
       "id": 6,
       "source": "Check if list contains a value - programming-idioms.org",
-      "length": 55
+      "length": 102
     },
     {
       "text": "public enum Wood {\n\tINDIAN_ROSEWOOD, BRAZILIAN_ROSEWOOD, MAHOGANY,\n\tMAPLE, COCOBOLO, CEDAR, ADIRONDACK, ALDER, SITKA;\n\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase INDIAN_ROSEWOOD: return \"Indian Rosewood\";\n\t\t\tcase BRAZILIAN_ROSEWOOD: return \"Brazilian Rosewood\";\n\t\t\tcase MAHOGANY: return \"Mahogany\";\n\t\t\tcase MAPLE: return \"Maple\";\n\t\t\tcase COCOBOLO: return \"Cocobolo\";\n\t\t\tcase CEDAR: return \"Cedar\";\n\t\t\tcase ADIRONDACK: return \"Adirondack\";\n\t\t\tcase ALDER: return \"Alder\";\n\t\t\tcase SITKA: return \"Sitka\";\n\t\t\tdefault: return \"Any\";\n\t\t}\n\t}\n}",

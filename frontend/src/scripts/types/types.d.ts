@@ -25,7 +25,7 @@ declare namespace MonkeyTypes {
 
   type QuoteLengthArray = QuoteLength[];
 
-  type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
+  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
   type CaretStyle =
     | "off"
@@ -230,6 +230,9 @@ declare namespace MonkeyTypes {
 
   interface Config {
     theme: string;
+    themeLight: string;
+    themeDark: string;
+    autoSwitchTheme: boolean;
     customTheme: boolean;
     customThemeColors: string[];
     favThemes: string[];
