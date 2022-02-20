@@ -50,7 +50,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
    - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
-3. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -94,9 +94,9 @@ Follow these steps if you want to work on anything involving the database/accoun
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
 1. Run `npm install:all` in the project root to install all dependencies.
-   - If you are on Windows, use `npm install:all:win`.
+   - If you are on Windows, use `npm install:all:windows`.
    - If none of this works, you will have to run `npm install` in root, frontend, and backend directories.
-3. Run `npm run start:dev` (`npm run start:dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+2. Run `npm run start:dev` (`npm run start:dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 **Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
 
