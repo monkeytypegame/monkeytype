@@ -8,7 +8,7 @@
     "start:dev:be": "cd backend && npm run start:dev",
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
-    "install": "sh ./bin/install.sh",
+    "install:all": "sh ./bin/install.sh",
     "install:windows": ".\\bin\\install.cmd",
     "lint": "run-script-os",
     "lint:windows": ".\\node_modules\\.bin\\eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
