@@ -1126,6 +1126,7 @@ export async function retrySavingResult() {
     );
   }
 
+  $("#retrySavingResultButton").addClass("hidden");
   Notifications.add("Result saved", 1);
 }
 
