@@ -451,13 +451,18 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
       filters["words"]["custom"] = true;
     }
   } else if (Config.mode === "quote") {
-    (
-      Object.keys(
-        getGroup("quoteLength")
-      ) as MonkeyTypes.Filter<"quoteLength">[]
-    ).forEach((ql) => {
-      // TODO figure out how to fix this
-      filters["quoteLength"][ql] = true;
+    const filterName: MonkeyTypes.Filter<"quoteLength">[] = [
+      "short",
+      "medium",
+      "long",
+      "thicc",
+    ];
+    filterName.forEach((ql, index) => {
+      if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
+        filters["quoteLength"][ql] = true;
+      } else {
+        filters["quoteLength"][ql] = false;
+      }
     });
   }
   if (Config.punctuation) {
