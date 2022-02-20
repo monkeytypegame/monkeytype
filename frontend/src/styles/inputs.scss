@@ -106,8 +106,8 @@ input[type="number"] {
 }
 
 .select2-container--default .select2-results__option--selected {
-  background-color: var(--bg-color);
-  color: var(--sub-color);
+  background-color: var(--main-color);
+  color: var(--bg-color);
 }
 
 .select2-container--open .select2-dropdown--below,
