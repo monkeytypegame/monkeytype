@@ -283,7 +283,6 @@ interface LanguageObject {
   noLazyMode?: boolean;
   ligatures?: boolean;
   words: string[];
-  bcp47?: string;
 }
 
 let currentLanguage: LanguageObject;

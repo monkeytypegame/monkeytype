@@ -1,13 +1,15 @@
-let currentWordset = null;
-let currentWordGenerator = null;
+let currentWordset: Wordset | null = null;
+let currentWordGenerator: WordGenerator | null = null;
 
-class Wordset {
-  constructor(words) {
+export class Wordset {
+  public words: string[];
+  public length: number;
+  constructor(words: string[]) {
     this.words = words;
     this.length = this.words.length;
   }
 
-  randomWord() {
+  public randomWord(): string {
     return this.words[Math.floor(Math.random() * this.length)];
   }
 }
@@ -15,12 +17,14 @@ class Wordset {
 const prefixSize = 2;
 
 class CharDistribution {
+  public chars: { [char: string]: number };
+  public count: number;
   constructor() {
     this.chars = {};
     this.count = 0;
   }
 
-  addChar(char) {
+  public addChar(char: string): void {
     this.count++;
     if (char in this.chars) {
       this.chars[char]++;
@@ -29,7 +33,7 @@ class CharDistribution {
     }
   }
 
-  randomChar() {
+  public randomChar(): string {
     const randomIndex = Math.floor(Math.random() * this.count);
     let runningCount = 0;
     for (const [char, charCount] of Object.entries(this.chars)) {
@@ -38,16 +42,18 @@ class CharDistribution {
         return char;
       }
     }
+
+    return Object.keys(this.chars)[0];
   }
 }
 
 class WordGenerator extends Wordset {
-  constructor(words) {
+  public ngrams: { [prefix: string]: CharDistribution } = {};
+  constructor(words: string[]) {
     super(words);
     // Can generate an unbounded number of words in theory.
     this.length = Infinity;
 
-    this.ngrams = {};
     for (let word of words) {
       // Mark the end of each word with a space.
       word += " ";
@@ -58,16 +64,16 @@ class WordGenerator extends Wordset {
           this.ngrams[prefix] = new CharDistribution();
         }
         this.ngrams[prefix].addChar(c);
-        prefix = (prefix + c).substr(-prefixSize);
+        prefix = (prefix + c).substring(-prefixSize);
       }
     }
   }
 
-  randomWord() {
+  public override randomWord(): string {
     let word = "";
     for (;;) {
-      const prefix = word.substr(-prefixSize);
-      let charDistribution = this.ngrams[prefix];
+      const prefix = word.substring(-prefixSize);
+      const charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
         // This shouldn't happen if this.ngrams is complete. If it does
         // somehow, start generating a new word.
@@ -86,7 +92,7 @@ class WordGenerator extends Wordset {
   }
 }
 
-export function withWords(words, funbox) {
+export function withWords(words: string[], funbox: string): Wordset {
   if (funbox == "pseudolang") {
     if (currentWordGenerator == null || words !== currentWordGenerator.words) {
       currentWordGenerator = new WordGenerator(words);
