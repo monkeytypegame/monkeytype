@@ -568,11 +568,11 @@ declare namespace MonkeyTypes {
     [layout: string]: Layout;
   }
   interface Keys {
-    [row1: string]: string[];
-    [row2: string]: string[];
-    [row3: string]: string[];
-    [row4: string]: string[];
-    [row5: string]: string[];
+    row1: string[];
+    row2: string[];
+    row3: string[];
+    row4: string[];
+    row5: string[];
   }
 
   interface WordsPerMinuteAndRaw {
