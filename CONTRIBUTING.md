@@ -22,7 +22,7 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 ## Prerequisites
 
-While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
+While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2.
 
 #### Text Editor
 
