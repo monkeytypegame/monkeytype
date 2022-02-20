@@ -1056,7 +1056,7 @@ let retrySaving = {
   canRetry: false,
 };
 
-export function retrySavingResult() {
+export async function retrySavingResult() {
   if (!retrySaving.completedEvent) {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
