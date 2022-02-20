@@ -1,7 +1,7 @@
 npm ci
-cd ./frontend
+cd .\frontend
 npm ci
-cd ./backend
+cd ..\backend
 npm ci
-cd ../
+cd ..\
 PAUSE
