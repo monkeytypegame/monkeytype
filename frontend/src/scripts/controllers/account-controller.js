@@ -1,9 +1,9 @@
+import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Account from "../pages/account";
 import * as VerificationController from "./verification-controller";
-import Ape from "../ape";
 import * as Misc from "../misc";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
@@ -105,7 +105,7 @@ export async function getDataAndInit() {
       //valid, just update
       snapshot.name = user.name;
       DB.setSnapshot(snapshot);
-      DB.updateName(user.uid, user.name);
+      await Ape.users.updateName(user.name);
     } else {
       //invalid, get new
       let nameGood = false;

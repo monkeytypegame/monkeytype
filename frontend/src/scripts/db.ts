@@ -1,19 +1,9 @@
 import Ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
-import axiosInstance from "./axios-instance";
 import * as LoadingPage from "./pages/loading";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
-
-export function updateName(uid: string, name: string): void {
-  //TODO update
-  axiosInstance.patch("/users/name", {
-    name,
-  });
-
-  name = uid; // this is just so that typescript is happy; Remove once this function is updated.
-}
 
 export function getSnapshot(): MonkeyTypes.Snapshot {
   return dbSnapshot;
@@ -583,13 +573,13 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
   return;
 }
 
-export function updateLbMemory<M extends MonkeyTypes.Mode>(
+export async function updateLbMemory<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
   language: string,
   rank: number,
   api = false
-): void {
+): Promise<void> {
   //could dbSnapshot just be used here instead of getSnapshot()
 
   if (mode === "time") {
@@ -609,12 +599,7 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
     const current = snapshot.lbMemory[timeMode][timeMode2][language];
     snapshot.lbMemory[timeMode][timeMode2][language] = rank;
     if (api && current != rank) {
-      axiosInstance.patch("/user/leaderboardMemory", {
-        mode,
-        mode2,
-        language,
-        rank,
-      });
+      await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
     setSnapshot(snapshot);
   }

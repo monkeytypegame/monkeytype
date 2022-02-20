@@ -4,9 +4,7 @@ import * as DB from "../db";
 import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
-import { AxiosError } from "axios";
 
 type Input = {
   placeholder: string;
@@ -232,31 +230,22 @@ list["updateEmail"] = new SimplePopup(
         );
         await user.reauthenticateWithCredential(credential);
       }
+
       Loader.show();
-      let response;
-      try {
-        response = await axiosInstance.patch("/user/email", {
-          uid: user.uid,
-          previousEmail: user.email,
-          newEmail: email,
-        });
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to update email: " + msg, -1);
-        return;
-      }
+      const response = await Ape.users.updateEmail(email, user.email);
       Loader.hide();
+
       if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      } else {
-        Notifications.add("Email updated", 1);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        return Notifications.add(
+          "Failed to update email: " + response.message,
+          -1
+        );
       }
+
+      Notifications.add("Email updated", 1);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (e) {
       // @ts-ignore todo help
       if (e.code == "auth/wrong-password") {
@@ -309,41 +298,27 @@ list["updateName"] = new SimplePopup(
       }
       Loader.show();
 
-      let response;
-      try {
-        response = await axiosInstance.get(`/user/checkName/${newName}`);
-      } catch (error) {
-        const e = error as AxiosError;
+      const checkNameResponse = await Ape.users.getNameAvailability(newName);
+      if (checkNameResponse.status !== 200) {
         Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to check name: " + msg, -1);
-        return;
+        return Notifications.add(
+          "Failed to check name: " + checkNameResponse.message,
+          -1
+        );
       }
-      Loader.hide();
-      if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      }
-      try {
-        response = await axiosInstance.patch("/user/name", {
-          name: newName,
-        });
-      } catch (error) {
-        const e = error as AxiosError;
+
+      const updateNameResponse = await Ape.users.updateName(newName);
+      if (updateNameResponse.status !== 200) {
         Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to update name: " + msg, -1);
-        return;
+        return Notifications.add(
+          "Failed to update name: " + updateNameResponse.message,
+          -1
+        );
       }
-      Loader.hide();
-      if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      } else {
-        Notifications.add("Name updated", 1);
-        DB.getSnapshot().name = newName;
-        $("#menu .icon-button.account .text").text(newName);
-      }
+
+      Notifications.add("Name updated", 1);
+      DB.getSnapshot().name = newName;
+      $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
       Loader.hide();
       // @ts-ignore todo remove ignore
@@ -564,40 +539,36 @@ list["clearTagPb"] = new SimplePopup(
   [],
   `Are you sure you want to clear this tags PB?`,
   "Clear",
-  () => {
-    const tagid = eval("this.parameters[0]");
+  async () => {
+    const tagId = eval("this.parameters[0]");
     Loader.show();
-    axiosInstance
-      .delete(`/user/tags/${tagid}/clearPb`)
-      .then((res) => {
-        Loader.hide();
-        if (res.data.resultCode === 1) {
-          const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagid)[0];
+    const response = await Ape.users.deleteTagPersonalBest(tagId);
+    Loader.hide();
 
-          if (tag === undefined) return;
-          tag.personalBests = {
-            time: {},
-            words: {},
-            zen: { zen: [] },
-            quote: { custom: [] },
-            custom: { custom: [] },
-          };
-          $(
-            `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
-          ).attr("aria-label", "No PB found");
-          Notifications.add("Tag PB cleared.", 0);
-        } else {
-          Notifications.add("Something went wrong: " + res.data.message, -1);
-        }
-      })
-      .catch((e) => {
-        Loader.hide();
-        if (e.code == "auth/wrong-password") {
-          Notifications.add("Incorrect password", -1);
-        } else {
-          Notifications.add("Something went wrong: " + e, -1);
-        }
-      });
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to delete tag's PB: " + response.message
+      );
+    }
+
+    if (response.data.resultCode === 1) {
+      const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagId)[0];
+
+      if (tag === undefined) return;
+      tag.personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
+      ).attr("aria-label", "No PB found");
+      Notifications.add("Tag PB cleared.", 0);
+    } else {
+      Notifications.add("Something went wrong: " + response.message, -1);
+    }
     // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
   () => {
@@ -649,30 +620,24 @@ list["resetPersonalBests"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
-      let response;
-      try {
-        response = await axiosInstance.delete("/user/personalBests");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to reset personal bests: " + msg, -1);
-        return;
-      }
+      const response = await Ape.users.deletePersonalBests();
       Loader.hide();
+
       if (response.status !== 200) {
-        Notifications.add(response.data.message);
-      } else {
-        Notifications.add("Personal bests have been reset", 1);
-        DB.getSnapshot().personalBests = {
-          time: {},
-          words: {},
-          zen: { zen: [] },
-          quote: { custom: [] },
-          custom: { custom: [] },
-        };
+        return Notifications.add(
+          "Failed to reset personal bests: " + response.message,
+          -1
+        );
       }
+
+      Notifications.add("Personal bests have been reset", 1);
+      DB.getSnapshot().personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
     } catch (e) {
       Loader.hide();
       Notifications.add(e as string, -1);
@@ -714,24 +679,19 @@ list["unlinkDiscord"] = new SimplePopup(
   "Unlink",
   async () => {
     Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/user/discord/unlink", {});
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to unlink Discord: " + msg, -1);
-      return;
-    }
+    const response = await Ape.users.unlinkDiscord();
     Loader.hide();
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
-    } else {
-      Notifications.add("Accounts unlinked", 1);
-      DB.getSnapshot().discordId = undefined;
-      Settings.updateDiscordSection();
+      return Notifications.add(
+        "Failed to unlink Discord: " + response.message,
+        -1
+      );
     }
+
+    Notifications.add("Accounts unlinked", 1);
+    DB.getSnapshot().discordId = undefined;
+    Settings.updateDiscordSection();
   },
   () => {
     //
