@@ -229,6 +229,9 @@ declare namespace MonkeyTypes {
 
   interface Config {
     theme: string;
+    themeLight: string;
+    themeDark: string;
+    autoSwitchTheme: boolean;
     customTheme: boolean;
     customThemeColors: string[];
     favThemes: string[];

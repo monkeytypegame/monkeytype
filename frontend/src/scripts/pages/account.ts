@@ -1072,6 +1072,10 @@ $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
 });
 
+$(".pageAccount .content .group.aboveHistory .exportCSV").click(() => {
+  Misc.downloadResultsCSV(filteredResults);
+});
+
 export const page = new Page(
   "account",
   $(".page.pageAccount"),

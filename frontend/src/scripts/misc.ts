@@ -950,3 +950,78 @@ export function getMode2(
   }
   return mode2;
 }
+
+export async function downloadResultsCSV(
+  array: MonkeyTypes.Result<MonkeyTypes.Mode>[]
+): Promise<void> {
+  Loader.show();
+  const csvString = [
+    [
+      "_id",
+      "isPb",
+      "wpm",
+      "acc",
+      "rawWpm",
+      "consistency",
+      "charStats",
+      "mode",
+      "mode2",
+      "quoteLength",
+      "restartCount",
+      "testDuration",
+      "afkDuration",
+      "incompleteTestSeconds",
+      "punctuation",
+      "numbers",
+      "language",
+      "funbox",
+      "difficulty",
+      "lazyMode",
+      "blindMode",
+      "bailedOut",
+      "tags",
+      "timestamp",
+    ],
+    ...array.map((item: MonkeyTypes.Result<MonkeyTypes.Mode>) => [
+      item._id,
+      item.isPb,
+      item.wpm,
+      item.acc,
+      item.rawWpm,
+      item.consistency,
+      item.charStats.join(","),
+      item.mode,
+      item.mode2,
+      item.quoteLength,
+      item.restartCount,
+      item.testDuration,
+      item.afkDuration,
+      item.incompleteTestSeconds,
+      item.punctuation,
+      item.numbers,
+      item.language,
+      item.funbox,
+      item.difficulty,
+      item.lazyMode,
+      item.blindMode,
+      item.bailedOut,
+      item.tags.join(","),
+      item.timestamp,
+    ]),
+  ]
+    .map((e) => e.join("|"))
+    .join("\n");
+
+  const blob = new Blob([csvString], { type: "text/csv" });
+
+  const href = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", href);
+  link.setAttribute("download", "results.csv");
+  document.body.appendChild(link); // Required for FF
+
+  link.click();
+  link.remove();
+  Loader.hide();
+}
