@@ -1617,7 +1617,11 @@ export async function setCustomLayoutfluid(
   //validate the layouts
 
   const allGood = (
-    await Promise.all(customLayoutfluid.split("#").map(Misc.getLayout))
+    await Promise.all(
+      customLayoutfluid
+        .split("#")
+        .map((customLayout) => Misc.getLayout(customLayout))
+    )
   ).every((customLayout) => !!customLayout);
 
   if (!allGood) {
