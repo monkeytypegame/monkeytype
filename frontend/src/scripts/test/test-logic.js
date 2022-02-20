@@ -26,7 +26,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay.js";
-import axiosInstance from "../axios-instance";
 import * as Poetry from "./poetry.js";
 import * as Wikipedia from "./wikipedia.js";
 import * as TodayTracker from "./today-tracker";
