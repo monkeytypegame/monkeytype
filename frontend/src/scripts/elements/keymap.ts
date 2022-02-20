@@ -153,7 +153,7 @@ export async function refresh(
           )
             continue;
           const key = rowKeys[i];
-          const bump = row === "row3" && (i === 3 || i === 7) ? true : false;
+          const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
           const keyElement = `<div class="keymap-key" data-key="${key}">
               <span class="letter">${key[0]}</span>
               ${bump ? "<div class='bump'></div>" : ""}
