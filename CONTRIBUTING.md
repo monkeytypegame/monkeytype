@@ -74,7 +74,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
-   - Click on `Google`, adFd a support email and save
+   - Click on `Google`, add a support email and save
 
 #### Mongo Setup
 
