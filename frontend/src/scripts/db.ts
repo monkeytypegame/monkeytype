@@ -666,8 +666,10 @@ export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
       await axiosInstance.post("/config/save", { config });
     } catch (e: any) {
       AccountButton.loading(false);
-
-      const msg = e?.response?.data?.message ?? e.message;
+      let msg = e?.response?.data?.message ?? e.message;
+      if (e.response.status === 429) {
+        msg = "Too many requests. Please try again later.";
+      }
       Notifications.add("Failed to save config: " + msg, -1);
       return;
     }

@@ -351,8 +351,7 @@ export async function getChallengeList(): Promise<Challenge[]> {
 export function smooth(
   arr: number[],
   windowSize: number,
-  getter = (value: number): number => value,
-  setter: (index: number, value: number) => number
+  getter = (value: number): number => value
 ): number[] {
   const get = getter;
   const result = [];
@@ -369,7 +368,7 @@ export function smooth(
       count += 1;
     }
 
-    result[i] = setter ? setter(arr[i], sum / count) : sum / count;
+    result[i] = sum / count;
   }
 
   return result;

@@ -251,7 +251,7 @@ async function loadUser(user) {
   $(".pageAccount .group.createdDate").text(text);
 
   if (VerificationController.data !== null) {
-    VerificationController.verify(user);
+    VerificationController.verify(user.uid);
   }
 }
 
@@ -266,16 +266,23 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }
     PageTransition.set(false);
   }
-  if (window.location.pathname == "/login" && user) {
-    PageController.change("account");
-  } else if (window.location.pathname != "/account") {
+  if (user) {
+    if (window.location.pathname == "/login") {
+      PageController.change("account");
+    } else if (window.location.pathname != "/account") {
+      PageController.change();
+      setTimeout(() => {
+        Focus.set(false);
+      }, 125 / 2);
+    } else {
+      Account.update();
+      // SignOutButton.show();
+    }
+  } else {
     PageController.change();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
-  } else {
-    Account.update();
-    // SignOutButton.show();
   }
 
   let theme = Misc.findGetParameter("customTheme");

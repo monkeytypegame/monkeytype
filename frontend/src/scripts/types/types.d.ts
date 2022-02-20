@@ -134,10 +134,14 @@ declare namespace MonkeyTypes {
     delimiter: string;
   }
 
+  interface PresetConfig extends MonkeyTypes.Config {
+    tags: string[];
+  }
+
   interface Preset {
     _id: string;
     name: string;
-    config: Config;
+    config: PresetConfig;
   }
 
   interface PersonalBest {
@@ -546,7 +550,7 @@ declare namespace MonkeyTypes {
     colorfulErrorExtra: string;
   }
 
-  //  type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
+  type Page = "loading" | "test" | "about" | "settings" | "account" | "login";
 
   //  type ActivePage = `page${Page}` | undefined;
 
