@@ -35,7 +35,7 @@ export default function getUsersEndpoints(
 
   async function updateLeaderboardMemory(
     mode: string,
-    mode2: string | number,
+    mode2: MonkeyTypes.Mode2<any>,
     language: string,
     rank: number
   ): Ape.EndpointData {
@@ -93,7 +93,7 @@ export default function getUsersEndpoints(
   async function linkDiscord(data: {
     tokenType: string;
     accessToken: string;
-    uid: string;
+    uid?: string;
   }): Ape.EndpointData {
     return await apeClient.post(`${BASE_PATH}/discord/link`, {
       payload: { data },

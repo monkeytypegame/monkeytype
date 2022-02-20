@@ -1,12 +1,10 @@
+import Ape from "../ape";
 import * as ResultFilters from "../account/result-filters";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
-import axiosInstance from "../axios-instance";
 import * as ResultTagsPopup from "./result-tags-popup";
-
-import { AxiosError } from "axios";
 
 export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
@@ -67,28 +65,18 @@ function hide(): void {
 }
 
 async function apply(): Promise<void> {
-  // console.log(DB.getSnapshot());
   const action = $("#tagsWrapper #tagsEdit").attr("action");
-  const inputVal = $("#tagsWrapper #tagsEdit input").val() as string;
-  const tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
+  const tagName = $("#tagsWrapper #tagsEdit input").val() as string;
+  const tagId = $("#tagsWrapper #tagsEdit").attr("tagid") as string;
+
   hide();
+  Loader.show();
+
   if (action === "add") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/user/tags", {
-        tagName: inputVal,
-      });
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to add tag: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.users.createTag(tagName);
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to add tag: " + response.message, -1);
     } else {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags?.push({
@@ -100,28 +88,15 @@ async function apply(): Promise<void> {
       ResultFilters.updateTags();
     }
   } else if (action === "edit") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.patch("/user/tags", {
-        tagId: tagid,
-        newName: inputVal,
-      });
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to edit tag: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.users.editTag(tagId, tagName);
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to edit tag: " + response.message, -1);
     } else {
       Notifications.add("Tag updated", 1);
       DB.getSnapshot().tags?.forEach((tag) => {
-        if (tag._id === tagid) {
-          tag.name = inputVal;
+        if (tag._id === tagId) {
+          tag.name = tagName;
         }
       });
       ResultTagsPopup.updateButtons();
@@ -129,24 +104,14 @@ async function apply(): Promise<void> {
       ResultFilters.updateTags();
     }
   } else if (action === "remove") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.delete(`/user/tags/${tagid}`);
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to remove tag: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.users.deleteTag(tagId);
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to remove tag: " + response.message, -1);
     } else {
       Notifications.add("Tag removed", 1);
       DB.getSnapshot().tags?.forEach((tag, index: number) => {
-        if (tag._id === tagid) {
+        if (tag._id === tagId) {
           DB.getSnapshot().tags?.splice(index, 1);
         }
       });
@@ -155,24 +120,14 @@ async function apply(): Promise<void> {
       ResultFilters.updateTags();
     }
   } else if (action === "clearPb") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.delete(`/user/tags/${tagid}/personalBest`);
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to clear tag pb: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.users.deleteTagPersonalBest(tagId);
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to clear tag pb: " + response.message, -1);
     } else {
       Notifications.add("Tag PB cleared", 1);
       DB.getSnapshot().tags?.forEach((tag) => {
-        if (tag._id === tagid) {
+        if (tag._id === tagId) {
           tag.personalBests = {
             time: {},
             words: {},
@@ -187,6 +142,7 @@ async function apply(): Promise<void> {
       ResultFilters.updateTags();
     }
   }
+  Loader.hide();
 }
 
 $("#tagsWrapper").click((e) => {

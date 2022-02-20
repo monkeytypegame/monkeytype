@@ -172,7 +172,7 @@ router.post(
       data: joi.object({
         tokenType: joi.string().required(),
         accessToken: joi.string().required(),
-        uid: joi.string().required(),
+        uid: joi.string(),
       }),
     },
   }),

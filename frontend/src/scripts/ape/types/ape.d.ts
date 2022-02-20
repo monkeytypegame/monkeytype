@@ -98,7 +98,7 @@ declare namespace Ape {
       updateName: (name: string) => EndpointData;
       updateLeaderboardMemory: (
         mode: string,
-        mode2: string | number,
+        mode2: MonkeyTypes.Mode2<any>,
         language: string,
         rank: number
       ) => EndpointData;
@@ -112,7 +112,7 @@ declare namespace Ape {
       linkDiscord: (data: {
         tokenType: string;
         accessToken: string;
-        uid: string;
+        uid?: string;
       }) => EndpointData;
       unlinkDiscord: Endpoint;
     };
