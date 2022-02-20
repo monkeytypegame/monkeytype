@@ -529,6 +529,7 @@ declare namespace MonkeyTypes {
     id: number | string;
     group?: number;
     language: string;
+    textSplit?: string;
   }
 
   interface PSA {
