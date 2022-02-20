@@ -115,6 +115,14 @@
       text-align: center;
     }
 
+    &.aboveHistory {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      .exportCSV {
+        grid-column: 3/4;
+      }
+    }
+
     &.createdDate {
       text-align: center;
       color: var(--sub-color);
