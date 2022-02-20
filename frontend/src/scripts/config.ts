@@ -132,6 +132,7 @@ type PossibleType =
   | "undefined"
   | "null"
   | "stringArray"
+  | "layoutfluid"
   | string[]
   | number[];
 
@@ -161,6 +162,15 @@ function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
 
       case "stringArray":
         return val instanceof Array && val.every((v) => typeof v === "string");
+
+      case "numberArray":
+        return val instanceof Array && val.every((v) => typeof v === "number");
+
+      case "layoutfluid":
+        return (
+          typeof val === "string" &&
+          (val.split("#").length === 3 || val.split(" ").length === 3)
+        );
 
       default:
         if (possibleType instanceof Array) {
@@ -1104,6 +1114,9 @@ export function setWordCount(
   wordCount: MonkeyTypes.WordsModes,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(wordCount, ["number"]))
+    return invalid("words", wordCount);
+
   const newWordCount =
     wordCount === null ||
     wordCount === undefined ||
@@ -1129,6 +1142,8 @@ export function setWordCount(
 
 //caret
 export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"])) return invalid("", mode);
+
   config.smoothCaret = mode;
   if (mode) {
     $("#caret").css("animation-name", "caretFlashSmooth");
@@ -1140,6 +1155,9 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
 }
 
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
+    return invalid("start graphs at zero", mode);
+
   config.startGraphsAtZero = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("startGraphsAtZero", config.startGraphsAtZero);
@@ -1147,6 +1165,9 @@ export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
 
 //linescroll
 export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
+    return invalid("smoot line scroll", mode);
+
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("smoothLineScroll", config.smoothLineScroll);
@@ -1154,6 +1175,9 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
 
 //quick tab
 export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
+    return invalid("quick tab mode", mode);
+
   config.quickTab = mode;
   if (!config.quickTab) {
     $("#restartTestButton").removeClass("hidden");
@@ -1171,6 +1195,9 @@ export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
 }
 
 export function previewFontFamily(font: string): void {
+  if (!isConfigValueValid(font, ["string"]))
+    return invalid("preview font family", font);
+
   if (font == undefined) {
     font = "roboto_mono";
   }
@@ -1182,6 +1209,9 @@ export function previewFontFamily(font: string): void {
 
 //font family
 export function setFontFamily(font: string, nosave?: boolean): void {
+  if (!isConfigValueValid(font, ["string"]))
+    return invalid("font family", font);
+
   if (font == undefined || font === "") {
     font = "roboto_mono";
     Notifications.add(
@@ -1211,6 +1241,9 @@ export function setFontFamily(font: string, nosave?: boolean): void {
 
 //freedom
 export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(freedom, ["boolean"]))
+    return invalid("freedom mode", freedom);
+
   if (freedom == null) {
     freedom = false;
   }
@@ -1226,6 +1259,9 @@ export function setConfidenceMode(
   cm: MonkeyTypes.ConfidenceMode,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(cm, [["off", "on", "max"]]))
+    return invalid("confidence mode", cm);
+
   if (cm == undefined || !["off", "on", "max"].includes(cm)) {
     cm = defaultConfig.confidenceMode;
   }
@@ -1242,6 +1278,9 @@ export function setIndicateTypos(
   value: MonkeyTypes.IndicateTypos,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(value, [["off", "below", "replace"]]))
+    return invalid("indicate typos", value);
+
   if (!["off", "below", "replace"].includes(value)) {
     value = defaultConfig.indicateTypos;
   }
@@ -1251,12 +1290,17 @@ export function setIndicateTypos(
 }
 
 export function setCustomTheme(boolean: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(boolean, ["boolean"]))
+    return invalid("custom theme", boolean);
+
   if (boolean !== undefined) config.customTheme = boolean;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customTheme", config.customTheme);
 }
 
 export function setTheme(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"])) return invalid("", name);
+
   config.theme = name;
   setCustomTheme(false, true);
   if (!nosave) saveToLocalStorage();
@@ -1268,6 +1312,8 @@ function setThemes(
   customState: boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
+
   config.theme = theme;
   config.customTheme = customState;
   if (!nosave) saveToLocalStorage();
@@ -1278,6 +1324,11 @@ export function setRandomTheme(
   val: MonkeyTypes.RandomTheme | boolean,
   nosave?: boolean
 ): void {
+  if (
+    !isConfigValueValid(val, ["boolean", ["off", "on", "fav", "light", "dark"]])
+  )
+    return invalid("random theme", val);
+
   if (val === undefined || val === true || val === false) {
     val = "off";
   }
@@ -1287,6 +1338,9 @@ export function setRandomTheme(
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("british english", val);
+
   if (!val) {
     val = false;
   }
@@ -1296,6 +1350,8 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): void {
 }
 
 export function setLazyMode(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"])) return invalid("lazy mode", val);
+
   if (!val) {
     val = false;
   }
@@ -1305,6 +1361,9 @@ export function setLazyMode(val: boolean, nosave?: boolean): void {
 }
 
 export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
+  if (!isConfigValueValid(colors, ["stringArray"]))
+    return invalid("custom theme colors", colors);
+
   if (colors !== undefined) {
     config.customThemeColors = colors;
     // ThemeController.set("custom");
@@ -1315,6 +1374,9 @@ export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
 }
 
 export function setLanguage(language: string, nosave?: boolean): void {
+  if (!isConfigValueValid(language, ["string"]))
+    return invalid("language", language);
+
   if (language == null || language == undefined) {
     language = "english";
   }
@@ -1331,6 +1393,9 @@ export function setLanguage(language: string, nosave?: boolean): void {
 }
 
 export function setMonkey(monkey: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(monkey, ["boolean"]))
+    return invalid("monkey", monkey);
+
   if (monkey === null || monkey === undefined) {
     monkey = false;
   }
@@ -1348,6 +1413,9 @@ export function setKeymapMode(
   mode: MonkeyTypes.KeymapMode,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(mode, [["off", "static", "react", "next"]]))
+    return invalid("keymap mode", mode);
+
   if (mode == null || mode == undefined) {
     mode = "off";
   }
@@ -1362,6 +1430,9 @@ export function setKeymapLegendStyle(
   style: MonkeyTypes.KeymapLegendStyle,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
+    return invalid("keymap legend style", style);
+
   // Remove existing styles
   const keymapLegendStyles = ["lowercase", "uppercase", "blank"];
   keymapLegendStyles.forEach((name) => {
@@ -1394,6 +1465,13 @@ export function setKeymapStyle(
   style: MonkeyTypes.KeymapStyle,
   nosave?: boolean
 ): void {
+  if (
+    !isConfigValueValid(style, [
+      ["staggered", "alice", "matrix", "split", "split_matrix"],
+    ])
+  )
+    return invalid("keymap style", style);
+
   style = style || "staggered";
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
@@ -1401,6 +1479,9 @@ export function setKeymapStyle(
 }
 
 export function setKeymapLayout(layout: string, nosave?: boolean): void {
+  if (!isConfigValueValid(layout, ["string"]))
+    return invalid("keymap layout", layout);
+
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
@@ -1410,6 +1491,8 @@ export function setKeymapLayout(layout: string, nosave?: boolean): void {
 }
 
 export function setLayout(layout: string, nosave?: boolean): void {
+  if (!isConfigValueValid(layout, ["string"])) return invalid("layout", layout);
+
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
@@ -1430,6 +1513,9 @@ export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(fontSize, [[1, 125, 15, 2, 3, 4]]))
+    return invalid("font size", fontSize);
+
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }
@@ -1480,6 +1566,9 @@ export function setFontSize(
 }
 
 export function setCustomBackground(value: string, nosave?: boolean): void {
+  if (!isConfigValueValid(value, ["string"]))
+    return invalid("custom background", value);
+
   if (value == null || value == undefined) {
     value = "";
   }
@@ -1503,6 +1592,9 @@ export async function setCustomLayoutfluid(
   value: MonkeyTypes.CustomLayoutFluidSpaces,
   nosave?: boolean
 ): Promise<void> {
+  if (!isConfigValueValid(value, ["layoutfluid"]))
+    return invalid("custom layoutfluid", value);
+
   if (value == null || value == undefined) {
     value = "qwerty#dvorak#colemak";
   }
@@ -1539,6 +1631,9 @@ export function setCustomBackgroundSize(
   value: MonkeyTypes.CustomBackgroundSize,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(value, [["max", "cover", "contain"]]))
+    return invalid("custom background size", value);
+
   if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
   }
@@ -1551,6 +1646,9 @@ export function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(array, ["numberArray"]))
+    return invalid("custom background filter", array);
+
   config.customBackgroundFilter = array;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
@@ -1560,6 +1658,9 @@ export function setMonkeyPowerLevel(
   level: MonkeyTypes.MonkeyPowerLevel,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(level, [["off", "1", "2", "3", "4"]]))
+    return invalid("monkey power level", level);
+
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
   config.monkeyPowerLevel = level;
   if (!nosave) saveToLocalStorage();
@@ -1567,6 +1668,9 @@ export function setMonkeyPowerLevel(
 }
 
 export function setBurstHeatmap(value: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(value, ["boolean"]))
+    return invalid("burst heatmap", value);
+
   if (!value) {
     value = false;
   }
