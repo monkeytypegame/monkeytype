@@ -5,6 +5,8 @@ import * as Misc from "../misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 
+Chart.defaults.global.animation.duration = 250;
+
 export let result = new Chart($("#wpmChart"), {
   type: "line",
   data: {
@@ -737,7 +739,7 @@ export async function updateColors(chart) {
   //   },
   // });
 
-  chart.update({ duration: 250 });
+  chart.update();
 }
 
 Chart.prototype.updateColors = function () {

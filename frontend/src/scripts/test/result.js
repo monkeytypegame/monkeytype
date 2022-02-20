@@ -109,7 +109,7 @@ async function updateGraph() {
   ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
   ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
 
-  ChartController.result.update({ duration: 0 });
+  ChartController.result.update();
   ChartController.result.resize();
 }
 
@@ -159,7 +159,7 @@ export async function updateGraphPBLine() {
     Math.round(maxChartVal);
   ChartController.result.options.scales.yAxes[1].ticks.max =
     Math.round(maxChartVal);
-  ChartController.result.update({ duration: 0 });
+  ChartController.result.update();
 }
 
 function updateWpmAndAcc() {

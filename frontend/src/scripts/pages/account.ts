@@ -176,8 +176,8 @@ export function reset(): void {
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
-  ChartController.accountActivity.update({ duration: 0 });
-  ChartController.accountHistory.update({ duration: 0 });
+  ChartController.accountActivity.update();
+  ChartController.accountHistory.update();
 }
 
 type ChartData = {
@@ -228,7 +228,7 @@ export function smoothHistory(factor: number): void {
 
   ChartController.accountHistory.data.datasets[0].data = chartData2;
   ChartController.accountHistory.data.datasets[1].data = accChartData2;
-  ChartController.accountHistory.update({ duration: 0 });
+  ChartController.accountHistory.update();
 }
 
 function applyHistorySmoothing(): void {
@@ -865,7 +865,7 @@ export function update(): void {
     );
 
     applyHistorySmoothing();
-    ChartController.accountActivity.update({ duration: 0 });
+    ChartController.accountActivity.update();
     LoadingPage.updateBar(100, true);
     setTimeout(() => {
       SignOutButton.show();

@@ -49,7 +49,7 @@ export function updateData(data: MonkeyTypes.ChartData): void {
     ChartController.miniResult.options.scales.yAxes[1].ticks.min = 0;
   }
 
-  ChartController.miniResult.update({ duration: 0 });
+  ChartController.miniResult.update();
 }
 
 $(document).on("click", ".pageAccount .miniResultChartBg", () => {
