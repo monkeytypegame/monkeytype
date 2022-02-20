@@ -166,14 +166,6 @@ declare namespace MonkeyTypes {
     };
   }
 
-  interface LanguageObject {
-    name: string;
-    leftToRight: boolean;
-    noLazyMode?: boolean;
-    ligatures?: boolean;
-    words: string[];
-  }
-
   interface Tag {
     _id: string;
     name: string;

@@ -277,10 +277,16 @@ export async function getLanguageGroups(): Promise<
   }
 }
 
-let currentLanguage: MonkeyTypes.LanguageObject;
-export async function getLanguage(
-  lang: string
-): Promise<MonkeyTypes.LanguageObject> {
+interface LanguageObject {
+  name: string;
+  leftToRight: boolean;
+  noLazyMode?: boolean;
+  ligatures?: boolean;
+  words: string[];
+}
+
+let currentLanguage: LanguageObject;
+export async function getLanguage(lang: string): Promise<LanguageObject> {
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
       console.log("getting language json");
@@ -301,7 +307,7 @@ export async function getLanguage(
 
 export async function getCurrentLanguage(
   languageName: string
-): Promise<MonkeyTypes.LanguageObject> {
+): Promise<LanguageObject> {
   return await getLanguage(languageName);
 }
 
@@ -936,17 +942,17 @@ export function getMode2(
   randomQuote: MonkeyTypes.Quote
 ): string {
   const mode = config.mode;
-  let mode2 = "";
   if (mode === "time") {
-    mode2 = config.time.toString();
+    return config.time.toString();
   } else if (mode === "words") {
-    mode2 = config.words.toString();
+    return config.words.toString();
   } else if (mode === "custom") {
-    mode2 = "custom";
+    return "custom";
   } else if (mode === "zen") {
-    mode2 = "zen";
+    return "zen";
   } else if (mode === "quote") {
-    mode2 = randomQuote.id.toString();
+    return randomQuote.id.toString();
   }
-  return mode2;
+
+  return "";
 }
