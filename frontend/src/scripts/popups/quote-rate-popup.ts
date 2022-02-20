@@ -167,7 +167,7 @@ async function submit(): Promise<void> {
     );
   }
 
-  let quoteRatings = DB.getSnapshot().quoteRatings;
+  const quoteRatings = DB.getSnapshot().quoteRatings;
 
   if (quoteRatings === undefined) {
     return;
@@ -188,7 +188,7 @@ async function submit(): Promise<void> {
     Notifications.add("Rating updated", 1);
   } else {
     if (quoteRatings[currentQuote.language] === undefined) {
-      quoteRatings[currentQuote.language] = {};      
+      quoteRatings[currentQuote.language] = {};
     }
     quoteRatings[currentQuote.language][currentQuote.id] = rating;
     if (quoteStats?.ratings && quoteStats.totalRating) {
