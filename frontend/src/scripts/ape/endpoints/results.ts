@@ -7,7 +7,9 @@ export default function getResultsEndpoints(
     return await apeClient.get(BASE_PATH);
   }
 
-  async function save(result: MonkeyTypes.Result): Ape.EndpointData {
+  async function save(
+    result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  ): Ape.EndpointData {
     return await apeClient.post(BASE_PATH, { payload: { result } });
   }
 
