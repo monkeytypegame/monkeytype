@@ -1514,12 +1514,22 @@ export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
 ): void {
-  if (!isConfigValueValid(fontSize, [[1, 125, 15, 2, 3, 4]]))
+  if (
+    !isConfigValueValid(fontSize, [
+      [1, 125, 15, 2, 3, 4],
+      ["1", "125", "15", "2", "3", "4"],
+    ])
+  )
     return invalid("font size", fontSize);
 
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }
+
+  if (typeof fontSize === "string") {
+    fontSize = <MonkeyTypes.FontSize>parseInt(fontSize);
+  }
+
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
   $("#caret, #paceCaret").removeClass("size125");
