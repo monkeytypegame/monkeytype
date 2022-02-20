@@ -9,6 +9,7 @@
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
+    "install:all:win": ".\\bin\\install.cmd",
     "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
