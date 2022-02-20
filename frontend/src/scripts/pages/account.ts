@@ -180,7 +180,64 @@ export function reset(): void {
   ChartController.accountHistory.update({ duration: 0 });
 }
 
+type ChartData = {
+  x: number;
+  y: number;
+  wpm: number;
+  acc: number;
+  mode: string;
+  mode2: string | number;
+  punctuation: boolean;
+  language: string;
+  timestamp: number;
+  difficulty: string;
+  raw: number;
+};
+
+type AccChartData = {
+  x: number;
+  y: number;
+  errorRate: number;
+};
+
 let totalSecondsFiltered = 0;
+let chartData: ChartData[] = [];
+let accChartData: AccChartData[] = [];
+
+export function smoothHistory(factor: number): void {
+  const smoothedWpmData = Misc.smooth(
+    chartData.map((a) => a.y),
+    factor
+  );
+  const smoothedAccData = Misc.smooth(
+    accChartData.map((a) => a.y),
+    factor
+  );
+
+  const chartData2 = chartData.map((a, i) => {
+    const ret = Object.assign({}, a);
+    ret.y = smoothedWpmData[i];
+    return ret;
+  });
+
+  const accChartData2 = accChartData.map((a, i) => {
+    const ret = Object.assign({}, a);
+    ret.y = smoothedAccData[i];
+    return ret;
+  });
+
+  ChartController.accountHistory.data.datasets[0].data = chartData2;
+  ChartController.accountHistory.data.datasets[1].data = accChartData2;
+  ChartController.accountHistory.update({ duration: 0 });
+}
+
+function applyHistorySmoothing(): void {
+  const smoothing = $(
+    ".pageAccount .content .below .smoothing input"
+  ).val() as string;
+  $(".pageAccount .content .below .smoothing .value").text(smoothing);
+  smoothHistory(parseInt(smoothing));
+}
 
 export function update(): void {
   function cont(): void {
@@ -194,27 +251,9 @@ export function update(): void {
 
     PbTables.update();
 
-    type ChartData = {
-      x: number;
-      y: number;
-      acc: number;
-      mode: string;
-      mode2: string | number;
-      punctuation: boolean;
-      language: string;
-      timestamp: number;
-      difficulty: string;
-      raw: number;
-    };
-
-    type AccChartData = {
-      x: number;
-      y: number;
-    };
-
-    const chartData: ChartData[] = [];
+    chartData = [];
+    accChartData = [];
     const wpmChartData: number[] = [];
-    const accChartData: AccChartData[] = [];
     visibleTableLines = 0;
 
     let topWpm = 0;
@@ -550,6 +589,9 @@ export function update(): void {
         chartData.push({
           x: result.timestamp,
           y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
+          wpm: Config.alwaysShowCPM
+            ? Misc.roundTo2(result.wpm * 5)
+            : result.wpm,
           acc: result.acc,
           mode: result.mode,
           mode2: result.mode2,
@@ -567,6 +609,7 @@ export function update(): void {
         accChartData.push({
           x: result.timestamp,
           y: 100 - result.acc,
+          errorRate: 100 - result.acc,
         });
 
         if (result.wpm > topWpm) {
@@ -821,7 +864,7 @@ export function update(): void {
       } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
     );
 
-    ChartController.accountHistory.update({ duration: 0 });
+    applyHistorySmoothing();
     ChartController.accountActivity.update({ duration: 0 });
     LoadingPage.updateBar(100, true);
     setTimeout(() => {
@@ -1023,6 +1066,10 @@ $(
   setTimeout(() => {
     update();
   }, 0);
+});
+
+$(".pageAccount .content .below .smoothing input").on("input", () => {
+  applyHistorySmoothing();
 });
 
 export const page = new Page(
