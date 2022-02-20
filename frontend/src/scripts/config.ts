@@ -49,7 +49,7 @@ const defaultConfig: MonkeyTypes.Config = {
   mode: "time",
   quoteLength: [1],
   language: "english",
-  fontSize: "15",
+  fontSize: "1.5",
   freedomMode: false,
   resultFilters: null,
   difficulty: "normal",
@@ -1514,7 +1514,7 @@ export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
 ): void {
-  if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
+  if (!isConfigValueValid(fontSize, [["1", "1.25", "1.5", "2", "3", "4"]]))
     return invalid("font size", fontSize);
 
   if (fontSize == null || fontSize == undefined) {
@@ -1542,11 +1542,11 @@ export function setFontSize(
   $("#miniTimerAndLiveWpm").removeClass("size35");
   $("#miniTimerAndLiveWpm").removeClass("size4");
 
-  if (fontSize == "125") {
+  if (fontSize == "1.25") {
     $("#words").addClass("size125");
     $("#caret, #paceCaret").addClass("size125");
     $("#miniTimerAndLiveWpm").addClass("size125");
-  } else if (fontSize == "15") {
+  } else if (fontSize == "1.5") {
     $("#words").addClass("size15");
     $("#caret, #paceCaret").addClass("size15");
     $("#miniTimerAndLiveWpm").addClass("size15");
