@@ -25,7 +25,7 @@ declare namespace MonkeyTypes {
 
   type QuoteLengthArray = QuoteLength[];
 
-  type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
+  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
   type CaretStyle =
     | "off"

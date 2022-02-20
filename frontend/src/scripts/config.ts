@@ -49,7 +49,7 @@ const defaultConfig: MonkeyTypes.Config = {
   mode: "time",
   quoteLength: [1],
   language: "english",
-  fontSize: 15,
+  fontSize: "15",
   freedomMode: false,
   resultFilters: null,
   difficulty: "normal",
@@ -1514,20 +1514,11 @@ export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
 ): void {
-  if (
-    !isConfigValueValid(fontSize, [
-      [1, 125, 15, 2, 3, 4],
-      ["1", "125", "15", "2", "3", "4"],
-    ])
-  )
+  if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
     return invalid("font size", fontSize);
 
   if (fontSize == null || fontSize == undefined) {
-    fontSize = 1;
-  }
-
-  if (typeof fontSize === "string") {
-    fontSize = <MonkeyTypes.FontSize>parseInt(fontSize);
+    fontSize = "1";
   }
 
   config.fontSize = fontSize;
@@ -1551,23 +1542,23 @@ export function setFontSize(
   $("#miniTimerAndLiveWpm").removeClass("size35");
   $("#miniTimerAndLiveWpm").removeClass("size4");
 
-  if (fontSize == 125) {
+  if (fontSize == "125") {
     $("#words").addClass("size125");
     $("#caret, #paceCaret").addClass("size125");
     $("#miniTimerAndLiveWpm").addClass("size125");
-  } else if (fontSize == 15) {
+  } else if (fontSize == "15") {
     $("#words").addClass("size15");
     $("#caret, #paceCaret").addClass("size15");
     $("#miniTimerAndLiveWpm").addClass("size15");
-  } else if (fontSize == 2) {
+  } else if (fontSize == "2") {
     $("#words").addClass("size2");
     $("#caret, #paceCaret").addClass("size2");
     $("#miniTimerAndLiveWpm").addClass("size2");
-  } else if (fontSize == 3) {
+  } else if (fontSize == "3") {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
-  } else if (fontSize == 4) {
+  } else if (fontSize == "4") {
     $("#words").addClass("size4");
     $("#caret, #paceCaret").addClass("size4");
     $("#miniTimerAndLiveWpm").addClass("size4");

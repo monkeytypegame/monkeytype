@@ -2183,7 +2183,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1x",
       configValue: 1,
       exec: (): void => {
-        UpdateConfig.setFontSize(1);
+        UpdateConfig.setFontSize("1");
         TestLogic.restart();
       },
     },
@@ -2192,7 +2192,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.25x",
       configValue: 125,
       exec: (): void => {
-        UpdateConfig.setFontSize(125);
+        UpdateConfig.setFontSize("125");
         TestLogic.restart();
       },
     },
@@ -2201,7 +2201,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.5x",
       configValue: 15,
       exec: (): void => {
-        UpdateConfig.setFontSize(15);
+        UpdateConfig.setFontSize("15");
         TestLogic.restart();
       },
     },
@@ -2210,7 +2210,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "2x",
       configValue: 2,
       exec: (): void => {
-        UpdateConfig.setFontSize(2);
+        UpdateConfig.setFontSize("2");
         TestLogic.restart();
       },
     },
@@ -2219,7 +2219,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "3x",
       configValue: 3,
       exec: (): void => {
-        UpdateConfig.setFontSize(3);
+        UpdateConfig.setFontSize("3");
         TestLogic.restart();
       },
     },
@@ -2228,7 +2228,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "4x",
       configValue: 4,
       exec: (): void => {
-        UpdateConfig.setFontSize(4);
+        UpdateConfig.setFontSize("4");
         TestLogic.restart();
       },
     },
