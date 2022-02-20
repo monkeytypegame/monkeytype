@@ -507,9 +507,10 @@ list["deleteAccount"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
       Notifications.add("Deleting stats...", 0);
       const usersResponse = await Ape.users.delete();
+      Loader.hide();
+
       if (usersResponse.status !== 200) {
         return Notifications.add(
           "Failed to delete user stats: " + usersResponse.message,
@@ -517,8 +518,11 @@ list["deleteAccount"] = new SimplePopup(
         );
       }
 
+      Loader.show();
       Notifications.add("Deleting results...", 0);
       const resultsResponse = await Ape.results.deleteAll();
+      Loader.hide();
+
       if (resultsResponse.status !== 200) {
         return Notifications.add(
           "Failed to delete user results: " + resultsResponse.message,
