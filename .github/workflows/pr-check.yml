@@ -59,7 +59,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.filter.outputs.changes != '[]'
-        run: npm run install
+        run: npm run install:all
 
       # - name: Run webpack
       #   run: npm run build:live
