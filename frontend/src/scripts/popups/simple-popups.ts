@@ -1,3 +1,4 @@
+import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
 import * as UpdateConfig from "../config";
@@ -506,34 +507,27 @@ list["deleteAccount"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
       Notifications.add("Deleting stats...", 0);
-      let response;
-      try {
-        response = await axiosInstance.delete("/user");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to delete user stats: " + msg, -1);
-        return;
-      }
-      if (response.status !== 200) {
-        throw response.data.message;
+      const usersResponse = await Ape.users.delete();
+      Loader.hide();
+
+      if (usersResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to delete user stats: " + usersResponse.message,
+          -1
+        );
       }
 
+      Loader.show();
       Notifications.add("Deleting results...", 0);
-      try {
-        response = await axiosInstance.post("/results/deleteAll");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to delete user results: " + msg, -1);
-        return;
-      }
-      if (response.status !== 200) {
-        throw response.data.message;
+      const resultsResponse = await Ape.results.deleteAll();
+      Loader.hide();
+
+      if (resultsResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to delete user results: " + resultsResponse.message,
+          -1
+        );
       }
 
       Notifications.add("Deleting login information...", 0);
