@@ -2192,7 +2192,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.25x",
       configValue: 125,
       exec: (): void => {
-        UpdateConfig.setFontSize("1.25");
+        UpdateConfig.setFontSize("125");
         TestLogic.restart();
       },
     },
@@ -2201,7 +2201,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.5x",
       configValue: 15,
       exec: (): void => {
-        UpdateConfig.setFontSize("1.5");
+        UpdateConfig.setFontSize("15");
         TestLogic.restart();
       },
     },
