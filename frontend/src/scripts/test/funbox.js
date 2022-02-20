@@ -201,7 +201,7 @@ export async function activate(funbox) {
       UpdateConfig.setHighlightMode("letter", true);
     }
   }
-  ModesNotice.update();
+  // ModesNotice.update();
   return true;
 }
 
