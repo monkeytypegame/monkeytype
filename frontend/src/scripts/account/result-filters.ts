@@ -440,11 +440,15 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
     if ([15, 30, 60, 120].includes(Config.time)) {
       const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
       filters["time"][configTime] = true;
+    } else {
+      filters["time"]["custom"] = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
       filters["words"][configWords] = true;
+    } else {
+      filters["words"]["custom"] = true;
     }
   } else if (Config.mode === "quote") {
     (
