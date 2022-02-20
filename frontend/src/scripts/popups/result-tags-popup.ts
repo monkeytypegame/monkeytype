@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
 
 function show(): void {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
