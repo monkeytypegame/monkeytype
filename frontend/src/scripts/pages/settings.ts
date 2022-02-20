@@ -723,6 +723,12 @@ export function update(): void {
   } else {
     $(".pageSettings .section.autoSwitchThemeInputs").addClass("hidden");
   }
+
+  if (Config.customBackground !== "") {
+    $(".pageSettings .section.customBackgroundFilter").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.customBackgroundFilter").addClass("hidden");
+  }
 }
 
 function toggleSettingsGroup(groupName: string): void {
