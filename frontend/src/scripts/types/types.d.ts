@@ -570,4 +570,9 @@ declare namespace MonkeyTypes {
     [row4: string]: string[];
     [row5: string]: string[];
   }
+
+  interface WordsPerMinuteAndRaw {
+    wpm: number;
+    raw: number;
+  }
 }
