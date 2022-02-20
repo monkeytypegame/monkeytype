@@ -123,6 +123,62 @@ function isConfigKeyValid(name: string): boolean {
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
 
+type PossibleType =
+  | "string"
+  | "number"
+  | "numberArray"
+  | "numberInString"
+  | "boolean"
+  | "undefined"
+  | "null"
+  | "stringArray"
+  | string[]
+  | number[];
+
+function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
+  return possibleTypes.some((possibleType) => {
+    switch (possibleType) {
+      case "boolean":
+        return typeof val === "boolean";
+
+      case "number":
+        return typeof val === "number";
+
+      case "numberInString":
+        return (
+          typeof val === "number" ||
+          (typeof val === "string" && !isNaN(parseInt(val)))
+        );
+
+      case "string":
+        return typeof val === "string";
+
+      case "undefined":
+        return typeof val === "undefined";
+
+      case "null":
+        return val === null;
+
+      case "stringArray":
+        return val instanceof Array && val.every((v) => typeof v === "string");
+
+      default:
+        if (possibleType instanceof Array) {
+          return possibleType.includes(val as never);
+        }
+
+        return false;
+    }
+  });
+}
+
+function invalid(key: string, val: any): void {
+  Notifications.add(
+    `A config key was invalid, tried setting ${key} to ${val.toString()}`,
+    -1
+  );
+}
+
 let config = {
   ...defaultConfig,
 };
@@ -148,6 +204,8 @@ export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
 
 //numbers
 export function setNumbers(numb: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(numb, ["boolean"])) return invalid("numbers", numb);
+
   if (config.mode === "quote") {
     numb = false;
   }
@@ -163,6 +221,9 @@ export function setNumbers(numb: boolean, nosave?: boolean): void {
 
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(punc, ["boolean"]))
+    return invalid("punctuation", punc);
+
   if (config.mode === "quote") {
     punc = false;
   }
@@ -177,6 +238,9 @@ export function setPunctuation(punc: boolean, nosave?: boolean): void {
 }
 
 export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]))
+    return invalid("mode", mode);
+
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
@@ -199,6 +263,9 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
 }
 
 export function setPlaySoundOnError(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("play sound on error", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -211,6 +278,9 @@ export function setPlaySoundOnClick(
   val: MonkeyTypes.PlaySoundOnClick,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]))
+    return invalid("play sound on click", val);
+
   if (val == undefined) {
     val = "off";
   }
@@ -223,6 +293,9 @@ export function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["0.1", "0.5", "1.0"]]))
+    return invalid("sound volume", val);
+
   if (val == undefined) {
     val = "1.0";
   }
@@ -236,6 +309,9 @@ export function setDifficulty(
   diff: MonkeyTypes.Difficulty,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(diff, [["normal", "expert", "master"]]))
+    return invalid("difficulty", diff);
+
   if (
     (diff !== "normal" && diff !== "expert" && diff !== "master") ||
     diff == undefined
@@ -249,12 +325,16 @@ export function setDifficulty(
 
 //set fav themes
 export function setFavThemes(themes: string[], nosave?: boolean): void {
+  if (!isConfigValueValid(themes, ["stringArray"]))
+    return invalid("favorite themes", themes);
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("favThemes", config.favThemes);
 }
 
 export function setFunbox(funbox: string, nosave?: boolean): void {
+  if (!isConfigValueValid(funbox, ["string"])) return invalid("funbox", funbox);
+
   const val = funbox ? funbox : "none";
   config.funbox = val;
   if (!nosave) saveToLocalStorage();
@@ -262,6 +342,9 @@ export function setFunbox(funbox: string, nosave?: boolean): void {
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(blind, ["boolean"]))
+    return invalid("blind mode", blind);
+
   if (blind == undefined) {
     blind = false;
   }
@@ -274,6 +357,9 @@ export function setChartAccuracy(
   chartAccuracy: boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(chartAccuracy, ["boolean"]))
+    return invalid("chart accuracy", chartAccuracy);
+
   if (chartAccuracy == undefined) {
     chartAccuracy = true;
   }
@@ -286,6 +372,9 @@ export function setChartStyle(
   chartStyle: MonkeyTypes.ChartStyle,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(chartStyle, [["line", "scatter"]]))
+    return invalid("chart style", chartStyle);
+
   if (chartStyle == undefined) {
     chartStyle = "line";
   }
@@ -298,6 +387,9 @@ export function setStopOnError(
   soe: MonkeyTypes.StopOnError | boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(soe, [["off", "word", "letter"]]))
+    return invalid("stop on error", soe);
+
   if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
@@ -313,6 +405,9 @@ export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("always show decimal places", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -325,6 +420,9 @@ export function setAlwaysShowDecimalPlaces(
 }
 
 export function setAlwaysShowCPM(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("always show CPM", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -334,6 +432,9 @@ export function setAlwaysShowCPM(val: boolean, nosave?: boolean): void {
 }
 
 export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("show out of focus warning", val);
+
   if (val == undefined) {
     val = true;
   }
@@ -346,6 +447,9 @@ export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
 }
 
 export function setSwapEscAndTab(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("swap esc and tab", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -359,6 +463,9 @@ export function setPaceCaret(
   val: MonkeyTypes.PaceCaret,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["custom", "off", "average", "pb"]]))
+    return invalid("pace caret", val);
+
   if (val == undefined) {
     val = "off";
   }
@@ -378,6 +485,9 @@ export function setPaceCaret(
 }
 
 export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("pace caret custom speed", val);
+
   if (val == undefined) {
     val = 100;
   }
@@ -387,6 +497,9 @@ export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
 }
 
 export function setRepeatedPace(pace: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(pace, ["boolean"]))
+    return invalid("repeated pace", pace);
+
   if (pace == undefined) {
     pace = true;
   }
@@ -400,6 +513,9 @@ export function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(minwpm, [["off", "custom"]]))
+    return invalid("min WPM", minwpm);
+
   if (minwpm == undefined) {
     minwpm = "off";
   }
@@ -409,6 +525,9 @@ export function setMinWpm(
 }
 
 export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("min WPM custom speed", val);
+
   if (val == undefined) {
     val = 100;
   }
@@ -422,6 +541,9 @@ export function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(min, [["off", "custom"]]))
+    return invalid("min acc", min);
+
   if (min == undefined) {
     min = "off";
   }
@@ -431,6 +553,9 @@ export function setMinAcc(
 }
 
 export function setMinAccCustom(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("min acc custom", val);
+
   if (val === undefined) {
     val = 90;
   }
@@ -444,6 +569,9 @@ export function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(min, [["off", "fixed", "flex"]]))
+    return invalid("min burst", min);
+
   if (min == undefined) {
     min = "off";
   }
@@ -453,6 +581,9 @@ export function setMinBurst(
 }
 
 export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("min burst custom speed", val);
+
   if (val == undefined) {
     val = 100;
   }
@@ -466,6 +597,9 @@ export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("always show words history", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -479,6 +613,9 @@ export function setSingleListCommandLine(
   option: MonkeyTypes.SingleListCommandLine,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(option, [["manual", "on"]]))
+    return invalid("single list command line", option);
+
   if (!option) option = "manual";
   config.singleListCommandLine = option;
   if (!nosave) saveToLocalStorage();
@@ -487,6 +624,9 @@ export function setSingleListCommandLine(
 
 //caps lock warning
 export function setCapsLockWarning(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("caps lock warning", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -496,6 +636,9 @@ export function setCapsLockWarning(val: boolean, nosave?: boolean): void {
 }
 
 export function setShowAllLines(sal: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(sal, ["boolean"]))
+    return invalid("show all lines", sal);
+
   if (sal == undefined) {
     sal = false;
   }
@@ -507,6 +650,8 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): void {
 }
 
 export function setQuickEnd(qe: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(qe, ["boolean"])) return invalid("quick end", qe);
+
   if (qe == undefined) {
     qe = false;
   }
@@ -519,6 +664,9 @@ export function setEnableAds(
   val: MonkeyTypes.EnableAds | boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["on", "off", "max"], "boolean"]))
+    return invalid("enable ads", val);
+
   if (val == undefined || val === true || val === false) {
     val = "off";
   }
@@ -536,6 +684,9 @@ export function setRepeatQuotes(
   val: MonkeyTypes.RepeatQuotes | boolean,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["off", "typing"], "boolean"]))
+    return invalid("repeat quotes", val);
+
   if (val == undefined || val === true || val === false) {
     val = "off";
   }
@@ -546,6 +697,9 @@ export function setRepeatQuotes(
 
 //flip colors
 export function setFlipTestColors(flip: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(flip, ["boolean"]))
+    return invalid("flip test colors", flip);
+
   if (flip == undefined) {
     flip = false;
   }
@@ -556,6 +710,9 @@ export function setFlipTestColors(flip: boolean, nosave?: boolean): void {
 
 //extra color
 export function setColorfulMode(extra: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(extra, ["boolean"]))
+    return invalid("colorful mode", extra);
+
   if (extra == undefined) {
     extra = false;
   }
@@ -566,6 +723,9 @@ export function setColorfulMode(extra: boolean, nosave?: boolean): void {
 
 //strict space
 export function setStrictSpace(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("strict space", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -579,6 +739,9 @@ export function setOppositeShiftMode(
   val: MonkeyTypes.OppositeShiftMode,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["off", "on", "keymap"]]))
+    return invalid("opposite shift mode", val);
+
   if (val == undefined) {
     val = "off";
   }
@@ -591,6 +754,9 @@ export function setPageWidth(
   val: MonkeyTypes.PageWidth,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(val, [["max", "100", "125", "150", "200"]]))
+    return invalid("page width", val);
+
   if (val == null || val == undefined) {
     val = "100";
   }
@@ -611,6 +777,13 @@ export function setCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
 ): void {
+  if (
+    !isConfigValueValid(caretStyle, [
+      ["off", "default", "block", "outline", "underline", "carrot", "banana"],
+    ])
+  )
+    return invalid("caret style", caretStyle);
+
   if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
@@ -646,6 +819,13 @@ export function setPaceCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
 ): void {
+  if (
+    !isConfigValueValid(caretStyle, [
+      ["off", "default", "block", "outline", "underline", "carrot", "banana"],
+    ])
+  )
+    return invalid("pace caret style", caretStyle);
+
   if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
@@ -676,6 +856,9 @@ export function setPaceCaretStyle(
 }
 
 export function setShowTimerProgress(timer: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(timer, ["boolean"]))
+    return invalid("show timer progress", timer);
+
   if (timer == null || timer == undefined) {
     timer = false;
   }
@@ -685,6 +868,9 @@ export function setShowTimerProgress(timer: boolean, nosave?: boolean): void {
 }
 
 export function setShowLiveWpm(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show live WPM", live);
+
   if (live == null || live == undefined) {
     live = false;
   }
@@ -694,6 +880,9 @@ export function setShowLiveWpm(live: boolean, nosave?: boolean): void {
 }
 
 export function setShowLiveAcc(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show live acc", live);
+
   if (live == null || live == undefined) {
     live = false;
   }
@@ -703,6 +892,9 @@ export function setShowLiveAcc(live: boolean, nosave?: boolean): void {
 }
 
 export function setShowLiveBurst(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show live burst", live);
+
   if (live == null || live == undefined) {
     live = false;
   }
@@ -715,6 +907,9 @@ export function setHighlightMode(
   mode: MonkeyTypes.HighlightMode,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(mode, [["off", "letter", "word"]]))
+    return invalid("highlight mode", mode);
+
   if (
     mode === "word" &&
     (config.funbox === "nospace" ||
@@ -736,6 +931,8 @@ export function setHighlightMode(
 }
 
 export function setHideExtraLetters(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, [])) return invalid("", val);
+
   if (val == null || val == undefined) {
     val = false;
   }
@@ -748,6 +945,9 @@ export function setTimerStyle(
   style: MonkeyTypes.TimerStyle,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(style, [["bar", "text", "mini"]]))
+    return invalid("timer style", style);
+
   if (style == null || style == undefined) {
     style = "mini";
   }
@@ -760,6 +960,9 @@ export function setTimerColor(
   color: MonkeyTypes.TimerColor,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(color, [["black", "sub", "text", "main"]]))
+    return invalid("timer color", color);
+
   if (!color || !["black", "sub", "text", "main"].includes(color)) {
     color = "black";
   }
@@ -805,6 +1008,9 @@ export function setTimerOpacity(
   opacity: MonkeyTypes.TimerOpacity,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]))
+    return invalid("timer opacity", opacity);
+
   if (opacity == null || opacity == undefined) {
     opacity = "0.25";
   }
@@ -815,6 +1021,9 @@ export function setTimerOpacity(
 
 //key tips
 export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(keyTips, ["boolean"]))
+    return invalid("key tips", keyTips);
+
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
     $("#bottom .keyTips").removeClass("hidden");
@@ -830,6 +1039,8 @@ export function setTimeConfig(
   time: MonkeyTypes.TimeModes,
   nosave?: boolean
 ): void {
+  if (!isConfigValueValid(time, ["number"])) return invalid("time", time);
+
   const newTime =
     time === null || time === undefined || isNaN(time) || time < 0
       ? defaultConfig.time
@@ -854,6 +1065,9 @@ export function setQuoteLength(
   nosave?: boolean,
   multipleMode?: boolean
 ): void {
+  if (!isConfigValueValid(len, [[-1, 0, 1, 2, 3], "numberArray"]))
+    return invalid("quote length", len);
+
   if (Array.isArray(len)) {
     //config load
     if (len.length === 1 && len[0] === -1) len = [1];
