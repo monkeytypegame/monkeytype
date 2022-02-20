@@ -3,6 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Account from "../pages/account";
 import * as VerificationController from "./verification-controller";
+import Ape from "../ape";
 import * as Misc from "../misc";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
@@ -339,25 +340,21 @@ export function signIn() {
           PageController.change("account");
           if (TestLogic.notSignedInLastResult !== null) {
             TestLogic.setNotSignedInUid(e.user.uid);
-            let response;
-            try {
-              response = await axiosInstance.post("/results/add", {
-                result: TestLogic.notSignedInLastResult,
-              });
-            } catch (e) {
-              let msg = e?.response?.data?.message ?? e.message;
-              Notifications.add("Failed to save last result: " + msg, -1);
-              return;
-            }
+
+            const response = await Ape.results.save(
+              TestLogic.notSignedInLastResult
+            );
+
             if (response.status !== 200) {
-              Notifications.add(response.data.message);
-            } else {
-              TestLogic.clearNotSignedInResult();
-              Notifications.add("Last test result saved", 1);
+              return Notifications.add(
+                "Failed to save last result: " + response.message,
+                -1
+              );
             }
-            // PageController.change("account");
+
+            TestLogic.clearNotSignedInResult();
+            Notifications.add("Last test result saved", 1);
           }
-          // PageController.change("test");
           //TODO: redirect user to relevant page
         })
         .catch(function (error) {
@@ -442,20 +439,16 @@ export async function signInWithGoogle() {
         PageController.change("account");
         if (TestLogic.notSignedInLastResult !== null) {
           TestLogic.setNotSignedInUid(signedInUser.user.uid);
-          axiosInstance
-            .post("/results/add", {
-              result: TestLogic.notSignedInLastResult,
-            })
-            .then((result) => {
-              if (result.status === 200) {
-                const snapshot = DB.getSnapshot();
 
-                snapshot.results.push(TestLogic.notSignedInLastResult);
+          const resultsSaveResponse = await Ape.results.save(
+            TestLogic.notSignedInLastResult
+          );
 
-                DB.setSnapshot(snapshot);
-              }
-            });
-          // PageController.change("account");
+          if (resultsSaveResponse.status === 200) {
+            const snapshot = DB.getSnapshot();
+            snapshot.results.push(TestLogic.notSignedInLastResult);
+            DB.setSnapshot(snapshot);
+          }
         }
       }
     } else {
@@ -661,19 +654,14 @@ async function signUp() {
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
       TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
-      axiosInstance
-        .post("/results/add", {
-          result: TestLogic.notSignedInLastResult,
-        })
-        .then((result) => {
-          if (result.status === 200) {
-            const snapshot = DB.getSnapshot();
 
-            snapshot.results.push(TestLogic.notSignedInLastResult);
+      const response = await Ape.results.save(TestLogic.notSignedInLastResult);
 
-            DB.setSnapshot(snapshot);
-          }
-        });
+      if (response.status === 200) {
+        const snapshot = DB.getSnapshot();
+        snapshot.results.push(TestLogic.notSignedInLastResult);
+        DB.setSnapshot(snapshot);
+      }
       PageController.change("account");
     }
   } catch (e) {
