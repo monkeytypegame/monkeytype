@@ -209,6 +209,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setStartGraphsAtZero,
     "button"
   );
+  groups["autoSwitchTheme"] = new SettingsGroup(
+    "autoSwitchTheme",
+    UpdateConfig.setAutoSwitchTheme,
+    "button"
+  );
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
@@ -377,9 +382,7 @@ export function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
-  $(".pageSettings .section.layout select").empty().select2("destroy");
-  $(".pageSettings .section.keymapLayout select").empty().select2("destroy");
-  $(".pageSettings .section.language select").empty().select2("destroy");
+  $(".pageSettings select").empty().select2("destroy");
   $(".pageSettings .section.funbox .buttons").empty();
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
@@ -404,7 +407,9 @@ export async function fillSettingsPage(): Promise<void> {
     langComboBox += `</optgroup>`;
     languageEl.append(langComboBox);
   });
-  languageEl.select2();
+  languageEl.select2({
+    width: "100%",
+  });
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
@@ -413,7 +418,9 @@ export async function fillSettingsPage(): Promise<void> {
       `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
   });
-  layoutEl.select2();
+  layoutEl.select2({
+    width: "100%",
+  });
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
@@ -424,7 +431,37 @@ export async function fillSettingsPage(): Promise<void> {
       );
     }
   });
-  keymapEl.select2();
+  keymapEl.select2({
+    width: "100%",
+  });
+
+  const themeEl1 = $(
+    ".pageSettings .section.autoSwitchThemeInputs select.light"
+  ).empty();
+  const themeEl2 = $(
+    ".pageSettings .section.autoSwitchThemeInputs select.dark"
+  ).empty();
+  for (const theme of await Misc.getThemesList()) {
+    themeEl1.append(
+      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+    );
+    themeEl2.append(
+      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+    );
+  }
+  themeEl1.select2({
+    width: "100%",
+  });
+  themeEl2.select2({
+    width: "100%",
+  });
+
+  $(`.pageSettings .section.autoSwitchThemeInputs select.light`)
+    .val(Config.themeLight)
+    .trigger("change.select2");
+  $(`.pageSettings .section.autoSwitchThemeInputs select.dark`)
+    .val(Config.themeDark)
+    .trigger("change.select2");
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
@@ -680,6 +717,12 @@ export function update(): void {
   $(".pageSettings .section.minBurst input.customMinBurst").val(
     Config.minBurstCustomSpeed
   );
+
+  if (Config.autoSwitchTheme) {
+    $(".pageSettings .section.autoSwitchThemeInputs").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.autoSwitchThemeInputs").addClass("hidden");
+  }
 }
 
 function toggleSettingsGroup(groupName: string): void {
@@ -953,6 +996,28 @@ $(".quickNav .links a").on("click", (e) => {
   );
   isOpen && toggleSettingsGroup(settingsGroup);
 });
+
+$(document).on(
+  "change",
+  `.pageSettings .section.autoSwitchThemeInputs select.light`,
+  (e) => {
+    const target = $(e.currentTarget);
+    if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+      return;
+    UpdateConfig.setThemeLight(target.val() as string);
+  }
+);
+
+$(document).on(
+  "change",
+  `.pageSettings .section.autoSwitchThemeInputs select.dark`,
+  (e) => {
+    const target = $(e.currentTarget);
+    if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+      return;
+    UpdateConfig.setThemeDark(target.val() as string);
+  }
+);
 
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {

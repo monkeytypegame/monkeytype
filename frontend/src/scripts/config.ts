@@ -24,6 +24,9 @@ let loadDone: (...stuff: any[]) => any;
 
 const defaultConfig: MonkeyTypes.Config = {
   theme: "serika_dark",
+  themeLight: "serika",
+  themeDark: "serika_dark",
+  autoSwitchTheme: false,
   customTheme: false,
   customThemeColors: [
     "#323437",
@@ -1036,6 +1039,13 @@ export function setIndicateTypos(
   ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
 }
 
+export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
+  boolean = boolean ?? defaultConfig.autoSwitchTheme;
+  config.autoSwitchTheme = boolean;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
+}
+
 export function setCustomTheme(boolean: boolean, nosave?: boolean): void {
   if (boolean !== undefined) config.customTheme = boolean;
   if (!nosave) saveToLocalStorage();
@@ -1047,6 +1057,18 @@ export function setTheme(name: string, nosave?: boolean): void {
   setCustomTheme(false, true);
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("theme", config.theme);
+}
+
+export function setThemeLight(name: string, nosave?: boolean): void {
+  config.themeLight = name;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
+}
+
+export function setThemeDark(name: string, nosave?: boolean): void {
+  config.themeDark = name;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
 }
 
 function setThemes(
@@ -1379,6 +1401,9 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
   );
   if (configObj && configObj !== null) {
     setCustomThemeColors(configObj.customThemeColors, true);
+    setThemeLight(configObj.themeLight, true);
+    setThemeDark(configObj.themeDark, true);
+    setAutoSwitchTheme(configObj.autoSwitchTheme, true);
     setThemes(configObj.theme, configObj.customTheme, true);
     // setTheme(configObj.theme, true);
     // setCustomTheme(configObj.customTheme, true, true);

@@ -3513,6 +3513,38 @@
                   </div>
                 </div>
               </div>
+              <div class="section autoSwitchTheme">
+                <h1>auto switch theme</h1>
+                <div class="text">
+                  Enabling this will automatically switch the theme between
+                  light and dark depending on the system theme (this will not
+                  override custom theme).
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    autoSwitchTheme="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    autoSwitchTheme="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section autoSwitchThemeInputs">
+                <div>light</div>
+                <div><select class="light"></select></div>
+                <div>dark</div>
+                <div><select class="dark"></select></div>
+              </div>
               <div class="section randomTheme fullWidth">
                 <h1>randomize theme</h1>
                 <div class="text">

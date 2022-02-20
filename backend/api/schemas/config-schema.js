@@ -13,6 +13,9 @@ const CARET_STYLES = [
 
 const CONFIG_SCHEMA = joi.object({
   theme: joi.string(),
+  themeLight: joi.string(),
+  themeDark: joi.string(),
+  autoSwitchTheme: joi.boolean(),
   customTheme: joi.boolean(),
   customThemeColors: joi
     .array()

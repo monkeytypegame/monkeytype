@@ -119,6 +119,11 @@
       padding: 0.25rem 0;
     }
   }
+  .pageSettings {
+    .section.autoSwitchThemeInputs {
+      grid-template-columns: 1fr 3fr;
+    }
+  }
   .pageAccount {
     .group.personalBestTables {
       .tables {

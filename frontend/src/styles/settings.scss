@@ -85,6 +85,15 @@
       }
     }
 
+    &.autoSwitchThemeInputs {
+      grid-template-areas: unset;
+      grid-template-columns: 1fr 3fr 1fr 3fr;
+      gap: 1rem;
+      select {
+        width: 100%;
+      }
+    }
+
     &.themes .tabContainer [tabcontent="custom"] {
       label.button:first-child {
         color: var(--text-color);
