@@ -354,7 +354,7 @@ declare namespace MonkeyTypes {
 
   interface QuoteRatings {
     [language: string]: {
-      [id: string | number]: any; // TODO find this
+      [id: number]: number;
     };
   }
 
