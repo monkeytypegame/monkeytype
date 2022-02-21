@@ -1629,7 +1629,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
-  let len = $(e.currentTarget).attr("quoteLength");
+  let len = parseInt($(e.currentTarget).attr("quoteLength"));
   if (len != -2) {
     if (len == -1) {
       len = [0, 1, 2, 3];
