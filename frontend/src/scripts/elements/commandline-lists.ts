@@ -1419,7 +1419,7 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
-        UpdateConfig.setPaceCaretCustomSpeed(input);
+        UpdateConfig.setPaceCaretCustomSpeed(parseInt(input));
         UpdateConfig.setPaceCaret("custom");
         TestLogic.restart();
       },
@@ -1445,7 +1445,7 @@ const commandsMinWpm: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
-        UpdateConfig.setMinWpmCustomSpeed(input);
+        UpdateConfig.setMinWpmCustomSpeed(parseInt(input));
         UpdateConfig.setMinWpm("custom");
       },
     },
@@ -1470,7 +1470,7 @@ const commandsMinAcc: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
-        UpdateConfig.setMinAccCustom(input);
+        UpdateConfig.setMinAccCustom(parseInt(input));
         UpdateConfig.setMinAcc("custom");
       },
     },
@@ -1496,7 +1496,7 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         UpdateConfig.setMinBurst("fixed");
-        UpdateConfig.setMinBurstCustomSpeed(input);
+        UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
     },
     {
@@ -1506,7 +1506,7 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         UpdateConfig.setMinBurst("flex");
-        UpdateConfig.setMinBurstCustomSpeed(input);
+        UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
     },
   ],
@@ -1861,7 +1861,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount(input);
+        UpdateConfig.setWordCount(parseInt(input));
         TestLogic.restart();
       },
     },
@@ -2128,7 +2128,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig(input);
+        UpdateConfig.setTimeConfig(parseInt(input));
         TestLogic.restart();
       },
     },
