@@ -106,7 +106,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.showAvg && firebase.auth().currentUser) {
+  if (Config.showAvg) {
     const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
     let wpm = await DB.getUserAverageWpm10(
       Config.mode,
@@ -118,9 +118,11 @@ export async function update(): Promise<void> {
     );
     wpm = Math.round(wpm * 100) / 100;
     if (!Config.alwaysShowDecimalPlaces) wpm = Math.round(wpm);
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>average: ${wpm}</div>`
-    );
+    if (wpm > 0) {
+      $(".pageTest #testModesNotice").append(
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>average: ${wpm}</div>`
+      );
+    }
   }
 
   if (Config.minWpm !== "off") {
