@@ -1557,6 +1557,7 @@ export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
 ): void {
+  fontSize = fontSize.toString() as MonkeyTypes.FontSize; //todo remove after around a week
   if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
     return invalid("font size", fontSize);
 
