@@ -22,6 +22,8 @@ class PresetController {
     const { _id, name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
+    await PresetDAO.editPreset(uid, _id, name, config);
+
     return new MonkeyResponse("Preset updated");
   }
 
