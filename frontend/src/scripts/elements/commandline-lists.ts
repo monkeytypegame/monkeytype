@@ -200,6 +200,7 @@ Misc.getFontsList().then((fonts) => {
       UpdateConfig.previewFontFamily(Config.fontFamily);
     },
     exec: (name) => {
+      if (!name) return;
       UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
       // Settings.groups.fontFamily.updateInput();
     },
@@ -1419,6 +1420,7 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setPaceCaretCustomSpeed(parseInt(input));
         UpdateConfig.setPaceCaret("custom");
         TestLogic.restart();
@@ -1445,6 +1447,7 @@ const commandsMinWpm: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMinWpmCustomSpeed(parseInt(input));
         UpdateConfig.setMinWpm("custom");
       },
@@ -1470,6 +1473,7 @@ const commandsMinAcc: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMinAccCustom(parseInt(input));
         UpdateConfig.setMinAcc("custom");
       },
@@ -1495,6 +1499,7 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       configValue: "fixed",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMinBurst("fixed");
         UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
@@ -1505,6 +1510,7 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       configValue: "flex",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMinBurst("flex");
         UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
@@ -1860,6 +1866,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       display: "custom...",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMode("words");
         UpdateConfig.setWordCount(parseInt(input));
         TestLogic.restart();
@@ -2127,6 +2134,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       display: "custom...",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig(parseInt(input));
         TestLogic.restart();
@@ -2866,6 +2874,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       defaultValue: "",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setCustomBackground(input);
       },
     },
@@ -2929,7 +2938,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       icon: "fa-tint",
       exec: (input): void => {
-        UpdateConfig.setCustomLayoutfluid(input);
+        if (!input) return;
+        UpdateConfig.setCustomLayoutfluid(
+          input as MonkeyTypes.CustomLayoutFluidSpaces
+        );
         if (Config.funbox === "layoutfluid") TestLogic.restart();
         // UpdateConfig.setLayout(
         //   Config.customLayoutfluid
@@ -3136,6 +3148,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-cog",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         try {
           UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveToLocalStorage();

@@ -496,9 +496,6 @@ declare namespace MonkeyTypes {
     };
   }
 
-  // eslint-disable-next-line no-unused-vars
-  type ExecFunction = (input?: any) => any;
-
   interface Command {
     id: string;
     display: string;
@@ -513,8 +510,8 @@ declare namespace MonkeyTypes {
     defaultValue?: string;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
-    exec?: ExecFunction;
-    hover?: ExecFunction;
+    exec?: (input?: string) => void;
+    hover?: () => void;
     available?: () => void;
     beforeSubgroup?: () => void;
   }
