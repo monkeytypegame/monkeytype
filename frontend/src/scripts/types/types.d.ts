@@ -526,7 +526,7 @@ declare namespace MonkeyTypes {
     text: string;
     source: string;
     length: number;
-    id: number | string;
+    id: number;
     group?: number;
     language: string;
   }
