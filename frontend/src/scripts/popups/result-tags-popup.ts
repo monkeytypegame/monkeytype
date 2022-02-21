@@ -32,7 +32,7 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+  DB.getSnapshot().tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
     );
@@ -52,7 +52,7 @@ function updateActiveButtons(active: string[]): void {
 }
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (DB.getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot().tags?.length || 0 > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
     const tags = $(f.target).parents("span").attr("tags") as string;
     $("#resultEditTagsPanel").attr("resultid", resultid);
@@ -97,17 +97,19 @@ $("#resultEditTagsPanel .confirmButton").click(() => {
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Tags updated.", 1, 2);
-        DB.getSnapshot().results.forEach((result: MonkeyTypes.Result) => {
-          if (result._id === resultid) {
-            result.tags = newtags;
+        DB.getSnapshot().results?.forEach(
+          (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+            if (result._id === resultid) {
+              result.tags = newtags;
+            }
           }
-        });
+        );
 
         let tagNames = "";
 
         if (newtags.length > 0) {
           newtags.forEach((tag) => {
-            DB.getSnapshot().tags.forEach((snaptag: MonkeyTypes.Tag) => {
+            DB.getSnapshot().tags?.forEach((snaptag) => {
               if (tag === snaptag._id) {
                 tagNames += snaptag.name + ", ";
               }

@@ -1,29 +1,32 @@
 import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
-import LayoutList from "./test/layouts";
+import * as Misc from "./misc";
 import * as ConfigEvent from "./observables/config-event";
 
-export let localStorageConfig = null;
+export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
 export let changedBeforeDb = false;
 
-export function setLocalStorageConfig(val) {
+export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
   localStorageConfig = val;
 }
 
-export function setDbConfigLoaded(val) {
+export function setDbConfigLoaded(val: boolean): void {
   dbConfigLoaded = val;
 }
 
-export function setChangedBeforeDb(val) {
+export function setChangedBeforeDb(val: boolean): void {
   changedBeforeDb = val;
 }
 
-let loadDone;
+let loadDone: (...stuff: any[]) => any;
 
-let defaultConfig = {
+const defaultConfig: MonkeyTypes.Config = {
   theme: "serika_dark",
+  themeLight: "serika",
+  themeDark: "serika_dark",
+  autoSwitchTheme: false,
   customTheme: false,
   customThemeColors: [
     "#323437",
@@ -49,7 +52,7 @@ let defaultConfig = {
   mode: "time",
   quoteLength: [1],
   language: "english",
-  fontSize: 15,
+  fontSize: "15",
   freedomMode: false,
   resultFilters: null,
   difficulty: "normal",
@@ -73,7 +76,7 @@ let defaultConfig = {
   keymapStyle: "staggered",
   keymapLegendStyle: "lowercase",
   keymapLayout: "overrideSync",
-  fontFamily: "Roboto_Mono",
+  fontFamily: "roboto_mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
@@ -117,17 +120,83 @@ let defaultConfig = {
   lazyMode: false,
 };
 
-function isConfigKeyValid(name) {
+function isConfigKeyValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
   if (name.length > 30) return false;
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+}
+
+type PossibleType =
+  | "string"
+  | "number"
+  | "numberArray"
+  | "numberInString"
+  | "boolean"
+  | "undefined"
+  | "null"
+  | "stringArray"
+  | "layoutfluid"
+  | string[]
+  | number[];
+
+function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
+  return possibleTypes.some((possibleType) => {
+    switch (possibleType) {
+      case "boolean":
+        return typeof val === "boolean";
+
+      case "number":
+        return typeof val === "number";
+
+      case "numberInString":
+        return (
+          typeof val === "number" ||
+          (typeof val === "string" && !isNaN(parseInt(val)))
+        );
+
+      case "string":
+        return typeof val === "string";
+
+      case "undefined":
+        return typeof val === "undefined";
+
+      case "null":
+        return val === null;
+
+      case "stringArray":
+        return val instanceof Array && val.every((v) => typeof v === "string");
+
+      case "numberArray":
+        return val instanceof Array && val.every((v) => typeof v === "number");
+
+      case "layoutfluid":
+        return (
+          typeof val === "string" &&
+          (val.split("#").length === 3 || val.split(" ").length === 3)
+        );
+
+      default:
+        if (possibleType instanceof Array) {
+          return possibleType.includes(val as never);
+        }
+
+        return false;
+    }
+  });
+}
+
+function invalid(key: string, val: any): void {
+  Notifications.add(
+    `A config value was invalid, tried setting "${key}" to "${val.toString()}", type "${typeof val}"`,
+    -1
+  );
 }
 
 let config = {
   ...defaultConfig,
 };
 
-export async function saveToLocalStorage(noDbCheck = false) {
+export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
   if (!dbConfigLoaded && !noDbCheck) {
     setChangedBeforeDb(true);
   }
@@ -137,9 +206,9 @@ export async function saveToLocalStorage(noDbCheck = false) {
   //   expires: d,
   //   path: "/",
   // });
-  let save = config;
+  const save = config;
   delete save.resultFilters;
-  let stringified = JSON.stringify(save);
+  const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
@@ -147,7 +216,9 @@ export async function saveToLocalStorage(noDbCheck = false) {
 }
 
 //numbers
-export function setNumbers(numb, nosave) {
+export function setNumbers(numb: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(numb, ["boolean"])) return invalid("numbers", numb);
+
   if (config.mode === "quote") {
     numb = false;
   }
@@ -162,7 +233,10 @@ export function setNumbers(numb, nosave) {
 }
 
 //punctuation
-export function setPunctuation(punc, nosave) {
+export function setPunctuation(punc: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(punc, ["boolean"]))
+    return invalid("punctuation", punc);
+
   if (config.mode === "quote") {
     punc = false;
   }
@@ -176,12 +250,15 @@ export function setPunctuation(punc, nosave) {
   ConfigEvent.dispatch("punctuation", config.punctuation);
 }
 
-export function setMode(mode, nosave) {
+export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]))
+    return invalid("mode", mode);
+
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
-  let previous = config.mode;
+  const previous = config.mode;
   config.mode = mode;
   if (config.mode == "custom") {
     setPunctuation(false, true);
@@ -198,7 +275,10 @@ export function setMode(mode, nosave) {
   ConfigEvent.dispatch("mode", previous, config.mode);
 }
 
-export function setPlaySoundOnError(val, nosave) {
+export function setPlaySoundOnError(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("play sound on error", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -207,7 +287,13 @@ export function setPlaySoundOnError(val, nosave) {
   ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
 }
 
-export function setPlaySoundOnClick(val, nosave) {
+export function setPlaySoundOnClick(
+  val: MonkeyTypes.PlaySoundOnClick,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]))
+    return invalid("play sound on click", val);
+
   if (val == undefined) {
     val = "off";
   }
@@ -216,7 +302,13 @@ export function setPlaySoundOnClick(val, nosave) {
   ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
 }
 
-export function setSoundVolume(val, nosave) {
+export function setSoundVolume(
+  val: MonkeyTypes.SoundVolume,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["0.1", "0.5", "1.0"]]))
+    return invalid("sound volume", val);
+
   if (val == undefined) {
     val = "1.0";
   }
@@ -226,7 +318,13 @@ export function setSoundVolume(val, nosave) {
 }
 
 //difficulty
-export function setDifficulty(diff, nosave) {
+export function setDifficulty(
+  diff: MonkeyTypes.Difficulty,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(diff, [["normal", "expert", "master"]]))
+    return invalid("difficulty", diff);
+
   if (
     (diff !== "normal" && diff !== "expert" && diff !== "master") ||
     diff == undefined
@@ -239,20 +337,27 @@ export function setDifficulty(diff, nosave) {
 }
 
 //set fav themes
-export function setFavThemes(themes, nosave) {
+export function setFavThemes(themes: string[], nosave?: boolean): void {
+  if (!isConfigValueValid(themes, ["stringArray"]))
+    return invalid("favorite themes", themes);
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("favThemes", config.favThemes);
 }
 
-export function setFunbox(funbox, nosave) {
-  let val = funbox ? funbox : "none";
+export function setFunbox(funbox: string, nosave?: boolean): void {
+  if (!isConfigValueValid(funbox, ["string"])) return invalid("funbox", funbox);
+
+  const val = funbox ? funbox : "none";
   config.funbox = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("funbox", config.funbox);
 }
 
-export function setBlindMode(blind, nosave) {
+export function setBlindMode(blind: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(blind, ["boolean"]))
+    return invalid("blind mode", blind);
+
   if (blind == undefined) {
     blind = false;
   }
@@ -261,7 +366,13 @@ export function setBlindMode(blind, nosave) {
   ConfigEvent.dispatch("blindMode", config.blindMode);
 }
 
-export function setChartAccuracy(chartAccuracy, nosave) {
+export function setChartAccuracy(
+  chartAccuracy: boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(chartAccuracy, ["boolean"]))
+    return invalid("chart accuracy", chartAccuracy);
+
   if (chartAccuracy == undefined) {
     chartAccuracy = true;
   }
@@ -270,7 +381,13 @@ export function setChartAccuracy(chartAccuracy, nosave) {
   ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
 }
 
-export function setChartStyle(chartStyle, nosave) {
+export function setChartStyle(
+  chartStyle: MonkeyTypes.ChartStyle,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(chartStyle, [["line", "scatter"]]))
+    return invalid("chart style", chartStyle);
+
   if (chartStyle == undefined) {
     chartStyle = "line";
   }
@@ -279,7 +396,13 @@ export function setChartStyle(chartStyle, nosave) {
   ConfigEvent.dispatch("chartStyle", config.chartStyle);
 }
 
-export function setStopOnError(soe, nosave) {
+export function setStopOnError(
+  soe: MonkeyTypes.StopOnError | boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(soe, [["off", "word", "letter"]]))
+    return invalid("stop on error", soe);
+
   if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
@@ -291,7 +414,13 @@ export function setStopOnError(soe, nosave) {
   ConfigEvent.dispatch("stopOnError", config.stopOnError);
 }
 
-export function setAlwaysShowDecimalPlaces(val, nosave) {
+export function setAlwaysShowDecimalPlaces(
+  val: boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("always show decimal places", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -303,7 +432,10 @@ export function setAlwaysShowDecimalPlaces(val, nosave) {
   );
 }
 
-export function setAlwaysShowCPM(val, nosave) {
+export function setAlwaysShowCPM(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("always show CPM", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -312,7 +444,10 @@ export function setAlwaysShowCPM(val, nosave) {
   ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
 }
 
-export function setShowOutOfFocusWarning(val, nosave) {
+export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("show out of focus warning", val);
+
   if (val == undefined) {
     val = true;
   }
@@ -324,7 +459,10 @@ export function setShowOutOfFocusWarning(val, nosave) {
   ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
 }
 
-export function setSwapEscAndTab(val, nosave) {
+export function setSwapEscAndTab(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("swap esc and tab", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -334,7 +472,13 @@ export function setSwapEscAndTab(val, nosave) {
 }
 
 //pace caret
-export function setPaceCaret(val, nosave) {
+export function setPaceCaret(
+  val: MonkeyTypes.PaceCaret,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["custom", "off", "average", "pb"]]))
+    return invalid("pace caret", val);
+
   if (val == undefined) {
     val = "off";
   }
@@ -353,9 +497,11 @@ export function setPaceCaret(val, nosave) {
   ConfigEvent.dispatch("paceCaret", config.paceCaret);
 }
 
-export function setPaceCaretCustomSpeed(val, nosave) {
-  val = parseInt(val);
-  if (val == undefined || Number.isNaN(val)) {
+export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("pace caret custom speed", val);
+
+  if (val == undefined) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
@@ -363,7 +509,10 @@ export function setPaceCaretCustomSpeed(val, nosave) {
   ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 }
 
-export function setRepeatedPace(pace, nosave) {
+export function setRepeatedPace(pace: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(pace, ["boolean"]))
+    return invalid("repeated pace", pace);
+
   if (pace == undefined) {
     pace = true;
   }
@@ -373,7 +522,13 @@ export function setRepeatedPace(pace, nosave) {
 }
 
 //min wpm
-export function setMinWpm(minwpm, nosave) {
+export function setMinWpm(
+  minwpm: MonkeyTypes.MinimumWordsPerMinute,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(minwpm, [["off", "custom"]]))
+    return invalid("min WPM", minwpm);
+
   if (minwpm == undefined) {
     minwpm = "off";
   }
@@ -382,9 +537,11 @@ export function setMinWpm(minwpm, nosave) {
   ConfigEvent.dispatch("minWpm", config.minWpm);
 }
 
-export function setMinWpmCustomSpeed(val, nosave) {
-  val = parseInt(val);
-  if (val == undefined || Number.isNaN(val)) {
+export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("min WPM custom speed", val);
+
+  if (val == undefined) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
@@ -393,7 +550,13 @@ export function setMinWpmCustomSpeed(val, nosave) {
 }
 
 //min acc
-export function setMinAcc(min, nosave) {
+export function setMinAcc(
+  min: MonkeyTypes.MinimumAccuracy,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(min, [["off", "custom"]]))
+    return invalid("min acc", min);
+
   if (min == undefined) {
     min = "off";
   }
@@ -402,8 +565,11 @@ export function setMinAcc(min, nosave) {
   ConfigEvent.dispatch("minAcc", config.minAcc);
 }
 
-export function setMinAccCustom(val, nosave) {
-  if (val == undefined || Number.isNaN(parseInt(val))) {
+export function setMinAccCustom(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("min acc custom", val);
+
+  if (val === undefined) {
     val = 90;
   }
   config.minAccCustom = val;
@@ -412,7 +578,13 @@ export function setMinAccCustom(val, nosave) {
 }
 
 //min burst
-export function setMinBurst(min, nosave) {
+export function setMinBurst(
+  min: MonkeyTypes.MinimumBurst,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(min, [["off", "fixed", "flex"]]))
+    return invalid("min burst", min);
+
   if (min == undefined) {
     min = "off";
   }
@@ -421,9 +593,11 @@ export function setMinBurst(min, nosave) {
   ConfigEvent.dispatch("minBurst", config.minBurst);
 }
 
-export function setMinBurstCustomSpeed(val, nosave) {
-  val = parseInt(val);
-  if (val == undefined || Number.isNaN(val)) {
+export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
+    return invalid("min burst custom speed", val);
+
+  if (val == undefined) {
     val = 100;
   }
   config.minBurstCustomSpeed = val;
@@ -432,7 +606,13 @@ export function setMinBurstCustomSpeed(val, nosave) {
 }
 
 //always show words history
-export function setAlwaysShowWordsHistory(val, nosave) {
+export function setAlwaysShowWordsHistory(
+  val: boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("always show words history", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -442,7 +622,13 @@ export function setAlwaysShowWordsHistory(val, nosave) {
 }
 
 //single list command line
-export function setSingleListCommandLine(option, nosave) {
+export function setSingleListCommandLine(
+  option: MonkeyTypes.SingleListCommandLine,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(option, [["manual", "on"]]))
+    return invalid("single list command line", option);
+
   if (!option) option = "manual";
   config.singleListCommandLine = option;
   if (!nosave) saveToLocalStorage();
@@ -450,7 +636,10 @@ export function setSingleListCommandLine(option, nosave) {
 }
 
 //caps lock warning
-export function setCapsLockWarning(val, nosave) {
+export function setCapsLockWarning(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("caps lock warning", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -459,7 +648,10 @@ export function setCapsLockWarning(val, nosave) {
   ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
 }
 
-export function setShowAllLines(sal, nosave) {
+export function setShowAllLines(sal: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(sal, ["boolean"]))
+    return invalid("show all lines", sal);
+
   if (sal == undefined) {
     sal = false;
   }
@@ -470,7 +662,9 @@ export function setShowAllLines(sal, nosave) {
   ConfigEvent.dispatch("showAllLines", config.showAllLines);
 }
 
-export function setQuickEnd(qe, nosave) {
+export function setQuickEnd(qe: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(qe, ["boolean"])) return invalid("quick end", qe);
+
   if (qe == undefined) {
     qe = false;
   }
@@ -479,7 +673,13 @@ export function setQuickEnd(qe, nosave) {
   ConfigEvent.dispatch("quickEnd", config.quickEnd);
 }
 
-export function setEnableAds(val, nosave) {
+export function setEnableAds(
+  val: MonkeyTypes.EnableAds | boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["on", "off", "max"], "boolean"]))
+    return invalid("enable ads", val);
+
   if (val == undefined || val === true || val === false) {
     val = "off";
   }
@@ -493,7 +693,13 @@ export function setEnableAds(val, nosave) {
   }
 }
 
-export function setRepeatQuotes(val, nosave) {
+export function setRepeatQuotes(
+  val: MonkeyTypes.RepeatQuotes | boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["off", "typing"], "boolean"]))
+    return invalid("repeat quotes", val);
+
   if (val == undefined || val === true || val === false) {
     val = "off";
   }
@@ -503,7 +709,10 @@ export function setRepeatQuotes(val, nosave) {
 }
 
 //flip colors
-export function setFlipTestColors(flip, nosave) {
+export function setFlipTestColors(flip: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(flip, ["boolean"]))
+    return invalid("flip test colors", flip);
+
   if (flip == undefined) {
     flip = false;
   }
@@ -513,7 +722,10 @@ export function setFlipTestColors(flip, nosave) {
 }
 
 //extra color
-export function setColorfulMode(extra, nosave) {
+export function setColorfulMode(extra: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(extra, ["boolean"]))
+    return invalid("colorful mode", extra);
+
   if (extra == undefined) {
     extra = false;
   }
@@ -523,7 +735,10 @@ export function setColorfulMode(extra, nosave) {
 }
 
 //strict space
-export function setStrictSpace(val, nosave) {
+export function setStrictSpace(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("strict space", val);
+
   if (val == undefined) {
     val = false;
   }
@@ -533,7 +748,13 @@ export function setStrictSpace(val, nosave) {
 }
 
 //opposite shift space
-export function setOppositeShiftMode(val, nosave) {
+export function setOppositeShiftMode(
+  val: MonkeyTypes.OppositeShiftMode,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["off", "on", "keymap"]]))
+    return invalid("opposite shift mode", val);
+
   if (val == undefined) {
     val = "off";
   }
@@ -542,7 +763,13 @@ export function setOppositeShiftMode(val, nosave) {
   ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
 }
 
-export function setPageWidth(val, nosave) {
+export function setPageWidth(
+  val: MonkeyTypes.PageWidth,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(val, [["max", "100", "125", "150", "200"]]))
+    return invalid("page width", val);
+
   if (val == null || val == undefined) {
     val = "100";
   }
@@ -559,7 +786,17 @@ export function setPageWidth(val, nosave) {
   ConfigEvent.dispatch("pageWidth", config.pageWidth);
 }
 
-export function setCaretStyle(caretStyle, nosave) {
+export function setCaretStyle(
+  caretStyle: MonkeyTypes.CaretStyle,
+  nosave?: boolean
+): void {
+  if (
+    !isConfigValueValid(caretStyle, [
+      ["off", "default", "block", "outline", "underline", "carrot", "banana"],
+    ])
+  )
+    return invalid("caret style", caretStyle);
+
   if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
@@ -591,7 +828,17 @@ export function setCaretStyle(caretStyle, nosave) {
   ConfigEvent.dispatch("caretStyle", config.caretStyle);
 }
 
-export function setPaceCaretStyle(caretStyle, nosave) {
+export function setPaceCaretStyle(
+  caretStyle: MonkeyTypes.CaretStyle,
+  nosave?: boolean
+): void {
+  if (
+    !isConfigValueValid(caretStyle, [
+      ["off", "default", "block", "outline", "underline", "carrot", "banana"],
+    ])
+  )
+    return invalid("pace caret style", caretStyle);
+
   if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
@@ -621,7 +868,10 @@ export function setPaceCaretStyle(caretStyle, nosave) {
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
 }
 
-export function setShowTimerProgress(timer, nosave) {
+export function setShowTimerProgress(timer: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(timer, ["boolean"]))
+    return invalid("show timer progress", timer);
+
   if (timer == null || timer == undefined) {
     timer = false;
   }
@@ -630,7 +880,10 @@ export function setShowTimerProgress(timer, nosave) {
   ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
 }
 
-export function setShowLiveWpm(live, nosave) {
+export function setShowLiveWpm(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show live WPM", live);
+
   if (live == null || live == undefined) {
     live = false;
   }
@@ -639,7 +892,10 @@ export function setShowLiveWpm(live, nosave) {
   ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
 }
 
-export function setShowLiveAcc(live, nosave) {
+export function setShowLiveAcc(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show live acc", live);
+
   if (live == null || live == undefined) {
     live = false;
   }
@@ -648,7 +904,10 @@ export function setShowLiveAcc(live, nosave) {
   ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
 }
 
-export function setShowLiveBurst(live, nosave) {
+export function setShowLiveBurst(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show live burst", live);
+
   if (live == null || live == undefined) {
     live = false;
   }
@@ -657,7 +916,13 @@ export function setShowLiveBurst(live, nosave) {
   ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
 }
 
-export function setHighlightMode(mode, nosave) {
+export function setHighlightMode(
+  mode: MonkeyTypes.HighlightMode,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(mode, [["off", "letter", "word"]]))
+    return invalid("highlight mode", mode);
+
   if (
     mode === "word" &&
     (config.funbox === "nospace" ||
@@ -678,7 +943,10 @@ export function setHighlightMode(mode, nosave) {
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
 }
 
-export function setHideExtraLetters(val, nosave) {
+export function setHideExtraLetters(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("hide extra letters", val);
+
   if (val == null || val == undefined) {
     val = false;
   }
@@ -687,7 +955,13 @@ export function setHideExtraLetters(val, nosave) {
   ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
 }
 
-export function setTimerStyle(style, nosave) {
+export function setTimerStyle(
+  style: MonkeyTypes.TimerStyle,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(style, [["bar", "text", "mini"]]))
+    return invalid("timer style", style);
+
   if (style == null || style == undefined) {
     style = "mini";
   }
@@ -696,7 +970,13 @@ export function setTimerStyle(style, nosave) {
   ConfigEvent.dispatch("timerStyle", config.timerStyle);
 }
 
-export function setTimerColor(color, nosave) {
+export function setTimerColor(
+  color: MonkeyTypes.TimerColor,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(color, [["black", "sub", "text", "main"]]))
+    return invalid("timer color", color);
+
   if (!color || !["black", "sub", "text", "main"].includes(color)) {
     color = "black";
   }
@@ -738,9 +1018,15 @@ export function setTimerColor(color, nosave) {
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerColor", config.timerColor);
 }
-export function setTimerOpacity(opacity, nosave) {
+export function setTimerOpacity(
+  opacity: MonkeyTypes.TimerOpacity,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]))
+    return invalid("timer opacity", opacity);
+
   if (opacity == null || opacity == undefined) {
-    opacity = 0.25;
+    opacity = "0.25";
   }
   config.timerOpacity = opacity;
   if (!nosave) saveToLocalStorage();
@@ -748,7 +1034,10 @@ export function setTimerOpacity(opacity, nosave) {
 }
 
 //key tips
-export function setKeyTips(keyTips, nosave) {
+export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(keyTips, ["boolean"]))
+    return invalid("key tips", keyTips);
+
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
     $("#bottom .keyTips").removeClass("hidden");
@@ -760,26 +1049,39 @@ export function setKeyTips(keyTips, nosave) {
 }
 
 //mode
-export function setTimeConfig(time, nosave) {
-  if (time === null || isNaN(time) || time < 0) {
-    time = 15;
-  }
-  time = parseInt(time);
-  // if (!nosave) setMode("time", nosave);
-  config.time = time;
+export function setTimeConfig(
+  time: MonkeyTypes.TimeModes,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(time, ["number"])) return invalid("time", time);
+
+  const newTime =
+    time === null || time === undefined || isNaN(time) || time < 0
+      ? defaultConfig.time
+      : time;
+
   $("#top .config .time .text-button").removeClass("active");
-  if (![15, 30, 60, 120].includes(time)) {
-    time = "custom";
-  }
-  $("#top .config .time .text-button[timeConfig='" + time + "']").addClass(
-    "active"
-  );
+
+  const timeCustom = ![15, 30, 60, 120].includes(newTime) ? "custom" : newTime;
+
+  config.time = newTime;
+
+  $(
+    "#top .config .time .text-button[timeConfig='" + timeCustom + "']"
+  ).addClass("active");
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("time", config.time);
 }
 
 //quote length
-export function setQuoteLength(len, nosave, multipleMode) {
+export function setQuoteLength(
+  len: MonkeyTypes.QuoteLengthArray | MonkeyTypes.QuoteLength,
+  nosave?: boolean,
+  multipleMode?: boolean
+): void {
+  if (!isConfigValueValid(len, [[-1, 0, 1, 2, 3], "numberArray"]))
+    return invalid("quote length", len);
+
   if (Array.isArray(len)) {
     //config load
     if (len.length === 1 && len[0] === -1) len = [1];
@@ -789,7 +1091,7 @@ export function setQuoteLength(len, nosave, multipleMode) {
     if (len === null || isNaN(len) || len < -2 || len > 3) {
       len = 1;
     }
-    len = parseInt(len);
+    len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
     if (multipleMode) {
       if (!config.quoteLength.includes(len)) {
         config.quoteLength.push(len);
@@ -812,31 +1114,40 @@ export function setQuoteLength(len, nosave, multipleMode) {
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 }
 
-export function setWordCount(wordCount, nosave) {
-  wordCount = parseInt(wordCount);
-  if (
+export function setWordCount(
+  wordCount: MonkeyTypes.WordsModes,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(wordCount, ["number"]))
+    return invalid("words", wordCount);
+
+  const newWordCount =
     wordCount === null ||
-    isNaN(wordCount) ||
+    wordCount === undefined ||
     wordCount < 0 ||
     wordCount > 100000
-  ) {
-    wordCount = defaultConfig.words;
-  }
-  // if (!nosave) setMode("words", nosave);
-  config.words = wordCount;
+      ? defaultConfig.words
+      : wordCount;
+
   $("#top .config .wordCount .text-button").removeClass("active");
-  if (![10, 25, 50, 100, 200].includes(wordCount)) {
-    wordCount = "custom";
-  }
-  $(`#top .config .wordCount .text-button[wordCount='${wordCount}']`).addClass(
-    "active"
-  );
+
+  const wordCustom = ![10, 25, 50, 100, 200].includes(newWordCount)
+    ? "custom"
+    : newWordCount;
+
+  config.words = newWordCount;
+
+  $(
+    "#top .config .wordCount .text-button[wordCount='" + wordCustom + "']"
+  ).addClass("active");
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("words", config.words);
 }
 
 //caret
-export function setSmoothCaret(mode, nosave) {
+export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"])) return invalid("", mode);
+
   config.smoothCaret = mode;
   if (mode) {
     $("#caret").css("animation-name", "caretFlashSmooth");
@@ -847,21 +1158,30 @@ export function setSmoothCaret(mode, nosave) {
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 }
 
-export function setStartGraphsAtZero(mode, nosave) {
+export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
+    return invalid("start graphs at zero", mode);
+
   config.startGraphsAtZero = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("startGraphsAtZero", config.startGraphsAtZero);
 }
 
 //linescroll
-export function setSmoothLineScroll(mode, nosave) {
+export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
+    return invalid("smoot line scroll", mode);
+
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("smoothLineScroll", config.smoothLineScroll);
 }
 
 //quick tab
-export function setQuickTabMode(mode, nosave) {
+export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
+    return invalid("quick tab mode", mode);
+
   config.quickTab = mode;
   if (!config.quickTab) {
     $("#restartTestButton").removeClass("hidden");
@@ -878,9 +1198,12 @@ export function setQuickTabMode(mode, nosave) {
   ConfigEvent.dispatch("quickTab", config.quickTab);
 }
 
-export function previewFontFamily(font) {
+export function previewFontFamily(font: string): void {
+  if (!isConfigValueValid(font, ["string"]))
+    return invalid("preview font family", font);
+
   if (font == undefined) {
-    font = "Roboto_Mono";
+    font = "roboto_mono";
   }
   document.documentElement.style.setProperty(
     "--font",
@@ -889,9 +1212,12 @@ export function previewFontFamily(font) {
 }
 
 //font family
-export function setFontFamily(font, nosave) {
+export function setFontFamily(font: string, nosave?: boolean): void {
+  if (!isConfigValueValid(font, ["string"]))
+    return invalid("font family", font);
+
   if (font == undefined || font === "") {
-    font = "Roboto_Mono";
+    font = "roboto_mono";
     Notifications.add(
       "Empty input received, reverted to the default font.",
       0,
@@ -918,7 +1244,10 @@ export function setFontFamily(font, nosave) {
 }
 
 //freedom
-export function setFreedomMode(freedom, nosave) {
+export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(freedom, ["boolean"]))
+    return invalid("freedom mode", freedom);
+
   if (freedom == null) {
     freedom = false;
   }
@@ -930,7 +1259,13 @@ export function setFreedomMode(freedom, nosave) {
   ConfigEvent.dispatch("freedomMode", config.freedomMode);
 }
 
-export function setConfidenceMode(cm, nosave) {
+export function setConfidenceMode(
+  cm: MonkeyTypes.ConfidenceMode,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(cm, [["off", "on", "max"]]))
+    return invalid("confidence mode", cm);
+
   if (cm == undefined || !["off", "on", "max"].includes(cm)) {
     cm = defaultConfig.confidenceMode;
   }
@@ -943,7 +1278,13 @@ export function setConfidenceMode(cm, nosave) {
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode);
 }
 
-export function setIndicateTypos(value, nosave) {
+export function setIndicateTypos(
+  value: MonkeyTypes.IndicateTypos,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(value, [["off", "below", "replace"]]))
+    return invalid("indicate typos", value);
+
   if (!["off", "below", "replace"].includes(value)) {
     value = defaultConfig.indicateTypos;
   }
@@ -952,27 +1293,73 @@ export function setIndicateTypos(value, nosave) {
   ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
 }
 
-export function setCustomTheme(boolean, nosave) {
+export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(boolean, ["boolean"]))
+    return invalid("auto switch theme", boolean);
+
+  boolean = boolean ?? defaultConfig.autoSwitchTheme;
+  config.autoSwitchTheme = boolean;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
+}
+
+export function setCustomTheme(boolean: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(boolean, ["boolean"]))
+    return invalid("custom theme", boolean);
+
   if (boolean !== undefined) config.customTheme = boolean;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customTheme", config.customTheme);
 }
 
-export function setTheme(name, nosave) {
+export function setTheme(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"])) return invalid("", name);
+
   config.theme = name;
-  setCustomTheme(false, true, true);
+  setCustomTheme(false, true);
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("theme", config.theme);
 }
 
-function setThemes(theme, customState, nosave) {
+export function setThemeLight(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"]))
+    return invalid("theme light", name);
+
+  config.themeLight = name;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
+}
+
+export function setThemeDark(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"])) return invalid("theme dark", name);
+
+  config.themeDark = name;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
+}
+
+function setThemes(
+  theme: string,
+  customState: boolean,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
+
   config.theme = theme;
   config.customTheme = customState;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("setThemes", customState);
 }
 
-export function setRandomTheme(val, nosave) {
+export function setRandomTheme(
+  val: MonkeyTypes.RandomTheme | boolean,
+  nosave?: boolean
+): void {
+  if (
+    !isConfigValueValid(val, ["boolean", ["off", "on", "fav", "light", "dark"]])
+  )
+    return invalid("random theme", val);
+
   if (val === undefined || val === true || val === false) {
     val = "off";
   }
@@ -981,7 +1368,10 @@ export function setRandomTheme(val, nosave) {
   ConfigEvent.dispatch("randomTheme", config.randomTheme);
 }
 
-export function setBritishEnglish(val, nosave) {
+export function setBritishEnglish(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
+    return invalid("british english", val);
+
   if (!val) {
     val = false;
   }
@@ -990,16 +1380,21 @@ export function setBritishEnglish(val, nosave) {
   ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
 }
 
-export function setLazyMode(val, nosave) {
+export function setLazyMode(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"])) return invalid("lazy mode", val);
+
   if (!val) {
     val = false;
   }
   config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("lazyMode", config.lazyMode);
+  ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 }
 
-export function setCustomThemeColors(colors, nosave) {
+export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
+  if (!isConfigValueValid(colors, ["stringArray"]))
+    return invalid("custom theme colors", colors);
+
   if (colors !== undefined) {
     config.customThemeColors = colors;
     // ThemeController.set("custom");
@@ -1009,7 +1404,10 @@ export function setCustomThemeColors(colors, nosave) {
   ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
 }
 
-export function setLanguage(language, nosave) {
+export function setLanguage(language: string, nosave?: boolean): void {
+  if (!isConfigValueValid(language, ["string"]))
+    return invalid("language", language);
+
   if (language == null || language == undefined) {
     language = "english";
   }
@@ -1025,7 +1423,10 @@ export function setLanguage(language, nosave) {
   ConfigEvent.dispatch("language", config.language);
 }
 
-export function setMonkey(monkey, nosave) {
+export function setMonkey(monkey: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(monkey, ["boolean"]))
+    return invalid("monkey", monkey);
+
   if (monkey === null || monkey === undefined) {
     monkey = false;
   }
@@ -1039,7 +1440,13 @@ export function setMonkey(monkey, nosave) {
   ConfigEvent.dispatch("monkey", config.monkey);
 }
 
-export function setKeymapMode(mode, nosave) {
+export function setKeymapMode(
+  mode: MonkeyTypes.KeymapMode,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(mode, [["off", "static", "react", "next"]]))
+    return invalid("keymap mode", mode);
+
   if (mode == null || mode == undefined) {
     mode = "off";
   }
@@ -1050,7 +1457,13 @@ export function setKeymapMode(mode, nosave) {
   ConfigEvent.dispatch("keymapMode", config.keymapMode);
 }
 
-export function setKeymapLegendStyle(style, nosave) {
+export function setKeymapLegendStyle(
+  style: MonkeyTypes.KeymapLegendStyle,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
+    return invalid("keymap legend style", style);
+
   // Remove existing styles
   const keymapLegendStyles = ["lowercase", "uppercase", "blank"];
   keymapLegendStyles.forEach((name) => {
@@ -1079,20 +1492,27 @@ export function setKeymapLegendStyle(style, nosave) {
   ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
 }
 
-export function setKeymapStyle(style, nosave) {
-  $(".keymap").removeClass("matrix");
-  $(".keymap").removeClass("split");
-  $(".keymap").removeClass("split_matrix");
-  $(".keymap").removeClass("alice");
-  style = style || "staggered";
+export function setKeymapStyle(
+  style: MonkeyTypes.KeymapStyle,
+  nosave?: boolean
+): void {
+  if (
+    !isConfigValueValid(style, [
+      ["staggered", "alice", "matrix", "split", "split_matrix"],
+    ])
+  )
+    return invalid("keymap style", style);
 
-  $(".keymap").addClass(style);
+  style = style || "staggered";
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
 }
 
-export function setKeymapLayout(layout, nosave) {
+export function setKeymapLayout(layout: string, nosave?: boolean): void {
+  if (!isConfigValueValid(layout, ["string"]))
+    return invalid("keymap layout", layout);
+
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
@@ -1101,7 +1521,9 @@ export function setKeymapLayout(layout, nosave) {
   ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
 }
 
-export function setLayout(layout, nosave) {
+export function setLayout(layout: string, nosave?: boolean): void {
+  if (!isConfigValueValid(layout, ["string"])) return invalid("layout", layout);
+
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
@@ -1110,7 +1532,7 @@ export function setLayout(layout, nosave) {
   ConfigEvent.dispatch("layout", config.layout);
 }
 
-// export function setSavedLayout(layout, nosave) {
+// export function setSavedLayout(layout, nosave?: boolean): void {
 //   if (layout == null || layout == undefined) {
 //     layout = "qwerty";
 //   }
@@ -1118,10 +1540,17 @@ export function setLayout(layout, nosave) {
 //   setLayout(layout, nosave);
 // }
 
-export function setFontSize(fontSize, nosave) {
+export function setFontSize(
+  fontSize: MonkeyTypes.FontSize,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
+    return invalid("font size", fontSize);
+
   if (fontSize == null || fontSize == undefined) {
-    fontSize = 1;
+    fontSize = "1";
   }
+
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
   $("#caret, #paceCaret").removeClass("size125");
@@ -1143,23 +1572,23 @@ export function setFontSize(fontSize, nosave) {
   $("#miniTimerAndLiveWpm").removeClass("size35");
   $("#miniTimerAndLiveWpm").removeClass("size4");
 
-  if (fontSize == 125) {
+  if (fontSize == "125") {
     $("#words").addClass("size125");
     $("#caret, #paceCaret").addClass("size125");
     $("#miniTimerAndLiveWpm").addClass("size125");
-  } else if (fontSize == 15) {
+  } else if (fontSize == "15") {
     $("#words").addClass("size15");
     $("#caret, #paceCaret").addClass("size15");
     $("#miniTimerAndLiveWpm").addClass("size15");
-  } else if (fontSize == 2) {
+  } else if (fontSize == "2") {
     $("#words").addClass("size2");
     $("#caret, #paceCaret").addClass("size2");
     $("#miniTimerAndLiveWpm").addClass("size2");
-  } else if (fontSize == 3) {
+  } else if (fontSize == "3") {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
-  } else if (fontSize == 4) {
+  } else if (fontSize == "4") {
     $("#words").addClass("size4");
     $("#caret, #paceCaret").addClass("size4");
     $("#miniTimerAndLiveWpm").addClass("size4");
@@ -1168,7 +1597,10 @@ export function setFontSize(fontSize, nosave) {
   ConfigEvent.dispatch("fontSize", config.fontSize);
 }
 
-export function setCustomBackground(value, nosave) {
+export function setCustomBackground(value: string, nosave?: boolean): void {
+  if (!isConfigValueValid(value, ["string"]))
+    return invalid("custom background", value);
+
   if (value == null || value == undefined) {
     value = "";
   }
@@ -1188,36 +1620,55 @@ export function setCustomBackground(value, nosave) {
   }
 }
 
-export function setCustomLayoutfluid(value, nosave) {
+export async function setCustomLayoutfluid(
+  value: MonkeyTypes.CustomLayoutFluidSpaces,
+  nosave?: boolean
+): Promise<void> {
+  if (!isConfigValueValid(value, ["layoutfluid"]))
+    return invalid("custom layoutfluid", value);
+
   if (value == null || value == undefined) {
     value = "qwerty#dvorak#colemak";
   }
-  value = value.replace(/ /g, "#");
+  let customLayoutfluid = value.replace(
+    / /g,
+    "#"
+  ) as MonkeyTypes.CustomLayoutFluid;
 
   //validate the layouts
-  let allGood = true;
-  let list = Object.keys(LayoutList);
-  value.split("#").forEach((customLayout) => {
-    if (!list.includes(customLayout)) allGood = false;
-  });
+
+  const allGood = (
+    await Promise.all(
+      customLayoutfluid
+        .split("#")
+        .map((customLayout) => Misc.getLayout(customLayout))
+    )
+  ).every((customLayout) => !!customLayout);
+
   if (!allGood) {
     Notifications.add(
       "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",
       0,
       4
     );
-    value = "qwerty#dvorak#colemak";
+    customLayoutfluid = "qwerty#dvorak#colemak";
     nosave = false;
   }
-  config.customLayoutfluid = value;
+  config.customLayoutfluid = customLayoutfluid;
   $(".pageSettings .section.customLayoutfluid input").val(
-    value.replace(/#/g, " ")
+    customLayoutfluid.replace(/#/g, " ")
   );
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutFluid);
+  ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 }
 
-export function setCustomBackgroundSize(value, nosave) {
+export function setCustomBackgroundSize(
+  value: MonkeyTypes.CustomBackgroundSize,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(value, [["max", "cover", "contain"]]))
+    return invalid("custom background size", value);
+
   if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
   }
@@ -1226,20 +1677,35 @@ export function setCustomBackgroundSize(value, nosave) {
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
 }
 
-export function setCustomBackgroundFilter(array, nosave) {
+export function setCustomBackgroundFilter(
+  array: MonkeyTypes.CustomBackgroundFilter,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(array, ["numberArray"]))
+    return invalid("custom background filter", array);
+
   config.customBackgroundFilter = array;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
 }
 
-export function setMonkeyPowerLevel(level, nosave) {
+export function setMonkeyPowerLevel(
+  level: MonkeyTypes.MonkeyPowerLevel,
+  nosave?: boolean
+): void {
+  if (!isConfigValueValid(level, [["off", "1", "2", "3", "4"]]))
+    return invalid("monkey power level", level);
+
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
   config.monkeyPowerLevel = level;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
 }
 
-export function setBurstHeatmap(value, nosave) {
+export function setBurstHeatmap(value: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(value, ["boolean"]))
+    return invalid("burst heatmap", value);
+
   if (!value) {
     value = false;
   }
@@ -1250,18 +1716,25 @@ export function setBurstHeatmap(value, nosave) {
   ConfigEvent.dispatch("burstHeatmap", config.burstHeatmap);
 }
 
-export function apply(configObj) {
-  if (configObj == null || configObj == undefined) {
+export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
+  if (configObj == null || configObj == undefined || configObj === "null") {
     Notifications.add("Could not apply config", -1, 3);
     return;
   }
-  Object.keys(defaultConfig).forEach((configKey) => {
-    if (configObj[configKey] === undefined) {
-      configObj[configKey] = defaultConfig[configKey];
+  (Object.keys(defaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
+    (configKey) => {
+      if (configObj[configKey] === undefined) {
+        const newValue = defaultConfig[configKey];
+
+        (configObj[configKey] as typeof newValue) = newValue;
+      }
     }
-  });
-  if (configObj && configObj != null && configObj != "null") {
+  );
+  if (configObj && configObj !== null) {
     setCustomThemeColors(configObj.customThemeColors, true);
+    setThemeLight(configObj.themeLight, true);
+    setThemeDark(configObj.themeDark, true);
+    setAutoSwitchTheme(configObj.autoSwitchTheme, true);
     setThemes(configObj.theme, configObj.customTheme, true);
     // setTheme(configObj.theme, true);
     // setCustomTheme(configObj.customTheme, true, true);
@@ -1438,7 +1911,7 @@ export function apply(configObj) {
         $("#ad_about1").remove();
         $("#ad_about2").remove();
       }
-    } catch (e) {
+    } catch (e: any) {
       Notifications.add("Error initialising ads: " + e.message);
       console.log("error initialising ads " + e.message);
       $(".footerads").remove();
@@ -1460,20 +1933,25 @@ export function apply(configObj) {
   }
 }
 
-export function reset() {
+export function reset(): void {
   apply(defaultConfig);
   saveToLocalStorage();
 }
 
-export function loadFromLocalStorage() {
+export function loadFromLocalStorage(): void {
   console.log("loading localStorage config");
   // let newConfig = $.cookie("config");
-  let newConfig = window.localStorage.getItem("config");
-  if (newConfig !== undefined && newConfig !== null && newConfig !== "") {
+  const newConfigString = window.localStorage.getItem("config");
+  let newConfig: MonkeyTypes.Config;
+  if (
+    newConfigString !== undefined &&
+    newConfigString !== null &&
+    newConfigString !== ""
+  ) {
     try {
-      newConfig = JSON.parse(newConfig);
+      newConfig = JSON.parse(newConfigString);
     } catch (e) {
-      newConfig = {};
+      newConfig = {} as MonkeyTypes.Config;
     }
     apply(newConfig);
     console.log("applying localStorage config");
@@ -1485,23 +1963,23 @@ export function loadFromLocalStorage() {
   loadDone();
 }
 
-export function getConfigChanges() {
-  let configChanges = {};
-  Object.keys(config)
+export function getConfigChanges(): MonkeyTypes.PresetConfig {
+  const configChanges = {} as MonkeyTypes.PresetConfig;
+  (Object.keys(config) as (keyof MonkeyTypes.Config)[])
     .filter((key) => {
       return config[key] != defaultConfig[key];
     })
     .forEach((key) => {
-      configChanges[key] = config[key];
+      (configChanges[key] as typeof config[typeof key]) = config[key];
     });
   return configChanges;
 }
 
-export function setConfig(newConfig) {
+export function setConfig(newConfig: MonkeyTypes.Config): void {
   config = newConfig;
 }
 
-export let loadPromise = new Promise((v) => {
+export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
 

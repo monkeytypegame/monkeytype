@@ -169,7 +169,7 @@ export function update(): void {
 
   let tagsString = "";
   try {
-    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {
         tagsString += tag.name + ", ";
       }

@@ -2,7 +2,7 @@ import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../misc";
 
-export function update() {
+export function update(): void {
   $(".pageAccount .timePbTable tbody").html(`
   <tr>
     <td>15</td>
@@ -75,10 +75,11 @@ export function update() {
   }
 
   const pb = DB.getSnapshot().personalBests;
+  if (pb === undefined) return;
   let pbData;
   let text;
   let dateText = `-<br><span class="sub">-</span>`;
-  let multiplier = Config.alwaysShowCPM ? 5 : 1;
+  const multiplier = Config.alwaysShowCPM ? 5 : 1;
 
   text = "";
   try {

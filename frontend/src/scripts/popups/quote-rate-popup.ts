@@ -15,12 +15,6 @@ type QuoteStats = {
   language: string;
 };
 
-type QuoteRatings = {
-  [language: string]: {
-    [id: string]: number;
-  };
-};
-
 let quoteStats: QuoteStats | null | Record<string, never> = null;
 let currentQuote: MonkeyTypes.Quote | null = null;
 
@@ -111,9 +105,13 @@ export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
 
     currentQuote = quote;
     rating = 0;
-    const alreadyRated = DB.getSnapshot().quoteRatings?.[
-      currentQuote.language
-    ]?.[currentQuote.id];
+
+    const snapshot = DB.getSnapshot();
+
+    if (snapshot.quoteRatings === undefined) return;
+
+    const alreadyRated =
+      snapshot.quoteRatings[currentQuote.language][currentQuote.id];
     if (alreadyRated) {
       rating = alreadyRated;
     }
@@ -174,7 +172,10 @@ async function submit(): Promise<void> {
   if (response.status !== 200) {
     Notifications.add(response.data.message);
   } else {
-    let quoteRatings: QuoteRatings = DB.getSnapshot().quoteRatings;
+    let quoteRatings = DB.getSnapshot().quoteRatings;
+
+    if (quoteRatings === undefined) return;
+
     if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
       const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
       const diff = rating - oldRating;
@@ -243,5 +244,5 @@ $("#quoteRatePopup .submitButton").click(() => {
 
 $(".pageTest #rateQuoteButton").click(async () => {
   // TODO remove this when done with TestWords
-  show((TestWords.randomQuote as unknown) as MonkeyTypes.Quote);
+  show(TestWords.randomQuote as unknown as MonkeyTypes.Quote);
 });

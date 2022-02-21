@@ -6,21 +6,24 @@ export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function hexToHSL(
-  hex: string
-): { hue: number; sat: number; lgt: number; string: string } {
+function hexToHSL(hex: string): {
+  hue: number;
+  sat: number;
+  lgt: number;
+  string: string;
+} {
   // Convert hex to RGB first
   let r: number;
   let g: number;
   let b: number;
   if (hex.length == 4) {
-    r = (("0x" + hex[1] + hex[1]) as unknown) as number;
-    g = (("0x" + hex[2] + hex[2]) as unknown) as number;
-    b = (("0x" + hex[3] + hex[3]) as unknown) as number;
+    r = ("0x" + hex[1] + hex[1]) as unknown as number;
+    g = ("0x" + hex[2] + hex[2]) as unknown as number;
+    b = ("0x" + hex[3] + hex[3]) as unknown as number;
   } else if (hex.length == 7) {
-    r = (("0x" + hex[1] + hex[2]) as unknown) as number;
-    g = (("0x" + hex[3] + hex[4]) as unknown) as number;
-    b = (("0x" + hex[5] + hex[6]) as unknown) as number;
+    r = ("0x" + hex[1] + hex[2]) as unknown as number;
+    g = ("0x" + hex[3] + hex[4]) as unknown as number;
+    b = ("0x" + hex[5] + hex[6]) as unknown as number;
   } else {
     r = 0x00;
     g = 0x00;
@@ -180,6 +183,27 @@ export async function getQuotes(language: string): Promise<QuoteCollection> {
   }
 }
 
+let layoutsList: MonkeyTypes.Layouts = {};
+export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+  if (Object.keys(layoutsList).length === 0) {
+    return $.getJSON("layouts/_list.json", function (data) {
+      layoutsList = data;
+      return layoutsList;
+    });
+  } else {
+    return layoutsList;
+  }
+}
+
+export async function getLayout(
+  layoutName: keyof MonkeyTypes.Layouts & string
+): Promise<MonkeyTypes.Layout> {
+  if (Object.keys(layoutsList).length === 0) {
+    await getLayoutsList();
+  }
+  return layoutsList[layoutName];
+}
+
 type Font = { name: string; display?: string };
 
 let fontsList: Font[] = [];
@@ -298,18 +322,8 @@ export async function findCurrentGroup(
   return retgroup;
 }
 
-type Challenge = {
-  name: string;
-  display: string;
-  autoRole: boolean;
-  type: string;
-  parameters: string | number[];
-  message: string;
-  requirements: object;
-};
-
-let challengeList: Challenge[] = [];
-export async function getChallengeList(): Promise<Challenge[]> {
+let challengeList: MonkeyTypes.Challenge[] = [];
+export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   if (challengeList.length === 0) {
     return $.getJSON("challenges/_list.json", function (data) {
       challengeList = data;
@@ -323,8 +337,7 @@ export async function getChallengeList(): Promise<Challenge[]> {
 export function smooth(
   arr: number[],
   windowSize: number,
-  getter = (value: number): number => value,
-  setter: (index: number, value: number) => number
+  getter = (value: number): number => value
 ): number[] {
   const get = getter;
   const result = [];
@@ -341,7 +354,7 @@ export function smooth(
       count += 1;
     }
 
-    result[i] = setter ? setter(arr[i], sum / count) : sum / count;
+    result[i] = sum / count;
   }
 
   return result;
@@ -380,7 +393,9 @@ export function median(arr: number[]): number {
   }
 }
 
-export async function getReleasesFromGitHub(): Promise<object> {
+export async function getReleasesFromGitHub(): Promise<
+  MonkeyTypes.GithubRelease[]
+> {
   return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
@@ -425,8 +440,11 @@ export function getLastChar(word: string): string {
   }
 }
 
-export function capitalizeFirstLetter(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+export function capitalizeFirstLetterOfEachWord(str: string): string {
+  return str
+    .split(/ +/)
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ");
 }
 
 export function isASCIILetter(c: string): boolean {
@@ -921,4 +939,79 @@ export function getMode2(
     mode2 = randomQuote.id.toString();
   }
   return mode2;
+}
+
+export async function downloadResultsCSV(
+  array: MonkeyTypes.Result<MonkeyTypes.Mode>[]
+): Promise<void> {
+  Loader.show();
+  const csvString = [
+    [
+      "_id",
+      "isPb",
+      "wpm",
+      "acc",
+      "rawWpm",
+      "consistency",
+      "charStats",
+      "mode",
+      "mode2",
+      "quoteLength",
+      "restartCount",
+      "testDuration",
+      "afkDuration",
+      "incompleteTestSeconds",
+      "punctuation",
+      "numbers",
+      "language",
+      "funbox",
+      "difficulty",
+      "lazyMode",
+      "blindMode",
+      "bailedOut",
+      "tags",
+      "timestamp",
+    ],
+    ...array.map((item: MonkeyTypes.Result<MonkeyTypes.Mode>) => [
+      item._id,
+      item.isPb,
+      item.wpm,
+      item.acc,
+      item.rawWpm,
+      item.consistency,
+      item.charStats.join(","),
+      item.mode,
+      item.mode2,
+      item.quoteLength,
+      item.restartCount,
+      item.testDuration,
+      item.afkDuration,
+      item.incompleteTestSeconds,
+      item.punctuation,
+      item.numbers,
+      item.language,
+      item.funbox,
+      item.difficulty,
+      item.lazyMode,
+      item.blindMode,
+      item.bailedOut,
+      item.tags.join(","),
+      item.timestamp,
+    ]),
+  ]
+    .map((e) => e.join("|"))
+    .join("\n");
+
+  const blob = new Blob([csvString], { type: "text/csv" });
+
+  const href = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", href);
+  link.setAttribute("download", "results.csv");
+  document.body.appendChild(link); // Required for FF
+
+  link.click();
+  link.remove();
+  Loader.hide();
 }

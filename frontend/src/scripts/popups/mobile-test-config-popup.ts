@@ -95,23 +95,27 @@ $("#top .mobileConfig").click(() => {
 
 el.find(".wordsGroup .button").on("click", (e) => {
   const wrd = $(e.currentTarget).attr("words");
+
   if (wrd == "custom") {
     hidePopup();
     CustomWordAmountPopup.show();
-  } else {
-    UpdateConfig.setWordCount(wrd);
+  } else if (wrd !== undefined) {
+    const wrdNum = parseInt(wrd);
+    UpdateConfig.setWordCount(wrdNum);
     ManualRestart.set();
     TestLogic.restart();
   }
 });
 
 el.find(".timeGroup .button").on("click", (e) => {
-  const mode = $(e.currentTarget).attr("time");
-  if (mode == "custom") {
+  const time = $(e.currentTarget).attr("time");
+
+  if (time == "custom") {
     hidePopup();
     CustomTestDurationPopup.show();
-  } else {
-    UpdateConfig.setTimeConfig(mode);
+  } else if (time !== undefined) {
+    const timeNum = parseInt(time);
+    UpdateConfig.setTimeConfig(timeNum);
     ManualRestart.set();
     TestLogic.restart();
   }
@@ -128,7 +132,11 @@ el.find(".quoteGroup .button").on("click", (e) => {
     if (len == -1) {
       len = [0, 1, 2, 3];
     }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
+    UpdateConfig.setQuoteLength(
+      len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLengthArray,
+      false,
+      e.shiftKey
+    );
     ManualRestart.set();
     TestLogic.restart();
   }
@@ -154,7 +162,7 @@ el.find(".numbers").on("click", () => {
 el.find(".modeGroup .button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = $(e.currentTarget).attr("mode");
-  UpdateConfig.setMode(mode);
+  UpdateConfig.setMode(mode as MonkeyTypes.Mode);
   ManualRestart.set();
   TestLogic.restart();
 });

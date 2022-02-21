@@ -12,6 +12,8 @@ const webpackDevConfig = require("./webpack.config.js");
 const webpackProdConfig = require("./webpack-production.config.js");
 const ts = require("gulp-typescript");
 
+const JSONValidation = require("./json-validation");
+
 const eslintConfig = "../.eslintrc.json";
 const tsProject = ts.createProject("tsconfig.json");
 
@@ -31,6 +33,10 @@ task("lint-json", function () {
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
+});
+
+task("validate-json-schema", function () {
+  return JSONValidation.validateAll();
 });
 
 task("copy-src-contents", function () {
@@ -123,6 +129,7 @@ task(
   series(
     "lint",
     "lint-json",
+    "validate-json-schema",
     "webpack-production",
     "static",
     "sass",
@@ -131,13 +138,43 @@ task(
 );
 
 task("watch", function () {
-  watch("./src/styles/**/*.scss", series("sass"));
+  watch("./src/styles/*.scss", series("sass"));
   watch(
-    ["./src/scripts/**/*.js", "./src/scripts/**/*.ts"],
+    [
+      "./src/scripts/**/*.js",
+      "./src/scripts/**/*.ts",
+      "./src/scripts/*.js",
+      "./src/scripts/*.ts",
+    ],
     series("lint", "webpack")
   );
-  watch("./static/**/*.*", series("lint-json", "static"));
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
 });
 
 task("build", series("clean", "compile"));
+
 task("build-production", series("clean", "compile-production"));
+
+//PR CHECK
+
+task("validate-quote-json-schema", function () {
+  return JSONValidation.validateQuotes();
+});
+
+task("validate-language-json-schema", function () {
+  return JSONValidation.validateLanguages();
+});
+
+task("validate-other-json-schema", function () {
+  return JSONValidation.validateOthers();
+});
+
+task("pr-check-lint-json", series("lint-json"));
+task("pr-check-quote-json", series("validate-quote-json-schema"));
+task("pr-check-language-json", series("validate-language-json-schema"));
+task("pr-check-other-json", series("validate-other-json-schema"));
+
+task("pr-check-lint", series("lint"));
+task("pr-check-scss", series("sass"));
+
+task("pr-check-ts", series("webpack-production"));

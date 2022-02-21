@@ -1,12 +1,12 @@
-type SubscribeFunction = (key: string, value?: string, value2?: string) => void;
+type SubscribeFunction<V, V2> = (key: string, value?: V, value2?: V2) => void;
 
-const subscribers: SubscribeFunction[] = [];
+const subscribers: SubscribeFunction<any, any>[] = [];
 
-export function subscribe(fn: SubscribeFunction): void {
+export function subscribe(fn: SubscribeFunction<any, any>): void {
   subscribers.push(fn);
 }
 
-export function dispatch(key: string, value: string, value2: string): void {
+export function dispatch<V, V2>(key: string, value?: V, value2?: V2): void {
   subscribers.forEach((fn) => {
     try {
       fn(key, value, value2);

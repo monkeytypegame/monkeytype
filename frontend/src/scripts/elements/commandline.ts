@@ -263,9 +263,13 @@ function addChildCommands(
     if ((commandItem as any).beforeSubgroup)
       (commandItem as any).beforeSubgroup();
     try {
-      ((commandItem as MonkeyTypes.Command)
-        ?.subgroup as MonkeyTypes.CommandsGroup).list?.forEach((cmd) => {
-        (commandItem as MonkeyTypes.CommandsGroup).configKey = (commandItem as any).subgroup.configKey;
+      (
+        (commandItem as MonkeyTypes.Command)
+          ?.subgroup as MonkeyTypes.CommandsGroup
+      ).list?.forEach((cmd) => {
+        (commandItem as MonkeyTypes.CommandsGroup).configKey = (
+          commandItem as any
+        ).subgroup.configKey;
         addChildCommands(
           unifiedCommands,
           cmd,
@@ -316,7 +320,7 @@ function useSingleListCommandLine(sshow = true): void {
   // } else if (Config.singleListCommandLine == "on") {
   CommandlineLists.setCurrent([allCommands]);
   // }
-  if (Config.singleListCommandLine != "off")
+  if (Config.singleListCommandLine != "manual")
     $("#commandLine").addClass("allCommands");
   if (sshow) show();
 }
@@ -644,7 +648,7 @@ $(document).on("click", "#commandLineMobileButton", () => {
   show();
 });
 
-$(document).on("click", ".keymap .r5 #KeySpace", () => {
+$(document).on("click", "#keymap .r5 .key-space", () => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   show();
 });

@@ -212,7 +212,7 @@ $(document).on(
 
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
-  if (!$(e.target).hasClass("favButton")) {
+  if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
     updateActiveButton();
   }

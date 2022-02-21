@@ -7,12 +7,10 @@ export function update(burst: number): void {
   if (Config.blindMode) {
     number = 0;
   }
-  (document.querySelector(
-    "#miniTimerAndLiveWpm .burst"
-  ) as Element).innerHTML = number.toString();
-  (document.querySelector(
-    "#liveBurst"
-  ) as Element).innerHTML = number.toString();
+  (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
+    number.toString();
+  (document.querySelector("#liveBurst") as Element).innerHTML =
+    number.toString();
 }
 
 export function show(): void {

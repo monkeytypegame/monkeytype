@@ -7,17 +7,17 @@ declare namespace MonkeyTypes {
 
   type Mode2<M extends Mode> = keyof PersonalBests[M];
 
+  type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
+
   type LanguageGroup = { name: string; languages: string[] };
 
-  //   type Mode2 = 10 | 15 | 25 | 30 | 50 | 60 | 100 | 120 | 200 | "zen" | "custom";
+  type WordsModes = number;
 
-  type NoncustomWordsModes = 10 | 25 | 50 | 100 | 200;
+  type TimeModes = number;
 
-  type WordsModes = NoncustomWordsModes | CustomModes;
+  type DefaultWordsModes = 10 | 25 | 50 | 100;
 
-  type NoncustomTimeModes = 15 | 30 | 60 | 120;
-
-  type TimeModes = NoncustomTimeModes | CustomModes;
+  type DefaultTimeModes = 15 | 30 | 60 | 120;
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
@@ -25,7 +25,7 @@ declare namespace MonkeyTypes {
 
   type QuoteLengthArray = QuoteLength[];
 
-  type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
+  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
   type CaretStyle =
     | "off"
@@ -40,7 +40,7 @@ declare namespace MonkeyTypes {
 
   type TimerStyle = "bar" | "text" | "mini";
 
-  type RandomTheme = "off" | "on" | "favorite" | "light" | "dark";
+  type RandomTheme = "off" | "on" | "fav" | "light" | "dark";
 
   type TimerColor = "black" | "sub" | "text" | "main";
 
@@ -61,15 +61,17 @@ declare namespace MonkeyTypes {
 
   type SingleListCommandLine = "manual" | "on";
 
-  type PlaySoundOnClick =
-    | "off"
-    | "click"
-    | "beep"
-    | "pop"
-    | "nk_creams"
-    | "typewriter"
-    | "osu"
-    | "hitmarker";
+  /*
+    off = off
+    1 = click
+    2 = beep
+    3 = pop
+    4 = nk creams
+    5 = typewriter
+    6 = osu
+    7 = hitmarker
+  */
+  type PlaySoundOnClick = "off" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
@@ -83,7 +85,7 @@ declare namespace MonkeyTypes {
 
   type HighlightMode = "off" | "letter" | "word";
 
-  type EnableAds = "off" | "on" | "sellout";
+  type EnableAds = "off" | "on" | "max";
 
   type MinimumAccuracy = "off" | "custom";
 
@@ -95,11 +97,26 @@ declare namespace MonkeyTypes {
 
   type CustomBackgroundFilter = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
 
-  type MonkeyPowerLevel = "off" | "mellow" | "high" | "ultra" | "over_9000";
+  /*
+    off = off
+    1 = mellow
+    2 = high
+    3 = ultra
+    4 = over 9000
+  */
+  type MonkeyPowerLevel = "off" | "1" | "2" | "3" | "4";
 
   type MinimumBurst = "off" | "fixed" | "flex";
 
   type FunboxObjectType = "script" | "style";
+
+  type IndicateTypos = "off" | "below" | "replace";
+
+  type CustomLayoutFluid = `${string}#${string}#${string}`;
+
+  type CustomLayoutFluidSpaces =
+    | CustomLayoutFluid
+    | `${string} ${string} ${string}`;
 
   interface FunboxObject {
     name: string;
@@ -116,10 +133,14 @@ declare namespace MonkeyTypes {
     delimiter: string;
   }
 
+  interface PresetConfig extends MonkeyTypes.Config {
+    tags: string[];
+  }
+
   interface Preset {
     _id: string;
     name: string;
-    config: Config;
+    config: PresetConfig;
   }
 
   interface PersonalBest {
@@ -137,22 +158,22 @@ declare namespace MonkeyTypes {
   interface PersonalBests {
     time: {
       [key: number]: PersonalBest[];
-      custom: PersonalBest[];
     };
     words: {
       [key: number]: PersonalBest[];
-      custom: PersonalBest[];
     };
     quote: { [quote: string]: PersonalBest[] };
     custom: { custom: PersonalBest[] };
-    zen: PersonalBest[];
+    zen: {
+      zen: PersonalBest[];
+    };
   }
 
   interface Tag {
     _id: string;
     name: string;
-    personalBests: PersonalBests | Record<string, never>;
-    active: boolean;
+    personalBests?: PersonalBests;
+    active?: boolean;
   }
 
   interface Stats {
@@ -172,7 +193,7 @@ declare namespace MonkeyTypes {
     sd: number;
   }
 
-  interface Result {
+  interface Result<M extends Mode> {
     _id: string;
     wpm: number;
     rawWpm: number;
@@ -180,8 +201,8 @@ declare namespace MonkeyTypes {
     correctChars?: number; // --------------
     incorrectChars?: number; // legacy results
     acc: number;
-    mode: Mode;
-    mode2: number | "custom" | "zen";
+    mode: M;
+    mode2: Mode2<M>;
     quoteLength: number;
     timestamp: number;
     restartCount: number;
@@ -208,6 +229,9 @@ declare namespace MonkeyTypes {
 
   interface Config {
     theme: string;
+    themeLight: string;
+    themeDark: string;
+    autoSwitchTheme: boolean;
     customTheme: boolean;
     customThemeColors: string[];
     favThemes: string[];
@@ -235,7 +259,7 @@ declare namespace MonkeyTypes {
     layout: string;
     funbox: string;
     confidenceMode: ConfidenceMode;
-    indicateTypos: boolean;
+    indicateTypos: IndicateTypos;
     timerStyle: TimerStyle;
     colorfulMode: boolean;
     randomTheme: RandomTheme;
@@ -282,7 +306,7 @@ declare namespace MonkeyTypes {
     customBackground: string;
     customBackgroundSize: CustomBackgroundSize;
     customBackgroundFilter: CustomBackgroundFilter;
-    customLayoutfluid: string;
+    customLayoutfluid: CustomLayoutFluid;
     monkeyPowerLevel: MonkeyPowerLevel;
     minBurst: MinimumBurst;
     minBurstCustomSpeed: number;
@@ -293,6 +317,14 @@ declare namespace MonkeyTypes {
 
   interface DefaultConfig extends Config {
     wordCount: WordsModes;
+  }
+
+  interface LeaderboardMemory {
+    time: {
+      [key in 15 | 60]: {
+        [language: string]: number;
+      };
+    };
   }
 
   interface Leaderboards {
@@ -319,105 +351,91 @@ declare namespace MonkeyTypes {
     hidden?: boolean;
   }
 
+  interface QuoteRatings {
+    [language: string]: {
+      [id: string | number]: any; // TODO find this
+    };
+  }
+
   interface Snapshot {
     banned?: boolean;
     emailVerified?: boolean;
-    quoteRatings?: object; // TODO find structure of quoteRatings
-    results?: Result[];
+    quoteRatings?: QuoteRatings;
+    results?: Result<Mode>[];
     verified?: boolean;
     personalBests?: PersonalBests;
     name?: string;
     presets?: Preset[];
     tags?: Tag[];
     favouriteThemes?: string[];
-    lbMemory?: Leaderboards;
+    lbMemory?: LeaderboardMemory;
     globalStats?: Stats;
     quoteMod?: boolean;
     discordId?: string;
     config?: Config;
   }
 
+  type PartialRecord<K extends keyof any, T> = {
+    [P in K]?: T;
+  };
+
   interface ResultFilters {
     difficulty: {
-      normal?: boolean;
-      expert?: boolean;
-      master?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["difficulty"])[];
+      normal: boolean;
+      expert: boolean;
+      master: boolean;
     };
     mode: {
-      words?: boolean;
-      time?: boolean;
-      quote?: boolean;
-      zen?: boolean;
-      custom?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["mode"])[];
+      words: boolean;
+      time: boolean;
+      quote: boolean;
+      zen: boolean;
+      custom: boolean;
     };
     words: {
-      10?: boolean;
-      25?: boolean;
-      50?: boolean;
-      100?: boolean;
-      200?: boolean;
-      custom?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["words"])[];
+      10: boolean;
+      25: boolean;
+      50: boolean;
+      100: boolean;
+      custom: boolean;
     };
     time: {
-      15?: boolean;
-      30?: boolean;
-      60?: boolean;
-      120?: boolean;
-      custom?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["time"])[];
+      15: boolean;
+      30: boolean;
+      60: boolean;
+      120: boolean;
+      custom: boolean;
     };
     quoteLength: {
-      short?: boolean;
-      medium?: boolean;
-      long?: boolean;
-      thicc?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["quoteLength"])[];
+      short: boolean;
+      medium: boolean;
+      long: boolean;
+      thicc: boolean;
     };
     punctuation: {
-      on?: boolean;
-      off?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["punctuation"])[];
+      on: boolean;
+      off: boolean;
     };
     numbers: {
-      on?: boolean;
-      off?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["numbers"])[];
+      on: boolean;
+      off: boolean;
     };
     date: {
-      last_day?: boolean;
-      last_week?: boolean;
-      last_month?: boolean;
-      last_3months?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["date"])[];
-      [date: string]: boolean | any[] | undefined;
+      last_day: boolean;
+      last_week: boolean;
+      last_month: boolean;
+      last_3months: boolean;
+      all: boolean;
     };
     tags: {
-      none?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["tags"])[];
-      [tag: string]: boolean | any[] | undefined;
+      [tagId: string]: boolean;
     };
     language: {
-      all?: boolean;
-      array?: (keyof ResultFilters["language"])[];
-      [language: string]: boolean | any[] | undefined;
+      [language: string]: boolean;
     };
     funbox: {
       none?: boolean;
-      all?: boolean;
-      array?: (keyof ResultFilters["funbox"])[];
-      [funbox: string]: boolean | any[] | undefined;
+      [funbox: string]: boolean;
     };
   }
 
@@ -534,7 +552,38 @@ declare namespace MonkeyTypes {
     colorfulErrorExtra: string;
   }
 
-  //  type Page = "Loading" | "Account" | "Settings" | "About" | "Test";
+  type Page = "loading" | "test" | "about" | "settings" | "account" | "login";
 
   //  type ActivePage = `page${Page}` | undefined;
+
+  interface Layout {
+    keymapShowTopRow: boolean;
+    type: "iso" | "ansi" | "ortho";
+    keys: Keys;
+  }
+
+  interface Layouts {
+    [layout: string]: Layout;
+  }
+  interface Keys {
+    [row1: string]: string[];
+    [row2: string]: string[];
+    [row3: string]: string[];
+    [row4: string]: string[];
+    [row5: string]: string[];
+  }
+
+  interface Challenge {
+    name: string;
+    display: string;
+    autoRole: boolean;
+    type: string;
+    parameters: (string | number | boolean)[];
+    message: string;
+    requirements: {
+      [requirement: string]: {
+        [parameter: string]: string | number | boolean;
+      };
+    };
+  }
 }

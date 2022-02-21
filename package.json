@@ -9,9 +9,18 @@
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
-    "lint": "./node_modules/.bin/eslint './backend/**/*.js' './frontend/src/scripts/**/*.js'",
+    "install:windows": ".\\bin\\install.cmd",
+    "lint": "run-script-os",
+    "lint:windows": ".\\node_modules\\.bin\\eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
+    "lint:default": "./node_modules/.bin/eslint './backend/**/*.{ts,js}' './frontend/src/scripts/**/*.{ts,js}'",
     "build:live": "cd ./frontend && npm run build:live",
-    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'"
+    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
+    "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
+    "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
+    "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
+    "pr-check-scss": "cd frontend && npx gulp pr-check-scss",
+    "pr-check-ts": "cd frontend && npx gulp pr-check-ts"
   },
   "engines": {
     "npm": "8.1.2"
@@ -30,8 +39,10 @@
     "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "4.3.0",
-    "prettier": "2.1.2",
-    "pretty-quick": "3.1.0"
+    "jsonschema": "1.4.0",
+    "prettier": "2.5.1",
+    "pretty-quick": "3.1.0",
+    "run-script-os": "1.1.6"
   },
   "husky": {
     "hooks": {

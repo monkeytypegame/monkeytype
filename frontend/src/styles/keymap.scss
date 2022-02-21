@@ -1,4 +1,4 @@
-.keymap {
+#keymap {
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
   justify-content: center;
@@ -47,19 +47,16 @@
       }
     }
 
-    &#KeySpace {
+    &.key-space {
+      width: 100%;
       &:hover {
         cursor: pointer;
         color: var(--main-color);
       }
     }
 
-    &#KeySpace,
-    &#KeySpace2 {
+    &.key-split-space {
       width: 100%;
-    }
-
-    &#KeySpace2 {
       opacity: 0;
     }
 
@@ -116,15 +113,15 @@
     .r1,
     .r2,
     .r3 {
-      grid-template-columns: 1.125fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r4 {
-      grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r5 {
-      grid-template-columns: 3.25fr 5fr 2fr 1fr;
+      grid-template-columns: 3fr 4fr 3fr;
     }
 
     .r1,
@@ -169,7 +166,7 @@
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
     }
-    #KeySpace2 {
+    .key-split-space {
       opacity: 1;
     }
   }
@@ -190,17 +187,17 @@
     .r1,
     .r2,
     .r3 {
-      grid-template-columns: 1.125fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r4 {
-      grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r5 {
-      grid-template-columns: 3.225fr 3fr 1fr 3fr 2fr;
+      grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
     }
-    #KeySpace2 {
+    .key-split-space {
       opacity: 1;
     }
 
@@ -432,7 +429,7 @@
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
     }
-    #KeySpace2 {
+    .key-split-space {
       opacity: 1;
     }
 
@@ -517,12 +514,12 @@
     // div#KeyH.keymap-key {
     //   margin-top: 19px;
     // }
-    div#KeySpace.keymap-key {
+    div.key-space {
       transform: rotate(10deg);
       margin-left: -5%;
       margin-top: 21%;
     }
-    div#KeySpace2.keymap-key {
+    div.key-split-space {
       transform: rotate(-10deg);
       margin-left: -33%;
       margin-top: 20%;
@@ -531,7 +528,7 @@
       visibility: hidden;
     }
 
-    div.extraKey {
+    div.extra-key {
       margin-top: 25px;
       transform: rotate(-10deg) !important;
       margin-left: -7px !important;
