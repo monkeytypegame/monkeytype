@@ -454,7 +454,7 @@ export function restart(
         TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
         await init();
-        PaceCaret.init(nosave);
+        await PaceCaret.init(nosave);
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
@@ -476,7 +476,7 @@ export function restart(
           );
         }
         Funbox.toggleScript(TestWords.words.getCurrent());
-        PaceCaret.init();
+        await PaceCaret.init();
       }
       failReason = "";
       if (Config.mode === "quote") {

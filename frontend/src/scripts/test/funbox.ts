@@ -215,7 +215,7 @@ export async function activate(funbox: string): Promise<boolean | undefined> {
       UpdateConfig.setHighlightMode("letter", true);
     }
   }
-  ModesNotice.update();
+  // ModesNotice.update();
   return true;
 }
 

@@ -578,4 +578,18 @@ declare namespace MonkeyTypes {
     wpm: number;
     raw: number;
   }
+
+  interface Challenge {
+    name: string;
+    display: string;
+    autoRole: boolean;
+    type: string;
+    parameters: (string | number | boolean)[];
+    message: string;
+    requirements: {
+      [requirement: string]: {
+        [parameter: string]: string | number | boolean;
+      };
+    };
+  }
 }

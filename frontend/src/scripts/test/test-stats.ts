@@ -16,7 +16,7 @@ type CharCount = {
 type Keypress = {
   count: number;
   errors: number;
-  words: string[];
+  words: number[];
   afk: boolean;
 };
 
@@ -41,7 +41,7 @@ type DebugStats = {
   currentKeypress: {
     count: number;
     errors: number;
-    words: string[];
+    words: number[];
     afk: boolean;
   };
   lastKeypress: number;
