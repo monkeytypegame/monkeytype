@@ -313,6 +313,7 @@ declare namespace MonkeyTypes {
     burstHeatmap: boolean;
     britishEnglish: boolean;
     lazyMode: boolean;
+    showAvg: boolean;
   }
 
   interface DefaultConfig extends Config {

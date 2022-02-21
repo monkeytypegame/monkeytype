@@ -118,6 +118,7 @@ const defaultConfig: MonkeyTypes.Config = {
   burstHeatmap: false,
   britishEnglish: false,
   lazyMode: false,
+  showAvg: false,
 };
 
 function isConfigKeyValid(name: string): boolean {
@@ -914,6 +915,18 @@ export function setShowLiveBurst(live: boolean, nosave?: boolean): void {
   config.showLiveBurst = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
+}
+
+export function setShowAvg(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
+    return invalid("show average", live);
+
+  if (live == null || live == undefined) {
+    live = false;
+  }
+  config.showAvg = live;
+  if (!nosave) saveToLocalStorage();
+  ConfigEvent.dispatch("showAvg", config.showAvg);
 }
 
 export function setHighlightMode(
@@ -1816,6 +1829,7 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
     setBurstHeatmap(configObj.burstHeatmap, true);
     setBritishEnglish(configObj.britishEnglish, true);
     setLazyMode(configObj.lazyMode, true);
+    setShowAvg(configObj.showAvg, true);
 
     try {
       setEnableAds(configObj.enableAds, true);
