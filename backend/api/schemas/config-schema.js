@@ -13,6 +13,9 @@ const CARET_STYLES = [
 
 const CONFIG_SCHEMA = joi.object({
   theme: joi.string(),
+  themeLight: joi.string(),
+  themeDark: joi.string(),
+  autoSwitchTheme: joi.boolean(),
   customTheme: joi.boolean(),
   customThemeColors: joi
     .array()
@@ -31,7 +34,7 @@ const CONFIG_SCHEMA = joi.object({
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
   quoteLength: joi.array().items(joi.number()),
   language: joi.string(),
-  fontSize: joi.number().valid(1, 125, 15, 2, 3, 4),
+  fontSize: joi.string().valid("1", "125", "15", "2", "3", "4"),
   freedomMode: joi.boolean(),
   difficulty: joi.string().valid("normal", "expert", "master"),
   blindMode: joi.boolean(),
@@ -101,6 +104,7 @@ const CONFIG_SCHEMA = joi.object({
   burstHeatmap: joi.boolean(),
   britishEnglish: joi.boolean(),
   lazyMode: joi.boolean(),
+  showAvg: joi.boolean(),
 });
 
 module.exports = CONFIG_SCHEMA;

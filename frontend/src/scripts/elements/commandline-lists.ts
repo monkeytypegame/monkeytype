@@ -1,6 +1,5 @@
 import * as DB from "../db";
 import * as Misc from "../misc";
-import layouts from "../test/layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "../controllers/sound-controller";
 import * as ThemeController from "../controllers/theme-controller";
@@ -53,11 +52,20 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-if (Object.keys(layouts).length > 0) {
+Misc.getLayoutsList().then((layouts) => {
   commandsLayouts.list = [];
+  commandsLayouts.list.push({
+    id: "changeLayoutDefault",
+    display: "off",
+    configValue: "default",
+    exec: (): void => {
+      UpdateConfig.setLayout("default");
+      TestLogic.restart();
+    },
+  });
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
-      id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
+      id: "changeLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
       display: layout === "default" ? "off" : layout.replace(/_/g, " "),
       configValue: layout,
       exec: (): void => {
@@ -67,7 +75,7 @@ if (Object.keys(layouts).length > 0) {
       },
     });
   });
-}
+});
 
 export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
   title: "Change keymap layout...",
@@ -79,8 +87,7 @@ export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
-
-if (Object.keys(layouts).length > 0) {
+Misc.getLayoutsList().then((layouts) => {
   commandsKeymapLayouts.list = [];
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
@@ -94,7 +101,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
-        id: "changeKeymapLayout" + Misc.capitalizeFirstLetter(layout),
+        id: "changeKeymapLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
         display: layout.replace(/_/g, " "),
         configValue: layout,
         exec: (): void => {
@@ -104,7 +111,7 @@ if (Object.keys(layouts).length > 0) {
       });
     }
   });
-}
+});
 
 const commandsLanguages: MonkeyTypes.CommandsGroup = {
   title: "Language...",
@@ -121,7 +128,7 @@ commandsLanguages.list = [];
 Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     commandsLanguages.list.push({
-      id: "changeLanguage" + Misc.capitalizeFirstLetter(language),
+      id: "changeLanguage" + Misc.capitalizeFirstLetterOfEachWord(language),
       display: language.replace(/_/g, " "),
       configValue: language,
       exec: (): void => {
@@ -205,7 +212,7 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateTagCommands(): void {
-  if (DB.getSnapshot()?.tags?.length > 0) {
+  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
@@ -213,15 +220,21 @@ export function updateTagCommands(): void {
       display: `Clear tags`,
       icon: "fa-times",
       exec: (): void => {
-        DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+        const snapshot = DB.getSnapshot();
+
+        snapshot.tags = snapshot.tags?.map((tag) => {
           tag.active = false;
+
+          return tag;
         });
+
+        DB.setSnapshot(snapshot);
         ModesNotice.update();
         TagController.saveActiveToLocalStorage();
       },
     });
 
-    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {
@@ -276,10 +289,12 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 };
 
 export function updatePresetCommands(): void {
-  if (DB.getSnapshot()?.presets?.length > 0) {
+  const snapshot = DB.getSnapshot();
+
+  if (snapshot.presets !== undefined && snapshot.presets.length > 0) {
     commandsPresets.list = [];
 
-    DB.getSnapshot().presets.forEach((preset: MonkeyTypes.Preset) => {
+    snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
       const dis = preset.name;
 
       commandsPresets.list.push({
@@ -338,6 +353,29 @@ const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setShowLiveWpm(true);
+      },
+    },
+  ],
+};
+
+const commandsShowAvg: MonkeyTypes.CommandsGroup = {
+  title: "Show average...",
+  configKey: "showAvg",
+  list: [
+    {
+      id: "setAvgOff",
+      display: "off",
+      configValue: false,
+      exec: (): void => {
+        UpdateConfig.setShowAvg(false);
+      },
+    },
+    {
+      id: "setAvgOn",
+      display: "on",
+      configValue: true,
+      exec: (): void => {
+        UpdateConfig.setShowAvg(true);
       },
     },
   ],
@@ -959,6 +997,7 @@ const commandsKeymapMode: MonkeyTypes.CommandsGroup = {
     {
       id: "setKeymapModeReact",
       display: "react",
+      alias: "flash",
       configValue: "react",
       exec: (): void => {
         UpdateConfig.setKeymapMode("react");
@@ -1647,7 +1686,7 @@ const commandsTimerColor: MonkeyTypes.CommandsGroup = {
       display: "black",
       configValue: "black",
       exec: (): void => {
-        UpdateConfig.setTimerColor("bar");
+        UpdateConfig.setTimerColor("black");
       },
     },
     {
@@ -1732,7 +1771,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: ".25",
       configValue: 0.25,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(0.25);
+        UpdateConfig.setTimerOpacity("0.25");
       },
     },
     {
@@ -1740,7 +1779,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: ".5",
       configValue: 0.5,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(0.5);
+        UpdateConfig.setTimerOpacity("0.5");
       },
     },
     {
@@ -1748,7 +1787,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: ".75",
       configValue: 0.75,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(0.75);
+        UpdateConfig.setTimerOpacity("0.75");
       },
     },
     {
@@ -1756,7 +1795,7 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       display: "1",
       configValue: 1,
       exec: (): void => {
-        UpdateConfig.setTimerOpacity(1);
+        UpdateConfig.setTimerOpacity("1");
       },
     },
   ],
@@ -1772,7 +1811,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 10,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("10");
+        UpdateConfig.setWordCount(10);
         TestLogic.restart();
       },
     },
@@ -1782,7 +1821,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 25,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("25");
+        UpdateConfig.setWordCount(25);
         TestLogic.restart();
       },
     },
@@ -1792,7 +1831,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 50,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("50");
+        UpdateConfig.setWordCount(50);
         TestLogic.restart();
       },
     },
@@ -1802,7 +1841,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 100,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("100");
+        UpdateConfig.setWordCount(100);
         TestLogic.restart();
       },
     },
@@ -1812,7 +1851,7 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 200,
       exec: (): void => {
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount("200");
+        UpdateConfig.setWordCount(200);
         TestLogic.restart();
       },
     },
@@ -2049,7 +2088,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 15,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("15");
+        UpdateConfig.setTimeConfig(15);
         TestLogic.restart();
       },
     },
@@ -2059,7 +2098,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 30,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("30");
+        UpdateConfig.setTimeConfig(30);
         TestLogic.restart();
       },
     },
@@ -2069,7 +2108,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 60,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("60");
+        UpdateConfig.setTimeConfig(60);
         TestLogic.restart();
       },
     },
@@ -2079,7 +2118,7 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 120,
       exec: (): void => {
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig("120");
+        UpdateConfig.setTimeConfig(120);
         TestLogic.restart();
       },
     },
@@ -2167,7 +2206,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1x",
       configValue: 1,
       exec: (): void => {
-        UpdateConfig.setFontSize(1);
+        UpdateConfig.setFontSize("1");
         TestLogic.restart();
       },
     },
@@ -2176,7 +2215,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.25x",
       configValue: 125,
       exec: (): void => {
-        UpdateConfig.setFontSize(125);
+        UpdateConfig.setFontSize("125");
         TestLogic.restart();
       },
     },
@@ -2185,7 +2224,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.5x",
       configValue: 15,
       exec: (): void => {
-        UpdateConfig.setFontSize(15);
+        UpdateConfig.setFontSize("15");
         TestLogic.restart();
       },
     },
@@ -2194,7 +2233,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "2x",
       configValue: 2,
       exec: (): void => {
-        UpdateConfig.setFontSize(2);
+        UpdateConfig.setFontSize("2");
         TestLogic.restart();
       },
     },
@@ -2203,7 +2242,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "3x",
       configValue: 3,
       exec: (): void => {
-        UpdateConfig.setFontSize(3);
+        UpdateConfig.setFontSize("3");
         TestLogic.restart();
       },
     },
@@ -2212,7 +2251,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "4x",
       configValue: 4,
       exec: (): void => {
-        UpdateConfig.setFontSize(4);
+        UpdateConfig.setFontSize("4");
         TestLogic.restart();
       },
     },
@@ -2275,6 +2314,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
     {
@@ -2283,6 +2323,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
     {
@@ -2291,6 +2332,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
+        TestLogic.restart(false, false, undefined, true);
       },
     },
   ],
@@ -2305,7 +2347,7 @@ export const themeCommands: MonkeyTypes.CommandsGroup = {
 Misc.getThemesList().then((themes) => {
   themes.forEach((theme) => {
     themeCommands.list.push({
-      id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
+      id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
       display: theme.name.replace(/_/g, " "),
       configValue: theme.name,
       hover: (): void => {
@@ -2327,7 +2369,8 @@ export const commandsChallenges: MonkeyTypes.CommandsGroup = {
 Misc.getChallengeList().then((challenges) => {
   challenges.forEach((challenge) => {
     commandsChallenges.list.push({
-      id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
+      id:
+        "loadChallenge" + Misc.capitalizeFirstLetterOfEachWord(challenge.name),
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
@@ -2344,7 +2387,7 @@ export function updateThemeCommands(): void {
     themeCommands.list = [];
     Config.favThemes.forEach((theme: string) => {
       themeCommands.list.push({
-        id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
+        id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme),
         display: theme.replace(/_/g, " "),
         hover: (): void => {
           // previewTheme(theme);
@@ -2359,7 +2402,7 @@ export function updateThemeCommands(): void {
       themes.forEach((theme) => {
         if ((Config.favThemes as string[]).includes(theme.name)) return;
         themeCommands.list.push({
-          id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
+          id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
           display: theme.name.replace(/_/g, " "),
           hover: (): void => {
             // previewTheme(theme.name);
@@ -2809,6 +2852,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Highlight mode...",
       icon: "fa-highlighter",
       subgroup: commandsHighlightMode,
+    },
+    {
+      id: "changeShowAvg",
+      display: "Show average...",
+      icon: "fa-tachometer-alt",
+      subgroup: commandsShowAvg,
     },
     {
       id: "changeCustomBackground",

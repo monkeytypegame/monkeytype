@@ -70,9 +70,9 @@ function updateTimerElement(): void {
 
 function startTimer(): void {
   updateTimerElement();
-  updateTimer = (setInterval(() => {
+  updateTimer = setInterval(() => {
     updateTimerElement();
-  }, 1000) as unknown) as number;
+  }, 1000) as unknown as number;
 }
 
 function showLoader(lb: number): void {
@@ -152,7 +152,7 @@ function checkLbMemory(lb: LbKey): void {
     side = "right";
   }
 
-  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.english;
+  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"];
 
   if (memory && currentRank[lb]) {
     const difference = memory - currentRank[lb].rank;

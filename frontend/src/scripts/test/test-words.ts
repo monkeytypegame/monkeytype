@@ -57,7 +57,7 @@ class Words {
 }
 export const words = new Words();
 export let hasTab = false;
-export let randomQuote = (null as unknown) as MonkeyTypes.Quote;
+export let randomQuote = null as unknown as MonkeyTypes.Quote;
 
 export function setRandomQuote(rq: MonkeyTypes.Quote): void {
   randomQuote = rq;

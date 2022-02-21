@@ -2,16 +2,17 @@ import Config from "../config";
 import * as TestActive from "../states/test-active";
 import * as ConfigEvent from "../observables/config-event";
 
-export function update(acc) {
+export function update(acc: number): void {
   let number = Math.floor(acc);
   if (Config.blindMode) {
     number = 100;
   }
-  document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = number + "%";
-  document.querySelector("#liveAcc").innerHTML = number + "%";
+  (document.querySelector("#miniTimerAndLiveWpm .acc") as Element).innerHTML =
+    number + "%";
+  (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
 }
 
-export function show() {
+export function show(): void {
   if (!Config.showLiveAcc) return;
   if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
@@ -38,7 +39,7 @@ export function show() {
   }
 }
 
-export function hide() {
+export function hide(): void {
   // $("#liveWpm").css("opacity", 0);
   // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
   $("#liveAcc").animate(

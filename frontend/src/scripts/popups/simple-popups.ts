@@ -578,10 +578,16 @@ list["clearTagPb"] = new SimplePopup(
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
-          const tag = DB.getSnapshot().tags.filter(
-            (t: MonkeyTypes.Tag) => t._id === tagid
-          )[0];
-          tag.pb = 0;
+          const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagid)[0];
+
+          if (tag === undefined) return;
+          tag.personalBests = {
+            time: {},
+            words: {},
+            zen: { zen: [] },
+            quote: { custom: [] },
+            custom: { custom: [] },
+          };
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
           ).attr("aria-label", "No PB found");
@@ -665,7 +671,13 @@ list["resetPersonalBests"] = new SimplePopup(
         Notifications.add(response.data.message);
       } else {
         Notifications.add("Personal bests have been reset", 1);
-        DB.getSnapshot().personalBests = {};
+        DB.getSnapshot().personalBests = {
+          time: {},
+          words: {},
+          zen: { zen: [] },
+          quote: { custom: [] },
+          custom: { custom: [] },
+        };
       }
     } catch (e) {
       Loader.hide();

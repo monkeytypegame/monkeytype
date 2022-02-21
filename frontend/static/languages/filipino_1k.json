@@ -1,6 +1,6 @@
 {
   "name": "filipino_1k",
-  "leftToRight": "true",
+  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "salita",

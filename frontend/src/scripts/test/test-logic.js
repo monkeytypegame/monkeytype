@@ -85,7 +85,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
 
-      word = Misc.capitalizeFirstLetter(word);
+      word = Misc.capitalizeFirstLetterOfEachWord(word);
 
       if (currentLanguage == "spanish" || currentLanguage == "catalan") {
         let rand = Math.random();
@@ -454,7 +454,7 @@ export function restart(
         TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
         await init();
-        PaceCaret.init(nosave);
+        await PaceCaret.init(nosave);
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
@@ -476,7 +476,7 @@ export function restart(
           );
         }
         Funbox.toggleScript(TestWords.words.getCurrent());
-        PaceCaret.init();
+        await PaceCaret.init();
       }
       failReason = "";
       if (Config.mode === "quote") {
@@ -541,6 +541,7 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
+      ModesNotice.update();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -558,7 +559,6 @@ export function restart(
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
             // ChartController.result.update();
-            ModesNotice.update();
             PageTransition.set(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
@@ -580,7 +580,7 @@ function applyFunboxesToWord(word, wordset) {
     }
     word = randomcaseword;
   } else if (Config.funbox === "capitals") {
-    word = Misc.capitalizeFirstLetter(word);
+    word = Misc.capitalizeFirstLetterOfEachWord(word);
   } else if (Config.funbox === "gibberish") {
     word = Misc.getGibberish();
   } else if (Config.funbox === "arrows") {
@@ -669,6 +669,7 @@ async function getNextWord(wordset, language, wordsBound) {
   return randomWord;
 }
 
+let rememberLazyMode;
 export async function init() {
   TestActive.set(false);
   MonkeyPower.reset();
@@ -698,8 +699,15 @@ export async function init() {
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
+    rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0);
-    UpdateConfig.setLazyMode(false);
+    UpdateConfig.setLazyMode(false, true);
+  } else if (rememberLazyMode === true && !language.noLazyMode) {
+    UpdateConfig.setLazyMode(true, true);
+  }
+
+  if (Config.lazyMode === false && !language.noLazyMode) {
+    rememberLazyMode = false;
   }
 
   let wordsBound = 100;
@@ -1605,7 +1613,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd != "custom") {
-    UpdateConfig.setWordCount(wrd);
+    UpdateConfig.setWordCount(parseInt(wrd));
     ManualRestart.set();
     restart();
   }
@@ -1614,14 +1622,14 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 $(document).on("click", "#top .config .time .text-button", (e) => {
   let mode = $(e.currentTarget).attr("timeConfig");
   if (mode != "custom") {
-    UpdateConfig.setTimeConfig(mode);
+    UpdateConfig.setTimeConfig(parseInt(mode));
     ManualRestart.set();
     restart();
   }
 });
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
-  let len = $(e.currentTarget).attr("quoteLength");
+  let len = parseInt($(e.currentTarget).attr("quoteLength"));
   if (len != -2) {
     if (len == -1) {
       len = [0, 1, 2, 3];
@@ -1693,6 +1701,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
   if (eventKey === "showAllLines" && !nosave) restart();
   if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+  if (eventKey === "lazyMode" && eventValue === false && !nosave)
+    rememberLazyMode = false;
 });
 
 TimerEvent.subscribe((eventKey, eventValue) => {

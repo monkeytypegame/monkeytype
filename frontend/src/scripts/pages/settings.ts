@@ -2,7 +2,6 @@ import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../misc";
-import layouts from "../test/layouts";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -59,6 +58,11 @@ async function initGroups(): Promise<void> {
   groups["showTimerProgress"] = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress,
+    "button"
+  );
+  groups["showAvg"] = new SettingsGroup(
+    "showAvg",
+    UpdateConfig.setShowAvg,
     "button"
   );
   groups["keymapMode"] = new SettingsGroup(
@@ -208,6 +212,11 @@ async function initGroups(): Promise<void> {
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
+    "button"
+  );
+  groups["autoSwitchTheme"] = new SettingsGroup(
+    "autoSwitchTheme",
+    UpdateConfig.setAutoSwitchTheme,
     "button"
   );
   groups["randomTheme"] = new SettingsGroup(
@@ -378,9 +387,7 @@ export function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
-  $(".pageSettings .section.layout select").empty().select2("destroy");
-  $(".pageSettings .section.keymapLayout select").empty().select2("destroy");
-  $(".pageSettings .section.language select").empty().select2("destroy");
+  $(".pageSettings select").empty().select2("destroy");
   $(".pageSettings .section.funbox .buttons").empty();
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
@@ -405,28 +412,61 @@ export async function fillSettingsPage(): Promise<void> {
     langComboBox += `</optgroup>`;
     languageEl.append(langComboBox);
   });
-  languageEl.select2();
+  languageEl.select2({
+    width: "100%",
+  });
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
-  Object.keys(layouts).forEach((layout) => {
+  layoutEl.append(`<option value='default'>off</option>`);
+  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
     layoutEl.append(
-      `<option value='${layout}'>${
-        layout === "default" ? "off" : layout.replace(/_/g, " ")
-      }</option>`
+      `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
   });
-  layoutEl.select2();
+  layoutEl.select2({
+    width: "100%",
+  });
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(layouts).forEach((layout) => {
+  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
       );
     }
   });
-  keymapEl.select2();
+  keymapEl.select2({
+    width: "100%",
+  });
+
+  const themeEl1 = $(
+    ".pageSettings .section.autoSwitchThemeInputs select.light"
+  ).empty();
+  const themeEl2 = $(
+    ".pageSettings .section.autoSwitchThemeInputs select.dark"
+  ).empty();
+  for (const theme of await Misc.getThemesList()) {
+    themeEl1.append(
+      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+    );
+    themeEl2.append(
+      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+    );
+  }
+  themeEl1.select2({
+    width: "100%",
+  });
+  themeEl2.select2({
+    width: "100%",
+  });
+
+  $(`.pageSettings .section.autoSwitchThemeInputs select.light`)
+    .val(Config.themeLight)
+    .trigger("change.select2");
+  $(`.pageSettings .section.autoSwitchThemeInputs select.dark`)
+    .val(Config.themeDark)
+    .trigger("change.select2");
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
@@ -589,7 +629,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags.forEach((tag: MonkeyTypes.Tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -624,7 +664,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets.forEach((preset: MonkeyTypes.Preset) => {
+    DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
@@ -682,6 +722,18 @@ export function update(): void {
   $(".pageSettings .section.minBurst input.customMinBurst").val(
     Config.minBurstCustomSpeed
   );
+
+  if (Config.autoSwitchTheme) {
+    $(".pageSettings .section.autoSwitchThemeInputs").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.autoSwitchThemeInputs").addClass("hidden");
+  }
+
+  if (Config.customBackground !== "") {
+    $(".pageSettings .section.customBackgroundFilter").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.customBackgroundFilter").addClass("hidden");
+  }
 }
 
 function toggleSettingsGroup(groupName: string): void {
@@ -837,7 +889,7 @@ $(document).on(
   ".pageSettings .section.tags .tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
-    const tagid = $(target).parent(".tag").attr("id");
+    const tagid = $(target).parent(".tag").attr("id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
   }
@@ -848,7 +900,7 @@ $(document).on(
   ".pageSettings .section.presets .presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
-    const presetid = $(target).parent(".preset").attr("id");
+    const presetid = $(target).parent(".preset").attr("id") as string;
     console.log("Applying Preset");
     configEventDisabled = true;
     PresetController.apply(presetid);
@@ -906,7 +958,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
     UpdateConfig.setCustomBackground(
       $(
         ".pageSettings .section.customBackgroundSize .inputAndButton input"
-      ).val()
+      ).val() as string
     );
   }
 );
@@ -917,7 +969,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
       UpdateConfig.setCustomBackground(
         $(
           ".pageSettings .section.customBackgroundSize .inputAndButton input"
-        ).val()
+        ).val() as string
       );
     }
   }
@@ -927,7 +979,9 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   () => {
     UpdateConfig.setCustomLayoutfluid(
-      $(".pageSettings .section.customLayoutfluid .inputAndButton input").val()
+      $(
+        ".pageSettings .section.customLayoutfluid .inputAndButton input"
+      ).val() as MonkeyTypes.CustomLayoutFluidSpaces
     );
     Notifications.add("Custom layoutfluid saved", 1);
   }
@@ -939,7 +993,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
       UpdateConfig.setCustomLayoutfluid(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
-        ).val()
+        ).val() as MonkeyTypes.CustomLayoutFluidSpaces
       );
       Notifications.add("Custom layoutfluid saved", 1);
     }
@@ -953,6 +1007,28 @@ $(".quickNav .links a").on("click", (e) => {
   );
   isOpen && toggleSettingsGroup(settingsGroup);
 });
+
+$(document).on(
+  "change",
+  `.pageSettings .section.autoSwitchThemeInputs select.light`,
+  (e) => {
+    const target = $(e.currentTarget);
+    if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+      return;
+    UpdateConfig.setThemeLight(target.val() as string);
+  }
+);
+
+$(document).on(
+  "change",
+  `.pageSettings .section.autoSwitchThemeInputs select.dark`,
+  (e) => {
+    const target = $(e.currentTarget);
+    if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+      return;
+    UpdateConfig.setThemeDark(target.val() as string);
+  }
+);
 
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {

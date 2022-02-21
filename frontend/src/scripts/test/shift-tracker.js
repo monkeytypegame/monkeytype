@@ -1,5 +1,5 @@
 import Config from "../config";
-import Layouts from "./layouts";
+import * as Misc from "../misc";
 
 export let leftState = false;
 export let rightState = false;
@@ -10,10 +10,10 @@ let keymapStrings = {
   keymap: null,
 };
 
-function buildKeymapStrings() {
+async function buildKeymapStrings() {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
-  let layout = Layouts[Config.keymapLayout]?.keys;
+  let layout = await Misc.getLayout(Config.keymapLayout).keys;
 
   if (!layout) {
     keymapStrings = {
@@ -121,7 +121,7 @@ let rightSideKeys = [
   "Slash",
 ];
 
-export function isUsingOppositeShift(event) {
+export async function isUsingOppositeShift(event) {
   if (!leftState && !rightState) return null;
 
   if (Config.oppositeShiftMode === "on") {
@@ -140,7 +140,7 @@ export function isUsingOppositeShift(event) {
       return false;
     }
   } else if (Config.oppositeShiftMode === "keymap") {
-    buildKeymapStrings();
+    await buildKeymapStrings();
 
     if (!keymapStrings.left || !keymapStrings.right) return null;
 

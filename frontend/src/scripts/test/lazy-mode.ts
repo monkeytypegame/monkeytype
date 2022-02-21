@@ -1,4 +1,4 @@
-let accents = [
+const accents: [string, string][] = [
   ["áàâäåãąą́āą̄ă", "a"],
   ["éèêëẽęę́ēę̄ėě", "e"],
   ["íìîïĩįį́īį̄", "i"],
@@ -31,11 +31,14 @@ let accents = [
   ["ّ", ""],
 ];
 
-export function replaceAccents(word, accentsOverride) {
+export function replaceAccents(
+  word: string,
+  accentsOverride?: [accents: string, replace: string][]
+): string {
   let newWord = word;
   if (!accents && !accentsOverride) return newWord;
   let regex;
-  let list = accentsOverride || accents;
+  const list = accentsOverride || accents;
   for (let i = 0; i < list.length; i++) {
     regex = new RegExp(`[${list[i][0]}]`, "gi");
     newWord = newWord.replace(regex, list[i][1]);

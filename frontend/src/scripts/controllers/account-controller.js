@@ -79,10 +79,10 @@ export async function getDataAndInit() {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
-  let snap = DB.getSnapshot();
-  $("#menu .icon-button.account .text").text(snap.name);
+  const snapshot = DB.getSnapshot();
+  $("#menu .icon-button.account .text").text(snapshot.name);
 
-  ResultFilters.loadTags(DB.getSnapshot().tags);
+  ResultFilters.loadTags(snapshot.tags);
 
   Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     let languages = values[0];
@@ -98,12 +98,12 @@ export async function getDataAndInit() {
   });
 
   let user = firebase.auth().currentUser;
-  if (snap.name == undefined) {
+  if (snapshot.name == undefined) {
     //verify username
     if (Misc.isUsernameValid(user.name)) {
       //valid, just update
-      snap.name = user.name;
-      DB.setSnapshot(snap);
+      snapshot.name = user.name;
+      DB.setSnapshot(snapshot);
       DB.updateName(user.uid, user.name);
     } else {
       //invalid, get new
@@ -134,7 +134,8 @@ export async function getDataAndInit() {
         if (response?.status == 200) {
           nameGood = true;
           Notifications.add("Name updated", 1);
-          DB.getSnapshot().name = name;
+          snapshot.name = name;
+          DB.setSnapshot(snapshot);
           $("#menu .icon-button.account .text").text(name);
         }
       }
@@ -145,11 +146,11 @@ export async function getDataAndInit() {
     if (Config.localStorageConfig === null) {
       console.log("no local config, applying db");
       AccountButton.loading(false);
-      UpdateConfig.apply(DB.getSnapshot().config);
+      UpdateConfig.apply(snapshot.config);
       Settings.update();
       UpdateConfig.saveToLocalStorage(true);
       TestLogic.restart(false, true);
-    } else if (DB.getSnapshot().config !== undefined) {
+    } else if (snapshot.config !== undefined) {
       //loading db config, keep for now
       let configsDifferent = false;
       Object.keys(Config).forEach((key) => {
@@ -158,22 +159,18 @@ export async function getDataAndInit() {
             if (key !== "resultFilters") {
               if (Array.isArray(Config[key])) {
                 Config[key].forEach((arrval, index) => {
-                  if (arrval != DB.getSnapshot().config[key][index]) {
+                  if (arrval != snapshot.config[key][index]) {
                     configsDifferent = true;
                     console.log(
-                      `.config is different: ${arrval} != ${
-                        DB.getSnapshot().config[key][index]
-                      }`
+                      `.config is different: ${arrval} != ${snapshot.config[key][index]}`
                     );
                   }
                 });
               } else {
-                if (Config[key] != DB.getSnapshot().config[key]) {
+                if (Config[key] != snapshot.config[key]) {
                   configsDifferent = true;
                   console.log(
-                    `..config is different ${key}: ${Config[key]} != ${
-                      DB.getSnapshot().config[key]
-                    }`
+                    `..config is different ${key}: ${Config[key]} != ${snapshot.config[key]}`
                   );
                 }
               }
@@ -188,7 +185,7 @@ export async function getDataAndInit() {
       if (configsDifferent) {
         console.log("configs are different, applying config from db");
         AccountButton.loading(false);
-        UpdateConfig.apply(DB.getSnapshot().config);
+        UpdateConfig.apply(snapshot.config);
         Settings.update();
         UpdateConfig.saveToLocalStorage(true);
         if (ActivePage.get() == "test") {
@@ -254,7 +251,7 @@ async function loadUser(user) {
   $(".pageAccount .group.createdDate").text(text);
 
   if (VerificationController.data !== null) {
-    VerificationController.verify(user);
+    VerificationController.verify(user.uid);
   }
 }
 
@@ -269,16 +266,23 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }
     PageTransition.set(false);
   }
-  if (window.location.pathname == "/login" && user) {
-    PageController.change("account");
-  } else if (window.location.pathname != "/account") {
+  if (user) {
+    if (window.location.pathname == "/login") {
+      PageController.change("account");
+    } else if (window.location.pathname != "/account") {
+      PageController.change();
+      setTimeout(() => {
+        Focus.set(false);
+      }, 125 / 2);
+    } else {
+      Account.update();
+      // SignOutButton.show();
+    }
+  } else {
     PageController.change();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
-  } else {
-    Account.update();
-    // SignOutButton.show();
   }
 
   let theme = Misc.findGetParameter("customTheme");
@@ -444,7 +448,11 @@ export async function signInWithGoogle() {
             })
             .then((result) => {
               if (result.status === 200) {
-                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+                const snapshot = DB.getSnapshot();
+
+                snapshot.results.push(TestLogic.notSignedInLastResult);
+
+                DB.setSnapshot(snapshot);
               }
             });
           // PageController.change("account");
@@ -659,7 +667,11 @@ async function signUp() {
         })
         .then((result) => {
           if (result.status === 200) {
-            DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+            const snapshot = DB.getSnapshot();
+
+            snapshot.results.push(TestLogic.notSignedInLastResult);
+
+            DB.setSnapshot(snapshot);
           }
         });
       PageController.change("account");

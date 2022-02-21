@@ -115,6 +115,14 @@
       text-align: center;
     }
 
+    &.aboveHistory {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      .exportCSV {
+        grid-column: 3/4;
+      }
+    }
+
     &.createdDate {
       text-align: center;
       color: var(--sub-color);
@@ -208,6 +216,20 @@
         .buttons {
           display: grid;
           gap: 0.5rem;
+          .smoothing {
+            display: grid;
+            gap: 0.25rem;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            justify-items: start;
+            color: var(--text-color);
+            .title {
+              color: var(--text-color);
+            }
+            input[type="range"] {
+              grid-column: 1/3;
+            }
+          }
         }
       }
       .chart {

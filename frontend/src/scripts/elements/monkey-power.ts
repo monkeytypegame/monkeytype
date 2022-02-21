@@ -212,7 +212,7 @@ export async function addPower(good = true, extra = false): Promise<void> {
       `translate(${shake[0]}px, ${shake[1]}px)`
     );
     if (ctx.resetTimeOut) clearTimeout(ctx.resetTimeOut);
-    ctx.resetTimeOut = (setTimeout(reset, 2000) as unknown) as number;
+    ctx.resetTimeOut = setTimeout(reset, 2000) as unknown as number;
   }
 
   // Sparks

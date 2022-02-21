@@ -1,4 +1,4 @@
-export function show() {
+export function show(): void {
   // $(".signOut").removeClass("hidden").css("opacity", 1);
   $(".signOut")
     .stop(true, true)
@@ -18,7 +18,7 @@ export function show() {
     );
 }
 
-export function hide() {
+export function hide(): void {
   $(".signOut")
     .stop(true, true)
     .css({
