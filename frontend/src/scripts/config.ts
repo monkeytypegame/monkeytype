@@ -1696,7 +1696,7 @@ export function setCustomBackgroundFilter(
   nosave?: boolean
 ): void {
   array = (array as unknown as string[]).map((value) =>
-    parseInt(value)
+    parseFloat(value)
   ) as MonkeyTypes.CustomBackgroundFilter;
   if (!isConfigValueValid(array, ["numberArray"]))
     return invalid("custom background filter", array);
