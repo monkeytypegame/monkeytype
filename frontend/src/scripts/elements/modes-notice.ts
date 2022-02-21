@@ -106,7 +106,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.showAvg) {
+  if (Config.showAvg && firebase.auth().currentUser) {
     const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
     let wpm = await DB.getUserAverageWpm10(
       Config.mode,
