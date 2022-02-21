@@ -4,10 +4,10 @@ import endpoints from "./endpoints";
 const DEV_SERVER_HOST = "http://localhost:5005";
 const PROD_SERVER_HOST = "https://api.monkeytype.com";
 
-const apiPath = "";
-const baseUrl =
+const API_PATH = "";
+const BASE_URL =
   window.location.hostname === "localhost" ? DEV_SERVER_HOST : PROD_SERVER_HOST;
-const apiUrl = `${baseUrl}${apiPath}`;
+const API_URL = `${BASE_URL}${API_PATH}`;
 
 // Adapts the ape client's view of request options to the underlying HTTP client.
 async function adaptRequestOptions(
@@ -32,24 +32,42 @@ type AxiosClientMethod = (
   config: AxiosRequestConfig
 ) => Promise<AxiosResponse>;
 
+type AxiosClientDataMethod = (
+  endpoint: string,
+  data: any,
+  config: AxiosRequestConfig
+) => Promise<AxiosResponse>;
+
+type AxiosClientMethods = AxiosClientMethod & AxiosClientDataMethod;
+
 // Wrap the underlying HTTP client's method with our own.
-function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
+function apeifyClientMethod(
+  clientMethod: AxiosClientMethods,
+  methodType: Ape.MethodTypes
+): Ape.ClientMethod {
   return async (
     endpoint: string,
     options: Ape.RequestOptions = {}
   ): Ape.EndpointData => {
-    let errorMessage = "Something went wrong";
+    let errorMessage = "";
 
     try {
       const requestOptions: AxiosRequestConfig = await adaptRequestOptions(
         options
       );
-      const response: AxiosResponse = await clientMethod(
-        endpoint,
-        requestOptions
-      );
 
-      const { message, data } = response.data;
+      let response;
+      if (methodType === "get" || methodType === "delete") {
+        response = await clientMethod(endpoint, requestOptions);
+      } else {
+        response = await clientMethod(
+          endpoint,
+          requestOptions.data,
+          requestOptions
+        );
+      }
+
+      const { message, data } = response.data as Ape.ApiResponse;
 
       return {
         status: response.status,
@@ -79,25 +97,27 @@ function apeifyClientMethod(clientMethod: AxiosClientMethod): Ape.ClientMethod {
 }
 
 const axiosClient = axios.create({
-  baseURL: apiUrl,
+  baseURL: API_URL,
   timeout: 10000,
 });
 
 const apeClient: Ape.Client = {
-  get: apeifyClientMethod(axiosClient.get),
-  post: apeifyClientMethod(axiosClient.post),
-  put: apeifyClientMethod(axiosClient.put),
-  patch: apeifyClientMethod(axiosClient.patch),
-  delete: apeifyClientMethod(axiosClient.delete),
+  get: apeifyClientMethod(axiosClient.get, "get"),
+  post: apeifyClientMethod(axiosClient.post, "post"),
+  put: apeifyClientMethod(axiosClient.put, "put"),
+  patch: apeifyClientMethod(axiosClient.patch, "patch"),
+  delete: apeifyClientMethod(axiosClient.delete, "delete"),
 };
 
 // API Endpoints
-
-export default {
+const Ape: Ape.Endpoints = {
   users: endpoints.getUsersEndpoints(apeClient),
   configs: endpoints.getConfigsEndpoints(apeClient),
   results: endpoints.getResultsEndpoints(apeClient),
   psas: endpoints.getPsasEndpoints(apeClient),
   quotes: endpoints.getQuotesEndpoints(apeClient),
   leaderboards: endpoints.getLeaderboardsEndpoints(apeClient),
-} as Ape.Endpoints;
+  presets: endpoints.getPresetsEndpoints(apeClient),
+};
+
+export default Ape;

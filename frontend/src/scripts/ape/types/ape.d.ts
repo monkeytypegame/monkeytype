@@ -4,6 +4,11 @@ declare namespace Ape {
     config?: RequestOptions
   ) => Promise<Response>;
 
+  interface ApiResponse {
+    message: string;
+    data: any | null;
+  }
+
   interface Client {
     get: ClientMethod;
     post: ClientMethod;
@@ -11,6 +16,8 @@ declare namespace Ape {
     patch: ClientMethod;
     delete: ClientMethod;
   }
+
+  type MethodTypes = keyof Client;
 
   interface RequestOptions {
     searchQuery?: Record<string, any>;

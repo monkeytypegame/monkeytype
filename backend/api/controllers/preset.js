@@ -27,7 +27,7 @@ class PresetController {
   }
 
   static async removePreset(req, _res) {
-    const { presetId } = req.body;
+    const { presetId } = req.params;
     const { uid } = req.ctx.decodedToken;
 
     await PresetDAO.removePreset(uid, presetId);

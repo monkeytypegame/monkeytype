@@ -72,7 +72,6 @@ export async function hide(): Promise<void> {
         },
         noAnim ? 0 : 100,
         () => {
-          grecaptcha.reset(CAPTCHA_ID);
           $("#quoteReportPopupWrapper").addClass("hidden");
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
@@ -118,6 +117,7 @@ async function submitReport(): Promise<void> {
     captcha
   );
   Loader.hide();
+  grecaptcha.reset(CAPTCHA_ID);
 
   if (response.status !== 200) {
     return Notifications.add("Failed to report quote: " + response.message, -1);

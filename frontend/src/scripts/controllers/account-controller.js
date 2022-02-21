@@ -10,7 +10,6 @@ import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import * as PageController from "../controllers/page-controller";
-import axiosInstance from "../axios-instance";
 import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
@@ -45,7 +44,7 @@ export function sendVerificationEmail() {
 export async function getDataAndInit() {
   try {
     console.log("getting account data");
-    if (ActivePage.get() == "loading") {
+    if (ActivePage.get() === "loading") {
       LoadingPage.updateBar(90);
     } else {
       LoadingPage.updateBar(45);
@@ -71,7 +70,7 @@ export async function getDataAndInit() {
     Notifications.add("Failed to get user data: " + msg, -1);
 
     $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() == "loading") PageController.change("");
+    if (ActivePage.get() === "loading") PageController.change("");
     return false;
   }
   if (ActivePage.get() == "loading") {
@@ -99,7 +98,7 @@ export async function getDataAndInit() {
   });
 
   let user = firebase.auth().currentUser;
-  if (snapshot.name == undefined) {
+  if (!snapshot.name) {
     //verify username
     if (Misc.isUsernameValid(user.name)) {
       //valid, just update
@@ -111,34 +110,29 @@ export async function getDataAndInit() {
       let nameGood = false;
       let name = "";
 
-      while (nameGood === false) {
-        name = await prompt(
+      while (!nameGood) {
+        name = prompt(
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
 
-        if (name == null) {
+        if (!name) {
           return false;
         }
 
-        let response;
-        try {
-          response = await axiosInstance.patch("/user/name", { name });
-        } catch (e) {
-          let msg = e?.response?.data?.message ?? e.message;
-          if (e.response.status >= 500) {
-            Notifications.add("Failed to update name: " + msg, -1);
-            throw e;
-          } else {
-            alert(msg);
-          }
+        const response = await Ape.users.updateName(name);
+
+        if (response.status !== 200) {
+          return Notifications.add(
+            "Failed to update name: " + response.message,
+            -1
+          );
         }
-        if (response?.status == 200) {
-          nameGood = true;
-          Notifications.add("Name updated", 1);
-          snapshot.name = name;
-          DB.setSnapshot(snapshot);
-          $("#menu .icon-button.account .text").text(name);
-        }
+
+        nameGood = true;
+        Notifications.add("Name updated", 1);
+        snapshot.name = name;
+        DB.setSnapshot(snapshot);
+        $("#menu .icon-button.account .text").text(name);
       }
     }
   }
@@ -389,45 +383,40 @@ export async function signInWithGoogle() {
       let nameGood = false;
       let name = "";
 
-      while (nameGood === false) {
-        name = await prompt(
+      while (!nameGood) {
+        name = prompt(
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
 
-        if (name == null) {
+        if (!name) {
           signOut();
           $(".pageLogin .preloader").addClass("hidden");
           return;
         }
 
-        let response;
-        try {
-          response = await axiosInstance.get(`/user/checkName/${name}`);
-        } catch (e) {
-          let msg = e?.response?.data?.message ?? e.message;
-          if (e.response.status >= 500) {
-            Notifications.add("Failed to check name: " + msg, -1);
-            throw e;
-          } else {
-            alert(msg);
-          }
+        const response = await Ape.users.getNameAvailability(name);
+
+        if (response.status !== 200) {
+          return Notifications.add(
+            "Failed to check name: " + response.message,
+            -1
+          );
         }
-        if (response?.status == 200) {
-          nameGood = true;
-        }
+
+        nameGood = true;
       }
       //create database object for the new user
-      let response;
       // try {
-      response = await axiosInstance.post("/user/signUp", {
-        name,
-      });
+      const response = Ape.users.create(name);
+      if (response.status !== 200) {
+        throw response;
+      }
       // } catch (e) {
       //   let msg = e?.response?.data?.message ?? e.message;
       //   Notifications.add("Failed to create account: " + msg, -1);
       //   return;
       // }
-      if (response.status == 200) {
+      if (response.status === 200) {
         await signedInUser.user.updateProfile({ displayName: name });
         await signedInUser.user.sendEmailVerification();
         AllTimeStats.clear();
@@ -462,7 +451,7 @@ export async function signInWithGoogle() {
     $(".pageLogin .button").removeClass("disabled");
     if (signedInUser?.user) {
       signedInUser.user.delete();
-      await axiosInstance.delete("/user");
+      await Ape.users.delete();
     }
     return;
   }
@@ -601,32 +590,24 @@ async function signUp() {
   let password = $(".pageLogin .register input")[3].value;
   let passwordVerify = $(".pageLogin .register input")[4].value;
 
-  if (email != emailVerify) {
+  if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
-  if (password != passwordVerify) {
+  if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     return;
   }
 
-  try {
-    await axiosInstance.get(`/user/checkName/${nname}`);
-  } catch (e) {
-    let txt;
-    if (e.response) {
-      txt =
-        e.response.data.message ||
-        e.response.status + " " + e.response.statusText;
-    } else {
-      txt = e.message;
-    }
-    Notifications.add(txt, -1);
+  const response = await Ape.users.getNameAvailability(nname);
+
+  if (response.status !== 200) {
+    Notifications.add(response.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     return;
@@ -639,11 +620,16 @@ async function signUp() {
     createdAuthUser = await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password);
-    await axiosInstance.post("/user/signup", {
-      name: nname,
+
+    const signInResponse = await Ape.users.create(
+      nname,
       email,
-      uid: createdAuthUser.user.uid,
-    });
+      createdAuthUser.user.id
+    );
+    if (signInResponse.status !== 200) {
+      throw signInResponse;
+    }
+
     await createdAuthUser.user.updateProfile({ displayName: nname });
     await createdAuthUser.user.sendEmailVerification();
     AllTimeStats.clear();
@@ -668,7 +654,7 @@ async function signUp() {
     //make sure to do clean up here
     if (createdAuthUser) {
       await createdAuthUser.user.delete();
-      axiosInstance.delete("/user");
+      await Ape.users.delete();
     }
     let txt;
     if (e.response) {

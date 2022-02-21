@@ -198,22 +198,22 @@ class UserController {
 
   static async clearTagPb(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid } = req.body;
-    await UsersDAO.removeTagPb(uid, tagid);
+    const { tagId } = req.body;
+    await UsersDAO.removeTagPb(uid, tagId);
     return new MonkeyResponse("Tag PB cleared");
   }
 
   static async editTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid, newname } = req.body;
-    await UsersDAO.editTag(uid, tagid, newname);
+    const { tagId, newName } = req.body;
+    await UsersDAO.editTag(uid, tagId, newName);
     return new MonkeyResponse("Tag updated");
   }
 
   static async removeTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagid } = req.body;
-    await UsersDAO.removeTag(uid, tagid);
+    const { tagId } = req.params;
+    await UsersDAO.removeTag(uid, tagId);
     return new MonkeyResponse("Tag deleted");
   }
 
