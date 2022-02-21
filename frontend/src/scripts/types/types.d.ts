@@ -572,4 +572,18 @@ declare namespace MonkeyTypes {
     [row4: string]: string[];
     [row5: string]: string[];
   }
+
+  interface Challenge {
+    name: string;
+    display: string;
+    autoRole: boolean;
+    type: string;
+    parameters: (string | number | boolean)[];
+    message: string;
+    requirements: {
+      [requirement: string]: {
+        [parameter: string]: string | number | boolean;
+      };
+    };
+  }
 }
