@@ -359,7 +359,7 @@ const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
 };
 
 const commandsShowAvg: MonkeyTypes.CommandsGroup = {
-  title: "Show Average...",
+  title: "Show average...",
   configKey: "showAvg",
   list: [
     {
