@@ -59,6 +59,7 @@ export async function init() {
       Config.difficulty,
       Config.lazyMode
     );
+    wpm = Math.round(wpm);
     console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
