@@ -40,7 +40,7 @@ function addApiRoutes(app) {
 
   app.get(
     "/",
-    asyncHandler((_req, _res) => {
+    asyncHandler(async (_req, _res) => {
       return new MonkeyResponse("ok", {
         uptime: Date.now() - APP_START_TIME,
         requestsProcessed,
