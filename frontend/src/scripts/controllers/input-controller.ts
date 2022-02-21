@@ -13,7 +13,7 @@ import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
-import * as PageController from "../controllers/page-controller";
+import * as PageController from "./page-controller";
 import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
@@ -32,7 +32,7 @@ import * as TestWords from "../test/test-words";
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 
-function setWordsInput(value) {
+function setWordsInput(value: string): void {
   // Only change #wordsInput if it's not already the wanted value
   // Avoids Safari triggering unneeded events, causing issues with
   // dead keys.
@@ -42,8 +42,8 @@ function setWordsInput(value) {
   }
 }
 
-function updateUI() {
-  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+function updateUI(): void {
+  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -57,7 +57,7 @@ function updateUI() {
   }
 }
 
-function backspaceToPrevious() {
+function backspaceToPrevious(): void {
   if (!TestActive.get()) return;
 
   if (
@@ -94,7 +94,7 @@ function backspaceToPrevious() {
   Replay.addReplayEvent("backWord");
 }
 
-function handleSpace() {
+function handleSpace(): void {
   if (!TestActive.get()) return;
 
   if (TestInput.input.current === "") return;
@@ -104,14 +104,14 @@ function handleSpace() {
     $("#words").append("<div class='word active'></div>");
   }
 
-  let currentWord = TestWords.words.getCurrent();
+  const currentWord = TestWords.words.getCurrent();
   if (Config.funbox === "layoutfluid" && Config.mode !== "time") {
     // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
     const layouts = Config.customLayoutfluid
       ? Config.customLayoutfluid.split("#")
       : ["qwerty", "dvorak", "colemak"];
     let index = 0;
-    let outof = TestWords.words.length;
+    const outof = TestWords.words.length;
     index = Math.floor(
       (TestInput.input.history.length + 1) / (outof / layouts.length)
     );
@@ -127,11 +127,11 @@ function handleSpace() {
         .toString()
         .toUpperCase()
     );
-    Settings.groups.layout?.updateInput();
+    Settings.groups["layout"]?.updateInput();
   }
   dontInsertSpace = true;
 
-  let burst = TestStats.calculateBurst();
+  const burst = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
@@ -151,20 +151,20 @@ function handleSpace() {
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
-      Sound.playClick(Config.playSoundOnClick);
+      Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
   } else {
     if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
       if (!Config.playSoundOnError || Config.blindMode) {
-        Sound.playClick(Config.playSoundOnClick);
+        Sound.playClick();
       } else {
-        Sound.playError(Config.playSoundOnError);
+        Sound.playError();
       }
     }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
     TestInput.incrementKeypressErrors();
-    let cil = TestInput.input.current.length;
+    const cil = TestInput.input.current.length;
     if (cil <= TestWords.words.getCurrent().length) {
       if (cil >= TestInput.corrected.current.length) {
         TestInput.corrected.current += "_";
@@ -219,7 +219,7 @@ function handleSpace() {
     wordLength = TestWords.words.getCurrent().length;
   }
 
-  let flex = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
+  const flex = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
   if (
     (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
     (Config.minBurst === "flex" && burst < flex)
@@ -236,15 +236,15 @@ function handleSpace() {
     (CustomText.isWordRandom && CustomText.word == 0) ||
     CustomText.isTimeRandom
   ) {
-    let currentTop = Math.floor(
-      document.querySelectorAll("#words .word")[
+    const currentTop = Math.floor(
+      document.querySelectorAll<HTMLElement>("#words .word")[
         TestUI.currentWordElementIndex - 1
       ].offsetTop
     );
     let nextTop;
     try {
       nextTop = Math.floor(
-        document.querySelectorAll("#words .word")[
+        document.querySelectorAll<HTMLElement>("#words .word")[
           TestUI.currentWordElementIndex
         ].offsetTop
       );
@@ -278,7 +278,7 @@ function handleSpace() {
   }
 }
 
-function isCharCorrect(char, charIndex) {
+function isCharCorrect(char: string, charIndex: number): boolean {
   if (!correctShiftUsed) return false;
 
   if (Config.mode == "zen") {
@@ -342,7 +342,7 @@ function isCharCorrect(char, charIndex) {
   return false;
 }
 
-function handleChar(char, charIndex) {
+function handleChar(char: string, charIndex: number): void {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
@@ -396,7 +396,7 @@ function handleChar(char, charIndex) {
   Focus.set(true);
   Caret.stopAnimation();
 
-  let thisCharCorrect = isCharCorrect(char, charIndex);
+  const thisCharCorrect = isCharCorrect(char, charIndex);
 
   if (thisCharCorrect && Config.mode !== "zen") {
     char = TestWords.words.getCurrent().charAt(charIndex);
@@ -437,12 +437,12 @@ function handleChar(char, charIndex) {
   );
 
   if (thisCharCorrect) {
-    Sound.playClick(Config.playSoundOnClick);
+    Sound.playClick();
   } else {
     if (!Config.playSoundOnError || Config.blindMode) {
-      Sound.playClick(Config.playSoundOnClick);
+      Sound.playClick();
     } else {
-      Sound.playError(Config.playSoundOnError);
+      Sound.playError();
     }
   }
 
@@ -480,7 +480,9 @@ function handleChar(char, charIndex) {
     TestInput.input.current.length === 1 &&
     TestWords.words.currentIndex === 0
   ) {
-    TestUI.setActiveWordTop(document.querySelector("#words .active").offsetTop);
+    TestUI.setActiveWordTop(
+      document.querySelector<HTMLElement>("#words .active")?.offsetTop
+    );
   }
 
   //max length of the input is 20 unless in zen mode then its 30
@@ -507,8 +509,8 @@ function handleChar(char, charIndex) {
   if (Config.mode != "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
-    let currentWord = TestWords.words.getCurrent();
-    let lastindex = TestWords.words.currentIndex;
+    const currentWord = TestWords.words.getCurrent();
+    const lastindex = TestWords.words.currentIndex;
     if (
       (currentWord == TestInput.input.current ||
         (Config.quickEnd &&
@@ -523,13 +525,15 @@ function handleChar(char, charIndex) {
     }
   }
 
-  let activeWordTopBeforeJump = document.querySelector(
+  const activeWordTopBeforeJump = document.querySelector<HTMLElement>(
     "#words .word.active"
-  ).offsetTop;
+  )?.offsetTop as number;
   TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
-    let newActiveTop = document.querySelector("#words .word.active").offsetTop;
+    const newActiveTop = document.querySelector<HTMLElement>(
+      "#words .word.active"
+    )?.offsetTop as number;
     //stop the word jump by slicing off the last character, update word again
     if (
       activeWordTopBeforeJump < newActiveTop &&
@@ -537,11 +541,11 @@ function handleChar(char, charIndex) {
       TestInput.input.current.length > 1
     ) {
       if (Config.mode == "zen") {
-        let currentTop = Math.floor(
-          document.querySelectorAll("#words .word")[
+        const currentTop = Math.floor(
+          document.querySelectorAll<HTMLElement>("#words .word")[
             TestUI.currentWordElementIndex - 1
-          ].offsetTop
-        );
+          ]?.offsetTop
+        ) as number;
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
         TestInput.input.current = TestInput.input.current.slice(0, -1);
@@ -564,7 +568,7 @@ function handleChar(char, charIndex) {
   }
 }
 
-function handleTab(event) {
+function handleTab(event: JQuery.KeyDownEvent): void {
   if (TestUI.resultCalculating) {
     event.preventDefault();
   }
@@ -578,10 +582,10 @@ function handleTab(event) {
   if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
-    let area = $("#customTextPopup .textarea")[0];
+    const area = $("#customTextPopup .textarea")[0] as HTMLTextAreaElement;
 
-    let start = area.selectionStart;
-    let end = area.selectionEnd;
+    const start = area.selectionStart;
+    const end = area.selectionEnd;
 
     // set textarea value to: text before caret + tab + text after caret
     area.value =
@@ -714,12 +718,13 @@ $(document).keydown(async (event) => {
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
-    Sound.playClick(Config.playSoundOnClick);
-    let t = /INPUT|SELECT|TEXTAREA/i;
+    Sound.playClick();
+    const t = /INPUT|SELECT|TEXTAREA/i;
     if (
-      !t.test(event.target.tagName) ||
-      event.target.disabled ||
-      event.target.readOnly
+      !t.test((event.target as unknown as Element).tagName)
+      // if this breaks in the future, call mio and tell him to stop being lazy
+      // (event.target as unknown as KeyboardEvent).disabled ||
+      // (event.target as unknown as Element).readOnly
     ) {
       event.preventDefault();
     }
@@ -764,12 +769,10 @@ $(document).keydown(async (event) => {
     event.key === "Dead" &&
     !Misc.trailingComposeChars.test(TestInput.input.current)
   ) {
-    Sound.playClick(Config.playSoundOnClick);
-    $(
-      document.querySelector("#words .word.active").querySelectorAll("letter")[
-        TestInput.input.current.length
-      ]
-    ).toggleClass("dead");
+    Sound.playClick();
+    const word = document.querySelector<HTMLElement>("#words .word.active");
+    const len = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
+    word?.querySelectorAll("letter")[len].classList.toggle("dead");
   }
 
   if (Config.oppositeShiftMode !== "off") {
@@ -812,9 +815,9 @@ $("#wordsInput").keyup((event) => {
   }
 
   if (TestUI.resultVisible) return;
-  let now = performance.now();
+  const now = performance.now();
   if (TestInput.keypressTimings.duration.current !== -1) {
-    let diff = Math.abs(TestInput.keypressTimings.duration.current - now);
+    const diff = Math.abs(TestInput.keypressTimings.duration.current - now);
     TestInput.pushKeypressDuration(diff);
   }
   TestInput.setKeypressDuration(now);
@@ -823,20 +826,20 @@ $("#wordsInput").keyup((event) => {
 
 $("#wordsInput").on("beforeinput", (event) => {
   if (!event.originalEvent?.isTrusted) return;
-  if (event.target.value === "") {
-    event.target.value = " ";
+  if ((event.target as HTMLInputElement).value === "") {
+    (event.target as HTMLInputElement).value = " ";
   }
 });
 
 $("#wordsInput").on("input", (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
-    event.target.value = " ";
+    (event.target as HTMLInputElement).value = " ";
     return;
   }
 
   TestInput.setKeypressNotAfk();
 
-  const realInputValue = event.target.value.normalize();
+  const realInputValue = (event.target as HTMLInputElement).value.normalize();
   const inputValue = realInputValue.slice(1);
 
   // input will be modified even with the preventDefault() in
@@ -878,20 +881,27 @@ $("#wordsInput").on("input", (event) => {
   // the selection inside the input event
   setTimeout(() => {
     if (
-      event.target.selectionStart !== event.target.value.length &&
-      (!Misc.trailingComposeChars.test(event.target.value) ||
-        event.target.selectionStart <
-          event.target.value.search(Misc.trailingComposeChars))
+      (event.target as HTMLInputElement).selectionStart !==
+        (event.target as HTMLInputElement).value.length &&
+      (!Misc.trailingComposeChars.test(
+        (event.target as HTMLInputElement).value
+      ) ||
+        ((event.target as HTMLInputElement).selectionStart ?? 0) <
+          (event.target as HTMLInputElement).value.search(
+            Misc.trailingComposeChars
+          ))
     ) {
-      event.target.selectionStart = event.target.selectionEnd =
-        event.target.value.length;
+      (event.target as HTMLInputElement).selectionStart = (
+        event.target as HTMLInputElement
+      ).selectionEnd = (event.target as HTMLInputElement).value.length;
     }
   }, 0);
 });
 
 $("#wordsInput").focus((event) => {
-  event.target.selectionStart = event.target.selectionEnd =
-    event.target.value.length;
+  (event.target as HTMLInputElement).selectionStart = (
+    event.target as HTMLInputElement
+  ).selectionEnd = (event.target as HTMLInputElement).value.length;
 });
 
 $("#wordsInput").on("copy paste", (event) => {
