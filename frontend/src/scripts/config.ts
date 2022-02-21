@@ -188,8 +188,11 @@ function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
 
 function invalid(key: string, val: any): void {
   Notifications.add(
-    `A config value was invalid, tried setting "${key}" to "${val.toString()}", type "${typeof val}"`,
+    `Invalid value for ${key} (${val.toString()}). Please try to change this setting again.`,
     -1
+  );
+  console.error(
+    `Invalid value key ${key} value ${val.toString()} type ${typeof val}`
   );
 }
 
