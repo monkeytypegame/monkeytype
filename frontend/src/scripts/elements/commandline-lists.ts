@@ -2594,12 +2594,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsLiveAcc,
     },
     {
-      id: "changeShowAvg",
-      display: "Show average...",
-      icon: "fa-tachometer-alt",
-      subgroup: commandsShowAvg,
-    },
-    {
       id: "changeLiveBurst",
       display: "Live burst...",
       icon: "fa-fire-alt",
@@ -2858,6 +2852,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Highlight mode...",
       icon: "fa-highlighter",
       subgroup: commandsHighlightMode,
+    },
+    {
+      id: "changeShowAvg",
+      display: "Show average...",
+      icon: "fa-tachometer-alt",
+      subgroup: commandsShowAvg,
     },
     {
       id: "changeCustomBackground",
