@@ -13,15 +13,14 @@ class PresetController {
     const { name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
-    await PresetDAO.addPreset(uid, name, config);
-    return new MonkeyResponse("Preset updated");
+    const data = await PresetDAO.addPreset(uid, name, config);
+
+    return new MonkeyResponse("Preset created", data);
   }
 
   static async editPreset(req, _res) {
     const { _id, name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
-
-    await PresetDAO.editPreset(uid, _id, name, config);
 
     return new MonkeyResponse("Preset updated");
   }
