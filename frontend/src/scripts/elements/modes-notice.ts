@@ -1,7 +1,7 @@
 import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
-import * as Misc from "../misc";
+import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
@@ -107,20 +107,10 @@ export async function update(): Promise<void> {
   }
 
   if (Config.showAvg) {
-    const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
-    let wpm = await DB.getUserAverageWpm10(
-      Config.mode,
-      mode2 as never,
-      Config.punctuation,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode
-    );
-    wpm = Math.round(wpm * 100) / 100;
-    if (!Config.alwaysShowDecimalPlaces) wpm = Math.round(wpm);
-    if (wpm > 0) {
+    const val = Last10Average.get();
+    if (firebase.auth().currentUser && val > 0) {
       $(".pageTest #testModesNotice").append(
-        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${wpm}wpm</div>`
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${val}wpm</div>`
       );
     }
   }
