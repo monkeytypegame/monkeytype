@@ -198,7 +198,7 @@ class UserController {
 
   static async clearTagPb(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { tagId } = req.body;
+    const { tagId } = req.params;
     await UsersDAO.removeTagPb(uid, tagId);
     return new MonkeyResponse("Tag PB cleared");
   }
