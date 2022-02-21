@@ -120,7 +120,7 @@ export async function update(): Promise<void> {
     if (!Config.alwaysShowDecimalPlaces) wpm = Math.round(wpm);
     if (wpm > 0) {
       $(".pageTest #testModesNotice").append(
-        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>average: ${wpm}</div>`
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${wpm}wpm</div>`
       );
     }
   }
