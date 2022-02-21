@@ -60,7 +60,6 @@ export async function init() {
       Config.lazyMode
     );
     wpm = Math.round(wpm);
-    console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (TestState.isPaceRepeat == true) {
@@ -152,9 +151,8 @@ export function update(expectedStepEnd) {
       if (settings.currentLetterIndex === -1) {
         currentLetter = word.querySelectorAll("letter")[0];
       } else {
-        currentLetter = word.querySelectorAll("letter")[
-          settings.currentLetterIndex
-        ];
+        currentLetter =
+          word.querySelectorAll("letter")[settings.currentLetterIndex];
       }
       newTop = currentLetter.offsetTop - $(currentLetter).height() / 5;
       newLeft;

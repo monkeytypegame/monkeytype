@@ -322,18 +322,8 @@ export async function findCurrentGroup(
   return retgroup;
 }
 
-type Challenge = {
-  name: string;
-  display: string;
-  autoRole: boolean;
-  type: string;
-  parameters: string | number[];
-  message: string;
-  requirements: object;
-};
-
-let challengeList: Challenge[] = [];
-export async function getChallengeList(): Promise<Challenge[]> {
+let challengeList: MonkeyTypes.Challenge[] = [];
+export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   if (challengeList.length === 0) {
     return $.getJSON("challenges/_list.json", function (data) {
       challengeList = data;

@@ -3,7 +3,7 @@ import * as TestWords from "./test-words";
 type Keypress = {
   count: number;
   errors: number;
-  words: string[];
+  words: number[];
   afk: boolean;
 };
 
@@ -185,8 +185,8 @@ export function incrementKeypressErrors(): void {
   currentKeypress.errors++;
 }
 
-export function pushKeypressWord(word: string): void {
-  currentKeypress.words.push(word);
+export function pushKeypressWord(wordIndex: number): void {
+  currentKeypress.words.push(wordIndex);
 }
 
 export function setBurstStart(time: number): void {
