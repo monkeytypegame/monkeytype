@@ -241,6 +241,10 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "armenian",
+    "languages": ["armenian_western", "armenian_western_1k"]
+  },
+  {
     "name": "japanese",
     "languages": ["japanese_hiragana", "japanese_katakana"]
   },
