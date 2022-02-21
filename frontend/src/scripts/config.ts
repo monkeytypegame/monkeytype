@@ -1092,7 +1092,7 @@ export function setQuoteLength(
   nosave?: boolean,
   multipleMode?: boolean
 ): void {
-  if (!isConfigValueValid(len, [[-1, 0, 1, 2, 3], "numberArray"]))
+  if (!isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]))
     return invalid("quote length", len);
 
   if (Array.isArray(len)) {
