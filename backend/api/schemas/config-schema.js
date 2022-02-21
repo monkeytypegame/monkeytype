@@ -104,6 +104,7 @@ const CONFIG_SCHEMA = joi.object({
   burstHeatmap: joi.boolean(),
   britishEnglish: joi.boolean(),
   lazyMode: joi.boolean(),
+  showAvg: joi.boolean(),
 });
 
 module.exports = CONFIG_SCHEMA;

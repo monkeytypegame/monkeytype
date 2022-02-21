@@ -358,6 +358,29 @@ const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
   ],
 };
 
+const commandsShowAvg: MonkeyTypes.CommandsGroup = {
+  title: "Show average...",
+  configKey: "showAvg",
+  list: [
+    {
+      id: "setAvgOff",
+      display: "off",
+      configValue: false,
+      exec: (): void => {
+        UpdateConfig.setShowAvg(false);
+      },
+    },
+    {
+      id: "setAvgOn",
+      display: "on",
+      configValue: true,
+      exec: (): void => {
+        UpdateConfig.setShowAvg(true);
+      },
+    },
+  ],
+};
+
 const commandsLiveAcc: MonkeyTypes.CommandsGroup = {
   title: "Live accuracy...",
   configKey: "showLiveAcc",
@@ -2569,6 +2592,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Live accuracy...",
       icon: "fa-percentage",
       subgroup: commandsLiveAcc,
+    },
+    {
+      id: "changeShowAvg",
+      display: "Show average...",
+      icon: "fa-tachometer-alt",
+      subgroup: commandsShowAvg,
     },
     {
       id: "changeLiveBurst",

@@ -1,6 +1,7 @@
 import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
+import * as Misc from "../misc";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
@@ -17,13 +18,14 @@ ConfigEvent.subscribe((eventKey) => {
       "minBurst",
       "confidenceMode",
       "layout",
+      "showAvg",
     ].includes(eventKey)
   ) {
     update();
   }
 });
 
-export function update(): void {
+export async function update(): Promise<void> {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -102,6 +104,25 @@ export function update(): void {
           : "custom"
       } pace${speed}</div>`
     );
+  }
+
+  if (Config.showAvg) {
+    const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+    let wpm = await DB.getUserAverageWpm10(
+      Config.mode,
+      mode2 as never,
+      Config.punctuation,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode
+    );
+    wpm = Math.round(wpm * 100) / 100;
+    if (!Config.alwaysShowDecimalPlaces) wpm = Math.round(wpm);
+    if (wpm > 0) {
+      $(".pageTest #testModesNotice").append(
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${wpm}wpm</div>`
+      );
+    }
   }
 
   if (Config.minWpm !== "off") {
