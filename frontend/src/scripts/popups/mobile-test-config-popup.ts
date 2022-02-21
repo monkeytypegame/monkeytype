@@ -133,7 +133,7 @@ el.find(".quoteGroup .button").on("click", (e) => {
       len = [0, 1, 2, 3];
     }
     UpdateConfig.setQuoteLength(
-      len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLengthArray,
+      len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[],
       false,
       e.shiftKey
     );

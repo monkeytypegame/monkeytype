@@ -23,8 +23,6 @@ declare namespace MonkeyTypes {
 
   type QuoteLength = -1 | 0 | 1 | 2 | 3;
 
-  type QuoteLengthArray = QuoteLength[];
-
   type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
   type CaretStyle =
@@ -187,6 +185,7 @@ declare namespace MonkeyTypes {
     wpm: number[];
     raw: number[];
     err: number[];
+    unsmoothedRaw?: number[];
   }
 
   interface KeyStats {
@@ -246,7 +245,7 @@ declare namespace MonkeyTypes {
     words: WordsModes;
     time: TimeModes;
     mode: Mode;
-    quoteLength: QuoteLengthArray;
+    quoteLength: QuoteLength[];
     language: string;
     fontSize: FontSize;
     freedomMode: boolean;
