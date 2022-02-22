@@ -1,6 +1,10 @@
 import ResultController from "../controllers/result";
 import resultSchema from "../schemas/result-schema";
-import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import {
+  asyncHandler,
+  validateRequest,
+  validateConfiguration,
+} from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
@@ -17,6 +21,12 @@ router.get(
 
 router.post(
   "/",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.enableSavingResults.enabled;
+    },
+    invalidMessage: "Results are not being saved at this time.",
+  }),
   RateLimit.resultsAdd,
   authenticateRequest(),
   validateRequest({
