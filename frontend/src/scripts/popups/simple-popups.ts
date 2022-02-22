@@ -25,7 +25,7 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: any;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => void | Promise<void>;
   beforeShowFn: (thisPopup: SimplePopup) => void;
   constructor(
     id: string,
@@ -34,20 +34,24 @@ class SimplePopup {
     inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn: any,
+    execFn: (
+      thisPopup: SimplePopup,
+      ...params: string[]
+    ) => void | Promise<void>,
     beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = execFn;
+    this.execFn = (thisPopup, ...vals): Promise<void> | void =>
+      execFn(thisPopup, ...vals);
     this.title = title;
     this.inputs = inputs;
     this.text = text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
-    this.beforeShowFn = (): void => beforeShowFn(this);
+    this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
   }
   reset(): void {
     this.element.html(`
@@ -133,7 +137,7 @@ class SimplePopup {
       vals.push($(el).val() as string);
     });
     // @ts-ignore todo remove
-    this.execFn(...vals);
+    this.execFn(this, ...vals);
     this.hide();
   }
 
@@ -217,7 +221,7 @@ list["updateEmail"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (password: string, email: string, emailConfirm: string) => {
+  async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       if (email !== emailConfirm) {
@@ -294,7 +298,7 @@ list["updateName"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (pass: string, newName: string) => {
+  async (_thisPopup, pass, newName) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -385,7 +389,7 @@ list["updatePassword"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (previousPass: string, newPass: string, newPassConfirm: string) => {
+  async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -453,12 +457,7 @@ list["addPasswordAuth"] = new SimplePopup(
   ],
   "",
   "Add",
-  async (
-    email: string,
-    emailConfirm: string,
-    pass: string,
-    passConfirm: string
-  ) => {
+  async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
     if (email !== emailConfirm) {
       Notifications.add("Emails don't match", 0);
       return;
@@ -492,7 +491,7 @@ list["deleteAccount"] = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     //
     try {
       const user = firebase.auth().currentUser;
@@ -570,8 +569,8 @@ list["clearTagPb"] = new SimplePopup(
   [],
   `Are you sure you want to clear this tags PB?`,
   "Clear",
-  () => {
-    const tagid = eval("this.parameters[0]");
+  (thisPopup) => {
+    const tagid = thisPopup.parameters[0];
     Loader.show();
     axiosInstance
       .delete(`/user/tags/${tagid}/clearPb`)
@@ -604,7 +603,6 @@ list["clearTagPb"] = new SimplePopup(
           Notifications.add("Something went wrong: " + e, -1);
         }
       });
-    // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
   (thisPopup) => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
@@ -618,7 +616,7 @@ list["applyCustomFont"] = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying.",
   "Apply",
-  (fontName: string) => {
+  (_thisPopup, fontName: string) => {
     if (fontName === "") return;
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
   },
@@ -640,7 +638,7 @@ list["resetPersonalBests"] = new SimplePopup(
   ],
   "",
   "Reset",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
