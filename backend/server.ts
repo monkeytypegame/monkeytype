@@ -2,7 +2,7 @@ import "dotenv/config";
 import admin, { ServiceAccount } from "firebase-admin";
 import serviceAccount from "./credentials/serviceAccountKey.json";
 import db from "./init/db.js";
-import jobs from "./jobs/index.js";
+import jobs from "./jobs";
 import ConfigurationDAO from "./dao/configuration.js";
 import app from "./app";
 
@@ -16,7 +16,7 @@ async function bootServer(port) {
     admin.initializeApp({
       credential: admin.credential.cert(
         serviceAccount as unknown as ServiceAccount
-      )
+      ),
     });
     console.log("Firebase app initialized");
 

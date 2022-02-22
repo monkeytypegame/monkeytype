@@ -35,8 +35,14 @@ jobs:
             ts:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
+            anti-cheat:
+              - 'backend/**/anticheat/**'
 
       - run: echo ${{ steps.filter.outputs.changes }}
+
+      - name: Check Anti-cheat
+        if: steps.filter.outputs.anti-cheat == 'true'
+        run: exit 1
 
       - name: Cache node modules
         if: steps.filter.outputs.changes != '[]'
