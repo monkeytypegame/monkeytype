@@ -74,6 +74,7 @@ export async function init(): Promise<void> {
       Config.difficulty,
       Config.lazyMode
     );
+    wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (TestState.isPaceRepeat == true) {

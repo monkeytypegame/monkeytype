@@ -25,8 +25,8 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: any;
-  beforeShowFn: any;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => void | Promise<void>;
+  beforeShowFn: (thisPopup: SimplePopup) => void;
   constructor(
     id: string,
     type: string,
@@ -34,20 +34,24 @@ class SimplePopup {
     inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn: any,
-    beforeShowFn: any
+    execFn: (
+      thisPopup: SimplePopup,
+      ...params: string[]
+    ) => void | Promise<void>,
+    beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = execFn;
+    this.execFn = (thisPopup, ...vals): Promise<void> | void =>
+      execFn(thisPopup, ...vals);
     this.title = title;
     this.inputs = inputs;
     this.text = text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
-    this.beforeShowFn = beforeShowFn;
+    this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
   }
   reset(): void {
     this.element.html(`
@@ -68,7 +72,7 @@ class SimplePopup {
 
     this.initInputs();
 
-    if (!this.buttonText) {
+    if (this.buttonText === "") {
       el.find(".button").remove();
     } else {
       el.find(".button").text(this.buttonText);
@@ -133,13 +137,13 @@ class SimplePopup {
       vals.push($(el).val() as string);
     });
     // @ts-ignore todo remove
-    this.execFn(...vals);
+    this.execFn(this, ...vals);
     this.hide();
   }
 
   show(parameters: string[] = []): void {
     this.parameters = parameters;
-    this.beforeShowFn();
+    this.beforeShowFn(this);
     this.init();
     this.wrapper
       .stop(true, true)
@@ -217,7 +221,7 @@ list["updateEmail"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (password: string, email: string, emailConfirm: string) => {
+  async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       if (email !== emailConfirm) {
@@ -265,13 +269,13 @@ list["updateEmail"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     // @ts-ignore todo remove ignore once firebase is initialised with code
     if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
   }
 );
@@ -294,7 +298,7 @@ list["updateName"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (pass: string, newName: string) => {
+  async (_thisPopup, pass, newName) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -353,11 +357,11 @@ list["updateName"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs[0].hidden = true`);
-      eval(`this.buttonText = "Reauthenticate to update"`);
+      thisPopup.inputs[0].hidden = true;
+      thisPopup.buttonText = "Reauthenticate to update";
     }
   }
 );
@@ -385,7 +389,7 @@ list["updatePassword"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (previousPass: string, newPass: string, newPassConfirm: string) => {
+  async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -414,13 +418,13 @@ list["updatePassword"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     // @ts-ignore todo remove ignore
     if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
   }
 );
@@ -453,12 +457,7 @@ list["addPasswordAuth"] = new SimplePopup(
   ],
   "",
   "Add",
-  async (
-    email: string,
-    emailConfirm: string,
-    pass: string,
-    passConfirm: string
-  ) => {
+  async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
     if (email !== emailConfirm) {
       Notifications.add("Emails don't match", 0);
       return;
@@ -492,7 +491,7 @@ list["deleteAccount"] = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     //
     try {
       const user = firebase.auth().currentUser;
@@ -554,11 +553,11 @@ list["deleteAccount"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to delete"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to delete";
     }
   }
 );
@@ -570,8 +569,8 @@ list["clearTagPb"] = new SimplePopup(
   [],
   `Are you sure you want to clear this tags PB?`,
   "Clear",
-  () => {
-    const tagid = eval("this.parameters[0]");
+  (thisPopup) => {
+    const tagid = thisPopup.parameters[0];
     Loader.show();
     axiosInstance
       .delete(`/user/tags/${tagid}/clearPb`)
@@ -604,12 +603,9 @@ list["clearTagPb"] = new SimplePopup(
           Notifications.add("Something went wrong: " + e, -1);
         }
       });
-    // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
-  () => {
-    eval(
-      "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
-    );
+  (thisPopup) => {
+    thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
   }
 );
 
@@ -620,7 +616,7 @@ list["applyCustomFont"] = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying.",
   "Apply",
-  (fontName: string) => {
+  (_thisPopup, fontName: string) => {
     if (fontName === "") return;
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
   },
@@ -642,7 +638,7 @@ list["resetPersonalBests"] = new SimplePopup(
   ],
   "",
   "Reset",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -684,11 +680,11 @@ list["resetPersonalBests"] = new SimplePopup(
       Notifications.add(e as string, -1);
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to reset"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
     }
   }
 );

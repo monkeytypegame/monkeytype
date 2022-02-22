@@ -313,11 +313,11 @@ export async function getUserAverageWpm10<M extends MonkeyTypes.Mode>(
 
     // Return the last 10 average wpm for quote if the current quote id has never been completed before by the user.
     if (count == 0 && mode == "quote") {
-      return Math.round(last10Wpm / last10Count);
+      return last10Wpm / last10Count;
     }
 
     // Return the average wpm of the last 10 completions for the targeted test mode.
-    return Math.round(wpmSum / count);
+    return wpmSum / count;
   }
 
   const retval =

@@ -46,6 +46,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
+import * as Last10Average from "../elements/last-10-average";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -372,6 +373,7 @@ export function restart(
   Replay.pauseReplay();
   TestInput.setBailout(false);
   PaceCaret.reset();
+  if (Config.showAvg) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
@@ -1411,7 +1413,7 @@ export async function finish(difficultyFailed = false) {
     } catch (e) {
       console.log("Analytics unavailable");
     }
-    notSignedInLastResult = completedEvent;
+    if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
   } else {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
@@ -1629,7 +1631,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
-  let len = $(e.currentTarget).attr("quoteLength");
+  let len = parseInt($(e.currentTarget).attr("quoteLength"));
   if (len != -2) {
     if (len == -1) {
       len = [0, 1, 2, 3];

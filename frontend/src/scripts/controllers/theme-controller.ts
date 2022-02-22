@@ -226,7 +226,7 @@ export function applyCustomBackground(): void {
 
 window
   .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (event) => {
+  ?.addEventListener("change", (event) => {
     if (!Config.autoSwitchTheme || Config.customTheme) return;
     if (event.matches) {
       set(Config.themeDark);

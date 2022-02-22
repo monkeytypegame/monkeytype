@@ -1,6 +1,7 @@
 import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
+import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
@@ -17,13 +18,14 @@ ConfigEvent.subscribe((eventKey) => {
       "minBurst",
       "confidenceMode",
       "layout",
+      "showAvg",
     ].includes(eventKey)
   ) {
     update();
   }
 });
 
-export function update(): void {
+export async function update(): Promise<void> {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -102,6 +104,15 @@ export function update(): void {
           : "custom"
       } pace${speed}</div>`
     );
+  }
+
+  if (Config.showAvg) {
+    const val = Last10Average.get();
+    if (firebase.auth().currentUser && val > 0) {
+      $(".pageTest #testModesNotice").append(
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${val}wpm</div>`
+      );
+    }
   }
 
   if (Config.minWpm !== "off") {
