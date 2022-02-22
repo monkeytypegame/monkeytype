@@ -9,17 +9,16 @@ import Logger from "../../handlers/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 import MonkeyError from "../../handlers/error";
+import {
+  implemented as anticheatImplemented,
+  validateResult,
+  validateKeys,
+} from "../../anticheat/index";
 
 const objecthash = node_object_hash().hash;
 
-let validateResult;
-let validateKeys;
 try {
-  // eslint-disable-next-line
-  let module = require("anticheat");
-  validateResult = module.validateResult;
-  validateKeys = module.validateKeys;
-  if (!validateResult || !validateKeys) throw new Error("undefined");
+  if (anticheatImplemented() === false) throw new Error("undefined");
 } catch (e) {
   if (process.env.MODE === "dev") {
     console.error(

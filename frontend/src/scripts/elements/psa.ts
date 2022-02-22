@@ -17,6 +17,15 @@ function setMemory(id: string): void {
 
 async function getLatest(): Promise<MonkeyTypes.PSA[]> {
   const response = await Ape.psas.get();
+  if (response.message === "Server is down for maintenance") {
+    Notifications.addBanner(
+      "Server is currently under maintenance",
+      -1,
+      "bullhorn",
+      true
+    );
+    return [];
+  }
   return response.data as MonkeyTypes.PSA[];
 }
 
