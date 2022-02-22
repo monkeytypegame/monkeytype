@@ -1,5 +1,5 @@
 export function implemented(): boolean {
-  return false;
+  return true;
 }
 
 export function validateResult(_result: object): boolean {
