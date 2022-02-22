@@ -26,7 +26,7 @@ class SimplePopup {
   text: string;
   buttonText: string;
   execFn: any;
-  beforeShowFn: any;
+  beforeShowFn: (thisPopup: SimplePopup) => void;
   constructor(
     id: string,
     type: string,
@@ -35,7 +35,7 @@ class SimplePopup {
     text = "",
     buttonText = "Confirm",
     execFn: any,
-    beforeShowFn: any
+    beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
@@ -47,7 +47,7 @@ class SimplePopup {
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
-    this.beforeShowFn = beforeShowFn;
+    this.beforeShowFn = (): void => beforeShowFn(this);
   }
   reset(): void {
     this.element.html(`
@@ -68,7 +68,7 @@ class SimplePopup {
 
     this.initInputs();
 
-    if (!this.buttonText) {
+    if (this.buttonText === "") {
       el.find(".button").remove();
     } else {
       el.find(".button").text(this.buttonText);
@@ -139,7 +139,7 @@ class SimplePopup {
 
   show(parameters: string[] = []): void {
     this.parameters = parameters;
-    this.beforeShowFn();
+    this.beforeShowFn(this);
     this.init();
     this.wrapper
       .stop(true, true)
@@ -265,13 +265,13 @@ list["updateEmail"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     // @ts-ignore todo remove ignore once firebase is initialised with code
     if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
   }
 );
@@ -353,11 +353,11 @@ list["updateName"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs[0].hidden = true`);
-      eval(`this.buttonText = "Reauthenticate to update"`);
+      thisPopup.inputs[0].hidden = true;
+      thisPopup.buttonText = "Reauthenticate to update";
     }
   }
 );
@@ -414,13 +414,13 @@ list["updatePassword"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     // @ts-ignore todo remove ignore
     if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
   }
 );
@@ -554,11 +554,11 @@ list["deleteAccount"] = new SimplePopup(
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to delete"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to delete";
     }
   }
 );
@@ -606,10 +606,8 @@ list["clearTagPb"] = new SimplePopup(
       });
     // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
-  () => {
-    eval(
-      "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
-    );
+  (thisPopup) => {
+    thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
   }
 );
 
@@ -684,11 +682,11 @@ list["resetPersonalBests"] = new SimplePopup(
       Notifications.add(e as string, -1);
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to reset"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
     }
   }
 );
