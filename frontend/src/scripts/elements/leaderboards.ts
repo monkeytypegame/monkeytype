@@ -151,28 +151,34 @@ function checkLbMemory(lb: LbKey): void {
     side = "right";
   }
 
-  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"];
+  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
 
-  if (memory && currentRank[lb]) {
+  if (currentRank[lb]) {
     const difference = memory - currentRank[lb].rank;
     if (difference > 0) {
       DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
-        ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-          difference
-        )} since you last checked)`
-      );
+      if (memory !== 0) {
+        $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+          ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+            difference
+          )} since you last checked)`
+        );
+      }
     } else if (difference < 0) {
       DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
-        ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-          difference
-        )} since you last checked)`
-      );
+      if (memory !== 0) {
+        $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+          ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+            difference
+          )} since you last checked)`
+        );
+      }
     } else {
-      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
-        ` ( = since you last checked)`
-      );
+      if (memory !== 0) {
+        $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+          ` ( = since you last checked)`
+        );
+      }
     }
   }
 }
