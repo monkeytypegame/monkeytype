@@ -19,6 +19,7 @@ const objecthash = node_object_hash().hash;
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
+  console.log("Anticheat module loaded");
 } catch (e) {
   if (process.env.MODE === "dev") {
     console.error(
@@ -115,7 +116,7 @@ class ResultController {
       }
     }
 
-    if (validateResult) {
+    if (anticheatImplemented()) {
       if (!validateResult(result)) {
         throw new MonkeyError(400, "Result data doesn't make sense");
       }
@@ -221,7 +222,7 @@ class ResultController {
           result.keySpacingStats !== null &&
           result.keyDurationStats !== null
         ) {
-          if (validateKeys) {
+          if (anticheatImplemented()) {
             if (!validateKeys(result, uid)) {
               throw new MonkeyError(400, "Possible bot detected");
             }
