@@ -19,6 +19,9 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   monkeyTokens: {
     enabled: false,
   },
+  enableSavingResults: {
+    enabled: false,
+  },
 };
 
 export default Object.freeze(BASE_CONFIGURATION);

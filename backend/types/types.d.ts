@@ -17,6 +17,9 @@ declare namespace MonkeyTypes {
     monkeyTokens: {
       enabled: boolean;
     };
+    enableSavingResults: {
+      enabled: boolean;
+    };
   }
 
   interface Context {
