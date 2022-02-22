@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "module": "ES2020",
-    "target": "ES2019",
-    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": false,
     "allowJs": true,
     "checkJs": true,
     "outDir": "build",

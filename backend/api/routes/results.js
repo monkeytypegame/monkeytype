@@ -34,7 +34,7 @@ router.patch(
   validateRequest({
     body: {
       tagIds: joi.array().items(joi.string()).required(),
-      resultIds: joi.string().required(),
+      resultId: joi.string().required(),
     },
   }),
   asyncHandler(ResultController.updateTags)
