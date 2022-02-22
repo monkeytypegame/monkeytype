@@ -324,14 +324,14 @@ list["updateName"] = new SimplePopup(
       DB.getSnapshot().name = newName;
       $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      Loader.hide();
       // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (e.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
+    Loader.hide();
   },
   (thisPopup) => {
     const user = firebase.auth().currentUser;
