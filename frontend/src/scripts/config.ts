@@ -20,7 +20,7 @@ export function setChangedBeforeDb(val: boolean): void {
   changedBeforeDb = val;
 }
 
-let loadDone: (...stuff: any[]) => any;
+let loadDone: (value?: unknown) => void;
 
 const defaultConfig: MonkeyTypes.Config = {
   theme: "serika_dark",
@@ -151,11 +151,11 @@ async function some<T>(
   return false;
 }
 
-function isConfigValueValid<T>(
-  val: T,
+function isConfigValueValid(
+  val: unknown,
   possibleTypes: PossibleType[]
-): Promise<boolean> {
-  return some(possibleTypes, async (possibleType) => {
+): boolean {
+  return possibleTypes.some((possibleType) => {
     switch (possibleType) {
       case "boolean":
         return typeof val === "boolean";
@@ -184,6 +184,22 @@ function isConfigValueValid<T>(
       case "numberArray":
         return val instanceof Array && val.every((v) => typeof v === "number");
 
+      default:
+        if (possibleType instanceof Array) {
+          return possibleType.includes(val as never);
+        }
+
+        return false;
+    }
+  });
+}
+
+function isConfigValueValidAsync(
+  val: unknown,
+  possibleTypes: PossibleType[]
+): Promise<boolean> {
+  return some(possibleTypes, async (possibleType) => {
+    switch (possibleType) {
       case "layoutfluid": {
         if (typeof val !== "string") return false;
 
@@ -212,14 +228,12 @@ function isConfigValueValid<T>(
   });
 }
 
-function invalid(key: string, val: any): void {
+function invalid(key: string, val: unknown): void {
   Notifications.add(
-    `Invalid value for ${key} (${val.toString()}). Please try to change this setting again.`,
+    `Invalid value for ${key} (${val}). Please try to change this setting again.`,
     -1
   );
-  console.error(
-    `Invalid value key ${key} value ${val.toString()} type ${typeof val}`
-  );
+  console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
 }
 
 let config = {
@@ -246,12 +260,8 @@ export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
 }
 
 //numbers
-export async function setNumbers(
-  numb: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(numb, ["boolean"])))
-    return invalid("numbers", numb);
+export function setNumbers(numb: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(numb, ["boolean"])) return invalid("numbers", numb);
 
   if (config.mode === "quote") {
     numb = false;
@@ -267,11 +277,8 @@ export async function setNumbers(
 }
 
 //punctuation
-export async function setPunctuation(
-  punc: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(punc, ["boolean"])))
+export function setPunctuation(punc: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(punc, ["boolean"]))
     return invalid("punctuation", punc);
 
   if (config.mode === "quote") {
@@ -287,15 +294,8 @@ export async function setPunctuation(
   ConfigEvent.dispatch("punctuation", config.punctuation);
 }
 
-export async function setMode(
-  mode: MonkeyTypes.Mode,
-  nosave?: boolean
-): Promise<void> {
-  if (
-    !(await isConfigValueValid(mode, [
-      ["time", "words", "quote", "zen", "custom"],
-    ]))
-  )
+export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]))
     return invalid("mode", mode);
 
   if (mode !== "words" && config.funbox === "memory") {
@@ -319,11 +319,8 @@ export async function setMode(
   ConfigEvent.dispatch("mode", previous, config.mode);
 }
 
-export async function setPlaySoundOnError(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setPlaySoundOnError(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("play sound on error", val);
 
   config.playSoundOnError = val;
@@ -331,15 +328,11 @@ export async function setPlaySoundOnError(
   ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
 }
 
-export async function setPlaySoundOnClick(
+export function setPlaySoundOnClick(
   val: MonkeyTypes.PlaySoundOnClick,
   nosave?: boolean
-): Promise<void> {
-  if (
-    !(await isConfigValueValid(val, [
-      ["off", "1", "2", "3", "4", "5", "6", "7"],
-    ]))
-  )
+): void {
+  if (!isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]))
     return invalid("play sound on click", val);
 
   config.playSoundOnClick = val;
@@ -347,11 +340,11 @@ export async function setPlaySoundOnClick(
   ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
 }
 
-export async function setSoundVolume(
+export function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, [["0.1", "0.5", "1.0"]])))
+): void {
+  if (!isConfigValueValid(val, [["0.1", "0.5", "1.0"]]))
     return invalid("sound volume", val);
 
   config.soundVolume = val;
@@ -360,11 +353,11 @@ export async function setSoundVolume(
 }
 
 //difficulty
-export async function setDifficulty(
+export function setDifficulty(
   diff: MonkeyTypes.Difficulty,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(diff, [["normal", "expert", "master"]])))
+): void {
+  if (!isConfigValueValid(diff, [["normal", "expert", "master"]]))
     return invalid("difficulty", diff);
 
   if (diff !== "normal" && diff !== "expert" && diff !== "master") {
@@ -376,23 +369,16 @@ export async function setDifficulty(
 }
 
 //set fav themes
-export async function setFavThemes(
-  themes: string[],
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(themes, ["stringArray"])))
+export function setFavThemes(themes: string[], nosave?: boolean): void {
+  if (!isConfigValueValid(themes, ["stringArray"]))
     return invalid("favorite themes", themes);
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("favThemes", config.favThemes);
 }
 
-export async function setFunbox(
-  funbox: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(funbox, ["string"])))
-    return invalid("funbox", funbox);
+export function setFunbox(funbox: string, nosave?: boolean): void {
+  if (!isConfigValueValid(funbox, ["string"])) return invalid("funbox", funbox);
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
@@ -400,11 +386,8 @@ export async function setFunbox(
   ConfigEvent.dispatch("funbox", config.funbox);
 }
 
-export async function setBlindMode(
-  blind: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(blind, ["boolean"])))
+export function setBlindMode(blind: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(blind, ["boolean"]))
     return invalid("blind mode", blind);
 
   config.blindMode = blind;
@@ -412,11 +395,11 @@ export async function setBlindMode(
   ConfigEvent.dispatch("blindMode", config.blindMode, nosave);
 }
 
-export async function setChartAccuracy(
+export function setChartAccuracy(
   chartAccuracy: boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(chartAccuracy, ["boolean"])))
+): void {
+  if (!isConfigValueValid(chartAccuracy, ["boolean"]))
     return invalid("chart accuracy", chartAccuracy);
 
   config.chartAccuracy = chartAccuracy;
@@ -424,11 +407,11 @@ export async function setChartAccuracy(
   ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
 }
 
-export async function setChartStyle(
+export function setChartStyle(
   chartStyle: MonkeyTypes.ChartStyle,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(chartStyle, [["line", "scatter"]])))
+): void {
+  if (!isConfigValueValid(chartStyle, [["line", "scatter"]]))
     return invalid("chart style", chartStyle);
 
   config.chartStyle = chartStyle;
@@ -436,11 +419,11 @@ export async function setChartStyle(
   ConfigEvent.dispatch("chartStyle", config.chartStyle);
 }
 
-export async function setStopOnError(
+export function setStopOnError(
   soe: MonkeyTypes.StopOnError | boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(soe, [["off", "word", "letter"], "boolean"])))
+): void {
+  if (!isConfigValueValid(soe, [["off", "word", "letter"], "boolean"]))
     return invalid("stop on error", soe);
 
   if (soe === true || soe === false) {
@@ -454,11 +437,11 @@ export async function setStopOnError(
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 }
 
-export async function setAlwaysShowDecimalPlaces(
+export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("always show decimal places", val);
 
   config.alwaysShowDecimalPlaces = val;
@@ -469,11 +452,8 @@ export async function setAlwaysShowDecimalPlaces(
   );
 }
 
-export async function setAlwaysShowCPM(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setAlwaysShowCPM(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("always show CPM", val);
 
   config.alwaysShowCPM = val;
@@ -481,11 +461,8 @@ export async function setAlwaysShowCPM(
   ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
 }
 
-export async function setShowOutOfFocusWarning(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("show out of focus warning", val);
 
   config.showOutOfFocusWarning = val;
@@ -496,11 +473,8 @@ export async function setShowOutOfFocusWarning(
   ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
 }
 
-export async function setSwapEscAndTab(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setSwapEscAndTab(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("swap esc and tab", val);
 
   config.swapEscAndTab = val;
@@ -509,11 +483,11 @@ export async function setSwapEscAndTab(
 }
 
 //pace caret
-export async function setPaceCaret(
+export function setPaceCaret(
   val: MonkeyTypes.PaceCaret,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, [["custom", "off", "average", "pb"]])))
+): void {
+  if (!isConfigValueValid(val, [["custom", "off", "average", "pb"]]))
     return invalid("pace caret", val);
 
   if (document.readyState === "complete") {
@@ -531,11 +505,8 @@ export async function setPaceCaret(
   ConfigEvent.dispatch("paceCaret", config.paceCaret, nosave);
 }
 
-export async function setPaceCaretCustomSpeed(
-  val: number,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["number"])))
+export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
     return invalid("pace caret custom speed", val);
 
   config.paceCaretCustomSpeed = val;
@@ -543,11 +514,8 @@ export async function setPaceCaretCustomSpeed(
   ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 }
 
-export async function setRepeatedPace(
-  pace: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(pace, ["boolean"])))
+export function setRepeatedPace(pace: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(pace, ["boolean"]))
     return invalid("repeated pace", pace);
 
   config.repeatedPace = pace;
@@ -556,11 +524,11 @@ export async function setRepeatedPace(
 }
 
 //min wpm
-export async function setMinWpm(
+export function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(minwpm, [["off", "custom"]])))
+): void {
+  if (!isConfigValueValid(minwpm, [["off", "custom"]]))
     return invalid("min WPM", minwpm);
 
   config.minWpm = minwpm;
@@ -568,11 +536,8 @@ export async function setMinWpm(
   ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
 }
 
-export async function setMinWpmCustomSpeed(
-  val: number,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["number"])))
+export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
     return invalid("min WPM custom speed", val);
 
   config.minWpmCustomSpeed = val;
@@ -581,11 +546,11 @@ export async function setMinWpmCustomSpeed(
 }
 
 //min acc
-export async function setMinAcc(
+export function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(min, [["off", "custom"]])))
+): void {
+  if (!isConfigValueValid(min, [["off", "custom"]]))
     return invalid("min acc", min);
 
   config.minAcc = min;
@@ -593,11 +558,8 @@ export async function setMinAcc(
   ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
 }
 
-export async function setMinAccCustom(
-  val: number,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["number"])))
+export function setMinAccCustom(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
     return invalid("min acc custom", val);
 
   config.minAccCustom = val;
@@ -606,11 +568,11 @@ export async function setMinAccCustom(
 }
 
 //min burst
-export async function setMinBurst(
+export function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(min, [["off", "fixed", "flex"]])))
+): void {
+  if (!isConfigValueValid(min, [["off", "fixed", "flex"]]))
     return invalid("min burst", min);
 
   config.minBurst = min;
@@ -618,11 +580,8 @@ export async function setMinBurst(
   ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
 }
 
-export async function setMinBurstCustomSpeed(
-  val: number,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["number"])))
+export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["number"]))
     return invalid("min burst custom speed", val);
 
   config.minBurstCustomSpeed = val;
@@ -631,11 +590,11 @@ export async function setMinBurstCustomSpeed(
 }
 
 //always show words history
-export async function setAlwaysShowWordsHistory(
+export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("always show words history", val);
 
   config.alwaysShowWordsHistory = val;
@@ -644,11 +603,11 @@ export async function setAlwaysShowWordsHistory(
 }
 
 //single list command line
-export async function setSingleListCommandLine(
+export function setSingleListCommandLine(
   option: MonkeyTypes.SingleListCommandLine,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(option, [["manual", "on"]])))
+): void {
+  if (!isConfigValueValid(option, [["manual", "on"]]))
     return invalid("single list command line", option);
 
   config.singleListCommandLine = option;
@@ -657,11 +616,8 @@ export async function setSingleListCommandLine(
 }
 
 //caps lock warning
-export async function setCapsLockWarning(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setCapsLockWarning(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("caps lock warning", val);
 
   config.capsLockWarning = val;
@@ -669,11 +625,8 @@ export async function setCapsLockWarning(
   ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
 }
 
-export async function setShowAllLines(
-  sal: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(sal, ["boolean"])))
+export function setShowAllLines(sal: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(sal, ["boolean"]))
     return invalid("show all lines", sal);
 
   config.showAllLines = sal;
@@ -683,23 +636,19 @@ export async function setShowAllLines(
   ConfigEvent.dispatch("showAllLines", config.showAllLines);
 }
 
-export async function setQuickEnd(
-  qe: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(qe, ["boolean"])))
-    return invalid("quick end", qe);
+export function setQuickEnd(qe: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(qe, ["boolean"])) return invalid("quick end", qe);
 
   config.quickEnd = qe;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("quickEnd", config.quickEnd);
 }
 
-export async function setEnableAds(
+export function setEnableAds(
   val: MonkeyTypes.EnableAds | boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, [["on", "off", "max"], "boolean"])))
+): void {
+  if (!isConfigValueValid(val, [["on", "off", "max"], "boolean"]))
     return invalid("enable ads", val);
 
   if (val === true || val === false) {
@@ -715,11 +664,11 @@ export async function setEnableAds(
   }
 }
 
-export async function setRepeatQuotes(
+export function setRepeatQuotes(
   val: MonkeyTypes.RepeatQuotes | boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, [["off", "typing"], "boolean"])))
+): void {
+  if (!isConfigValueValid(val, [["off", "typing"], "boolean"]))
     return invalid("repeat quotes", val);
 
   if (val === true || val === false) {
@@ -731,11 +680,8 @@ export async function setRepeatQuotes(
 }
 
 //flip colors
-export async function setFlipTestColors(
-  flip: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(flip, ["boolean"])))
+export function setFlipTestColors(flip: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(flip, ["boolean"]))
     return invalid("flip test colors", flip);
 
   config.flipTestColors = flip;
@@ -744,11 +690,8 @@ export async function setFlipTestColors(
 }
 
 //extra color
-export async function setColorfulMode(
-  extra: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(extra, ["boolean"])))
+export function setColorfulMode(extra: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(extra, ["boolean"]))
     return invalid("colorful mode", extra);
 
   config.colorfulMode = extra;
@@ -757,11 +700,8 @@ export async function setColorfulMode(
 }
 
 //strict space
-export async function setStrictSpace(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setStrictSpace(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("strict space", val);
 
   config.strictSpace = val;
@@ -770,11 +710,11 @@ export async function setStrictSpace(
 }
 
 //opposite shift space
-export async function setOppositeShiftMode(
+export function setOppositeShiftMode(
   val: MonkeyTypes.OppositeShiftMode,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, [["off", "on", "keymap"]])))
+): void {
+  if (!isConfigValueValid(val, [["off", "on", "keymap"]]))
     return invalid("opposite shift mode", val);
 
   config.oppositeShiftMode = val;
@@ -782,11 +722,11 @@ export async function setOppositeShiftMode(
   ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
 }
 
-export async function setPageWidth(
+export function setPageWidth(
   val: MonkeyTypes.PageWidth,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, [["max", "100", "125", "150", "200"]])))
+): void {
+  if (!isConfigValueValid(val, [["max", "100", "125", "150", "200"]]))
     return invalid("page width", val);
 
   config.pageWidth = val;
@@ -802,14 +742,14 @@ export async function setPageWidth(
   ConfigEvent.dispatch("pageWidth", config.pageWidth);
 }
 
-export async function setCaretStyle(
+export function setCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
-): Promise<void> {
+): void {
   if (
-    !(await isConfigValueValid(caretStyle, [
+    !isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
-    ]))
+    ])
   )
     return invalid("caret style", caretStyle);
 
@@ -841,14 +781,14 @@ export async function setCaretStyle(
   ConfigEvent.dispatch("caretStyle", config.caretStyle);
 }
 
-export async function setPaceCaretStyle(
+export function setPaceCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
-): Promise<void> {
+): void {
   if (
-    !(await isConfigValueValid(caretStyle, [
+    !isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
-    ]))
+    ])
   )
     return invalid("pace caret style", caretStyle);
 
@@ -878,11 +818,8 @@ export async function setPaceCaretStyle(
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
 }
 
-export async function setShowTimerProgress(
-  timer: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(timer, ["boolean"])))
+export function setShowTimerProgress(timer: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(timer, ["boolean"]))
     return invalid("show timer progress", timer);
 
   config.showTimerProgress = timer;
@@ -890,11 +827,8 @@ export async function setShowTimerProgress(
   ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
 }
 
-export async function setShowLiveWpm(
-  live: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(live, ["boolean"])))
+export function setShowLiveWpm(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show live WPM", live);
 
   config.showLiveWpm = live;
@@ -902,11 +836,8 @@ export async function setShowLiveWpm(
   ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
 }
 
-export async function setShowLiveAcc(
-  live: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(live, ["boolean"])))
+export function setShowLiveAcc(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show live acc", live);
 
   config.showLiveAcc = live;
@@ -914,11 +845,8 @@ export async function setShowLiveAcc(
   ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
 }
 
-export async function setShowLiveBurst(
-  live: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(live, ["boolean"])))
+export function setShowLiveBurst(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show live burst", live);
 
   config.showLiveBurst = live;
@@ -926,11 +854,8 @@ export async function setShowLiveBurst(
   ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
 }
 
-export async function setShowAvg(
-  live: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(live, ["boolean"])))
+export function setShowAvg(live: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show average", live);
 
   config.showAvg = live;
@@ -938,11 +863,11 @@ export async function setShowAvg(
   ConfigEvent.dispatch("showAvg", config.showAvg, nosave);
 }
 
-export async function setHighlightMode(
+export function setHighlightMode(
   mode: MonkeyTypes.HighlightMode,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(mode, [["off", "letter", "word"]])))
+): void {
+  if (!isConfigValueValid(mode, [["off", "letter", "word"]]))
     return invalid("highlight mode", mode);
 
   if (
@@ -963,11 +888,8 @@ export async function setHighlightMode(
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
 }
 
-export async function setHideExtraLetters(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setHideExtraLetters(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("hide extra letters", val);
 
   config.hideExtraLetters = val;
@@ -975,11 +897,11 @@ export async function setHideExtraLetters(
   ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
 }
 
-export async function setTimerStyle(
+export function setTimerStyle(
   style: MonkeyTypes.TimerStyle,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(style, [["bar", "text", "mini"]])))
+): void {
+  if (!isConfigValueValid(style, [["bar", "text", "mini"]]))
     return invalid("timer style", style);
 
   config.timerStyle = style;
@@ -987,11 +909,11 @@ export async function setTimerStyle(
   ConfigEvent.dispatch("timerStyle", config.timerStyle);
 }
 
-export async function setTimerColor(
+export function setTimerColor(
   color: MonkeyTypes.TimerColor,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(color, [["black", "sub", "text", "main"]])))
+): void {
+  if (!isConfigValueValid(color, [["black", "sub", "text", "main"]]))
     return invalid("timer color", color);
 
   config.timerColor = color;
@@ -1032,11 +954,11 @@ export async function setTimerColor(
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerColor", config.timerColor);
 }
-export async function setTimerOpacity(
+export function setTimerOpacity(
   opacity: MonkeyTypes.TimerOpacity,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]])))
+): void {
+  if (!isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]))
     return invalid("timer opacity", opacity);
 
   config.timerOpacity = opacity;
@@ -1045,11 +967,8 @@ export async function setTimerOpacity(
 }
 
 //key tips
-export async function setKeyTips(
-  keyTips: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(keyTips, ["boolean"])))
+export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(keyTips, ["boolean"]))
     return invalid("key tips", keyTips);
 
   config.showKeyTips = keyTips;
@@ -1063,12 +982,11 @@ export async function setKeyTips(
 }
 
 //mode
-export async function setTimeConfig(
+export function setTimeConfig(
   time: MonkeyTypes.TimeModes,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(time, ["number"])))
-    return invalid("time", time);
+): void {
+  if (!isConfigValueValid(time, ["number"])) return invalid("time", time);
 
   const newTime = isNaN(time) || time < 0 ? defaultConfig.time : time;
 
@@ -1086,12 +1004,12 @@ export async function setTimeConfig(
 }
 
 //quote length
-export async function setQuoteLength(
+export function setQuoteLength(
   len: MonkeyTypes.QuoteLengthArray | MonkeyTypes.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"])))
+): void {
+  if (!isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]))
     return invalid("quote length", len);
 
   if (Array.isArray(len)) {
@@ -1126,11 +1044,11 @@ export async function setQuoteLength(
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 }
 
-export async function setWordCount(
+export function setWordCount(
   wordCount: MonkeyTypes.WordsModes,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(wordCount, ["number"])))
+): void {
+  if (!isConfigValueValid(wordCount, ["number"]))
     return invalid("words", wordCount);
 
   const newWordCount =
@@ -1152,11 +1070,8 @@ export async function setWordCount(
 }
 
 //caret
-export async function setSmoothCaret(
-  mode: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(mode, ["boolean"]))) return invalid("", mode);
+export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"])) return invalid("", mode);
 
   config.smoothCaret = mode;
   if (mode) {
@@ -1168,11 +1083,8 @@ export async function setSmoothCaret(
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 }
 
-export async function setStartGraphsAtZero(
-  mode: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(mode, ["boolean"])))
+export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
     return invalid("start graphs at zero", mode);
 
   config.startGraphsAtZero = mode;
@@ -1181,11 +1093,8 @@ export async function setStartGraphsAtZero(
 }
 
 //linescroll
-export async function setSmoothLineScroll(
-  mode: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(mode, ["boolean"])))
+export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
     return invalid("smooth line scroll", mode);
 
   config.smoothLineScroll = mode;
@@ -1194,11 +1103,8 @@ export async function setSmoothLineScroll(
 }
 
 //quick tab
-export async function setQuickTabMode(
-  mode: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(mode, ["boolean"])))
+export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(mode, ["boolean"]))
     return invalid("quick tab mode", mode);
 
   config.quickTab = mode;
@@ -1217,8 +1123,8 @@ export async function setQuickTabMode(
   ConfigEvent.dispatch("quickTab", config.quickTab);
 }
 
-export async function previewFontFamily(font: string): Promise<void> {
-  if (!(await isConfigValueValid(font, ["string"])))
+export function previewFontFamily(font: string): void {
+  if (!isConfigValueValid(font, ["string"]))
     return invalid("preview font family", font);
 
   document.documentElement.style.setProperty(
@@ -1228,11 +1134,8 @@ export async function previewFontFamily(font: string): Promise<void> {
 }
 
 //font family
-export async function setFontFamily(
-  font: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(font, ["string"])))
+export function setFontFamily(font: string, nosave?: boolean): void {
+  if (!isConfigValueValid(font, ["string"]))
     return invalid("font family", font);
 
   if (font === "") {
@@ -1263,11 +1166,8 @@ export async function setFontFamily(
 }
 
 //freedom
-export async function setFreedomMode(
-  freedom: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(freedom, ["boolean"])))
+export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(freedom, ["boolean"]))
     return invalid("freedom mode", freedom);
 
   if (freedom == null) {
@@ -1281,11 +1181,11 @@ export async function setFreedomMode(
   ConfigEvent.dispatch("freedomMode", config.freedomMode);
 }
 
-export async function setConfidenceMode(
+export function setConfidenceMode(
   cm: MonkeyTypes.ConfidenceMode,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(cm, [["off", "on", "max"]])))
+): void {
+  if (!isConfigValueValid(cm, [["off", "on", "max"]]))
     return invalid("confidence mode", cm);
 
   config.confidenceMode = cm;
@@ -1297,11 +1197,11 @@ export async function setConfidenceMode(
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
 }
 
-export async function setIndicateTypos(
+export function setIndicateTypos(
   value: MonkeyTypes.IndicateTypos,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(value, [["off", "below", "replace"]])))
+): void {
+  if (!isConfigValueValid(value, [["off", "below", "replace"]]))
     return invalid("indicate typos", value);
 
   config.indicateTypos = value;
@@ -1309,11 +1209,8 @@ export async function setIndicateTypos(
   ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
 }
 
-export async function setAutoSwitchTheme(
-  boolean: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(boolean, ["boolean"])))
+export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(boolean, ["boolean"]))
     return invalid("auto switch theme", boolean);
 
   boolean = boolean ?? defaultConfig.autoSwitchTheme;
@@ -1322,19 +1219,16 @@ export async function setAutoSwitchTheme(
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
 }
 
-export async function setCustomTheme(
-  boolean: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(boolean, ["boolean"])))
+export function setCustomTheme(boolean: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(boolean, ["boolean"]))
     return invalid("custom theme", boolean);
 
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customTheme", config.customTheme);
 }
 
-export async function setTheme(name: string, nosave?: boolean): Promise<void> {
-  if (!(await isConfigValueValid(name, ["string"]))) return invalid("", name);
+export function setTheme(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"])) return invalid("", name);
 
   config.theme = name;
   setCustomTheme(false, true);
@@ -1342,11 +1236,8 @@ export async function setTheme(name: string, nosave?: boolean): Promise<void> {
   ConfigEvent.dispatch("theme", config.theme);
 }
 
-export async function setThemeLight(
-  name: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(name, ["string"])))
+export function setThemeLight(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"]))
     return invalid("theme light", name);
 
   config.themeLight = name;
@@ -1354,24 +1245,20 @@ export async function setThemeLight(
   ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
 }
 
-export async function setThemeDark(
-  name: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(name, ["string"])))
-    return invalid("theme dark", name);
+export function setThemeDark(name: string, nosave?: boolean): void {
+  if (!isConfigValueValid(name, ["string"])) return invalid("theme dark", name);
 
   config.themeDark = name;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
 }
 
-async function setThemes(
+function setThemes(
   theme: string,
   customState: boolean,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(theme, ["string"]))) return invalid("", theme);
+): void {
+  if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
 
   config.theme = theme;
   config.customTheme = customState;
@@ -1379,15 +1266,12 @@ async function setThemes(
   ConfigEvent.dispatch("setThemes", customState);
 }
 
-export async function setRandomTheme(
+export function setRandomTheme(
   val: MonkeyTypes.RandomTheme | boolean,
   nosave?: boolean
-): Promise<void> {
+): void {
   if (
-    !(await isConfigValueValid(val, [
-      ["off", "on", "fav", "light", "dark"],
-      "boolean",
-    ]))
+    !isConfigValueValid(val, [["off", "on", "fav", "light", "dark"], "boolean"])
   )
     return invalid("random theme", val);
 
@@ -1399,11 +1283,8 @@ export async function setRandomTheme(
   ConfigEvent.dispatch("randomTheme", config.randomTheme);
 }
 
-export async function setBritishEnglish(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
+export function setBritishEnglish(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"]))
     return invalid("british english", val);
 
   if (!val) {
@@ -1414,12 +1295,8 @@ export async function setBritishEnglish(
   ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
 }
 
-export async function setLazyMode(
-  val: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(val, ["boolean"])))
-    return invalid("lazy mode", val);
+export function setLazyMode(val: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(val, ["boolean"])) return invalid("lazy mode", val);
 
   if (!val) {
     val = false;
@@ -1429,11 +1306,8 @@ export async function setLazyMode(
   ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 }
 
-export async function setCustomThemeColors(
-  colors: string[],
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(colors, ["stringArray"])))
+export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
+  if (!isConfigValueValid(colors, ["stringArray"]))
     return invalid("custom theme colors", colors);
 
   if (colors !== undefined) {
@@ -1445,11 +1319,8 @@ export async function setCustomThemeColors(
   ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
 }
 
-export async function setLanguage(
-  language: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(language, ["string"])))
+export function setLanguage(language: string, nosave?: boolean): void {
+  if (!isConfigValueValid(language, ["string"]))
     return invalid("language", language);
 
   config.language = language;
@@ -1464,11 +1335,8 @@ export async function setLanguage(
   ConfigEvent.dispatch("language", config.language);
 }
 
-export async function setMonkey(
-  monkey: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(monkey, ["boolean"])))
+export function setMonkey(monkey: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(monkey, ["boolean"]))
     return invalid("monkey", monkey);
 
   config.monkey = monkey;
@@ -1481,11 +1349,11 @@ export async function setMonkey(
   ConfigEvent.dispatch("monkey", config.monkey);
 }
 
-export async function setKeymapMode(
+export function setKeymapMode(
   mode: MonkeyTypes.KeymapMode,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(mode, [["off", "static", "react", "next"]])))
+): void {
+  if (!isConfigValueValid(mode, [["off", "static", "react", "next"]]))
     return invalid("keymap mode", mode);
 
   $(".active-key").removeClass("active-key");
@@ -1495,11 +1363,11 @@ export async function setKeymapMode(
   ConfigEvent.dispatch("keymapMode", config.keymapMode);
 }
 
-export async function setKeymapLegendStyle(
+export function setKeymapLegendStyle(
   style: MonkeyTypes.KeymapLegendStyle,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(style, [["lowercase", "uppercase", "blank"]])))
+): void {
+  if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
     return invalid("keymap legend style", style);
 
   // Remove existing styles
@@ -1530,14 +1398,14 @@ export async function setKeymapLegendStyle(
   ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
 }
 
-export async function setKeymapStyle(
+export function setKeymapStyle(
   style: MonkeyTypes.KeymapStyle,
   nosave?: boolean
-): Promise<void> {
+): void {
   if (
-    !(await isConfigValueValid(style, [
+    !isConfigValueValid(style, [
       ["staggered", "alice", "matrix", "split", "split_matrix"],
-    ]))
+    ])
   )
     return invalid("keymap style", style);
 
@@ -1547,11 +1415,8 @@ export async function setKeymapStyle(
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
 }
 
-export async function setKeymapLayout(
-  layout: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(layout, ["string"])))
+export function setKeymapLayout(layout: string, nosave?: boolean): void {
+  if (!isConfigValueValid(layout, ["string"]))
     return invalid("keymap layout", layout);
 
   config.keymapLayout = layout;
@@ -1559,19 +1424,15 @@ export async function setKeymapLayout(
   ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
 }
 
-export async function setLayout(
-  layout: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(layout, ["string"])))
-    return invalid("layout", layout);
+export function setLayout(layout: string, nosave?: boolean): void {
+  if (!isConfigValueValid(layout, ["string"])) return invalid("layout", layout);
 
   config.layout = layout;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("layout", config.layout, nosave);
 }
 
-// export async function setSavedLayout(layout, nosave?: boolean): Promise<void> {
+// export function setSavedLayout(layout, nosave?: boolean): void {
 //   if (layout == null || layout == undefined) {
 //     layout = "qwerty";
 //   }
@@ -1579,14 +1440,12 @@ export async function setLayout(
 //   setLayout(layout, nosave);
 // }
 
-export async function setFontSize(
+export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
-): Promise<void> {
+): void {
   fontSize = fontSize.toString() as MonkeyTypes.FontSize; //todo remove after around a week
-  if (
-    !(await isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
-  )
+  if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
     return invalid("font size", fontSize);
 
   config.fontSize = fontSize;
@@ -1635,11 +1494,8 @@ export async function setFontSize(
   ConfigEvent.dispatch("fontSize", config.fontSize);
 }
 
-export async function setCustomBackground(
-  value: string,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(value, ["string"])))
+export function setCustomBackground(value: string, nosave?: boolean): void {
+  if (!isConfigValueValid(value, ["string"]))
     return invalid("custom background", value);
 
   value = value.trim();
@@ -1662,7 +1518,7 @@ export async function setCustomLayoutfluid(
   value: MonkeyTypes.CustomLayoutFluidSpaces,
   nosave?: boolean
 ): Promise<void> {
-  if (!(await isConfigValueValid(value, ["layoutfluid"])))
+  if (!(await isConfigValueValidAsync(value, ["layoutfluid"])))
     return invalid("custom layoutfluid", value);
 
   const customLayoutfluid = value.replace(
@@ -1678,11 +1534,11 @@ export async function setCustomLayoutfluid(
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 }
 
-export async function setCustomBackgroundSize(
+export function setCustomBackgroundSize(
   value: MonkeyTypes.CustomBackgroundSize,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(value, [["max", "cover", "contain"]])))
+): void {
+  if (!isConfigValueValid(value, [["max", "cover", "contain"]]))
     return invalid("custom background size", value);
 
   if (value != "cover" && value != "contain" && value != "max") {
@@ -1693,14 +1549,14 @@ export async function setCustomBackgroundSize(
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
 }
 
-export async function setCustomBackgroundFilter(
+export function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,
   nosave?: boolean
-): Promise<void> {
+): void {
   array = (array as unknown as string[]).map((value) =>
     parseFloat(value)
   ) as MonkeyTypes.CustomBackgroundFilter;
-  if (!(await isConfigValueValid(array, ["numberArray"])))
+  if (!isConfigValueValid(array, ["numberArray"]))
     return invalid("custom background filter", array);
 
   config.customBackgroundFilter = array;
@@ -1708,11 +1564,11 @@ export async function setCustomBackgroundFilter(
   ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
 }
 
-export async function setMonkeyPowerLevel(
+export function setMonkeyPowerLevel(
   level: MonkeyTypes.MonkeyPowerLevel,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(level, [["off", "1", "2", "3", "4"]])))
+): void {
+  if (!isConfigValueValid(level, [["off", "1", "2", "3", "4"]]))
     return invalid("monkey power level", level);
 
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
@@ -1721,11 +1577,8 @@ export async function setMonkeyPowerLevel(
   ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
 }
 
-export async function setBurstHeatmap(
-  value: boolean,
-  nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValid(value, ["boolean"])))
+export function setBurstHeatmap(value: boolean, nosave?: boolean): void {
+  if (!isConfigValueValid(value, ["boolean"]))
     return invalid("burst heatmap", value);
 
   if (!value) {
