@@ -221,7 +221,10 @@ export async function start() {
         if (slowTimerCount > 5) {
           //slow timer
           Notifications.add(
-            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
+            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this." +
+              window.navigator.userAgent.includes("Edg")
+              ? 'This could be caused by "efficiency mode" on Microsoft Edge.'
+              : "",
             -1
           );
           TimerEvent.dispatch("fail", "slow timer");
