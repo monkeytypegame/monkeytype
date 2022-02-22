@@ -151,11 +151,11 @@ async function some<T>(
   return false;
 }
 
-async function isConfigValueValid(
-  val: any,
+function isConfigValueValid<T>(
+  val: T,
   possibleTypes: PossibleType[]
 ): Promise<boolean> {
-  return await some(possibleTypes, async (possibleType) => {
+  return some(possibleTypes, async (possibleType) => {
     switch (possibleType) {
       case "boolean":
         return typeof val === "boolean";
