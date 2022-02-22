@@ -1413,7 +1413,7 @@ export async function finish(difficultyFailed = false) {
     } catch (e) {
       console.log("Analytics unavailable");
     }
-    notSignedInLastResult = completedEvent;
+    if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
   } else {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
