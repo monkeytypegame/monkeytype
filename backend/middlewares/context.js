@@ -1,6 +1,6 @@
-const ConfigurationDAO = require("../dao/configuration");
+import ConfigurationDAO from "../dao/configuration";
 
-async function contextMiddleware(req, res, next) {
+async function contextMiddleware(req, _res, next) {
   const configuration = await ConfigurationDAO.getCachedConfiguration(true);
 
   req.ctx = {
@@ -13,4 +13,4 @@ async function contextMiddleware(req, res, next) {
   next();
 }
 
-module.exports = contextMiddleware;
+export default contextMiddleware;

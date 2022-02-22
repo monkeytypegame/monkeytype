@@ -1,21 +1,24 @@
-const ConfigDAO = require("../../dao/config");
-const { validateConfig } = require("../../handlers/validation");
+import ConfigDAO from "../../dao/config";
+import { validateConfig } from "../../handlers/validation";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class ConfigController {
   static async getConfig(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
-    return await ConfigDAO.getConfig(uid);
+    const data = await ConfigDAO.getConfig(uid);
+    return new MonkeyResponse("Configuration retrieved", data);
   }
-  static async saveConfig(req, res) {
+
+  static async saveConfig(req, _res) {
     const { config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
     validateConfig(config);
     await ConfigDAO.saveConfig(uid, config);
 
-    return res.sendStatus(200);
+    return new MonkeyResponse("Config updated");
   }
 }
 
-module.exports = ConfigController;
+export default ConfigController;

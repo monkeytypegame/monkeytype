@@ -34,4 +34,4 @@ const SUPPORTED_QUOTE_LANGUAGES = [
   "vietnamese",
 ];
 
-module.exports = SUPPORTED_QUOTE_LANGUAGES;
+export default SUPPORTED_QUOTE_LANGUAGES;

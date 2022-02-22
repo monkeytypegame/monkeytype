@@ -140,7 +140,7 @@ declare namespace MonkeyTypes {
   interface Preset {
     _id: string;
     name: string;
-    config: PresetConfig;
+    config: ConfigChanges;
   }
 
   interface PersonalBest {
@@ -314,6 +314,10 @@ declare namespace MonkeyTypes {
     britishEnglish: boolean;
     lazyMode: boolean;
     showAvg: boolean;
+  }
+
+  interface ConfigChanges extends Partial<MonkeyTypes.Config> {
+    tags?: string[];
   }
 
   interface DefaultConfig extends Config {

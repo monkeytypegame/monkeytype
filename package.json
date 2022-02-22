@@ -12,9 +12,12 @@
     "install:windows": ".\\bin\\install.cmd",
     "lint": "run-script-os",
     "lint:windows": ".\\node_modules\\.bin\\eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
-    "lint:default": "./node_modules/.bin/eslint './backend/**/*.{ts,js}' './frontend/src/scripts/**/*.{ts,js}'",
+    "lint:default": "eslint --ignore-pattern '**/build/**' './backend/**/*.js' './frontend/src/scripts/**/*.js'",
     "build:live": "cd ./frontend && npm run build:live",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "start:dev-ts": "concurrently --kill-others \"cd ./frontend && npm run start:dev-ts\" \"cd ./backend && npm run start:dev\"",
+    "start:dev:fe-ts": "cd frontend && npm run start:dev-ts",
+    "deploy:live-ts": "cd frontend && npm run deploy:live-ts",
     "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
@@ -42,7 +45,8 @@
     "jsonschema": "1.4.0",
     "prettier": "2.5.1",
     "pretty-quick": "3.1.0",
-    "run-script-os": "1.1.6"
+    "run-script-os": "1.1.6",
+    "typescript": "^4.5.5"
   },
   "husky": {
     "hooks": {

@@ -1,9 +1,8 @@
-import * as Loader from "./loader";
-import * as Notifications from "./notifications";
+import Ape from "../ape";
 import * as DB from "../db";
-import axiosInstance from "../axios-instance";
-import * as Misc from "../misc";
 import Config from "../config";
+import * as Misc from "../misc";
+import * as Notifications from "./notifications";
 
 const currentLeaderboard = "time_15";
 
@@ -152,33 +151,43 @@ function checkLbMemory(lb: LbKey): void {
     side = "right";
   }
 
-  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"];
+  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
 
-  if (memory && currentRank[lb]) {
+  if (currentRank[lb]) {
     const difference = memory - currentRank[lb].rank;
     if (difference > 0) {
       DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
-        ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-          difference
-        )} since you last checked)`
-      );
+      if (memory !== 0) {
+        $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+          ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+            difference
+          )} since you last checked)`
+        );
+      }
     } else if (difference < 0) {
       DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
-        ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-          difference
-        )} since you last checked)`
-      );
+      if (memory !== 0) {
+        $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+          ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+            difference
+          )} since you last checked)`
+        );
+      }
     } else {
-      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
-        ` ( = since you last checked)`
-      );
+      if (memory !== 0) {
+        $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+          ` ( = since you last checked)`
+        );
+      }
     }
   }
 }
 
 function fillTable(lb: LbKey, prepend?: number): void {
+  if (!currentData[lb]) {
+    return;
+  }
+
   let side;
   if (lb === 15) {
     side = "left";
@@ -256,84 +265,58 @@ export function hide(): void {
     );
 }
 
-function update(): void {
+async function update(): Promise<void> {
   $("#leaderboardsWrapper .buttons .button").removeClass("active");
   $(
     `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
   ).addClass("active");
 
-  // Loader.show();
   showLoader(15);
   showLoader(60);
 
-  const requestsToAwait = [
-    axiosInstance.get(`/leaderboard`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "15",
-        skip: 0,
-      },
-    }),
-    axiosInstance.get(`/leaderboard`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "60",
-        skip: 0,
-      },
-    }),
+  const leaderboardRequests = [
+    Ape.leaderboards.get("english", "time", "15", 0),
+    Ape.leaderboards.get("english", "time", "60", 0),
   ];
 
   if (firebase.auth().currentUser) {
-    requestsToAwait.push(
-      axiosInstance.get(`/leaderboard/rank`, {
-        params: {
-          language: "english",
-          mode: "time",
-          mode2: "15",
-        },
-      })
-    );
-    requestsToAwait.push(
-      axiosInstance.get(`/leaderboard/rank`, {
-        params: {
-          language: "english",
-          mode: "time",
-          mode2: "60",
-        },
-      })
+    leaderboardRequests.push(
+      Ape.leaderboards.getRank("english", "time", "15"),
+      Ape.leaderboards.getRank("english", "time", "60")
     );
   }
 
-  Promise.all(requestsToAwait)
-    .then((lbdata) => {
-      // Loader.hide();
-      hideLoader(15);
-      hideLoader(60);
-      currentData[15] = lbdata[0]?.data;
-      currentData[60] = lbdata[1]?.data;
-      currentRank[15] = lbdata[2]?.data;
-      currentRank[60] = lbdata[3]?.data;
+  const responses = await Promise.all(leaderboardRequests);
 
-      clearTable(15);
-      clearTable(60);
-      updateFooter(15);
-      updateFooter(60);
-      checkLbMemory(15);
-      checkLbMemory(60);
-      fillTable(15);
-      fillTable(60);
-      $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
-      $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
-    })
-    .catch((e) => {
-      console.log(e);
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to load leaderboards: " + msg, -1);
-      return;
-    });
+  const failedResponse = responses.find((response) => response.status !== 200);
+  if (failedResponse) {
+    return Notifications.add(
+      "Failed to load leaderboards: " + failedResponse.message,
+      -1
+    );
+  }
+
+  const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
+    (response) => response.data
+  );
+
+  currentData[15] = lb15Data;
+  currentData[60] = lb60Data;
+  currentRank[15] = lb15Rank;
+  currentRank[60] = lb60Rank;
+
+  const leaderboardKeys: LbKey[] = [15, 60];
+
+  leaderboardKeys.forEach((leaderboardTime: LbKey) => {
+    hideLoader(leaderboardTime);
+    clearTable(leaderboardTime);
+    updateFooter(leaderboardTime);
+    checkLbMemory(leaderboardTime);
+    fillTable(leaderboardTime);
+  });
+
+  $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
+  $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
 }
 
 async function requestMore(lb: LbKey, prepend = false): Promise<void> {
@@ -350,17 +333,17 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     limitVal = Math.abs(skipVal) - 1;
     skipVal = 0;
   }
-  const response = await axiosInstance.get(`/leaderboard`, {
-    params: {
-      language: "english",
-      mode: "time",
-      mode2: lb,
-      skip: skipVal,
-      limit: limitVal,
-    },
-  });
+
+  const response = await Ape.leaderboards.get(
+    "english",
+    "time",
+    lb,
+    skipVal,
+    limitVal
+  );
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
-  if (data.length === 0) {
+
+  if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
     return;
   }
@@ -379,18 +362,13 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 
 async function requestNew(lb: LbKey, skip: number): Promise<void> {
   showLoader(lb);
-  const response = await axiosInstance.get(`/leaderboard`, {
-    params: {
-      language: "english",
-      mode: "time",
-      mode2: lb,
-      skip: skip,
-    },
-  });
+
+  const response = await Ape.leaderboards.get("english", "time", lb, skip);
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
+
   clearTable(lb);
   currentData[lb] = [];
-  if (data.length === 0) {
+  if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
     return;
   }

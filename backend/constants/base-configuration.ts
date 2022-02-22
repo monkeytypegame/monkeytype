@@ -3,7 +3,7 @@
  * To add a new configuration. Simply add it to this object.
  * When changing this template, please follow the principle of "Secure by default" (https://en.wikipedia.org/wiki/Secure_by_default).
  */
-const BASE_CONFIGURATION = Object.freeze({
+const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   maintenance: false,
   quoteReport: {
     enabled: false,
@@ -16,6 +16,9 @@ const BASE_CONFIGURATION = Object.freeze({
   resultObjectHashCheck: {
     enabled: false,
   },
-});
+  monkeyTokens: {
+    enabled: false,
+  },
+};
 
-module.exports = BASE_CONFIGURATION;
+export default Object.freeze(BASE_CONFIGURATION);

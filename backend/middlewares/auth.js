@@ -1,8 +1,9 @@
-const MonkeyError = require("../handlers/error");
-const { verifyIdToken } = require("../handlers/auth");
+import MonkeyError from "../handlers/error";
+import { verifyIdToken } from "../handlers/auth";
 
 const DEFAULT_OPTIONS = {
   isPublic: false,
+  acceptMonkeyTokens: false,
 };
 
 function authenticateRequest(options = DEFAULT_OPTIONS) {
@@ -12,7 +13,7 @@ function authenticateRequest(options = DEFAULT_OPTIONS) {
       let token = null;
 
       if (authHeader) {
-        token = await authenticateWithAuthHeader(authHeader);
+        token = await authenticateWithAuthHeader(authHeader, options);
       } else if (options.isPublic) {
         return next();
       } else if (process.env.MODE === "dev") {
@@ -49,18 +50,21 @@ function authenticateWithBody(body) {
   };
 }
 
-async function authenticateWithAuthHeader(authHeader) {
+async function authenticateWithAuthHeader(authHeader, options) {
   const token = authHeader.split(" ");
 
   const authScheme = token[0].trim();
   const credentials = token[1];
 
-  if (authScheme === "Bearer") {
-    return await authenticateWithBearerToken(credentials);
+  switch (authScheme) {
+    case "Bearer":
+      return await authenticateWithBearerToken(credentials);
+    case "MonkeyToken":
+      return await authenticateWithMonkeyToken(credentials, options);
   }
 
   throw new MonkeyError(
-    400,
+    401,
     "Unknown authentication scheme",
     `The authentication scheme "${authScheme}" is not implemented.`
   );
@@ -92,6 +96,12 @@ async function authenticateWithBearerToken(token) {
   }
 }
 
-module.exports = {
-  authenticateRequest,
-};
+async function authenticateWithMonkeyToken(token, options) {
+  if (!options.acceptMonkeyTokens) {
+    throw new MonkeyError(401, "This endpoint does not accept MonkeyTokens.");
+  }
+
+  throw new MonkeyError(401, "MonkeyTokens are not implemented.");
+}
+
+export { authenticateRequest };

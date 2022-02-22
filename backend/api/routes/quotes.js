@@ -1,16 +1,16 @@
-const joi = require("joi");
-const { authenticateRequest } = require("../../middlewares/auth");
-const { Router } = require("express");
-const NewQuotesController = require("../controllers/new-quotes");
-const QuoteRatingsController = require("../controllers/quote-ratings");
-const QuotesController = require("../controllers/quotes");
-const RateLimit = require("../../middlewares/rate-limit");
-const {
+import joi from "joi";
+import { authenticateRequest } from "../../middlewares/auth";
+import { Router } from "express";
+import NewQuotesController from "../controllers/new-quotes";
+import QuoteRatingsController from "../controllers/quote-ratings";
+import QuotesController from "../controllers/quotes";
+import * as RateLimit from "../../middlewares/rate-limit";
+import {
   asyncHandler,
-  validateRequest,
   validateConfiguration,
-} = require("../../middlewares/api-utils");
-const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quote-languages");
+  validateRequest,
+} from "../../middlewares/api-utils";
+import SUPPORTED_QUOTE_LANGUAGES from "../../constants/quote-languages";
 
 const quotesRouter = Router();
 
@@ -51,8 +51,8 @@ quotesRouter.post(
   validateRequest({
     body: {
       quoteId: joi.string().required(),
-      editText: joi.string().required(),
-      editSource: joi.string().required(),
+      editText: joi.string().allow(null),
+      editSource: joi.string().allow(null),
     },
     validationErrorMessage: "Please fill all the fields",
   }),
@@ -131,4 +131,4 @@ quotesRouter.post(
   asyncHandler(QuotesController.reportQuote)
 );
 
-module.exports = quotesRouter;
+export default quotesRouter;

@@ -1,5 +1,6 @@
-const _ = require("lodash");
-const LeaderboardsDAO = require("../../dao/leaderboards");
+import { MonkeyResponse } from "../../handlers/monkey-response";
+import _ from "lodash";
+import LeaderboardsDAO from "../../dao/leaderboards";
 
 class LeaderboardsController {
   static async get(req, _res) {
@@ -20,21 +21,15 @@ class LeaderboardsController {
         : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
     });
 
-    return normalizedLeaderboard;
+    return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
   }
 
-  static async getRank(req, res) {
+  static async getRank(req, _res) {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.ctx.decodedToken;
-
-    if (!uid) {
-      return res.status(400).json({
-        message: "Missing user id.",
-      });
-    }
-
-    return await LeaderboardsDAO.getRank(mode, mode2, language, uid);
+    const data = await LeaderboardsDAO.getRank(mode, mode2, language, uid);
+    return new MonkeyResponse("Rank retrieved", data);
   }
 }
 
-module.exports = LeaderboardsController;
+export default LeaderboardsController;

@@ -1,19 +1,11 @@
-const uuid = require("uuid");
+import * as uuid from "uuid";
 
 class MonkeyError {
   constructor(status, message, stack = null, uid = null) {
     this.status = status ?? 500;
-    this.errorID = uuid.v4();
+    this.errorId = uuid.v4();
     this.stack = stack;
     this.uid = uid;
-    // this.message =
-    // process.env.MODE === "dev"
-    //   ? stack
-    //     ? String(stack)
-    //     : this.status === 500
-    //     ? String(message)
-    //     : message
-    //   : "Internal Server Error " + this.errorID;
 
     if (process.env.MODE === "dev") {
       this.message = stack
@@ -22,7 +14,7 @@ class MonkeyError {
     } else {
       if (this.stack && this.status >= 500) {
         this.stack = this.message + "\n" + this.stack;
-        this.message = "Internal Server Error " + this.errorID;
+        this.message = "Internal Server Error " + this.errorId;
       } else {
         this.message = String(message);
       }
@@ -30,4 +22,4 @@ class MonkeyError {
   }
 }
 
-module.exports = MonkeyError;
+export default MonkeyError;

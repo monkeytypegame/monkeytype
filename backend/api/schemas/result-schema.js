@@ -1,4 +1,4 @@
-const joi = require("joi");
+import joi from "joi";
 
 const RESULT_SCHEMA = joi
   .object({
@@ -63,4 +63,4 @@ const RESULT_SCHEMA = joi
   })
   .required();
 
-module.exports = RESULT_SCHEMA;
+export default RESULT_SCHEMA;

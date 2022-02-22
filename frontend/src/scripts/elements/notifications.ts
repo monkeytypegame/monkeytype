@@ -58,7 +58,7 @@ class Notification {
       cls = "bad";
       icon = `<i class="fas fa-fw fa-times"></i>`;
       title = "Error";
-      console.trace(this.message);
+      console.error(this.message);
     }
 
     if (this.customTitle != undefined) {
