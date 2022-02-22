@@ -14,9 +14,10 @@ export function update(): void {
     // let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
     // let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
     // let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
+    const x: number = snapshot.globalStats.time as number; 
     $(".pageAccount .globalTimeTyping .val").text(
       Misc.secondsToString(
-        Math.round(snapshot.globalStats.time as number),
+        !isNaN(x)) ? Math.round(x) : 0,
         true,
         true
       )
