@@ -107,11 +107,8 @@ export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
     rating = 0;
 
     const snapshot = DB.getSnapshot();
-
-    if (snapshot.quoteRatings === undefined) return;
-
     const alreadyRated =
-      snapshot.quoteRatings[currentQuote.language][currentQuote.id];
+      snapshot?.quoteRatings?.[currentQuote.language]?.[currentQuote.id];
     if (alreadyRated) {
       rating = alreadyRated;
     }
