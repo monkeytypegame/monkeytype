@@ -220,10 +220,16 @@ export async function start() {
         slowTimerCount++;
         if (slowTimerCount > 5) {
           //slow timer
+          
+          if (window.navigator.userAgent.includes("Edg")) {
+            Notifications.add('This bad performance could be caused by "efficiency mode" on Microsoft Edge.');
+          }
+          
           Notifications.add(
             "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
             -1
           );
+          
           TimerEvent.dispatch("fail", "slow timer");
         }
       }
