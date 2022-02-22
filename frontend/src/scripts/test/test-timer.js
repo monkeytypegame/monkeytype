@@ -221,12 +221,14 @@ export async function start() {
         if (slowTimerCount > 5) {
           //slow timer
           Notifications.add(
-            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this." +
-              window.navigator.userAgent.includes("Edg")
-              ? 'This could be caused by "efficiency mode" on Microsoft Edge.'
-              : "",
+            "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
             -1
           );
+          
+          if (window.navigator.userAgent.includes("Edg")) {
+            Notifications.add('This bad performance could be caused by "efficiency mode" on Microsoft Edge.');
+          }
+          
           TimerEvent.dispatch("fail", "slow timer");
         }
       }
