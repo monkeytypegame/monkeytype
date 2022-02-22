@@ -277,17 +277,10 @@ export async function getLanguageGroups(): Promise<
   }
 }
 
-interface LanguageObject {
-  name: string;
-  leftToRight: boolean;
-  noLazyMode?: boolean;
-  ligatures?: boolean;
-  words: string[];
-  bcp47?: string;
-}
-
-let currentLanguage: LanguageObject;
-export async function getLanguage(lang: string): Promise<LanguageObject> {
+let currentLanguage: MonkeyTypes.LanguageObject;
+export async function getLanguage(
+  lang: string
+): Promise<MonkeyTypes.LanguageObject> {
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
       console.log("getting language json");
@@ -308,7 +301,7 @@ export async function getLanguage(lang: string): Promise<LanguageObject> {
 
 export async function getCurrentLanguage(
   languageName: string
-): Promise<LanguageObject> {
+): Promise<MonkeyTypes.LanguageObject> {
   return await getLanguage(languageName);
 }
 

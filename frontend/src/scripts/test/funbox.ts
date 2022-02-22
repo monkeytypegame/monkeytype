@@ -115,7 +115,7 @@ export async function clear(): Promise<boolean> {
   return true;
 }
 
-export async function activate(funbox: string): Promise<boolean | undefined> {
+export async function activate(funbox?: string): Promise<boolean | undefined> {
   let mode = modeSaved;
 
   if (funbox === undefined || funbox === null) {

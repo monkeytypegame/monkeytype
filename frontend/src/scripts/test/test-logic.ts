@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
@@ -47,35 +48,44 @@ import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
+import NodeObjectHash from "node-object-hash";
 
-const objecthash = require("node-object-hash")().hash;
+const objecthash = NodeObjectHash().hash;
 
 let failReason = "";
 
-export let notSignedInLastResult = null;
+export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
+  null;
 
-export function clearNotSignedInResult() {
+export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
 }
 
-export function setNotSignedInUid(uid) {
-  notSignedInLastResult.uid = uid;
-  delete notSignedInLastResult.hash;
-  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
+export function setNotSignedInUid(uid: string): void {
+  if (notSignedInLastResult !== null) {
+    notSignedInLastResult.uid = uid;
+    delete notSignedInLastResult.hash;
+    notSignedInLastResult.hash = objecthash(notSignedInLastResult);
+  }
 }
 
 let spanishSentenceTracker = "";
-export function punctuateWord(previousWord, currentWord, index, maxindex) {
+export function punctuateWord(
+  previousWord: string,
+  currentWord: string,
+  index: number,
+  maxindex: number
+): string {
   let word = currentWord;
 
-  let currentLanguage = Config.language.split("_")[0];
+  const currentLanguage = Config.language.split("_")[0];
 
-  let lastChar = Misc.getLastChar(previousWord);
+  const lastChar = Misc.getLastChar(previousWord);
 
   if (Config.funbox === "58008") {
     if (currentWord.length > 3) {
       if (Math.random() < 0.75) {
-        let special = ["/", "*", "-", "+"][Math.floor(Math.random() * 4)];
+        const special = ["/", "*", "-", "+"][Math.floor(Math.random() * 4)];
         word = Misc.setCharAt(word, Math.floor(word.length / 2), special);
       }
     }
@@ -89,7 +99,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       word = Misc.capitalizeFirstLetterOfEachWord(word);
 
       if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-        let rand = Math.random();
+        const rand = Math.random();
         if (rand > 0.9) {
           word = "¿" + word;
           spanishSentenceTracker = "?";
@@ -111,7 +121,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
           spanishSentenceTracker = "";
         }
       } else {
-        let rand = Math.random();
+        const rand = Math.random();
         if (rand <= 0.8) {
           word += ".";
         } else if (rand > 0.8 && rand < 0.9) {
@@ -153,7 +163,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       word = `'${word}'`;
     } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
       if (currentLanguage == "code") {
-        let r = Math.random();
+        const r = Math.random();
         if (r < 0.25) {
           word = `(${word})`;
         } else if (r < 0.5) {
@@ -216,7 +226,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
         word += ",";
       }
     } else if (Math.random() < 0.25 && currentLanguage == "code") {
-      let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
+      const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
       word = specials[Math.floor(Math.random() * 10)];
     }
@@ -224,11 +234,11 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
   return word;
 }
 
-export function startTest() {
+export function startTest(): boolean {
   if (PageTransition.get()) {
     return false;
   }
-  if (!Config.dbConfigLoaded) {
+  if (!UpdateConfig.dbConfigLoaded) {
     UpdateConfig.setChangedBeforeDb(true);
   }
   try {
@@ -273,27 +283,23 @@ export function startTest() {
 
 export function restart(
   withSameWordset = false,
-  nosave = false,
-  event,
+  _?: boolean, // this is nosave, rename to nosave when necessary
+  event?: JQuery.KeyDownEvent,
   practiseMissed = false,
   noAnim = false
-) {
+): void {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
-    try {
-      event.preventDefault();
-    } catch {}
+    event?.preventDefault();
+
     return;
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (TestWords.hasTab) {
-        try {
-          if (!event.shiftKey) return;
-        } catch {}
+        if (!event?.shiftKey) return;
       }
-      try {
-        if (Config.mode !== "zen") event.preventDefault();
-      } catch {}
+      if (Config.mode !== "zen") event?.preventDefault();
+
       if (
         !Misc.canQuickRestart(
           Config.mode,
@@ -315,8 +321,8 @@ export function restart(
   }
   if (TestActive.get()) {
     TestInput.pushKeypressesToHistory();
-    let testSeconds = TestStats.calculateTestSeconds(performance.now());
-    let afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+    const testSeconds = TestStats.calculateTestSeconds(performance.now());
+    const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
     // incompleteTestSeconds += ;
     let tt = testSeconds - afkseconds;
     if (tt < 0) tt = 0;
@@ -346,8 +352,10 @@ export function restart(
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
-    UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    if (PractiseWords.before.punctuation !== null)
+      UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
+    if (PractiseWords.before.numbers !== null)
+      UpdateConfig.setNumbers(PractiseWords.before.numbers);
     UpdateConfig.setMode(PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -456,7 +464,7 @@ export function restart(
         TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
         await init();
-        await PaceCaret.init(nosave);
+        await PaceCaret.init();
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
@@ -489,12 +497,20 @@ export function restart(
       } else {
         Keymap.hide();
       }
-      document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = "0";
-      document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
-      document.querySelector("#miniTimerAndLiveWpm .burst").innerHTML = "0";
-      document.querySelector("#liveWpm").innerHTML = "0";
-      document.querySelector("#liveAcc").innerHTML = "100%";
-      document.querySelector("#liveBurst").innerHTML = "0";
+
+      const miniWPM = document.querySelector("#miniTimerAndLiveWpm .wpm");
+      const miniAcc = document.querySelector("#miniTimerAndLiveWpm .acc");
+      const miniBurst = document.querySelector("#miniTimerAndLiveWpm .burst");
+      const liveWpm = document.querySelector("#liveWpm");
+      const liveAcc = document.querySelector("#liveAcc");
+      const liveBurst = document.querySelector("#liveBurst");
+
+      if (miniWPM !== null) miniWPM.innerHTML = "0";
+      if (miniAcc !== null) miniAcc.innerHTML = "100%";
+      if (miniBurst !== null) miniBurst.innerHTML = "0";
+      if (liveWpm !== null) liveWpm.innerHTML = "0";
+      if (liveAcc !== null) liveAcc.innerHTML = "100%";
+      if (liveBurst !== null) liveBurst.innerHTML = "0";
 
       if (Config.funbox === "memory") {
         Funbox.startMemoryTimer();
@@ -503,7 +519,7 @@ export function restart(
         }
       }
 
-      let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+      const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
       if (Config.funbox !== "none") {
         fbtext = " " + Config.funbox;
@@ -570,7 +586,7 @@ export function restart(
   );
 }
 
-function applyFunboxesToWord(word, wordset) {
+function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
     for (let i = 0; i < word.length; i++) {
@@ -593,32 +609,40 @@ function applyFunboxesToWord(word, wordset) {
     word = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
     word = Misc.getASCII();
-  } else if (wordset && Config.funbox === "weakspot") {
+  } else if (wordset !== undefined && Config.funbox === "weakspot") {
     word = WeakSpot.getWord(wordset);
   }
   return word;
 }
 
-async function applyBritishEnglishToWord(word) {
+async function applyBritishEnglishToWord(word: string): Promise<string> {
   if (Config.britishEnglish && /english/.test(Config.language)) {
     word = await BritishEnglish.replace(word);
   }
   return word;
 }
 
-function applyLazyModeToWord(word, language) {
+function applyLazyModeToWord(
+  word: string,
+  language: MonkeyTypes.LanguageObject
+): string {
   if (Config.lazyMode === true && !language.noLazyMode) {
     word = LazyMode.replaceAccents(word, language.accents);
   }
   return word;
 }
 
-async function getNextWord(wordset, language, wordsBound) {
+async function getNextWord(
+  wordset: Wordset.Wordset,
+  language: MonkeyTypes.LanguageObject,
+  wordsBound: number
+): Promise<string> {
   let randomWord = wordset.randomWord();
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
   if (Config.mode === "quote") {
-    randomWord = TestWords.randomQuote.textSplit[TestWords.words.length];
+    randomWord =
+      TestWords.randomQuote.textSplit?.[TestWords.words.length] ?? "";
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
@@ -671,8 +695,8 @@ async function getNextWord(wordset, language, wordsBound) {
   return randomWord;
 }
 
-let rememberLazyMode;
-export async function init() {
+let rememberLazyMode: boolean;
+export async function init(): Promise<void> {
   TestActive.set(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
@@ -800,11 +824,12 @@ export async function init() {
         (Config.mode == "words" && Config.words >= wordCount) ||
         (Config.mode === "time" && wordCount < 100)
       ) {
-        let section =
+        const section =
           Config.funbox == "wikipedia"
             ? await Wikipedia.getSection(Config.language)
             : await Poetry.getPoem();
-        for (let word of section.words) {
+        if (typeof section === "number") continue;
+        for (const word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
             wordCount++;
             break;
@@ -815,14 +840,14 @@ export async function init() {
       }
     } else {
       for (let i = 0; i < wordsBound; i++) {
-        let randomWord = await getNextWord(wordset, language, wordsBound);
+        const randomWord = await getNextWord(wordset, language, wordsBound);
 
         if (/\t/g.test(randomWord)) {
           TestWords.setHasTab(true);
         }
 
         if (/ +/.test(randomWord)) {
-          let randomList = randomWord.split(" ");
+          const randomList = randomWord.split(" ");
           let id = 0;
           while (id < randomList.length) {
             TestWords.words.push(randomList[id]);
@@ -853,7 +878,7 @@ export async function init() {
   } else if (Config.mode == "quote") {
     // setLanguage(Config.language.replace(/_\d*k$/g, ""), true);
 
-    let quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
+    const quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
 
     if (quotes.length === 0) {
       TestUI.setTestRestarting(false);
@@ -869,9 +894,9 @@ export async function init() {
       return;
     }
 
-    let rq;
-    if (Config.quoteLength != -2) {
-      let quoteLengths = Config.quoteLength;
+    let rq: MonkeyTypes.Quote | number | undefined;
+    if (!Config.quoteLength.includes(-2)) {
+      const quoteLengths = Config.quoteLength;
       let groupIndex;
       if (quoteLengths.length > 1) {
         groupIndex =
@@ -893,7 +918,11 @@ export async function init() {
         quotes.groups[groupIndex][
           Math.floor(Math.random() * quotes.groups[groupIndex].length)
         ];
-      if (TestWords.randomQuote != null && rq.id === TestWords.randomQuote.id) {
+      if (
+        TestWords.randomQuote != null &&
+        typeof rq !== "number" &&
+        rq.id === TestWords.randomQuote.id
+      ) {
         rq =
           quotes.groups[groupIndex][
             Math.floor(Math.random() * quotes.groups[groupIndex].length)
@@ -901,7 +930,11 @@ export async function init() {
       }
     } else {
       quotes.groups.forEach((group) => {
-        let filtered = group.filter(
+        const quoteGroup = <MonkeyTypes.Quote[]>group;
+
+        if (!quoteGroup.every((quote) => typeof quote !== "number")) return;
+
+        const filtered = quoteGroup.filter(
           (quote) => quote.id == QuoteSearchPopup.selectedId
         );
         if (filtered.length > 0) {
@@ -913,20 +946,25 @@ export async function init() {
         Notifications.add("Quote Id Does Not Exist", 0);
       }
     }
-    rq.text = rq.text.replace(/ +/gm, " ");
-    rq.text = rq.text.replace(/\\\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\\\n/gm, "\n");
-    rq.text = rq.text.replace(/\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\n/gm, "\n");
-    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-    rq.text = rq.text.replace(/…/g, "...");
-    rq.text = rq.text.trim();
-    rq.textSplit = rq.text.split(" ");
-    rq.language = Config.language.replace(/_\d*k$/g, "");
 
-    TestWords.setRandomQuote(rq);
+    if (rq !== undefined && typeof rq !== "number") {
+      rq.text = rq.text.replace(/ +/gm, " ");
+      rq.text = rq.text.replace(/\\\\t/gm, "\t");
+      rq.text = rq.text.replace(/\\\\n/gm, "\n");
+      rq.text = rq.text.replace(/\\t/gm, "\t");
+      rq.text = rq.text.replace(/\\n/gm, "\n");
+      rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+      rq.text = rq.text.replace(/…/g, "...");
+      rq.text = rq.text.trim();
+      rq.textSplit = rq.text.split(" ");
+      rq.language = Config.language.replace(/_\d*k$/g, "");
 
-    let w = TestWords.randomQuote.textSplit;
+      TestWords.setRandomQuote(rq);
+    }
+
+    const w = TestWords.randomQuote.textSplit;
+
+    if (w === undefined) return;
 
     if (Config.showAllLines) {
       wordsBound = w.length;
@@ -984,23 +1022,24 @@ export async function init() {
   // }
 }
 
-export async function addWord() {
+export async function addWord(): Promise<void> {
   let bound = 100;
   if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
     if (
       Config.mode == "time" &&
       TestWords.words.length - TestWords.words.currentIndex < 20
     ) {
-      let section =
+      const section =
         Config.funbox == "wikipedia"
           ? await Wikipedia.getSection(Config.language)
           : await Poetry.getPoem();
-      let wordCount = 0;
-      for (let word of section.words) {
-        if (wordCount >= Config.words && Config.mode == "words") {
-          break;
-        }
-        wordCount++;
+      if (typeof section === "number") return;
+      // let wordCount = 0;
+      for (const word of section.words) {
+        // if (wordCount >= Config.words && Config.mode == "words") {
+        //   break;
+        // }
+        // wordCount++;
         TestWords.words.push(word);
         TestUI.addWord(word);
       }
@@ -1025,23 +1064,24 @@ export async function addWord() {
       !CustomText.isTimeRandom &&
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
-      TestWords.words.length >= TestWords.randomQuote.textSplit.length)
+      TestWords.words.length >= (TestWords.randomQuote.textSplit?.length ?? 0))
   )
     return;
   const language =
     Config.mode !== "custom"
       ? await Misc.getCurrentLanguage(Config.language)
       : {
+          name: (await Misc.getCurrentLanguage(Config.language)).name,
           //borrow the direction of the current language
-          leftToRight: await Misc.getCurrentLanguage(Config.language)
+          leftToRight: (await Misc.getCurrentLanguage(Config.language))
             .leftToRight,
           words: CustomText.text,
         };
   const wordset = Wordset.withWords(language.words, Config.funbox);
 
-  let randomWord = await getNextWord(wordset, language, bound);
+  const randomWord = await getNextWord(wordset, language, bound);
 
-  let split = randomWord.split(" ");
+  const split = randomWord.split(" ");
   if (split.length > 1) {
     split.forEach((word) => {
       TestWords.words.push(word);
@@ -1053,12 +1093,52 @@ export async function addWord() {
   }
 }
 
-let retrySaving = {
+interface RetrySaving {
+  completedEvent: CompletedEvent<MonkeyTypes.Mode> | null;
+  canRetry: boolean;
+}
+
+type Modify<T, R> = Omit<T, keyof R> & R;
+
+interface CompletedEvent<M extends MonkeyTypes.Mode>
+  extends Modify<
+    MonkeyTypes.Result<M>,
+    {
+      _id: string | undefined;
+      uid: string | undefined;
+      wpm: number | undefined;
+      rawWpm: number | undefined;
+      charStats: number[] | undefined;
+      acc: number | undefined;
+      mode2: MonkeyTypes.Mode2<M>;
+      tags: string[] | undefined;
+      consistency: number | undefined;
+      keyConsistency: number | undefined;
+      chartData:
+        | {
+            wpm: number[];
+            raw: number[] | undefined;
+            err: number[] | undefined;
+            unsmoothedRaw?: number[];
+          }
+        | "toolong";
+      testDuration: number | undefined;
+      afkDuration: number | undefined;
+      keySpacingStats: MonkeyTypes.KeyStats | undefined;
+      keyDurationStats: MonkeyTypes.KeyStats | undefined;
+    }
+  > {
+  smoothConsistency: number | undefined;
+  wpmConsistency: number | undefined;
+  lang: string | undefined;
+}
+
+const retrySaving: RetrySaving = {
   completedEvent: null,
   canRetry: false,
 };
 
-export function retrySavingResult() {
+export function retrySavingResult(): void {
   if (!retrySaving.completedEvent) {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
@@ -1077,7 +1157,7 @@ export function retrySavingResult() {
 
   Notifications.add("Retrying to save...");
 
-  let { completedEvent } = retrySaving;
+  const { completedEvent } = retrySaving;
 
   axiosInstance
     .post("/results/add", {
@@ -1090,17 +1170,22 @@ export function retrySavingResult() {
       if (response.status !== 200) {
         Notifications.add("Result not saved. " + response.data.message, -1);
       } else {
+        if (completedEvent === null) return;
         completedEvent._id = response.data.insertedId;
         if (response.data.isPb) {
           completedEvent.isPb = true;
         }
 
-        DB.saveLocalResult(completedEvent);
+        const result = <MonkeyTypes.Result<MonkeyTypes.Mode>>(
+          (<unknown>completedEvent)
+        );
+
+        DB.saveLocalResult(result);
         DB.updateLocalStats({
           time:
-            completedEvent.testDuration +
-            completedEvent.incompleteTestSeconds -
-            completedEvent.afkDuration,
+            result.testDuration +
+            result.incompleteTestSeconds -
+            result.afkDuration,
           started: TestStats.restartCount + 1,
         });
 
@@ -1116,15 +1201,15 @@ export function retrySavingResult() {
           Result.updateCrown();
           DB.saveLocalPB(
             Config.mode,
-            completedEvent.mode2,
+            result.mode2,
             Config.punctuation,
             Config.language,
             Config.difficulty,
             Config.lazyMode,
-            completedEvent.wpm,
-            completedEvent.acc,
-            completedEvent.rawWpm,
-            completedEvent.consistency
+            result.wpm,
+            result.acc,
+            result.rawWpm,
+            result.consistency
           );
         }
       }
@@ -1134,21 +1219,26 @@ export function retrySavingResult() {
     })
     .catch((e) => {
       AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to save result: " + msg, -1);
       $("#retrySavingResultButton").removeClass("hidden");
       retrySaving.canRetry = true;
     });
 }
 
-function buildCompletedEvent(difficultyFailed) {
+function buildCompletedEvent(
+  difficultyFailed: boolean
+): CompletedEvent<MonkeyTypes.Mode> {
   //build completed event object
-  let completedEvent = {
+  const completedEvent: CompletedEvent<typeof Config.mode> = {
+    _id: undefined,
+    uid: undefined,
     wpm: undefined,
     rawWpm: undefined,
     charStats: undefined,
     acc: undefined,
     mode: Config.mode,
+    // @ts-ignore wtf
     mode2: undefined,
     quoteLength: -1,
     punctuation: Config.punctuation,
@@ -1166,6 +1256,8 @@ function buildCompletedEvent(difficultyFailed) {
     tags: undefined,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
+    keySpacingStats: undefined,
+    keyDurationStats: undefined,
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1178,10 +1270,13 @@ function buildCompletedEvent(difficultyFailed) {
     customText: undefined,
     testDuration: undefined,
     afkDuration: undefined,
+    smoothConsistency: undefined,
+    wpmConsistency: undefined,
+    lang: undefined,
   };
 
   // stats
-  let stats = TestStats.calculateStats();
+  const stats = TestStats.calculateStats();
   if (stats.time % 1 != 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
@@ -1198,51 +1293,57 @@ function buildCompletedEvent(difficultyFailed) {
 
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
-    let wpmAndRaw = TestStats.calculateWpmAndRaw();
+    const wpmAndRaw = TestStats.calculateWpmAndRaw();
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
   }
 
   //consistency
-  let rawPerSecond = TestInput.keypressPerSecond.map((f) =>
+  const rawPerSecond = TestInput.keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
   );
-  let stddev = Misc.stdDev(rawPerSecond);
-  let avg = Misc.mean(rawPerSecond);
+  const stddev = Misc.stdDev(rawPerSecond);
+  const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyconsistencyarray = TestInput.keypressTimings.spacing.array.slice();
-  keyconsistencyarray = keyconsistencyarray.splice(
-    0,
-    keyconsistencyarray.length - 1
-  );
-  let keyConsistency = Misc.roundTo2(
-    Misc.kogasa(
-      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
-    )
-  );
+  if (TestInput.keypressTimings.spacing.array !== "toolong") {
+    let keyconsistencyarray = TestInput.keypressTimings.spacing.array.slice();
+
+    keyconsistencyarray = keyconsistencyarray.splice(
+      0,
+      keyconsistencyarray.length - 1
+    );
+    const keyConsistency = Misc.roundTo2(
+      Misc.kogasa(
+        Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
+      )
+    );
+    completedEvent.keyConsistency = keyConsistency;
+  }
   if (isNaN(consistency)) {
     consistency = 0;
   }
-  completedEvent.keyConsistency = keyConsistency;
   completedEvent.consistency = consistency;
-  let smoothedraw = Misc.smooth(rawPerSecond, 1);
+  const smoothedraw = Misc.smooth(rawPerSecond, 1);
+
+  if (completedEvent.chartData === "toolong") return completedEvent;
+
   completedEvent.chartData.raw = smoothedraw;
   completedEvent.chartData.unsmoothedRaw = rawPerSecond;
 
   //smoothed consistency
-  let stddev2 = Misc.stdDev(smoothedraw);
-  let avg2 = Misc.mean(smoothedraw);
-  let smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
+  const stddev2 = Misc.stdDev(smoothedraw);
+  const avg2 = Misc.mean(smoothedraw);
+  const smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
   completedEvent.smoothConsistency = smoothConsistency;
 
   //wpm consistency
-  let stddev3 = Misc.stdDev(completedEvent.chartData.wpm);
-  let avg3 = Misc.mean(completedEvent.chartData.wpm);
-  let wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
+  const stddev3 = Misc.stdDev(completedEvent.chartData.wpm);
+  const avg3 = Misc.mean(completedEvent.chartData.wpm);
+  const wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
   completedEvent.wpmConsistency = wpmConsistency;
 
-  completedEvent.testDuration = parseFloat(stats.time);
+  completedEvent.testDuration = parseFloat(stats.time.toString());
   completedEvent.afkDuration = TestStats.calculateAfkSeconds(
     completedEvent.testDuration
   );
@@ -1253,10 +1354,11 @@ function buildCompletedEvent(difficultyFailed) {
   }
 
   if (Config.mode === "quote") {
-    completedEvent.quoteLength = TestWords.randomQuote.group;
+    completedEvent.quoteLength = TestWords.randomQuote.group ?? 0;
     completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
   }
 
+  // @ts-ignore wtf
   completedEvent.mode2 = Misc.getMode2(Config, TestWords.randomQuote);
 
   if (Config.mode === "custom") {
@@ -1264,22 +1366,16 @@ function buildCompletedEvent(difficultyFailed) {
     completedEvent.customText.textLen = CustomText.text.length;
     completedEvent.customText.isWordRandom = CustomText.isWordRandom;
     completedEvent.customText.isTimeRandom = CustomText.isTimeRandom;
-    completedEvent.customText.word =
-      CustomText.word !== "" && !isNaN(CustomText.word)
-        ? CustomText.word
-        : null;
-    completedEvent.customText.time =
-      CustomText.time !== "" && !isNaN(CustomText.time)
-        ? CustomText.time
-        : null;
+    completedEvent.customText.word = CustomText.word;
+    completedEvent.customText.time = CustomText.time;
   } else {
     delete completedEvent.customText;
   }
 
   //tags
-  let activeTagsIds = [];
+  const activeTagsIds: string[] = [];
   try {
-    DB.getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagsIds.push(tag._id);
       }
@@ -1292,7 +1388,7 @@ function buildCompletedEvent(difficultyFailed) {
   return completedEvent;
 }
 
-export async function finish(difficultyFailed = false) {
+export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;
   if (Config.mode == "zen" && TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
@@ -1320,7 +1416,7 @@ export async function finish(difficultyFailed = false) {
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
-    let burst = TestStats.calculateBurst();
+    const burst = TestStats.calculateBurst();
     TestInput.pushBurstToHistory(burst);
   }
 
@@ -1336,7 +1432,7 @@ export async function finish(difficultyFailed = false) {
   ///////// completed event ready
 
   //afk check
-  let kps = TestInput.keypressPerSecond.slice(-5);
+  const kps = TestInput.keypressPerSecond.slice(-5);
   let afkDetected = kps.every((second) => second.afk);
   if (TestInput.bailout) afkDetected = false;
 
@@ -1358,12 +1454,14 @@ export async function finish(difficultyFailed = false) {
       completedEvent.mode2 > 0) ||
     (Config.mode === "time" &&
       completedEvent.mode2 == 0 &&
+      completedEvent.testDuration !== undefined &&
       completedEvent.testDuration < 15) ||
     (Config.mode === "words" &&
       completedEvent.mode2 < 10 &&
       completedEvent.mode2 > 0) ||
     (Config.mode === "words" &&
       completedEvent.mode2 == 0 &&
+      completedEvent.testDuration !== undefined &&
       completedEvent.testDuration < 15) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
@@ -1377,16 +1475,24 @@ export async function finish(difficultyFailed = false) {
       !CustomText.isWordRandom &&
       CustomText.isTimeRandom &&
       CustomText.time < 15) ||
-    (Config.mode === "zen" && completedEvent.testDuration < 15)
+    (Config.mode === "zen" &&
+      completedEvent.testDuration !== undefined &&
+      completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+  } else if (
+    completedEvent.wpm !== undefined &&
+    (completedEvent.wpm < 0 || completedEvent.wpm > 350)
+  ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+  } else if (
+    completedEvent.acc !== undefined &&
+    (completedEvent.acc < 75 || completedEvent.acc > 100)
+  ) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;
@@ -1394,7 +1500,11 @@ export async function finish(difficultyFailed = false) {
 
   // test is valid
 
-  if (!dontSave) {
+  if (
+    !dontSave &&
+    completedEvent.testDuration !== undefined &&
+    completedEvent.afkDuration !== undefined
+  ) {
     TodayTracker.addSeconds(
       completedEvent.testDuration +
         (TestStats.incompleteSeconds < 0
@@ -1430,7 +1540,8 @@ export async function finish(difficultyFailed = false) {
     dontSave
   );
 
-  delete completedEvent.chartData.unsmoothedRaw;
+  if (completedEvent.chartData !== "toolong")
+    delete completedEvent.chartData.unsmoothedRaw;
 
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
@@ -1521,7 +1632,7 @@ export async function finish(difficultyFailed = false) {
     })
     .catch((e) => {
       AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
+      const msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to save result: " + msg, -1);
       $("#retrySavingResultButton").removeClass("hidden");
       if (msg == "Incorrect result hash") {
@@ -1533,21 +1644,21 @@ export async function finish(difficultyFailed = false) {
     });
 }
 
-export function fail(reason) {
+export function fail(reason: string): void {
   failReason = reason;
   // input.pushHistory();
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
   finish(true);
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
-  let afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+  const testSeconds = TestStats.calculateTestSeconds(performance.now());
+  const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
   let tt = testSeconds - afkseconds;
   if (tt < 0) tt = 0;
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
 }
 
-$(document).on("click", "#testModesNotice .text-button.restart", (event) => {
+$(document).on("click", "#testModesNotice .text-button.restart", () => {
   restart();
 });
 
@@ -1622,7 +1733,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
-  let mode = $(e.currentTarget).attr("timeConfig");
+  const mode = $(e.currentTarget).attr("timeConfig");
   if (mode != "custom") {
     UpdateConfig.setTimeConfig(parseInt(mode));
     ManualRestart.set();
@@ -1687,13 +1798,13 @@ $(document).on(
     if (e.target.classList.contains("report")) {
       return;
     }
-    let sid = parseInt($(e.currentTarget).attr("id"));
+    const sid = parseInt($(e.currentTarget).attr("id"));
     QuoteSearchPopup.setSelectedId(sid);
     if (QuoteSearchPopup.apply(sid) === true) restart();
   }
 );
 
-$(document).on("click", "#top #menu #startTestButton, #top .logo", (e) => {
+$(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
   if (ActivePage.get() === "test") restart();
 });
 

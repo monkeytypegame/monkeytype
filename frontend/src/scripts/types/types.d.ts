@@ -9,7 +9,20 @@ declare namespace MonkeyTypes {
 
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
 
-  type LanguageGroup = { name: string; languages: string[] };
+  interface LanguageGroup {
+    name: string;
+    languages: string[];
+  }
+
+  interface LanguageObject {
+    name: string;
+    leftToRight?: boolean;
+    noLazyMode?: boolean;
+    bcp47?: string;
+    accents?: [string, string][];
+    ligatures?: boolean;
+    words: string[];
+  }
 
   type WordsModes = number;
 
@@ -21,7 +34,7 @@ declare namespace MonkeyTypes {
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  type QuoteLength = -1 | 0 | 1 | 2 | 3;
+  type QuoteLength = -2 | -1 | 0 | 1 | 2 | 3;
 
   type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
@@ -132,6 +145,14 @@ declare namespace MonkeyTypes {
     delimiter: string;
   }
 
+  interface ResultCustomText {
+    textLen?: number;
+    isWordRandom?: boolean;
+    isTimeRandom?: boolean;
+    word?: number | null;
+    time?: number | null;
+  }
+
   interface PresetConfig extends MonkeyTypes.Config {
     tags: string[];
   }
@@ -178,7 +199,7 @@ declare namespace MonkeyTypes {
   interface Stats {
     time: number;
     started: number;
-    completed: number;
+    completed?: number;
   }
 
   interface ChartData {
@@ -216,6 +237,8 @@ declare namespace MonkeyTypes {
     uid: string;
     keySpacingStats: KeyStats;
     keyDurationStats: KeyStats;
+    keySpacing?: number[] | "toolong";
+    keyDuration?: number[] | "toolong";
     isPb?: boolean;
     bailedOut?: boolean;
     blindMode?: boolean;
@@ -225,6 +248,8 @@ declare namespace MonkeyTypes {
     language: string;
     numbers?: boolean;
     punctuation?: boolean;
+    hash?: string;
+    customText?: ResultCustomText;
   }
 
   interface Config {
@@ -529,7 +554,7 @@ declare namespace MonkeyTypes {
     id: number;
     group?: number;
     language: string;
-    textSplit?: string;
+    textSplit?: string[];
   }
 
   interface PSA {
