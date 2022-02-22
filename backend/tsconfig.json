@@ -10,10 +10,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "paths": {
-      "anticheat": ["./anticheat/anticheat"]
-    }
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "build"]
 }
