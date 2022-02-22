@@ -46,6 +46,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
+import * as Last10Average from "../elements/last-10-average";
 
 const objecthash = require("node-object-hash")().hash;
 
@@ -372,6 +373,7 @@ export function restart(
   Replay.pauseReplay();
   TestInput.setBailout(false);
   PaceCaret.reset();
+  if (Config.showAvg) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();

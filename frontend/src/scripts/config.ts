@@ -188,8 +188,11 @@ function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
 
 function invalid(key: string, val: any): void {
   Notifications.add(
-    `A config value was invalid, tried setting "${key}" to "${val.toString()}", type "${typeof val}"`,
+    `Invalid value for ${key} (${val.toString()}). Please try to change this setting again.`,
     -1
+  );
+  console.error(
+    `Invalid value key ${key} value ${val.toString()} type ${typeof val}`
   );
 }
 
@@ -364,7 +367,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): void {
   }
   config.blindMode = blind;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("blindMode", config.blindMode);
+  ConfigEvent.dispatch("blindMode", config.blindMode, nosave);
 }
 
 export function setChartAccuracy(
@@ -412,7 +415,7 @@ export function setStopOnError(
     config.confidenceMode = "off";
   }
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("stopOnError", config.stopOnError);
+  ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 }
 
 export function setAlwaysShowDecimalPlaces(
@@ -495,7 +498,7 @@ export function setPaceCaret(
   // }
   config.paceCaret = val;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("paceCaret", config.paceCaret);
+  ConfigEvent.dispatch("paceCaret", config.paceCaret, nosave);
 }
 
 export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
@@ -535,7 +538,7 @@ export function setMinWpm(
   }
   config.minWpm = minwpm;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("minWpm", config.minWpm);
+  ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
 }
 
 export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
@@ -563,7 +566,7 @@ export function setMinAcc(
   }
   config.minAcc = min;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("minAcc", config.minAcc);
+  ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
 }
 
 export function setMinAccCustom(val: number, nosave?: boolean): void {
@@ -591,7 +594,7 @@ export function setMinBurst(
   }
   config.minBurst = min;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("minBurst", config.minBurst);
+  ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
 }
 
 export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
@@ -926,7 +929,7 @@ export function setShowAvg(live: boolean, nosave?: boolean): void {
   }
   config.showAvg = live;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("showAvg", config.showAvg);
+  ConfigEvent.dispatch("showAvg", config.showAvg, nosave);
 }
 
 export function setHighlightMode(
@@ -1092,7 +1095,7 @@ export function setQuoteLength(
   nosave?: boolean,
   multipleMode?: boolean
 ): void {
-  if (!isConfigValueValid(len, [[-1, 0, 1, 2, 3], "numberArray"]))
+  if (!isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]))
     return invalid("quote length", len);
 
   if (Array.isArray(len)) {
@@ -1288,7 +1291,7 @@ export function setConfidenceMode(
     config.stopOnError = "off";
   }
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("confidenceMode", config.confidenceMode);
+  ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
 }
 
 export function setIndicateTypos(
@@ -1542,7 +1545,7 @@ export function setLayout(layout: string, nosave?: boolean): void {
   }
   config.layout = layout;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("layout", config.layout);
+  ConfigEvent.dispatch("layout", config.layout, nosave);
 }
 
 // export function setSavedLayout(layout, nosave?: boolean): void {
@@ -1557,6 +1560,7 @@ export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
 ): void {
+  fontSize = fontSize.toString() as MonkeyTypes.FontSize; //todo remove after around a week
   if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
     return invalid("font size", fontSize);
 
@@ -1694,6 +1698,9 @@ export function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,
   nosave?: boolean
 ): void {
+  array = (array as unknown as string[]).map((value) =>
+    parseFloat(value)
+  ) as MonkeyTypes.CustomBackgroundFilter;
   if (!isConfigValueValid(array, ["numberArray"]))
     return invalid("custom background filter", array);
 

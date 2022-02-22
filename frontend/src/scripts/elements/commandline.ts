@@ -405,7 +405,7 @@ $("#commandInput input").keydown((e) => {
     //enter
     e.preventDefault();
     const command = $("#commandInput input").attr("command");
-    const value = $("#commandInput input").val();
+    const value = $("#commandInput input").val() as string;
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
       if (obj.id == command) {

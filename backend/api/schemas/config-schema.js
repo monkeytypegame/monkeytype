@@ -34,7 +34,10 @@ const CONFIG_SCHEMA = joi.object({
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
   quoteLength: joi.array().items(joi.number()),
   language: joi.string(),
-  fontSize: joi.string().valid("1", "125", "15", "2", "3", "4"),
+  fontSize: joi.alternatives().try(
+    joi.number().valid(1, 125, 15, 2, 3, 4), //todo remove after a week
+    joi.string().valid("1", "125", "15", "2", "3", "4")
+  ),
   freedomMode: joi.boolean(),
   difficulty: joi.string().valid("normal", "expert", "master"),
   blindMode: joi.boolean(),
@@ -45,10 +48,7 @@ const CONFIG_SCHEMA = joi.object({
   layout: joi.string(),
   funbox: joi.string(),
   confidenceMode: joi.string().valid("off", "on", "max"),
-  indicateTypos: joi.alternatives().try(
-    joi.boolean(), //todo remove
-    joi.string().valid("off", "below", "replace")
-  ),
+  indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("bar", "text", "mini"),
   colorfulMode: joi.boolean(),
   randomTheme: joi.string().valid("off", "on", "fav", "light", "dark"),
