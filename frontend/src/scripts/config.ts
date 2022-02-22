@@ -140,8 +140,22 @@ type PossibleType =
   | string[]
   | number[];
 
-function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
-  return possibleTypes.some((possibleType) => {
+async function some<T>(
+  array: T[],
+  predicate: (item: T) => Promise<boolean>
+): Promise<boolean> {
+  for (const item of array) {
+    if (await predicate(item)) return true;
+  }
+
+  return false;
+}
+
+async function isConfigValueValid(
+  val: any,
+  possibleTypes: PossibleType[]
+): Promise<boolean> {
+  return await some(possibleTypes, async (possibleType) => {
     switch (possibleType) {
       case "boolean":
         return typeof val === "boolean";
@@ -170,11 +184,23 @@ function isConfigValueValid(val: any, possibleTypes: PossibleType[]): boolean {
       case "numberArray":
         return val instanceof Array && val.every((v) => typeof v === "number");
 
-      case "layoutfluid":
-        return (
-          typeof val === "string" &&
-          (val.split("#").length === 3 || val.split(" ").length === 3)
+      case "layoutfluid": {
+        if (typeof val !== "string") return false;
+
+        const layoutNames = val.split(/[# ]+/);
+
+        if (layoutNames.length < 2 || layoutNames.length > 5) return false;
+
+        // convert the layout names to layouts
+        const layouts = await Promise.all(
+          layoutNames.map((layoutName) => Misc.getLayout(layoutName))
         );
+
+        // check if all layouts exist
+        if (!layouts.every((layout) => layout !== undefined)) return false;
+
+        return true;
+      }
 
       default:
         if (possibleType instanceof Array) {
@@ -220,8 +246,12 @@ export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
 }
 
 //numbers
-export function setNumbers(numb: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(numb, ["boolean"])) return invalid("numbers", numb);
+export async function setNumbers(
+  numb: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(numb, ["boolean"])))
+    return invalid("numbers", numb);
 
   if (config.mode === "quote") {
     numb = false;
@@ -237,8 +267,11 @@ export function setNumbers(numb: boolean, nosave?: boolean): void {
 }
 
 //punctuation
-export function setPunctuation(punc: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(punc, ["boolean"]))
+export async function setPunctuation(
+  punc: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(punc, ["boolean"])))
     return invalid("punctuation", punc);
 
   if (config.mode === "quote") {
@@ -254,8 +287,15 @@ export function setPunctuation(punc: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("punctuation", config.punctuation);
 }
 
-export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
-  if (!isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]))
+export async function setMode(
+  mode: MonkeyTypes.Mode,
+  nosave?: boolean
+): Promise<void> {
+  if (
+    !(await isConfigValueValid(mode, [
+      ["time", "words", "quote", "zen", "custom"],
+    ]))
+  )
     return invalid("mode", mode);
 
   if (mode !== "words" && config.funbox === "memory") {
@@ -279,60 +319,55 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
   ConfigEvent.dispatch("mode", previous, config.mode);
 }
 
-export function setPlaySoundOnError(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setPlaySoundOnError(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("play sound on error", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.playSoundOnError = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
 }
 
-export function setPlaySoundOnClick(
+export async function setPlaySoundOnClick(
   val: MonkeyTypes.PlaySoundOnClick,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]))
+): Promise<void> {
+  if (
+    !(await isConfigValueValid(val, [
+      ["off", "1", "2", "3", "4", "5", "6", "7"],
+    ]))
+  )
     return invalid("play sound on click", val);
 
-  if (val == undefined) {
-    val = "off";
-  }
   config.playSoundOnClick = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
 }
 
-export function setSoundVolume(
+export async function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["0.1", "0.5", "1.0"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, [["0.1", "0.5", "1.0"]])))
     return invalid("sound volume", val);
 
-  if (val == undefined) {
-    val = "1.0";
-  }
   config.soundVolume = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("soundVolume", config.soundVolume);
 }
 
 //difficulty
-export function setDifficulty(
+export async function setDifficulty(
   diff: MonkeyTypes.Difficulty,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(diff, [["normal", "expert", "master"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(diff, [["normal", "expert", "master"]])))
     return invalid("difficulty", diff);
 
-  if (
-    (diff !== "normal" && diff !== "expert" && diff !== "master") ||
-    diff == undefined
-  ) {
+  if (diff !== "normal" && diff !== "expert" && diff !== "master") {
     diff = "normal";
   }
   config.difficulty = diff;
@@ -341,16 +376,23 @@ export function setDifficulty(
 }
 
 //set fav themes
-export function setFavThemes(themes: string[], nosave?: boolean): void {
-  if (!isConfigValueValid(themes, ["stringArray"]))
+export async function setFavThemes(
+  themes: string[],
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(themes, ["stringArray"])))
     return invalid("favorite themes", themes);
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("favThemes", config.favThemes);
 }
 
-export function setFunbox(funbox: string, nosave?: boolean): void {
-  if (!isConfigValueValid(funbox, ["string"])) return invalid("funbox", funbox);
+export async function setFunbox(
+  funbox: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(funbox, ["string"])))
+    return invalid("funbox", funbox);
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
@@ -358,56 +400,50 @@ export function setFunbox(funbox: string, nosave?: boolean): void {
   ConfigEvent.dispatch("funbox", config.funbox);
 }
 
-export function setBlindMode(blind: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(blind, ["boolean"]))
+export async function setBlindMode(
+  blind: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(blind, ["boolean"])))
     return invalid("blind mode", blind);
 
-  if (blind == undefined) {
-    blind = false;
-  }
   config.blindMode = blind;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("blindMode", config.blindMode, nosave);
 }
 
-export function setChartAccuracy(
+export async function setChartAccuracy(
   chartAccuracy: boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(chartAccuracy, ["boolean"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(chartAccuracy, ["boolean"])))
     return invalid("chart accuracy", chartAccuracy);
 
-  if (chartAccuracy == undefined) {
-    chartAccuracy = true;
-  }
   config.chartAccuracy = chartAccuracy;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
 }
 
-export function setChartStyle(
+export async function setChartStyle(
   chartStyle: MonkeyTypes.ChartStyle,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(chartStyle, [["line", "scatter"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(chartStyle, [["line", "scatter"]])))
     return invalid("chart style", chartStyle);
 
-  if (chartStyle == undefined) {
-    chartStyle = "line";
-  }
   config.chartStyle = chartStyle;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("chartStyle", config.chartStyle);
 }
 
-export function setStopOnError(
+export async function setStopOnError(
   soe: MonkeyTypes.StopOnError | boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(soe, [["off", "word", "letter"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(soe, [["off", "word", "letter"], "boolean"])))
     return invalid("stop on error", soe);
 
-  if (soe == undefined || soe === true || soe === false) {
+  if (soe === true || soe === false) {
     soe = "off";
   }
   config.stopOnError = soe;
@@ -418,16 +454,13 @@ export function setStopOnError(
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 }
 
-export function setAlwaysShowDecimalPlaces(
+export async function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("always show decimal places", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.alwaysShowDecimalPlaces = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch(
@@ -436,25 +469,25 @@ export function setAlwaysShowDecimalPlaces(
   );
 }
 
-export function setAlwaysShowCPM(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setAlwaysShowCPM(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("always show CPM", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.alwaysShowCPM = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
 }
 
-export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setShowOutOfFocusWarning(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("show out of focus warning", val);
 
-  if (val == undefined) {
-    val = true;
-  }
   config.showOutOfFocusWarning = val;
   if (!config.showOutOfFocusWarning) {
     OutOfFocus.hide();
@@ -463,29 +496,26 @@ export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
 }
 
-export function setSwapEscAndTab(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setSwapEscAndTab(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("swap esc and tab", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.swapEscAndTab = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("swapEscAndTab", config.swapEscAndTab);
 }
 
 //pace caret
-export function setPaceCaret(
+export async function setPaceCaret(
   val: MonkeyTypes.PaceCaret,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["custom", "off", "average", "pb"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, [["custom", "off", "average", "pb"]])))
     return invalid("pace caret", val);
 
-  if (val == undefined) {
-    val = "off";
-  }
   if (document.readyState === "complete") {
     if (val == "pb" && firebase.auth().currentUser === null) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
@@ -501,164 +531,151 @@ export function setPaceCaret(
   ConfigEvent.dispatch("paceCaret", config.paceCaret, nosave);
 }
 
-export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["number"]))
+export async function setPaceCaretCustomSpeed(
+  val: number,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["number"])))
     return invalid("pace caret custom speed", val);
 
-  if (val == undefined) {
-    val = 100;
-  }
   config.paceCaretCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 }
 
-export function setRepeatedPace(pace: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(pace, ["boolean"]))
+export async function setRepeatedPace(
+  pace: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(pace, ["boolean"])))
     return invalid("repeated pace", pace);
 
-  if (pace == undefined) {
-    pace = true;
-  }
   config.repeatedPace = pace;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("repeatedPace", config.repeatedPace);
 }
 
 //min wpm
-export function setMinWpm(
+export async function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(minwpm, [["off", "custom"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(minwpm, [["off", "custom"]])))
     return invalid("min WPM", minwpm);
 
-  if (minwpm == undefined) {
-    minwpm = "off";
-  }
   config.minWpm = minwpm;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
 }
 
-export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["number"]))
+export async function setMinWpmCustomSpeed(
+  val: number,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["number"])))
     return invalid("min WPM custom speed", val);
 
-  if (val == undefined) {
-    val = 100;
-  }
   config.minWpmCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
 }
 
 //min acc
-export function setMinAcc(
+export async function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(min, [["off", "custom"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(min, [["off", "custom"]])))
     return invalid("min acc", min);
 
-  if (min == undefined) {
-    min = "off";
-  }
   config.minAcc = min;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
 }
 
-export function setMinAccCustom(val: number, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["number"]))
+export async function setMinAccCustom(
+  val: number,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["number"])))
     return invalid("min acc custom", val);
 
-  if (val === undefined) {
-    val = 90;
-  }
   config.minAccCustom = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
 }
 
 //min burst
-export function setMinBurst(
+export async function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(min, [["off", "fixed", "flex"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(min, [["off", "fixed", "flex"]])))
     return invalid("min burst", min);
 
-  if (min == undefined) {
-    min = "off";
-  }
   config.minBurst = min;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
 }
 
-export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["number"]))
+export async function setMinBurstCustomSpeed(
+  val: number,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["number"])))
     return invalid("min burst custom speed", val);
 
-  if (val == undefined) {
-    val = 100;
-  }
   config.minBurstCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
 }
 
 //always show words history
-export function setAlwaysShowWordsHistory(
+export async function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("always show words history", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.alwaysShowWordsHistory = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
 }
 
 //single list command line
-export function setSingleListCommandLine(
+export async function setSingleListCommandLine(
   option: MonkeyTypes.SingleListCommandLine,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(option, [["manual", "on"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(option, [["manual", "on"]])))
     return invalid("single list command line", option);
 
-  if (!option) option = "manual";
   config.singleListCommandLine = option;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("singleListCommandLine", config.singleListCommandLine);
 }
 
 //caps lock warning
-export function setCapsLockWarning(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setCapsLockWarning(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("caps lock warning", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.capsLockWarning = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
 }
 
-export function setShowAllLines(sal: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(sal, ["boolean"]))
+export async function setShowAllLines(
+  sal: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(sal, ["boolean"])))
     return invalid("show all lines", sal);
 
-  if (sal == undefined) {
-    sal = false;
-  }
   config.showAllLines = sal;
   if (!nosave) {
     saveToLocalStorage();
@@ -666,25 +683,26 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("showAllLines", config.showAllLines);
 }
 
-export function setQuickEnd(qe: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(qe, ["boolean"])) return invalid("quick end", qe);
+export async function setQuickEnd(
+  qe: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(qe, ["boolean"])))
+    return invalid("quick end", qe);
 
-  if (qe == undefined) {
-    qe = false;
-  }
   config.quickEnd = qe;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("quickEnd", config.quickEnd);
 }
 
-export function setEnableAds(
+export async function setEnableAds(
   val: MonkeyTypes.EnableAds | boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["on", "off", "max"], "boolean"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, [["on", "off", "max"], "boolean"])))
     return invalid("enable ads", val);
 
-  if (val == undefined || val === true || val === false) {
+  if (val === true || val === false) {
     val = "off";
   }
   config.enableAds = val;
@@ -697,14 +715,14 @@ export function setEnableAds(
   }
 }
 
-export function setRepeatQuotes(
+export async function setRepeatQuotes(
   val: MonkeyTypes.RepeatQuotes | boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["off", "typing"], "boolean"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, [["off", "typing"], "boolean"])))
     return invalid("repeat quotes", val);
 
-  if (val == undefined || val === true || val === false) {
+  if (val === true || val === false) {
     val = "off";
   }
   config.repeatQuotes = val;
@@ -713,70 +731,64 @@ export function setRepeatQuotes(
 }
 
 //flip colors
-export function setFlipTestColors(flip: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(flip, ["boolean"]))
+export async function setFlipTestColors(
+  flip: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(flip, ["boolean"])))
     return invalid("flip test colors", flip);
 
-  if (flip == undefined) {
-    flip = false;
-  }
   config.flipTestColors = flip;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("flipTestColors", config.flipTestColors);
 }
 
 //extra color
-export function setColorfulMode(extra: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(extra, ["boolean"]))
+export async function setColorfulMode(
+  extra: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(extra, ["boolean"])))
     return invalid("colorful mode", extra);
 
-  if (extra == undefined) {
-    extra = false;
-  }
   config.colorfulMode = extra;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("colorfulMode", config.colorfulMode);
 }
 
 //strict space
-export function setStrictSpace(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setStrictSpace(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("strict space", val);
 
-  if (val == undefined) {
-    val = false;
-  }
   config.strictSpace = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("strictSpace", config.strictSpace);
 }
 
 //opposite shift space
-export function setOppositeShiftMode(
+export async function setOppositeShiftMode(
   val: MonkeyTypes.OppositeShiftMode,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["off", "on", "keymap"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, [["off", "on", "keymap"]])))
     return invalid("opposite shift mode", val);
 
-  if (val == undefined) {
-    val = "off";
-  }
   config.oppositeShiftMode = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
 }
 
-export function setPageWidth(
+export async function setPageWidth(
   val: MonkeyTypes.PageWidth,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(val, [["max", "100", "125", "150", "200"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(val, [["max", "100", "125", "150", "200"]])))
     return invalid("page width", val);
 
-  if (val == null || val == undefined) {
-    val = "100";
-  }
   config.pageWidth = val;
   $("#centerContent").removeClass("wide125");
   $("#centerContent").removeClass("wide150");
@@ -790,20 +802,17 @@ export function setPageWidth(
   ConfigEvent.dispatch("pageWidth", config.pageWidth);
 }
 
-export function setCaretStyle(
+export async function setCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
-): void {
+): Promise<void> {
   if (
-    !isConfigValueValid(caretStyle, [
+    !(await isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
-    ])
+    ]))
   )
     return invalid("caret style", caretStyle);
 
-  if (caretStyle == null || caretStyle == undefined) {
-    caretStyle = "default";
-  }
   config.caretStyle = caretStyle;
   $("#caret").removeClass("off");
   $("#caret").removeClass("default");
@@ -832,20 +841,17 @@ export function setCaretStyle(
   ConfigEvent.dispatch("caretStyle", config.caretStyle);
 }
 
-export function setPaceCaretStyle(
+export async function setPaceCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
-): void {
+): Promise<void> {
   if (
-    !isConfigValueValid(caretStyle, [
+    !(await isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
-    ])
+    ]))
   )
     return invalid("pace caret style", caretStyle);
 
-  if (caretStyle == null || caretStyle == undefined) {
-    caretStyle = "default";
-  }
   config.paceCaretStyle = caretStyle;
   $("#paceCaret").removeClass("off");
   $("#paceCaret").removeClass("default");
@@ -872,71 +878,71 @@ export function setPaceCaretStyle(
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
 }
 
-export function setShowTimerProgress(timer: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(timer, ["boolean"]))
+export async function setShowTimerProgress(
+  timer: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(timer, ["boolean"])))
     return invalid("show timer progress", timer);
 
-  if (timer == null || timer == undefined) {
-    timer = false;
-  }
   config.showTimerProgress = timer;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
 }
 
-export function setShowLiveWpm(live: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(live, ["boolean"]))
+export async function setShowLiveWpm(
+  live: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(live, ["boolean"])))
     return invalid("show live WPM", live);
 
-  if (live == null || live == undefined) {
-    live = false;
-  }
   config.showLiveWpm = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
 }
 
-export function setShowLiveAcc(live: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(live, ["boolean"]))
+export async function setShowLiveAcc(
+  live: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(live, ["boolean"])))
     return invalid("show live acc", live);
 
-  if (live == null || live == undefined) {
-    live = false;
-  }
   config.showLiveAcc = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
 }
 
-export function setShowLiveBurst(live: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(live, ["boolean"]))
+export async function setShowLiveBurst(
+  live: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(live, ["boolean"])))
     return invalid("show live burst", live);
 
-  if (live == null || live == undefined) {
-    live = false;
-  }
   config.showLiveBurst = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
 }
 
-export function setShowAvg(live: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(live, ["boolean"]))
+export async function setShowAvg(
+  live: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(live, ["boolean"])))
     return invalid("show average", live);
 
-  if (live == null || live == undefined) {
-    live = false;
-  }
   config.showAvg = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showAvg", config.showAvg, nosave);
 }
 
-export function setHighlightMode(
+export async function setHighlightMode(
   mode: MonkeyTypes.HighlightMode,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(mode, [["off", "letter", "word"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(mode, [["off", "letter", "word"]])))
     return invalid("highlight mode", mode);
 
   if (
@@ -951,51 +957,43 @@ export function setHighlightMode(
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
   }
-  if (mode == null || mode == undefined) {
-    mode = "letter";
-  }
+
   config.highlightMode = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
 }
 
-export function setHideExtraLetters(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setHideExtraLetters(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("hide extra letters", val);
 
-  if (val == null || val == undefined) {
-    val = false;
-  }
   config.hideExtraLetters = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
 }
 
-export function setTimerStyle(
+export async function setTimerStyle(
   style: MonkeyTypes.TimerStyle,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(style, [["bar", "text", "mini"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(style, [["bar", "text", "mini"]])))
     return invalid("timer style", style);
 
-  if (style == null || style == undefined) {
-    style = "mini";
-  }
   config.timerStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerStyle", config.timerStyle);
 }
 
-export function setTimerColor(
+export async function setTimerColor(
   color: MonkeyTypes.TimerColor,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(color, [["black", "sub", "text", "main"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(color, [["black", "sub", "text", "main"]])))
     return invalid("timer color", color);
 
-  if (!color || !["black", "sub", "text", "main"].includes(color)) {
-    color = "black";
-  }
   config.timerColor = color;
 
   $("#timer").removeClass("timerSub");
@@ -1034,24 +1032,24 @@ export function setTimerColor(
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerColor", config.timerColor);
 }
-export function setTimerOpacity(
+export async function setTimerOpacity(
   opacity: MonkeyTypes.TimerOpacity,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]])))
     return invalid("timer opacity", opacity);
 
-  if (opacity == null || opacity == undefined) {
-    opacity = "0.25";
-  }
   config.timerOpacity = opacity;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerOpacity", config.timerOpacity);
 }
 
 //key tips
-export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(keyTips, ["boolean"]))
+export async function setKeyTips(
+  keyTips: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(keyTips, ["boolean"])))
     return invalid("key tips", keyTips);
 
   config.showKeyTips = keyTips;
@@ -1065,16 +1063,14 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
 }
 
 //mode
-export function setTimeConfig(
+export async function setTimeConfig(
   time: MonkeyTypes.TimeModes,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(time, ["number"])) return invalid("time", time);
+): Promise<void> {
+  if (!(await isConfigValueValid(time, ["number"])))
+    return invalid("time", time);
 
-  const newTime =
-    time === null || time === undefined || isNaN(time) || time < 0
-      ? defaultConfig.time
-      : time;
+  const newTime = isNaN(time) || time < 0 ? defaultConfig.time : time;
 
   $("#top .config .time .text-button").removeClass("active");
 
@@ -1090,12 +1086,12 @@ export function setTimeConfig(
 }
 
 //quote length
-export function setQuoteLength(
+export async function setQuoteLength(
   len: MonkeyTypes.QuoteLengthArray | MonkeyTypes.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean
-): void {
-  if (!isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"])))
     return invalid("quote length", len);
 
   if (Array.isArray(len)) {
@@ -1130,20 +1126,15 @@ export function setQuoteLength(
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 }
 
-export function setWordCount(
+export async function setWordCount(
   wordCount: MonkeyTypes.WordsModes,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(wordCount, ["number"]))
+): Promise<void> {
+  if (!(await isConfigValueValid(wordCount, ["number"])))
     return invalid("words", wordCount);
 
   const newWordCount =
-    wordCount === null ||
-    wordCount === undefined ||
-    wordCount < 0 ||
-    wordCount > 100000
-      ? defaultConfig.words
-      : wordCount;
+    wordCount < 0 || wordCount > 100000 ? defaultConfig.words : wordCount;
 
   $("#top .config .wordCount .text-button").removeClass("active");
 
@@ -1161,8 +1152,11 @@ export function setWordCount(
 }
 
 //caret
-export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(mode, ["boolean"])) return invalid("", mode);
+export async function setSmoothCaret(
+  mode: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(mode, ["boolean"]))) return invalid("", mode);
 
   config.smoothCaret = mode;
   if (mode) {
@@ -1174,8 +1168,11 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 }
 
-export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(mode, ["boolean"]))
+export async function setStartGraphsAtZero(
+  mode: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(mode, ["boolean"])))
     return invalid("start graphs at zero", mode);
 
   config.startGraphsAtZero = mode;
@@ -1184,9 +1181,12 @@ export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
 }
 
 //linescroll
-export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(mode, ["boolean"]))
-    return invalid("smoot line scroll", mode);
+export async function setSmoothLineScroll(
+  mode: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(mode, ["boolean"])))
+    return invalid("smooth line scroll", mode);
 
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
@@ -1194,8 +1194,11 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
 }
 
 //quick tab
-export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(mode, ["boolean"]))
+export async function setQuickTabMode(
+  mode: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(mode, ["boolean"])))
     return invalid("quick tab mode", mode);
 
   config.quickTab = mode;
@@ -1214,13 +1217,10 @@ export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("quickTab", config.quickTab);
 }
 
-export function previewFontFamily(font: string): void {
-  if (!isConfigValueValid(font, ["string"]))
+export async function previewFontFamily(font: string): Promise<void> {
+  if (!(await isConfigValueValid(font, ["string"])))
     return invalid("preview font family", font);
 
-  if (font == undefined) {
-    font = "roboto_mono";
-  }
   document.documentElement.style.setProperty(
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono"'
@@ -1228,11 +1228,14 @@ export function previewFontFamily(font: string): void {
 }
 
 //font family
-export function setFontFamily(font: string, nosave?: boolean): void {
-  if (!isConfigValueValid(font, ["string"]))
+export async function setFontFamily(
+  font: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(font, ["string"])))
     return invalid("font family", font);
 
-  if (font == undefined || font === "") {
+  if (font === "") {
     font = "roboto_mono";
     Notifications.add(
       "Empty input received, reverted to the default font.",
@@ -1260,8 +1263,11 @@ export function setFontFamily(font: string, nosave?: boolean): void {
 }
 
 //freedom
-export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(freedom, ["boolean"]))
+export async function setFreedomMode(
+  freedom: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(freedom, ["boolean"])))
     return invalid("freedom mode", freedom);
 
   if (freedom == null) {
@@ -1275,16 +1281,13 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("freedomMode", config.freedomMode);
 }
 
-export function setConfidenceMode(
+export async function setConfidenceMode(
   cm: MonkeyTypes.ConfidenceMode,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(cm, [["off", "on", "max"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(cm, [["off", "on", "max"]])))
     return invalid("confidence mode", cm);
 
-  if (cm == undefined || !["off", "on", "max"].includes(cm)) {
-    cm = defaultConfig.confidenceMode;
-  }
   config.confidenceMode = cm;
   if (config.confidenceMode !== "off") {
     config.freedomMode = false;
@@ -1294,23 +1297,23 @@ export function setConfidenceMode(
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
 }
 
-export function setIndicateTypos(
+export async function setIndicateTypos(
   value: MonkeyTypes.IndicateTypos,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(value, [["off", "below", "replace"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(value, [["off", "below", "replace"]])))
     return invalid("indicate typos", value);
 
-  if (!["off", "below", "replace"].includes(value)) {
-    value = defaultConfig.indicateTypos;
-  }
   config.indicateTypos = value;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
 }
 
-export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(boolean, ["boolean"]))
+export async function setAutoSwitchTheme(
+  boolean: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(boolean, ["boolean"])))
     return invalid("auto switch theme", boolean);
 
   boolean = boolean ?? defaultConfig.autoSwitchTheme;
@@ -1319,17 +1322,19 @@ export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
 }
 
-export function setCustomTheme(boolean: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(boolean, ["boolean"]))
+export async function setCustomTheme(
+  boolean: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(boolean, ["boolean"])))
     return invalid("custom theme", boolean);
 
-  if (boolean !== undefined) config.customTheme = boolean;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customTheme", config.customTheme);
 }
 
-export function setTheme(name: string, nosave?: boolean): void {
-  if (!isConfigValueValid(name, ["string"])) return invalid("", name);
+export async function setTheme(name: string, nosave?: boolean): Promise<void> {
+  if (!(await isConfigValueValid(name, ["string"]))) return invalid("", name);
 
   config.theme = name;
   setCustomTheme(false, true);
@@ -1337,8 +1342,11 @@ export function setTheme(name: string, nosave?: boolean): void {
   ConfigEvent.dispatch("theme", config.theme);
 }
 
-export function setThemeLight(name: string, nosave?: boolean): void {
-  if (!isConfigValueValid(name, ["string"]))
+export async function setThemeLight(
+  name: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(name, ["string"])))
     return invalid("theme light", name);
 
   config.themeLight = name;
@@ -1346,20 +1354,24 @@ export function setThemeLight(name: string, nosave?: boolean): void {
   ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
 }
 
-export function setThemeDark(name: string, nosave?: boolean): void {
-  if (!isConfigValueValid(name, ["string"])) return invalid("theme dark", name);
+export async function setThemeDark(
+  name: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(name, ["string"])))
+    return invalid("theme dark", name);
 
   config.themeDark = name;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
 }
 
-function setThemes(
+async function setThemes(
   theme: string,
   customState: boolean,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
+): Promise<void> {
+  if (!(await isConfigValueValid(theme, ["string"]))) return invalid("", theme);
 
   config.theme = theme;
   config.customTheme = customState;
@@ -1367,16 +1379,19 @@ function setThemes(
   ConfigEvent.dispatch("setThemes", customState);
 }
 
-export function setRandomTheme(
+export async function setRandomTheme(
   val: MonkeyTypes.RandomTheme | boolean,
   nosave?: boolean
-): void {
+): Promise<void> {
   if (
-    !isConfigValueValid(val, ["boolean", ["off", "on", "fav", "light", "dark"]])
+    !(await isConfigValueValid(val, [
+      ["off", "on", "fav", "light", "dark"],
+      "boolean",
+    ]))
   )
     return invalid("random theme", val);
 
-  if (val === undefined || val === true || val === false) {
+  if (val === true || val === false) {
     val = "off";
   }
   config.randomTheme = val;
@@ -1384,8 +1399,11 @@ export function setRandomTheme(
   ConfigEvent.dispatch("randomTheme", config.randomTheme);
 }
 
-export function setBritishEnglish(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"]))
+export async function setBritishEnglish(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
     return invalid("british english", val);
 
   if (!val) {
@@ -1396,8 +1414,12 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
 }
 
-export function setLazyMode(val: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(val, ["boolean"])) return invalid("lazy mode", val);
+export async function setLazyMode(
+  val: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(val, ["boolean"])))
+    return invalid("lazy mode", val);
 
   if (!val) {
     val = false;
@@ -1407,8 +1429,11 @@ export function setLazyMode(val: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 }
 
-export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
-  if (!isConfigValueValid(colors, ["stringArray"]))
+export async function setCustomThemeColors(
+  colors: string[],
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(colors, ["stringArray"])))
     return invalid("custom theme colors", colors);
 
   if (colors !== undefined) {
@@ -1420,13 +1445,13 @@ export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
   ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
 }
 
-export function setLanguage(language: string, nosave?: boolean): void {
-  if (!isConfigValueValid(language, ["string"]))
+export async function setLanguage(
+  language: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(language, ["string"])))
     return invalid("language", language);
 
-  if (language == null || language == undefined) {
-    language = "english";
-  }
   config.language = language;
   try {
     firebase.analytics().logEvent("changedLanguage", {
@@ -1439,13 +1464,13 @@ export function setLanguage(language: string, nosave?: boolean): void {
   ConfigEvent.dispatch("language", config.language);
 }
 
-export function setMonkey(monkey: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(monkey, ["boolean"]))
+export async function setMonkey(
+  monkey: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(monkey, ["boolean"])))
     return invalid("monkey", monkey);
 
-  if (monkey === null || monkey === undefined) {
-    monkey = false;
-  }
   config.monkey = monkey;
   if (config.monkey) {
     $("#monkey").removeClass("hidden");
@@ -1456,16 +1481,13 @@ export function setMonkey(monkey: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("monkey", config.monkey);
 }
 
-export function setKeymapMode(
+export async function setKeymapMode(
   mode: MonkeyTypes.KeymapMode,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(mode, [["off", "static", "react", "next"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(mode, [["off", "static", "react", "next"]])))
     return invalid("keymap mode", mode);
 
-  if (mode == null || mode == undefined) {
-    mode = "off";
-  }
   $(".active-key").removeClass("active-key");
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
@@ -1473,11 +1495,11 @@ export function setKeymapMode(
   ConfigEvent.dispatch("keymapMode", config.keymapMode);
 }
 
-export function setKeymapLegendStyle(
+export async function setKeymapLegendStyle(
   style: MonkeyTypes.KeymapLegendStyle,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(style, [["lowercase", "uppercase", "blank"]])))
     return invalid("keymap legend style", style);
 
   // Remove existing styles
@@ -1508,14 +1530,14 @@ export function setKeymapLegendStyle(
   ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
 }
 
-export function setKeymapStyle(
+export async function setKeymapStyle(
   style: MonkeyTypes.KeymapStyle,
   nosave?: boolean
-): void {
+): Promise<void> {
   if (
-    !isConfigValueValid(style, [
+    !(await isConfigValueValid(style, [
       ["staggered", "alice", "matrix", "split", "split_matrix"],
-    ])
+    ]))
   )
     return invalid("keymap style", style);
 
@@ -1525,30 +1547,31 @@ export function setKeymapStyle(
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
 }
 
-export function setKeymapLayout(layout: string, nosave?: boolean): void {
-  if (!isConfigValueValid(layout, ["string"]))
+export async function setKeymapLayout(
+  layout: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(layout, ["string"])))
     return invalid("keymap layout", layout);
 
-  if (layout == null || layout == undefined) {
-    layout = "qwerty";
-  }
   config.keymapLayout = layout;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
 }
 
-export function setLayout(layout: string, nosave?: boolean): void {
-  if (!isConfigValueValid(layout, ["string"])) return invalid("layout", layout);
+export async function setLayout(
+  layout: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(layout, ["string"])))
+    return invalid("layout", layout);
 
-  if (layout == null || layout == undefined) {
-    layout = "qwerty";
-  }
   config.layout = layout;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("layout", config.layout, nosave);
 }
 
-// export function setSavedLayout(layout, nosave?: boolean): void {
+// export async function setSavedLayout(layout, nosave?: boolean): Promise<void> {
 //   if (layout == null || layout == undefined) {
 //     layout = "qwerty";
 //   }
@@ -1556,17 +1579,15 @@ export function setLayout(layout: string, nosave?: boolean): void {
 //   setLayout(layout, nosave);
 // }
 
-export function setFontSize(
+export async function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
-): void {
+): Promise<void> {
   fontSize = fontSize.toString() as MonkeyTypes.FontSize; //todo remove after around a week
-  if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
+  if (
+    !(await isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
+  )
     return invalid("font size", fontSize);
-
-  if (fontSize == null || fontSize == undefined) {
-    fontSize = "1";
-  }
 
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
@@ -1614,13 +1635,13 @@ export function setFontSize(
   ConfigEvent.dispatch("fontSize", config.fontSize);
 }
 
-export function setCustomBackground(value: string, nosave?: boolean): void {
-  if (!isConfigValueValid(value, ["string"]))
+export async function setCustomBackground(
+  value: string,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(value, ["string"])))
     return invalid("custom background", value);
 
-  if (value == null || value == undefined) {
-    value = "";
-  }
   value = value.trim();
   if (
     (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
@@ -1641,36 +1662,14 @@ export async function setCustomLayoutfluid(
   value: MonkeyTypes.CustomLayoutFluidSpaces,
   nosave?: boolean
 ): Promise<void> {
-  if (!isConfigValueValid(value, ["layoutfluid"]))
+  if (!(await isConfigValueValid(value, ["layoutfluid"])))
     return invalid("custom layoutfluid", value);
 
-  if (value == null || value == undefined) {
-    value = "qwerty#dvorak#colemak";
-  }
-  let customLayoutfluid = value.replace(
+  const customLayoutfluid = value.replace(
     / /g,
     "#"
   ) as MonkeyTypes.CustomLayoutFluid;
 
-  //validate the layouts
-
-  const allGood = (
-    await Promise.all(
-      customLayoutfluid
-        .split("#")
-        .map((customLayout) => Misc.getLayout(customLayout))
-    )
-  ).every((customLayout) => !!customLayout);
-
-  if (!allGood) {
-    Notifications.add(
-      "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",
-      0,
-      4
-    );
-    customLayoutfluid = "qwerty#dvorak#colemak";
-    nosave = false;
-  }
   config.customLayoutfluid = customLayoutfluid;
   $(".pageSettings .section.customLayoutfluid input").val(
     customLayoutfluid.replace(/#/g, " ")
@@ -1679,11 +1678,11 @@ export async function setCustomLayoutfluid(
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 }
 
-export function setCustomBackgroundSize(
+export async function setCustomBackgroundSize(
   value: MonkeyTypes.CustomBackgroundSize,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(value, [["max", "cover", "contain"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(value, [["max", "cover", "contain"]])))
     return invalid("custom background size", value);
 
   if (value != "cover" && value != "contain" && value != "max") {
@@ -1694,14 +1693,14 @@ export function setCustomBackgroundSize(
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
 }
 
-export function setCustomBackgroundFilter(
+export async function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,
   nosave?: boolean
-): void {
+): Promise<void> {
   array = (array as unknown as string[]).map((value) =>
     parseFloat(value)
   ) as MonkeyTypes.CustomBackgroundFilter;
-  if (!isConfigValueValid(array, ["numberArray"]))
+  if (!(await isConfigValueValid(array, ["numberArray"])))
     return invalid("custom background filter", array);
 
   config.customBackgroundFilter = array;
@@ -1709,11 +1708,11 @@ export function setCustomBackgroundFilter(
   ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
 }
 
-export function setMonkeyPowerLevel(
+export async function setMonkeyPowerLevel(
   level: MonkeyTypes.MonkeyPowerLevel,
   nosave?: boolean
-): void {
-  if (!isConfigValueValid(level, [["off", "1", "2", "3", "4"]]))
+): Promise<void> {
+  if (!(await isConfigValueValid(level, [["off", "1", "2", "3", "4"]])))
     return invalid("monkey power level", level);
 
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
@@ -1722,8 +1721,11 @@ export function setMonkeyPowerLevel(
   ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
 }
 
-export function setBurstHeatmap(value: boolean, nosave?: boolean): void {
-  if (!isConfigValueValid(value, ["boolean"]))
+export async function setBurstHeatmap(
+  value: boolean,
+  nosave?: boolean
+): Promise<void> {
+  if (!(await isConfigValueValid(value, ["boolean"])))
     return invalid("burst heatmap", value);
 
   if (!value) {
@@ -1750,7 +1752,7 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
       }
     }
   );
-  if (configObj && configObj !== null) {
+  if (configObj !== undefined && configObj !== null) {
     setCustomThemeColors(configObj.customThemeColors, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
