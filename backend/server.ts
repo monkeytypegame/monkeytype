@@ -1,5 +1,6 @@
 import "dotenv/config";
 import admin, { ServiceAccount } from "firebase-admin";
+// @ts-ignore
 import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
 import db from "./init/db.js";
 import jobs from "./jobs";

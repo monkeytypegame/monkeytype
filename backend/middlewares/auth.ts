@@ -3,8 +3,8 @@ import { verifyIdToken } from "../handlers/auth";
 import { NextFunction, Response, Handler } from "express";
 
 interface RequestAuthenticationOptions {
-  isPublic: boolean;
-  acceptMonkeyTokens: boolean;
+  isPublic?: boolean;
+  acceptMonkeyTokens?: boolean;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
@@ -12,7 +12,12 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   acceptMonkeyTokens: false,
 };
 
-function authenticateRequest(options = DEFAULT_OPTIONS): Handler {
+function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
+  const options = {
+    ...DEFAULT_OPTIONS,
+    ...authOptions,
+  };
+
   return async (
     req: MonkeyTypes.Request,
     _res: Response,
