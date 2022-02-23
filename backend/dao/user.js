@@ -3,10 +3,7 @@ import { updateAuthEmail } from "../handlers/auth";
 import { checkAndUpdatePb } from "../handlers/pb";
 import db from "../init/db";
 import MonkeyError from "../handlers/error";
-import Mongo from "mongodb";
-
-const { ObjectID } = Mongo;
-
+import { ObjectId } from "mongodb";
 class UsersDAO {
   static async addUser(name, email, uid) {
     const user = await db.collection("users").findOne({ uid });
@@ -83,7 +80,7 @@ class UsersDAO {
   }
 
   static async addTag(uid, name) {
-    let _id = ObjectID();
+    let _id = new ObjectId();
     await db
       .collection("users")
       .updateOne({ uid }, { $push: { tags: { _id, name } } });
@@ -110,7 +107,7 @@ class UsersDAO {
     return await db.collection("users").updateOne(
       {
         uid: uid,
-        "tags._id": ObjectID(_id),
+        "tags._id": new ObjectId(_id),
       },
       { $set: { "tags.$.name": name } }
     );
@@ -127,9 +124,9 @@ class UsersDAO {
     return await db.collection("users").updateOne(
       {
         uid: uid,
-        "tags._id": ObjectID(_id),
+        "tags._id": new ObjectId(_id),
       },
-      { $pull: { tags: { _id: ObjectID(_id) } } }
+      { $pull: { tags: { _id: new ObjectId(_id) } } }
     );
   }
 
@@ -144,7 +141,7 @@ class UsersDAO {
     return await db.collection("users").updateOne(
       {
         uid: uid,
-        "tags._id": ObjectID(_id),
+        "tags._id": new ObjectId(_id),
       },
       { $set: { "tags.$.personalBests": {} } }
     );
@@ -287,7 +284,7 @@ class UsersDAO {
         await db
           .collection("users")
           .updateOne(
-            { uid, "tags._id": ObjectID(tag._id) },
+            { uid, "tags._id": new ObjectId(tag._id) },
             { $set: { "tags.$.personalBests": tagpb.obj } }
           );
       }

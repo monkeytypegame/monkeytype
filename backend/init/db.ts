@@ -1,12 +1,19 @@
-import MongoClient from "mongodb/lib/mongo_client.js";
+import {
+  AuthMechanism,
+  Collection,
+  Document,
+  Db,
+  MongoClient,
+  MongoClientOptions,
+} from "mongodb";
 
 class DatabaseClient {
-  static mongoClient = null;
-  static db = null;
-  static collections = {};
+  static mongoClient: MongoClient = null;
+  static db: Db = null;
+  static collections: Record<string, Collection<Document>> = {};
   static connected = false;
 
-  static async connect() {
+  static async connect(): Promise<void> {
     const {
       DB_USERNAME,
       DB_PASSWORD,
@@ -16,9 +23,7 @@ class DatabaseClient {
       DB_NAME,
     } = process.env;
 
-    const connectionOptions = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    const connectionOptions: MongoClientOptions = {
       connectTimeoutMS: 2000,
       serverSelectionTimeoutMS: 2000,
     };
@@ -31,7 +36,7 @@ class DatabaseClient {
     }
 
     if (DB_AUTH_MECHANISM) {
-      connectionOptions.authMechanism = DB_AUTH_MECHANISM;
+      connectionOptions.authMechanism = DB_AUTH_MECHANISM as AuthMechanism;
     }
 
     if (DB_AUTH_SOURCE) {
@@ -53,13 +58,13 @@ class DatabaseClient {
     }
   }
 
-  static async close() {
+  static async close(): Promise<void> {
     if (this.connected) {
       await this.mongoClient.close();
     }
   }
 
-  static collection(collectionName) {
+  static collection(collectionName: string): Collection<Document> {
     if (!this.connected) {
       return null;
     }
