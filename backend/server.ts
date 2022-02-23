@@ -1,12 +1,14 @@
 import "dotenv/config";
 import admin, { ServiceAccount } from "firebase-admin";
-import serviceAccount from "./credentials/serviceAccountKey.json";
+// @ts-ignore
+import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
 import db from "./init/db.js";
 import jobs from "./jobs";
 import ConfigurationDAO from "./dao/configuration.js";
 import app from "./app";
+import { Server } from "http";
 
-async function bootServer(port) {
+async function bootServer(port: number): Promise<Server> {
   try {
     console.log("Connecting to database...");
     await db.connect();
@@ -38,6 +40,6 @@ async function bootServer(port) {
   });
 }
 
-const PORT = process.env.PORT || 5005;
+const PORT = parseInt(process.env.PORT) || 5005;
 
 bootServer(PORT);

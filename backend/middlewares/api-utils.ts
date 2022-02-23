@@ -63,9 +63,9 @@ function asyncHandler(handler: AsyncHandler): RequestHandler {
 }
 
 interface ValidationSchema {
-  body?: {};
-  query?: {};
-  params?: {};
+  body?: object;
+  query?: object;
+  params?: object;
   validationErrorMessage?: string;
 }
 
@@ -91,7 +91,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
   return (req: MonkeyTypes.Request, _res: Response, next: NextFunction) => {
     _.each(
       normalizedValidationSchema,
-      (schema: {}, key: keyof ValidationSchema) => {
+      (schema: object, key: keyof ValidationSchema) => {
         const joiSchema = joi.object().keys(schema);
 
         const { error } = joiSchema.validate(req[key] ?? {});

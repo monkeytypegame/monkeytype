@@ -5,7 +5,7 @@ import express, { urlencoded, json } from "express";
 import contextMiddleware from "./middlewares/context";
 import errorHandlingMiddleware from "./middlewares/error";
 
-function buildApp() {
+function buildApp(): express.Application {
   const app = express();
 
   app.use(urlencoded({ extended: true }));

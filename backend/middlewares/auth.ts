@@ -1,16 +1,31 @@
 import MonkeyError from "../handlers/error";
 import { verifyIdToken } from "../handlers/auth";
+import { NextFunction, Response, Handler } from "express";
 
-const DEFAULT_OPTIONS = {
+interface RequestAuthenticationOptions {
+  isPublic?: boolean;
+  acceptMonkeyTokens?: boolean;
+}
+
+const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
   acceptMonkeyTokens: false,
 };
 
-function authenticateRequest(options = DEFAULT_OPTIONS) {
-  return async (req, _res, next) => {
+function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
+  const options = {
+    ...DEFAULT_OPTIONS,
+    ...authOptions,
+  };
+
+  return async (
+    req: MonkeyTypes.Request,
+    _res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { authorization: authHeader } = req.headers;
-      let token = null;
+      let token: MonkeyTypes.DecodedToken = {};
 
       if (authHeader) {
         token = await authenticateWithAuthHeader(authHeader, options);
@@ -26,7 +41,10 @@ function authenticateRequest(options = DEFAULT_OPTIONS) {
         );
       }
 
-      req.ctx.decodedToken = token;
+      req.ctx = {
+        ...req.ctx,
+        decodedToken: token,
+      };
     } catch (error) {
       return next(error);
     }
@@ -35,7 +53,9 @@ function authenticateRequest(options = DEFAULT_OPTIONS) {
   };
 }
 
-function authenticateWithBody(body) {
+function authenticateWithBody(
+  body: MonkeyTypes.Request["body"]
+): MonkeyTypes.DecodedToken {
   const { uid } = body;
 
   if (!uid) {
@@ -50,7 +70,10 @@ function authenticateWithBody(body) {
   };
 }
 
-async function authenticateWithAuthHeader(authHeader, options) {
+async function authenticateWithAuthHeader(
+  authHeader: string,
+  options: RequestAuthenticationOptions
+): Promise<MonkeyTypes.DecodedToken> {
   const token = authHeader.split(" ");
 
   const authScheme = token[0].trim();
@@ -70,9 +93,16 @@ async function authenticateWithAuthHeader(authHeader, options) {
   );
 }
 
-async function authenticateWithBearerToken(token) {
+async function authenticateWithBearerToken(
+  token: string
+): Promise<MonkeyTypes.DecodedToken> {
   try {
-    return await verifyIdToken(token);
+    const decodedToken = await verifyIdToken(token);
+
+    return {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+    };
   } catch (error) {
     console.log("-----------");
     console.log(error.errorInfo.code);
@@ -96,7 +126,10 @@ async function authenticateWithBearerToken(token) {
   }
 }
 
-async function authenticateWithMonkeyToken(token, options) {
+async function authenticateWithMonkeyToken(
+  token: string,
+  options: RequestAuthenticationOptions
+): Promise<MonkeyTypes.DecodedToken> {
   if (!options.acceptMonkeyTokens) {
     throw new MonkeyError(401, "This endpoint does not accept MonkeyTokens.");
   }

@@ -1,7 +1,8 @@
 import * as uuid from "uuid";
 
-class MonkeyError {
+class MonkeyError extends Error {
   constructor(status, message, stack = null, uid = null) {
+    super();
     this.status = status ?? 500;
     this.errorId = uuid.v4();
     this.stack = stack;

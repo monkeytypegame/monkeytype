@@ -2,7 +2,7 @@ name: PR Check
 
 on:
   pull_request:
-    branches: [master, api-overhaul]
+    branches: [master]
 
 jobs:
   build:
@@ -30,11 +30,14 @@ jobs:
               - 'frontend/**/*.scss'
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
+              - 'backend/**/*.{js,ts}'
             scss:
               - 'frontend/**/*.scss'
-            ts:
+            ts-fe:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
+            ts-be:
+              - 'backend/**/*.{js,ts}'
             anti-cheat:
               - 'backend/**/anticheat/**'
 
@@ -88,12 +91,16 @@ jobs:
 
       - name: Lint
         if: steps.filter.outputs.any-tsscss == 'true'
-        run: npm run pr-check-lint-json
+        run: npm run lint
 
       - name: Compile SCSS
         if: steps.filter.outputs.scss == 'true'
         run: npm run pr-check-scss
 
+      - name: Build backend
+        if: steps.filter.outputs.ts-be == 'true'
+        run: npm run pr-check-build-be
+
       - name: Run webpack
-        if: steps.filter.outputs.ts == 'true'
+        if: steps.filter.outputs.ts-fe == 'true'
         run: npm run pr-check-ts
