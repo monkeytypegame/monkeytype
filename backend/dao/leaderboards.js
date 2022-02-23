@@ -1,4 +1,4 @@
-import { mongoDB } from "../init/mongodb";
+import db from "../init/db";
 import Logger from "../handlers/logger";
 import { performance } from "perf_hooks";
 
@@ -6,7 +6,7 @@ class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 50) {
     if (limit > 50 || limit <= 0) limit = 50;
     if (skip < 0) skip = 0;
-    const preset = await mongoDB()
+    const preset = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
       .sort({ rank: 1 })
@@ -17,11 +17,11 @@ class LeaderboardsDAO {
   }
 
   static async getRank(mode, mode2, language, uid) {
-    const res = await mongoDB()
+    const res = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
     if (res)
-      res.count = await mongoDB()
+      res.count = await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .estimatedDocumentCount();
     return res;
@@ -30,7 +30,7 @@ class LeaderboardsDAO {
   static async update(mode, mode2, language, uid = undefined) {
     let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
     let start1 = performance.now();
-    let lb = await mongoDB()
+    let lb = await db
       .collection("users")
       .aggregate(
         [
@@ -84,23 +84,21 @@ class LeaderboardsDAO {
     let end2 = performance.now();
     let start3 = performance.now();
     try {
-      await mongoDB()
-        .collection(`leaderboards.${language}.${mode}.${mode2}`)
-        .drop();
+      await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
     } catch (e) {}
     if (lb && lb.length !== 0)
-      await mongoDB()
+      await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .insertMany(lb);
     let end3 = performance.now();
 
     let start4 = performance.now();
-    await mongoDB()
+    await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .createIndex({
         uid: -1,
       });
-    await mongoDB()
+    await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .createIndex({
         rank: 1,
