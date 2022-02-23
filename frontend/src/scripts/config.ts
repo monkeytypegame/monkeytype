@@ -142,7 +142,7 @@ type PossibleType =
 
 async function some<T>(
   array: T[],
-  predicate: (item: T) => Promise<boolean>
+  predicate: (item: T) => Promise<boolean | undefined>
 ): Promise<boolean> {
   for (const item of array) {
     if (await predicate(item)) return true;
