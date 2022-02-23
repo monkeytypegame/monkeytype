@@ -15,12 +15,12 @@ async function errorHandlingMiddleware(error, req, res, _next) {
     uid: error.uid ?? req.ctx?.decodedToken?.uid,
   };
 
-  if (error instanceof MonkeyError) {
-    monkeyResponse.message = error.message;
-    monkeyResponse.status = error.status;
-  } else if (/ECONNREFUSED.*27017/i.test(error.message)) {
+  if (/ECONNREFUSED.*27017/i.test(error.message)) {
     monkeyResponse.message =
       "Could not connect to the database. It may be down.";
+  } else if (error instanceof MonkeyError) {
+    monkeyResponse.message = error.message;
+    monkeyResponse.status = error.status;
   } else {
     monkeyResponse.message =
       "Oops! Our monkeys dropped their bananas. Please try again later.";
