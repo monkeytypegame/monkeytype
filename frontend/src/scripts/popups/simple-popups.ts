@@ -1,11 +1,11 @@
+import type FirebaseTypes from "firebase";
+import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
 import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
-import { AxiosError } from "axios";
 
 type Input = {
   placeholder: string;
@@ -25,8 +25,8 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: any;
-  beforeShowFn: any;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => void | Promise<void>;
+  beforeShowFn: (thisPopup: SimplePopup) => void;
   constructor(
     id: string,
     type: string,
@@ -34,20 +34,24 @@ class SimplePopup {
     inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn: any,
-    beforeShowFn: any
+    execFn: (
+      thisPopup: SimplePopup,
+      ...params: string[]
+    ) => void | Promise<void>,
+    beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = execFn;
+    this.execFn = (thisPopup, ...vals): Promise<void> | void =>
+      execFn(thisPopup, ...vals);
     this.title = title;
     this.inputs = inputs;
     this.text = text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
-    this.beforeShowFn = beforeShowFn;
+    this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
   }
   reset(): void {
     this.element.html(`
@@ -68,7 +72,7 @@ class SimplePopup {
 
     this.initInputs();
 
-    if (!this.buttonText) {
+    if (this.buttonText === "") {
       el.find(".button").remove();
     } else {
       el.find(".button").text(this.buttonText);
@@ -132,14 +136,13 @@ class SimplePopup {
     $.each($("#simplePopup input"), (_, el) => {
       vals.push($(el).val() as string);
     });
-    // @ts-ignore todo remove
-    this.execFn(...vals);
+    this.execFn(this, ...vals);
     this.hide();
   }
 
   show(parameters: string[] = []): void {
     this.parameters = parameters;
-    this.beforeShowFn();
+    this.beforeShowFn(this);
     this.init();
     this.wrapper
       .stop(true, true)
@@ -217,7 +220,7 @@ list["updateEmail"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (password: string, email: string, emailConfirm: string) => {
+  async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       if (email !== emailConfirm) {
@@ -231,47 +234,37 @@ list["updateEmail"] = new SimplePopup(
         );
         await user.reauthenticateWithCredential(credential);
       }
+
       Loader.show();
-      let response;
-      try {
-        response = await axiosInstance.patch("/user/email", {
-          uid: user.uid,
-          previousEmail: user.email,
-          newEmail: email,
-        });
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to update email: " + msg, -1);
-        return;
-      }
+      const response = await Ape.users.updateEmail(email, user.email);
       Loader.hide();
+
       if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      } else {
-        Notifications.add("Email updated", 1);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        return Notifications.add(
+          "Failed to update email: " + response.message,
+          -1
+        );
       }
+
+      Notifications.add("Email updated", 1);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (e) {
-      // @ts-ignore todo help
-      if (e.code == "auth/wrong-password") {
+      const typedError = e as FirebaseTypes.FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
   },
-  () => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore once firebase is initialised with code
-    if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+  (thisPopup) => {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
   }
 );
@@ -294,7 +287,7 @@ list["updateName"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (pass: string, newName: string) => {
+  async (_thisPopup, pass, newName) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -308,56 +301,42 @@ list["updateName"] = new SimplePopup(
       }
       Loader.show();
 
-      let response;
-      try {
-        response = await axiosInstance.get(`/user/checkName/${newName}`);
-      } catch (error) {
-        const e = error as AxiosError;
+      const checkNameResponse = await Ape.users.getNameAvailability(newName);
+      if (checkNameResponse.status !== 200) {
         Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to check name: " + msg, -1);
-        return;
+        return Notifications.add(
+          "Failed to check name: " + checkNameResponse.message,
+          -1
+        );
       }
-      Loader.hide();
-      if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      }
-      try {
-        response = await axiosInstance.patch("/user/name", {
-          name: newName,
-        });
-      } catch (error) {
-        const e = error as AxiosError;
+
+      const updateNameResponse = await Ape.users.updateName(newName);
+      if (updateNameResponse.status !== 200) {
         Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to update name: " + msg, -1);
-        return;
+        return Notifications.add(
+          "Failed to update name: " + updateNameResponse.message,
+          -1
+        );
       }
-      Loader.hide();
-      if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      } else {
-        Notifications.add("Name updated", 1);
-        DB.getSnapshot().name = newName;
-        $("#menu .icon-button.account .text").text(newName);
-      }
+
+      Notifications.add("Name updated", 1);
+      DB.getSnapshot().name = newName;
+      $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      const typedError = e as FirebaseTypes.FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
+    Loader.hide();
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs[0].hidden = true`);
-      eval(`this.buttonText = "Reauthenticate to update"`);
+      thisPopup.inputs[0].hidden = true;
+      thisPopup.buttonText = "Reauthenticate to update";
     }
   }
 );
@@ -385,7 +364,7 @@ list["updatePassword"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (previousPass: string, newPass: string, newPassConfirm: string) => {
+  async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -405,22 +384,21 @@ list["updatePassword"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
   },
-  () => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore
-    if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+  (thisPopup) => {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
   }
 );
@@ -453,12 +431,7 @@ list["addPasswordAuth"] = new SimplePopup(
   ],
   "",
   "Add",
-  async (
-    email: string,
-    emailConfirm: string,
-    pass: string,
-    passConfirm: string
-  ) => {
+  async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
     if (email !== emailConfirm) {
       Notifications.add("Emails don't match", 0);
       return;
@@ -492,7 +465,7 @@ list["deleteAccount"] = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     //
     try {
       const user = firebase.auth().currentUser;
@@ -506,34 +479,27 @@ list["deleteAccount"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
       Notifications.add("Deleting stats...", 0);
-      let response;
-      try {
-        response = await axiosInstance.delete("/user");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to delete user stats: " + msg, -1);
-        return;
-      }
-      if (response.status !== 200) {
-        throw response.data.message;
+      const usersResponse = await Ape.users.delete();
+      Loader.hide();
+
+      if (usersResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to delete user stats: " + usersResponse.message,
+          -1
+        );
       }
 
+      Loader.show();
       Notifications.add("Deleting results...", 0);
-      try {
-        response = await axiosInstance.post("/results/deleteAll");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to delete user results: " + msg, -1);
-        return;
-      }
-      if (response.status !== 200) {
-        throw response.data.message;
+      const resultsResponse = await Ape.results.deleteAll();
+      Loader.hide();
+
+      if (resultsResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to delete user results: " + resultsResponse.message,
+          -1
+        );
       }
 
       Notifications.add("Deleting login information...", 0);
@@ -545,20 +511,20 @@ list["deleteAccount"] = new SimplePopup(
         location.reload();
       }, 3000);
     } catch (e) {
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to delete"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to delete";
     }
   }
 );
@@ -570,46 +536,40 @@ list["clearTagPb"] = new SimplePopup(
   [],
   `Are you sure you want to clear this tags PB?`,
   "Clear",
-  () => {
-    const tagid = eval("this.parameters[0]");
+  async (thisPopup) => {
+    const tagId = thisPopup.parameters[0];
     Loader.show();
-    axiosInstance
-      .delete(`/user/tags/${tagid}/clearPb`)
-      .then((res) => {
-        Loader.hide();
-        if (res.data.resultCode === 1) {
-          const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagid)[0];
+    const response = await Ape.users.deleteTagPersonalBest(tagId);
+    Loader.hide();
 
-          if (tag === undefined) return;
-          tag.personalBests = {
-            time: {},
-            words: {},
-            zen: { zen: [] },
-            quote: { custom: [] },
-            custom: { custom: [] },
-          };
-          $(
-            `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
-          ).attr("aria-label", "No PB found");
-          Notifications.add("Tag PB cleared.", 0);
-        } else {
-          Notifications.add("Something went wrong: " + res.data.message, -1);
-        }
-      })
-      .catch((e) => {
-        Loader.hide();
-        if (e.code == "auth/wrong-password") {
-          Notifications.add("Incorrect password", -1);
-        } else {
-          Notifications.add("Something went wrong: " + e, -1);
-        }
-      });
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to delete tag's PB: " + response.message
+      );
+    }
+
+    if (response.data.resultCode === 1) {
+      const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagId)[0];
+
+      if (tag === undefined) return;
+      tag.personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
+      ).attr("aria-label", "No PB found");
+      Notifications.add("Tag PB cleared.", 0);
+    } else {
+      Notifications.add("Something went wrong: " + response.message, -1);
+    }
     // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
-  () => {
-    eval(
-      "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
-    );
+  (thisPopup) => {
+    thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
   }
 );
 
@@ -620,7 +580,7 @@ list["applyCustomFont"] = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying.",
   "Apply",
-  (fontName: string) => {
+  (_thisPopup, fontName: string) => {
     if (fontName === "") return;
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
   },
@@ -642,7 +602,7 @@ list["resetPersonalBests"] = new SimplePopup(
   ],
   "",
   "Reset",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -655,40 +615,34 @@ list["resetPersonalBests"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
-      let response;
-      try {
-        response = await axiosInstance.delete("/user/personalBests");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to reset personal bests: " + msg, -1);
-        return;
-      }
+      const response = await Ape.users.deletePersonalBests();
       Loader.hide();
+
       if (response.status !== 200) {
-        Notifications.add(response.data.message);
-      } else {
-        Notifications.add("Personal bests have been reset", 1);
-        DB.getSnapshot().personalBests = {
-          time: {},
-          words: {},
-          zen: { zen: [] },
-          quote: { custom: [] },
-          custom: { custom: [] },
-        };
+        return Notifications.add(
+          "Failed to reset personal bests: " + response.message,
+          -1
+        );
       }
+
+      Notifications.add("Personal bests have been reset", 1);
+      DB.getSnapshot().personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
     } catch (e) {
       Loader.hide();
       Notifications.add(e as string, -1);
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to reset"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
     }
   }
 );
@@ -720,24 +674,19 @@ list["unlinkDiscord"] = new SimplePopup(
   "Unlink",
   async () => {
     Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/user/discord/unlink", {});
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to unlink Discord: " + msg, -1);
-      return;
-    }
+    const response = await Ape.users.unlinkDiscord();
     Loader.hide();
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
-    } else {
-      Notifications.add("Accounts unlinked", 1);
-      DB.getSnapshot().discordId = undefined;
-      Settings.updateDiscordSection();
+      return Notifications.add(
+        "Failed to unlink Discord: " + response.message,
+        -1
+      );
     }
+
+    Notifications.add("Accounts unlinked", 1);
+    DB.getSnapshot().discordId = undefined;
+    Settings.updateDiscordSection();
   },
   () => {
     //

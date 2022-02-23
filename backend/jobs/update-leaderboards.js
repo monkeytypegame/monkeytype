@@ -1,6 +1,6 @@
-const { CronJob } = require("cron");
-const BotDAO = require("../dao/bot");
-const LeaderboardsDAO = require("../dao/leaderboards");
+import { CronJob } from "cron";
+import BotDAO from "../dao/bot";
+import LeaderboardsDAO from "../dao/leaderboards";
 
 const CRON_SCHEDULE = "30 4/5 * * * *";
 const RECENT_AGE_MINUTES = 10;
@@ -51,4 +51,4 @@ async function updateLeaderboards() {
   await updateLeaderboardAndNotifyChanges("60");
 }
 
-module.exports = new CronJob(CRON_SCHEDULE, updateLeaderboards);
+export default new CronJob(CRON_SCHEDULE, updateLeaderboards);

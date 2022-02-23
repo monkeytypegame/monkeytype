@@ -1,18 +1,17 @@
+import Ape from "../ape";
 import * as DB from "../db";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
-import axiosInstance from "../axios-instance";
 import * as Notifications from "../elements/notifications";
-import { AxiosError } from "axios";
 
 let rating = 0;
 
 type QuoteStats = {
-  average: number;
-  ratings: number;
-  totalRating: number;
-  quoteId: number;
-  language: string;
+  average?: number;
+  ratings?: number;
+  totalRating?: number;
+  quoteId?: number;
+  language?: string;
 };
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
@@ -27,39 +26,40 @@ function reset(): void {
   $("#quoteRatePopup .ratingAverage .val").text("-");
 }
 
+function getRatingAverage(quoteStats: QuoteStats): number {
+  if (!quoteStats.totalRating || !quoteStats.ratings) {
+    return 0;
+  }
+
+  return Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
+}
+
 export async function getQuoteStats(
   quote?: MonkeyTypes.Quote
 ): Promise<QuoteStats | undefined> {
-  if (quote) currentQuote = quote;
-  let response;
-  try {
-    response = await axiosInstance.get("/quotes/rating", {
-      params: { quoteId: currentQuote?.id, language: currentQuote?.language },
-    });
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to get quote ratings: " + msg, -1);
+  if (!quote) {
     return;
   }
+
+  currentQuote = quote;
+  const response = await Ape.quotes.getRating(currentQuote);
   Loader.hide();
-  if (response.status !== 200 && response.status !== 204) {
-    Notifications.add(response.data.message);
-  } else {
-    if (response.status === 204) {
-      quoteStats = {};
-    } else {
-      quoteStats = response.data;
-      if (quoteStats && !quoteStats.average) {
-        quoteStats.average =
-          Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
-      }
-    }
-    return quoteStats as QuoteStats;
+
+  if (response.status !== 200) {
+    Notifications.add("Failed to get quote ratings: " + response.message, -1);
+    return;
   }
 
-  return;
+  if (!response.data) {
+    return {} as QuoteStats;
+  }
+
+  quoteStats = response.data as QuoteStats;
+  if (quoteStats && !quoteStats.average) {
+    quoteStats.average = getRatingAverage(quoteStats);
+  }
+
+  return quoteStats;
 }
 
 function refreshStars(force?: number): void {
@@ -107,11 +107,8 @@ export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
     rating = 0;
 
     const snapshot = DB.getSnapshot();
-
-    if (snapshot.quoteRatings === undefined) return;
-
     const alreadyRated =
-      snapshot.quoteRatings[currentQuote.language][currentQuote.id];
+      snapshot?.quoteRatings?.[currentQuote.language]?.[currentQuote.id];
     if (alreadyRated) {
       rating = alreadyRated;
     }
@@ -148,73 +145,69 @@ export function clearQuoteStats(): void {
 }
 
 async function submit(): Promise<void> {
-  if (rating == 0) {
-    Notifications.add("Please select a rating");
+  if (rating === 0) {
+    return Notifications.add("Please select a rating");
+  }
+  if (!currentQuote) {
     return;
   }
-  if (!currentQuote) return;
+
   hide();
-  let response;
-  try {
-    response = await axiosInstance.post("/quotes/rating", {
-      quoteId: currentQuote?.id,
-      rating: rating,
-      language: currentQuote?.language,
-    });
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to submit quote rating: " + msg, -1);
+
+  const response = await Ape.quotes.addRating(currentQuote, rating);
+  Loader.hide();
+
+  if (response.status !== 200) {
+    return Notifications.add(
+      "Failed to submit quote rating: " + response.message,
+      -1
+    );
+  }
+
+  const quoteRatings = DB.getSnapshot().quoteRatings;
+
+  if (quoteRatings === undefined) {
     return;
   }
-  Loader.hide();
-  if (response.status !== 200) {
-    Notifications.add(response.data.message);
+
+  if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
+    const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
+    const diff = rating - oldRating;
+    quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    quoteStats = {
+      ratings: quoteStats?.ratings,
+      totalRating: isNaN(quoteStats?.totalRating as number)
+        ? 0
+        : (quoteStats?.totalRating as number) + diff,
+      quoteId: currentQuote.id,
+      language: currentQuote.language,
+    } as QuoteStats;
+    Notifications.add("Rating updated", 1);
   } else {
-    let quoteRatings = DB.getSnapshot().quoteRatings;
-
-    if (quoteRatings === undefined) return;
-
-    if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
-      const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
-      const diff = rating - oldRating;
-      quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    if (quoteRatings[currentQuote.language] === undefined) {
+      quoteRatings[currentQuote.language] = {};
+    }
+    quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    if (quoteStats?.ratings && quoteStats.totalRating) {
+      quoteStats.ratings++;
+      quoteStats.totalRating += rating;
+    } else {
       quoteStats = {
-        ratings: quoteStats?.ratings,
-        totalRating: isNaN(quoteStats?.totalRating as number)
-          ? 0
-          : (quoteStats?.totalRating as number) + diff,
+        ratings: 1,
+        totalRating: rating,
         quoteId: currentQuote.id,
         language: currentQuote.language,
       } as QuoteStats;
-      Notifications.add("Rating updated", 1);
-    } else {
-      if (quoteRatings === undefined) quoteRatings = {};
-      if (quoteRatings[currentQuote.language] === undefined)
-        quoteRatings[currentQuote.language] = {};
-      quoteRatings[currentQuote.language][currentQuote.id] = rating;
-      if (quoteStats?.ratings && quoteStats.totalRating) {
-        quoteStats.ratings++;
-        quoteStats.totalRating += rating;
-      } else {
-        quoteStats = {
-          ratings: 1,
-          totalRating: rating,
-          quoteId: currentQuote.id,
-          language: currentQuote.language,
-        } as QuoteStats;
-      }
-      Notifications.add("Rating submitted", 1);
     }
-    quoteStats.average =
-      Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10;
-    $(".pageTest #result #rateQuoteButton .rating").text(
-      quoteStats.average?.toFixed(1)
-    );
-    $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
-    $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
+    Notifications.add("Rating submitted", 1);
   }
+
+  quoteStats.average = getRatingAverage(quoteStats);
+  $(".pageTest #result #rateQuoteButton .rating").text(
+    quoteStats.average?.toFixed(1)
+  );
+  $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
+  $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
 }
 
 $("#quoteRatePopupWrapper").click((e) => {

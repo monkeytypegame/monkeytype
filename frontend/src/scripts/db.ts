@@ -1,18 +1,9 @@
+import Ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
-import axiosInstance from "./axios-instance";
 import * as LoadingPage from "./pages/loading";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
-
-export function updateName(uid: string, name: string): void {
-  //TODO update
-  axiosInstance.patch("/user/name", {
-    name,
-  });
-
-  name = uid; // this is just so that typescript is happy; Remove once this function is updated.
-}
 
 export function getSnapshot(): MonkeyTypes.Snapshot {
   return dbSnapshot;
@@ -66,16 +57,14 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const promises = await Promise.all([
-      axiosInstance.get("/user"),
-      axiosInstance.get("/config"),
-      axiosInstance.get("/user/tags"),
-      axiosInstance.get("/presets"),
-    ]);
-    const userData = promises[0].data;
-    const configData = promises[1].data;
-    const tagsData = promises[2].data;
-    const presetsData = promises[3].data;
+    const [userData, configData, tagsData, presetsData] = (
+      await Promise.all([
+        Ape.users.getData(),
+        Ape.configs.get(),
+        Ape.users.getTags(),
+        Ape.presets.get(),
+      ])
+    ).map((response: Ape.Response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -155,70 +144,32 @@ export async function getUserResults(): Promise<boolean> {
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
-    try {
-      LoadingPage.updateText("Downloading results...");
-      LoadingPage.updateBar(90);
-      const resultsData = await axiosInstance.get("/results");
+    LoadingPage.updateText("Downloading results...");
+    LoadingPage.updateBar(90);
 
-      let results = resultsData.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+    const response = await Ape.results.get();
 
-      results.forEach((result) => {
-        if (result.bailedOut === undefined) result.bailedOut = false;
-        if (result.blindMode === undefined) result.blindMode = false;
-        if (result.lazyMode === undefined) result.lazyMode = false;
-        if (result.difficulty === undefined) result.difficulty = "normal";
-        if (result.funbox === undefined) result.funbox = "none";
-        if (result.language === undefined || result.language === null)
-          result.language = "english";
-        if (result.numbers === undefined) result.numbers = false;
-        if (result.punctuation === undefined) result.punctuation = false;
-      });
-      results = results.sort((a, b) => b.timestamp - a.timestamp);
-      dbSnapshot.results = results;
-      return true;
-    } catch (e: any) {
-      Notifications.add("Error getting results: " + e.message, -1);
+    if (response.status !== 200) {
+      Notifications.add("Error getting results: " + response.message, -1);
       return false;
     }
-  }
-  /*
-    try {
-      return await db
-        .collection(`users/${user.uid}/results/`)
-        .orderBy("timestamp", "desc")
-        .limit(1000)
-        .get()
-        .then(async (data) => {
-          dbSnapshot.results = [];
-          data.docs.forEach((doc) => {
-            let result = doc.data();
-            result.id = doc.id;
 
-            //this should be done server-side
-            if (result.bailedOut === undefined) result.bailedOut = false;
-            if (result.blindMode === undefined) result.blindMode = false;
-            if (result.difficulty === undefined) result.difficulty = "normal";
-            if (result.funbox === undefined) result.funbox = "none";
-            if (result.language === undefined) result.language = "english";
-            if (result.numbers === undefined) result.numbers = false;
-            if (result.punctuation === undefined) result.punctuation = false;
-
-            dbSnapshot.results.push(result);
-          });
-          await TodayTracker.addAllFromToday();
-          return true;
-        })
-        .catch((e) => {
-          throw e;
-        });
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+    results.forEach((result) => {
+      if (result.bailedOut === undefined) result.bailedOut = false;
+      if (result.blindMode === undefined) result.blindMode = false;
+      if (result.lazyMode === undefined) result.lazyMode = false;
+      if (result.difficulty === undefined) result.difficulty = "normal";
+      if (result.funbox === undefined) result.funbox = "none";
+      if (result.language === undefined || result.language === null)
+        result.language = "english";
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.punctuation === undefined) result.punctuation = false;
+    });
+    dbSnapshot.results = results.sort((a, b) => b.timestamp - a.timestamp);
+    return true;
   }
-  */
 }
-
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
@@ -622,13 +573,13 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
   return;
 }
 
-export function updateLbMemory<M extends MonkeyTypes.Mode>(
+export async function updateLbMemory<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
   language: string,
   rank: number,
   api = false
-): void {
+): Promise<void> {
   //could dbSnapshot just be used here instead of getSnapshot()
 
   if (mode === "time") {
@@ -648,12 +599,7 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
     const current = snapshot.lbMemory[timeMode][timeMode2][language];
     snapshot.lbMemory[timeMode][timeMode2][language] = rank;
     if (api && current != rank) {
-      axiosInstance.patch("/user/leaderboardMemory", {
-        mode,
-        mode2,
-        language,
-        rank,
-      });
+      await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
     setSnapshot(snapshot);
   }
@@ -662,17 +608,12 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    try {
-      await axiosInstance.post("/config/save", { config });
-    } catch (e: any) {
-      AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
-      if (e.response.status === 429) {
-        msg = "Too many requests. Please try again later.";
-      }
-      Notifications.add("Failed to save config: " + msg, -1);
-      return;
+
+    const response = await Ape.configs.save(config);
+    if (response.status !== 200) {
+      Notifications.add("Failed to save config: " + response.message, -1);
     }
+
     AccountButton.loading(false);
   }
 }

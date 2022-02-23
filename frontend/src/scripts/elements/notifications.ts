@@ -58,7 +58,7 @@ class Notification {
       cls = "bad";
       icon = `<i class="fas fa-fw fa-times"></i>`;
       title = "Error";
-      console.trace(this.message);
+      console.error(this.message);
     }
 
     if (this.customTitle != undefined) {
@@ -147,7 +147,7 @@ class Notification {
             <i class="fas fa-fw fa-times"></i>
           </div>
           `
-              : `<div style="margin-right: 2rem;">${icon}</div>`
+              : `<div class="righticon">${icon}</div>`
           }
         </div>
       </div>

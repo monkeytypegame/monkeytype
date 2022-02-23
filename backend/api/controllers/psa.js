@@ -1,10 +1,11 @@
-const PsaDAO = require("../../dao/psa");
+import PsaDAO from "../../dao/psa";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class PsaController {
-  static async get(req, res) {
+  static async get(_req, _res) {
     let data = await PsaDAO.get();
-    return res.status(200).json(data);
+    return new MonkeyResponse("PSAs retrieved", data);
   }
 }
 
-module.exports = PsaController;
+export default PsaController;
