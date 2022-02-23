@@ -147,7 +147,7 @@ class Notification {
             <i class="fas fa-fw fa-times"></i>
           </div>
           `
-              : `<div style="margin-right: 2rem;">${icon}</div>`
+              : `<div class="righticon">${icon}</div>`
           }
         </div>
       </div>
