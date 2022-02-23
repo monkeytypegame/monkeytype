@@ -197,7 +197,7 @@ function isConfigValueValid(
 function isConfigValueValidAsync(
   val: unknown,
   possibleTypes: PossibleType[]
-): Promise<boolean> {
+): Promise<boolean | undefined> {
   return some(possibleTypes, async (possibleType) => {
     switch (possibleType) {
       case "layoutfluid": {
@@ -213,7 +213,15 @@ function isConfigValueValidAsync(
         );
 
         // check if all layouts exist
-        if (!layouts.every((layout) => layout !== undefined)) return false;
+        if (!layouts.every((layout) => layout !== undefined)) {
+          const invalidLayoutNames = layoutNames.map((layoutName, index) => [layoutName, layouts[index]]);
+
+          const invalidLayouts = layoutNames.filter(layoutName => layoutName === undefined);
+
+          invalid("custom layoutfluid", val, `The following inputted layouts do not exist: ${invalidLayouts.join(", ")}.`);
+
+          return;
+        }
 
         return true;
       }
@@ -228,13 +236,20 @@ function isConfigValueValidAsync(
   });
 }
 
-function invalid(key: string, val: unknown): void {
-  Notifications.add(
-    `Invalid value for ${key} (${val}). Please try to change this setting again.`,
-    -1
-  );
-  console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
+function invalid(key: string, val: unknown, customMessage?: string): boolean {
+  if (customMessage !== undefined) {
+    Notifications.add(`Invalid value for ${key} (${val}). ${customMessage}`);
+  } else {
+    Notifications.add(
+      `Invalid value for ${key} (${val}). Please try to change this setting again.`,
+      -1
+    );
+    console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
+  }
+  
+  return false;
 }
+  
 
 let config = {
   ...defaultConfig,
@@ -260,7 +275,7 @@ export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
 }
 
 //numbers
-export function setNumbers(numb: boolean, nosave?: boolean): void {
+export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(numb, ["boolean"])) return invalid("numbers", numb);
 
   if (config.mode === "quote") {
@@ -274,10 +289,12 @@ export function setNumbers(numb: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("numbers", config.numbers);
+
+  return true;
 }
 
 //punctuation
-export function setPunctuation(punc: boolean, nosave?: boolean): void {
+export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(punc, ["boolean"]))
     return invalid("punctuation", punc);
 
@@ -292,9 +309,11 @@ export function setPunctuation(punc: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("punctuation", config.punctuation);
+
+  return true;
 }
 
-export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
+export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   if (!isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]))
     return invalid("mode", mode);
 
@@ -317,46 +336,54 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("mode", previous, config.mode);
+
+  return true;
 }
 
-export function setPlaySoundOnError(val: boolean, nosave?: boolean): void {
+export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("play sound on error", val);
 
   config.playSoundOnError = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
+
+  return true;
 }
 
 export function setPlaySoundOnClick(
   val: MonkeyTypes.PlaySoundOnClick,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]))
     return invalid("play sound on click", val);
 
   config.playSoundOnClick = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
+
+  return true;
 }
 
 export function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["0.1", "0.5", "1.0"]]))
     return invalid("sound volume", val);
 
   config.soundVolume = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("soundVolume", config.soundVolume);
+
+  return true;
 }
 
 //difficulty
 export function setDifficulty(
   diff: MonkeyTypes.Difficulty,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(diff, [["normal", "expert", "master"]]))
     return invalid("difficulty", diff);
 
@@ -366,24 +393,30 @@ export function setDifficulty(
   config.difficulty = diff;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("difficulty", config.difficulty, nosave);
+
+  return true;
 }
 
 //set fav themes
-export function setFavThemes(themes: string[], nosave?: boolean): void {
+export function setFavThemes(themes: string[], nosave?: boolean): boolean {
   if (!isConfigValueValid(themes, ["stringArray"]))
     return invalid("favorite themes", themes);
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("favThemes", config.favThemes);
+
+  return true;
 }
 
-export function setFunbox(funbox: string, nosave?: boolean): void {
+export function setFunbox(funbox: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(funbox, ["string"])) return invalid("funbox", funbox);
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("funbox", config.funbox);
+
+  return true;
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): void {
@@ -393,36 +426,42 @@ export function setBlindMode(blind: boolean, nosave?: boolean): void {
   config.blindMode = blind;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("blindMode", config.blindMode, nosave);
+
+  return true;
 }
 
 export function setChartAccuracy(
   chartAccuracy: boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(chartAccuracy, ["boolean"]))
     return invalid("chart accuracy", chartAccuracy);
 
   config.chartAccuracy = chartAccuracy;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
+
+  return true;
 }
 
 export function setChartStyle(
   chartStyle: MonkeyTypes.ChartStyle,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(chartStyle, [["line", "scatter"]]))
     return invalid("chart style", chartStyle);
 
   config.chartStyle = chartStyle;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("chartStyle", config.chartStyle);
+
+  return true;
 }
 
 export function setStopOnError(
   soe: MonkeyTypes.StopOnError | boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(soe, [["off", "word", "letter"], "boolean"]))
     return invalid("stop on error", soe);
 
@@ -435,12 +474,14 @@ export function setStopOnError(
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
+
+  return true;
 }
 
 export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("always show decimal places", val);
 
@@ -450,18 +491,22 @@ export function setAlwaysShowDecimalPlaces(
     "alwaysShowDecimalPlaces",
     config.alwaysShowDecimalPlaces
   );
+
+  return true;
 }
 
-export function setAlwaysShowCPM(val: boolean, nosave?: boolean): void {
+export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("always show CPM", val);
 
   config.alwaysShowCPM = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
+
+  return true;
 }
 
-export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
+export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("show out of focus warning", val);
 
@@ -471,29 +516,33 @@ export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
+
+  return true;
 }
 
-export function setSwapEscAndTab(val: boolean, nosave?: boolean): void {
+export function setSwapEscAndTab(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("swap esc and tab", val);
 
   config.swapEscAndTab = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("swapEscAndTab", config.swapEscAndTab);
+
+  return true;
 }
 
 //pace caret
 export function setPaceCaret(
   val: MonkeyTypes.PaceCaret,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["custom", "off", "average", "pb"]]))
     return invalid("pace caret", val);
 
   if (document.readyState === "complete") {
     if (val == "pb" && firebase.auth().currentUser === null) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
-      return;
+      return false;
     }
   }
   // if (config.mode === "zen" && val != "off") {
@@ -503,129 +552,153 @@ export function setPaceCaret(
   config.paceCaret = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("paceCaret", config.paceCaret, nosave);
+
+  return true;
 }
 
-export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): void {
+export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["number"]))
     return invalid("pace caret custom speed", val);
 
   config.paceCaretCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
+
+  return true;
 }
 
-export function setRepeatedPace(pace: boolean, nosave?: boolean): void {
+export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(pace, ["boolean"]))
     return invalid("repeated pace", pace);
 
   config.repeatedPace = pace;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("repeatedPace", config.repeatedPace);
+
+  return true;
 }
 
 //min wpm
 export function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(minwpm, [["off", "custom"]]))
     return invalid("min WPM", minwpm);
 
   config.minWpm = minwpm;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
+
+  return true;
 }
 
-export function setMinWpmCustomSpeed(val: number, nosave?: boolean): void {
+export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["number"]))
     return invalid("min WPM custom speed", val);
 
   config.minWpmCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
+
+  return true;
 }
 
 //min acc
 export function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(min, [["off", "custom"]]))
     return invalid("min acc", min);
 
   config.minAcc = min;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
+
+  return true;
 }
 
-export function setMinAccCustom(val: number, nosave?: boolean): void {
+export function setMinAccCustom(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["number"]))
     return invalid("min acc custom", val);
 
   config.minAccCustom = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
+
+  return true;
 }
 
 //min burst
 export function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(min, [["off", "fixed", "flex"]]))
     return invalid("min burst", min);
 
   config.minBurst = min;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
+
+  return true;
 }
 
-export function setMinBurstCustomSpeed(val: number, nosave?: boolean): void {
+export function setMinBurstCustomSpeed(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["number"]))
     return invalid("min burst custom speed", val);
 
   config.minBurstCustomSpeed = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
+
+  return true;
 }
 
 //always show words history
 export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("always show words history", val);
 
   config.alwaysShowWordsHistory = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
+
+  return true;
 }
 
 //single list command line
 export function setSingleListCommandLine(
   option: MonkeyTypes.SingleListCommandLine,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(option, [["manual", "on"]]))
     return invalid("single list command line", option);
 
   config.singleListCommandLine = option;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("singleListCommandLine", config.singleListCommandLine);
+
+  return true;
 }
 
 //caps lock warning
-export function setCapsLockWarning(val: boolean, nosave?: boolean): void {
+export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("caps lock warning", val);
 
   config.capsLockWarning = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
+
+  return true;
 }
 
-export function setShowAllLines(sal: boolean, nosave?: boolean): void {
+export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(sal, ["boolean"]))
     return invalid("show all lines", sal);
 
@@ -634,20 +707,24 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): void {
     saveToLocalStorage();
   }
   ConfigEvent.dispatch("showAllLines", config.showAllLines);
+
+  return true;
 }
 
-export function setQuickEnd(qe: boolean, nosave?: boolean): void {
+export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(qe, ["boolean"])) return invalid("quick end", qe);
 
   config.quickEnd = qe;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("quickEnd", config.quickEnd);
+
+  return true;
 }
 
 export function setEnableAds(
   val: MonkeyTypes.EnableAds | boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["on", "off", "max"], "boolean"]))
     return invalid("enable ads", val);
 
@@ -661,13 +738,15 @@ export function setEnableAds(
       location.reload();
     }, 3000);
     Notifications.add("Ad settings changed. Refreshing...", 0);
+
+    return true;
   }
 }
 
 export function setRepeatQuotes(
   val: MonkeyTypes.RepeatQuotes | boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["off", "typing"], "boolean"]))
     return invalid("repeat quotes", val);
 
@@ -677,55 +756,65 @@ export function setRepeatQuotes(
   config.repeatQuotes = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("repeatQuotes", config.repeatQuotes);
+
+  return true;
 }
 
 //flip colors
-export function setFlipTestColors(flip: boolean, nosave?: boolean): void {
+export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(flip, ["boolean"]))
     return invalid("flip test colors", flip);
 
   config.flipTestColors = flip;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("flipTestColors", config.flipTestColors);
+
+  return true;
 }
 
 //extra color
-export function setColorfulMode(extra: boolean, nosave?: boolean): void {
+export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(extra, ["boolean"]))
     return invalid("colorful mode", extra);
 
   config.colorfulMode = extra;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("colorfulMode", config.colorfulMode);
+
+  return true;
 }
 
 //strict space
-export function setStrictSpace(val: boolean, nosave?: boolean): void {
+export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("strict space", val);
 
   config.strictSpace = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("strictSpace", config.strictSpace);
+
+  return true;
 }
 
 //opposite shift space
 export function setOppositeShiftMode(
   val: MonkeyTypes.OppositeShiftMode,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["off", "on", "keymap"]]))
     return invalid("opposite shift mode", val);
 
   config.oppositeShiftMode = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
+
+  return true;
 }
 
 export function setPageWidth(
   val: MonkeyTypes.PageWidth,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(val, [["max", "100", "125", "150", "200"]]))
     return invalid("page width", val);
 
@@ -740,12 +829,14 @@ export function setPageWidth(
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("pageWidth", config.pageWidth);
+
+  return true;
 }
 
 export function setCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
-): void {
+): boolean {
   if (
     !isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
@@ -779,12 +870,14 @@ export function setCaretStyle(
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("caretStyle", config.caretStyle);
+
+  return true;
 }
 
 export function setPaceCaretStyle(
   caretStyle: MonkeyTypes.CaretStyle,
   nosave?: boolean
-): void {
+): boolean {
   if (
     !isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
@@ -816,57 +909,69 @@ export function setPaceCaretStyle(
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
+
+  return true;
 }
 
-export function setShowTimerProgress(timer: boolean, nosave?: boolean): void {
+export function setShowTimerProgress(timer: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(timer, ["boolean"]))
     return invalid("show timer progress", timer);
 
   config.showTimerProgress = timer;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
+
+  return true;
 }
 
-export function setShowLiveWpm(live: boolean, nosave?: boolean): void {
+export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show live WPM", live);
 
   config.showLiveWpm = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
+
+  return true;
 }
 
-export function setShowLiveAcc(live: boolean, nosave?: boolean): void {
+export function setShowLiveAcc(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show live acc", live);
 
   config.showLiveAcc = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
+
+  return true;
 }
 
-export function setShowLiveBurst(live: boolean, nosave?: boolean): void {
+export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show live burst", live);
 
   config.showLiveBurst = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
+
+  return true;
 }
 
-export function setShowAvg(live: boolean, nosave?: boolean): void {
+export function setShowAvg(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(live, ["boolean"]))
     return invalid("show average", live);
 
   config.showAvg = live;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showAvg", config.showAvg, nosave);
+
+  return true;
 }
 
 export function setHighlightMode(
   mode: MonkeyTypes.HighlightMode,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(mode, [["off", "letter", "word"]]))
     return invalid("highlight mode", mode);
 
@@ -886,33 +991,39 @@ export function setHighlightMode(
   config.highlightMode = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
+
+  return true;
 }
 
-export function setHideExtraLetters(val: boolean, nosave?: boolean): void {
+export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("hide extra letters", val);
 
   config.hideExtraLetters = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
+
+  return true;
 }
 
 export function setTimerStyle(
   style: MonkeyTypes.TimerStyle,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(style, [["bar", "text", "mini"]]))
     return invalid("timer style", style);
 
   config.timerStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerStyle", config.timerStyle);
+
+  return true;
 }
 
 export function setTimerColor(
   color: MonkeyTypes.TimerColor,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(color, [["black", "sub", "text", "main"]]))
     return invalid("timer color", color);
 
@@ -953,21 +1064,25 @@ export function setTimerColor(
 
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerColor", config.timerColor);
+
+  return true;
 }
 export function setTimerOpacity(
   opacity: MonkeyTypes.TimerOpacity,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]))
     return invalid("timer opacity", opacity);
 
   config.timerOpacity = opacity;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("timerOpacity", config.timerOpacity);
+
+  return true;
 }
 
 //key tips
-export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
+export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(keyTips, ["boolean"]))
     return invalid("key tips", keyTips);
 
@@ -979,13 +1094,15 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("showKeyTips", config.showKeyTips);
+
+  return true;
 }
 
 //mode
 export function setTimeConfig(
   time: MonkeyTypes.TimeModes,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(time, ["number"])) return invalid("time", time);
 
   const newTime = isNaN(time) || time < 0 ? defaultConfig.time : time;
@@ -1001,6 +1118,8 @@ export function setTimeConfig(
   ).addClass("active");
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("time", config.time);
+
+  return true;
 }
 
 //quote length
@@ -1008,7 +1127,7 @@ export function setQuoteLength(
   len: MonkeyTypes.QuoteLengthArray | MonkeyTypes.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]))
     return invalid("quote length", len);
 
@@ -1042,12 +1161,14 @@ export function setQuoteLength(
   });
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
+
+  return true;
 }
 
 export function setWordCount(
   wordCount: MonkeyTypes.WordsModes,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(wordCount, ["number"]))
     return invalid("words", wordCount);
 
@@ -1067,10 +1188,12 @@ export function setWordCount(
   ).addClass("active");
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("words", config.words);
+
+  return true;
 }
 
 //caret
-export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
+export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(mode, ["boolean"])) return invalid("", mode);
 
   config.smoothCaret = mode;
@@ -1081,29 +1204,35 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
+
+  return true;
 }
 
-export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): void {
+export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(mode, ["boolean"]))
     return invalid("start graphs at zero", mode);
 
   config.startGraphsAtZero = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("startGraphsAtZero", config.startGraphsAtZero);
+
+  return true;
 }
 
 //linescroll
-export function setSmoothLineScroll(mode: boolean, nosave?: boolean): void {
+export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(mode, ["boolean"]))
     return invalid("smooth line scroll", mode);
 
   config.smoothLineScroll = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("smoothLineScroll", config.smoothLineScroll);
+
+  return true;
 }
 
 //quick tab
-export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
+export function setQuickTabMode(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(mode, ["boolean"]))
     return invalid("quick tab mode", mode);
 
@@ -1121,9 +1250,11 @@ export function setQuickTabMode(mode: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("quickTab", config.quickTab);
+
+  return true;
 }
 
-export function previewFontFamily(font: string): void {
+export function previewFontFamily(font: string): boolean {
   if (!isConfigValueValid(font, ["string"]))
     return invalid("preview font family", font);
 
@@ -1131,10 +1262,12 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono"'
   );
+
+  return true;
 }
 
 //font family
-export function setFontFamily(font: string, nosave?: boolean): void {
+export function setFontFamily(font: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(font, ["string"]))
     return invalid("font family", font);
 
@@ -1154,7 +1287,7 @@ export function setFontFamily(font: string, nosave?: boolean): void {
       3,
       "Custom font"
     );
-    return;
+    return false;
   }
   config.fontFamily = font;
   document.documentElement.style.setProperty(
@@ -1163,10 +1296,12 @@ export function setFontFamily(font: string, nosave?: boolean): void {
   );
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("fontFamily", config.fontFamily);
+
+  return true;
 }
 
 //freedom
-export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
+export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(freedom, ["boolean"]))
     return invalid("freedom mode", freedom);
 
@@ -1179,12 +1314,14 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("freedomMode", config.freedomMode);
+
+  return true;
 }
 
 export function setConfidenceMode(
   cm: MonkeyTypes.ConfidenceMode,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(cm, [["off", "on", "max"]]))
     return invalid("confidence mode", cm);
 
@@ -1195,21 +1332,25 @@ export function setConfidenceMode(
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
+
+  return true;
 }
 
 export function setIndicateTypos(
   value: MonkeyTypes.IndicateTypos,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(value, [["off", "below", "replace"]]))
     return invalid("indicate typos", value);
 
   config.indicateTypos = value;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
+
+  return true;
 }
 
-export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
+export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(boolean, ["boolean"]))
     return invalid("auto switch theme", boolean);
 
@@ -1217,59 +1358,71 @@ export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
   config.autoSwitchTheme = boolean;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
+
+  return true;
 }
 
-export function setCustomTheme(boolean: boolean, nosave?: boolean): void {
+export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(boolean, ["boolean"]))
     return invalid("custom theme", boolean);
 
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customTheme", config.customTheme);
+
+  return true;
 }
 
-export function setTheme(name: string, nosave?: boolean): void {
+export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(name, ["string"])) return invalid("", name);
 
   config.theme = name;
   setCustomTheme(false, true);
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("theme", config.theme);
+
+  return true;
 }
 
-export function setThemeLight(name: string, nosave?: boolean): void {
+export function setThemeLight(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(name, ["string"]))
     return invalid("theme light", name);
 
   config.themeLight = name;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
+
+  return true;
 }
 
-export function setThemeDark(name: string, nosave?: boolean): void {
+export function setThemeDark(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(name, ["string"])) return invalid("theme dark", name);
 
   config.themeDark = name;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
+
+  return true;
 }
 
 function setThemes(
   theme: string,
   customState: boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
 
   config.theme = theme;
   config.customTheme = customState;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("setThemes", customState);
+
+  return true;
 }
 
 export function setRandomTheme(
   val: MonkeyTypes.RandomTheme | boolean,
   nosave?: boolean
-): void {
+): boolean {
   if (
     !isConfigValueValid(val, [["off", "on", "fav", "light", "dark"], "boolean"])
   )
@@ -1281,9 +1434,11 @@ export function setRandomTheme(
   config.randomTheme = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("randomTheme", config.randomTheme);
+
+  return true;
 }
 
-export function setBritishEnglish(val: boolean, nosave?: boolean): void {
+export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("british english", val);
 
@@ -1293,9 +1448,11 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): void {
   config.britishEnglish = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
+
+  return true;
 }
 
-export function setLazyMode(val: boolean, nosave?: boolean): void {
+export function setLazyMode(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(val, ["boolean"])) return invalid("lazy mode", val);
 
   if (!val) {
@@ -1304,9 +1461,11 @@ export function setLazyMode(val: boolean, nosave?: boolean): void {
   config.lazyMode = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
+
+  return true;
 }
 
-export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
+export function setCustomThemeColors(colors: string[], nosave?: boolean): boolean {
   if (!isConfigValueValid(colors, ["stringArray"]))
     return invalid("custom theme colors", colors);
 
@@ -1317,9 +1476,11 @@ export function setCustomThemeColors(colors: string[], nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
+
+  return true;
 }
 
-export function setLanguage(language: string, nosave?: boolean): void {
+export function setLanguage(language: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(language, ["string"]))
     return invalid("language", language);
 
@@ -1333,9 +1494,11 @@ export function setLanguage(language: string, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("language", config.language);
+
+  return true;
 }
 
-export function setMonkey(monkey: boolean, nosave?: boolean): void {
+export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(monkey, ["boolean"]))
     return invalid("monkey", monkey);
 
@@ -1347,12 +1510,14 @@ export function setMonkey(monkey: boolean, nosave?: boolean): void {
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("monkey", config.monkey);
+
+  return true;
 }
 
 export function setKeymapMode(
   mode: MonkeyTypes.KeymapMode,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(mode, [["off", "static", "react", "next"]]))
     return invalid("keymap mode", mode);
 
@@ -1361,12 +1526,14 @@ export function setKeymapMode(
   config.keymapMode = mode;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapMode", config.keymapMode);
+
+  return true;
 }
 
 export function setKeymapLegendStyle(
   style: MonkeyTypes.KeymapLegendStyle,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
     return invalid("keymap legend style", style);
 
@@ -1396,12 +1563,14 @@ export function setKeymapLegendStyle(
   config.keymapLegendStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
+
+  return true;
 }
 
 export function setKeymapStyle(
   style: MonkeyTypes.KeymapStyle,
   nosave?: boolean
-): void {
+): boolean {
   if (
     !isConfigValueValid(style, [
       ["staggered", "alice", "matrix", "split", "split_matrix"],
@@ -1413,37 +1582,45 @@ export function setKeymapStyle(
   config.keymapStyle = style;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
+
+  return true;
 }
 
-export function setKeymapLayout(layout: string, nosave?: boolean): void {
+export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(layout, ["string"]))
     return invalid("keymap layout", layout);
 
   config.keymapLayout = layout;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
+
+  return true;
 }
 
-export function setLayout(layout: string, nosave?: boolean): void {
+export function setLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(layout, ["string"])) return invalid("layout", layout);
 
   config.layout = layout;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("layout", config.layout, nosave);
+
+  return true;
 }
 
-// export function setSavedLayout(layout, nosave?: boolean): void {
+// export function setSavedLayout(layout: string, nosave?: boolean): boolean {
 //   if (layout == null || layout == undefined) {
 //     layout = "qwerty";
 //   }
 //   config.savedLayout = layout;
 //   setLayout(layout, nosave);
+
+//   return true;
 // }
 
 export function setFontSize(
   fontSize: MonkeyTypes.FontSize,
   nosave?: boolean
-): void {
+): boolean {
   fontSize = fontSize.toString() as MonkeyTypes.FontSize; //todo remove after around a week
   if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
     return invalid("font size", fontSize);
@@ -1492,9 +1669,11 @@ export function setFontSize(
   }
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("fontSize", config.fontSize);
+
+  return true;
 }
 
-export function setCustomBackground(value: string, nosave?: boolean): void {
+export function setCustomBackground(value: string, nosave?: boolean): boolean {
   if (!isConfigValueValid(value, ["string"]))
     return invalid("custom background", value);
 
@@ -1512,13 +1691,19 @@ export function setCustomBackground(value: string, nosave?: boolean): void {
   } else {
     Notifications.add("Invalid custom background URL", 0);
   }
+
+  return true;
 }
 
 export async function setCustomLayoutfluid(
   value: MonkeyTypes.CustomLayoutFluidSpaces,
   nosave?: boolean
-): Promise<void> {
-  if (!(await isConfigValueValidAsync(value, ["layoutfluid"])))
+): Promise<boolean> {
+  const isInvalid = await isConfigValueValidAsync(value, ["layoutfluid"]);
+  
+  if (isInvalid === undefined) return false;
+
+  if (!isInvalid)
     return invalid("custom layoutfluid", value);
 
   const customLayoutfluid = value.replace(
@@ -1532,12 +1717,14 @@ export async function setCustomLayoutfluid(
   );
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
+
+  return true;
 }
 
 export function setCustomBackgroundSize(
   value: MonkeyTypes.CustomBackgroundSize,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(value, [["max", "cover", "contain"]]))
     return invalid("custom background size", value);
 
@@ -1547,12 +1734,14 @@ export function setCustomBackgroundSize(
   config.customBackgroundSize = value;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
+
+  return true;
 }
 
 export function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,
   nosave?: boolean
-): void {
+): boolean {
   array = (array as unknown as string[]).map((value) =>
     parseFloat(value)
   ) as MonkeyTypes.CustomBackgroundFilter;
@@ -1562,12 +1751,14 @@ export function setCustomBackgroundFilter(
   config.customBackgroundFilter = array;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
+
+  return true;
 }
 
 export function setMonkeyPowerLevel(
   level: MonkeyTypes.MonkeyPowerLevel,
   nosave?: boolean
-): void {
+): boolean {
   if (!isConfigValueValid(level, [["off", "1", "2", "3", "4"]]))
     return invalid("monkey power level", level);
 
@@ -1575,9 +1766,11 @@ export function setMonkeyPowerLevel(
   config.monkeyPowerLevel = level;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
+
+  return true;
 }
 
-export function setBurstHeatmap(value: boolean, nosave?: boolean): void {
+export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(value, ["boolean"]))
     return invalid("burst heatmap", value);
 
@@ -1589,6 +1782,8 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): void {
     saveToLocalStorage();
   }
   ConfigEvent.dispatch("burstHeatmap", config.burstHeatmap);
+
+  return true;
 }
 
 export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
