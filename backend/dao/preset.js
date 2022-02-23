@@ -1,7 +1,6 @@
 import MonkeyError from "../handlers/error";
 import db from "../init/db";
-import Mongo from "mongodb";
-const { ObjectID } = Mongo;
+import { ObjectId } from "mongodb";
 
 class PresetDAO {
   static async getPresets(uid) {
@@ -28,27 +27,27 @@ class PresetDAO {
     console.log(_id);
     const preset = await db
       .collection("presets")
-      .findOne({ uid, _id: ObjectID(_id) });
+      .findOne({ uid, _id: new ObjectId(_id) });
     if (!preset) throw new MonkeyError(404, "Preset not found");
     if (config) {
       return await db
         .collection("presets")
-        .updateOne({ uid, _id: ObjectID(_id) }, { $set: { name, config } });
+        .updateOne({ uid, _id: new ObjectId(_id) }, { $set: { name, config } });
     } else {
       return await db
         .collection("presets")
-        .updateOne({ uid, _id: ObjectID(_id) }, { $set: { name } });
+        .updateOne({ uid, _id: new ObjectId(_id) }, { $set: { name } });
     }
   }
 
   static async removePreset(uid, _id) {
     const preset = await db
       .collection("presets")
-      .findOne({ uid, _id: ObjectID(_id) });
+      .findOne({ uid, _id: new ObjectId(_id) });
     if (!preset) throw new MonkeyError(404, "Preset not found");
     return await db
       .collection("presets")
-      .deleteOne({ uid, _id: ObjectID(_id) });
+      .deleteOne({ uid, _id: new ObjectId(_id) });
   }
 }
 

@@ -1,4 +1,4 @@
-import db from "../init/db.js";
+import db from "../init/db";
 
 export default {
   async log(event, message, uid) {
