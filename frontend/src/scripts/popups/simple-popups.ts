@@ -1,3 +1,4 @@
+import type FirebaseTypes from "firebase";
 import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
@@ -12,11 +13,6 @@ type Input = {
   initVal: string;
   hidden?: boolean;
 };
-
-type ErrorWithCode = Error & { code: string };
-// Incomplete Firebase user type
-// This is simply to satisfy the array method type constraints
-type UserWithProviderData = { providerData: { providerId: string }[] };
 
 export const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
@@ -255,7 +251,7 @@ list["updateEmail"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
-      const typedError = e as ErrorWithCode;
+      const typedError = e as FirebaseTypes.FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -264,8 +260,8 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user: UserWithProviderData = firebase.auth().currentUser;
-    if (!user.providerData.find((p) => p.providerId === "password")) {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -327,7 +323,7 @@ list["updateName"] = new SimplePopup(
       DB.getSnapshot().name = newName;
       $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      const typedError = e as ErrorWithCode;
+      const typedError = e as FirebaseTypes.FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -388,7 +384,7 @@ list["updatePassword"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
-      const typedError = e as ErrorWithCode;
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
@@ -398,8 +394,8 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user: UserWithProviderData = firebase.auth().currentUser;
-    if (!user.providerData.find((p) => p.providerId === "password")) {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -515,7 +511,7 @@ list["deleteAccount"] = new SimplePopup(
         location.reload();
       }, 3000);
     } catch (e) {
-      const typedError = e as ErrorWithCode;
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
