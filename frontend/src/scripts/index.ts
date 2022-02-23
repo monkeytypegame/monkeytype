@@ -35,26 +35,7 @@ import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import * as Account from "./pages/account";
 
-// May be pushed to test-timer when it gets converted to TypeScript
-type TimerStats = {
-  dateNow: number;
-  now: number;
-  expected: number;
-  delay: number;
-}[];
-
-type Global = typeof globalThis & {
-  snapshot(): MonkeyTypes.Snapshot;
-  config: MonkeyTypes.Config;
-  toggleFilterDebug(): void;
-  glarsesMode(): void;
-  stats(): void;
-  replay(): string;
-  enableTimerDebug(): void;
-  getTimerStats(): TimerStats;
-  toggleUnsmoothedRaw(): void;
-  enableSpacingDebug(): void;
-};
+type Global = typeof globalThis & MonkeyTypes.Global;
 
 (global as Global).snapshot = DB.getSnapshot;
 
