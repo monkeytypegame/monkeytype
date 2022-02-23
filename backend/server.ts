@@ -10,7 +10,7 @@ import { Server } from "http";
 
 async function bootServer(port: number): Promise<Server> {
   try {
-    console.log("Connecting to database...");
+    console.log(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
     console.log("Connected to database");
 
