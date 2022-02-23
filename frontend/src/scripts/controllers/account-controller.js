@@ -648,8 +648,8 @@ async function signUp() {
         snapshot.results.push(TestLogic.notSignedInLastResult);
         DB.setSnapshot(snapshot);
       }
-      PageController.change("account");
     }
+    PageController.change("account");
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
