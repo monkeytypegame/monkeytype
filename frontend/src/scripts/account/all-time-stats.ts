@@ -14,14 +14,14 @@ export function update(): void {
     // let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
     // let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
     // let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
-    const x: number = snapshot.globalStats.time as number; 
-    $(".pageAccount .globalTimeTyping .val").text(
-      Misc.secondsToString(
-        !isNaN(x)) ? Math.round(x) : 0,
-        true,
-        true
-      )
-    );
+    const seconds = snapshot?.globalStats?.time ?? 0;
+    let string = "";
+    if (seconds === 0) {
+      string = "-";
+    } else {
+      string = Misc.secondsToString(seconds, true, true);
+    }
+    $(".pageAccount .globalTimeTyping .val").text(string);
   }
 
   if (snapshot.globalStats !== undefined) {
