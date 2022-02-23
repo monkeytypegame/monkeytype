@@ -1,14 +1,16 @@
-const QuoteRatingsDAO = require("../../dao/quote-ratings");
-const UserDAO = require("../../dao/user");
-const MonkeyError = require("../../handlers/error");
+import MonkeyError from "../../handlers/error";
+import UserDAO from "../../dao/user";
+import QuoteRatingsDAO from "../../dao/quote-ratings";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class QuoteRatingsController {
   static async getRating(req, _res) {
     const { quoteId, language } = req.query;
-    return await QuoteRatingsDAO.get(parseInt(quoteId), language);
+    const data = await QuoteRatingsDAO.get(parseInt(quoteId), language);
+    return new MonkeyResponse("Rating retrieved", data);
   }
 
-  static async submitRating(req, res) {
+  static async submitRating(req, _res) {
     const { uid } = req.ctx.decodedToken;
     let { quoteId, rating, language } = req.body;
 
@@ -45,9 +47,8 @@ class QuoteRatingsController {
     await QuoteRatingsDAO.submit(quoteId, language, newRating, update);
     quoteRatings[language][quoteId] = rating;
     await UserDAO.updateQuoteRatings(uid, quoteRatings);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Rating updated");
   }
 }
 
-module.exports = QuoteRatingsController;
+export default QuoteRatingsController;

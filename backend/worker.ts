@@ -1,16 +1,18 @@
-const { config } = require("dotenv");
-const path = require("path");
+import path from "path";
+// @ts-ignore
+import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
+import admin, { ServiceAccount } from "firebase-admin";
+import db from "./init/db";
+import { config } from "dotenv";
+
 config({ path: path.join(__dirname, ".env") });
 
-const db = require("./init/db");
-const admin = require("firebase-admin");
-// eslint-disable-next-line
-const serviceAccount = require("./credentials/serviceAccountKey.json");
-
-async function main() {
+async function main(): Promise<void> {
   await db.connect();
-  await admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      serviceAccount as unknown as ServiceAccount
+    ),
   });
   console.log("Database Connected!!");
   refactor();
@@ -18,17 +20,17 @@ async function main() {
 
 main();
 
-async function refactor() {
+async function refactor(): Promise<void> {
   console.log("getting all users");
 
   const usersCollection = db.collection("users");
-  let users = await usersCollection.find({}).toArray();
+  const users = await usersCollection.find({}).toArray();
   console.log(users.length);
 
-  for (let user of users) {
-    let obj = user.personalBests;
+  for (const user of users) {
+    const obj = user.personalBests;
 
-    let lbPb = {
+    const lbPb = {
       time: {
         15: {},
         60: {},

@@ -1,11 +1,9 @@
+import Ape from "../ape";
 import * as DB from "../db";
 import * as Config from "../config";
 import * as Loader from "../elements/loader";
-import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
-
 import * as Notifications from "../elements/notifications";
-import { AxiosError } from "axios";
 
 export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
@@ -67,115 +65,82 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const action = $("#presetWrapper #presetEdit").attr("action");
-  const inputVal = $("#presetWrapper #presetEdit input").val() as string;
-  const presetid = $("#presetWrapper #presetEdit").attr("presetid");
+  const presetName = $("#presetWrapper #presetEdit input").val() as string;
+  const presetId = $("#presetWrapper #presetEdit").attr("presetId") as string;
 
-  const updateConfig = $("#presetWrapper #presetEdit label input").prop(
-    "checked"
-  );
+  const updateConfig: boolean = $(
+    "#presetWrapper #presetEdit label input"
+  ).prop("checked");
 
-  // TODO fix this sometime
-  let configChanges: MonkeyTypes.PresetConfig =
-    null as unknown as MonkeyTypes.PresetConfig;
+  let configChanges: MonkeyTypes.ConfigChanges = {};
+
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges();
-    const activeTagIds: string[] = [];
-    DB.getSnapshot().tags?.forEach((tag) => {
-      if (tag.active) {
-        activeTagIds.push(tag._id);
-      }
-    });
-    configChanges.tags = activeTagIds as string[];
+
+    const tags = DB.getSnapshot().tags || [];
+
+    const activeTagIds: string[] = tags.filter((tag: MonkeyTypes.Tag) => tag.active)
+      .map((tag: MonkeyTypes.Tag) => tag._id);
+    configChanges.tags = activeTagIds;
   }
 
+  const snapshotPresets = DB.getSnapshot().presets || [];
+
   hide();
+
+  Loader.show();
+
   if (action === "add") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/presets/add", {
-        name: inputVal,
-        config: configChanges,
-      });
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to add preset: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.presets.add(presetName, configChanges);
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to add preset: " + response.message, -1);
     } else {
       Notifications.add("Preset added", 1, 2);
-      DB.getSnapshot().presets?.push({
-        name: inputVal,
+      snapshotPresets.push({
+        name: presetName,
         config: configChanges,
         _id: response.data.insertedId,
       });
-      Settings.update();
     }
   } else if (action === "edit") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/presets/edit", {
-        name: inputVal,
-        _id: presetid,
-        config: updateConfig === true ? configChanges : null,
-      });
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to edit preset: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.presets.edit(
+      presetId,
+      presetName,
+      configChanges
+    );
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to edit preset: " + response.message, -1);
     } else {
       Notifications.add("Preset updated", 1);
-      const preset = DB.getSnapshot().presets?.filter(
-        (preset: MonkeyTypes.Preset) => preset._id == presetid
+      const preset: MonkeyTypes.Preset = snapshotPresets.filter(
+        (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
-
-      if (preset !== undefined) {
-        preset.name = inputVal;
-        if (updateConfig === true) preset.config = configChanges;
-        Settings.update();
+      preset.name = presetName;
+      if (updateConfig) {
+        preset.config = configChanges;
       }
     }
   } else if (action === "remove") {
-    Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/presets/remove", {
-        _id: presetid,
-      });
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to remove preset: " + msg, -1);
-      return;
-    }
-    Loader.hide();
+    const response = await Ape.presets.delete(presetId);
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
+      Notifications.add("Failed to remove preset: " + response.message, -1);
     } else {
       Notifications.add("Preset removed", 1);
-      DB.getSnapshot().presets?.forEach(
+      snapshotPresets.forEach(
         (preset: MonkeyTypes.Preset, index: number) => {
-          if (preset._id === presetid) {
-            DB.getSnapshot().presets?.splice(index, 1);
+          if (preset._id === presetId) {
+            snapshotPresets.splice(index, 1);
           }
         }
       );
-      Settings.update();
     }
   }
+
+  Settings.update();
+  Loader.hide();
 }
 
 $("#presetWrapper").click((e) => {
@@ -189,7 +154,7 @@ $("#presetWrapper #presetEdit .button").click(() => {
 });
 
 $("#presetWrapper #presetEdit input").keypress((e) => {
-  if (e.keyCode == 13) {
+  if (e.keyCode === 13) {
     apply();
   }
 });

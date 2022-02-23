@@ -43,6 +43,9 @@
           color: var(--text-color);
         }
       }
+      .righticon {
+        margin-right: 1rem;
+      }
     }
     &.good {
       background: var(--main-color);

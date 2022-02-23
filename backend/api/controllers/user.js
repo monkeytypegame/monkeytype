@@ -1,64 +1,58 @@
-const UsersDAO = require("../../dao/user");
-const BotDAO = require("../../dao/bot");
-const { isUsernameValid } = require("../../handlers/validation");
-const MonkeyError = require("../../handlers/error");
-const fetch = require("node-fetch");
-const Logger = require("../../handlers/logger.js");
-const uaparser = require("ua-parser-js");
+import UsersDAO from "../../dao/user";
+import BotDAO from "../../dao/bot";
+import { isUsernameValid } from "../../handlers/validation";
+import MonkeyError from "../../handlers/error";
+import fetch from "node-fetch";
+import Logger from "./../../handlers/logger.js";
+import uaparser from "ua-parser-js";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class UserController {
-  static async createNewUser(req, res) {
+  static async createNewUser(req, _res) {
     const { name } = req.body;
     const { email, uid } = req.ctx.decodedToken;
 
     await UsersDAO.addUser(name, email, uid);
     Logger.log("user_created", `${name} ${email}`, uid);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("User created");
   }
 
-  static async deleteUser(req, res) {
+  static async deleteUser(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const userInfo = await UsersDAO.getUser(uid);
 
     await UsersDAO.deleteUser(uid);
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("User deleted");
   }
 
-  static async updateName(req, res) {
+  static async updateName(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { name } = req.body;
-
-    if (!isUsernameValid(name)) {
-      return res.status(400).json({
-        message:
-          "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-      });
-    }
-
-    const olduser = await UsersDAO.getUser(uid);
+    if (!isUsernameValid(name))
+      throw new MonkeyError(
+        400,
+        "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
+      );
+    let olduser = await UsersDAO.getUser(uid);
     await UsersDAO.updateName(uid, name);
     Logger.log(
       "user_name_updated",
       `changed name from ${olduser.name} to ${name}`,
       uid
     );
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("User's name updated");
   }
 
-  static async clearPb(req, res) {
+  static async clearPb(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     await UsersDAO.clearPb(uid);
     Logger.log("user_cleared_pbs", "", uid);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("User's PB cleared");
   }
 
-  static async checkName(req, res) {
+  static async checkName(req, _res) {
     const { name } = req.params;
 
     if (!isUsernameValid(name)) {
@@ -69,14 +63,11 @@ class UserController {
     }
 
     const available = await UsersDAO.isNameAvailable(name);
-    if (!available) {
-      return res.status(400).json({ message: "Username unavailable" });
-    }
-
-    return res.sendStatus(200);
+    if (!available) throw new MonkeyError(400, "Username unavailable");
+    return new MonkeyResponse("Username available");
   }
 
-  static async updateEmail(req, res) {
+  static async updateEmail(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { newEmail } = req.body;
 
@@ -86,8 +77,7 @@ class UserController {
       throw new MonkeyError(400, e.message, "update email", uid);
     }
     Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Email updated");
   }
 
   static async getUser(req, _res) {
@@ -133,8 +123,7 @@ class UserController {
         agent.device.type;
     }
     Logger.log("user_data_requested", logobj, uid);
-
-    return userInfo;
+    return new MonkeyResponse("User data retrieved", userInfo);
   }
 
   static async linkDiscord(req, _res) {
@@ -179,14 +168,10 @@ class UserController {
     await UsersDAO.linkDiscord(uid, did);
     await BotDAO.linkDiscord(uid, did);
     Logger.log("user_discord_link", `linked to ${did}`, uid);
-
-    return {
-      message: "Discord account linked",
-      did,
-    };
+    return new MonkeyResponse("Discord account linked ", did);
   }
 
-  static async unlinkDiscord(req, res) {
+  static async unlinkDiscord(req, _res) {
     const { uid } = req.ctx.decodedToken;
 
     let userInfo;
@@ -201,58 +186,51 @@ class UserController {
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
     await UsersDAO.unlinkDiscord(uid);
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Discord account unlinked ");
   }
 
   static async addTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagName } = req.body;
-
-    return await UsersDAO.addTag(uid, tagName);
+    let tag = await UsersDAO.addTag(uid, tagName);
+    return new MonkeyResponse("Tag updated", tag);
   }
 
-  static async clearTagPb(req, res) {
+  static async clearTagPb(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagId } = req.params;
-
     await UsersDAO.removeTagPb(uid, tagId);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Tag PB cleared");
   }
 
-  static async editTag(req, res) {
+  static async editTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagId, newName } = req.body;
-
     await UsersDAO.editTag(uid, tagId, newName);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Tag updated");
   }
 
-  static async removeTag(req, res) {
+  static async removeTag(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { tagId } = req.params;
-
     await UsersDAO.removeTag(uid, tagId);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Tag deleted");
   }
 
   static async getTags(req, _res) {
     const { uid } = req.ctx.decodedToken;
-
-    return await UsersDAO.getTags(uid);
+    let tags = await UsersDAO.getTags(uid);
+    if (tags == undefined) tags = [];
+    return new MonkeyResponse("Tags retrieved", tags);
   }
 
-  static async updateLbMemory(req, res) {
+  static async updateLbMemory(req, _res) {
     const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
 
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
-
-    return res.sendStatus(200);
+    return new MonkeyResponse("Leaderboard memory updated");
   }
 }
 
-module.exports = UserController;
+export default UserController;
