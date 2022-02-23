@@ -22,14 +22,17 @@ declare namespace MonkeyTypes {
     };
   }
 
+  interface DecodedToken {
+    uid?: string;
+    email?: string;
+  }
+
   interface Context {
     configuration: Configuration;
-    decodedToken: {
-      uid: string | null;
-    };
+    decodedToken: DecodedToken;
   }
 
   interface Request extends ExpressRequest {
-    ctx: Context;
+    ctx: Readonly<Context>;
   }
 }

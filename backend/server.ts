@@ -5,8 +5,9 @@ import db from "./init/db.js";
 import jobs from "./jobs";
 import ConfigurationDAO from "./dao/configuration.js";
 import app from "./app";
+import { Server } from "http";
 
-async function bootServer(port) {
+async function bootServer(port: number): Promise<Server> {
   try {
     console.log("Connecting to database...");
     await db.connect();
@@ -38,6 +39,6 @@ async function bootServer(port) {
   });
 }
 
-const PORT = process.env.PORT || 5005;
+const PORT = parseInt(process.env.PORT) || 5005;
 
 bootServer(PORT);

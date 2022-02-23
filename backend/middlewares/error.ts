@@ -6,13 +6,21 @@ import {
   MonkeyResponse,
   handleMonkeyResponse,
 } from "../handlers/monkey-response";
+import { NextFunction, Response } from "express";
 
-async function errorHandlingMiddleware(error, req, res, _next) {
+async function errorHandlingMiddleware(
+  error: Error,
+  req: MonkeyTypes.Request,
+  res: Response,
+  _next: NextFunction
+): Promise<void> {
+  const monkeyError = error as MonkeyError;
+
   const monkeyResponse = new MonkeyResponse();
   monkeyResponse.status = 500;
   monkeyResponse.data = {
-    errorId: error.errorId ?? uuidv4(),
-    uid: error.uid ?? req.ctx?.decodedToken?.uid,
+    errorId: monkeyError.errorId ?? uuidv4(),
+    uid: monkeyError.uid ?? req.ctx?.decodedToken?.uid,
   };
 
   if (/ECONNREFUSED.*27017/i.test(error.message)) {

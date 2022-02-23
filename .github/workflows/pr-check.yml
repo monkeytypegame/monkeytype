@@ -30,9 +30,10 @@ jobs:
               - 'frontend/**/*.scss'
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
+              - 'backend/**/*.{js,ts}'
             scss:
               - 'frontend/**/*.scss'
-            ts:
+            ts-fe:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
             anti-cheat:
@@ -88,12 +89,12 @@ jobs:
 
       - name: Lint
         if: steps.filter.outputs.any-tsscss == 'true'
-        run: npm run pr-check-lint-json
+        run: npm run lint
 
       - name: Compile SCSS
         if: steps.filter.outputs.scss == 'true'
         run: npm run pr-check-scss
 
       - name: Run webpack
-        if: steps.filter.outputs.ts == 'true'
+        if: steps.filter.outputs.ts-fe == 'true'
         run: npm run pr-check-ts
