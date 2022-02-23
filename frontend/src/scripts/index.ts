@@ -35,24 +35,26 @@ import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import * as Account from "./pages/account";
 
-type Global = typeof globalThis & MonkeyTypes.Global;
+type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
-(global as Global).snapshot = DB.getSnapshot;
+const extendedGlobal = global as ExtendedGlobal;
 
-(global as Global).config = Config;
+extendedGlobal.snapshot = DB.getSnapshot;
 
-(global as Global).toggleFilterDebug = Account.toggleFilterDebug;
+extendedGlobal.config = Config;
 
-(global as Global).glarsesMode = enable;
+extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
 
-(global as Global).stats = TestStats.getStats;
+extendedGlobal.glarsesMode = enable;
 
-(global as Global).replay = Replay.getReplayExport;
+extendedGlobal.stats = TestStats.getStats;
 
-(global as Global).enableTimerDebug = TestTimer.enableTimerDebug;
+extendedGlobal.replay = Replay.getReplayExport;
 
-(global as Global).getTimerStats = TestTimer.getTimerStats;
+extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
 
-(global as Global).toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 
-(global as Global).enableSpacingDebug = TestInput.enableSpacingDebug;
+extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+
+extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
