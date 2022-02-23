@@ -170,28 +170,112 @@ router.delete(
 router.get(
   "/customThemes",
   RateLimit.userCustomThemeGet,
-  authenticateRequest,
+  authenticateRequest(),
   UserController.getCustomThemes
 );
 
 router.post(
-  "/customThemes/add",
+  "/customThemes",
   RateLimit.userCustomThemeAdd,
-  authenticateRequest,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      name: joi
+        .string()
+        .max(16)
+        .regex(/^[0-9a-zA-Z_.-]+$/)
+        .required()
+        .messages({
+          "string.max": "The name must not exceed 16 characters",
+          "string.pattern.base":
+            "The name can only contain numbers, alphabets and the following: _ . -",
+        }),
+      colors: joi
+        .array()
+        .items(
+          joi
+            .string()
+            .length(7)
+            .regex(/^[#][0-9a-fA-F]+$/)
+            .messages({
+              "string.pattern.base": "The colors must be valid hexadecimal",
+              "string.length": "The colors must be 7 characters long",
+            })
+        )
+        .length(9)
+        .messages({
+          "array.length": "The colors array must have 9 colors",
+        }),
+    },
+  }),
   UserController.addCustomTheme
 );
 
-router.post(
-  "/customThemes/remove",
+router.delete(
+  "/customThemes",
   RateLimit.userCustomThemeRemove,
-  authenticateRequest,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      themeID: joi
+        .string()
+        .length(24)
+        .regex(/^[0-9a-fA-F]+$/)
+        .required()
+        .messages({
+          "string.length": "The themeID must be 24 characters long",
+          "string.pattern.base": "The themeID must be valid hexadecimal string",
+        }),
+    },
+  }),
   UserController.removeCustomTheme
 );
 
-router.post(
-  "/customThemes/edit",
+router.put(
+  "/customThemes",
   RateLimit.userCustomThemeEdit,
-  authenticateRequest,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      themeID: joi
+        .string()
+        .length(24)
+        .regex(/^[0-9a-fA-F]+$/)
+        .required()
+        .messages({
+          "string.length": "The themeID must be 24 characters long",
+          "string.pattern.base": "The themeID must be valid hexadecimal string",
+        }),
+      theme: {
+        name: joi
+          .string()
+          .max(16)
+          .regex(/^[0-9a-zA-Z_.-]+$/)
+          .required()
+          .messages({
+            "string.max": "The name must not exceed 16 characters",
+            "string.pattern.base":
+              "The name can only contain numbers, alphabets and the following: _ . -",
+          }),
+        colors: joi
+          .array()
+          .items(
+            joi
+              .string()
+              .length(7)
+              .regex(/^[#][0-9a-fA-F]+$/)
+              .messages({
+                "string.pattern.base": "The colors must be valid hexadecimal",
+                "string.length": "The colors must be 7 characters long",
+              })
+          )
+          .length(9)
+          .messages({
+            "array.length": "The colors array must have 9 colors",
+          }),
+      },
+    },
+  }),
   UserController.editCustomTheme
 );
 

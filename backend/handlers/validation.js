@@ -88,31 +88,9 @@ function validateObjectValues(val) {
   return errCount;
 }
 
-function isThemeValid(theme) {
-  if (theme === null || theme === undefined) return false;
-  if (theme.constructor != Object) return false;
-
-  if (theme.name === null || theme.name === undefined || validateObjectValues(theme.name) != 0) return false;
-  
-  if (theme.colors === null || theme.colors === undefined) return false;
-
-  // Make sure the theme contains all the colors
-  if (theme.colors.length != 9) return false;
-
-  // Make sure all colors contain # symbol and length is 7
-  console.log(theme)
-  for (let i = 0; i < 9; i++){
-    console.log(theme.colors[i])
-    if (theme.colors[i][0] != "#" || theme.colors[i].length != 7) return false;
-  }
-
-  return true;
-}
-
 module.exports = {
   isUsernameValid,
   isTagPresetNameValid,
   validateConfig,
   validateObjectValues,
-  isThemeValid
 };

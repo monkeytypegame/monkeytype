@@ -1,10 +1,6 @@
 const UsersDAO = require("../../dao/user");
 const BotDAO = require("../../dao/bot");
-const {
-  isUsernameValid,
-  isTagPresetNameValid,
-  isThemeValid,
-} = require("../../handlers/validation");
+const { isUsernameValid } = require("../../handlers/validation");
 const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
 const Logger = require("../../handlers/logger.js");
@@ -260,11 +256,9 @@ class UserController {
 
   static async getCustomThemes(req, res, next) {
     try {
-      const { uid } = req.decodedToken;
+      const { uid } = req.ctx.decodedToken;
       let customThemes = await UsersDAO.getThemes(uid);
-      console.log("Printing custom themes")
-      console.log(customThemes)
-      if (customThemes == undefined) customThemes = [];
+      if (customThemes === undefined) customThemes = [];
       return res.status(200).json(customThemes);
     } catch (e) {
       return next(e);
@@ -273,23 +267,13 @@ class UserController {
 
   static async addCustomTheme(req, res, next) {
     try {
-      const { uid } = req.decodedToken;
+      const { uid } = req.ctx.decodedToken;
       const customTheme = req.body;
 
-      if (!isThemeValid(customTheme))
-        return res.status(400).json({
-          message:
-            "Invalid Custom Theme. 1. Theme must contain a name. 2. All 10 colors for the theme must be present in the hexadecimal format"
-        })
-
-      if (!isTagPresetNameValid(customTheme.name))
-        return res.status(400).json({
-          message:
-            "Invalid Custom Theme. Theme's name cannot contain special characters or more than 16 characters. Can include: _ . -"
-        });
-
       let addedTheme = await UsersDAO.addTheme(uid, customTheme);
-      return res.status(200).json(addedTheme);
+      return res
+        .status(200)
+        .json({ message: "Custom theme sucessfully added", theme: addedTheme });
     } catch (e) {
       return next(e);
     }
@@ -297,10 +281,12 @@ class UserController {
 
   static async removeCustomTheme(req, res, next) {
     try {
-      const { uid } = req.decodedToken;
-      const { themeid } = req.body;
-      await UsersDAO.removeTheme(uid, themeid);
-      return res.sendStatus(200);
+      const { uid } = req.ctx.decodedToken;
+      const { themeID } = req.body;
+      await UsersDAO.removeTheme(uid, themeID);
+      return res
+        .sendStatus(200)
+        .json({ message: "Custom theme successfully removed" });
     } catch (e) {
       return next(e);
     }
@@ -308,23 +294,13 @@ class UserController {
 
   static async editCustomTheme(req, res, next) {
     try {
-      const { uid } = req.decodedToken;
-      const { themeid, theme } = req.body;
+      const { uid } = req.ctx.decodedToken;
+      const { themeID, theme } = req.body;
 
-      if (!isThemeValid(theme))
-        return res.status(400).json({
-          message:
-            "Invalid Custom Theme. 1. Theme must contain a name. 2. All 10 colors for the theme must be present in the hexadecimal format"
-        })
-
-      if (!isTagPresetNameValid(theme.name))
-        return res.status(400).json({
-          message:
-            "Invalid Custom Theme. Theme's name cannot contain special characters or more than 16 characters. Can include: _ . -"
-        });
-
-      await UsersDAO.editTheme(uid, themeid, theme);
-      return res.status(200).json({ message: "Custom Theme successfully updated" });
+      await UsersDAO.editTheme(uid, themeID, theme);
+      return res
+        .status(200)
+        .json({ message: "Custom theme successfully updated" });
     } catch (e) {
       return next(e);
     }
