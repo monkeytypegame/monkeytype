@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-//this file should be concatenated at the top of the legacy js files
+// this file should be concatenated at the top of the legacy js files
 
 // @ts-ignore
 import Chart from "chart.js";
@@ -36,32 +35,43 @@ import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import * as Account from "./pages/account";
 
-// @ts-ignore
-global.snapshot = DB.getSnapshot;
+// May be pushed to test-timer when it gets converted to TypeScript
+type TimerStats = {
+  dateNow: number;
+  now: number;
+  expected: number;
+  delay: number;
+}[];
 
-// @ts-ignore
-global.config = Config;
+type Global = typeof globalThis & {
+  snapshot(): MonkeyTypes.Snapshot;
+  config: MonkeyTypes.Config;
+  toggleFilterDebug(): void;
+  glarsesMode(): void;
+  stats(): void;
+  replay(): string;
+  enableTimerDebug(): void;
+  getTimerStats(): TimerStats;
+  toggleUnsmoothedRaw(): void;
+  enableSpacingDebug(): void;
+};
 
-// @ts-ignore
-global.toggleFilterDebug = Account.toggleFilterDebug;
+(global as Global).snapshot = DB.getSnapshot;
 
-// @ts-ignore
-global.glarsesMode = enable;
+(global as Global).config = Config;
 
-// @ts-ignore
-global.stats = TestStats.getStats;
+(global as Global).toggleFilterDebug = Account.toggleFilterDebug;
 
-// @ts-ignore
-global.replay = Replay.getReplayExport;
+(global as Global).glarsesMode = enable;
 
-// @ts-ignore
-global.enableTimerDebug = TestTimer.enableTimerDebug;
+(global as Global).stats = TestStats.getStats;
 
-// @ts-ignore
-global.getTimerStats = TestTimer.getTimerStats;
+(global as Global).replay = Replay.getReplayExport;
 
-// @ts-ignore
-global.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+(global as Global).enableTimerDebug = TestTimer.enableTimerDebug;
 
-// @ts-ignore
-global.enableSpacingDebug = TestInput.enableSpacingDebug;
+(global as Global).getTimerStats = TestTimer.getTimerStats;
+
+(global as Global).toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+
+(global as Global).enableSpacingDebug = TestInput.enableSpacingDebug;

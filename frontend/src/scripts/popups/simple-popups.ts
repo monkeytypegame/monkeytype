@@ -13,6 +13,11 @@ type Input = {
   hidden?: boolean;
 };
 
+type ErrorWithCode = Error & { code: string };
+// Incomplete Firebase user type
+// This is simply to satisfy the array method type constraints
+type UserWithProviderData = { providerData: { providerId: string }[] };
+
 export const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
   parameters: string[];
@@ -135,7 +140,6 @@ class SimplePopup {
     $.each($("#simplePopup input"), (_, el) => {
       vals.push($(el).val() as string);
     });
-    // @ts-ignore todo remove
     this.execFn(this, ...vals);
     this.hide();
   }
@@ -251,8 +255,8 @@ list["updateEmail"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
-      // @ts-ignore todo help
-      if (e.code == "auth/wrong-password") {
+      const typedError = e as ErrorWithCode;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -260,8 +264,7 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore once firebase is initialised with code
+    const user: UserWithProviderData = firebase.auth().currentUser;
     if (!user.providerData.find((p) => p.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -324,8 +327,8 @@ list["updateName"] = new SimplePopup(
       DB.getSnapshot().name = newName;
       $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      // @ts-ignore todo remove ignore
-      if (e.code === "auth/wrong-password") {
+      const typedError = e as ErrorWithCode;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -385,9 +388,9 @@ list["updatePassword"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
+      const typedError = e as ErrorWithCode;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -395,8 +398,7 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore
+    const user: UserWithProviderData = firebase.auth().currentUser;
     if (!user.providerData.find((p) => p.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -513,9 +515,9 @@ list["deleteAccount"] = new SimplePopup(
         location.reload();
       }, 3000);
     } catch (e) {
+      const typedError = e as ErrorWithCode;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
