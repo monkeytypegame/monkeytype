@@ -216,7 +216,7 @@ function isConfigValueValidAsync(
         if (!layouts.every((layout) => layout !== undefined)) {
           const invalidLayoutNames = layoutNames.map((layoutName, index) => [layoutName, layouts[index]]);
 
-          const invalidLayouts = layoutNames.filter(layoutName => layoutName === undefined);
+          const invalidLayouts = invalidLayoutNames.filter(([layoutName, layout]) => layout === undefined).map(([layoutName, layout]) => layoutName);
 
           invalid("custom layoutfluid", val, `The following inputted layouts do not exist: ${invalidLayouts.join(", ")}.`);
 
