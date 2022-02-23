@@ -1,3 +1,4 @@
+import type FirebaseTypes from "firebase";
 import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
@@ -135,7 +136,6 @@ class SimplePopup {
     $.each($("#simplePopup input"), (_, el) => {
       vals.push($(el).val() as string);
     });
-    // @ts-ignore todo remove
     this.execFn(this, ...vals);
     this.hide();
   }
@@ -251,8 +251,8 @@ list["updateEmail"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
-      // @ts-ignore todo help
-      if (e.code == "auth/wrong-password") {
+      const typedError = e as FirebaseTypes.FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -260,9 +260,8 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore once firebase is initialised with code
-    if (!user.providerData.find((p) => p.providerId === "password")) {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -324,8 +323,8 @@ list["updateName"] = new SimplePopup(
       DB.getSnapshot().name = newName;
       $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      // @ts-ignore todo remove ignore
-      if (e.code === "auth/wrong-password") {
+      const typedError = e as FirebaseTypes.FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -385,9 +384,9 @@ list["updatePassword"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
@@ -395,9 +394,8 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore
-    if (!user.providerData.find((p) => p.providerId === "password")) {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -513,9 +511,9 @@ list["deleteAccount"] = new SimplePopup(
         location.reload();
       }, 3000);
     } catch (e) {
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
