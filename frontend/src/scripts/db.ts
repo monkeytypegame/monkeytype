@@ -22,6 +22,7 @@ export function setSnapshot(newSnapshot: MonkeyTypes.Snapshot): void {
 export async function initSnapshot(): Promise<
   MonkeyTypes.Snapshot | number | boolean
 > {
+  // Rizwan TODO: Update this file to set customThemes to snapshot
   //send api request with token that returns tags, presets, and data needed for snap
   const defaultSnap: MonkeyTypes.Snapshot = {
     results: undefined,
@@ -33,6 +34,7 @@ export async function initSnapshot(): Promise<
       custom: { custom: [] },
     },
     name: undefined,
+    customThemes: [],
     presets: [],
     tags: [],
     favouriteThemes: [],
@@ -102,6 +104,7 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(48);
     // }
     // LoadingPage.updateText("Downloading tags...");
+    snap.customThemes = userData.customThemes;
     snap.tags = tagsData;
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {

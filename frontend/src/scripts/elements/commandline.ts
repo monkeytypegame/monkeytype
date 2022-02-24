@@ -3,6 +3,8 @@ import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "../test/test-ui";
+import * as DB from "../db"; // Rizwan TODO: Use this import
+import * as Notifications from "../elements/notifications";
 
 let commandLineMouseMode = false;
 
@@ -671,7 +673,13 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    UpdateConfig.setCustomTheme(!Config.customTheme);
+    const customThemes = DB.getSnapshot().customThemes;
+    if (customThemes === undefined || customThemes.length < 1) {
+      Notifications.add("No custom themes!", 0);
+    }
+
+    // Turn on the first custom theme
+    UpdateConfig.setCustomThemeIndex(0);
   } else {
     CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
     show();

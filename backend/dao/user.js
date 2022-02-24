@@ -360,28 +360,28 @@ class UsersDAO {
   }
 
   static async addTheme(uid, theme) {
-    const user = await Mongo().collection("users").findOne({ uid });
+    const user = await db.collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "Add custom theme");
 
-    const count = user.customThemes.length;
+    if (user.customThemes !== undefined) {
+      const count = user.customThemes.length;
 
-    if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
+      if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
+    }
 
     let _id = ObjectID();
-    await Mongo()
-      .collection("users")
-      .updateOne(
-        { uid },
-        {
-          $push: {
-            customThemes: {
-              _id,
-              name: theme.name,
-              colors: theme.colors,
-            },
+    await db.collection("users").updateOne(
+      { uid },
+      {
+        $push: {
+          customThemes: {
+            _id,
+            name: theme.name,
+            colors: theme.colors,
           },
-        }
-      );
+        },
+      }
+    );
 
     return {
       _id,
@@ -390,7 +390,7 @@ class UsersDAO {
   }
 
   static async removeTheme(uid, _id) {
-    const user = await Mongo().collection("users").findOne({ uid });
+    const user = await db.collection("users").findOne({ uid });
     if (!user)
       throw new MonkeyError(404, "User not found", "Remove custom theme");
     if (
@@ -399,19 +399,17 @@ class UsersDAO {
     )
       throw new MonkeyError(404, "Custom theme not found");
 
-    return await Mongo()
-      .collection("users")
-      .updateOne(
-        {
-          uid: uid,
-          "customThemes._id": ObjectID(_id),
-        },
-        { $pull: { customThemes: { _id: ObjectID(_id) } } }
-      );
+    return await db.collection("users").updateOne(
+      {
+        uid: uid,
+        "customThemes._id": ObjectID(_id),
+      },
+      { $pull: { customThemes: { _id: ObjectID(_id) } } }
+    );
   }
 
   static async editTheme(uid, _id, theme) {
-    const user = await Mongo().collection("users").findOne({ uid });
+    const user = await db.collection("users").findOne({ uid });
     if (!user)
       throw new MonkeyError(404, "User not found", "Edit custom theme");
     if (
@@ -420,24 +418,22 @@ class UsersDAO {
     )
       throw new MonkeyError(404, "Custom Theme not found");
 
-    return await Mongo()
-      .collection("users")
-      .updateOne(
-        {
-          uid: uid,
-          "customThemes._id": ObjectID(_id),
+    return await db.collection("users").updateOne(
+      {
+        uid: uid,
+        "customThemes._id": ObjectID(_id),
+      },
+      {
+        $set: {
+          "customThemes.$.name": theme.name,
+          "customThemes.$.colors": theme.colors,
         },
-        {
-          $set: {
-            "customThemes.$.name": theme.name,
-            "customThemes.$.colors": theme.colors,
-          },
-        }
-      );
+      }
+    );
   }
 
   static async getThemes(uid) {
-    const user = await Mongo().collection("users").findOne({ uid });
+    const user = await db.collection("users").findOne({ uid });
     if (!user)
       throw new MonkeyError(404, "User not found", "Get custom themes");
     return user.customThemes;

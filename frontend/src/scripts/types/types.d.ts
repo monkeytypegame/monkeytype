@@ -176,6 +176,12 @@ declare namespace MonkeyTypes {
     active?: boolean;
   }
 
+  interface CustomTheme {
+    _id: string;
+    name: string;
+    colors: string[];
+  }
+
   interface Stats {
     time: number;
     started: number;
@@ -232,7 +238,7 @@ declare namespace MonkeyTypes {
     themeLight: string;
     themeDark: string;
     autoSwitchTheme: boolean;
-    customTheme: boolean;
+    customThemeIndex: number;
     customThemeColors: string[];
     favThemes: string[];
     showKeyTips: boolean;
@@ -370,6 +376,7 @@ declare namespace MonkeyTypes {
     verified?: boolean;
     personalBests?: PersonalBests;
     name?: string;
+    customThemes?: CustomTheme[];
     presets?: Preset[];
     tags?: Tag[];
     favouriteThemes?: string[];

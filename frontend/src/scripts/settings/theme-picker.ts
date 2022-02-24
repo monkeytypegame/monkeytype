@@ -4,8 +4,10 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
+import * as DB from "../db";
 
 export function updateActiveButton(): void {
+  // Rizwan TODO: Add a way for activating the button for user's custom themes
   let activeThemeName = Config.theme;
   if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
     activeThemeName = ThemeController.randomTheme;
@@ -172,7 +174,7 @@ function toggleFavourite(themeName: string): void {
 
 export function updateActiveTab(): void {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  if (!Config.customTheme) {
+  if (!Config.customThemeIndex) {
     $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
       "active"
     );
@@ -191,9 +193,12 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $target.addClass("active");
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
-    UpdateConfig.setCustomTheme(false);
+    UpdateConfig.setCustomThemeIndex(-1);
   } else {
-    UpdateConfig.setCustomTheme(true);
+    const customThemes = DB.getSnapshot().customThemes;
+    if (customThemes === undefined || customThemes.length < 1) {
+      // Rizwan TODO: Create a new custom theme which inherits colors from the serika_dark theme and set it
+    } else UpdateConfig.setCustomThemeIndex(0);
   }
 });
 
@@ -255,14 +260,15 @@ $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
   });
 
 $(".pageSettings .saveCustomThemeButton").on("click", () => {
-  const save: Array<string> = [];
+  const save: string[] = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
     (_index, element) => {
       save.push($(element).attr("value") as string);
     }
   );
-  UpdateConfig.setCustomThemeColors(save);
+  // Rizwan TODO: Update the custom theme and send a fetch request
+  // UpdateConfig.setCustomThemeColors(save);
   ThemeController.set("custom");
   Notifications.add("Custom theme colors saved", 1);
 });

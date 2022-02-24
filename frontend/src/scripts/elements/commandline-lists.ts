@@ -1217,26 +1217,43 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
 
 const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
   title: "Custom theme...",
-  configKey: "customTheme",
-  list: [
-    {
-      id: "setCustomThemeOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setCustomTheme(false);
-      },
-    },
-    {
-      id: "setCustomThemeOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setCustomTheme(true);
-      },
-    },
-  ],
+  configKey: "customThemeIndex",
+  list: [],
 };
+
+export function updateCustomThemeCommands(): void {
+  const customThemes = DB.getSnapshot().customThemes;
+  console.log(customThemes);
+  commandsCustomTheme.list = [];
+  console.log("we are here");
+
+  commandsCustomTheme.list.push({
+    id: "setCustomThemeOff",
+    display: "off",
+    configValue: -1,
+    exec: (): void => {
+      UpdateConfig.setCustomThemeIndex(-1);
+    },
+  });
+  if (customThemes !== undefined && customThemes.length > 0) {
+    DB.getSnapshot().customThemes?.forEach((theme, index) => {
+      console.log("Theme: ");
+      console.log(theme);
+      commandsCustomTheme.list.push({
+        id: "setCustomThemeOn" + theme._id,
+        display: theme.name,
+        configValue: index,
+        hover: (): void => {
+          // previewTheme(theme.name);
+          ThemeController.preview(index);
+        },
+        exec: (): void => {
+          UpdateConfig.setCustomThemeIndex(index);
+        },
+      });
+    });
+  }
+}
 
 const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
   title: "Change caret style...",
@@ -2794,6 +2811,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: commandsCustomTheme,
+      beforeSubgroup: (): void => {
+        console.log("asdfaasd");
+        updateCustomThemeCommands();
+      },
     },
     {
       id: "changeRandomTheme",

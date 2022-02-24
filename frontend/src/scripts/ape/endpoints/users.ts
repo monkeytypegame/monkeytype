@@ -90,6 +90,33 @@ export default function getUsersEndpoints(
     return await apeClient.delete(`${BASE_PATH}/tags/${tagId}/personalBest`);
   }
 
+  // Rizwan TODO: Uncomment these as we start using them
+  // async function getCustomThemes(): Ape.EndpointData {
+  //   return await apeClient.get(`${BASE_PATH}/customThemes`);
+  // }
+
+  // async function editCustomThemes(themeID: string, newTheme: MonkeyTypes.CustomTheme): Ape.EndpointData {
+  //   const payload = {
+  //     themeID: themeID,
+  //     theme: newTheme
+  //   };
+  //   return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
+  // }
+
+  // async function deleteCustomThemes(themeID: string): Ape.EndpointData {
+  //   const payload = {
+  //     themeID: themeID,
+  //   };
+  //   return await apeClient.delete(`${BASE_PATH}/customThemes`, { payload });
+  // }
+
+  async function addCustomThemes(
+    newTheme: MonkeyTypes.CustomTheme
+  ): Ape.EndpointData {
+    const payload = newTheme;
+    return await apeClient.post(`${BASE_PATH}/customThemes`, { payload });
+  }
+
   async function linkDiscord(data: {
     tokenType: string;
     accessToken: string;
@@ -120,5 +147,6 @@ export default function getUsersEndpoints(
     deleteTagPersonalBest,
     linkDiscord,
     unlinkDiscord,
+    addCustomThemes,
   };
 }

@@ -5,6 +5,8 @@ import Config from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
@@ -83,48 +85,48 @@ const loadStyle = async function (name: string): Promise<void> {
   });
 };
 
-export function apply(themeName: string, isPreview = false): void {
+export async function apply(
+  themeNameOrIndex: string | number,
+  isPreview = false
+): Promise<void> {
   clearCustomTheme();
 
-  let name = "serika_dark";
-  if (themeName !== "custom") {
-    name = themeName;
-    Misc.swapElements(
-      $('.pageSettings [tabContent="custom"]'),
-      $('.pageSettings [tabContent="preset"]'),
-      250
-    );
-  } else {
-    //is custom
-    Misc.swapElements(
-      $('.pageSettings [tabContent="preset"]'),
-      $('.pageSettings [tabContent="custom"]'),
-      250
-    );
-  }
+  if (themeNameOrIndex === -1) themeNameOrIndex = Config.theme;
 
-  ThemeColors.reset();
-
-  $(".keymap-key").attr("style", "");
-  // $("#currentTheme").attr("href", `themes/${name}.css`);
-  loadStyle(name).then(() => {
-    ThemeColors.update();
-    if (themeName === "custom") {
-      colorVars.forEach((e, index) => {
-        document.documentElement.style.setProperty(
-          e,
-          Config.customThemeColors[index]
-        );
-      });
+  if (typeof themeNameOrIndex === "number") {
+    // The user has not yet loaded
+    if (DB.getSnapshot() === undefined) {
+      return;
     }
+    // We have been given the index of the custom theme
+    const customThemes = DB.getSnapshot().customThemes;
+    console.log(customThemes);
+    const customTheme = customThemes ? customThemes[themeNameOrIndex] : null;
+    if (customTheme === undefined || customTheme === null) {
+      Notifications.add(`No custom theme at index: ${themeNameOrIndex}`, 0);
+      return;
+    }
+    const themeName = customTheme.name;
+    Misc.swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
+
+    ThemeColors.reset();
+
+    colorVars.forEach((e, index) => {
+      document.documentElement.style.setProperty(e, customTheme?.colors[index]);
+    });
 
     try {
-      firebase.analytics().logEvent("changedTheme", {
+      firebase.analytics().logEvent("changedCustomTheme", {
         theme: themeName,
       });
     } catch (e) {
       console.log("Analytics unavailable");
     }
+
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
         $(".current-theme .text").text(themeName.replace(/_/g, " "));
@@ -134,24 +136,53 @@ export function apply(themeName: string, isPreview = false): void {
         $("#metaThemeColor").attr("content", colors.bg);
       });
     }
-  });
+  } else {
+    const themeName = themeNameOrIndex;
+    Misc.swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
+    ThemeColors.reset();
+
+    loadStyle(themeName).then(() => {
+      ThemeColors.update();
+      try {
+        firebase.analytics().logEvent("changedTheme", {
+          theme: themeNameOrIndex,
+        });
+      } catch (e) {
+        console.log("Analytics unavailable");
+      }
+      if (!isPreview) {
+        ThemeColors.getAll().then((colors) => {
+          $(".current-theme .text").text(themeName.replace(/_/g, " "));
+          $(".keymap-key").attr("style", "");
+          ChartController.updateAllChartColors();
+          updateFavicon(128, 32);
+          $("#metaThemeColor").attr("content", colors.bg);
+        });
+      }
+    });
+  }
 }
 
-export function preview(themeName: string, randomTheme = false): void {
+export function preview(themeName: string | number, randomTheme = false): void {
   isPreviewingTheme = true;
   apply(themeName, true && !randomTheme);
 }
 
-export function set(themeName: string): void {
-  apply(themeName);
+export function set(themeNameOrIndex: string | number): void {
+  apply(themeNameOrIndex);
 }
 
 export function clearPreview(): void {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
-    if (Config.customTheme) {
-      apply("custom");
+    if (Config.customThemeIndex !== -1) {
+      // Rizwan TODO: Update the apply theme to support custom themes
+      apply(Config.customThemeIndex);
     } else {
       apply(Config.theme);
     }
@@ -227,7 +258,7 @@ export function applyCustomBackground(): void {
 window
   .matchMedia("(prefers-color-scheme: dark)")
   ?.addEventListener("change", (event) => {
-    if (!Config.autoSwitchTheme || Config.customTheme) return;
+    if (!Config.autoSwitchTheme || Config.customThemeIndex !== -1) return;
     if (event.matches) {
       set(Config.themeDark);
     } else {
@@ -236,8 +267,12 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  if (eventKey === "customTheme")
-    eventValue ? set("custom") : set(Config.theme);
+  if (eventKey === "customThemeIndex") {
+    // Rizwan TODO: Update this
+    console.log("customThemeIndex changed");
+    console.log(eventValue);
+    set(eventValue);
+  }
   if (eventKey === "theme") {
     clearPreview();
     set(eventValue);
@@ -245,7 +280,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "setThemes") {
     clearPreview();
     if (eventValue) {
-      set("custom");
+      // Rizwan TODO: Take a look at this
+      console.log("Printing event value ");
+      setTimeout(() => {
+        console.log(eventValue);
+        set(eventValue);
+      });
     } else {
       if (Config.autoSwitchTheme) {
         if (

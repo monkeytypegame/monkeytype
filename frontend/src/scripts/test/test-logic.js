@@ -397,7 +397,7 @@ export function restart(
     if (
       Config.randomTheme !== "off" &&
       !PageTransition.get() &&
-      !Config.customTheme
+      Config.customThemeIndex === -1
     ) {
       ThemeController.randomizeTheme();
     }

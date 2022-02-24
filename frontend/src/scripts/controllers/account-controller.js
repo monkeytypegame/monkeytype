@@ -22,6 +22,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
+import * as ThemeController from "../controllers/theme-controller";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -52,6 +53,26 @@ export async function getDataAndInit() {
     LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
+
+    const customThemes = DB.getSnapshot().customThemes ?? [];
+    if (Config.customThemeColors.length > 0 && customThemes.length < 1) {
+      const newCustomTheme = {
+        name: "custom",
+        colors: [...Config.customThemeColors],
+      };
+      const response = await Ape.users.addCustomThemes(newCustomTheme);
+
+      if (response.status === 200) {
+        Notifications.add("Custom theme: 'custom' successfully created", 1);
+        DB.getSnapshot().customThemes.push({
+          ...newCustomTheme,
+          _id: response.data._id,
+        });
+      } else {
+        Notifications.add("Could not create custom theme: 'custom'", -1);
+      }
+    }
+    ThemeController.set(Config.customThemeIndex);
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {
@@ -283,7 +304,9 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {
+      // Rizwan TODO: Create a new custom theme if space is avaiable else modify the last theme
       theme = theme.split(",");
+      console.log(theme); // Rizwan TODO: Remove this as it is for debugging only
       UpdateConfig.setCustomThemeColors(theme);
       Notifications.add("Custom theme applied.", 1);
     } catch (e) {
@@ -293,7 +316,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       );
       UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
     }
-    UpdateConfig.setCustomTheme(true);
+    UpdateConfig.setCustomThemeIndex(-1); // Rizwan TODO: Set the index to the index of the theme above
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
