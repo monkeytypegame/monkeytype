@@ -176,7 +176,7 @@ function toggleFavourite(themeName: string): void {
 
 export function updateActiveTab(): void {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  if (Config.customThemeIndex !== -1) {
+  if (Config.customThemeIndex === -1) {
     $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
       "active"
     );
