@@ -214,11 +214,22 @@ function isConfigValueValidAsync(
 
         // check if all layouts exist
         if (!layouts.every((layout) => layout !== undefined)) {
-          const invalidLayoutNames = layoutNames.map((layoutName, index) => [layoutName, layouts[index]]);
+          const invalidLayoutNames = layoutNames.map((layoutName, index) => [
+            layoutName,
+            layouts[index],
+          ]);
 
-          const invalidLayouts = invalidLayoutNames.filter(([_, layout]) => layout === undefined).map(([layoutName]) => layoutName);
+          const invalidLayouts = invalidLayoutNames
+            .filter(([_, layout]) => layout === undefined)
+            .map(([layoutName]) => layoutName);
 
-          invalid("custom layoutfluid", val, `The following inputted layouts do not exist: ${invalidLayouts.join(", ")}.`);
+          invalid(
+            "custom layoutfluid",
+            val,
+            `The following inputted layouts do not exist: ${invalidLayouts.join(
+              ", "
+            )}.`
+          );
 
           return;
         }
@@ -246,10 +257,9 @@ function invalid(key: string, val: unknown, customMessage?: string): boolean {
     );
     console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
   }
-  
+
   return false;
 }
-  
 
 let config = {
   ...defaultConfig,
@@ -319,7 +329,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
 
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
-    return;
+    return false;
   }
   const previous = config.mode;
   config.mode = mode;
@@ -419,7 +429,7 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
   return true;
 }
 
-export function setBlindMode(blind: boolean, nosave?: boolean): void {
+export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid(blind, ["boolean"]))
     return invalid("blind mode", blind);
 
@@ -506,7 +516,10 @@ export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setShowOutOfFocusWarning(val: boolean, nosave?: boolean): boolean {
+export function setShowOutOfFocusWarning(
+  val: boolean,
+  nosave?: boolean
+): boolean {
   if (!isConfigValueValid(val, ["boolean"]))
     return invalid("show out of focus warning", val);
 
@@ -556,7 +569,10 @@ export function setPaceCaret(
   return true;
 }
 
-export function setPaceCaretCustomSpeed(val: number, nosave?: boolean): boolean {
+export function setPaceCaretCustomSpeed(
+  val: number,
+  nosave?: boolean
+): boolean {
   if (!isConfigValueValid(val, ["number"]))
     return invalid("pace caret custom speed", val);
 
@@ -738,9 +754,9 @@ export function setEnableAds(
       location.reload();
     }, 3000);
     Notifications.add("Ad settings changed. Refreshing...", 0);
-
-    return true;
   }
+
+  return true;
 }
 
 export function setRepeatQuotes(
@@ -913,7 +929,10 @@ export function setPaceCaretStyle(
   return true;
 }
 
-export function setShowTimerProgress(timer: boolean, nosave?: boolean): boolean {
+export function setShowTimerProgress(
+  timer: boolean,
+  nosave?: boolean
+): boolean {
   if (!isConfigValueValid(timer, ["boolean"]))
     return invalid("show timer progress", timer);
 
@@ -985,7 +1004,7 @@ export function setHighlightMode(
       config.funbox === "arrows")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
-    return;
+    return false;
   }
 
   config.highlightMode = mode;
@@ -1350,7 +1369,10 @@ export function setIndicateTypos(
   return true;
 }
 
-export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): boolean {
+export function setAutoSwitchTheme(
+  boolean: boolean,
+  nosave?: boolean
+): boolean {
   if (!isConfigValueValid(boolean, ["boolean"]))
     return invalid("auto switch theme", boolean);
 
@@ -1465,7 +1487,10 @@ export function setLazyMode(val: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setCustomThemeColors(colors: string[], nosave?: boolean): boolean {
+export function setCustomThemeColors(
+  colors: string[],
+  nosave?: boolean
+): boolean {
   if (!isConfigValueValid(colors, ["stringArray"]))
     return invalid("custom theme colors", colors);
 
@@ -1700,11 +1725,10 @@ export async function setCustomLayoutfluid(
   nosave?: boolean
 ): Promise<boolean> {
   const isInvalid = await isConfigValueValidAsync(value, ["layoutfluid"]);
-  
+
   if (isInvalid === undefined) return false;
 
-  if (!isInvalid)
-    return invalid("custom layoutfluid", value);
+  if (!isInvalid) return invalid("custom layoutfluid", value);
 
   const customLayoutfluid = value.replace(
     / /g,

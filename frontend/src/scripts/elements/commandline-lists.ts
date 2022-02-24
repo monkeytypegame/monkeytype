@@ -292,7 +292,7 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 export function updatePresetCommands(): void {
   const snapshot = DB.getSnapshot();
 
-  if (snapshot.presets !== undefined && snapshot.presets.length > 0) {
+  if (snapshot?.presets !== undefined && snapshot.presets.length > 0) {
     commandsPresets.list = [];
 
     snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
