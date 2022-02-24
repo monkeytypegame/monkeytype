@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@types/cors": "2.8.12",
+    "@types/cron": "1.7.3",
+    "@types/lodash": "4.14.178",
     "@types/mongodb": "4.0.7",
     "@types/node": "17.0.18",
     "@types/uuid": "8.3.4"
