@@ -1,5 +1,8 @@
+import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
+import UserDAO from "../../dao/user";
 import ReportDAO from "../../dao/report";
+import QuoteRatingsDAO from "../../dao/quote-ratings";
 import UsersDAO from "../../dao/user";
 import MonkeyError from "../../handlers/error";
 import { verify } from "../../handlers/captcha";
@@ -7,6 +10,54 @@ import Logger from "../../handlers/logger";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class QuotesController {
+  static async getRating(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const { quoteId, language } = req.query;
+
+    const data = await QuoteRatingsDAO.get(
+      parseInt(quoteId as string),
+      language
+    );
+
+    return new MonkeyResponse("Rating retrieved", data);
+  }
+
+  static async submitRating(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { quoteId, rating, language } = req.body;
+
+    const user = await UserDAO.getUser(uid);
+    if (!user) {
+      throw new MonkeyError(401, "User not found.");
+    }
+
+    const userQuoteRatings = user.quoteRatings ?? {};
+
+    const normalizedQuoteId = parseInt(quoteId as string);
+    const normalizedRating = Math.round(parseInt(rating as string));
+
+    const currentRating = userQuoteRatings[language]?.[normalizedQuoteId] ?? 0;
+    _.setWith(
+      userQuoteRatings,
+      `[${language}][${normalizedQuoteId}]`,
+      normalizedRating,
+      Object
+    );
+
+    const newRating =
+      userQuoteRatings[language][normalizedQuoteId] - currentRating;
+
+    const shouldUpdateRating = currentRating !== 0;
+    await QuoteRatingsDAO.submit(
+      quoteId,
+      language,
+      newRating,
+      shouldUpdateRating
+    );
+    await UserDAO.updateQuoteRatings(uid, userQuoteRatings);
+
+    return new MonkeyResponse("Rating updated");
+  }
+
   static async reportQuote(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const {
