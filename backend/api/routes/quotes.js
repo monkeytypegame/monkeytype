@@ -1,65 +1,114 @@
-const joi = require("joi");
-const { authenticateRequest } = require("../../middlewares/auth");
-const { Router } = require("express");
-const NewQuotesController = require("../controllers/new-quotes");
-const QuoteRatingsController = require("../controllers/quote-ratings");
-const QuotesController = require("../controllers/quotes");
-const RateLimit = require("../../middlewares/rate-limit");
-const {
-  asyncHandlerWrapper,
-  requestValidation,
-} = require("../../middlewares/apiUtils");
-const SUPPORTED_QUOTE_LANGUAGES = require("../../constants/quoteLanguages");
+import joi from "joi";
+import { authenticateRequest } from "../../middlewares/auth";
+import { Router } from "express";
+import NewQuotesController from "../controllers/new-quotes";
+import QuoteRatingsController from "../controllers/quote-ratings";
+import QuotesController from "../controllers/quotes";
+import * as RateLimit from "../../middlewares/rate-limit";
+import {
+  asyncHandler,
+  validateConfiguration,
+  validateRequest,
+} from "../../middlewares/api-utils";
+import SUPPORTED_QUOTE_LANGUAGES from "../../constants/quote-languages";
 
 const quotesRouter = Router();
 
 quotesRouter.get(
   "/",
   RateLimit.newQuotesGet,
-  authenticateRequest,
-  NewQuotesController.getQuotes
+  authenticateRequest(),
+  asyncHandler(NewQuotesController.getQuotes)
 );
 
 quotesRouter.post(
   "/",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.quoteSubmit.enabled;
+    },
+    invalidMessage:
+      "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
+  }),
   RateLimit.newQuotesAdd,
-  authenticateRequest,
-  NewQuotesController.addQuote
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      text: joi.string().min(60).required(),
+      source: joi.string().required(),
+      language: joi.string().required(),
+      captcha: joi.string().required(),
+    },
+    validationErrorMessage: "Please fill all the fields",
+  }),
+  asyncHandler(NewQuotesController.addQuote)
 );
 
 quotesRouter.post(
   "/approve",
   RateLimit.newQuotesAction,
-  authenticateRequest,
-  NewQuotesController.approve
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      quoteId: joi.string().required(),
+      editText: joi.string().allow(null),
+      editSource: joi.string().allow(null),
+    },
+    validationErrorMessage: "Please fill all the fields",
+  }),
+  asyncHandler(NewQuotesController.approve)
 );
 
 quotesRouter.post(
   "/reject",
   RateLimit.newQuotesAction,
-  authenticateRequest,
-  NewQuotesController.refuse
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      quoteId: joi.string().required(),
+    },
+  }),
+  asyncHandler(NewQuotesController.refuse)
 );
 
 quotesRouter.get(
   "/rating",
   RateLimit.quoteRatingsGet,
-  authenticateRequest,
-  QuoteRatingsController.getRating
+  authenticateRequest(),
+  validateRequest({
+    query: {
+      quoteId: joi.string().regex(/^\d+$/).required(),
+      language: joi.string().required(),
+    },
+  }),
+  asyncHandler(QuoteRatingsController.getRating)
 );
 
 quotesRouter.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
-  authenticateRequest,
-  QuoteRatingsController.submitRating
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      quoteId: joi.number().required(),
+      rating: joi.number().min(1).max(5).required(),
+      language: joi.string().required(),
+    },
+  }),
+  asyncHandler(QuoteRatingsController.submitRating)
 );
 
 quotesRouter.post(
   "/report",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.quoteReport.enabled;
+    },
+    invalidMessage: "Quote reporting is unavailable.",
+  }),
   RateLimit.quoteReportSubmit,
-  authenticateRequest,
-  requestValidation({
+  authenticateRequest(),
+  validateRequest({
     body: {
       quoteId: joi.string().required(),
       quoteLanguage: joi
@@ -71,14 +120,15 @@ quotesRouter.post(
         .valid(
           "Grammatical error",
           "Inappropriate content",
-          "Low quality content"
+          "Low quality content",
+          "Incorrect source"
         )
         .required(),
       comment: joi.string().allow("").max(250).required(),
       captcha: joi.string().required(),
     },
   }),
-  asyncHandlerWrapper(QuotesController.reportQuote)
+  asyncHandler(QuotesController.reportQuote)
 );
 
-module.exports = quotesRouter;
+export default quotesRouter;

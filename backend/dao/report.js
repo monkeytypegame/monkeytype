@@ -1,12 +1,12 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
+import MonkeyError from "../handlers/error";
+import db from "../init/db";
 
 const MAX_REPORTS = 1000;
 const CONTENT_REPORT_LIMIT = 5;
 
 class ReportDAO {
   static async createReport(report) {
-    const reports = await mongoDB().collection("reports").find().toArray();
+    const reports = await db.collection("reports").find().toArray();
 
     if (reports.length >= MAX_REPORTS) {
       throw new MonkeyError(
@@ -26,8 +26,8 @@ class ReportDAO {
       );
     }
 
-    await mongoDB().collection("reports").insertOne(report);
+    await db.collection("reports").insertOne(report);
   }
 }
 
-module.exports = ReportDAO;
+export default ReportDAO;

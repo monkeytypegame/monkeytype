@@ -1,74 +1,50 @@
-const NewQuotesDAO = require("../../dao/new-quotes");
-const MonkeyError = require("../../handlers/error");
-const UserDAO = require("../../dao/user");
-const Logger = require("../../handlers/logger.js");
-// const Captcha = require("../../handlers/captcha");
+import NewQuotesDao from "../../dao/new-quotes";
+import MonkeyError from "../../handlers/error";
+import UsersDAO from "../../dao/user";
+import Logger from "../../handlers/logger.js";
+import { verify } from "../../handlers/captcha";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class NewQuotesController {
-  static async getQuotes(req, res, next) {
-    try {
-      const { uid } = req.decodedToken;
-      const userInfo = await UserDAO.getUser(uid);
-      if (!userInfo.quoteMod) {
-        throw new MonkeyError(403, "You don't have permission to do this");
-      }
-      let data = await NewQuotesDAO.get();
-      return res.status(200).json(data);
-    } catch (e) {
-      return next(e);
+  static async getQuotes(req, _res) {
+    const { uid } = req.ctx.decodedToken;
+    const userInfo = await UsersDAO.getUser(uid);
+    if (!userInfo.quoteMod) {
+      throw new MonkeyError(403, "You don't have permission to do this");
     }
+    const data = await NewQuotesDao.get();
+    return new MonkeyResponse("Quote submissions retrieved", data);
   }
 
-  static async addQuote(req, res, next) {
-    try {
-      throw new MonkeyError(
-        500,
-        "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up."
-      );
-      // let { uid } = req.decodedToken;
-      // let { text, source, language, captcha } = req.body;
-      // if (!text || !source || !language) {
-      //   throw new MonkeyError(400, "Please fill all the fields");
-      // }
-      // if (!(await Captcha.verify(captcha))) {
-      //   throw new MonkeyError(400, "Captcha check failed");
-      // }
-      // let data = await NewQuotesDAO.add(text, source, language, uid);
-      // return res.status(200).json(data);
-    } catch (e) {
-      return next(e);
+  static async addQuote(req, _res) {
+    const { uid } = req.ctx.decodedToken;
+    const { text, source, language, captcha } = req.body;
+    if (!(await verify(captcha))) {
+      throw new MonkeyError(400, "Captcha check failed");
     }
+    await NewQuotesDao.add(text, source, language, uid);
+    return new MonkeyResponse("Quote submission added");
   }
 
-  static async approve(req, res, next) {
-    try {
-      let { uid } = req.decodedToken;
-      let { quoteId, editText, editSource } = req.body;
-      const userInfo = await UserDAO.getUser(uid);
-      if (!userInfo.quoteMod) {
-        throw new MonkeyError(403, "You don't have permission to do this");
-      }
-      if (editText === "" || editSource === "") {
-        throw new MonkeyError(400, "Please fill all the fields");
-      }
-      let data = await NewQuotesDAO.approve(quoteId, editText, editSource);
-      Logger.log("system_quote_approved", data, uid);
-      return res.status(200).json(data);
-    } catch (e) {
-      return next(e);
+  static async approve(req, _res) {
+    const { uid } = req.ctx.decodedToken;
+    const { quoteId, editText, editSource } = req.body;
+    const userInfo = await UsersDAO.getUser(uid);
+    if (!userInfo.quoteMod) {
+      throw new MonkeyError(403, "You don't have permission to do this");
     }
+    const data = await NewQuotesDao.approve(quoteId, editText, editSource);
+    Logger.log("system_quote_approved", data, uid);
+
+    return new MonkeyResponse(data.message, data.quote);
   }
 
-  static async refuse(req, res, next) {
-    try {
-      let { uid } = req.decodedToken;
-      let { quoteId } = req.body;
-      await NewQuotesDAO.refuse(quoteId, uid);
-      return res.sendStatus(200);
-    } catch (e) {
-      return next(e);
-    }
+  static async refuse(req, _res) {
+    const { quoteId } = req.body;
+
+    await NewQuotesDao.refuse(quoteId);
+    return new MonkeyResponse("Quote refused");
   }
 }
 
-module.exports = NewQuotesController;
+export default NewQuotesController;

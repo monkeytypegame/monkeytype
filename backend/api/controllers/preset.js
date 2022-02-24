@@ -1,59 +1,40 @@
-const PresetDAO = require("../../dao/preset");
-const {
-  isTagPresetNameValid,
-  validateConfig,
-} = require("../../handlers/validation");
-const MonkeyError = require("../../handlers/error");
+import PresetDAO from "../../dao/preset";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class PresetController {
-  static async getPresets(req, res, next) {
-    try {
-      const { uid } = req.decodedToken;
-      let presets = await PresetDAO.getPresets(uid);
-      return res.status(200).json(presets);
-    } catch (e) {
-      return next(e);
-    }
+  static async getPresets(req, _res) {
+    const { uid } = req.ctx.decodedToken;
+
+    const data = await PresetDAO.getPresets(uid);
+    return new MonkeyResponse("Preset retrieved", data);
   }
 
-  static async addPreset(req, res, next) {
-    try {
-      const { name, config } = req.body;
-      const { uid } = req.decodedToken;
-      if (!isTagPresetNameValid(name))
-        throw new MonkeyError(400, "Invalid preset name.");
-      validateConfig(config);
-      let preset = await PresetDAO.addPreset(uid, name, config);
-      return res.status(200).json(preset);
-    } catch (e) {
-      return next(e);
-    }
+  static async addPreset(req, _res) {
+    const { name, config } = req.body;
+    const { uid } = req.ctx.decodedToken;
+
+    const data = await PresetDAO.addPreset(uid, name, config);
+
+    return new MonkeyResponse("Preset created", data);
   }
 
-  static async editPreset(req, res, next) {
-    try {
-      const { _id, name, config } = req.body;
-      const { uid } = req.decodedToken;
-      if (!isTagPresetNameValid(name))
-        throw new MonkeyError(400, "Invalid preset name.");
-      if (config) validateConfig(config);
-      await PresetDAO.editPreset(uid, _id, name, config);
-      return res.sendStatus(200);
-    } catch (e) {
-      return next(e);
-    }
+  static async editPreset(req, _res) {
+    const { _id, name, config } = req.body;
+    const { uid } = req.ctx.decodedToken;
+
+    await PresetDAO.editPreset(uid, _id, name, config);
+
+    return new MonkeyResponse("Preset updated");
   }
 
-  static async removePreset(req, res, next) {
-    try {
-      const { _id } = req.body;
-      const { uid } = req.decodedToken;
-      await PresetDAO.removePreset(uid, _id);
-      return res.sendStatus(200);
-    } catch (e) {
-      return next(e);
-    }
+  static async removePreset(req, _res) {
+    const { presetId } = req.params;
+    const { uid } = req.ctx.decodedToken;
+
+    await PresetDAO.removePreset(uid, presetId);
+
+    return new MonkeyResponse("Preset deleted");
   }
 }
 
-module.exports = PresetController;
+export default PresetController;

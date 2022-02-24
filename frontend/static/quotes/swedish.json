@@ -1,0 +1,419 @@
+{
+  "language": "swedish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Det är mycket nog, det, sade modern, liksom glad över att hon ändå inte haft alldeles fel. Därpå drog de sig allesammans in till det i kammarn framställda kaffet.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 162,
+      "id": 1
+    },
+    {
+      "text": "Grannarna började snart visa tecken till otålighet. Ensamma med modern ville de på något sätt markera, att de inte ämnade låta leka med sig. De tyckte hon började bli väl stolt över sin son.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 190,
+      "id": 2
+    },
+    {
+      "text": "En hög intelligensgrad förlänar ansiktet något rikt och moget, det är som om andens fetma stege i ansiktet, Minervas fetma.",
+      "source": "Edith Södergran, Dikter och aforismer",
+      "length": 123,
+      "id": 3
+    },
+    {
+      "text": "Uppför trädgårdsgången till prästgården kom en ung kvinna gående, långsamt som om hon bar på en börda, och en som hon inte var stolt över.",
+      "source": "Karin Boye, Ur funktion",
+      "length": 138,
+      "id": 4
+    },
+    {
+      "text": "Äntligen stod prästen i predikstolen. Församlingens huvuden lyftes. Så, där var han ändå! Det skulle inte bli mässfall denna söndagen såsom den förra och många söndagar förut.",
+      "source": "Selma Lagerlöf, Gösta Berlings saga",
+      "length": 175,
+      "id": 5
+    },
+    {
+      "text": "När de svärjande resa sig upp, är den onde borta, men hans gyllene löften sväva som glänsande kronor över kavaljerernas hjässor.",
+      "source": "Selma Lagerlöf, Gösta Berlings saga",
+      "length": 128,
+      "id": 6
+    },
+    {
+      "text": "Rockan är en ful fisk, och liknar ett däggdjur på undersidan. Den har läppar som en människa och de två sista fenorna äro riktiga lemmar som på ett foster.",
+      "source": "August Strindberg, En blå bok",
+      "length": 155,
+      "id": 7
+    },
+    {
+      "text": "Ingen hade lagt märke till något ovanligt med det gamla judiska paret. Ja, om de skulle vara ärliga, hade de inte ens tänkt på det. Efteråt var det så lätt att komma och säga, att det hade man sett och det, men skulle de vara ärliga, hade de ingenting alls sett.",
+      "source": "Ebba Lindqvist, Vägen till Jeriko",
+      "length": 262,
+      "id": 8
+    },
+    {
+      "text": "Det var för resten en ren slump, att de kommit tillsammans på tåget, och när väl den här resan var över, skulle de aldrig mera träffas.",
+      "source": "Ebba Lindqvist, Vägen till Jeriko",
+      "length": 135,
+      "id": 9
+    },
+    {
+      "text": "Där nere på gatan jamade hankatterna natten igenom och förtvivlade hyresgäster slängde alla möjliga tillhyggen efter dem, medan Susanne satt som den sköna i tornet: ingen kunde komma upp och själv värdigades hon inte komma ner.",
+      "source": "Ebba Lindqvist, Vägen till Jeriko",
+      "length": 227,
+      "id": 10
+    },
+    {
+      "text": "Hur man kan ha det invärtes. Det är för att jag super så mycket säger hon. Jag skulle inte dricka som jag gör tjatar hon bittida och sent. Varför jag inte reser hem till exempel utan sitter så här i ensamheten. Och det kan väl hända att det inte bara är hennes skuld, det erkänner jag.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 285,
+      "id": 11
+    },
+    {
+      "text": "När man tvivlar ibland, för det gör man ju. Undrar om det är nån mening med allt slitet. Dom djävla söndagskvällarna, dom är dom värsta. Då är det ingen som har nån direkt användning för en.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 190,
+      "id": 12
+    },
+    {
+      "text": "Det blev ett väldigt festande och det var slutet. Men det begrep jag ju inte förrän det var för sent. Där stod grabbarna med en grogg, det där gjorde du bra sa de, grattis grattis. Nu kan du behöva lite i kylarn sa de. Och jag var ju stark och spänstig och trodde inte på fan naturligtvis.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 289,
+      "id": 13
+    },
+    {
+      "text": "Här hände förra lördag natt att en yngre arbetare vid pappersbruket berövade sig själv livet - söndag morgon fanns han hängande död i ett redskapsskjul. Namnet på den olycklige, såsom jag hörde det strax innan jag gick till kyrkan, sade mig visserligen ingenting.",
+      "source": "Tage Aurell, Smärre berättelser",
+      "length": 263,
+      "id": 14
+    },
+    {
+      "text": "Äntligen händer det nånting. Det tar sig. Mer och mer. För nu har han fläktat undan röken och sett att det inte längre är bara papperet det brinner i, det börjar spraka och knastra i en gammal sockerlåda som står här.",
+      "source": "Tage Aurell, Skillingtryck",
+      "length": 217,
+      "id": 15
+    },
+    {
+      "text": "Man vet inte vad som är stort och vad som är litet, snart skall väl varenda förbannade simborgare in i tidningen verkar det som.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 128,
+      "id": 16
+    },
+    {
+      "text": "Han vet inte riktigt säkert vad han menar när han ser sig stå framför spegeln och linda in skallen i varv efter varv av en gasbinda han fann i skåpet. Han har inte mist handlaget sen han var sjukvårdssoldat, det blir en ganska prydlig och välsittande turban till sist.",
+      "source": "Tage Aurell, Skillingtryck",
+      "length": 268,
+      "id": 17
+    },
+    {
+      "text": "Men nu skall du höra. Hur djävligt konstigt livet kan vara. Ja det vet du nog du också att det kan vara så in i blågröna helvete konstigt. Hör på nu, gäspa inte för fan!",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 169,
+      "id": 18
+    },
+    {
+      "text": "Du super och du super och du super säger hon. Och det är klart att hon har rätt, jag säger inte annat, det gör jag inte. Men att få höra det jämt och ständigt är ju i alla fall ingen vidare hjälp, det måste du hålla med om.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 223,
+      "id": 19
+    },
+    {
+      "text": "Jag har ju en skvätt whisky också, jag får ingen knäck på det hela annars. Jag säger inget ont om gumman, hon är bra på många sätt, på alla sätt måste jag säga. Mycket bättre än jag, det tror jag det och tacka fan för det när man är så balanserad som hon.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 255,
+      "id": 20
+    },
+    {
+      "text": "Jag kände en bankkassör, som stal tjugutusen kronor bara därför att han en afton råkade komma i närmre beröring med en serveringsflicka.",
+      "source": "Hjalmar Bergman, Eros’ begravning",
+      "length": 136,
+      "id": 21
+    },
+    {
+      "text": "Strindberg har i någon av sina blå böcker kallat mig Sveriges dummaste karl. När jag hade läst boken till slut och lade den ifrån mig, började jag undra, om det ändå inte fanns en, som var nära på ännu dummare.",
+      "source": "Verner von Heidenstam, ur Proletärfilosofiens upplösning och fall",
+      "length": 210,
+      "id": 22
+    },
+    {
+      "text": "Somliga män är kroppsligt havande, sade hon, och vänder sig mer till kvinnor och blir älskare på det sättet att de tror sig vinna odödlighet, eftermäle och lycka åt sig själva för all framtid genom att avla barn.",
+      "source": "Platon, Gästabudet",
+      "length": 212,
+      "id": 23
+    },
+    {
+      "text": "Ni märker ju själva att Sokrates älskar vackra unga män, alltid kretsar kring dem och hänförs av dem; dessutom är han okunnig om allt och vet ingenting.",
+      "source": "Platon, Gästabudet",
+      "length": 152,
+      "id": 24
+    },
+    {
+      "text": "Hon gick upprätt som nu, i vilken riktning hon ville, och när hon satte igång att springa fort stödde hon sig på alla de åtta extremiteterna och snurrade snabbt runt precis som hjulande akrobater snurrar runt på sina lemmar och kommer upp i stående igen.",
+      "source": "Platon, Gästabudet",
+      "length": 254,
+      "id": 25
+    },
+    {
+      "text": "Den ångest, som har sin rot i oskulden, är nu för det första ingen skuld, inget lidande, som inte skulle låta sig bringas i samklang med oskuldens salighet.",
+      "source": "Søren Kierkegaard, Begreppet ångest",
+      "length": 156,
+      "id": 26
+    },
+    {
+      "text": "Upplysningen innebär att människan överger sin självpålagda omyndighet. Omyndigheten ligger i hennes oförmåga att använda sig av det egna förståndet utan någon annans styrelse.",
+      "source": "Immanuel Kant, Svaret på frågan: Vad är upplysningen?",
+      "length": 176,
+      "id": 27
+    },
+    {
+      "text": "I detta tillstånd råder frid och vila; men det är på samma gång något annat, som dock inte är ofrid och strid, ty det finns ju intet att strida mot. Men vad är det då? Ingenting. Men vilken verkan har ingenting? Det föder ångest.",
+      "source": "Søren Kierkegaard, Begreppet ångest",
+      "length": 229,
+      "id": 28
+    },
+    {
+      "text": "När man nu frågar: lever vi en upplyst tidsålder? Så är svaret: nej, men dock i en upplysningens tidsålder.",
+      "source": "Immanuel Kant, Svaret på frågan: Vad är upplysningen?",
+      "length": 107,
+      "id": 29
+    },
+    {
+      "text": "Dessutom var varje människa rund till formen, så att rygg och sidor bildade en cirkel. Hon hade fyra armar och lika många ben, två helt likadana ansikten på en cirkelrund hals och ett huvud för båda ansikten, vilka var riktade åt varsitt håll; fyra öron, två könsorgan och all annat som man kan tänka sig därefter.",
+      "source": "Platon, Gästabudet",
+      "length": 314,
+      "id": 30
+    },
+    {
+      "text": "Att icke vänta på någonting, det är att vara resignerad. Detta är de välbärgades konst, deras som har kommit underfund med förvaltningens och livets meningslöshet och som får ut ersättning om något ändå skulle hända.",
+      "source": "Willy Kyrklund, Mästaren Ma",
+      "length": 216,
+      "id": 31
+    },
+    {
+      "text": "Vad sker när vi läser? Ögat följer svarta bokstavstecken på det vita papperet från vänster till höger, åter och åter. Och varelser, natur eller tankar, som en annan tänkt, nyss eller för tusen år sen, stiger fram i vår inbillning.",
+      "source": "Olof Lagercrantz, Om konsten att läsa och skriva",
+      "length": 230,
+      "id": 32
+    },
+    {
+      "text": "När han vaknade och koppen föll i golvet och krossades, började han gråta över koppen. Det var en helt vanlig kopp.",
+      "source": "Willy Kyrklund, Mästaren Ma",
+      "length": 115,
+      "id": 33
+    },
+    {
+      "text": "Marcel Duchamps tog en urinoir av porslin, vände på den, kallade den Fontän och ställde ut den som ett konstföremål. Det brukar räknas till den moderna konsthistoriens djärvaste dåd.",
+      "source": "Olof Lagercrantz, Om konsten att läsa och skriva",
+      "length": 182,
+      "id": 34
+    },
+    {
+      "text": "Ensamheten har intet mått. Främlingskapet har ingen gräns. Vad har jag här att göra i en främmande stad?",
+      "source": "Willy Kyrklund, Mästaren Ma",
+      "length": 104,
+      "id": 35
+    },
+    {
+      "text": "Mästaren tänker på välklädda personer. När mästaren mötte en välklädd person med ett säkert uppträdande, stockade sig andan i halsen på honom och han fick icke fram ett ljud.",
+      "source": "Willy Kyrklund, Mästaren Ma",
+      "length": 174,
+      "id": 36
+    },
+    {
+      "text": "Det är grodor till middag. Levande grodor. Jag vaknar när jag skall bita huvudet av en grön padda. Den pulserar fortfarande i min hand.",
+      "source": "Sven Lindqvist, Utrota varenda jävel",
+      "length": 135,
+      "id": 37
+    },
+    {
+      "text": "Du vet det. Jag också. Det är inte kunskap vi saknar. Vad som fattas oss är modet att inse vad vi vet och dra slutsatserna.",
+      "source": "Sven Lindqvist, Utrota varenda jävel",
+      "length": 123,
+      "id": 38
+    },
+    {
+      "text": "När jag var ung tyckte jag att diktarnas liv var intressantare än deras diktning. Jag var villig att byta ut Tegnérs och Frödings lyrik mot deras kärlekshistorier och deras moraliska och konstnärliga utveckling.",
+      "source": "Olof Lagercrantz, Om konsten att läsa och skriva",
+      "length": 211,
+      "id": 39
+    },
+    {
+      "text": "Ett mode uppstår inte av en slump. Det är tidens ande, som speglar sig i modets växlingar, tidens och den unga generationens egenartade lynne och ideal.",
+      "source": "Karin Boye, Astarte",
+      "length": 152,
+      "id": 40
+    },
+    {
+      "text": "Vill du avläsa tidens väsen, vill du se den unga generationens lynne, så kasta en blick i de stora skyltfönstren! Där är kvinnans frigörelse tecknad i gråspräckligt ylle, där lyser teknikens triumf ur sakligt stränga linjer.",
+      "source": "Karin Boye, Astarte",
+      "length": 224,
+      "id": 41
+    },
+    {
+      "text": "En obestämd eftermiddag i slutet av augusti gick en pappa omkring i sin trädgård och kände sig onödig. Han visste inte var han skulle göra av sig, för allt som fanns att göra var redan gjort eller också var det nån annan som höll på med det.",
+      "source": "Tove Jansson, Pappan och havet",
+      "length": 241,
+      "id": 42
+    },
+    {
+      "text": "Huset var alltför sakligt för min smak. Fönsterkarmarna kunde ha varit mer fantasifulla. På kommandobryggan kunde en lätt balustrad med utsågade sjömotiv ha varit på sin plats. Och taket borde prydas med en knopp som kanske kunde förgyllas ...",
+      "source": "Tove Jansson, Muminpappans memoarer",
+      "length": 243,
+      "id": 43
+    },
+    {
+      "text": "I synnerhet tyckte jag om att tänka på hur imponerad Hemulen skulle ha blivit om hon kunnat se mig som en äventyrlig delägare i en flodbåt. Det hade, strängt taget, varit alldeles rätt åt henne!",
+      "source": "Tove Jansson, Muminpappans memoarer",
+      "length": 194,
+      "id": 44
+    },
+    {
+      "text": "Nånå, sa Mumintrollets mamma. Han har rökt i hela sitt liv och varken blivit darrig, skallig eller gul. Allting som är trevligt är bra för magen.",
+      "source": "Tove Jansson, Muminpappans memoarer",
+      "length": 145,
+      "id": 45
+    },
+    {
+      "text": "Som jag ser problemet är man hela tiden omgiven av massor med viktiga och betydelsefulla saker som borde upplevas och tänkas ut och erövras, det finns så fullt av möjligheter att nackhåret reser sig på ända när jag tänker på dem - och i mitten av alltihop sitter jag själv och är naturligtvis det allra viktigaste.",
+      "source": "Tove Jansson, Muminpappans memoarer",
+      "length": 314,
+      "id": 46
+    },
+    {
+      "text": "Man tycker om att föreställa sig Swedenborg som björn, ingen människoslukande grizzly utan en välvuxen, tankspridd Nalle Puh, en Nalle Puh med stor, förvirrad hjärna.",
+      "source": "Bengt Anderberg, Under molnen",
+      "length": 166,
+      "id": 47
+    },
+    {
+      "text": "Inget ont om de vackra pilfinkarna, men nog slår ens hjärta häftigare för gråsparvarna! Kanske för att de hör ihop med barndomen, då det ännu låg hästskit på grusvägarna och  enkupiga tegelpannor på taken, mat och husrum för otaliga gråsparvar.",
+      "source": "Bengt Anderberg, Under molnen",
+      "length": 244,
+      "id": 48
+    },
+    {
+      "text": "Har man skapat en öken berövad all kultur, kan man i den sälja vad som helst. Ty i en sådan öken ter sig allting som mirakel.",
+      "source": "Pier Paolo Pasolini",
+      "length": 125,
+      "id": 49
+    },
+    {
+      "text": "Jag njöt av hennes vrede. Inte vågade jag säga emot henne. Men jag var sjuk av mitt dunkla, aldrig erkända hat. Något tvang mig att plåga henne.",
+      "source": "Eva Neander, Staden",
+      "length": 144,
+      "id": 50
+    },
+    {
+      "text": "Men så småningom kom vi underfund med att de flesta av perukstockarna var riktigt mänskliga och trevliga. De var faktiskt rentav underhållande.",
+      "source": "Astrid Lindgren, Kati på Kaptensgatan",
+      "length": 143,
+      "id": 51
+    },
+    {
+      "text": "Undra på att han tyckte det var strålande att få flytta hem till mig. Han talade länge och ihållande om hur underbart det skulle bli. Men jag hade hela tiden en stark känsla av att det var dubbletten, som var det underbara, inte jag.",
+      "source": "Astrid Lindgren, Kati på Kaptensgatan",
+      "length": 233,
+      "id": 52
+    },
+    {
+      "text": "Men i samma stunden begrep han vad det var, som hade satt hjärtat i gång på honom. Och inte nog med det, utan han började också ana vad som hade varit felet med honom i hela hans liv. För den, som inte känner av sitt hjärta varken i sorg eller i glädje, den kan säkert inte räknas som en riktig människa.",
+      "source": "Selma Lagerlöf, Kejsarn av Portugallien",
+      "length": 304,
+      "id": 53
+    },
+    {
+      "text": "Och det gick så, att alla människor lade märke till den röda klänningen, och när de hade sett på den en gång, så vände de sig om och såg på den en gång till. Men andra gången såg de inte bara på klänningen, utan också på den unga flickan, som bar den.",
+      "source": "Selma Lagerlöf, Kejsarn av Portugallien",
+      "length": 251,
+      "id": 54
+    },
+    {
+      "text": "Men historierna förstås endast av dem som hört dem berättas. Ingen kan dra dem fram i dagsljuset på ett stycke nyktert, vitt papper. De skulle då likna skelett av vad de en gång varit och sedliga stora barn skulle förfasa sig över dem.",
+      "source": "Dan Andersson, Kolarhistorier",
+      "length": 235,
+      "id": 55
+    },
+    {
+      "text": "Det föll mig in att gå efter honom. Milan visade ju inga orosymptom, och månljuset skulle lysa mig väg genom skogen på Galgberget. Om jag stannade längre skulle jag somna - och det är inte bra att göra det, åtminstone inte på vindsidan vid en sprakande eld.",
+      "source": "Dan Andersson, Kolarhistorier",
+      "length": 257,
+      "id": 56
+    },
+    {
+      "text": "Har du sett dig i spegeln tillräckligt länge för att våga tänka på vem det är du ser? Man ser så enkel ut fastän man känner sig så komplicerad.",
+      "source": "Arne Sand, Ljugarstriden",
+      "length": 143,
+      "id": 57
+    },
+    {
+      "text": "Provensalerna är nästan slösaktigare än svenskarna. Provensalska bönder och även köpmän är periodvis patologiskt slösaktiga och kan spela bort hus och hem på ett tärningskast.",
+      "source": "Evert Taube, Vallfart till Trubadurien och Toscana",
+      "length": 175,
+      "id": 58
+    },
+    {
+      "text": "Karl den stores storhet är en storgermansk propagandamyt! Karln var i det närmaste analfabet, hans konstintresse var en barbars lyxfröjd.",
+      "source": "Evert Taube, Vallfart till Trubadurien och Toscana",
+      "length": 137,
+      "id": 59
+    },
+    {
+      "text": "När man vill uppleva poesins monumentalitet eller himlaflykt eller innerligaste ömhet och smek eller torterande melankoli eller daggstänk av lyriska tårar eller förtvivlans gråt ur rödkantade ögon i en ungkarlslya där lakanen bränner som nässlor, nattskjortan dryper av ångestsvett och djävulen står i tamburen, då skall man läsa Dante.",
+      "source": "Evert Taube, Vallfart till Trubadurien och Toscana",
+      "length": 336,
+      "id": 60
+    },
+    {
+      "text": "En målare, som endast sett honom, skulle ha blivit förtjust; en musiker, som hört, skulle bringats till förtvivlan.",
+      "source": "Victoria Benedictsson, Pengar",
+      "length": 115,
+      "id": 61
+    },
+    {
+      "text": "Om du är rädd för att förlora, vågar du inte heller vinna.",
+      "source": "Björn Borg",
+      "length": 58,
+      "id": 62
+    },
+    {
+      "text": "En jätteanalys av mänsklighetens barndomshistoria ligger numera inför möjligheternas område. Genom den skulle dessa frågor vi ställt besvaras, och det glömda innehållet i tidigare akter lyftas in i medvetandet.",
+      "source": "Elin Wägner, Väckarklocka",
+      "length": 210,
+      "id": 63
+    },
+    {
+      "text": "Det är det första fotstegets moder som vakar över de tidiga människorna vid början av vandringen.",
+      "source": "Elin Wägner, Väckarklocka",
+      "length": 97,
+      "id": 64
+    },
+    {
+      "text": "Mot den generösa civilisationen som givit kvinnan mänsklighet kunde hon naturligtvis inte öva någon kritik.",
+      "source": "Elin Wägner, Väckarklocka",
+      "length": 107,
+      "id": 65
+    },
+    {
+      "text": "Var han ensam om att märka att nätterna inte längre sänktes från något ovan beläget tak eller att dagen inte blåstes in som en vit gas i det svarta höljet?",
+      "source": "Stig Dagerman, De dömdas ö",
+      "length": 155,
+      "id": 66
+    },
+    {
+      "text": "Patron Kristersons far hade varit djurläkare, och hans praktik hade satt honom i stånd att spara ihop en liten förmögenhet åt sonen. Denne hade icke lust för boken, därför blev han lantbrukare.",
+      "source": "Victoria Benedictsson, Pengar",
+      "length": 193,
+      "id": 67
+    },
+    {
+      "text": "Hon hade så stort anseende, att de bästa vildgäss, som fanns, brukade sluta sig till henne. Men ingen hade ett sådant förakt för tamgäss som Akka och hennes flock, och gärna hade han velat visa dem, att han var deras jämlike.",
+      "source": "Selma Lagerlöf, Nils Holgerssons underbara resa genom Sverige",
+      "length": 225,
+      "id": 68
+    }
+  ]
+}

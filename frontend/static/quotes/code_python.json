@@ -1,0 +1,59 @@
+{
+  "language": "code_python",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "class Person:\\n\\tdef __init__(self, name, age):\\n\\t\\tself.name = name\\n\\t\\tself.age = age",
+      "source": "w3schools - Python Classes/Objects",
+      "id": 1,
+      "length": 89
+    },
+    {
+      "text": "def my_function(food):\\n\\tfor x in food:\\n\\t\\tprint(x)\\n\\nfruits = [\"apple\", \"banana\", \"cherry\"]\\nmy_function(fruits)",
+      "source": "w3schools - Python functions",
+      "id": 2,
+      "length": 117
+    },
+    {
+      "text": "f = open(\"demofile.txt\", \"r\")\\nprint(f.readline())\\nf.close()",
+      "source": "w3schools - Python Read File",
+      "id": 3,
+      "length": 61
+    },
+    {
+      "text": "def solveSudoku(sudoku, i=0, j=0):\\n\\ti, j = findNextCellToFill(sudoku)\\n\\tif i == -1:\\n\\t\\treturn True\\n\\tfor e in range(1, 10):\\n\\t\\tif isValid(sudoku, i, j, e):\\n\\t\\t\\tsudoku[i][j] = e\\n\\t\\t\\tif solveSudoku(sudoku, i, j):\\n\\t\\t\\t\\treturn True\\n\\t\\t\\tsudoku[i][j] = 0\\n\\treturn False",
+      "source": "GitHub - hastagAB/Awesome-Python-Scripts - sudoku solver by ayedaemon",
+      "id": 4,
+      "length": 285
+    },
+    {
+      "text": "def bruteforce(charset, maxlength):\\n\\treturn (''.join(candidate)\\n\\t\\tfor candidate in itertools.chain.from_iterable(itertools.product(charset, repeat=i)\\n\\t\\tfor i in range(1, maxlength + 1)))\\ndef extractFile(arFile, attempt):\\n\\ttry:\\n\\t\\tarFile.extractall(pwd=attempt)\\n\\t\\tprint \"Password found! password is %s\"%attempt\\n\\t\\texit(0)\\n\\texcept Exception,e:\\n\\t\\tpass\\n\\tif datetime.datetime.now().second%20==0:\\n\\t\\tprint 'At %s'%attempt",
+      "source": "GitHub -  GauthamGoli/rar-Password-Cracker",
+      "id": 5,
+      "length": 442
+    },
+    {
+      "text": "soup = BeautifulSoup(html, features='lxml')\\nprint(soup.h1)\\nprint(line_break, soup.p)\\n\\nall_href = soup.find_all('a')\\nall_href = [l['href'] for l in all_href]\\nprint(line_break, all_href)",
+      "source": "GitHub - MorvanZhou/easy-scraping-tutorial",
+      "id": 6,
+      "length": 190
+    },
+    {
+      "text": "def bubbleSort(arr):\\n\\tn = len(arr)\\n\\tfor i in range(n-1):\\n\\t\\tfor j in range(0, n-i-1):\\n\\t\\t\\tif arr[j] > arr[j + 1] :\\n\\t\\t\\t\\tarr[j], arr[j + 1] = arr[j + 1], arr[j]",
+      "source": "geeksforgeeks - Bubble Sort",
+      "id": 7,
+      "length": 172
+    },
+    {
+      "text": "def search(arr, n, x):\\n\\tfor i in range(0, n):\\n\\t\\tif (arr[i] == x):\\n\\t\\t\\treturn i\\n\\treturn -1",
+      "source": "geeksforgeeks - Linear Search",
+      "id": 8,
+      "length": 99
+    }
+  ]
+}

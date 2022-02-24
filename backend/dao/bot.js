@@ -1,32 +1,29 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
+import db from "../init/db";
 
-async function addCommand(command, arguments) {
-  return await mongoDB().collection("bot-commands").insertOne({
+async function addCommand(command, commandArguments) {
+  return await db.collection("bot-commands").insertOne({
     command,
-    arguments,
+    arguments: commandArguments,
     executed: false,
     requestTimestamp: Date.now(),
   });
 }
 
-async function addCommands(commands, arguments) {
-  if (commands.length === 0 || commands.length !== arguments.length) {
+async function addCommands(commands, commandArguments) {
+  if (commands.length === 0 || commands.length !== commandArguments.length) {
     return [];
   }
 
   const normalizedCommands = commands.map((command, index) => {
     return {
       command,
-      arguments: arguments[index],
+      arguments: commandArguments[index],
       executed: false,
       requestTimestamp: Date.now(),
     };
   });
 
-  return await mongoDB()
-    .collection("bot-commands")
-    .insertMany(normalizedCommands);
+  return await db.collection("bot-commands").insertMany(normalizedCommands);
 }
 
 class BotDAO {
@@ -68,4 +65,4 @@ class BotDAO {
   }
 }
 
-module.exports = BotDAO;
+export default BotDAO;
