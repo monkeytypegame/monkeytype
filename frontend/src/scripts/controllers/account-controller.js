@@ -450,8 +450,8 @@ export async function signInWithGoogle() {
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     if (signedInUser?.user) {
-      signedInUser.user.delete();
       await Ape.users.delete();
+      await signedInUser.user.delete();
     }
     return;
   }
