@@ -2,14 +2,14 @@ import PresetDAO from "../../dao/preset";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class PresetController {
-  static async getPresets(req, _res) {
+  static async getPresets(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
 
     const data = await PresetDAO.getPresets(uid);
     return new MonkeyResponse("Preset retrieved", data);
   }
 
-  static async addPreset(req, _res) {
+  static async addPreset(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
@@ -18,7 +18,7 @@ class PresetController {
     return new MonkeyResponse("Preset created", data);
   }
 
-  static async editPreset(req, _res) {
+  static async editPreset(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { _id, name, config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
@@ -27,7 +27,7 @@ class PresetController {
     return new MonkeyResponse("Preset updated");
   }
 
-  static async removePreset(req, _res) {
+  static async removePreset(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { presetId } = req.params;
     const { uid } = req.ctx.decodedToken;
 
