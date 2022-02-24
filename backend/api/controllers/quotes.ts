@@ -7,8 +7,11 @@ import Logger from "../../handlers/logger";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class QuotesController {
-  static async reportQuote(req, _res) {
+  static async reportQuote(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+    const {
+      quoteReport: { maxReports, contentReportLimit },
+    } = req.ctx.configuration;
 
     const user = await UsersDAO.getUser(uid);
     if (user.cannotReport) {
@@ -33,7 +36,7 @@ class QuotesController {
       },
     };
 
-    await ReportDAO.createReport(newReport);
+    await ReportDAO.createReport(newReport, maxReports, contentReportLimit);
 
     Logger.log("report_created", {
       type: newReport.type,
