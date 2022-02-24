@@ -25,7 +25,7 @@
     "helmet": "4.6.0",
     "joi": "17.6.0",
     "lodash": "4.17.21",
-    "mongodb": "3.6.9",
+    "mongodb": "4.4.0",
     "node-fetch": "2.6.7",
     "node-object-hash": "2.3.10",
     "nodemon": "2.0.7",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@types/cors": "2.8.12",
+    "@types/mongodb": "4.0.7",
     "@types/node": "17.0.18",
     "@types/uuid": "8.3.4"
   }

@@ -2,7 +2,7 @@ import "dotenv/config";
 import admin, { ServiceAccount } from "firebase-admin";
 // @ts-ignore
 import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
-import db from "./init/db.js";
+import db from "./init/db";
 import jobs from "./jobs";
 import ConfigurationDAO from "./dao/configuration.js";
 import app from "./app";

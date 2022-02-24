@@ -1,5 +1,4 @@
-import Mongo from "mongodb";
-const { ObjectID } = Mongo;
+import { ObjectId } from "mongodb";
 import MonkeyError from "../handlers/error";
 import db from "../init/db";
 
@@ -29,7 +28,7 @@ class ResultDAO {
   static async updateTags(uid, resultid, tags) {
     const result = await db
       .collection("results")
-      .findOne({ _id: ObjectID(resultid), uid });
+      .findOne({ _id: new ObjectId(resultid), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
     const userTags = await UserDAO.getTags(uid);
     const userTagIds = userTags.map((tag) => tag._id.toString());
@@ -41,27 +40,26 @@ class ResultDAO {
       throw new MonkeyError(400, "One of the tag id's is not valid");
     return await db
       .collection("results")
-      .updateOne({ _id: ObjectID(resultid), uid }, { $set: { tags } });
+      .updateOne({ _id: new ObjectId(resultid), uid }, { $set: { tags } });
   }
 
   static async getResult(uid, id) {
     const result = await db
       .collection("results")
-      .findOne({ _id: ObjectID(id), uid });
+      .findOne({ _id: new ObjectId(id), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
     return result;
   }
 
   static async getLastResult(uid) {
-    let result = await db
+    const [lastResult] = await db
       .collection("results")
       .find({ uid })
       .sort({ timestamp: -1 })
       .limit(1)
       .toArray();
-    result = result[0];
-    if (!result) throw new MonkeyError(404, "No results found");
-    return result;
+    if (!lastResult) throw new MonkeyError(404, "No results found");
+    return lastResult;
   }
 
   static async getResultByTimestamp(uid, timestamp) {
