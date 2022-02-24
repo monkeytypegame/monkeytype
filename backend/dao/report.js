@@ -11,11 +11,11 @@ class ReportDAO {
       );
     }
 
-    const reportAlreadyExists = reports.filter((existingReport) => {
+    const sameReports = reports.filter((existingReport) => {
       return existingReport.details.contentId === report.details.contentId;
     });
 
-    if (reportAlreadyExists.length >= contentReportLimit) {
+    if (sameReports.length >= contentReportLimit) {
       throw new MonkeyError(
         409,
         "A report limit for this content has been reached."
