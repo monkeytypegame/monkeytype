@@ -290,7 +290,8 @@
       "code_swift",
       "code_bash",
       "code_lua",
-      "code_luau"
+      "code_luau",
+      "code_matlab"
     ]
   },
   {
