@@ -4,7 +4,7 @@ import admin, { ServiceAccount } from "firebase-admin";
 import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
 import db from "./init/db";
 import jobs from "./jobs";
-import ConfigurationDAO from "./dao/configuration.js";
+import ConfigurationClient from "./init/configuration";
 import app from "./app";
 import { Server } from "http";
 
@@ -23,7 +23,7 @@ async function bootServer(port: number): Promise<Server> {
     console.log("Firebase app initialized");
 
     console.log("Fetching live configuration...");
-    await ConfigurationDAO.getLiveConfiguration();
+    await ConfigurationClient.getLiveConfiguration();
     console.log("Live configuration fetched");
 
     console.log("Starting cron jobs...");
