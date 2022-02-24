@@ -7,11 +7,11 @@ import leaderboards from "./leaderboards";
 import quotes from "./quotes";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../handlers/monkey-response";
+import { Application, NextFunction, Response } from "express";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
-let requestsProcessed = 0;
 
 const API_ROUTE_MAP = {
   "/users": users,
@@ -23,20 +23,23 @@ const API_ROUTE_MAP = {
   "/quotes": quotes,
 };
 
-function addApiRoutes(app) {
-  app.use((req, res, next) => {
-    const inMaintenance =
-      process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+function addApiRoutes(app: Application): void {
+  let requestsProcessed = 0;
 
-    if (inMaintenance) {
-      return res
-        .status(503)
-        .json({ message: "Server is down for maintenance" });
+  app.use(
+    (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
+      const inMaintenance =
+        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+
+      if (inMaintenance) {
+        res.status(503).json({ message: "Server is down for maintenance" });
+        return;
+      }
+
+      requestsProcessed++;
+      next();
     }
-
-    requestsProcessed++;
-    return next();
-  });
+  );
 
   app.get(
     "/",

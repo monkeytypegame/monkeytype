@@ -1087,7 +1087,7 @@ export async function retrySavingResult() {
   if (response.status !== 200) {
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
-    return Notifications.add("Result not saved. " + response.data.message, -1);
+    return Notifications.add("Result not saved. " + response.message, -1);
   }
 
   completedEvent._id = response.data.insertedId;
