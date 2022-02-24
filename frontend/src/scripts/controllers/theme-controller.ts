@@ -1,7 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../misc";
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
@@ -128,8 +128,11 @@ export async function apply(
     }
 
     if (!isPreview) {
+      UpdateConfig.setCustomThemeColors([...customTheme.colors]);
       ThemeColors.getAll().then((colors) => {
-        $(".current-theme .text").text(themeName.replace(/_/g, " "));
+        $(".current-theme .text").text(
+          "custom: " + themeName.replace(/_/g, " ")
+        );
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);

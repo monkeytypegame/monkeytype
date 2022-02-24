@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import * as DB from "../db";
+import Ape from "../ape";
 
 export function updateActiveButton(): void {
   // Rizwan TODO: Add a way for activating the button for user's custom themes
@@ -92,6 +93,7 @@ function updateColors(
 }
 
 export async function refreshButtons(): Promise<void> {
+  // Rizwan TODO: Modify this function to show custom theme buttons too
   const favThemesEl = $(
     ".pageSettings .section.themes .favThemes.buttons"
   ).empty();
@@ -109,7 +111,6 @@ export async function refreshButtons(): Promise<void> {
   if (Config.favThemes.length > 0) {
     favThemesEl.css({ paddingBottom: "1rem" });
     themes.forEach((theme) => {
-      // @ts-ignore TODO: Remove this comment once the config.js is converted to ts
       if (Config.favThemes.includes(theme.name)) {
         const activeTheme = activeThemeName === theme.name ? "active" : "";
         favThemesEl.append(
@@ -127,18 +128,19 @@ export async function refreshButtons(): Promise<void> {
   }
   //then the rest
   themes.forEach((theme) => {
-    // @ts-ignore TODO: Remove this comment once the config.js is converted to ts
-    if (!Config.favThemes.includes(theme.name)) {
-      const activeTheme = activeThemeName === theme.name ? "active" : "";
-      themesEl.append(
-        `<div class="theme button ${activeTheme}" theme='${
-          theme.name
-        }' style="color:${theme.mainColor};background:${theme.bgColor}">
+    if (Config.favThemes.includes(theme.name)) {
+      return;
+    }
+
+    const activeTheme = activeThemeName === theme.name ? "active" : "";
+    themesEl.append(
+      `<div class="theme button ${activeTheme}" theme='${
+        theme.name
+      }' style="color:${theme.mainColor};background:${theme.bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
         <div class="favButton"><i class="far fa-star"></i></div></div>`
-      );
-    }
+    );
   });
   updateActiveButton();
 }
@@ -174,7 +176,7 @@ function toggleFavourite(themeName: string): void {
 
 export function updateActiveTab(): void {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  if (!Config.customThemeIndex) {
+  if (Config.customThemeIndex !== -1) {
     $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
       "active"
     );
@@ -187,7 +189,7 @@ export function updateActiveTab(): void {
 
 // Add events to the DOM
 
-$(".pageSettings .section.themes .tabs .button").on("click", (e) => {
+$(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   const $target = $(e.currentTarget);
   $target.addClass("active");
@@ -197,7 +199,21 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   } else {
     const customThemes = DB.getSnapshot().customThemes;
     if (customThemes === undefined || customThemes.length < 1) {
-      // Rizwan TODO: Create a new custom theme which inherits colors from the serika_dark theme and set it
+      const newCustomTheme = {
+        name: "custom",
+        colors: [...Config.customThemeColors],
+      };
+
+      const response = await Ape.users.addCustomThemes(newCustomTheme);
+      if (response.status == 200) {
+        Notifications.add("Created new custom theme: custom", 1);
+        DB.getSnapshot().customThemes = [
+          { ...newCustomTheme, _id: response.data._id },
+        ];
+        UpdateConfig.setCustomThemeIndex(0);
+      } else {
+        Notifications.add("Could not create custom theme: custom", -1);
+      }
     } else UpdateConfig.setCustomThemeIndex(0);
   }
 });

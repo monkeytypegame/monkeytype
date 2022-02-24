@@ -676,10 +676,13 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     const customThemes = DB.getSnapshot().customThemes;
     if (customThemes === undefined || customThemes.length < 1) {
       Notifications.add("No custom themes!", 0);
+      UpdateConfig.setCustomThemeIndex(-1);
+      return;
     }
 
     // Turn on the first custom theme
-    UpdateConfig.setCustomThemeIndex(0);
+    if (Config.customThemeIndex === -1) UpdateConfig.setCustomThemeIndex(0);
+    else UpdateConfig.setCustomThemeIndex(-1);
   } else {
     CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
     show();

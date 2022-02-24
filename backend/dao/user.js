@@ -366,7 +366,7 @@ class UsersDAO {
       if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
     }
 
-    let _id = ObjectID();
+    let _id = new ObjectId();
     await db.collection("users").updateOne(
       { uid },
       {
@@ -399,9 +399,9 @@ class UsersDAO {
     return await db.collection("users").updateOne(
       {
         uid: uid,
-        "customThemes._id": ObjectID(_id),
+        "customThemes._id": new ObjectId(_id),
       },
-      { $pull: { customThemes: { _id: ObjectID(_id) } } }
+      { $pull: { customThemes: { _id: new ObjectId(_id) } } }
     );
   }
 
@@ -418,7 +418,7 @@ class UsersDAO {
     return await db.collection("users").updateOne(
       {
         uid: uid,
-        "customThemes._id": ObjectID(_id),
+        "customThemes._id": new ObjectId(_id),
       },
       {
         $set: {
