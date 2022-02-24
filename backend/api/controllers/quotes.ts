@@ -30,12 +30,22 @@ class QuotesController {
       throw new MonkeyError(401, "User not found.");
     }
 
-    const userQuoteRatings = user.quoteRatings ?? {};
-
     const normalizedQuoteId = parseInt(quoteId as string);
     const normalizedRating = Math.round(parseInt(rating as string));
 
+    const userQuoteRatings = user.quoteRatings ?? {};
     const currentRating = userQuoteRatings[language]?.[normalizedQuoteId] ?? 0;
+
+    const newRating = normalizedRating - currentRating;
+    const shouldUpdateRating = currentRating !== 0;
+
+    await QuoteRatingsDAO.submit(
+      quoteId,
+      language,
+      newRating,
+      shouldUpdateRating
+    );
+
     _.setWith(
       userQuoteRatings,
       `[${language}][${normalizedQuoteId}]`,
@@ -43,16 +53,6 @@ class QuotesController {
       Object
     );
 
-    const newRating =
-      userQuoteRatings[language][normalizedQuoteId] - currentRating;
-
-    const shouldUpdateRating = currentRating !== 0;
-    await QuoteRatingsDAO.submit(
-      quoteId,
-      language,
-      newRating,
-      shouldUpdateRating
-    );
     await UserDAO.updateQuoteRatings(uid, userQuoteRatings);
 
     return new MonkeyResponse("Rating updated");
