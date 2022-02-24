@@ -110,9 +110,10 @@ export default function getUsersEndpoints(
   //   return await apeClient.delete(`${BASE_PATH}/customThemes`, { payload });
   // }
 
-  async function addCustomThemes(
-    newTheme: MonkeyTypes.CustomTheme
-  ): Ape.EndpointData {
+  async function addCustomThemes(newTheme: {
+    name: string;
+    colors: string[];
+  }): Ape.EndpointData {
     const payload = newTheme;
     return await apeClient.post(`${BASE_PATH}/customThemes`, { payload });
   }
