@@ -4,6 +4,7 @@ import * as Misc from "../misc";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
+import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as DB from "../db";
 import Ape from "../ape";
 
@@ -336,20 +337,7 @@ $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
     }
   });
 
-$(".pageSettings .saveCustomThemeButton").on("click", () => {
-  const save: string[] = [];
-  $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
-    (_index, element) => {
-      save.push($(element).attr("value") as string);
-    }
-  );
-  // Rizwan TODO: Update the custom theme and send a fetch request
-  // UpdateConfig.setCustomThemeColors(save);
-  ThemeController.set("custom");
-  Notifications.add("Custom theme colors saved", 1);
-});
-
+// Rizwan TODO: Make this work with custom themes
 $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
   // previewTheme(Config.theme);
   $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
@@ -388,4 +376,45 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
       updateColors($(".colorPicker #" + colorName).parent(), color as string);
     });
   }, 250);
+});
+
+// Rizwan TODO: Make this work with custom themes
+$("#shareCustomThemeButton").on("click", () => {
+  const share: string[] = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (_, element) => {
+      share.push($(element).attr("value") as string);
+    }
+  );
+
+  console.log(share);
+
+  const url =
+    "https://monkeytype.com?" +
+    Misc.objectToQueryString({ customTheme: share });
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function () {
+      CustomThemePopup.show(url);
+    }
+  );
+});
+
+// Rizwan TODO: Make this work with custom themes
+$(".pageSettings .saveCustomThemeButton").on("click", () => {
+  const save: string[] = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (_index, element) => {
+      save.push($(element).attr("value") as string);
+    }
+  );
+  // Rizwan TODO: Update the custom theme and send a fetch request
+  // UpdateConfig.setCustomThemeColors(save);
+  ThemeController.set("custom");
+  Notifications.add("Custom theme colors saved", 1);
 });

@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "../test/test-ui";
-import * as DB from "../db"; // Rizwan TODO: Use this import
+import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 
 let commandLineMouseMode = false;
