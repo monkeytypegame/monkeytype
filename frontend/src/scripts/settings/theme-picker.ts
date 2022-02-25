@@ -232,7 +232,7 @@ export function updateActiveTab(): void {
 $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   const $target = $(e.currentTarget);
-  $target.addClass("active");
+  // $target.addClass("active"); Don't uncomment it. updateActiveTab() will add the active class itself
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
     UpdateConfig.setCustomThemeIndex(-1);
