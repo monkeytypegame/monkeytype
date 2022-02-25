@@ -232,55 +232,51 @@ class UserController {
     return new MonkeyResponse("Leaderboard memory updated");
   }
 
-  static async getCustomThemes(req, res, next) {
+  static async getCustomThemes(req, _res) {
     try {
       const { uid } = req.ctx.decodedToken;
       let customThemes = await UsersDAO.getThemes(uid);
       if (customThemes === undefined) customThemes = [];
-      return res.status(200).json(customThemes);
+      return new MonkeyResponse("Succesful", customThemes);
     } catch (e) {
-      return next(e);
+      throw new MonkeyError(500, "Could not get custom themes!", e);
     }
   }
 
-  static async addCustomTheme(req, res, next) {
+  static async addCustomTheme(req, _res) {
     try {
       const { uid } = req.ctx.decodedToken;
       const customTheme = req.body;
 
       let addedTheme = await UsersDAO.addTheme(uid, customTheme);
-      return res
-        .status(200)
-        .json({ message: "Custom theme sucessfully added", theme: addedTheme });
+      return new MonkeyResponse("Custom theme sucessfully added", {
+        theme: addedTheme,
+      });
     } catch (e) {
-      return next(e);
+      throw new MonkeyError(500, "Could not add custom theme!", e);
     }
   }
 
-  static async removeCustomTheme(req, res, next) {
+  static async removeCustomTheme(req, _res) {
     try {
       const { uid } = req.ctx.decodedToken;
       const { themeID } = req.body;
       await UsersDAO.removeTheme(uid, themeID);
-      return res
-        .sendStatus(200)
-        .json({ message: "Custom theme successfully removed" });
+      return new MonkeyResponse("Custom theme successfully removed");
     } catch (e) {
-      return next(e);
+      throw new MonkeyError(500, "Could not remove custom theme!", e);
     }
   }
 
-  static async editCustomTheme(req, res, next) {
+  static async editCustomTheme(req, _res) {
     try {
       const { uid } = req.ctx.decodedToken;
       const { themeID, theme } = req.body;
 
       await UsersDAO.editTheme(uid, themeID, theme);
-      return res
-        .status(200)
-        .json({ message: "Custom theme successfully updated" });
+      return new MonkeyResponse("Custom theme succesfully updated!");
     } catch (e) {
-      return next(e);
+      throw new MonkeyError(500, "Could not edit custom theme!", e);
     }
   }
 }

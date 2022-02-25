@@ -167,7 +167,7 @@ router.get(
   "/customThemes",
   RateLimit.userCustomThemeGet,
   authenticateRequest(),
-  UserController.getCustomThemes
+  asyncHandler(UserController.getCustomThemes)
 );
 
 router.post(
@@ -204,7 +204,7 @@ router.post(
         }),
     },
   }),
-  UserController.addCustomTheme
+  asyncHandler(UserController.addCustomTheme)
 );
 
 router.delete(
@@ -224,7 +224,7 @@ router.delete(
         }),
     },
   }),
-  UserController.removeCustomTheme
+  asyncHandler(UserController.removeCustomTheme)
 );
 
 router.put(
@@ -272,7 +272,7 @@ router.put(
       },
     },
   }),
-  UserController.editCustomTheme
+  asyncHandler(UserController.editCustomTheme)
 );
 
 router.post(
