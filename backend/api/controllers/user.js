@@ -139,13 +139,13 @@ class UserController {
       throw new MonkeyError(403, "Banned accounts cannot link with Discord");
     }
 
-    let discordFetch = await fetch("https://discord.com/api/users/@me", {
+    const discordFetch = await fetch("https://discord.com/api/users/@me", {
       headers: {
         authorization: `${req.body.data.tokenType} ${req.body.data.accessToken}`,
       },
     });
-    discordFetch = await discordFetch.json();
-    const did = discordFetch.id;
+    const discordFetchJSON = await discordFetch.json();
+    const did = discordFetchJSON.id;
     if (!did) {
       throw new MonkeyError(
         500,
