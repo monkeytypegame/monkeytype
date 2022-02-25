@@ -93,55 +93,82 @@ function updateColors(
 }
 
 export async function refreshButtons(): Promise<void> {
-  // Rizwan TODO: Modify this function to show custom theme buttons too
-  const favThemesEl = $(
-    ".pageSettings .section.themes .favThemes.buttons"
-  ).empty();
-  const themesEl = $(
-    ".pageSettings .section.themes .allThemes.buttons"
-  ).empty();
-
-  let activeThemeName = Config.theme;
-  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-    activeThemeName = ThemeController.randomTheme;
-  }
-
-  const themes = await Misc.getSortedThemesList();
-  //first show favourites
-  if (Config.favThemes.length > 0) {
-    favThemesEl.css({ paddingBottom: "1rem" });
-    themes.forEach((theme) => {
-      if (Config.favThemes.includes(theme.name)) {
-        const activeTheme = activeThemeName === theme.name ? "active" : "";
-        favThemesEl.append(
-          `<div class="theme button ${activeTheme}" theme='${
-            theme.name
-          }' style="color:${theme.mainColor};background:${theme.bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-        <div class="text">${theme.name.replace(/_/g, " ")}</div>
-        <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-        );
-      }
-    });
-  } else {
-    favThemesEl.css({ paddingBottom: "0" });
-  }
-  //then the rest
-  themes.forEach((theme) => {
-    if (Config.favThemes.includes(theme.name)) {
+  if (Config.customThemeIndex !== -1) {
+    const customThemesEl = $(
+      ".pageSettings .section.themes .allCustomThemes.buttons"
+    ).empty();
+    const customThemes = DB.getSnapshot().customThemes;
+    if (customThemes === undefined || customThemes.length < 1) {
+      Notifications.add("No custom themes!", -1);
       return;
     }
 
-    const activeTheme = activeThemeName === theme.name ? "active" : "";
-    themesEl.append(
-      `<div class="theme button ${activeTheme}" theme='${
-        theme.name
-      }' style="color:${theme.mainColor};background:${theme.bgColor}">
+    customThemes.forEach((customTheme, customThemeIndex) => {
+      const activeTheme =
+        Config.customThemeIndex === customThemeIndex ? "active" : "";
+      const bgColor = customTheme.colors[0];
+      const mainColor = customTheme.colors[1];
+
+      customThemesEl.append(
+        `<div class="customTheme button ${activeTheme}" customTheme='${
+          customTheme.name
+        }' 
+        style="color:${mainColor};background:${bgColor}">
+        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
+        <div class="favButton"><i class="far fa-star"></i></div></div>`
+      );
+    });
+  } else {
+    const favThemesEl = $(
+      ".pageSettings .section.themes .favThemes.buttons"
+    ).empty();
+    const themesEl = $(
+      ".pageSettings .section.themes .allThemes.buttons"
+    ).empty();
+
+    let activeThemeName = Config.theme;
+    if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+      activeThemeName = ThemeController.randomTheme;
+    }
+
+    const themes = await Misc.getSortedThemesList();
+    //first show favourites
+    if (Config.favThemes.length > 0) {
+      favThemesEl.css({ paddingBottom: "1rem" });
+      themes.forEach((theme) => {
+        if (Config.favThemes.includes(theme.name)) {
+          const activeTheme = activeThemeName === theme.name ? "active" : "";
+          favThemesEl.append(
+            `<div class="theme button ${activeTheme}" theme='${
+              theme.name
+            }' style="color:${theme.mainColor};background:${theme.bgColor}">
+        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+        <div class="text">${theme.name.replace(/_/g, " ")}</div>
+        <div class="favButton active"><i class="fas fa-star"></i></div></div>`
+          );
+        }
+      });
+    } else {
+      favThemesEl.css({ paddingBottom: "0" });
+    }
+    //then the rest
+    themes.forEach((theme) => {
+      if (Config.favThemes.includes(theme.name)) {
+        return;
+      }
+
+      const activeTheme = activeThemeName === theme.name ? "active" : "";
+      themesEl.append(
+        `<div class="theme button ${activeTheme}" theme='${
+          theme.name
+        }' style="color:${theme.mainColor};background:${theme.bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
         <div class="favButton"><i class="far fa-star"></i></div></div>`
-    );
-  });
+      );
+    });
+  }
   updateActiveButton();
 }
 
@@ -185,6 +212,7 @@ export function updateActiveTab(): void {
       "active"
     );
   }
+  refreshButtons();
 }
 
 // Add events to the DOM

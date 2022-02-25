@@ -131,11 +131,15 @@
       }
     }
 
-    & .customTheme {
-      grid-template-columns: 1fr;
+    & .allCustomThemes.buttons {
+      width: 103.5%;
+      grid-column: 1;
+      grid-row: 1;
+      margin-bottom: 1rem;
     }
 
     & .customThemeEdit {
+      grid-row: 2;
       width: 103.5%;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -300,6 +304,7 @@
           height: auto;
 
           &.customTheme {
+            grid-template-columns: 1fr;
             margin-top: 1rem;
             .colorText {
               color: var(--text-color);
@@ -312,7 +317,8 @@
         }
       }
 
-      .theme.button {
+      .theme.button,
+      .customTheme.button {
         display: grid;
         grid-template-columns: auto 1fr auto;
         .text {
