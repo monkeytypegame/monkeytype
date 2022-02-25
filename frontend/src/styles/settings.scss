@@ -131,7 +131,13 @@
       }
     }
 
-    &.customTheme {
+    & .customTheme {
+      grid-template-columns: 1fr;
+    }
+
+    & .customThemeEdit {
+      width: 103.5%;
+      display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
       gap: 0.5rem 2rem;
