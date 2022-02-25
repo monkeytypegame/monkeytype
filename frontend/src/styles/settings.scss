@@ -138,13 +138,29 @@
       margin-bottom: 1rem;
     }
 
-    & .customThemeEdit {
+    & .addCustomThemeWrapper {
       grid-row: 2;
+      padding-bottom: 1rem;
+      display: grid;
+      width: 103.5%;
+      & .button {
+        grid-column-start: 4;
+        grid-column-end: 5;
+      }
+    }
+
+    & .customThemeEdit {
+      grid-row: 3;
       width: 103.5%;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
       gap: 0.5rem 2rem;
+
+      & .input[id="name"] {
+        // background-color: red;
+        margin-bottom: 0.5rem;
+      }
 
       & p {
         grid-area: unset;

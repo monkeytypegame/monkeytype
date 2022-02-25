@@ -90,7 +90,6 @@ export default function getUsersEndpoints(
     return await apeClient.delete(`${BASE_PATH}/tags/${tagId}/personalBest`);
   }
 
-  // Rizwan TODO: Uncomment these as we start using them
   // async function getCustomThemes(): Ape.EndpointData {
   //   return await apeClient.get(`${BASE_PATH}/customThemes`);
   // }

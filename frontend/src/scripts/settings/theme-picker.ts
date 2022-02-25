@@ -147,7 +147,6 @@ export async function refreshButtons(): Promise<void> {
       favThemesEl.css({ paddingBottom: "1rem" });
       themes.forEach((theme) => {
         if (Config.favThemes.includes(theme.name)) {
-          console.log(theme);
           const activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
             `<div class="theme button ${activeTheme}" theme='${theme.name}' 
@@ -182,6 +181,12 @@ export async function refreshButtons(): Promise<void> {
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
+  const customTheme = (DB.getSnapshot().customThemes ?? [])[
+    Config.customThemeIndex
+  ];
+  $(".pageSettings .section.themes .tabContainer .customThemeEdit #name").val(
+    customTheme !== undefined ? customTheme.name : "custom"
+  );
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((_index, element: HTMLElement) => {
@@ -235,6 +240,7 @@ export function updateActiveTab(forced = false): void {
 
 // Add events to the DOM
 
+// Handle click on theme: preset or custom tab
 $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   const $target = $(e.currentTarget);
@@ -264,10 +270,37 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   }
 });
 
+// Handle click on new custom theme button
+$(".pageSettings .addCustomThemeButton").on("click", async () => {
+  const newCustomTheme = {
+    name: "custom",
+    colors: [...Config.customThemeColors],
+  };
+
+  const response = await Ape.users.addCustomThemes(newCustomTheme);
+
+  if (response.status === 200) {
+    const snapshot = DB.getSnapshot();
+    if (snapshot.customThemes === undefined) snapshot.customThemes = [];
+
+    snapshot.customThemes.push({
+      name: newCustomTheme.name,
+      colors: newCustomTheme.colors,
+      _id: response.data.theme._id,
+    });
+
+    Notifications.add("Created new custom theme: 'custom' sucessfully", 1);
+    updateActiveTab(true);
+  } else Notifications.add(response.message, -1);
+});
+
+// Handle click on custom theme button
 $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme.button",
   (e) => {
+    // Do not apply if user wanted to delete it
+    if ($(e.target).hasClass("delButton")) return;
     const customThemeIndex = parseInt(
       $(e.currentTarget).attr("customThemeIndex") ?? ""
     );
@@ -285,6 +318,7 @@ $(document).on(
   }
 );
 
+// Handle click on delete custom theme button
 $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
@@ -294,7 +328,6 @@ $(document).on(
         .parents(".customTheme.button")
         .attr("customThemeIndex") ?? "-1"
     );
-    console.log(customThemeIndex);
     if (customThemeIndex !== -1) {
       const customThemes = DB.getSnapshot().customThemes;
       if (customThemes === undefined || customThemes.length < 1) {
@@ -315,7 +348,6 @@ $(document).on(
         DB.getSnapshot().customThemes = filteredThemes;
         if (filteredThemes.length < 1) {
           UpdateConfig.setCustomThemeIndex(filteredThemes.length < 1 ? -1 : 0);
-          updateActiveButton();
         } else {
           UpdateConfig.setCustomThemeIndex(0);
           updateActiveTab(true);
@@ -331,6 +363,7 @@ $(document).on(
   }
 );
 
+// Handle click on favorite preset theme button
 $(document).on(
   "click",
   ".pageSettings .section.themes .theme .favButton",
@@ -344,6 +377,7 @@ $(document).on(
   }
 );
 
+// Handle click on preset theme button
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
@@ -388,7 +422,6 @@ $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
     }
   });
 
-// Rizwan TODO: Make this work with custom themes
 $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
   // previewTheme(Config.theme);
   $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
@@ -429,7 +462,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
   }, 250);
 });
 
-// Rizwan TODO: Make this work with custom themes
+// Handles click on share custom theme button
 $("#shareCustomThemeButton").on("click", () => {
   const share: string[] = [];
   $.each(
@@ -438,8 +471,6 @@ $("#shareCustomThemeButton").on("click", () => {
       share.push($(element).attr("value") as string);
     }
   );
-
-  console.log(share);
 
   const url =
     "https://monkeytype.com?" +
@@ -455,8 +486,12 @@ $("#shareCustomThemeButton").on("click", () => {
   );
 });
 
-// Rizwan TODO: Edit this to work with changed name for custom themes when that is added
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
+  let themeName = $(
+    ".pageSettings .section.customTheme input#name"
+  ).val() as string;
+  if (themeName.trim() === "") themeName = "custom";
+
   const newColors: string[] = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
@@ -476,7 +511,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     return;
   }
   const newTheme = {
-    name: customTheme.name,
+    name: themeName,
     colors: newColors,
   };
   const response = await Ape.users.editCustomThemes(customTheme._id, newTheme);

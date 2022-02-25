@@ -100,7 +100,6 @@ export async function apply(
     }
     // We have been given the index of the custom theme
     const customThemes = DB.getSnapshot().customThemes;
-    console.log(customThemes);
     const customTheme = customThemes ? customThemes[themeNameOrIndex] : null;
     if (customTheme === undefined || customTheme === null) {
       Notifications.add(`No custom theme at index: ${themeNameOrIndex}`, 0);
