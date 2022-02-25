@@ -236,7 +236,7 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
     let customThemes = await UsersDAO.getThemes(uid);
     if (customThemes === undefined) customThemes = [];
-    return new MonkeyResponse("", customThemes);
+    return new MonkeyResponse("Custom themes retrieved", customThemes);
   }
 
   static async addCustomTheme(req, _res) {

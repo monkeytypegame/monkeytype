@@ -100,7 +100,10 @@ export default function getUsersEndpoints(
   ): Ape.EndpointData {
     const payload = {
       themeID: themeID,
-      theme: newTheme,
+      theme: {
+        name: newTheme.name,
+        colors: newTheme.colors,
+      },
     };
     return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
   }
@@ -115,7 +118,7 @@ export default function getUsersEndpoints(
   async function addCustomThemes(
     newTheme: Partial<MonkeyTypes.CustomTheme>
   ): Ape.EndpointData {
-    const payload = newTheme;
+    const payload = { name: newTheme.name, colors: newTheme.colors };
     return await apeClient.post(`${BASE_PATH}/customThemes`, { payload });
   }
 
