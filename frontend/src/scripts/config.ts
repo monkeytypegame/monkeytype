@@ -1320,6 +1320,7 @@ export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
 }
 
 export function setCustomThemeIndex(index: number, nosave?: boolean): void {
+  if (index !== -1) setRandomTheme("off");
   if (!isConfigValueValid(index, ["number"]))
     return invalid("custom theme", index);
 
@@ -1376,7 +1377,7 @@ export function setRandomTheme(
     val = "off";
   }
 
-  if (val !== "off") config.customThemeIndex = -1;
+  if (val !== "off") setCustomThemeIndex(-1);
   config.randomTheme = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("randomTheme", config.randomTheme);

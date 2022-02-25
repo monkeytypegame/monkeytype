@@ -208,19 +208,22 @@ function toggleFavourite(themeName: string): void {
 }
 
 export function updateActiveTab(forced = false): void {
-  // Prevent theme buttons from being added twice
+  // Prevent theme buttons from being added twice by doing an update only when the state has changed
+  const $presetTab = $(
+    ".pageSettings .section.themes .tabs .button[tab='preset']"
+  );
+  const $customTab = $(
+    ".pageSettings .section.themes .tabs .button[tab='custom']"
+  );
+
   if (Config.customThemeIndex === -1) {
-    const $presetTab = $(
-      ".pageSettings .section.themes .tabs .button[tab='preset']"
-    );
+    $customTab.removeClass("active");
     if (!$presetTab.hasClass("active") || forced) {
       $presetTab.addClass("active");
       refreshButtons();
     }
   } else {
-    const $customTab = $(
-      ".pageSettings .section.themes .tabs .button[tab='custom']"
-    );
+    $presetTab.removeClass("active");
     if (!$customTab.hasClass("active") || forced) {
       $customTab.addClass("active");
       refreshButtons();
