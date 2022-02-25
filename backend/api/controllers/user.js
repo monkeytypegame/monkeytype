@@ -236,7 +236,7 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
     let customThemes = await UsersDAO.getThemes(uid);
     if (customThemes === undefined) customThemes = [];
-    return new MonkeyResponse("Succesful", customThemes);
+    return new MonkeyResponse("", customThemes);
   }
 
   static async addCustomTheme(req, _res) {
@@ -244,7 +244,7 @@ class UserController {
     const customTheme = req.body;
 
     let addedTheme = await UsersDAO.addTheme(uid, customTheme);
-    return new MonkeyResponse("Custom theme sucessfully added", {
+    return new MonkeyResponse("Custom theme added", {
       theme: addedTheme,
     });
   }
@@ -253,7 +253,7 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
     const { themeID } = req.body;
     await UsersDAO.removeTheme(uid, themeID);
-    return new MonkeyResponse("Custom theme successfully removed");
+    return new MonkeyResponse("Custom theme removed");
   }
 
   static async editCustomTheme(req, _res) {
@@ -261,7 +261,7 @@ class UserController {
     const { themeID, theme } = req.body;
 
     await UsersDAO.editTheme(uid, themeID, theme);
-    return new MonkeyResponse("Custom theme succesfully updated!");
+    return new MonkeyResponse("Custom theme updated");
   }
 }
 
