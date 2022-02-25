@@ -80,7 +80,7 @@ class UsersDAO {
   }
 
   static async addTag(uid, name) {
-    let _id = new ObjectId();
+    const _id = new ObjectId();
     await db
       .collection("users")
       .updateOne({ uid }, { $push: { tags: { _id, name } } });
@@ -366,7 +366,7 @@ class UsersDAO {
       if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
     }
 
-    let _id = new ObjectId();
+    const _id = new ObjectId();
     await db.collection("users").updateOne(
       { uid },
       {
