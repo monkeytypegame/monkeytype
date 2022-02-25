@@ -434,9 +434,15 @@ export async function signInWithGoogle() {
           );
 
           if (resultsSaveResponse.status === 200) {
-            const snapshot = DB.getSnapshot();
-            snapshot.results.push(TestLogic.notSignedInLastResult);
-            DB.setSnapshot(snapshot);
+            const result = TestLogic.notSignedInLastResult;
+            DB.saveLocalResult(result);
+            DB.updateLocalStats({
+              time:
+                result.testDuration +
+                result.incompleteTestSeconds -
+                result.afkDuration,
+              started: 1,
+            });
           }
         }
       }
@@ -643,9 +649,15 @@ async function signUp() {
       const response = await Ape.results.save(TestLogic.notSignedInLastResult);
 
       if (response.status === 200) {
-        const snapshot = DB.getSnapshot();
-        snapshot.results.push(TestLogic.notSignedInLastResult);
-        DB.setSnapshot(snapshot);
+        const result = TestLogic.notSignedInLastResult;
+        DB.saveLocalResult(result);
+        DB.updateLocalStats({
+          time:
+            result.testDuration +
+            result.incompleteTestSeconds -
+            result.afkDuration,
+          started: 1,
+        });
       }
     }
     PageController.change("account");
