@@ -533,7 +533,7 @@ export async function fillSettingsPage(): Promise<void> {
   setEventDisabled(true);
   await initGroups();
   setEventDisabled(false);
-  await ThemePicker.refreshButtons();
+  // await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
 

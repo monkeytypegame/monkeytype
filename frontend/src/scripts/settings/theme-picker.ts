@@ -101,6 +101,7 @@ function updateColors(
 
 export async function refreshButtons(): Promise<void> {
   if (Config.customThemeIndex !== -1) {
+    // Update custom theme buttons
     const customThemesEl = $(
       ".pageSettings .section.themes .allCustomThemes.buttons"
     ).empty();
@@ -120,11 +121,11 @@ export async function refreshButtons(): Promise<void> {
         `<div class="customTheme button ${activeTheme}" customThemeIndex='${customThemeIndex}' 
         style="color:${mainColor};background:${bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
-        <div class="favButton"><i class="far fa-star"></i></div></div>`
+        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>`
       );
     });
   } else {
+    // Update theme buttons
     const favThemesEl = $(
       ".pageSettings .section.themes .favThemes.buttons"
     ).empty();
@@ -143,14 +144,14 @@ export async function refreshButtons(): Promise<void> {
       favThemesEl.css({ paddingBottom: "1rem" });
       themes.forEach((theme) => {
         if (Config.favThemes.includes(theme.name)) {
+          console.log(theme);
           const activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
-            `<div class="theme button ${activeTheme}" theme='${
-              theme.name
-            }' style="color:${theme.mainColor};background:${theme.bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-        <div class="text">${theme.name.replace(/_/g, " ")}</div>
-        <div class="favButton active"><i class="fas fa-star"></i></div></div>`
+            `<div class="theme button ${activeTheme}" theme='${theme.name}' 
+            style="color:${theme.mainColor};background:${theme.bgColor}">
+            <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+            <div class="text">${theme.name.replace(/_/g, " ")}</div>
+            <div class="favButton active"><i class="fas fa-star"></i></div></div>`
           );
         }
       });
@@ -192,7 +193,6 @@ export function setCustomInputs(noThemeUpdate = false): void {
 }
 
 function toggleFavourite(themeName: string): void {
-  // @ts-ignore TODO: Remove this comment once config.js is converted to typescript
   if (Config.favThemes.includes(themeName)) {
     // already favourite, remove
     UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
@@ -207,17 +207,24 @@ function toggleFavourite(themeName: string): void {
 }
 
 export function updateActiveTab(): void {
-  $(".pageSettings .section.themes .tabs .button").removeClass("active");
+  // Prevent theme buttons from being added twice
   if (Config.customThemeIndex === -1) {
-    $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
-      "active"
+    const $presetTab = $(
+      ".pageSettings .section.themes .tabs .button[tab='preset']"
     );
+    if (!$presetTab.hasClass("active")) {
+      $presetTab.addClass("active");
+      refreshButtons();
+    }
   } else {
-    $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
-      "active"
+    const $customTab = $(
+      ".pageSettings .section.themes .tabs .button[tab='custom']"
     );
+    if (!$customTab.hasClass("active")) {
+      $customTab.addClass("active");
+      refreshButtons();
+    }
   }
-  refreshButtons();
 }
 
 // Add events to the DOM
@@ -253,6 +260,27 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
 
 $(document).on(
   "click",
+  ".pageSettings .section.themes .customTheme.button",
+  (e) => {
+    const customThemeIndex = parseInt(
+      $(e.currentTarget).attr("customThemeIndex") ?? ""
+    );
+    const customThemes = DB.getSnapshot().customThemes ?? [];
+    if (
+      customThemeIndex !== undefined &&
+      customThemes.length > customThemeIndex
+    ) {
+      UpdateConfig.setCustomThemeIndex(customThemeIndex);
+      updateActiveButton();
+    } else
+      console.error(
+        "Could not find the custom theme index attribute attached to the button clicked!"
+      );
+  }
+);
+
+$(document).on(
+  "click",
   ".pageSettings .section.themes .theme .favButton",
   (e) => {
     const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
@@ -261,25 +289,6 @@ $(document).on(
       console.error(
         "Could not find the theme attribute attached to the button clicked!"
       );
-  }
-);
-
-// Rizwan TODO: Create click event for custom theme buttons too
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .customTheme.button",
-  (e) => {
-    const customThemeIndex = parseInt(
-      $(e.currentTarget).attr("customThemeIndex") ?? ""
-    );
-    const customThemes = DB.getSnapshot().customThemes ?? [];
-    if (
-      customThemes.length > customThemeIndex &&
-      customThemeIndex !== undefined
-    ) {
-      UpdateConfig.setCustomThemeIndex(customThemeIndex);
-      updateActiveButton();
-    }
   }
 );
 

@@ -317,28 +317,7 @@
         }
       }
 
-      // Rizwan TODO: Seperate the styles for custom theme buttons and remove the fav icon for custom theme buttons
-      .theme.button,
-      .customTheme.button {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        .text {
-          color: inherit;
-        }
-        .activeIndicator {
-          overflow: hidden;
-          width: 1.25rem;
-          transition: 0.25s;
-          opacity: 0;
-          color: inherit;
-          .far {
-            margin: 0;
-          }
-          &.active {
-            width: 1.25rem;
-            opacity: 1;
-          }
-        }
+      .theme.button {
         .favButton {
           overflow: hidden;
           width: 1.25rem;
@@ -359,6 +338,29 @@
         }
         &:hover {
           .favButton {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+      }
+
+      .customTheme.button,
+      .theme.button {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        .text {
+          color: inherit;
+        }
+        .activeIndicator {
+          overflow: hidden;
+          width: 1.25rem;
+          transition: 0.25s;
+          opacity: 0;
+          color: inherit;
+          .far {
+            margin: 0;
+          }
+          &.active {
             width: 1.25rem;
             opacity: 1;
           }
