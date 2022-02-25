@@ -49,6 +49,14 @@
     ]
   },
   {
+    "name": "afrikaans",
+    "languages": [
+      "afrikaans",
+      "afrikaans_1k",
+      "afrikaans_10k"
+    ]
+  },
+  {
     "name": "mongolian",
     "languages": ["mongolian", "mongolian_10k"]
   },
