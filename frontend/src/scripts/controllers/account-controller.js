@@ -449,7 +449,7 @@ export async function signInWithGoogle() {
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
-    if (signedInUser?.user) {
+    if (signedInUser?.additionalUserInfo?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();
     }
