@@ -1223,9 +1223,7 @@ const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
 
 export function updateCustomThemeCommands(): void {
   const customThemes = DB.getSnapshot().customThemes;
-  console.log(customThemes);
   commandsCustomTheme.list = [];
-  console.log("we are here");
 
   commandsCustomTheme.list.push({
     id: "setCustomThemeOff",
