@@ -122,6 +122,7 @@ declare namespace Ape {
           colors: string[];
         }
       ) => EndpointData;
+      deleteCustomThemes: (themeID: string) => EndpointData;
       getTags: Endpoint;
       createTag: (tagName: string) => EndpointData;
       editTag: (tagId: string, newName: string) => EndpointData;

@@ -81,7 +81,7 @@ async function apply(): Promise<void> {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags?.push({
         name: response.data.name,
-        _id: response.data._id,
+        _id: response.data.theme._id,
       });
       ResultTagsPopup.updateButtons();
       Settings.update();

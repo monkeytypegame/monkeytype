@@ -122,7 +122,9 @@ export async function refreshButtons(): Promise<void> {
         `<div class="customTheme button ${activeTheme}" customThemeIndex='${customThemeIndex}' 
         style="color:${mainColor};background:${bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>`
+        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
+        <div class="delButton"><i class="fas fa-trash fa-fw"></i></div>
+        </div>`
       );
     });
   } else {
@@ -249,10 +251,10 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
       };
 
       const response = await Ape.users.addCustomThemes(newCustomTheme);
-      if (response.status == 200) {
+      if (response.status === 200) {
         Notifications.add("Created new custom theme: custom", 1);
         DB.getSnapshot().customThemes = [
-          { ...newCustomTheme, _id: response.data._id },
+          { ...newCustomTheme, _id: response.data.theme._id },
         ];
         UpdateConfig.setCustomThemeIndex(0);
       } else {
@@ -276,6 +278,52 @@ $(document).on(
     ) {
       UpdateConfig.setCustomThemeIndex(customThemeIndex);
       updateActiveButton();
+    } else
+      console.error(
+        "Could not find the custom theme index attribute attached to the button clicked!"
+      );
+  }
+);
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme .delButton",
+  async (e) => {
+    const customThemeIndex = parseInt(
+      $(e.currentTarget)
+        .parents(".customTheme.button")
+        .attr("customThemeIndex") ?? "-1"
+    );
+    console.log(customThemeIndex);
+    if (customThemeIndex !== -1) {
+      const customThemes = DB.getSnapshot().customThemes;
+      if (customThemes === undefined || customThemes.length < 1) {
+        Notifications.add("No custom themes!", -1);
+        return;
+      }
+      const customTheme = customThemes[customThemeIndex];
+      if (customTheme === undefined) {
+        Notifications.add("Custom theme does not exist!");
+        return;
+      }
+      const response = await Ape.users.deleteCustomThemes(customTheme._id);
+
+      if (response.status === 200) {
+        const filteredThemes = customThemes.filter((_customTheme, index) => {
+          return index !== customThemeIndex;
+        });
+        DB.getSnapshot().customThemes = filteredThemes;
+        if (filteredThemes.length < 1) {
+          UpdateConfig.setCustomThemeIndex(filteredThemes.length < 1 ? -1 : 0);
+          updateActiveButton();
+        } else {
+          UpdateConfig.setCustomThemeIndex(0);
+          updateActiveTab(true);
+        }
+        Notifications.add("Deleted custom theme sucessfully", 1);
+      } else Notifications.add(response.message, -1);
+
+      updateActiveTab();
     } else
       console.error(
         "Could not find the custom theme index attribute attached to the button clicked!"

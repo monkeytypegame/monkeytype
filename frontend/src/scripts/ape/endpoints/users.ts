@@ -106,12 +106,12 @@ export default function getUsersEndpoints(
     return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
   }
 
-  // async function deleteCustomThemes(themeID: string): Ape.EndpointData {
-  //   const payload = {
-  //     themeID: themeID,
-  //   };
-  //   return await apeClient.delete(`${BASE_PATH}/customThemes`, { payload });
-  // }
+  async function deleteCustomThemes(themeID: string): Ape.EndpointData {
+    const payload = {
+      themeID: themeID,
+    };
+    return await apeClient.delete(`${BASE_PATH}/customThemes`, { payload });
+  }
 
   async function addCustomThemes(newTheme: {
     name: string;
@@ -153,5 +153,6 @@ export default function getUsersEndpoints(
     unlinkDiscord,
     addCustomThemes,
     editCustomThemes,
+    deleteCustomThemes,
   };
 }

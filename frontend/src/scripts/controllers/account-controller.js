@@ -61,12 +61,13 @@ export async function getDataAndInit() {
         colors: [...Config.customThemeColors],
       };
       const response = await Ape.users.addCustomThemes(newCustomTheme);
+      console.log("No i was called");
 
       if (response.status === 200) {
         Notifications.add("Custom theme: 'custom' successfully created", 1);
         DB.getSnapshot().customThemes.push({
           ...newCustomTheme,
-          _id: response.data._id,
+          _id: response.data.theme._id,
         });
       } else {
         Notifications.add("Could not create custom theme: 'custom'", -1);
@@ -315,17 +316,18 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       } else {
         const newCustomTheme = { name: "custom", colors: themeColors };
         const response = await Ape.users.addCustomThemes(newCustomTheme);
+        console.log("I was called");
 
         if (response.status === 200) {
           const snapshot = DB.getSnapshot();
           if (customThemesLength === 0)
             snapshot.customThemes = [
-              { ...newCustomTheme, _id: response.data._id },
+              { ...newCustomTheme, _id: response.data.theme._id },
             ];
           else
             snapshot.customThemes.push({
               ...newCustomTheme,
-              _id: response.data._id,
+              _id: response.data.theme._id,
             });
 
           UpdateConfig.setCustomThemeIndex(customThemesLength);
