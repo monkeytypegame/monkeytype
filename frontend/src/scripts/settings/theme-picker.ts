@@ -8,15 +8,22 @@ import * as DB from "../db";
 import Ape from "../ape";
 
 export function updateActiveButton(): void {
-  // Rizwan TODO: Add a way for activating the button for user's custom themes
-  let activeThemeName = Config.theme;
-  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-    activeThemeName = ThemeController.randomTheme;
+  if (Config.customThemeIndex !== -1) {
+    const activeThemeIndex = Config.customThemeIndex;
+    $(`.pageSettings .section.themes .customTheme`).removeClass("active");
+    $(
+      `.pageSettings .section.themes .customTheme[customThemeIndex=${activeThemeIndex}]`
+    ).addClass("active");
+  } else {
+    let activeThemeName = Config.theme;
+    if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+      activeThemeName = ThemeController.randomTheme;
+    }
+    $(`.pageSettings .section.themes .theme`).removeClass("active");
+    $(
+      `.pageSettings .section.themes .theme[theme=${activeThemeName}]`
+    ).addClass("active");
   }
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
-    "active"
-  );
 }
 
 function updateColors(
