@@ -2938,7 +2938,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       icon: "fa-tint",
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined) return;
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );

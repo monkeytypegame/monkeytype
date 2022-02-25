@@ -140,21 +140,29 @@ type PossibleType =
   | string[]
   | number[];
 
+enum Validity {
+  HANDLED,
+  INVALID,
+  VALID,
+}
+
 async function some<T>(
   array: T[],
-  predicate: (item: T) => Promise<boolean | undefined>
-): Promise<boolean> {
+  predicate: (item: T) => Promise<Validity>
+): Promise<Validity> {
   for (const item of array) {
-    if (await predicate(item)) return true;
+    const val = await predicate(item);
+    if (val === Validity.VALID) return Validity.VALID;
+    else if (val === Validity.HANDLED) return Validity.HANDLED;
   }
 
-  return false;
+  return Validity.INVALID;
 }
 
 function isConfigValueValid(
   val: unknown,
   possibleTypes: PossibleType[]
-): boolean {
+): Validity {
   return possibleTypes.some((possibleType) => {
     switch (possibleType) {
       case "boolean":
@@ -173,7 +181,7 @@ function isConfigValueValid(
         return typeof val === "string";
 
       case "undefined":
-        return typeof val === "undefined";
+        return typeof val === "undefined" || val === undefined;
 
       case "null":
         return val === null;
@@ -191,21 +199,24 @@ function isConfigValueValid(
 
         return false;
     }
-  });
+  })
+    ? Validity.VALID
+    : Validity.INVALID;
 }
 
 function isConfigValueValidAsync(
   val: unknown,
   possibleTypes: PossibleType[]
-): Promise<boolean | undefined> {
+): Promise<Validity> {
   return some(possibleTypes, async (possibleType) => {
     switch (possibleType) {
       case "layoutfluid": {
-        if (typeof val !== "string") return false;
+        if (typeof val !== "string") return Validity.INVALID;
 
         const layoutNames = val.split(/[# ]+/);
 
-        if (layoutNames.length < 2 || layoutNames.length > 5) return false;
+        if (layoutNames.length < 2 || layoutNames.length > 5)
+          return Validity.INVALID;
 
         // convert the layout names to layouts
         const layouts = await Promise.all(
@@ -231,32 +242,38 @@ function isConfigValueValidAsync(
             )}.`
           );
 
-          return;
+          return Validity.HANDLED;
         }
 
-        return true;
+        return Validity.VALID;
       }
 
       default:
         if (possibleType instanceof Array) {
-          return possibleType.includes(val as never);
+          return possibleType.includes(val as never)
+            ? Validity.VALID
+            : Validity.INVALID;
         }
 
-        return false;
+        return Validity.INVALID;
     }
   });
 }
 
 function invalid(key: string, val: unknown, customMessage?: string): boolean {
-  if (customMessage !== undefined) {
-    Notifications.add(`Invalid value for ${key} (${val}). ${customMessage}`);
-  } else {
+  if (customMessage === undefined) {
     Notifications.add(
       `Invalid value for ${key} (${val}). Please try to change this setting again.`,
       -1
     );
-    console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
+  } else {
+    Notifications.add(
+      `Invalid value for ${key} (${val}). ${customMessage}`,
+      -1
+    );
   }
+
+  console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
 
   return false;
 }
@@ -286,7 +303,8 @@ export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
 
 //numbers
 export function setNumbers(numb: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(numb, ["boolean"])) return invalid("numbers", numb);
+  if (isConfigValueValid(numb, ["boolean"]) === Validity.INVALID)
+    return invalid("numbers", numb);
 
   if (config.mode === "quote") {
     numb = false;
@@ -305,7 +323,7 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(punc, ["boolean"]))
+  if (isConfigValueValid(punc, ["boolean"]) === Validity.INVALID)
     return invalid("punctuation", punc);
 
   if (config.mode === "quote") {
@@ -324,7 +342,10 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
 }
 
 export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
-  if (!isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]))
+  if (
+    isConfigValueValid(mode, [["time", "words", "quote", "zen", "custom"]]) ===
+    Validity.INVALID
+  )
     return invalid("mode", mode);
 
   if (mode !== "words" && config.funbox === "memory") {
@@ -351,7 +372,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
 }
 
 export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("play sound on error", val);
 
   config.playSoundOnError = val;
@@ -365,7 +386,10 @@ export function setPlaySoundOnClick(
   val: MonkeyTypes.PlaySoundOnClick,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]))
+  if (
+    isConfigValueValid(val, [["off", "1", "2", "3", "4", "5", "6", "7"]]) ===
+    Validity.INVALID
+  )
     return invalid("play sound on click", val);
 
   config.playSoundOnClick = val;
@@ -379,7 +403,7 @@ export function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["0.1", "0.5", "1.0"]]))
+  if (isConfigValueValid(val, [["0.1", "0.5", "1.0"]]) === Validity.INVALID)
     return invalid("sound volume", val);
 
   config.soundVolume = val;
@@ -394,7 +418,10 @@ export function setDifficulty(
   diff: MonkeyTypes.Difficulty,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(diff, [["normal", "expert", "master"]]))
+  if (
+    isConfigValueValid(diff, [["normal", "expert", "master"]]) ===
+    Validity.INVALID
+  )
     return invalid("difficulty", diff);
 
   if (diff !== "normal" && diff !== "expert" && diff !== "master") {
@@ -409,7 +436,7 @@ export function setDifficulty(
 
 //set fav themes
 export function setFavThemes(themes: string[], nosave?: boolean): boolean {
-  if (!isConfigValueValid(themes, ["stringArray"]))
+  if (isConfigValueValid(themes, ["stringArray"]) === Validity.INVALID)
     return invalid("favorite themes", themes);
   config.favThemes = themes;
   if (!nosave) saveToLocalStorage();
@@ -419,7 +446,8 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
 }
 
 export function setFunbox(funbox: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(funbox, ["string"])) return invalid("funbox", funbox);
+  if (isConfigValueValid(funbox, ["string"]) === Validity.INVALID)
+    return invalid("funbox", funbox);
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
@@ -430,7 +458,7 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(blind, ["boolean"]))
+  if (isConfigValueValid(blind, ["boolean"]) === Validity.INVALID)
     return invalid("blind mode", blind);
 
   config.blindMode = blind;
@@ -444,7 +472,7 @@ export function setChartAccuracy(
   chartAccuracy: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(chartAccuracy, ["boolean"]))
+  if (isConfigValueValid(chartAccuracy, ["boolean"]) === Validity.INVALID)
     return invalid("chart accuracy", chartAccuracy);
 
   config.chartAccuracy = chartAccuracy;
@@ -458,7 +486,9 @@ export function setChartStyle(
   chartStyle: MonkeyTypes.ChartStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(chartStyle, [["line", "scatter"]]))
+  if (
+    isConfigValueValid(chartStyle, [["line", "scatter"]]) === Validity.INVALID
+  )
     return invalid("chart style", chartStyle);
 
   config.chartStyle = chartStyle;
@@ -472,7 +502,10 @@ export function setStopOnError(
   soe: MonkeyTypes.StopOnError | boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(soe, [["off", "word", "letter"], "boolean"]))
+  if (
+    isConfigValueValid(soe, [["off", "word", "letter"], "boolean"]) ===
+    Validity.INVALID
+  )
     return invalid("stop on error", soe);
 
   if (soe === true || soe === false) {
@@ -492,7 +525,7 @@ export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("always show decimal places", val);
 
   config.alwaysShowDecimalPlaces = val;
@@ -506,7 +539,7 @@ export function setAlwaysShowDecimalPlaces(
 }
 
 export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("always show CPM", val);
 
   config.alwaysShowCPM = val;
@@ -520,7 +553,7 @@ export function setShowOutOfFocusWarning(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("show out of focus warning", val);
 
   config.showOutOfFocusWarning = val;
@@ -534,7 +567,7 @@ export function setShowOutOfFocusWarning(
 }
 
 export function setSwapEscAndTab(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("swap esc and tab", val);
 
   config.swapEscAndTab = val;
@@ -549,7 +582,10 @@ export function setPaceCaret(
   val: MonkeyTypes.PaceCaret,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["custom", "off", "average", "pb"]]))
+  if (
+    isConfigValueValid(val, [["custom", "off", "average", "pb"]]) ===
+    Validity.INVALID
+  )
     return invalid("pace caret", val);
 
   if (document.readyState === "complete") {
@@ -573,7 +609,7 @@ export function setPaceCaretCustomSpeed(
   val: number,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, ["number"]))
+  if (isConfigValueValid(val, ["number"]) === Validity.INVALID)
     return invalid("pace caret custom speed", val);
 
   config.paceCaretCustomSpeed = val;
@@ -584,7 +620,7 @@ export function setPaceCaretCustomSpeed(
 }
 
 export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(pace, ["boolean"]))
+  if (isConfigValueValid(pace, ["boolean"]) === Validity.INVALID)
     return invalid("repeated pace", pace);
 
   config.repeatedPace = pace;
@@ -599,7 +635,7 @@ export function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(minwpm, [["off", "custom"]]))
+  if (isConfigValueValid(minwpm, [["off", "custom"]]) === Validity.INVALID)
     return invalid("min WPM", minwpm);
 
   config.minWpm = minwpm;
@@ -610,7 +646,7 @@ export function setMinWpm(
 }
 
 export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["number"]))
+  if (isConfigValueValid(val, ["number"]) === Validity.INVALID)
     return invalid("min WPM custom speed", val);
 
   config.minWpmCustomSpeed = val;
@@ -625,7 +661,7 @@ export function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(min, [["off", "custom"]]))
+  if (isConfigValueValid(min, [["off", "custom"]]) === Validity.INVALID)
     return invalid("min acc", min);
 
   config.minAcc = min;
@@ -636,7 +672,7 @@ export function setMinAcc(
 }
 
 export function setMinAccCustom(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["number"]))
+  if (isConfigValueValid(val, ["number"]) === Validity.INVALID)
     return invalid("min acc custom", val);
 
   config.minAccCustom = val;
@@ -651,7 +687,7 @@ export function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(min, [["off", "fixed", "flex"]]))
+  if (isConfigValueValid(min, [["off", "fixed", "flex"]]) === Validity.INVALID)
     return invalid("min burst", min);
 
   config.minBurst = min;
@@ -662,7 +698,7 @@ export function setMinBurst(
 }
 
 export function setMinBurstCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["number"]))
+  if (isConfigValueValid(val, ["number"]) === Validity.INVALID)
     return invalid("min burst custom speed", val);
 
   config.minBurstCustomSpeed = val;
@@ -677,7 +713,7 @@ export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("always show words history", val);
 
   config.alwaysShowWordsHistory = val;
@@ -692,7 +728,7 @@ export function setSingleListCommandLine(
   option: MonkeyTypes.SingleListCommandLine,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(option, [["manual", "on"]]))
+  if (isConfigValueValid(option, [["manual", "on"]]) === Validity.INVALID)
     return invalid("single list command line", option);
 
   config.singleListCommandLine = option;
@@ -704,7 +740,7 @@ export function setSingleListCommandLine(
 
 //caps lock warning
 export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("caps lock warning", val);
 
   config.capsLockWarning = val;
@@ -715,7 +751,7 @@ export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(sal, ["boolean"]))
+  if (isConfigValueValid(sal, ["boolean"]) === Validity.INVALID)
     return invalid("show all lines", sal);
 
   config.showAllLines = sal;
@@ -728,7 +764,8 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
 }
 
 export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(qe, ["boolean"])) return invalid("quick end", qe);
+  if (isConfigValueValid(qe, ["boolean"]) === Validity.INVALID)
+    return invalid("quick end", qe);
 
   config.quickEnd = qe;
   if (!nosave) saveToLocalStorage();
@@ -741,7 +778,10 @@ export function setEnableAds(
   val: MonkeyTypes.EnableAds | boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["on", "off", "max"], "boolean"]))
+  if (
+    isConfigValueValid(val, [["on", "off", "max"], "boolean"]) ===
+    Validity.INVALID
+  )
     return invalid("enable ads", val);
 
   if (val === true || val === false) {
@@ -763,7 +803,9 @@ export function setRepeatQuotes(
   val: MonkeyTypes.RepeatQuotes | boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["off", "typing"], "boolean"]))
+  if (
+    isConfigValueValid(val, [["off", "typing"], "boolean"]) === Validity.INVALID
+  )
     return invalid("repeat quotes", val);
 
   if (val === true || val === false) {
@@ -778,7 +820,7 @@ export function setRepeatQuotes(
 
 //flip colors
 export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(flip, ["boolean"]))
+  if (isConfigValueValid(flip, ["boolean"]) === Validity.INVALID)
     return invalid("flip test colors", flip);
 
   config.flipTestColors = flip;
@@ -790,7 +832,7 @@ export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
 
 //extra color
 export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(extra, ["boolean"]))
+  if (isConfigValueValid(extra, ["boolean"]) === Validity.INVALID)
     return invalid("colorful mode", extra);
 
   config.colorfulMode = extra;
@@ -802,7 +844,7 @@ export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
 
 //strict space
 export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("strict space", val);
 
   config.strictSpace = val;
@@ -817,7 +859,7 @@ export function setOppositeShiftMode(
   val: MonkeyTypes.OppositeShiftMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["off", "on", "keymap"]]))
+  if (isConfigValueValid(val, [["off", "on", "keymap"]]) === Validity.INVALID)
     return invalid("opposite shift mode", val);
 
   config.oppositeShiftMode = val;
@@ -831,7 +873,10 @@ export function setPageWidth(
   val: MonkeyTypes.PageWidth,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(val, [["max", "100", "125", "150", "200"]]))
+  if (
+    isConfigValueValid(val, [["max", "100", "125", "150", "200"]]) ===
+    Validity.INVALID
+  )
     return invalid("page width", val);
 
   config.pageWidth = val;
@@ -854,9 +899,9 @@ export function setCaretStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid(caretStyle, [
+    isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
-    ])
+    ]) === Validity.INVALID
   )
     return invalid("caret style", caretStyle);
 
@@ -895,9 +940,9 @@ export function setPaceCaretStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid(caretStyle, [
+    isConfigValueValid(caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
-    ])
+    ]) === Validity.INVALID
   )
     return invalid("pace caret style", caretStyle);
 
@@ -933,7 +978,7 @@ export function setShowTimerProgress(
   timer: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(timer, ["boolean"]))
+  if (isConfigValueValid(timer, ["boolean"]) === Validity.INVALID)
     return invalid("show timer progress", timer);
 
   config.showTimerProgress = timer;
@@ -944,7 +989,7 @@ export function setShowTimerProgress(
 }
 
 export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(live, ["boolean"]))
+  if (isConfigValueValid(live, ["boolean"]) === Validity.INVALID)
     return invalid("show live WPM", live);
 
   config.showLiveWpm = live;
@@ -955,7 +1000,7 @@ export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowLiveAcc(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(live, ["boolean"]))
+  if (isConfigValueValid(live, ["boolean"]) === Validity.INVALID)
     return invalid("show live acc", live);
 
   config.showLiveAcc = live;
@@ -966,7 +1011,7 @@ export function setShowLiveAcc(live: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(live, ["boolean"]))
+  if (isConfigValueValid(live, ["boolean"]) === Validity.INVALID)
     return invalid("show live burst", live);
 
   config.showLiveBurst = live;
@@ -977,7 +1022,7 @@ export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowAvg(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(live, ["boolean"]))
+  if (isConfigValueValid(live, ["boolean"]) === Validity.INVALID)
     return invalid("show average", live);
 
   config.showAvg = live;
@@ -991,7 +1036,9 @@ export function setHighlightMode(
   mode: MonkeyTypes.HighlightMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(mode, [["off", "letter", "word"]]))
+  if (
+    isConfigValueValid(mode, [["off", "letter", "word"]]) === Validity.INVALID
+  )
     return invalid("highlight mode", mode);
 
   if (
@@ -1015,7 +1062,7 @@ export function setHighlightMode(
 }
 
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("hide extra letters", val);
 
   config.hideExtraLetters = val;
@@ -1029,7 +1076,7 @@ export function setTimerStyle(
   style: MonkeyTypes.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(style, [["bar", "text", "mini"]]))
+  if (isConfigValueValid(style, [["bar", "text", "mini"]]) === Validity.INVALID)
     return invalid("timer style", style);
 
   config.timerStyle = style;
@@ -1043,7 +1090,10 @@ export function setTimerColor(
   color: MonkeyTypes.TimerColor,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(color, [["black", "sub", "text", "main"]]))
+  if (
+    isConfigValueValid(color, [["black", "sub", "text", "main"]]) ===
+    Validity.INVALID
+  )
     return invalid("timer color", color);
 
   config.timerColor = color;
@@ -1090,7 +1140,10 @@ export function setTimerOpacity(
   opacity: MonkeyTypes.TimerOpacity,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]))
+  if (
+    isConfigValueValid(opacity, [["0.25", "0.5", "0.75", "1"]]) ===
+    Validity.INVALID
+  )
     return invalid("timer opacity", opacity);
 
   config.timerOpacity = opacity;
@@ -1102,7 +1155,7 @@ export function setTimerOpacity(
 
 //key tips
 export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(keyTips, ["boolean"]))
+  if (isConfigValueValid(keyTips, ["boolean"]) === Validity.INVALID)
     return invalid("key tips", keyTips);
 
   config.showKeyTips = keyTips;
@@ -1122,7 +1175,8 @@ export function setTimeConfig(
   time: MonkeyTypes.TimeModes,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(time, ["number"])) return invalid("time", time);
+  if (isConfigValueValid(time, ["number"]) === Validity.INVALID)
+    return invalid("time", time);
 
   const newTime = isNaN(time) || time < 0 ? defaultConfig.time : time;
 
@@ -1147,7 +1201,10 @@ export function setQuoteLength(
   nosave?: boolean,
   multipleMode?: boolean
 ): boolean {
-  if (!isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]))
+  if (
+    isConfigValueValid(len, [[-2, -1, 0, 1, 2, 3], "numberArray"]) ===
+    Validity.INVALID
+  )
     return invalid("quote length", len);
 
   if (Array.isArray(len)) {
@@ -1188,7 +1245,7 @@ export function setWordCount(
   wordCount: MonkeyTypes.WordsModes,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(wordCount, ["number"]))
+  if (isConfigValueValid(wordCount, ["number"]) === Validity.INVALID)
     return invalid("words", wordCount);
 
   const newWordCount =
@@ -1213,7 +1270,8 @@ export function setWordCount(
 
 //caret
 export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(mode, ["boolean"])) return invalid("", mode);
+  if (isConfigValueValid(mode, ["boolean"]) === Validity.INVALID)
+    return invalid("", mode);
 
   config.smoothCaret = mode;
   if (mode) {
@@ -1228,7 +1286,7 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
 }
 
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(mode, ["boolean"]))
+  if (isConfigValueValid(mode, ["boolean"]) === Validity.INVALID)
     return invalid("start graphs at zero", mode);
 
   config.startGraphsAtZero = mode;
@@ -1240,7 +1298,7 @@ export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
 
 //linescroll
 export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(mode, ["boolean"]))
+  if (isConfigValueValid(mode, ["boolean"]) === Validity.INVALID)
     return invalid("smooth line scroll", mode);
 
   config.smoothLineScroll = mode;
@@ -1252,7 +1310,7 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
 
 //quick tab
 export function setQuickTabMode(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(mode, ["boolean"]))
+  if (isConfigValueValid(mode, ["boolean"]) === Validity.INVALID)
     return invalid("quick tab mode", mode);
 
   config.quickTab = mode;
@@ -1274,7 +1332,7 @@ export function setQuickTabMode(mode: boolean, nosave?: boolean): boolean {
 }
 
 export function previewFontFamily(font: string): boolean {
-  if (!isConfigValueValid(font, ["string"]))
+  if (isConfigValueValid(font, ["string"]) === Validity.INVALID)
     return invalid("preview font family", font);
 
   document.documentElement.style.setProperty(
@@ -1287,7 +1345,7 @@ export function previewFontFamily(font: string): boolean {
 
 //font family
 export function setFontFamily(font: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(font, ["string"]))
+  if (isConfigValueValid(font, ["string"]) === Validity.INVALID)
     return invalid("font family", font);
 
   if (font === "") {
@@ -1321,7 +1379,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
 
 //freedom
 export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(freedom, ["boolean"]))
+  if (isConfigValueValid(freedom, ["boolean"]) === Validity.INVALID)
     return invalid("freedom mode", freedom);
 
   if (freedom == null) {
@@ -1341,7 +1399,7 @@ export function setConfidenceMode(
   cm: MonkeyTypes.ConfidenceMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(cm, [["off", "on", "max"]]))
+  if (isConfigValueValid(cm, [["off", "on", "max"]]) === Validity.INVALID)
     return invalid("confidence mode", cm);
 
   config.confidenceMode = cm;
@@ -1359,7 +1417,10 @@ export function setIndicateTypos(
   value: MonkeyTypes.IndicateTypos,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(value, [["off", "below", "replace"]]))
+  if (
+    isConfigValueValid(value, [["off", "below", "replace"]]) ===
+    Validity.INVALID
+  )
     return invalid("indicate typos", value);
 
   config.indicateTypos = value;
@@ -1373,7 +1434,7 @@ export function setAutoSwitchTheme(
   boolean: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(boolean, ["boolean"]))
+  if (isConfigValueValid(boolean, ["boolean"]) === Validity.INVALID)
     return invalid("auto switch theme", boolean);
 
   boolean = boolean ?? defaultConfig.autoSwitchTheme;
@@ -1385,7 +1446,7 @@ export function setAutoSwitchTheme(
 }
 
 export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(boolean, ["boolean"]))
+  if (isConfigValueValid(boolean, ["boolean"]) === Validity.INVALID)
     return invalid("custom theme", boolean);
 
   if (!nosave) saveToLocalStorage();
@@ -1395,7 +1456,8 @@ export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
 }
 
 export function setTheme(name: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(name, ["string"])) return invalid("", name);
+  if (isConfigValueValid(name, ["string"]) === Validity.INVALID)
+    return invalid("", name);
 
   config.theme = name;
   setCustomTheme(false, true);
@@ -1406,7 +1468,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
 }
 
 export function setThemeLight(name: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(name, ["string"]))
+  if (isConfigValueValid(name, ["string"]) === Validity.INVALID)
     return invalid("theme light", name);
 
   config.themeLight = name;
@@ -1417,7 +1479,8 @@ export function setThemeLight(name: string, nosave?: boolean): boolean {
 }
 
 export function setThemeDark(name: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(name, ["string"])) return invalid("theme dark", name);
+  if (isConfigValueValid(name, ["string"]) === Validity.INVALID)
+    return invalid("theme dark", name);
 
   config.themeDark = name;
   if (!nosave) saveToLocalStorage();
@@ -1431,7 +1494,8 @@ function setThemes(
   customState: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
+  if (isConfigValueValid(theme, ["string"]) === Validity.INVALID)
+    return invalid("", theme);
 
   config.theme = theme;
   config.customTheme = customState;
@@ -1446,7 +1510,10 @@ export function setRandomTheme(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid(val, [["off", "on", "fav", "light", "dark"], "boolean"])
+    isConfigValueValid(val, [
+      ["off", "on", "fav", "light", "dark"],
+      "boolean",
+    ]) === Validity.INVALID
   )
     return invalid("random theme", val);
 
@@ -1461,7 +1528,7 @@ export function setRandomTheme(
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"]))
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
     return invalid("british english", val);
 
   if (!val) {
@@ -1475,7 +1542,8 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setLazyMode(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(val, ["boolean"])) return invalid("lazy mode", val);
+  if (isConfigValueValid(val, ["boolean"]) === Validity.INVALID)
+    return invalid("lazy mode", val);
 
   if (!val) {
     val = false;
@@ -1491,7 +1559,7 @@ export function setCustomThemeColors(
   colors: string[],
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(colors, ["stringArray"]))
+  if (isConfigValueValid(colors, ["stringArray"]) === Validity.INVALID)
     return invalid("custom theme colors", colors);
 
   if (colors !== undefined) {
@@ -1506,7 +1574,7 @@ export function setCustomThemeColors(
 }
 
 export function setLanguage(language: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(language, ["string"]))
+  if (isConfigValueValid(language, ["string"]) === Validity.INVALID)
     return invalid("language", language);
 
   config.language = language;
@@ -1524,7 +1592,7 @@ export function setLanguage(language: string, nosave?: boolean): boolean {
 }
 
 export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(monkey, ["boolean"]))
+  if (isConfigValueValid(monkey, ["boolean"]) === Validity.INVALID)
     return invalid("monkey", monkey);
 
   config.monkey = monkey;
@@ -1543,7 +1611,10 @@ export function setKeymapMode(
   mode: MonkeyTypes.KeymapMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(mode, [["off", "static", "react", "next"]]))
+  if (
+    isConfigValueValid(mode, [["off", "static", "react", "next"]]) ===
+    Validity.INVALID
+  )
     return invalid("keymap mode", mode);
 
   $(".active-key").removeClass("active-key");
@@ -1559,7 +1630,10 @@ export function setKeymapLegendStyle(
   style: MonkeyTypes.KeymapLegendStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
+  if (
+    isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]) ===
+    Validity.INVALID
+  )
     return invalid("keymap legend style", style);
 
   // Remove existing styles
@@ -1597,9 +1671,9 @@ export function setKeymapStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid(style, [
+    isConfigValueValid(style, [
       ["staggered", "alice", "matrix", "split", "split_matrix"],
-    ])
+    ]) === Validity.INVALID
   )
     return invalid("keymap style", style);
 
@@ -1612,7 +1686,7 @@ export function setKeymapStyle(
 }
 
 export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(layout, ["string"]))
+  if (isConfigValueValid(layout, ["string"]) === Validity.INVALID)
     return invalid("keymap layout", layout);
 
   config.keymapLayout = layout;
@@ -1623,7 +1697,8 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
 }
 
 export function setLayout(layout: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(layout, ["string"])) return invalid("layout", layout);
+  if (isConfigValueValid(layout, ["string"]) === Validity.INVALID)
+    return invalid("layout", layout);
 
   config.layout = layout;
   if (!nosave) saveToLocalStorage();
@@ -1647,7 +1722,10 @@ export function setFontSize(
   nosave?: boolean
 ): boolean {
   fontSize = fontSize.toString() as MonkeyTypes.FontSize; //todo remove after around a week
-  if (!isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]))
+  if (
+    isConfigValueValid(fontSize, [["1", "125", "15", "2", "3", "4"]]) ===
+    Validity.INVALID
+  )
     return invalid("font size", fontSize);
 
   config.fontSize = fontSize;
@@ -1699,7 +1777,7 @@ export function setFontSize(
 }
 
 export function setCustomBackground(value: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid(value, ["string"]))
+  if (isConfigValueValid(value, ["string"]) === Validity.INVALID)
     return invalid("custom background", value);
 
   value = value.trim();
@@ -1724,13 +1802,16 @@ export async function setCustomLayoutfluid(
   value: MonkeyTypes.CustomLayoutFluidSpaces,
   nosave?: boolean
 ): Promise<boolean> {
-  const isInvalid = await isConfigValueValidAsync(value, ["layoutfluid"]);
+  const trimmed = value.trim();
 
-  if (isInvalid === undefined) return false;
+  const isInvalid = await isConfigValueValidAsync(trimmed, ["layoutfluid"]);
 
-  if (!isInvalid) return invalid("custom layoutfluid", value);
+  if (isInvalid === Validity.HANDLED) return false;
 
-  const customLayoutfluid = value.replace(
+  if (isInvalid === Validity.INVALID)
+    return invalid("custom layoutfluid", trimmed);
+
+  const customLayoutfluid = trimmed.replace(
     / /g,
     "#"
   ) as MonkeyTypes.CustomLayoutFluid;
@@ -1749,7 +1830,10 @@ export function setCustomBackgroundSize(
   value: MonkeyTypes.CustomBackgroundSize,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(value, [["max", "cover", "contain"]]))
+  if (
+    isConfigValueValid(value, [["max", "cover", "contain"]]) ===
+    Validity.INVALID
+  )
     return invalid("custom background size", value);
 
   if (value != "cover" && value != "contain" && value != "max") {
@@ -1769,7 +1853,7 @@ export function setCustomBackgroundFilter(
   array = (array as unknown as string[]).map((value) =>
     parseFloat(value)
   ) as MonkeyTypes.CustomBackgroundFilter;
-  if (!isConfigValueValid(array, ["numberArray"]))
+  if (isConfigValueValid(array, ["numberArray"]) === Validity.INVALID)
     return invalid("custom background filter", array);
 
   config.customBackgroundFilter = array;
@@ -1783,7 +1867,10 @@ export function setMonkeyPowerLevel(
   level: MonkeyTypes.MonkeyPowerLevel,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid(level, [["off", "1", "2", "3", "4"]]))
+  if (
+    isConfigValueValid(level, [["off", "1", "2", "3", "4"]]) ===
+    Validity.INVALID
+  )
     return invalid("monkey power level", level);
 
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
@@ -1795,7 +1882,7 @@ export function setMonkeyPowerLevel(
 }
 
 export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid(value, ["boolean"]))
+  if (isConfigValueValid(value, ["boolean"]) === Validity.INVALID)
     return invalid("burst heatmap", value);
 
   if (!value) {
