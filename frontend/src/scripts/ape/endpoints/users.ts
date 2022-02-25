@@ -95,13 +95,16 @@ export default function getUsersEndpoints(
   //   return await apeClient.get(`${BASE_PATH}/customThemes`);
   // }
 
-  // async function editCustomThemes(themeID: string, newTheme: MonkeyTypes.CustomTheme): Ape.EndpointData {
-  //   const payload = {
-  //     themeID: themeID,
-  //     theme: newTheme
-  //   };
-  //   return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
-  // }
+  async function editCustomThemes(
+    themeID: string,
+    newTheme: { name: string; colors: string[] }
+  ): Ape.EndpointData {
+    const payload = {
+      themeID: themeID,
+      theme: newTheme,
+    };
+    return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
+  }
 
   // async function deleteCustomThemes(themeID: string): Ape.EndpointData {
   //   const payload = {
@@ -149,5 +152,6 @@ export default function getUsersEndpoints(
     linkDiscord,
     unlinkDiscord,
     addCustomThemes,
+    editCustomThemes,
   };
 }

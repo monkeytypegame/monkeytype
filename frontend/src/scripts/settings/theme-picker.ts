@@ -207,13 +207,13 @@ function toggleFavourite(themeName: string): void {
   refreshButtons();
 }
 
-export function updateActiveTab(): void {
+export function updateActiveTab(forced = false): void {
   // Prevent theme buttons from being added twice
   if (Config.customThemeIndex === -1) {
     const $presetTab = $(
       ".pageSettings .section.themes .tabs .button[tab='preset']"
     );
-    if (!$presetTab.hasClass("active")) {
+    if (!$presetTab.hasClass("active") || forced) {
       $presetTab.addClass("active");
       refreshButtons();
     }
@@ -221,7 +221,7 @@ export function updateActiveTab(): void {
     const $customTab = $(
       ".pageSettings .section.themes .tabs .button[tab='custom']"
     );
-    if (!$customTab.hasClass("active")) {
+    if (!$customTab.hasClass("active") || forced) {
       $customTab.addClass("active");
       refreshButtons();
     }
@@ -404,17 +404,39 @@ $("#shareCustomThemeButton").on("click", () => {
   );
 });
 
-// Rizwan TODO: Make this work with custom themes
-$(".pageSettings .saveCustomThemeButton").on("click", () => {
-  const save: string[] = [];
+// Rizwan TODO: Edit this to work with changed name for custom themes when that is added
+$(".pageSettings .saveCustomThemeButton").on("click", async () => {
+  const newColors: string[] = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
     (_index, element) => {
-      save.push($(element).attr("value") as string);
+      newColors.push($(element).attr("value") as string);
     }
   );
-  // Rizwan TODO: Update the custom theme and send a fetch request
-  // UpdateConfig.setCustomThemeColors(save);
-  ThemeController.set("custom");
-  Notifications.add("Custom theme colors saved", 1);
+  const snapshot = DB.getSnapshot();
+  if (snapshot.customThemes === undefined) {
+    Notifications.add("No custom themes!", -1);
+    return;
+  }
+
+  const customTheme = snapshot.customThemes[Config.customThemeIndex];
+  if (customTheme === undefined) {
+    Notifications.add("Custom theme does not exist!", -1);
+    return;
+  }
+  const newTheme = {
+    name: customTheme.name,
+    colors: newColors,
+  };
+  const response = await Ape.users.editCustomThemes(customTheme._id, newTheme);
+  if (response.status === 200) {
+    snapshot.customThemes[Config.customThemeIndex] = {
+      ...newTheme,
+      _id: customTheme._id,
+    };
+    Notifications.add("Custom theme updated sucessfully!");
+  } else Notifications.add(response.message, -1);
+
+  ThemeController.set(Config.customThemeIndex);
+  updateActiveTab(true);
 });
