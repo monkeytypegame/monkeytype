@@ -61,7 +61,6 @@ export async function getDataAndInit() {
         colors: [...Config.customThemeColors],
       };
       const response = await Ape.users.addCustomThemes(newCustomTheme);
-      console.log("No i was called");
 
       if (response.status === 200) {
         Notifications.add("Custom theme: 'custom' successfully created", 1);
@@ -316,7 +315,6 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       } else {
         const newCustomTheme = { name: "custom", colors: themeColors };
         const response = await Ape.users.addCustomThemes(newCustomTheme);
-        console.log("I was called");
 
         if (response.status === 200) {
           const snapshot = DB.getSnapshot();

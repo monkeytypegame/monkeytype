@@ -1235,8 +1235,6 @@ export function updateCustomThemeCommands(): void {
   });
   if (customThemes !== undefined && customThemes.length > 0) {
     DB.getSnapshot().customThemes?.forEach((theme, index) => {
-      console.log("Theme: ");
-      console.log(theme);
       commandsCustomTheme.list.push({
         id: "setCustomThemeOn" + theme._id,
         display: theme.name,
@@ -2810,7 +2808,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-palette",
       subgroup: commandsCustomTheme,
       beforeSubgroup: (): void => {
-        console.log("asdfaasd");
         updateCustomThemeCommands();
       },
     },
