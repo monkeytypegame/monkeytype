@@ -110,9 +110,7 @@ export async function refreshButtons(): Promise<void> {
       const mainColor = customTheme.colors[1];
 
       customThemesEl.append(
-        `<div class="customTheme button ${activeTheme}" customTheme='${
-          customTheme.name
-        }' 
+        `<div class="customTheme button ${activeTheme}" customThemeIndex='${customThemeIndex}' 
         style="color:${mainColor};background:${bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
         <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
@@ -256,6 +254,25 @@ $(document).on(
       console.error(
         "Could not find the theme attribute attached to the button clicked!"
       );
+  }
+);
+
+// Rizwan TODO: Create click event for custom theme buttons too
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme.button",
+  (e) => {
+    const customThemeIndex = parseInt(
+      $(e.currentTarget).attr("customThemeIndex") ?? ""
+    );
+    const customThemes = DB.getSnapshot().customThemes ?? [];
+    if (
+      customThemes.length > customThemeIndex &&
+      customThemeIndex !== undefined
+    ) {
+      UpdateConfig.setCustomThemeIndex(customThemeIndex);
+      updateActiveButton();
+    }
   }
 );
 
