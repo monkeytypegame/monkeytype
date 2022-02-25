@@ -1449,6 +1449,7 @@ export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
   if (isConfigValueValid(boolean, ["boolean"]) === Validity.INVALID)
     return invalid("custom theme", boolean);
 
+  config.customTheme = boolean;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customTheme", config.customTheme);
 
