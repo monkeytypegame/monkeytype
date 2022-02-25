@@ -114,10 +114,11 @@ export async function apply(
     );
 
     ThemeColors.reset();
-
+    await loadStyle("serika_dark");
     colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(e, customTheme?.colors[index]);
+      document.documentElement.style.setProperty(e, customTheme.colors[index]);
     });
+    ThemeColors.update();
 
     try {
       firebase.analytics().logEvent("changedCustomTheme", {
@@ -170,9 +171,12 @@ export async function apply(
   }
 }
 
-export function preview(themeName: string | number, randomTheme = false): void {
+export function preview(
+  themeNameOrIndex: string | number,
+  randomTheme = false
+): void {
   isPreviewingTheme = true;
-  apply(themeName, true && !randomTheme);
+  apply(themeNameOrIndex, true && !randomTheme);
 }
 
 export function set(themeNameOrIndex: string | number): void {
@@ -184,7 +188,6 @@ export function clearPreview(): void {
     isPreviewingTheme = false;
     randomTheme = null;
     if (Config.customThemeIndex !== -1) {
-      // Rizwan TODO: Update the apply theme to support custom themes
       apply(Config.customThemeIndex);
     } else {
       apply(Config.theme);
@@ -271,9 +274,6 @@ window
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "customThemeIndex") {
-    // Rizwan TODO: Update this
-    console.log("customThemeIndex changed");
-    console.log(eventValue);
     set(eventValue);
   }
   if (eventKey === "theme") {
@@ -283,12 +283,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "setThemes") {
     clearPreview();
     if (eventValue) {
-      // Rizwan TODO: Take a look at this
-      console.log("Printing event value ");
-      setTimeout(() => {
-        console.log(eventValue);
-        set(eventValue);
-      });
+      set(eventValue);
     } else {
       if (Config.autoSwitchTheme) {
         if (
