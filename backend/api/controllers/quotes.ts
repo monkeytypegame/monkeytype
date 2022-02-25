@@ -55,7 +55,10 @@ class QuotesController {
 
     await UserDAO.updateQuoteRatings(uid, userQuoteRatings);
 
-    return new MonkeyResponse("Rating updated");
+    const responseMessage = `Rating ${
+      shouldUpdateRating ? "updated" : "submitted"
+    }`;
+    return new MonkeyResponse(responseMessage);
   }
 
   static async reportQuote(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
