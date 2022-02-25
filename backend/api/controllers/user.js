@@ -233,51 +233,35 @@ class UserController {
   }
 
   static async getCustomThemes(req, _res) {
-    try {
-      const { uid } = req.ctx.decodedToken;
-      let customThemes = await UsersDAO.getThemes(uid);
-      if (customThemes === undefined) customThemes = [];
-      return new MonkeyResponse("Succesful", customThemes);
-    } catch (e) {
-      throw new MonkeyError(500, "Could not get custom themes!", e);
-    }
+    const { uid } = req.ctx.decodedToken;
+    let customThemes = await UsersDAO.getThemes(uid);
+    if (customThemes === undefined) customThemes = [];
+    return new MonkeyResponse("Succesful", customThemes);
   }
 
   static async addCustomTheme(req, _res) {
-    try {
-      const { uid } = req.ctx.decodedToken;
-      const customTheme = req.body;
+    const { uid } = req.ctx.decodedToken;
+    const customTheme = req.body;
 
-      let addedTheme = await UsersDAO.addTheme(uid, customTheme);
-      return new MonkeyResponse("Custom theme sucessfully added", {
-        theme: addedTheme,
-      });
-    } catch (e) {
-      throw new MonkeyError(500, "Could not add custom theme!", e);
-    }
+    let addedTheme = await UsersDAO.addTheme(uid, customTheme);
+    return new MonkeyResponse("Custom theme sucessfully added", {
+      theme: addedTheme,
+    });
   }
 
   static async removeCustomTheme(req, _res) {
-    try {
-      const { uid } = req.ctx.decodedToken;
-      const { themeID } = req.body;
-      await UsersDAO.removeTheme(uid, themeID);
-      return new MonkeyResponse("Custom theme successfully removed");
-    } catch (e) {
-      throw new MonkeyError(500, "Could not remove custom theme!", e);
-    }
+    const { uid } = req.ctx.decodedToken;
+    const { themeID } = req.body;
+    await UsersDAO.removeTheme(uid, themeID);
+    return new MonkeyResponse("Custom theme successfully removed");
   }
 
   static async editCustomTheme(req, _res) {
-    try {
-      const { uid } = req.ctx.decodedToken;
-      const { themeID, theme } = req.body;
+    const { uid } = req.ctx.decodedToken;
+    const { themeID, theme } = req.body;
 
-      await UsersDAO.editTheme(uid, themeID, theme);
-      return new MonkeyResponse("Custom theme succesfully updated!");
-    } catch (e) {
-      throw new MonkeyError(500, "Could not edit custom theme!", e);
-    }
+    await UsersDAO.editTheme(uid, themeID, theme);
+    return new MonkeyResponse("Custom theme succesfully updated!");
   }
 }
 
