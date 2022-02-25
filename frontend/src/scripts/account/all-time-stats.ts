@@ -19,7 +19,7 @@ export function update(): void {
     if (seconds === 0) {
       string = "-";
     } else {
-      string = Misc.secondsToString(seconds, true, true);
+      string = Misc.secondsToString(Math.round(seconds), true, true);
     }
     $(".pageAccount .globalTimeTyping .val").text(string);
   }

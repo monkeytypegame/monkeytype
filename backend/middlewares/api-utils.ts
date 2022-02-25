@@ -38,7 +38,7 @@ function validateConfiguration(
 
 type AsyncHandler = (
   req: MonkeyTypes.Request,
-  res: Response
+  res?: Response
 ) => Promise<MonkeyResponse>;
 
 /**

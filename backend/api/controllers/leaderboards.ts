@@ -1,18 +1,18 @@
-import { MonkeyResponse } from "../../handlers/monkey-response";
 import _ from "lodash";
+import { MonkeyResponse } from "../../handlers/monkey-response";
 import LeaderboardsDAO from "../../dao/leaderboards";
 
 class LeaderboardsController {
-  static async get(req, _res) {
-    const { language, mode, mode2, skip, limit } = req.query;
+  static async get(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const { language, mode, mode2, skip, limit = 50 } = req.query;
     const { uid } = req.ctx.decodedToken;
 
     const leaderboard = await LeaderboardsDAO.get(
       mode,
       mode2,
       language,
-      skip,
-      limit
+      parseInt(skip as string),
+      parseInt(limit as string)
     );
 
     const normalizedLeaderboard = _.map(leaderboard, (entry) => {
@@ -24,10 +24,12 @@ class LeaderboardsController {
     return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
   }
 
-  static async getRank(req, _res) {
+  static async getRank(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { language, mode, mode2 } = req.query;
     const { uid } = req.ctx.decodedToken;
+
     const data = await LeaderboardsDAO.getRank(mode, mode2, language, uid);
+
     return new MonkeyResponse("Rank retrieved", data);
   }
 }

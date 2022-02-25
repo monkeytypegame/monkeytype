@@ -500,8 +500,8 @@ export async function signInWithGoogle() {
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     if (signedInUser?.user) {
-      signedInUser.user.delete();
       await Ape.users.delete();
+      await signedInUser.user.delete();
     }
     return;
   }
@@ -683,7 +683,6 @@ async function signUp() {
     await createdAuthUser.user.updateProfile({ displayName: nname });
     await createdAuthUser.user.sendEmailVerification();
     AllTimeStats.clear();
-    Notifications.add("Account created", 1, 3);
     $("#menu .icon-button.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin .preloader").addClass("hidden");
@@ -700,11 +699,12 @@ async function signUp() {
       }
     }
     PageController.change("account");
+    Notifications.add("Account created", 1, 3);
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
-      await createdAuthUser.user.delete();
       await Ape.users.delete();
+      await createdAuthUser.user.delete();
     }
     let txt;
     if (e.response) {
@@ -717,6 +717,7 @@ async function signUp() {
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
+    signOut();
     return;
   }
 }
