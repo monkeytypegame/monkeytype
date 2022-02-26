@@ -95,7 +95,7 @@ declare namespace MonkeyTypes {
 
   type CustomBackgroundSize = "cover" | "contain" | "max";
 
-  type CustomBackgroundFilter = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
+  type CustomBackgroundFilter = [number, number, number, number, number];
 
   /*
     off = off
