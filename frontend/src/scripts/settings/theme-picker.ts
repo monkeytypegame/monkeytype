@@ -33,6 +33,7 @@ function updateColors(
   onlyStyle = false,
   noThemeUpdate = false
 ): void {
+  console.log(colorPicker);
   if (onlyStyle) {
     const colorID = colorPicker.find("input[type=color]").attr("id");
     if (colorID === undefined) console.error("Could not find color ID!");
@@ -406,12 +407,14 @@ $(
 
 $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
   .on("blur", (e) => {
+    if (e.target.id === "name") return;
     const $colorVar = $(e.currentTarget).attr("id") as string;
     const $pickedColor = $(e.currentTarget).val() as string;
 
     updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
   })
   .on("keypress", function (e) {
+    if (e.target.id === "name") return;
     if (e.code === "Enter") {
       $(this).attr("disabled", "disabled");
       const $colorVar = $(e.currentTarget).attr("id") as string;
