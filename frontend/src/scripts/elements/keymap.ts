@@ -16,15 +16,9 @@ export function highlightKey(currentKey: string): void {
     if (currentKey == " ") {
       highlightKey = "#keymap .key-space, #keymap .key-split-space";
     } else if (currentKey == '"') {
-      highlightKey = `#keymap .keymap-key[data-key*='${currentKey.replace(
-        '"',
-        "&quot;"
-      )}']`;
+      highlightKey = `#keymap .keymap-key[data-key*='${currentKey}']`;
     } else {
-      highlightKey = `#keymap .keymap-key[data-key*="${currentKey.replace(
-        '"',
-        "&quot;"
-      )}"]`;
+      highlightKey = `#keymap .keymap-key[data-key*="${currentKey}"]`;
     }
 
     console.log("highlighting", highlightKey);
@@ -43,9 +37,9 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == " ") {
     key = "#keymap .key-space, #keymap .key-split-space";
   } else if (key == '"') {
-    key = `#keymap .keymap-key[data-key*='${key.replace('"', "&quot;")}']`;
+    key = `#keymap .keymap-key[data-key*='${key}']`;
   } else {
-    key = `#keymap .keymap-key[data-key*="${key.replace('"', "&quot;")}"]`;
+    key = `#keymap .keymap-key[data-key*="${key}"]`;
   }
 
   const themecolors = await ThemeColors.getAll();
