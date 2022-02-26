@@ -595,7 +595,9 @@ export function getASCII(): string {
   const randLen = Math.floor(Math.random() * 10) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+    let ran = 33 + Math.floor(Math.random() * 94);
+    while (ran == 96 || ran == 94) ran = 33 + Math.floor(Math.random() * 94); //todo remove when input rewrite is fixed
+    ret += String.fromCharCode(ran);
   }
   return ret;
 }
