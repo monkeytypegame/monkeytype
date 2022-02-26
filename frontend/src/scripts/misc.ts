@@ -196,7 +196,7 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
 }
 
 export async function getLayout(
-  layoutName: keyof MonkeyTypes.Layouts & string
+  layoutName: string
 ): Promise<MonkeyTypes.Layout> {
   if (Object.keys(layoutsList).length === 0) {
     await getLayoutsList();

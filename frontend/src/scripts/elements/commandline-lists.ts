@@ -2456,31 +2456,31 @@ const commandsMonkeyPowerLevel: MonkeyTypes.CommandsGroup = {
       id: "monkeyPowerLevelOff",
       display: "off",
       configValue: "off",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("off"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
       id: "monkeyPowerLevel1",
       display: "mellow",
       configValue: "1",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("1"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
       display: "high",
       configValue: "2",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("2"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
       display: "ultra",
       configValue: "3",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("3"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
       display: "over 9000",
       configValue: "4",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("4"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
 };
@@ -2935,7 +2935,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       icon: "fa-tint",
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined) return;
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
