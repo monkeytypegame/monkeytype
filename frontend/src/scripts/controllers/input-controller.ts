@@ -779,6 +779,9 @@ $(document).keydown(async (event) => {
     correctShiftUsed =
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
+  if (Config.layout === "default" && LayoutEmulator.layoutData !== undefined) {
+    LayoutEmulator.resetLayoutData();
+  }
   if (Config.funbox === "arrows") {
     let char = event.key;
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {

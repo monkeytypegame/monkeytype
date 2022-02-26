@@ -4,6 +4,23 @@ import { capsLock } from "./caps-warning";
 
 export let layoutData;
 
+resetLayoutData();
+
+export async function resetLayoutData() {
+  const qwerty = await Misc.getLayout("qwerty");
+
+  layoutData = qwerty.keymapShowTopRow
+    ? qwerty.keys["row1"]
+        .concat(qwerty.keys["row2"])
+        .concat(qwerty.keys["row3"])
+        .concat(qwerty.keys["row4"])
+        .concat(qwerty.keys["row5"])
+    : qwerty.keys["row2"]
+        .concat(qwerty.keys["row3"])
+        .concat(qwerty.keys["row4"])
+        .concat(qwerty.keys["row5"]);
+}
+
 export async function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
     if (capsLock) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;

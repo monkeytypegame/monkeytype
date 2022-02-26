@@ -25,24 +25,20 @@ function dynamicKeymapLegendStyle(uppercase) {
 
     for (const key of keys) {
       if (key.textContent.length > 1) continue;
-      if (!layoutData) key.textContent = key.textContent.toUpperCase();
-      else {
-        const layoutKey = layoutData.find((k) => k.includes(key.textContent));
 
-        if (layoutKey) key.textContent = layoutKey[1];
-      }
+      const layoutKey = layoutData.find((k) => k.includes(key.textContent));
+
+      if (layoutKey) key.textContent = layoutKey[1];
     }
   } else if (!uppercase && casing) {
     casing = false;
 
     for (const key of keys) {
       if (key.textContent.length > 1) continue;
-      if (!layoutData) key.textContent = key.textContent.toLowerCase();
-      else {
-        const layoutKey = layoutData.find((k) => k.includes(key.textContent));
 
-        if (layoutKey) key.textContent = layoutKey[0];
-      }
+      const layoutKey = layoutData.find((k) => k.includes(key.textContent));
+
+      if (layoutKey) key.textContent = layoutKey[0];
     }
   }
 }
