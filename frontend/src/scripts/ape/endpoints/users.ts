@@ -90,9 +90,9 @@ export default function getUsersEndpoints(
     return await apeClient.delete(`${BASE_PATH}/tags/${tagId}/personalBest`);
   }
 
-  // async function getCustomThemes(): Ape.EndpointData {
-  //   return await apeClient.get(`${BASE_PATH}/customThemes`);
-  // }
+  async function getCustomThemes(): Ape.EndpointData {
+    return await apeClient.get(`${BASE_PATH}/customThemes`);
+  }
 
   async function editCustomThemes(
     themeId: string,
@@ -152,6 +152,7 @@ export default function getUsersEndpoints(
     deleteTagPersonalBest,
     linkDiscord,
     unlinkDiscord,
+    getCustomThemes,
     addCustomThemes,
     editCustomThemes,
     deleteCustomThemes,
