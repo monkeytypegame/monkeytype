@@ -2,14 +2,48 @@ import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import UserDAO from "../../dao/user";
 import ReportDAO from "../../dao/report";
+import NewQuotesDao from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
-import UsersDAO from "../../dao/user";
 import MonkeyError from "../../handlers/error";
 import { verify } from "../../handlers/captcha";
 import Logger from "../../handlers/logger";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class QuotesController {
+  static async getQuotes(_req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const data = await NewQuotesDao.get();
+    return new MonkeyResponse("Quote submissions retrieved", data);
+  }
+
+  static async addQuote(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { text, source, language, captcha } = req.body;
+
+    if (!(await verify(captcha))) {
+      throw new MonkeyError(400, "Captcha check failed");
+    }
+
+    await NewQuotesDao.add(text, source, language, uid);
+    return new MonkeyResponse("Quote submission added");
+  }
+
+  static async approveQuote(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { quoteId, editText, editSource } = req.body;
+
+    const data = await NewQuotesDao.approve(quoteId, editText, editSource);
+    Logger.log("system_quote_approved", data, uid);
+
+    return new MonkeyResponse(data.message, data.quote);
+  }
+
+  static async refuseQuote(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+    const { quoteId } = req.body;
+
+    await NewQuotesDao.refuse(quoteId);
+    return new MonkeyResponse("Quote refused");
+  }
+
   static async getRating(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { quoteId, language } = req.query;
 
@@ -66,11 +100,6 @@ class QuotesController {
     const {
       quoteReport: { maxReports, contentReportLimit },
     } = req.ctx.configuration;
-
-    const user = await UsersDAO.getUser(uid);
-    if (user.cannotReport) {
-      throw new MonkeyError(403, "You don't have permission to do this.");
-    }
 
     const { quoteId, quoteLanguage, reason, comment, captcha } = req.body;
 
