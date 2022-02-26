@@ -102,7 +102,11 @@ export async function apply(
     const customThemes = DB.getSnapshot().customThemes;
     const customTheme = customThemes ? customThemes[themeNameOrIndex] : null;
     if (customTheme === undefined || customTheme === null) {
-      Notifications.add(`No custom theme at index: ${themeNameOrIndex}`, 0);
+      Notifications.add(
+        `No custom theme at index: ${themeNameOrIndex}\nReverting to presets`,
+        0
+      );
+      UpdateConfig.setCustomThemeIndex(-1);
       return;
     }
     const themeName = customTheme.name;

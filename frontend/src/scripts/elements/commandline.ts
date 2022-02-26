@@ -673,8 +673,7 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    const customThemes = DB.getSnapshot().customThemes;
-    if (customThemes === undefined || customThemes.length < 1) {
+    if (DB.getSnapshot().customThemes.length < 1) {
       Notifications.add("No custom themes!", 0);
       UpdateConfig.setCustomThemeIndex(-1);
       return;

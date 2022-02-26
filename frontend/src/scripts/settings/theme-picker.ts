@@ -107,7 +107,8 @@ export async function refreshButtons(): Promise<void> {
       ".pageSettings .section.themes .allCustomThemes.buttons"
     ).empty();
     const customThemes = DB.getSnapshot().customThemes;
-    if (customThemes === undefined || customThemes.length < 1) {
+
+    if (customThemes.length < 1) {
       Notifications.add("No custom themes!", -1);
       return;
     }
@@ -250,7 +251,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
     UpdateConfig.setCustomThemeIndex(-1);
   } else {
     const customThemes = DB.getSnapshot().customThemes;
-    if (customThemes === undefined || customThemes.length < 1) {
+    if (customThemes.length < 1) {
       const newCustomTheme = {
         name: "custom",
         colors: [...Config.customThemeColors],
@@ -281,7 +282,6 @@ $(".pageSettings .addCustomThemeButton").on("click", async () => {
 
   if (response.status === 200) {
     const snapshot = DB.getSnapshot();
-    if (snapshot.customThemes === undefined) snapshot.customThemes = [];
 
     snapshot.customThemes.push({
       name: newCustomTheme.name,
@@ -330,7 +330,7 @@ $(document).on(
     );
     if (customThemeIndex !== -1) {
       const customThemes = DB.getSnapshot().customThemes;
-      if (customThemes === undefined || customThemes.length < 1) {
+      if (customThemes.length < 1) {
         Notifications.add("No custom themes!", -1);
         return;
       }
@@ -500,7 +500,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     }
   );
   const snapshot = DB.getSnapshot();
-  if (snapshot.customThemes === undefined) {
+  if (snapshot.customThemes.length < 1) {
     Notifications.add("No custom themes!", -1);
     return;
   }

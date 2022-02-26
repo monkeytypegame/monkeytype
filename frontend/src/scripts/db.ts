@@ -103,7 +103,7 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(48);
     // }
     // LoadingPage.updateText("Downloading tags...");
-    snap.customThemes = userData.customThemes;
+    snap.customThemes = userData.customThemes ?? [];
     snap.tags = tagsData;
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {

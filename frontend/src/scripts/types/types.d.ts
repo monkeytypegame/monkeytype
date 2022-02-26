@@ -376,7 +376,7 @@ declare namespace MonkeyTypes {
     verified?: boolean;
     personalBests?: PersonalBests;
     name?: string;
-    customThemes?: CustomTheme[];
+    customThemes: CustomTheme[];
     presets?: Preset[];
     tags?: Tag[];
     favouriteThemes?: string[];
