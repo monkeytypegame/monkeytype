@@ -212,7 +212,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     }
   }
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("mode", previous, config.mode);
+  ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
   return true;
 }
@@ -1876,9 +1876,9 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
         $("#ad_about1").remove();
         $("#ad_about2").remove();
       }
-    } catch (e: any) {
-      Notifications.add("Error initialising ads: " + e.message);
-      console.log("error initialising ads " + e.message);
+    } catch (e) {
+      Notifications.add("Error initialising ads: " + (e as Error).message);
+      console.log("error initialising ads " + (e as Error).message);
       $(".footerads").remove();
       $("#ad_left").remove();
       $("#ad_right").remove();
@@ -1894,7 +1894,13 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
       $("#ad_about2").remove();
     }
 
-    ConfigEvent.dispatch("configApplied", config);
+    ConfigEvent.dispatch(
+      "configApplied",
+      undefined,
+      undefined,
+      undefined,
+      config
+    );
   }
 }
 
