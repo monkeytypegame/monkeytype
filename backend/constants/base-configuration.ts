@@ -24,4 +24,4 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
 };
 
-export default Object.freeze(BASE_CONFIGURATION);
+export default BASE_CONFIGURATION;

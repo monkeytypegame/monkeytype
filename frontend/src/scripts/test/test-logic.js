@@ -986,29 +986,6 @@ export async function init() {
 
 export async function addWord() {
   let bound = 100;
-  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
-    if (
-      Config.mode == "time" &&
-      TestWords.words.length - TestWords.words.currentIndex < 20
-    ) {
-      let section =
-        Config.funbox == "wikipedia"
-          ? await Wikipedia.getSection(Config.language)
-          : await Poetry.getPoem();
-      let wordCount = 0;
-      for (let word of section.words) {
-        if (wordCount >= Config.words && Config.mode == "words") {
-          break;
-        }
-        wordCount++;
-        TestWords.words.push(word);
-        TestUI.addWord(word);
-      }
-    } else {
-      return;
-    }
-  }
-
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
   if (
@@ -1028,6 +1005,27 @@ export async function addWord() {
       TestWords.words.length >= TestWords.randomQuote.textSplit.length)
   )
     return;
+
+  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+      let section =
+        Config.funbox == "wikipedia"
+          ? await Wikipedia.getSection(Config.language)
+          : await Poetry.getPoem();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        TestWords.words.push(word);
+        TestUI.addWord(word);
+      }
+    } else {
+      return;
+    }
+  }
+
   const language =
     Config.mode !== "custom"
       ? await Misc.getCurrentLanguage(Config.language)

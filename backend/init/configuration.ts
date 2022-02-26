@@ -1,11 +1,15 @@
+import db from "./db";
 import _ from "lodash";
-import db from "../init/db";
-import BASE_CONFIGURATION from "../constants/base-configuration";
 import Logger from "../handlers/logger.js";
+import { identity } from "../handlers/misc";
+import BASE_CONFIGURATION from "../constants/base-configuration";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
-function mergeConfigurations(baseConfiguration, liveConfiguration) {
+function mergeConfigurations(
+  baseConfiguration: MonkeyTypes.Configuration,
+  liveConfiguration: MonkeyTypes.Configuration
+): void {
   if (
     !_.isPlainObject(baseConfiguration) ||
     !_.isPlainObject(liveConfiguration)
@@ -13,7 +17,7 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
     return;
   }
 
-  function merge(base, source) {
+  function merge(base: object, source: object): void {
     const commonKeys = _.intersection(_.keys(base), _.keys(source));
 
     commonKeys.forEach((key) => {
@@ -22,19 +26,10 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
 
       const isBaseValueObject = _.isPlainObject(baseValue);
       const isSourceValueObject = _.isPlainObject(sourceValue);
-      const isBaseValueArray = _.isArray(baseValue);
-      const isSourceValueArray = _.isArray(sourceValue);
-
-      const arrayObjectMismatch =
-        (isBaseValueObject && isSourceValueArray) ||
-        (isBaseValueArray && isSourceValueObject);
 
       if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
-      } else if (
-        typeof baseValue === typeof sourceValue &&
-        !arrayObjectMismatch // typeof {} = "object", typeof [] = "object"
-      ) {
+      } else if (identity(baseValue) === identity(sourceValue)) {
         base[key] = sourceValue;
       }
     });
@@ -43,23 +38,25 @@ function mergeConfigurations(baseConfiguration, liveConfiguration) {
   merge(baseConfiguration, liveConfiguration);
 }
 
-class ConfigurationDAO {
-  static configuration = BASE_CONFIGURATION;
+class ConfigurationClient {
+  static configuration: MonkeyTypes.Configuration = BASE_CONFIGURATION;
   static lastFetchTime = 0;
   static databaseConfigurationUpdated = false;
 
-  static async getCachedConfiguration(attemptCacheUpdate = false) {
+  static async getCachedConfiguration(
+    attemptCacheUpdate = false
+  ): Promise<MonkeyTypes.Configuration> {
     if (
       attemptCacheUpdate &&
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
-      Logger.log("stale_configuration", "Cached configuration is stale.");
+      console.log("Cached configuration is stale.");
       return await this.getLiveConfiguration();
     }
     return this.configuration;
   }
 
-  static async getLiveConfiguration() {
+  static async getLiveConfiguration(): Promise<MonkeyTypes.Configuration> {
     this.lastFetchTime = Date.now();
 
     const configurationCollection = db.collection("configuration");
@@ -69,20 +66,17 @@ class ConfigurationDAO {
 
       if (liveConfiguration) {
         const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
-        mergeConfigurations(baseConfiguration, liveConfiguration);
+        const liveConfigurationWithoutId = _.omit(
+          liveConfiguration,
+          "_id"
+        ) as MonkeyTypes.Configuration;
+        mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
         this.pushConfiguration(baseConfiguration);
-        this.configuration = Object.freeze(baseConfiguration);
+        this.configuration = baseConfiguration;
       } else {
-        await configurationCollection.insertOne(
-          Object.assign({}, BASE_CONFIGURATION)
-        ); // Seed the base configuration.
+        await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
       }
-
-      Logger.log(
-        "fetch_configuration_success",
-        "Successfully fetched live configuration."
-      );
     } catch (error) {
       Logger.log(
         "fetch_configuration_failure",
@@ -93,15 +87,15 @@ class ConfigurationDAO {
     return this.configuration;
   }
 
-  static async pushConfiguration(configuration) {
+  static async pushConfiguration(
+    configuration: MonkeyTypes.Configuration
+  ): Promise<void> {
     if (this.databaseConfigurationUpdated) {
       return;
     }
 
-    const configurationCollection = db.collection("configuration");
-
     try {
-      await configurationCollection.replaceOne({}, configuration);
+      await db.collection("configuration").replaceOne({}, configuration);
 
       this.databaseConfigurationUpdated = true;
     } catch (error) {
@@ -113,4 +107,4 @@ class ConfigurationDAO {
   }
 }
 
-export default ConfigurationDAO;
+export default ConfigurationClient;

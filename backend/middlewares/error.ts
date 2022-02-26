@@ -58,6 +58,7 @@ async function errorHandlingMiddleware(
     }
   } else {
     console.error(error.message);
+    console.error(error.stack);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);

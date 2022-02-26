@@ -2,7 +2,6 @@ import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import NewQuotesController from "../controllers/new-quotes";
-import QuoteRatingsController from "../controllers/quote-ratings";
 import QuotesController from "../controllers/quotes";
 import * as RateLimit from "../../middlewares/rate-limit";
 import {
@@ -81,7 +80,7 @@ quotesRouter.get(
       language: joi.string().required(),
     },
   }),
-  asyncHandler(QuoteRatingsController.getRating)
+  asyncHandler(QuotesController.getRating)
 );
 
 quotesRouter.post(
@@ -95,7 +94,7 @@ quotesRouter.post(
       language: joi.string().required(),
     },
   }),
-  asyncHandler(QuoteRatingsController.submitRating)
+  asyncHandler(QuotesController.submitRating)
 );
 
 quotesRouter.post(
