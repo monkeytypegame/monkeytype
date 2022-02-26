@@ -484,9 +484,15 @@ export async function signInWithGoogle() {
           );
 
           if (resultsSaveResponse.status === 200) {
-            const snapshot = DB.getSnapshot();
-            snapshot.results.push(TestLogic.notSignedInLastResult);
-            DB.setSnapshot(snapshot);
+            const result = TestLogic.notSignedInLastResult;
+            DB.saveLocalResult(result);
+            DB.updateLocalStats({
+              time:
+                result.testDuration +
+                result.incompleteTestSeconds -
+                result.afkDuration,
+              started: 1,
+            });
           }
         }
       }
@@ -499,7 +505,7 @@ export async function signInWithGoogle() {
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
-    if (signedInUser?.user) {
+    if (signedInUser?.additionalUserInfo?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();
     }
@@ -693,9 +699,15 @@ async function signUp() {
       const response = await Ape.results.save(TestLogic.notSignedInLastResult);
 
       if (response.status === 200) {
-        const snapshot = DB.getSnapshot();
-        snapshot.results.push(TestLogic.notSignedInLastResult);
-        DB.setSnapshot(snapshot);
+        const result = TestLogic.notSignedInLastResult;
+        DB.saveLocalResult(result);
+        DB.updateLocalStats({
+          time:
+            result.testDuration +
+            result.incompleteTestSeconds -
+            result.afkDuration,
+          started: 1,
+        });
       }
     }
     PageController.change("account");

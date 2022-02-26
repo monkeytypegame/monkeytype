@@ -34,8 +34,10 @@ let updateTimer: number | undefined;
 function clearTable(lb: number): void {
   if (lb === 15) {
     $("#leaderboardsWrapper table.left tbody").empty();
+    $("#leaderboardsWrapper table.left tfoot").empty();
   } else if (lb === 60) {
     $("#leaderboardsWrapper table.right tbody").empty();
+    $("#leaderboardsWrapper table.right tfoot").empty();
   }
 }
 

@@ -25,3 +25,10 @@ export function kogasa(cov) {
     100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
   );
 }
+
+export function identity(value) {
+  return Object.prototype.toString
+    .call(value)
+    .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
+    .toLowerCase();
+}

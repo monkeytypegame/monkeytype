@@ -164,11 +164,8 @@ async function submit(): Promise<void> {
     );
   }
 
-  const quoteRatings = DB.getSnapshot().quoteRatings;
-
-  if (quoteRatings === undefined) {
-    return;
-  }
+  const snapshot = DB.getSnapshot();
+  const quoteRatings = snapshot.quoteRatings ?? {};
 
   if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
     const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
@@ -184,7 +181,7 @@ async function submit(): Promise<void> {
     } as QuoteStats;
     Notifications.add("Rating updated", 1);
   } else {
-    if (quoteRatings[currentQuote.language] === undefined) {
+    if (!quoteRatings[currentQuote.language]) {
       quoteRatings[currentQuote.language] = {};
     }
     quoteRatings[currentQuote.language][currentQuote.id] = rating;
@@ -201,6 +198,9 @@ async function submit(): Promise<void> {
     }
     Notifications.add("Rating submitted", 1);
   }
+
+  snapshot.quoteRatings = quoteRatings;
+  DB.setSnapshot(snapshot);
 
   quoteStats.average = getRatingAverage(quoteStats);
   $(".pageTest #result #rateQuoteButton .rating").text(
