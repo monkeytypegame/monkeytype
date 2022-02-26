@@ -360,11 +360,8 @@ class UsersDAO {
     const user = await db.collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "Add custom theme");
 
-    if (user.customThemes !== undefined) {
-      const count = user.customThemes.length;
-
-      if (count >= 10) throw new MonkeyError(409, "Too many custom themes");
-    }
+    if ((user.customThemes ?? []).length >= 10)
+      throw new MonkeyError(409, "Too many custom themes");
 
     const _id = new ObjectId();
     await db.collection("users").updateOne(
@@ -390,10 +387,8 @@ class UsersDAO {
     const user = await db.collection("users").findOne({ uid });
     if (!user)
       throw new MonkeyError(404, "User not found", "Remove custom theme");
-    if (
-      user.customThemes === undefined ||
-      user.customThemes.filter((t) => t._id == _id).length === 0
-    )
+
+    if ((user.customThemes ?? []).filter((t) => t._id == _id).length === 0)
       throw new MonkeyError(404, "Custom theme not found");
 
     return await db.collection("users").updateOne(
@@ -409,10 +404,8 @@ class UsersDAO {
     const user = await db.collection("users").findOne({ uid });
     if (!user)
       throw new MonkeyError(404, "User not found", "Edit custom theme");
-    if (
-      user.customThemes === undefined ||
-      user.customThemes.filter((t) => t._id == _id).length === 0
-    )
+
+    if ((user.customThemes ?? []).filter((t) => t._id == _id).length === 0)
       throw new MonkeyError(404, "Custom Theme not found");
 
     return await db.collection("users").updateOne(
@@ -433,7 +426,7 @@ class UsersDAO {
     const user = await db.collection("users").findOne({ uid });
     if (!user)
       throw new MonkeyError(404, "User not found", "Get custom themes");
-    return user.customThemes;
+    return user.customThemes ?? [];
   }
 }
 
