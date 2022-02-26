@@ -3215,16 +3215,16 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "saveToLocalStorage") {
     defaultCommands.list.filter(
       (command) => command.id == "exportSettingsJSON"
-    )[0].defaultValue = eventValue;
+    )[0].defaultValue = eventValue as string;
   }
   if (eventKey === "customBackground") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomBackground"
-    )[0].defaultValue = eventValue;
+    )[0].defaultValue = eventValue as string;
   }
   if (eventKey === "customLayoutFluid") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomLayoutfluid"
-    )[0].defaultValue = eventValue?.replace(/#/g, " ");
+    )[0].defaultValue = (eventValue as string)?.replace(/#/g, " ");
   }
 });

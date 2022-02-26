@@ -1,15 +1,38 @@
-type SubscribeFunction<V, V2> = (key: string, value?: V, value2?: V2) => void;
+type ConfigValues =
+  | string
+  | number
+  | boolean
+  | string[]
+  | MonkeyTypes.QuoteLengthArray
+  | MonkeyTypes.ResultFilters
+  | MonkeyTypes.CustomBackgroundFilter
+  | null
+  | undefined;
 
-const subscribers: SubscribeFunction<any, any>[] = [];
+type SubscribeFunction = (
+  key: string,
+  newValue?: ConfigValues,
+  nosave?: boolean,
+  previousValue?: ConfigValues,
+  fullConfig?: MonkeyTypes.Config
+) => void;
 
-export function subscribe(fn: SubscribeFunction<any, any>): void {
+const subscribers: SubscribeFunction[] = [];
+
+export function subscribe(fn: SubscribeFunction): void {
   subscribers.push(fn);
 }
 
-export function dispatch<V, V2>(key: string, value?: V, value2?: V2): void {
+export function dispatch(
+  key: string,
+  newValue?: ConfigValues,
+  nosave?: boolean,
+  previousValue?: ConfigValues,
+  fullConfig?: MonkeyTypes.Config
+): void {
   subscribers.forEach((fn) => {
     try {
-      fn(key, value, value2);
+      fn(key, newValue, nosave, previousValue, fullConfig);
     } catch (e) {
       console.error("Config event subscriber threw an error");
       console.error(e);

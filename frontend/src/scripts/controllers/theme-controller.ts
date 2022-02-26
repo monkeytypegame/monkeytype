@@ -240,7 +240,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     eventValue ? set("custom") : set(Config.theme);
   if (eventKey === "theme") {
     clearPreview();
-    set(eventValue);
+    set(eventValue as string);
   }
   if (eventKey === "setThemes") {
     clearPreview();

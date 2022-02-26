@@ -212,7 +212,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     }
   }
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("mode", previous, config.mode);
+  ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
   return true;
 }
@@ -1894,7 +1894,13 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
       $("#ad_about2").remove();
     }
 
-    ConfigEvent.dispatch("configApplied", config);
+    ConfigEvent.dispatch(
+      "configApplied",
+      undefined,
+      undefined,
+      undefined,
+      config
+    );
   }
 }
 
