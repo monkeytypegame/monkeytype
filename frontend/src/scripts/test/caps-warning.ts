@@ -1,5 +1,7 @@
 import Config from "../config";
 
+export let capsLock = false;
+
 function show(): void {
   if ($("#capsWarning").hasClass("hidden")) {
     $("#capsWarning").removeClass("hidden");
@@ -13,11 +15,14 @@ function hide(): void {
 }
 
 $(document).keydown(function (event) {
+  if (event.originalEvent?.getModifierState("CapsLock")) {
+    capsLock = true;
+  } else {
+    capsLock = false;
+  }
+
   try {
-    if (
-      Config.capsLockWarning &&
-      event.originalEvent?.getModifierState("CapsLock")
-    ) {
+    if (Config.capsLockWarning && capsLock) {
       show();
     } else {
       hide();
@@ -26,11 +31,14 @@ $(document).keydown(function (event) {
 });
 
 $(document).keyup(function (event) {
+  if (event.originalEvent?.getModifierState("CapsLock")) {
+    capsLock = true;
+  } else {
+    capsLock = false;
+  }
+
   try {
-    if (
-      Config.capsLockWarning &&
-      event.originalEvent?.getModifierState("CapsLock")
-    ) {
+    if (Config.capsLockWarning && capsLock) {
       show();
     } else {
       hide();

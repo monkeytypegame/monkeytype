@@ -1,8 +1,10 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import { capsLock } from "./caps-warning";
 
 export let leftState = false;
 export let rightState = false;
+let casing = false;
 
 let keymapStrings = {
   left: null,
@@ -10,15 +12,21 @@ let keymapStrings = {
   keymap: null,
 };
 
-function dynamicKeymapLegendStyle(uppercase, e) {
-  const keys = $(".keymap-key").children();
+function dynamicKeymapLegendStyle(uppercase) {
+  const keys = [...document.getElementsByClassName("keymap-key")].map(
+    (el) => el.childNodes[1]
+  );
 
-  if (e.originalEvent?.getModifierState("CapsLock")) uppercase = !uppercase;
+  if (capsLock) uppercase = !uppercase;
 
-  for (const key of keys) {
-    if (uppercase) {
+  if (uppercase && !casing) {
+    casing = true;
+    for (const key of keys) {
       key.innerText = key.innerText.toUpperCase();
-    } else {
+    }
+  } else if (!uppercase && casing) {
+    casing = false;
+    for (const key of keys) {
       key.innerText = key.innerText.toLowerCase();
     }
   }
@@ -68,7 +76,7 @@ $(document).keydown((e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    dynamicKeymapLegendStyle(leftState || rightState, e);
+    dynamicKeymapLegendStyle(leftState || rightState);
   }
 });
 
@@ -79,7 +87,7 @@ $(document).keyup((e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    dynamicKeymapLegendStyle(leftState || rightState, e);
+    dynamicKeymapLegendStyle(leftState || rightState);
   }
 });
 
