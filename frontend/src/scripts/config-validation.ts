@@ -9,9 +9,10 @@ type PossibleType =
   | "undefined"
   | "null"
   | "stringArray"
-  | "layoutfluid"
   | string[]
   | number[];
+
+type PossibleTypeAsync = "layoutfluid";
 
 export function isConfigKeyValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
@@ -98,7 +99,7 @@ export function isConfigValueValid(
 export async function isConfigValueValidAsync(
   key: string,
   val: unknown,
-  possibleTypes: PossibleType[]
+  possibleTypes: PossibleTypeAsync[]
 ): Promise<boolean> {
   let isValid = false;
 
