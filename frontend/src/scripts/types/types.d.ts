@@ -57,7 +57,7 @@ declare namespace MonkeyTypes {
     | "split"
     | "split_matrix";
 
-  type KeymapLegendStyle = "lowercase" | "uppercase" | "blank";
+  type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
   type SingleListCommandLine = "manual" | "on";
 

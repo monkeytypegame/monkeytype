@@ -1477,11 +1477,13 @@ export function setKeymapLegendStyle(
   style: MonkeyTypes.KeymapLegendStyle,
   nosave?: boolean
 ): void {
-  if (!isConfigValueValid(style, [["lowercase", "uppercase", "blank"]]))
+  if (
+    !isConfigValueValid(style, [["lowercase", "uppercase", "blank", "dynamic"]])
+  )
     return invalid("keymap legend style", style);
 
   // Remove existing styles
-  const keymapLegendStyles = ["lowercase", "uppercase", "blank"];
+  const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
   keymapLegendStyles.forEach((name) => {
     $(".keymapLegendStyle").removeClass(name);
   });

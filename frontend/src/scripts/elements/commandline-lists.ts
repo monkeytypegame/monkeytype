@@ -1590,6 +1590,14 @@ const commandsKeymapLegendStyle: MonkeyTypes.CommandsGroup = {
         UpdateConfig.setKeymapLegendStyle("blank");
       },
     },
+    {
+      id: "setKeymapLegendStyleDynamic",
+      display: "dynamic",
+      configValue: "dynamic",
+      exec: (): void => {
+        UpdateConfig.setKeymapLegendStyle("dynamic");
+      },
+    },
   ],
 };
 

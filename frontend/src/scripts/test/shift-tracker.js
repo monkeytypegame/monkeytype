@@ -10,6 +10,20 @@ let keymapStrings = {
   keymap: null,
 };
 
+function dynamicKeymapLegendStyle(uppercase, e) {
+  const keys = $(".keymap-key").children();
+
+  if (e.originalEvent?.getModifierState("CapsLock")) uppercase = !uppercase;
+
+  for (const key of keys) {
+    if (uppercase) {
+      key.innerText = key.innerText.toUpperCase();
+    } else {
+      key.innerText = key.innerText.toLowerCase();
+    }
+  }
+}
+
 async function buildKeymapStrings() {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
@@ -52,12 +66,20 @@ $(document).keydown((e) => {
     leftState = false;
     rightState = true;
   }
+
+  if (Config.keymapLegendStyle === "dynamic") {
+    dynamicKeymapLegendStyle(leftState || rightState, e);
+  }
 });
 
 $(document).keyup((e) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;
+  }
+
+  if (Config.keymapLegendStyle === "dynamic") {
+    dynamicKeymapLegendStyle(leftState || rightState, e);
   }
 });
 
