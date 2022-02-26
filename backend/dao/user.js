@@ -388,7 +388,7 @@ class UsersDAO {
     if (!user)
       throw new MonkeyError(404, "User not found", "Remove custom theme");
 
-    if ((user.customThemes ?? []).filter((t) => t._id == _id).length === 0)
+    if ((user.customThemes ?? []).filter((t) => t._id === _id).length === 0)
       throw new MonkeyError(404, "Custom theme not found");
 
     return await db.collection("users").updateOne(
@@ -405,7 +405,7 @@ class UsersDAO {
     if (!user)
       throw new MonkeyError(404, "User not found", "Edit custom theme");
 
-    if ((user.customThemes ?? []).filter((t) => t._id == _id).length === 0)
+    if ((user.customThemes ?? []).filter((t) => t._id === _id).length === 0)
       throw new MonkeyError(404, "Custom Theme not found");
 
     return await db.collection("users").updateOne(
