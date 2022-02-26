@@ -60,6 +60,7 @@ export async function getDataAndInit() {
         name: "custom",
         colors: [...Config.customThemeColors],
       };
+      Loader.show();
       const response = await Ape.users.addCustomThemes(newCustomTheme);
 
       if (response.status === 200) {
@@ -71,6 +72,7 @@ export async function getDataAndInit() {
       } else {
         Notifications.add("Could not create custom theme: 'custom'", -1);
       }
+      Loader.hide();
     }
     ThemeController.set(Config.customThemeIndex);
   } catch (e) {
@@ -314,6 +316,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
         Notifications.add("Too many custom themes!", 0);
       } else {
         const newCustomTheme = { name: "custom", colors: themeColors };
+        Loader.show();
         const response = await Ape.users.addCustomThemes(newCustomTheme);
 
         if (response.status === 200) {
@@ -336,6 +339,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
         } else {
           Notifications.add(response.message, -1);
         }
+        Loader.hide();
       }
     } catch (e) {
       Notifications.add(

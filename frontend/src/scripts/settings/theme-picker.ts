@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
+import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import Ape from "../ape";
 
@@ -256,7 +257,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
         name: "custom",
         colors: [...Config.customThemeColors],
       };
-
+      Loader.show();
       const response = await Ape.users.addCustomThemes(newCustomTheme);
       if (response.status === 200) {
         Notifications.add("Created new custom theme: custom", 1);
@@ -267,6 +268,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
       } else {
         Notifications.add("Could not create custom theme: custom", -1);
       }
+      Loader.hide();
     } else UpdateConfig.setCustomThemeIndex(0);
   }
 });
@@ -278,6 +280,7 @@ $(".pageSettings .addCustomThemeButton").on("click", async () => {
     colors: [...Config.customThemeColors],
   };
 
+  Loader.show();
   const response = await Ape.users.addCustomThemes(newCustomTheme);
 
   if (response.status === 200) {
@@ -292,6 +295,7 @@ $(".pageSettings .addCustomThemeButton").on("click", async () => {
     Notifications.add("Created new custom theme: 'custom' sucessfully", 1);
     updateActiveTab(true);
   } else Notifications.add(response.message, -1);
+  Loader.hide();
 });
 
 // Handle click on custom theme button
@@ -339,6 +343,7 @@ $(document).on(
         Notifications.add("Custom theme does not exist!");
         return;
       }
+      Loader.show();
       const response = await Ape.users.deleteCustomThemes(customTheme._id);
 
       if (response.status === 200) {
@@ -354,7 +359,7 @@ $(document).on(
         }
         Notifications.add("Deleted custom theme sucessfully", 1);
       } else Notifications.add(response.message, -1);
-
+      Loader.hide();
       updateActiveTab();
     } else
       console.error(
@@ -516,6 +521,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     name: themeName,
     colors: newColors,
   };
+  Loader.show();
   const response = await Ape.users.editCustomThemes(customTheme._id, newTheme);
   if (response.status === 200) {
     snapshot.customThemes[Config.customThemeIndex] = {
@@ -524,6 +530,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     };
     Notifications.add("Custom theme updated sucessfully!");
   } else Notifications.add(response.message, -1);
+  Loader.hide();
 
   ThemeController.set(Config.customThemeIndex);
   updateActiveTab(true);
