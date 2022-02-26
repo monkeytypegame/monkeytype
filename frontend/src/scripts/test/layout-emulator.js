@@ -4,7 +4,7 @@ import { capsLock } from "./caps-warning";
 
 export let layoutData;
 
-resetLayoutData();
+if (Config.layout === "default") resetLayoutData();
 
 export async function resetLayoutData() {
   const qwerty = await Misc.getLayout("qwerty");
