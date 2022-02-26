@@ -115,10 +115,10 @@ declare namespace Ape {
         newTheme: Partial<MonkeyTypes.CustomTheme>
       ) => EndpointData;
       editCustomThemes: (
-        themeID: string,
+        themeId: string,
         newTheme: Partial<MonkeyTypes.CustomTheme>
       ) => EndpointData;
-      deleteCustomThemes: (themeID: string) => EndpointData;
+      deleteCustomThemes: (themeId: string) => EndpointData;
       getTags: Endpoint;
       createTag: (tagName: string) => EndpointData;
       editTag: (tagId: string, newName: string) => EndpointData;

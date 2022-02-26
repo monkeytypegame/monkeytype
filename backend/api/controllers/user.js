@@ -250,16 +250,16 @@ class UserController {
 
   static async removeCustomTheme(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { themeID } = req.body;
-    await UsersDAO.removeTheme(uid, themeID);
+    const { themeId } = req.body;
+    await UsersDAO.removeTheme(uid, themeId);
     return new MonkeyResponse("Custom theme removed");
   }
 
   static async editCustomTheme(req, _res) {
     const { uid } = req.ctx.decodedToken;
-    const { themeID, theme } = req.body;
+    const { themeId, theme } = req.body;
 
-    await UsersDAO.editTheme(uid, themeID, theme);
+    await UsersDAO.editTheme(uid, themeId, theme);
     return new MonkeyResponse("Custom theme updated");
   }
 }

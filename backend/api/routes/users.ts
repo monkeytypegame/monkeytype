@@ -52,8 +52,8 @@ const customThemeIdValidation = joi
   .regex(/^[0-9a-fA-F]+$/)
   .required()
   .messages({
-    "string.length": "The themeID must be 24 characters long",
-    "string.pattern.base": "The themeID must be valid hexadecimal string",
+    "string.length": "The themeId must be 24 characters long",
+    "string.pattern.base": "The themeId must be valid hexadecimal string",
   });
 
 router.get(
@@ -227,7 +227,7 @@ router.delete(
   authenticateRequest(),
   validateRequest({
     body: {
-      themeID: customThemeIdValidation,
+      themeId: customThemeIdValidation,
     },
   }),
   asyncHandler(UserController.removeCustomTheme)
@@ -239,7 +239,7 @@ router.put(
   authenticateRequest(),
   validateRequest({
     body: {
-      themeID: customThemeIdValidation,
+      themeId: customThemeIdValidation,
       theme: {
         name: customThemeNameValidation,
         colors: customThemeColorsValidation,
