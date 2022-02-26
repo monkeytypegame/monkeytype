@@ -5,7 +5,7 @@ import {
   isConfigKeyValid,
   isConfigValueValid,
   isConfigValueValidAsync,
-} from "./config-validator";
+} from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 
 export let localStorageConfig: MonkeyTypes.Config;
