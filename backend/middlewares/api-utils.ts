@@ -39,6 +39,7 @@ function validateConfiguration(
 
 /**
  * Check user permissions before handling request.
+ * Note that this middleware must be used after authentication in the middleware stack.
  */
 function checkUserPermissions(
   options: ValidationOptions<MonkeyTypes.User>
