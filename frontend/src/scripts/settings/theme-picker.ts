@@ -33,7 +33,6 @@ function updateColors(
   onlyStyle = false,
   noThemeUpdate = false
 ): void {
-  console.log(colorPicker);
   if (onlyStyle) {
     const colorID = colorPicker.find("input[type=color]").attr("id");
     if (colorID === undefined) console.error("Could not find color ID!");
