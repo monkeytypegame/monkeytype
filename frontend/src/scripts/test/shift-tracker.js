@@ -1,7 +1,6 @@
 import Config from "../config";
 import * as Misc from "../misc";
 import { capsLock } from "./caps-warning";
-import { layoutData } from "./layout-emulator";
 
 export let leftState = false;
 export let rightState = false;
@@ -14,32 +13,29 @@ let keymapStrings = {
 };
 
 function dynamicKeymapLegendStyle(uppercase) {
-  const keys = [...document.getElementsByClassName("keymap-key")].map(
-    (el) => el.childNodes[1]
-  );
+  const keymapKeys = [...document.getElementsByClassName("keymap-key")];
+
+  const layoutKeys = keymapKeys.map((el) => el.dataset.key);
+
+  const keys = keymapKeys.map((el) => el.childNodes[1]);
 
   if (capsLock) uppercase = !uppercase;
 
-  if (uppercase && !casing) {
-    casing = true;
+  if (layoutKeys.filter((v) => v === undefined).length > 2) return;
 
-    for (const key of keys) {
-      if (key.textContent.length > 1) continue;
+  if ((uppercase && casing) || (!uppercase && !casing)) return;
 
-      const layoutKey = layoutData.find((k) => k.includes(key.textContent));
+  const index = uppercase ? 1 : 0;
 
-      if (layoutKey) key.textContent = layoutKey[1];
-    }
-  } else if (!uppercase && casing) {
-    casing = false;
+  casing = index === 1 ? true : false;
 
-    for (const key of keys) {
-      if (key.textContent.length > 1) continue;
+  for (let i = 0; i < layoutKeys.length; i++) {
+    const layoutKey = layoutKeys[i],
+      key = keys[i];
 
-      const layoutKey = layoutData.find((k) => k.includes(key.textContent));
+    if (key === undefined || layoutKey === undefined) continue;
 
-      if (layoutKey) key.textContent = layoutKey[0];
-    }
+    key.textContent = layoutKey[index];
   }
 }
 

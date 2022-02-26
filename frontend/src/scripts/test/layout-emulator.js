@@ -2,25 +2,6 @@ import Config from "../config";
 import * as Misc from "../misc";
 import { capsLock } from "./caps-warning";
 
-export let layoutData;
-
-if (Config.layout === "default" && layoutData === undefined) resetLayoutData();
-
-export async function resetLayoutData() {
-  const qwerty = await Misc.getLayout("qwerty");
-
-  layoutData = qwerty.keymapShowTopRow
-    ? qwerty.keys["row1"]
-        .concat(qwerty.keys["row2"])
-        .concat(qwerty.keys["row3"])
-        .concat(qwerty.keys["row4"])
-        .concat(qwerty.keys["row5"])
-    : qwerty.keys["row2"]
-        .concat(qwerty.keys["row3"])
-        .concat(qwerty.keys["row4"])
-        .concat(qwerty.keys["row5"]);
-}
-
 export async function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
     if (capsLock) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
@@ -194,13 +175,6 @@ export async function getCharFromEvent(event) {
     .concat(layoutKeys["row3"])
     .concat(layoutKeys["row4"])
     .concat(layoutKeys["row5"]);
-
-  layoutData = layout.keymapShowTopRow
-    ? layoutMap
-    : layoutKeys["row2"]
-        .concat(layoutKeys["row3"])
-        .concat(layoutKeys["row4"])
-        .concat(layoutKeys["row5"]);
 
   let mapIndex = null;
   for (let i = 0; i < keyEventCodes.length; i++) {
