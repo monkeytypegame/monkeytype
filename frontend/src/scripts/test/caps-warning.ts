@@ -15,7 +15,10 @@ function hide(): void {
 }
 
 $(document).keydown(function (event) {
-  if (event.originalEvent?.getModifierState("CapsLock")) {
+  if (
+    event?.originalEvent?.getModifierState &&
+    event?.originalEvent?.getModifierState("CapsLock")
+  ) {
     capsLock = true;
   } else {
     capsLock = false;
@@ -31,7 +34,11 @@ $(document).keydown(function (event) {
 });
 
 $(document).keyup(function (event) {
-  if (event.originalEvent?.getModifierState("CapsLock")) {
+  if (
+    event?.originalEvent?.getModifierState &&
+    event?.originalEvent?.getModifierState("CapsLock")
+  ) {
+    //filthy fix but optional chaining refues to work
     capsLock = true;
   } else {
     capsLock = false;
