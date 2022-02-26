@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as Misc from "../misc";
 import { capsLock } from "./caps-warning";
+import { layoutData } from "./layout-emulator";
 
 export let leftState = false;
 export let rightState = false;
@@ -21,13 +22,27 @@ function dynamicKeymapLegendStyle(uppercase) {
 
   if (uppercase && !casing) {
     casing = true;
+
     for (const key of keys) {
-      key.innerText = key.innerText.toUpperCase();
+      if (key.textContent.length > 1) continue;
+      if (!layoutData) key.textContent = key.textContent.toUpperCase();
+      else {
+        const layoutKey = layoutData.find((k) => k.includes(key.textContent));
+
+        if (layoutKey) key.textContent = layoutKey[1];
+      }
     }
   } else if (!uppercase && casing) {
     casing = false;
+
     for (const key of keys) {
-      key.innerText = key.innerText.toLowerCase();
+      if (key.textContent.length > 1) continue;
+      if (!layoutData) key.textContent = key.textContent.toLowerCase();
+      else {
+        const layoutKey = layoutData.find((k) => k.includes(key.textContent));
+
+        if (layoutKey) key.textContent = layoutKey[0];
+      }
     }
   }
 }
