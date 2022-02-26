@@ -16,9 +16,15 @@ export function highlightKey(currentKey: string): void {
     if (currentKey == " ") {
       highlightKey = "#keymap .key-space, #keymap .key-split-space";
     } else if (currentKey == '"') {
-      highlightKey = `#keymap .keymap-key[data-key*='${currentKey}']`;
+      highlightKey = `#keymap .keymap-key[data-key*='${currentKey.replace(
+        '"',
+        "&quot;"
+      )}']`;
     } else {
-      highlightKey = `#keymap .keymap-key[data-key*="${currentKey}"]`;
+      highlightKey = `#keymap .keymap-key[data-key*="${currentKey.replace(
+        '"',
+        "&quot;"
+      )}"]`;
     }
 
     console.log("highlighting", highlightKey);
@@ -37,9 +43,9 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == " ") {
     key = "#keymap .key-space, #keymap .key-split-space";
   } else if (key == '"') {
-    key = `#keymap .keymap-key[data-key*='${key}']`;
+    key = `#keymap .keymap-key[data-key*='${key.replace('"', "&quot;")}']`;
   } else {
-    key = `#keymap .keymap-key[data-key*="${key}"]`;
+    key = `#keymap .keymap-key[data-key*="${key.replace('"', "&quot;")}"]`;
   }
 
   const themecolors = await ThemeColors.getAll();
@@ -164,7 +170,10 @@ export async function refresh(
           } else if (Config.keymapLegendStyle === "uppercase") {
             keyDisplay = keyDisplay.toUpperCase();
           }
-          const keyElement = `<div class="keymap-key" data-key="${key}">
+          const keyElement = `<div class="keymap-key" data-key="${key.replace(
+            '"',
+            "&quot;"
+          )}">
               <span class="letter">${keyDisplay}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;
