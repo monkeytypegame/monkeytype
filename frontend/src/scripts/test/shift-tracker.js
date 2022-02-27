@@ -1,6 +1,6 @@
 import Config from "../config";
 import * as Misc from "../misc";
-import { capsLock } from "./caps-warning";
+import { capsState } from "./caps-warning";
 
 export let leftState = false;
 export let rightState = false;
@@ -19,7 +19,7 @@ function dynamicKeymapLegendStyle(uppercase) {
 
   const keys = keymapKeys.map((el) => el.childNodes[1]);
 
-  if (capsLock) uppercase = !uppercase;
+  if (capsState) uppercase = !uppercase;
 
   if (layoutKeys.filter((v) => v === undefined).length > 2) return;
 

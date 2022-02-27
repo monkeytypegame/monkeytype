@@ -1,10 +1,10 @@
 import Config from "../config";
 import * as Misc from "../misc";
-import { capsLock } from "./caps-warning";
+import { capsState } from "./caps-warning";
 
 export async function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
-    if (capsLock) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
 
