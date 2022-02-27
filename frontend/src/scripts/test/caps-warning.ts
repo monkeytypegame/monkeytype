@@ -1,6 +1,6 @@
 import Config from "../config";
 
-export let capsLock = false;
+export let capsState = false;
 
 function show(): void {
   if ($("#capsWarning").hasClass("hidden")) {
@@ -19,13 +19,13 @@ $(document).keydown(function (event) {
     event?.originalEvent?.getModifierState &&
     event?.originalEvent?.getModifierState("CapsLock")
   ) {
-    capsLock = true;
+    capsState = true;
   } else {
-    capsLock = false;
+    capsState = false;
   }
 
   try {
-    if (Config.capsLockWarning && capsLock) {
+    if (Config.capsLockWarning && capsState) {
       show();
     } else {
       hide();
@@ -39,13 +39,13 @@ $(document).keyup(function (event) {
     event?.originalEvent?.getModifierState("CapsLock")
   ) {
     //filthy fix but optional chaining refues to work
-    capsLock = true;
+    capsState = true;
   } else {
-    capsLock = false;
+    capsState = false;
   }
 
   try {
-    if (Config.capsLockWarning && capsLock) {
+    if (Config.capsLockWarning && capsState) {
       show();
     } else {
       hide();

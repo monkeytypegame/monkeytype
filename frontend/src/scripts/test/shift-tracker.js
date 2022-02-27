@@ -4,7 +4,7 @@ import { capsLock } from "./caps-warning";
 
 export let leftState = false;
 export let rightState = false;
-let casing = false;
+let caseState = false;
 
 let keymapStrings = {
   left: null,
@@ -23,11 +23,11 @@ function dynamicKeymapLegendStyle(uppercase) {
 
   if (layoutKeys.filter((v) => v === undefined).length > 2) return;
 
-  if ((uppercase && casing) || (!uppercase && !casing)) return;
+  if ((uppercase && caseState) || (!uppercase && !caseState)) return;
 
   const index = uppercase ? 1 : 0;
 
-  casing = index === 1 ? true : false;
+  caseState = index === 1 ? true : false;
 
   for (let i = 0; i < layoutKeys.length; i++) {
     const layoutKey = layoutKeys[i],
