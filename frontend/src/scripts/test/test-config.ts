@@ -41,11 +41,12 @@ export function update(
   previous: MonkeyTypes.Mode,
   current: MonkeyTypes.Mode
 ): void {
-  if (previous == current) return;
+  if (previous === current) return;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + current + "']").addClass(
     "active"
   );
+
   if (current == "time") {
     // $("#top .config .wordCount").addClass("hidden");
     // $("#top .config .time").removeClass("hidden");
@@ -162,7 +163,7 @@ export function update(
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (eventKey === "mode")
     update(
-      eventValue as MonkeyTypes.Mode,
-      eventPreviousValue as MonkeyTypes.Mode
+      eventPreviousValue as MonkeyTypes.Mode,
+      eventValue as MonkeyTypes.Mode
     );
 });
