@@ -21,7 +21,6 @@ declare namespace MonkeyTypes {
       enabled: boolean;
     };
   }
-
   interface DecodedToken {
     uid?: string;
     email?: string;
@@ -34,5 +33,29 @@ declare namespace MonkeyTypes {
 
   interface Request extends ExpressRequest {
     ctx: Readonly<Context>;
+  }
+
+  // Data Model
+
+  interface User {
+    // TODO, Complete the typings for the user model
+    _id: string;
+    addedAt: number;
+    bananas: number;
+    completedTests: number;
+    discordId?: string;
+    email: string;
+    lastNameChange: number;
+    lbMemory: object;
+    lbPersonalBests: object;
+    name: string;
+    personalBests: object;
+    quoteRatings: Record<string, Record<string, number>>;
+    startedTests: number;
+    tags: object[];
+    timeTyping: number;
+    uid: string;
+    quoteMod: boolean;
+    cannotReport: boolean;
   }
 }

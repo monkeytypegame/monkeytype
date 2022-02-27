@@ -1,11 +1,11 @@
 import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
-import NewQuotesController from "../controllers/new-quotes";
 import QuotesController from "../controllers/quotes";
 import * as RateLimit from "../../middlewares/rate-limit";
 import {
   asyncHandler,
+  checkUserPermissions,
   validateConfiguration,
   validateRequest,
 } from "../../middlewares/api-utils";
@@ -13,11 +13,18 @@ import SUPPORTED_QUOTE_LANGUAGES from "../../constants/quote-languages";
 
 const quotesRouter = Router();
 
+const checkIfUserIsQuoteMod = checkUserPermissions({
+  criteria: (user) => {
+    return user.quoteMod;
+  },
+});
+
 quotesRouter.get(
   "/",
   RateLimit.newQuotesGet,
   authenticateRequest(),
-  asyncHandler(NewQuotesController.getQuotes)
+  checkIfUserIsQuoteMod,
+  asyncHandler(QuotesController.getQuotes)
 );
 
 quotesRouter.post(
@@ -40,7 +47,7 @@ quotesRouter.post(
     },
     validationErrorMessage: "Please fill all the fields",
   }),
-  asyncHandler(NewQuotesController.addQuote)
+  asyncHandler(QuotesController.addQuote)
 );
 
 quotesRouter.post(
@@ -55,7 +62,8 @@ quotesRouter.post(
     },
     validationErrorMessage: "Please fill all the fields",
   }),
-  asyncHandler(NewQuotesController.approve)
+  checkIfUserIsQuoteMod,
+  asyncHandler(QuotesController.approveQuote)
 );
 
 quotesRouter.post(
@@ -67,7 +75,8 @@ quotesRouter.post(
       quoteId: joi.string().required(),
     },
   }),
-  asyncHandler(NewQuotesController.refuse)
+  checkIfUserIsQuoteMod,
+  asyncHandler(QuotesController.refuseQuote)
 );
 
 quotesRouter.get(
@@ -125,6 +134,11 @@ quotesRouter.post(
         .required(),
       comment: joi.string().allow("").max(250).required(),
       captcha: joi.string().required(),
+    },
+  }),
+  checkUserPermissions({
+    criteria: (user) => {
+      return !user.cannotReport;
     },
   }),
   asyncHandler(QuotesController.reportQuote)
