@@ -21,10 +21,11 @@ export function isTagPresetNameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-function isConfigKeyValid(name) {
-  if (name === null || name === undefined) return false;
-  if (name.length > 40) return false;
-  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+function isConfigKeyValid(_name) {
+  return true;
+  // if (name === null || name === undefined) return false;
+  // if (name.length > 40) return false;
+  // return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
 
 export function validateConfig(config) {
