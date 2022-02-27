@@ -890,8 +890,8 @@ export async function init(): Promise<void> {
       return;
     }
 
-    let rq: MonkeyTypes.Quote;
-    if (Config.quoteLength != -2) {
+    let rq: MonkeyTypes.Quote | undefined = undefined;
+    if (!Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
       const quoteLengths = Config.quoteLength;
       let groupIndex;
       if (quoteLengths.length > 1) {
@@ -931,11 +931,14 @@ export async function init(): Promise<void> {
           rq = filtered[0];
         }
       });
-      if (rq == undefined) {
-        rq = quotes.groups[0][0];
+      if (rq === undefined) {
+        rq = <MonkeyTypes.Quote>quotes.groups[0][0];
         Notifications.add("Quote Id Does Not Exist", 0);
       }
     }
+
+    if (rq === undefined) return;
+
     rq.text = rq.text.replace(/ +/gm, " ");
     rq.text = rq.text.replace(/\\\\t/gm, "\t");
     rq.text = rq.text.replace(/\\\\n/gm, "\n");
@@ -1638,18 +1641,18 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
 });
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  const wrd = $(e.currentTarget).attr("wordCount");
+  const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
-    UpdateConfig.setWordCount(parseInt(wrd ?? ""));
+    UpdateConfig.setWordCount(parseInt(wrd));
     ManualRestart.set();
     restart();
   }
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
-  const mode = $(e.currentTarget).attr("timeConfig");
+  const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
-    UpdateConfig.setTimeConfig(parseInt(mode ?? ""));
+    UpdateConfig.setTimeConfig(parseInt(mode));
     ManualRestart.set();
     restart();
   }
@@ -1658,7 +1661,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
-  >parseInt($(e.currentTarget).attr("quoteLength") ?? "");
+  >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
   if (len != -2) {
     if (len == -1) {
       len = [0, 1, 2, 3];
@@ -1683,7 +1686,7 @@ $(document).on("click", "#top .config .numbersMode .text-button", () => {
 
 $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = $(e.currentTarget).attr("mode") as MonkeyTypes.Mode | undefined;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
@@ -1736,6 +1739,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 });
 
 TimerEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "fail") fail(eventValue ?? "");
+  if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
   if (eventKey === "finish") finish();
 });
