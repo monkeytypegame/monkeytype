@@ -5,6 +5,7 @@ import presets from "./presets";
 import psas from "./psas";
 import leaderboards from "./leaderboards";
 import quotes from "./quotes";
+import apeKeys from "./ape-keys";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 import { Application, NextFunction, Response } from "express";
@@ -21,6 +22,7 @@ const API_ROUTE_MAP = {
   "/psas": psas,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
+  "/ape-keys": apeKeys,
 };
 
 function addApiRoutes(app: Application): void {

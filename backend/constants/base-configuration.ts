@@ -16,8 +16,10 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   resultObjectHashCheck: {
     enabled: false,
   },
-  monkeyTokens: {
-    enabled: false,
+  apeKeys: {
+    endpointsEnabled: false,
+    acceptKeys: false,
+    maxKeysPerUser: 0,
   },
   enableSavingResults: {
     enabled: false,
