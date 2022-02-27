@@ -308,10 +308,12 @@ $(document).on(
   (e) => {
     // Do not apply if user wanted to delete it
     if ($(e.target).hasClass("delButton")) return;
-    const customThemeId =
-      $(e.currentTarget).attr("customThemeId") ?? ("" as string);
+    const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
     const customThemes = DB.getSnapshot().customThemes ?? [];
-    if (customThemes.filter((t) => t._id === customThemeId)[0]) {
+    if (
+      customThemeId !== "" &&
+      customThemes.filter((t) => t._id === customThemeId)[0]
+    ) {
       UpdateConfig.setCustomThemeId(customThemeId);
       updateActiveButton();
     } else

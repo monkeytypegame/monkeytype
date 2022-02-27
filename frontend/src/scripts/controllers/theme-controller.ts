@@ -91,16 +91,18 @@ export async function apply_custom(
 ): Promise<void> {
   clearCustomTheme();
   if (!DB.getSnapshot()) return; // The user has not yet loaded or is not signed in
-  if (themeId.trim() === "") {
+  if (themeId.trim() === "" || themeId.trim() === "") {
+    apply_preset("", isPreview);
     // Rizwan TODO: Remove this if statement later
     Notifications.add("apply_custom got an empty value. This shouldn't happen");
   }
 
   const customThemes = DB.getSnapshot().customThemes;
   const customTheme = customThemes
-    ? customThemes.filter((t) => t._id === themeId)[0]
+    ? customThemes.find((t) => t._id === themeId)
     : undefined;
   if (!customTheme) {
+    console.log(Config.customThemeId);
     Notifications.add(`No custom theme with id: ${themeId}`, 0);
     if (customThemes && customThemes.length > 1)
       UpdateConfig.setCustomThemeId(customThemes[0]._id);
@@ -142,6 +144,7 @@ export async function apply_preset(
   isPreview = false
 ): Promise<void> {
   clearCustomTheme();
+
   if (themeName.trim() === "") themeName = Config.theme;
   Misc.swapElements(
     $('.pageSettings [tabContent="custom"]'),
@@ -173,8 +176,19 @@ export const apply = async (
   themeIdentifier: string,
   isPreview = false
 ): Promise<void> => {
-  if (custom === true) apply_custom(themeIdentifier, isPreview);
-  else apply_preset(themeIdentifier, isPreview);
+  if (!themeIdentifier) {
+    // Rizwan TODO: Investigate why themeName is undefined / null and remove this if statement later
+    console.log("Investigate these");
+    console.log(themeIdentifier);
+    return;
+  }
+  if (custom === true && themeIdentifier !== "")
+    apply_custom(themeIdentifier, isPreview);
+  else
+    apply_preset(
+      themeIdentifier !== "" ? themeIdentifier : Config.theme,
+      isPreview
+    );
 };
 
 export function preview(
