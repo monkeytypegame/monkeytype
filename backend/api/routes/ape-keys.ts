@@ -11,7 +11,6 @@ import * as RateLimit from "../../middlewares/rate-limit";
 
 const apeKeyNameSchema = joi
   .string()
-  .required()
   .regex(/^[0-9a-zA-Z_.-]+$/)
   .max(20)
   .messages({
