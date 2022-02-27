@@ -8,6 +8,7 @@ import quotes from "./quotes";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 import { Application, NextFunction, Response } from "express";
+import swStats from "swagger-stats";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -39,6 +40,22 @@ function addApiRoutes(app: Application): void {
       requestsProcessed++;
       next();
     }
+  );
+
+  app.use(
+    swStats.getMiddleware({
+      name: "Monkeytype API",
+      // hostname: process.env.MODE === "dev" ? "localhost": process.env.STATS_HOSTNAME,
+      // ip: process.env.MODE === "dev" ? "127.0.0.1": process.env.STATS_IP,
+      uriPath: "/stats",
+      authentication: process.env.MODE === "dev" ? false : true,
+      onAuthenticate: function (req, username, password) {
+        return (
+          username === process.env.STATS_USERNAME &&
+          password === process.env.STATS_PASSWORD
+        );
+      },
+    })
   );
 
   app.get(
