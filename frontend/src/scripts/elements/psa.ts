@@ -6,7 +6,7 @@ function clearMemory(): void {
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "") ?? [];
+  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
 }
 
 function setMemory(id: string): void {
