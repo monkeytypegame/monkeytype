@@ -1,14 +1,43 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import { capsLock } from "./caps-warning";
 
 export let leftState = false;
 export let rightState = false;
+let caseState = false;
 
 let keymapStrings = {
   left: null,
   right: null,
   keymap: null,
 };
+
+function dynamicKeymapLegendStyle(uppercase) {
+  const keymapKeys = [...document.getElementsByClassName("keymap-key")];
+
+  const layoutKeys = keymapKeys.map((el) => el.dataset.key);
+
+  const keys = keymapKeys.map((el) => el.childNodes[1]);
+
+  if (capsLock) uppercase = !uppercase;
+
+  if (layoutKeys.filter((v) => v === undefined).length > 2) return;
+
+  if ((uppercase && caseState) || (!uppercase && !caseState)) return;
+
+  const index = uppercase ? 1 : 0;
+
+  caseState = index === 1 ? true : false;
+
+  for (let i = 0; i < layoutKeys.length; i++) {
+    const layoutKey = layoutKeys[i],
+      key = keys[i];
+
+    if (key === undefined || layoutKey === undefined) continue;
+
+    key.textContent = layoutKey[index];
+  }
+}
 
 async function buildKeymapStrings() {
   if (keymapStrings.keymap === Config.keymapLayout) return;
@@ -52,12 +81,20 @@ $(document).keydown((e) => {
     leftState = false;
     rightState = true;
   }
+
+  if (Config.keymapLegendStyle === "dynamic") {
+    dynamicKeymapLegendStyle(leftState || rightState);
+  }
 });
 
 $(document).keyup((e) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;
+  }
+
+  if (Config.keymapLegendStyle === "dynamic") {
+    dynamicKeymapLegendStyle(leftState || rightState);
   }
 });
 

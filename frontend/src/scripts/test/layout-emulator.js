@@ -1,11 +1,10 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import { capsLock } from "./caps-warning";
 
 export async function getCharFromEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
-    const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
-    if (isCapsLockHeld)
-      return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+    if (capsLock) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
 
@@ -170,6 +169,7 @@ export async function getCharFromEvent(event) {
   }
 
   const layoutKeys = layout.keys;
+
   const layoutMap = layoutKeys["row1"]
     .concat(layoutKeys["row2"])
     .concat(layoutKeys["row3"])

@@ -164,7 +164,10 @@ export async function refresh(
           } else if (Config.keymapLegendStyle === "uppercase") {
             keyDisplay = keyDisplay.toUpperCase();
           }
-          const keyElement = `<div class="keymap-key" data-key="${key}">
+          const keyElement = `<div class="keymap-key" data-key="${key.replace(
+            '"',
+            "&quot;"
+          )}">
               <span class="letter">${keyDisplay}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;

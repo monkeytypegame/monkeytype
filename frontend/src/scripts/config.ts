@@ -1422,13 +1422,13 @@ export function setKeymapLegendStyle(
 ): boolean {
   if (
     !isConfigValueValid("keymap legend style", style, [
-      ["lowercase", "uppercase", "blank"],
+      ["lowercase", "uppercase", "blank", "dynamic"],
     ])
   )
     return false;
 
   // Remove existing styles
-  const keymapLegendStyles = ["lowercase", "uppercase", "blank"];
+  const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
   keymapLegendStyles.forEach((name) => {
     $(".keymapLegendStyle").removeClass(name);
   });
