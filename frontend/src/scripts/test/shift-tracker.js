@@ -27,7 +27,7 @@ function dynamicKeymapLegendStyle(uppercase) {
 
   const index = uppercase ? 1 : 0;
 
-  caseState = index === 1 ? true : false;
+  caseState = uppercase;
 
   for (let i = 0; i < layoutKeys.length; i++) {
     const layoutKey = layoutKeys[i],
