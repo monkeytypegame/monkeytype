@@ -779,6 +779,7 @@ $(document).keydown(async (event) => {
     correctShiftUsed =
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
+
   if (Config.funbox === "arrows") {
     let char = event.key;
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {

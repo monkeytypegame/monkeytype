@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import { capsState } from "./caps-warning";
 
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
@@ -8,9 +9,7 @@ export async function getCharFromEvent(
     event: JQuery.KeyDownEvent,
     newKeyPreview: string
   ): boolean {
-    const isCapsLockHeld = event.originalEvent?.getModifierState("CapsLock");
-    if (isCapsLockHeld)
-      return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
 
@@ -175,6 +174,7 @@ export async function getCharFromEvent(
   }
 
   const layoutKeys = layout.keys;
+
   const layoutMap = layoutKeys["row1"]
     .concat(layoutKeys["row2"])
     .concat(layoutKeys["row3"])
