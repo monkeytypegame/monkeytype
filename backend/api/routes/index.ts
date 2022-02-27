@@ -58,6 +58,16 @@ function addApiRoutes(app: Application): void {
     const router = API_ROUTE_MAP[route];
     app.use(apiRoute, router);
   });
+
+  app.use(
+    asyncHandler(async (req, _res) => {
+      return new MonkeyResponse(
+        `Unknown request URL (${req.method}: ${req.path})`,
+        null,
+        404
+      );
+    })
+  );
 }
 
 export default addApiRoutes;
