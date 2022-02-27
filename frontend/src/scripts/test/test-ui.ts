@@ -13,6 +13,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventValue === undefined || typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
   if (eventKey === "highlightMode") updateWordElement(eventValue);

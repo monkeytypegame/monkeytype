@@ -224,7 +224,7 @@ function stopReplayRecording(): void {
   replayRecording = false;
 }
 
-function addReplayEvent(action: ReplayAction, value: number | string): void {
+function addReplayEvent(action: ReplayAction, value?: number | string): void {
   if (!replayRecording) {
     return;
   }

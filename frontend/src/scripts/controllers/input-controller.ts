@@ -481,7 +481,7 @@ function handleChar(char: string, charIndex: number): void {
     TestWords.words.currentIndex === 0
   ) {
     TestUI.setActiveWordTop(
-      document.querySelector<HTMLElement>("#words .active")?.offsetTop
+      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
     );
   }
 
