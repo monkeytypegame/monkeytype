@@ -582,7 +582,7 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
   if (!nosave) {
     saveToLocalStorage();
   }
-  ConfigEvent.dispatch("showAllLines", config.showAllLines);
+  ConfigEvent.dispatch("showAllLines", config.showAllLines, nosave);
 
   return true;
 }
@@ -1411,7 +1411,7 @@ export function setKeymapMode(
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("keymapMode", config.keymapMode);
+  ConfigEvent.dispatch("keymapMode", config.keymapMode, nosave);
 
   return true;
 }
