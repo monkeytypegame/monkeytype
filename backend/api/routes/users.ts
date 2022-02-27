@@ -42,6 +42,7 @@ const customThemeColorsValidation = joi
       })
   )
   .length(9)
+  .required()
   .messages({
     "array.length": "The colors array must have 9 colors",
   });
