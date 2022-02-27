@@ -22,7 +22,7 @@ export function isTagPresetNameValid(name) {
 }
 
 function isConfigKeyValid(name) {
-  if (name === null || name === undefined || name === "") return false;
+  if (name === null || name === undefined) return false;
   if (name.length > 40) return false;
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
