@@ -126,7 +126,7 @@ declare namespace Ape {
 
     results: {
       get: Endpoint;
-      save: (result: MonkeyTypes.Result) => EndpointData;
+      save: (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => EndpointData;
       updateTags: (resultId: string, tagIds: string[]) => EndpointData;
       deleteAll: Endpoint;
     };

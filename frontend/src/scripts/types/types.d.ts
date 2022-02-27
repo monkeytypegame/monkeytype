@@ -11,6 +11,18 @@ declare namespace MonkeyTypes {
 
   type LanguageGroup = { name: string; languages: string[] };
 
+  type Accents = [string, string][];
+
+  interface LanguageObject {
+    name: string;
+    leftToRight: boolean;
+    noLazyMode?: boolean;
+    ligatures?: boolean;
+    words: string[];
+    accents: Accents;
+    bcp47?: string;
+  }
+
   type WordsModes = number;
 
   type TimeModes = number;
@@ -21,7 +33,7 @@ declare namespace MonkeyTypes {
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  type QuoteLength = -1 | 0 | 1 | 2 | 3;
+  type QuoteLength = -2 | -1 | 0 | 1 | 2 | 3;
 
   type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
@@ -130,6 +142,7 @@ declare namespace MonkeyTypes {
     word: number;
     time: number;
     delimiter: string;
+    textLen?: number;
   }
 
   interface PresetConfig extends MonkeyTypes.Config {
@@ -178,7 +191,7 @@ declare namespace MonkeyTypes {
   interface Stats {
     time: number;
     started: number;
-    completed: number;
+    completed?: number;
   }
 
   interface ChartData {
@@ -225,6 +238,7 @@ declare namespace MonkeyTypes {
     language: string;
     numbers?: boolean;
     punctuation?: boolean;
+    hash?: string;
   }
 
   interface Config {
@@ -546,7 +560,7 @@ declare namespace MonkeyTypes {
     id: number;
     group?: number;
     language: string;
-    textSplit?: string;
+    textSplit?: string[];
   }
 
   interface PSA {

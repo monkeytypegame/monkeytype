@@ -44,7 +44,7 @@ interface PoemObject {
   author: string;
 }
 
-export async function getPoem(): Promise<Poem | number> {
+export async function getPoem(): Promise<Poem | undefined> {
   console.log("Getting poem");
 
   const response = await axios.get(apiURL);
@@ -63,6 +63,7 @@ export async function getPoem(): Promise<Poem | number> {
     return new Poem(poemObj.title, poemObj.author, words);
   } catch (e) {
     console.log(e);
-    return response.status;
   }
+
+  return;
 }

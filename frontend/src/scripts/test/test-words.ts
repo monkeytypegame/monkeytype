@@ -7,7 +7,9 @@ class Words {
     this.length = 0;
     this.currentIndex = 0;
   }
-  get(i?: number, raw = false): string | string[] {
+  get(i?: undefined, raw?: boolean): string[];
+  get(i: number, raw?: boolean): string;
+  get(i?: number | undefined, raw = false): string | string[] {
     if (i === undefined) {
       return this.list;
     } else {
