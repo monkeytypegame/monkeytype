@@ -9,25 +9,38 @@ import * as TestActive from "../states/test-active";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
-export let settings = null;
+interface Settings {
+  wpm: number;
+  cps: number;
+  spc: number;
+  correction: number;
+  currentWordIndex: number;
+  currentLetterIndex: number;
+  wordsStatus: { [key: number]: any };
+  timeout: NodeJS.Timeout | null;
+}
 
-function resetCaretPosition() {
+export let settings: Settings | null = null;
+
+function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
   if (Config.mode === "zen") return;
 
-  let caret = $("#paceCaret");
-  let firstLetter = document
-    ?.querySelector("#words .word")
-    ?.querySelector("letter");
+  const caret = $("#paceCaret");
+  const firstLetter = <HTMLElement>(
+    document?.querySelector("#words .word")?.querySelector("letter")
+  );
 
-  if (!firstLetter) return;
+  const firstLetterHeight = $(firstLetter).height();
+
+  if (firstLetter === undefined || firstLetterHeight === undefined) return;
 
   caret.stop(true, true).animate(
     {
-      top: firstLetter.offsetTop - $(firstLetter).height() / 4,
+      top: firstLetter.offsetTop - firstLetterHeight / 4,
       left: firstLetter.offsetLeft,
     },
     0,
@@ -35,9 +48,12 @@ function resetCaretPosition() {
   );
 }
 
-export async function init() {
+export async function init(): Promise<void> {
   $("#paceCaret").addClass("hidden");
-  let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  const mode2 = Misc.getMode2(
+    Config,
+    TestWords.randomQuote
+  ) as MonkeyTypes.Mode2<typeof Config.mode>;
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -50,7 +66,6 @@ export async function init() {
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
-    let mode2 = Misc.getMode2(Config, TestWords.randomQuote);
     wpm = await DB.getUserAverageWpm10(
       Config.mode,
       mode2,
@@ -65,14 +80,14 @@ export async function init() {
   } else if (TestState.isPaceRepeat == true) {
     wpm = TestStats.lastTestWpm;
   }
-  if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
+  if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
     settings = null;
     return;
   }
 
-  let characters = wpm * 5;
-  let cps = characters / 60; //characters per step
-  let spc = 60 / characters; //seconds per character
+  const characters = wpm * 5;
+  const cps = characters / 60; //characters per step
+  const spc = 60 / characters; //seconds per character
 
   settings = {
     wpm: wpm,
@@ -87,7 +102,7 @@ export async function init() {
   resetCaretPosition();
 }
 
-export function update(expectedStepEnd) {
+export function update(expectedStepEnd: number): void {
   if (settings === null || !TestActive.get() || TestUI.resultVisible) {
     return;
   }
@@ -139,35 +154,48 @@ export function update(expectedStepEnd) {
   }
 
   try {
-    let caret = $("#paceCaret");
+    const caret = $("#paceCaret");
     let currentLetter;
     let newTop;
     let newLeft;
     try {
-      let newIndex =
+      const newIndex =
         settings.currentWordIndex -
         (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
-      let word = document.querySelectorAll("#words .word")[newIndex];
+      const word = document.querySelectorAll("#words .word")[newIndex];
       if (settings.currentLetterIndex === -1) {
-        currentLetter = word.querySelectorAll("letter")[0];
+        currentLetter = <HTMLElement>word.querySelectorAll("letter")[0];
       } else {
-        currentLetter =
-          word.querySelectorAll("letter")[settings.currentLetterIndex];
+        currentLetter = <HTMLElement>(
+          word.querySelectorAll("letter")[settings.currentLetterIndex]
+        );
       }
-      newTop = currentLetter.offsetTop - $(currentLetter).height() / 5;
+
+      const currentLetterHeight = $(currentLetter).height(),
+        currentLetterWidth = $(currentLetter).width(),
+        caretWidth = caret.width();
+
+      if (
+        currentLetterHeight === undefined ||
+        currentLetterWidth === undefined ||
+        caretWidth === undefined
+      )
+        throw ``;
+
+      newTop = currentLetter.offsetTop - currentLetterHeight / 5;
       newLeft;
       if (settings.currentLetterIndex === -1) {
         newLeft = currentLetter.offsetLeft;
       } else {
         newLeft =
-          currentLetter.offsetLeft +
-          $(currentLetter).width() -
-          caret.width() / 2;
+          currentLetter.offsetLeft + currentLetterWidth - caretWidth / 2;
       }
       caret.removeClass("hidden");
     } catch (e) {
       caret.addClass("hidden");
     }
+
+    if (newTop === undefined) return;
 
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
@@ -176,7 +204,7 @@ export function update(expectedStepEnd) {
       top: newTop - smoothlinescroll,
     });
 
-    let duration = expectedStepEnd - performance.now();
+    const duration = expectedStepEnd - performance.now();
 
     if (Config.smoothCaret) {
       caret.stop(true, true).animate(
@@ -197,7 +225,7 @@ export function update(expectedStepEnd) {
     }
     settings.timeout = setTimeout(() => {
       try {
-        update(expectedStepEnd + settings.spc * 1000);
+        update(expectedStepEnd + (settings?.spc ?? 0) * 1000);
       } catch (e) {
         settings = null;
       }
@@ -208,12 +236,13 @@ export function update(expectedStepEnd) {
   }
 }
 
-export function reset() {
+export function reset(): void {
+  if (settings !== null && settings.timeout !== null)
+    clearTimeout(settings.timeout);
   settings = null;
-  if (settings !== null) clearTimeout(settings.timeout);
 }
 
-export function handleSpace(correct, currentWord) {
+export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings !== null &&
@@ -235,10 +264,10 @@ export function handleSpace(correct, currentWord) {
   }
 }
 
-export function start() {
-  update(performance.now() + settings.spc * 1000);
+export function start(): void {
+  update(performance.now() + (settings?.spc ?? 0) * 1000);
 }
 
-ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  if (eventKey === "paceCaret") init(nosave);
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "paceCaret") init();
 });

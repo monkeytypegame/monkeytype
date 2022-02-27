@@ -102,13 +102,14 @@ export async function getSortedThemesList(): Promise<Theme[]> {
   }
 }
 
-type Funbox = { name: string; type: string; info: string };
-
-let funboxList: Funbox[] = [];
-export async function getFunboxList(): Promise<Funbox[]> {
+let funboxList: MonkeyTypes.FunboxObject[] = [];
+export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
   if (funboxList.length === 0) {
     return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (a: Funbox, b: Funbox) {
+      funboxList = data.sort(function (
+        a: MonkeyTypes.FunboxObject,
+        b: MonkeyTypes.FunboxObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -122,8 +123,10 @@ export async function getFunboxList(): Promise<Funbox[]> {
   }
 }
 
-export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
-  const list: Funbox[] = await getFunboxList();
+export async function getFunbox(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObject | undefined> {
+  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
   return list.find(function (element) {
     return element.name == funbox;
   });
@@ -274,15 +277,17 @@ export async function getLanguageGroups(): Promise<
   }
 }
 
-type Language = {
+interface LanguageObject {
   name: string;
   leftToRight: boolean;
   noLazyMode?: boolean;
+  ligatures?: boolean;
   words: string[];
-};
+  bcp47?: string;
+}
 
-let currentLanguage: Language;
-export async function getLanguage(lang: string): Promise<Language> {
+let currentLanguage: LanguageObject;
+export async function getLanguage(lang: string): Promise<LanguageObject> {
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
       console.log("getting language json");
@@ -303,7 +308,7 @@ export async function getLanguage(lang: string): Promise<Language> {
 
 export async function getCurrentLanguage(
   languageName: string
-): Promise<Language> {
+): Promise<LanguageObject> {
   return await getLanguage(languageName);
 }
 
@@ -810,9 +815,10 @@ export function canQuickRestart(
   }
 }
 
-export function clearTimeouts(timeouts: number[]): void {
+export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   timeouts.forEach((to) => {
-    clearTimeout(to);
+    if (typeof to === "number") clearTimeout(to);
+    else clearTimeout(to);
   });
 }
 
@@ -936,19 +942,19 @@ export function getMode2(
   randomQuote: MonkeyTypes.Quote
 ): string {
   const mode = config.mode;
-  let mode2 = "";
   if (mode === "time") {
-    mode2 = config.time.toString();
+    return config.time.toString();
   } else if (mode === "words") {
-    mode2 = config.words.toString();
+    return config.words.toString();
   } else if (mode === "custom") {
-    mode2 = "custom";
+    return "custom";
   } else if (mode === "zen") {
-    mode2 = "zen";
+    return "zen";
   } else if (mode === "quote") {
-    mode2 = randomQuote.id.toString();
+    return randomQuote.id.toString();
   }
-  return mode2;
+
+  return "";
 }
 
 export async function downloadResultsCSV(

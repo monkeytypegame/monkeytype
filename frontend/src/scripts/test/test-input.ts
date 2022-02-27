@@ -71,7 +71,7 @@ class Input {
     return ret;
   }
 
-  getHistory(i: number): string | string[] {
+  getHistory(i?: number): string | string[] {
     if (i === undefined) {
       return this.history;
     } else {

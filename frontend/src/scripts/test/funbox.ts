@@ -6,29 +6,36 @@ import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
 
-let modeSaved = null;
-let memoryTimer = null;
-let memoryInterval = null;
+let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
+let memoryTimer: number | null = null;
+let memoryInterval: NodeJS.Timeout | null = null;
 
-let settingsMemory = {};
+type SetFunction = (...params: any[]) => any;
 
-function rememberSetting(settingName, value, setFunction) {
+let settingsMemory: {
+  [key: string]: { value: any; setFunction: SetFunction };
+} = {};
+
+function rememberSetting(
+  settingName: string,
+  value: any,
+  setFunction: SetFunction
+): void {
   settingsMemory[settingName] ??= {
     value,
     setFunction,
   };
 }
 
-function loadMemory() {
+function loadMemory(): void {
   Notifications.add("Reverting funbox settings", 0);
   Object.keys(settingsMemory).forEach((setting) => {
-    setting = settingsMemory[setting];
-    setting.setFunction(setting.value, true);
+    settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
   });
   settingsMemory = {};
 }
 
-function showMemoryTimer() {
+function showMemoryTimer(): void {
   $("#typingTest #memoryTimer").stop(true, true).animate(
     {
       opacity: 1,
@@ -37,7 +44,7 @@ function showMemoryTimer() {
   );
 }
 
-function hideMemoryTimer() {
+function hideMemoryTimer(): void {
   $("#typingTest #memoryTimer").stop(true, true).animate(
     {
       opacity: 0,
@@ -46,24 +53,28 @@ function hideMemoryTimer() {
   );
 }
 
-export function resetMemoryTimer() {
-  memoryInterval = clearInterval(memoryInterval);
+export function resetMemoryTimer(): void {
+  if (memoryInterval !== null) {
+    clearInterval(memoryInterval);
+    memoryInterval = null;
+  }
   memoryTimer = null;
   hideMemoryTimer();
 }
 
-function updateMemoryTimer(sec) {
+function updateMemoryTimer(sec: number): void {
   $("#typingTest #memoryTimer").text(
     `Timer left to memorise all words: ${sec}s`
   );
 }
 
-export function startMemoryTimer() {
+export function startMemoryTimer(): void {
   resetMemoryTimer();
   memoryTimer = Math.round(Math.pow(TestWords.words.length, 1.2));
   updateMemoryTimer(memoryTimer);
   showMemoryTimer();
   memoryInterval = setInterval(() => {
+    if (memoryTimer === null) return;
     memoryTimer -= 1;
     memoryTimer == 0 ? hideMemoryTimer() : updateMemoryTimer(memoryTimer);
     if (memoryTimer <= 0) {
@@ -73,24 +84,27 @@ export function startMemoryTimer() {
   }, 1000);
 }
 
-export function reset() {
+export function reset(): void {
   resetMemoryTimer();
 }
 
-export function toggleScript(...params) {
+export function toggleScript(...params: any[]): void {
   if (Config.funbox === "tts") {
     TTS.speak(params[0]);
   }
 }
 
-export function setFunbox(funbox, mode) {
+export function setFunbox(
+  funbox: string,
+  mode: MonkeyTypes.FunboxObjectType | null
+): boolean {
   modeSaved = mode;
   UpdateConfig.setFunbox(funbox, false);
   if (funbox === "none") loadMemory();
   return true;
 }
 
-export async function clear() {
+export async function clear(): Promise<boolean> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
@@ -101,19 +115,19 @@ export async function clear() {
   return true;
 }
 
-export async function activate(funbox) {
+export async function activate(funbox: string): Promise<boolean | undefined> {
   let mode = modeSaved;
 
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   }
 
-  let funboxInfo = await Misc.getFunbox(funbox);
+  const funboxInfo = await Misc.getFunbox(funbox);
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if (await Misc.getCurrentLanguage(Config.language).ligatures) {
+  if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
@@ -149,7 +163,7 @@ export async function activate(funbox) {
     (funbox !== "none" && mode === undefined) ||
     (funbox !== "none" && mode === null)
   ) {
-    let list = await Misc.getFunboxList();
+    const list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
@@ -205,8 +219,8 @@ export async function activate(funbox) {
   return true;
 }
 
-export async function rememberSettings() {
-  let funbox = Config.funbox;
+export async function rememberSettings(): Promise<void> {
+  const funbox = Config.funbox;
   let mode = modeSaved;
   if (funbox === "none" && mode === undefined) {
     mode = null;
@@ -214,7 +228,7 @@ export async function rememberSettings() {
     (funbox !== "none" && mode === undefined) ||
     (funbox !== "none" && mode === null)
   ) {
-    let list = await Misc.getFunboxList();
+    const list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
   if (mode === "style") {

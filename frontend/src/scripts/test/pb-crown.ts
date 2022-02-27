@@ -1,8 +1,8 @@
-export function hide() {
+export function hide(): void {
   $("#result .stats .wpm .crown").css("opacity", 0).addClass("hidden");
 }
 
-export function show() {
+export function show(): void {
   $("#result .stats .wpm .crown")
     .removeClass("hidden")
     .css("opacity", "0")

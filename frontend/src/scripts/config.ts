@@ -1002,7 +1002,7 @@ export function setTimeConfig(
 
 //quote length
 export function setQuoteLength(
-  len: MonkeyTypes.QuoteLengthArray | MonkeyTypes.QuoteLength,
+  len: MonkeyTypes.QuoteLength[] | MonkeyTypes.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean
 ): boolean {

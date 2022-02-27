@@ -6,16 +6,24 @@ export let leftState = false;
 export let rightState = false;
 let caseState = false;
 
-let keymapStrings = {
+interface KeymapStrings {
+  left: string[] | null;
+  right: string[] | null;
+  keymap: string | null;
+}
+
+const keymapStrings: KeymapStrings = {
   left: null,
   right: null,
   keymap: null,
 };
 
-function dynamicKeymapLegendStyle(uppercase) {
-  const keymapKeys = [...document.getElementsByClassName("keymap-key")];
+function dynamicKeymapLegendStyle(uppercase: boolean): void {
+  const keymapKeys = <HTMLElement[]>[
+    ...document.getElementsByClassName("keymap-key"),
+  ];
 
-  const layoutKeys = keymapKeys.map((el) => el.dataset.key);
+  const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
 
   const keys = keymapKeys.map((el) => el.childNodes[1]);
 
@@ -39,37 +47,52 @@ function dynamicKeymapLegendStyle(uppercase) {
   }
 }
 
-async function buildKeymapStrings() {
+async function buildKeymapStrings(): Promise<void> {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
-  let layout = await Misc.getLayout(Config.keymapLayout).keys;
+  const layout = await Misc.getLayout(Config.keymapLayout);
+
+  if (layout === undefined) return;
+
+  const layoutKeys = layout.keys;
+  const layoutKeysEntries = Object.entries(layoutKeys) as [string, string[]][];
+
+  keymapStrings.keymap = Config.keymapLayout;
 
   if (!layout) {
-    keymapStrings = {
-      left: null,
-      right: null,
-      keymap: Config.keymapLayout,
-    };
+    keymapStrings.left = null;
+    keymapStrings.right = null;
   } else {
-    keymapStrings.left = (
-      layout.slice(0, 7).join(" ") +
-      " " +
-      layout.slice(13, 19).join(" ") +
-      " " +
-      layout.slice(26, 31).join(" ") +
-      " " +
-      layout.slice(38, 43).join(" ")
-    ).replace(/ /g, "");
-    keymapStrings.right = (
-      layout.slice(6, 13).join(" ") +
-      " " +
-      layout.slice(18, 26).join(" ") +
-      " " +
-      layout.slice(31, 38).join(" ") +
-      " " +
-      layout.slice(42, 48).join(" ")
-    ).replace(/ /g, "");
-    keymapStrings.keymap = Config.keymapLayout;
+    keymapStrings.left = layoutKeysEntries
+      .map(([rowName, row]) =>
+        row
+          // includes "6" and "y" (buttons on qwerty) into the left hand
+          .slice(
+            0,
+            ["row1", "row2"].includes(rowName)
+              ? rowName === "row1"
+                ? 7
+                : 6
+              : 5
+          )
+          .map((key) => key.split(""))
+      )
+      .flat(2);
+
+    keymapStrings.right = layoutKeysEntries
+      .map(([rowName, row]) =>
+        row
+          // includes "b" (buttons on qwerty) into the right hand
+          .slice(
+            ["row1", "row4"].includes(rowName)
+              ? rowName === "row1"
+                ? 6
+                : 4
+              : 5
+          )
+          .map((key) => key.split(""))
+      )
+      .flat(2);
   }
 }
 
@@ -98,12 +121,12 @@ $(document).keyup((e) => {
   }
 });
 
-export function reset() {
+export function reset(): void {
   leftState = false;
   rightState = false;
 }
 
-let leftSideKeys = [
+const leftSideKeys = [
   "KeyQ",
   "KeyW",
   "KeyE",
@@ -129,7 +152,7 @@ let leftSideKeys = [
   "Digit5",
 ];
 
-let rightSideKeys = [
+const rightSideKeys = [
   "KeyU",
   "KeyI",
   "KeyO",
@@ -158,7 +181,9 @@ let rightSideKeys = [
   "Slash",
 ];
 
-export async function isUsingOppositeShift(event) {
+export async function isUsingOppositeShift(
+  event: JQuery.KeyDownEvent
+): Promise<boolean | null> {
   if (!leftState && !rightState) return null;
 
   if (Config.oppositeShiftMode === "on") {
@@ -190,4 +215,6 @@ export async function isUsingOppositeShift(event) {
       return false;
     }
   }
+
+  return true;
 }

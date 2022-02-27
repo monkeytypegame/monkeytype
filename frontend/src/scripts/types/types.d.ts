@@ -23,8 +23,6 @@ declare namespace MonkeyTypes {
 
   type QuoteLength = -1 | 0 | 1 | 2 | 3;
 
-  type QuoteLengthArray = QuoteLength[];
-
   type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
   type CaretStyle =
@@ -122,6 +120,7 @@ declare namespace MonkeyTypes {
     name: string;
     type: FunboxObjectType;
     info: string;
+    affectsWordGeneration?: boolean;
   }
 
   interface CustomText {
@@ -186,6 +185,7 @@ declare namespace MonkeyTypes {
     wpm: number[];
     raw: number[];
     err: number[];
+    unsmoothedRaw?: number[];
   }
 
   interface KeyStats {
@@ -245,7 +245,7 @@ declare namespace MonkeyTypes {
     words: WordsModes;
     time: TimeModes;
     mode: Mode;
-    quoteLength: QuoteLengthArray;
+    quoteLength: QuoteLength[];
     language: string;
     fontSize: FontSize;
     freedomMode: boolean;
@@ -546,6 +546,7 @@ declare namespace MonkeyTypes {
     id: number;
     group?: number;
     language: string;
+    textSplit?: string;
   }
 
   interface PSA {
@@ -573,7 +574,7 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
-    type: "iso" | "ansi" | "ortho";
+    type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }
 
@@ -581,11 +582,16 @@ declare namespace MonkeyTypes {
     [layout: string]: Layout;
   }
   interface Keys {
-    [row1: string]: string[];
-    [row2: string]: string[];
-    [row3: string]: string[];
-    [row4: string]: string[];
-    [row5: string]: string[];
+    row1: string[];
+    row2: string[];
+    row3: string[];
+    row4: string[];
+    row5: string[];
+  }
+
+  interface WordsPerMinuteAndRaw {
+    wpm: number;
+    raw: number;
   }
 
   interface Challenge {

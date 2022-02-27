@@ -119,96 +119,98 @@ export async function refresh(
 
     let keymapElement = "";
 
-    Object.keys(lts.keys).forEach((row, index) => {
-      const rowKeys = lts.keys[row];
-      let rowElement = "";
-      if (row === "row1" && !showTopRow) {
-        return;
-      }
-
-      if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
-        rowElement += "<div></div>";
-      }
-
-      if (row === "row4" && lts.type !== "iso" && !isMatrix) {
-        rowElement += "<div></div>";
-      }
-
-      if (row === "row5") {
-        let layoutDisplay = layoutString.replace(/_/g, " ");
-        if (Config.keymapLegendStyle === "blank") {
-          layoutDisplay = "";
+    (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).forEach(
+      (row, index) => {
+        const rowKeys = lts.keys[row];
+        let rowElement = "";
+        if (row === "row1" && !showTopRow) {
+          return;
         }
-        rowElement += "<div></div>";
-        rowElement += `<div class="keymap-key key-space">
+
+        if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
+          rowElement += "<div></div>";
+        }
+
+        if (row === "row4" && lts.type !== "iso" && !isMatrix) {
+          rowElement += "<div></div>";
+        }
+
+        if (row === "row5") {
+          let layoutDisplay = layoutString.replace(/_/g, " ");
+          if (Config.keymapLegendStyle === "blank") {
+            layoutDisplay = "";
+          }
+          rowElement += "<div></div>";
+          rowElement += `<div class="keymap-key key-space">
           <div class="letter">${layoutDisplay}</div>
         </div>`;
-        rowElement += `<div class="keymap-split-spacer"></div>`;
-        rowElement += `<div class="keymap-key key-split-space">
+          rowElement += `<div class="keymap-split-spacer"></div>`;
+          rowElement += `<div class="keymap-key key-split-space">
           <div class="letter"></div>
         </div>`;
-      } else {
-        for (let i = 0; i < rowKeys.length; i++) {
-          if (row === "row2" && i === 12) continue;
-          if (
-            (Config.keymapStyle === "matrix" ||
-              Config.keymapStyle === "split_matrix") &&
-            i >= 10
-          )
-            continue;
-          const key = rowKeys[i];
-          const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
-          let keyDisplay = key[0];
-          if (Config.keymapLegendStyle === "blank") {
-            keyDisplay = "";
-          } else if (Config.keymapLegendStyle === "uppercase") {
-            keyDisplay = keyDisplay.toUpperCase();
-          }
-          const keyElement = `<div class="keymap-key" data-key="${key.replace(
-            '"',
-            "&quot;"
-          )}">
+        } else {
+          for (let i = 0; i < rowKeys.length; i++) {
+            if (row === "row2" && i === 12) continue;
+            if (
+              (Config.keymapStyle === "matrix" ||
+                Config.keymapStyle === "split_matrix") &&
+              i >= 10
+            )
+              continue;
+            const key = rowKeys[i];
+            const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
+            let keyDisplay = key[0];
+            if (Config.keymapLegendStyle === "blank") {
+              keyDisplay = "";
+            } else if (Config.keymapLegendStyle === "uppercase") {
+              keyDisplay = keyDisplay.toUpperCase();
+            }
+            const keyElement = `<div class="keymap-key" data-key="${key.replace(
+              '"',
+              "&quot;"
+            )}">
               <span class="letter">${keyDisplay}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;
 
-          let splitSpacer = "";
-          if (
-            Config.keymapStyle === "split" ||
-            Config.keymapStyle === "split_matrix" ||
-            Config.keymapStyle === "alice"
-          ) {
+            let splitSpacer = "";
             if (
-              row === "row4" &&
-              (Config.keymapStyle === "split" ||
-                Config.keymapStyle === "alice") &&
-              lts.type === "iso"
+              Config.keymapStyle === "split" ||
+              Config.keymapStyle === "split_matrix" ||
+              Config.keymapStyle === "alice"
             ) {
-              if (i === 6) {
-                splitSpacer += `<div class="keymap-split-spacer"></div>`;
-              }
-            } else {
-              if (i === 5) {
-                splitSpacer += `<div class="keymap-split-spacer"></div>`;
+              if (
+                row === "row4" &&
+                (Config.keymapStyle === "split" ||
+                  Config.keymapStyle === "alice") &&
+                lts.type === "iso"
+              ) {
+                if (i === 6) {
+                  splitSpacer += `<div class="keymap-split-spacer"></div>`;
+                }
+              } else {
+                if (i === 5) {
+                  splitSpacer += `<div class="keymap-split-spacer"></div>`;
+                }
               }
             }
-          }
 
-          if (Config.keymapStyle === "alice" && row === "row4") {
-            if (
-              (lts.type === "iso" && i === 6) ||
-              (lts.type !== "iso" && i === 5)
-            ) {
-              splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
+            if (Config.keymapStyle === "alice" && row === "row4") {
+              if (
+                (lts.type === "iso" && i === 6) ||
+                (lts.type !== "iso" && i === 5)
+              ) {
+                splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
+              }
             }
-          }
 
-          rowElement += splitSpacer + keyElement;
+            rowElement += splitSpacer + keyElement;
+          }
         }
-      }
 
-      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
-    });
+        keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+      }
+    );
 
     $("#keymap").html(keymapElement);
 

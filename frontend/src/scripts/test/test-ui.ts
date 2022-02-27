@@ -13,6 +13,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventValue === undefined || typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
   if (eventKey === "highlightMode") updateWordElement(eventValue);
@@ -23,25 +24,25 @@ export let currentWordElementIndex = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
-export let testRestartingPromise = null;
+export let testRestartingPromise: Promise<unknown>;
 export let lineTransition = false;
 export let currentTestLine = 0;
 export let resultCalculating = false;
 
-export function setResultVisible(val) {
+export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setCurrentWordElementIndex(val) {
+export function setCurrentWordElementIndex(val: number): void {
   currentWordElementIndex = val;
 }
 
-export function setActiveWordTop(val) {
+export function setActiveWordTop(val: number): void {
   activeWordTop = val;
 }
 
-let restartingResolve;
-export function setTestRestarting(val) {
+let restartingResolve: null | ((value?: unknown) => void);
+export function setTestRestarting(val: boolean): void {
   testRestarting = val;
   if (val === true) {
     testRestartingPromise = new Promise((resolve) => {
@@ -53,25 +54,25 @@ export function setTestRestarting(val) {
   }
 }
 
-export function setResultCalculating(val) {
+export function setResultCalculating(val: boolean): void {
   resultCalculating = val;
 }
 
-export function reset() {
+export function reset(): void {
   currentTestLine = 0;
   currentWordElementIndex = 0;
 }
 
-export function focusWords() {
+export function focusWords(): void {
   if (!$("#wordsWrapper").hasClass("hidden")) {
     $("#wordsInput").focus();
   }
 }
 
-export function updateActiveElement(backspace) {
-  let active = document.querySelector("#words .active");
+export function updateActiveElement(backspace?: boolean): void {
+  const active = document.querySelector("#words .active");
   if (Config.mode == "zen" && backspace) {
-    active.remove();
+    active?.remove();
   } else if (active !== null) {
     if (Config.highlightMode == "word") {
       active.querySelectorAll("letter").forEach((e) => {
@@ -81,12 +82,12 @@ export function updateActiveElement(backspace) {
     active.classList.remove("active");
   }
   try {
-    let activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ];
+    const activeWord =
+      document.querySelectorAll("#words .word")[currentWordElementIndex];
     activeWord.classList.add("active");
     activeWord.classList.remove("error");
-    activeWordTop = document.querySelector("#words .active").offsetTop;
+    activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
+      .offsetTop;
     if (Config.highlightMode == "word") {
       activeWord.querySelectorAll("letter").forEach((e) => {
         e.classList.add("correct");
@@ -95,7 +96,7 @@ export function updateActiveElement(backspace) {
   } catch (e) {}
 }
 
-function getWordHTML(word) {
+function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
   for (let c = 0; c < word.length; c++) {
@@ -126,13 +127,13 @@ function getWordHTML(word) {
   return retval;
 }
 
-export function showWords() {
+export function showWords(): void {
   $("#words").empty();
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += getWordHTML(TestWords.words.get(i));
+      wordsHTML += getWordHTML(<string>TestWords.words.get(i));
     }
   } else {
     wordsHTML =
@@ -142,8 +143,12 @@ export function showWords() {
   $("#words").html(wordsHTML);
 
   $("#wordsWrapper").removeClass("hidden");
-  const wordHeight = $(document.querySelector(".word")).outerHeight(true);
-  const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
+  const wordHeight = <number>(
+    $(<Element>document.querySelector(".word")).outerHeight(true)
+  );
+  const wordsHeight = <number>(
+    $(<Element>document.querySelector("#words")).outerHeight(true)
+  );
   console.log(
     `Showing words. wordHeight: ${wordHeight}, wordsHeight: ${wordsHeight}`
   );
@@ -155,6 +160,7 @@ export function showWords() {
   ) {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
+
     let nh = wordHeight * 3;
 
     if (nh > wordsHeight) {
@@ -172,18 +178,18 @@ export function showWords() {
   }
 
   if (Config.mode === "zen") {
-    $(document.querySelector(".word")).remove();
+    $(<Element>document.querySelector(".word")).remove();
   }
 
   updateActiveElement();
   Caret.updatePosition();
 }
 
-export function addWord(word) {
+export function addWord(word: string): void {
   $("#words").append(getWordHTML(word));
 }
 
-export function flipColors(tf) {
+export function flipColors(tf: boolean): void {
   if (tf) {
     $("#words").addClass("flipped");
   } else {
@@ -191,7 +197,7 @@ export function flipColors(tf) {
   }
 }
 
-export function colorful(tc) {
+export function colorful(tc: boolean): void {
   if (tc) {
     $("#words").addClass("colorfulMode");
   } else {
@@ -199,9 +205,9 @@ export function colorful(tc) {
   }
 }
 
-export async function screenshot() {
+export async function screenshot(): Promise<void> {
   let revealReplay = false;
-  function revertScreenshot() {
+  function revertScreenshot(): void {
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
@@ -230,30 +236,31 @@ export async function screenshot() {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  let src = $("#middle");
-  let sourceX = src.position().left; /*X position from div#target*/
-  let sourceY = src.position().top; /*Y position from div#target*/
-  let sourceWidth = src.outerWidth(
-    true
+  const src = $("#middle");
+  const sourceX = src.position().left; /*X position from div#target*/
+  const sourceY = src.position().top; /*Y position from div#target*/
+  const sourceWidth = <number>(
+    src.outerWidth(true)
   ); /*clientWidth/offsetWidth from div#target*/
-  let sourceHeight = src.outerHeight(
-    true
+  const sourceHeight = <number>(
+    src.outerHeight(true)
   ); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
-    let paddingX = 50;
-    let paddingY = 25;
+    const paddingX = 50;
+    const paddingY = 25;
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
       height: sourceHeight + paddingY * 2,
       x: sourceX - paddingX,
       y: sourceY - paddingY,
-    }).then(function (canvas) {
-      canvas.toBlob(function (blob) {
+    }).then((canvas) => {
+      canvas.toBlob((blob) => {
         try {
+          if (blob === null) return;
           if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
             open(URL.createObjectURL(blob));
             revertScreenshot();
@@ -272,7 +279,7 @@ export async function screenshot() {
                 revertScreenshot();
               });
           }
-        } catch (e) {
+        } catch (e: any) {
           Notifications.add(
             "Error saving image to clipboard: " + e.message,
             -1
@@ -281,7 +288,7 @@ export async function screenshot() {
         }
       });
     });
-  } catch (e) {
+  } catch (e: any) {
     Notifications.add("Error creating image: " + e.message, -1);
     revertScreenshot();
   }
@@ -290,12 +297,10 @@ export async function screenshot() {
   }, 3000);
 }
 
-export function updateWordElement(showError = !Config.blindMode) {
-  let input = TestInput.input.current;
-  let wordAtIndex;
-  let currentWord;
-  wordAtIndex = document.querySelector("#words .word.active");
-  currentWord = TestWords.words.getCurrent();
+export function updateWordElement(showError = !Config.blindMode): void {
+  const input = TestInput.input.current;
+  const wordAtIndex = <Element>document.querySelector("#words .word.active");
+  const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
 
   let ret = "";
@@ -334,7 +339,7 @@ export function updateWordElement(showError = !Config.blindMode) {
     }
 
     for (let i = 0; i < input.length; i++) {
-      let charCorrect = currentWord[i] == input[i];
+      const charCorrect = currentWord[i] == input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -467,21 +472,23 @@ export function updateWordElement(showError = !Config.blindMode) {
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
-export function lineJump(currentTop) {
+export function lineJump(currentTop: number): void {
   //last word of the line
   if (currentTestLine > 0) {
-    let hideBound = currentTop;
+    const hideBound = currentTop;
 
-    let toHide = [];
-    let wordElements = $("#words .word");
+    const toHide: JQuery<HTMLElement>[] = [];
+    const wordElements = $("#words .word");
     for (let i = 0; i < currentWordElementIndex; i++) {
       if ($(wordElements[i]).hasClass("hidden")) continue;
-      let forWordTop = Math.floor(wordElements[i].offsetTop);
+      const forWordTop = Math.floor(wordElements[i].offsetTop);
       if (forWordTop < hideBound - 10) {
         toHide.push($($("#words .word")[i]));
       }
     }
-    const wordHeight = $(document.querySelector(".word")).outerHeight(true);
+    const wordHeight = <number>(
+      $(<Element>document.querySelector(".word")).outerHeight(true)
+    );
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
       $("#words").prepend(
@@ -498,7 +505,9 @@ export function lineJump(currentTop) {
       );
       $("#paceCaret").animate(
         {
-          top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+          top:
+            (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
+            wordHeight,
         },
         SlowTimer.get() ? 0 : 125
       );
@@ -508,7 +517,9 @@ export function lineJump(currentTop) {
         },
         SlowTimer.get() ? 0 : 125,
         () => {
-          activeWordTop = document.querySelector("#words .active").offsetTop;
+          activeWordTop = (<HTMLElement>(
+            document.querySelector("#words .active")
+          )).offsetTop;
 
           currentWordElementIndex -= toHide.length;
           lineTransition = false;
@@ -520,31 +531,33 @@ export function lineJump(currentTop) {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
       $("#paceCaret").css({
-        top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+        top:
+          (<HTMLElement>document.querySelector("#paceCaret")).offsetTop -
+          wordHeight,
       });
     }
   }
   currentTestLine++;
 }
 
-export function arrangeCharactersRightToLeft() {
+export function arrangeCharactersRightToLeft(): void {
   $("#words").addClass("rightToLeftTest");
   $("#resultWordsHistory .words").addClass("rightToLeftTest");
   $("#resultReplay .words").addClass("rightToLeftTest");
 }
 
-export function arrangeCharactersLeftToRight() {
+export function arrangeCharactersLeftToRight(): void {
   $("#words").removeClass("rightToLeftTest");
   $("#resultWordsHistory .words").removeClass("rightToLeftTest");
   $("#resultReplay .words").removeClass("rightToLeftTest");
 }
 
-async function loadWordsHistory() {
+async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
-    let input = TestInput.input.getHistory(i);
-    let word = TestWords.words.get(i);
+    const input = <string>TestInput.input.getHistory(i);
+    const word = TestWords.words.get(i);
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
@@ -565,12 +578,12 @@ async function loadWordsHistory() {
       }
       if (i === TestInput.input.history.length - 1) {
         //last word
-        let wordstats = {
+        const wordstats = {
           correct: 0,
           incorrect: 0,
           missed: 0,
         };
-        let length = Config.mode == "zen" ? input.length : word.length;
+        const length = Config.mode == "zen" ? input.length : word.length;
         for (let c = 0; c < length; c++) {
           if (c < input.length) {
             //on char that still has a word list pair
@@ -669,7 +682,7 @@ async function loadWordsHistory() {
   return true;
 }
 
-export function toggleResultWords() {
+export function toggleResultWords(): void {
   if (resultVisible) {
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
@@ -710,7 +723,7 @@ export function toggleResultWords() {
   }
 }
 
-export function applyBurstHeatmap() {
+export function applyBurstHeatmap(): void {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
 
@@ -726,13 +739,13 @@ export function applyBurstHeatmap() {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
 
-    let median = Misc.median(burstlist);
-    let adatm = [];
+    const median = Misc.median(burstlist);
+    const adatm: number[] = [];
     burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
-    let step = Misc.mean(adatm);
-    let steps = [
+    const step = Misc.mean(adatm);
+    const steps = [
       {
         val: 0,
         class: "heatmap-0",
@@ -754,8 +767,8 @@ export function applyBurstHeatmap() {
         class: "heatmap-4",
       },
     ];
-    $("#resultWordsHistory .words .word").each((index, word) => {
-      let wordBurstVal = parseInt($(word).attr("burst"));
+    $("#resultWordsHistory .words .word").each((_, word) => {
+      const wordBurstVal = parseInt(<string>$(word).attr("burst"));
       let cls = "";
       steps.forEach((step) => {
         if (wordBurstVal > step.val) cls = step.class;
@@ -772,7 +785,7 @@ export function applyBurstHeatmap() {
   }
 }
 
-export function highlightBadWord(index, showError) {
+export function highlightBadWord(index: number, showError: boolean): void {
   if (!showError) return;
   $($("#words .word")[index]).addClass("error");
 }
@@ -781,18 +794,17 @@ $(document.body).on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
-$(document).on("click", "#testModesNotice .text-button.blind", (event) => {
+$(document).on("click", "#testModesNotice .text-button.blind", () => {
   UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
-$(".pageTest #copyWordsListButton").click(async (event) => {
+$(".pageTest #copyWordsListButton").click(async () => {
   try {
     let words;
     if (Config.mode == "zen") {
       words = TestInput.input.history.join(" ");
     } else {
-      words = TestWords.words
-        .get()
+      words = (<string[]>TestWords.words.get())
         .slice(0, TestInput.input.history.length)
         .join(" ");
     }
@@ -803,22 +815,22 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   }
 });
 
-$(".pageTest #toggleBurstHeatmap").click(async (event) => {
+$(".pageTest #toggleBurstHeatmap").click(async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
-$(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
+$(document).on("mouseleave", "#resultWordsHistory .words .word", () => {
   $(".wordInputAfter").remove();
 });
 
-$("#wpmChart").on("mouseleave", (e) => {
+$("#wpmChart").on("mouseleave", () => {
   $(".wordInputAfter").remove();
 });
 
 $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
-    let input = $(e.currentTarget).attr("input");
-    let burst = $(e.currentTarget).attr("burst");
+    const input = $(e.currentTarget).attr("input");
+    const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
     if (input != undefined)
       $(e.currentTarget).append(
         `<div class="wordInputAfter">
@@ -843,7 +855,7 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show(TestInput.input.current);
+  Caret.show();
 });
 
 $("#wordsInput").on("focusout", () => {

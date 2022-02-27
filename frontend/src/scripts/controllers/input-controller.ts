@@ -20,7 +20,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TimerProgress from "../test/timer-progress";
 import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
-import * as Replay from "../test/replay.js";
+import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as Leaderboards from "../elements/leaderboards";
@@ -481,7 +481,7 @@ function handleChar(char: string, charIndex: number): void {
     TestWords.words.currentIndex === 0
   ) {
     TestUI.setActiveWordTop(
-      document.querySelector<HTMLElement>("#words .active")?.offsetTop
+      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
     );
   }
 

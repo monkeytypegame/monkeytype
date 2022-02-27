@@ -3,7 +3,7 @@ type ConfigValues =
   | number
   | boolean
   | string[]
-  | MonkeyTypes.QuoteLengthArray
+  | MonkeyTypes.QuoteLength[]
   | MonkeyTypes.ResultFilters
   | MonkeyTypes.CustomBackgroundFilter
   | null

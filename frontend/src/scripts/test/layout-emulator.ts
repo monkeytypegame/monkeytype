@@ -2,15 +2,20 @@ import Config from "../config";
 import * as Misc from "../misc";
 import { capsState } from "./caps-warning";
 
-export async function getCharFromEvent(event) {
-  function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
+export async function getCharFromEvent(
+  event: JQuery.KeyDownEvent
+): Promise<string | null> {
+  function emulatedLayoutShouldShiftKey(
+    event: JQuery.KeyDownEvent,
+    newKeyPreview: string
+  ): boolean {
     if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
 
   const layout = await Misc.getLayout(Config.layout);
 
-  let keyEventCodes = [];
+  let keyEventCodes: string[] = [];
 
   if (layout.type === "ansi") {
     keyEventCodes = [
