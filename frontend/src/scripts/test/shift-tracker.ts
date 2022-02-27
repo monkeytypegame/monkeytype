@@ -1,8 +1,10 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import { capsState } from "./caps-warning";
 
 export let leftState = false;
 export let rightState = false;
+let caseState = false;
 
 interface KeymapStrings {
   left: string[] | null;
@@ -15,6 +17,35 @@ const keymapStrings: KeymapStrings = {
   right: null,
   keymap: null,
 };
+
+function dynamicKeymapLegendStyle(uppercase: boolean): void {
+  const keymapKeys = <HTMLElement[]>[
+    ...document.getElementsByClassName("keymap-key"),
+  ];
+
+  const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
+
+  const keys = keymapKeys.map((el) => el.childNodes[1]);
+
+  if (capsState) uppercase = !uppercase;
+
+  if (layoutKeys.filter((v) => v === undefined).length > 2) return;
+
+  if ((uppercase && caseState) || (!uppercase && !caseState)) return;
+
+  const index = uppercase ? 1 : 0;
+
+  caseState = index === 1 ? true : false;
+
+  for (let i = 0; i < layoutKeys.length; i++) {
+    const layoutKey = layoutKeys[i],
+      key = keys[i];
+
+    if (key === undefined || layoutKey === undefined) continue;
+
+    key.textContent = layoutKey[index];
+  }
+}
 
 async function buildKeymapStrings(): Promise<void> {
   if (keymapStrings.keymap === Config.keymapLayout) return;
@@ -73,12 +104,20 @@ $(document).keydown((e) => {
     leftState = false;
     rightState = true;
   }
+
+  if (Config.keymapLegendStyle === "dynamic") {
+    dynamicKeymapLegendStyle(leftState || rightState);
+  }
 });
 
 $(document).keyup((e) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;
+  }
+
+  if (Config.keymapLegendStyle === "dynamic") {
+    dynamicKeymapLegendStyle(leftState || rightState);
   }
 });
 
@@ -144,15 +183,10 @@ const rightSideKeys = [
 
 export async function isUsingOppositeShift(
   event: JQuery.KeyDownEvent
-): Promise<boolean | null | undefined> {
+): Promise<boolean | null> {
   if (!leftState && !rightState) return null;
 
-  if (
-    Config.oppositeShiftMode === "on" ||
-    (Config.oppositeShiftMode === "keymap" &&
-      (Config.keymapLayout === undefined ||
-        Config.keymapLayout === "overrideSync"))
-  ) {
+  if (Config.oppositeShiftMode === "on") {
     if (
       !rightSideKeys.includes(event.code) &&
       !leftSideKeys.includes(event.code)
@@ -170,13 +204,7 @@ export async function isUsingOppositeShift(
   } else if (Config.oppositeShiftMode === "keymap") {
     await buildKeymapStrings();
 
-    if (
-      !keymapStrings.left ||
-      !keymapStrings.right ||
-      (!keymapStrings.right.includes(event.key) &&
-        !keymapStrings.left.includes(event.key))
-    )
-      return null;
+    if (!keymapStrings.left || !keymapStrings.right) return null;
 
     if (
       (leftState && keymapStrings.right.includes(event.key)) ||
@@ -188,5 +216,5 @@ export async function isUsingOppositeShift(
     }
   }
 
-  return;
+  return true;
 }
