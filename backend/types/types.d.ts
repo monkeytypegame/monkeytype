@@ -56,6 +56,6 @@ declare namespace MonkeyTypes {
     timeTyping: number;
     uid: string;
     quoteMod: boolean;
-    canReport: boolean;
+    cannotReport: boolean;
   }
 }

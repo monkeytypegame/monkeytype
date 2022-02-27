@@ -138,7 +138,7 @@ quotesRouter.post(
   }),
   checkUserPermissions({
     criteria: (user) => {
-      return user.canReport;
+      return !user.cannotReport;
     },
   }),
   asyncHandler(QuotesController.reportQuote)
