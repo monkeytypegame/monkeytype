@@ -24,10 +24,10 @@ function dynamicKeymapLegendStyle(uppercase) {
   if (layoutKeys.filter((v) => v === undefined).length > 2) return;
 
   if ((uppercase && caseState) || (!uppercase && !caseState)) return;
-
-  const index = uppercase ? 1 : 0;
-
-  caseState = index === 1 ? true : false;
+  
+  caseState = uppercase;
+  
+  const index = caseState ? 1 : 0;
 
   for (let i = 0; i < layoutKeys.length; i++) {
     const layoutKey = layoutKeys[i],
