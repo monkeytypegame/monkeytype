@@ -16,7 +16,7 @@ const CONFIG_SCHEMA = joi.object({
   themeLight: joi.string(),
   themeDark: joi.string(),
   autoSwitchTheme: joi.boolean(),
-  customThemeIndex: joi.number().min(-1).max(9),
+  customThemeId: joi.string().min(0).max(24),
   customThemeColors: joi
     .array()
     .items(joi.string().pattern(/^#([\da-f]{3}){1,2}$/i))

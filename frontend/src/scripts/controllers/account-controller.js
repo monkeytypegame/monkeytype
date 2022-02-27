@@ -74,7 +74,7 @@ export async function getDataAndInit() {
       }
       Loader.hide();
     }
-    ThemeController.set(Config.customThemeIndex);
+    ThemeController.set(Config.customThemeId);
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {
@@ -304,7 +304,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   }
 
   let themeColors = Misc.findGetParameter("customTheme");
-  const oldCustomThemeIndex = Config.customThemeIndex;
+  const oldCustomThemeIndex = Config.customThemeId;
   if (themeColors !== null) {
     try {
       themeColors = themeColors.split(",");
@@ -331,7 +331,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
               _id: response.data.theme._id,
             });
 
-          UpdateConfig.setCustomThemeIndex(customThemesLength);
+          UpdateConfig.setCustomThemeId(customThemesLength);
           Notifications.add(
             "Custom theme: 'custom' sucessfully created and applied.",
             1
@@ -346,7 +346,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
         "Something went wrong. Reverting to previous state.",
         0
       );
-      UpdateConfig.setCustomThemeIndex(oldCustomThemeIndex);
+      UpdateConfig.setCustomThemeId(oldCustomThemeIndex);
     }
   }
   if (/challenge_.+/g.test(window.location.pathname)) {

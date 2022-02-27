@@ -1217,7 +1217,7 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
 
 const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
   title: "Custom theme...",
-  configKey: "customThemeIndex",
+  configKey: "customThemeId",
   list: [],
 };
 
@@ -1228,9 +1228,9 @@ export function updateCustomThemeCommands(): void {
   commandsCustomTheme.list.push({
     id: "setCustomThemeOff",
     display: "off",
-    configValue: -1,
+    configValue: "",
     exec: (): void => {
-      UpdateConfig.setCustomThemeIndex(-1);
+      UpdateConfig.setCustomThemeId("");
     },
   });
   if (customThemes !== undefined && customThemes.length > 0) {
@@ -1241,10 +1241,10 @@ export function updateCustomThemeCommands(): void {
         configValue: index,
         hover: (): void => {
           // previewTheme(theme.name);
-          ThemeController.preview(index);
+          ThemeController.preview(true, theme._id);
         },
         exec: (): void => {
-          UpdateConfig.setCustomThemeIndex(index);
+          UpdateConfig.setCustomThemeId(theme._id);
         },
       });
     });
@@ -2373,7 +2373,7 @@ Misc.getThemesList().then((themes) => {
       configValue: theme.name,
       hover: (): void => {
         // previewTheme(theme.name);
-        ThemeController.preview(theme.name);
+        ThemeController.preview(false, theme.name);
       },
       exec: (): void => {
         UpdateConfig.setTheme(theme.name);
@@ -2412,7 +2412,7 @@ export function updateThemeCommands(): void {
         display: theme.replace(/_/g, " "),
         hover: (): void => {
           // previewTheme(theme);
-          ThemeController.preview(theme);
+          ThemeController.preview(false, theme);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme);
@@ -2427,7 +2427,7 @@ export function updateThemeCommands(): void {
           display: theme.name.replace(/_/g, " "),
           hover: (): void => {
             // previewTheme(theme.name);
-            ThemeController.preview(theme.name);
+            ThemeController.preview(false, theme.name);
           },
           exec: (): void => {
             UpdateConfig.setTheme(theme.name);

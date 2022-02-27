@@ -27,7 +27,7 @@ const defaultConfig: MonkeyTypes.Config = {
   themeLight: "serika",
   themeDark: "serika_dark",
   autoSwitchTheme: false,
-  customThemeIndex: -1,
+  customThemeId: "",
   customThemeColors: [
     "#323437",
     "#e2b714",
@@ -1319,21 +1319,21 @@ export function setAutoSwitchTheme(boolean: boolean, nosave?: boolean): void {
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
 }
 
-export function setCustomThemeIndex(index: number, nosave?: boolean): void {
-  if (index !== -1) setRandomTheme("off");
-  if (!isConfigValueValid(index, ["number"]))
-    return invalid("custom theme", index);
+export function setCustomThemeId(customId: string, nosave?: boolean): void {
+  if (customId !== "") setRandomTheme("off");
+  if (!isConfigValueValid(customId, ["string"]))
+    return invalid("custom theme", customId);
 
-  if (index !== undefined) config.customThemeIndex = index;
+  if (customId !== undefined) config.customThemeId = customId;
   if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("customThemeIndex", config.customThemeIndex);
+  ConfigEvent.dispatch("customThemeId", config.customThemeId);
 }
 
 export function setTheme(name: string, nosave?: boolean): void {
   if (!isConfigValueValid(name, ["string"])) return invalid("", name);
 
   config.theme = name;
-  setCustomThemeIndex(-1, true);
+  setCustomThemeId("", true);
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("theme", config.theme);
 }
@@ -1355,11 +1355,11 @@ export function setThemeDark(name: string, nosave?: boolean): void {
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
 }
 
-function setThemes(theme: string, customState: number, nosave?: boolean): void {
+function setThemes(theme: string, customState: string, nosave?: boolean): void {
   if (!isConfigValueValid(theme, ["string"])) return invalid("", theme);
 
   config.theme = theme;
-  config.customThemeIndex = customState;
+  config.customThemeId = customState;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("setThemes", customState);
 }
@@ -1377,7 +1377,7 @@ export function setRandomTheme(
     val = "off";
   }
 
-  if (val !== "off") setCustomThemeIndex(-1);
+  if (val !== "off") setCustomThemeId("");
   config.randomTheme = val;
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("randomTheme", config.randomTheme);
@@ -1754,7 +1754,7 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setAutoSwitchTheme(configObj.autoSwitchTheme, true);
-    setThemes(configObj.theme, configObj.customThemeIndex, true);
+    setThemes(configObj.theme, configObj.customThemeId, true);
     // setTheme(configObj.theme, true);
     // setCustomTheme(configObj.customTheme, true, true);
     setCustomLayoutfluid(configObj.customLayoutfluid, true);

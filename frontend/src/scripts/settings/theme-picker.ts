@@ -10,11 +10,11 @@ import * as DB from "../db";
 import Ape from "../ape";
 
 export function updateActiveButton(): void {
-  if (Config.customThemeIndex !== -1) {
-    const activeThemeIndex = Config.customThemeIndex;
+  if (Config.customThemeId !== "") {
+    const activeThemeId = Config.customThemeId;
     $(`.pageSettings .section.themes .customTheme`).removeClass("active");
     $(
-      `.pageSettings .section.themes .customTheme[customThemeIndex=${activeThemeIndex}]`
+      `.pageSettings .section.themes .customTheme[customThemeId=${activeThemeId}]`
     ).addClass("active");
   } else {
     let activeThemeName = Config.theme;
@@ -102,7 +102,7 @@ function updateColors(
 }
 
 export async function refreshButtons(): Promise<void> {
-  if (Config.customThemeIndex !== -1) {
+  if (Config.customThemeId !== "") {
     // Update custom theme buttons
     const customThemesEl = $(
       ".pageSettings .section.themes .allCustomThemes.buttons"
@@ -114,14 +114,16 @@ export async function refreshButtons(): Promise<void> {
       return;
     }
 
-    customThemes.forEach((customTheme, customThemeIndex) => {
+    customThemes.forEach((customTheme) => {
       const activeTheme =
-        Config.customThemeIndex === customThemeIndex ? "active" : "";
+        Config.customThemeId === customTheme._id ? "active" : "";
       const bgColor = customTheme.colors[0];
       const mainColor = customTheme.colors[1];
 
       customThemesEl.append(
-        `<div class="customTheme button ${activeTheme}" customThemeIndex='${customThemeIndex}' 
+        `<div class="customTheme button ${activeTheme}" customThemeId='${
+          customTheme._id
+        }' 
         style="color:${mainColor};background:${bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
         <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
@@ -183,9 +185,10 @@ export async function refreshButtons(): Promise<void> {
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
-  const customTheme = (DB.getSnapshot().customThemes ?? [])[
-    Config.customThemeIndex
-  ];
+  if (!DB.getSnapshot() || !DB.getSnapshot().customThemes) return;
+  const customTheme = DB.getSnapshot().customThemes.filter(
+    (t) => t._id === Config.customThemeId
+  )[0];
   $(".pageSettings .section.themes .tabContainer .customThemeEdit #name").val(
     customTheme !== undefined ? customTheme.name : "custom"
   );
@@ -225,7 +228,7 @@ export function updateActiveTab(forced = false): void {
     ".pageSettings .section.themes .tabs .button[tab='custom']"
   );
 
-  if (Config.customThemeIndex === -1) {
+  if (Config.customThemeId === "") {
     $customTab.removeClass("active");
     if (!$presetTab.hasClass("active") || forced) {
       $presetTab.addClass("active");
@@ -249,7 +252,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   // $target.addClass("active"); Don't uncomment it. updateActiveTab() will add the active class itself
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
-    UpdateConfig.setCustomThemeIndex(-1);
+    UpdateConfig.setCustomThemeId("");
   } else {
     const customThemes = DB.getSnapshot().customThemes;
     if (customThemes.length < 1) {
@@ -264,12 +267,12 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
         DB.getSnapshot().customThemes = [
           { ...newCustomTheme, _id: response.data.theme._id },
         ];
-        UpdateConfig.setCustomThemeIndex(0);
+        UpdateConfig.setCustomThemeId(response.data.theme._id);
       } else {
         Notifications.add("Could not create custom theme: custom", -1);
       }
       Loader.hide();
-    } else UpdateConfig.setCustomThemeIndex(0);
+    } else UpdateConfig.setCustomThemeId(customThemes[0]._id);
   }
 });
 
@@ -305,19 +308,15 @@ $(document).on(
   (e) => {
     // Do not apply if user wanted to delete it
     if ($(e.target).hasClass("delButton")) return;
-    const customThemeIndex = parseInt(
-      $(e.currentTarget).attr("customThemeIndex") ?? ""
-    );
+    const customThemeId =
+      $(e.currentTarget).attr("customThemeId") ?? ("" as string);
     const customThemes = DB.getSnapshot().customThemes ?? [];
-    if (
-      customThemeIndex !== undefined &&
-      customThemes.length > customThemeIndex
-    ) {
-      UpdateConfig.setCustomThemeIndex(customThemeIndex);
+    if (customThemes.filter((t) => t._id === customThemeId)[0]) {
+      UpdateConfig.setCustomThemeId(customThemeId);
       updateActiveButton();
     } else
       console.error(
-        "Could not find the custom theme index attribute attached to the button clicked!"
+        "Could not find the custom theme id attribute attached to the button clicked!"
       );
   }
 );
@@ -327,19 +326,19 @@ $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
   async (e) => {
-    const customThemeIndex = parseInt(
-      $(e.currentTarget)
-        .parents(".customTheme.button")
-        .attr("customThemeIndex") ?? "-1"
-    );
-    if (customThemeIndex !== -1) {
+    const parentElement = $(e.currentTarget).parent(".customTheme.button");
+    // const customThemeId = $(e.currentTarget).parents(".customTheme.button").attr("customThemeId") ?? "";
+    const customThemeId = parentElement.attr("customThemeId") ?? "";
+    const themeActive = parentElement.hasClass("active");
+
+    if (customThemeId !== "") {
       const customThemes = DB.getSnapshot().customThemes;
       if (customThemes.length < 1) {
         Notifications.add("No custom themes!", -1);
         return;
       }
-      const customTheme = customThemes[customThemeIndex];
-      if (customTheme === undefined) {
+      const customTheme = customThemes.find((t) => t._id === customThemeId);
+      if (!customTheme) {
         Notifications.add("Custom theme does not exist!");
         return;
       }
@@ -347,14 +346,16 @@ $(document).on(
       const response = await Ape.users.deleteCustomThemes(customTheme._id);
 
       if (response.status === 200) {
-        const filteredThemes = customThemes.filter((_customTheme, index) => {
-          return index !== customThemeIndex;
-        });
+        const filteredThemes = customThemes.filter(
+          (customTheme) => customTheme._id !== customThemeId
+        );
         DB.getSnapshot().customThemes = filteredThemes;
         if (filteredThemes.length < 1) {
-          UpdateConfig.setCustomThemeIndex(filteredThemes.length < 1 ? -1 : 0);
+          UpdateConfig.setCustomThemeId("");
         } else {
-          UpdateConfig.setCustomThemeIndex(0);
+          if (themeActive)
+            // If active theme was deleted set the first custom theme
+            UpdateConfig.setCustomThemeId(filteredThemes[0]._id);
           updateActiveTab(true);
         }
         Notifications.add("Deleted custom theme sucessfully", 1);
@@ -512,7 +513,9 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     return;
   }
 
-  const customTheme = snapshot.customThemes[Config.customThemeIndex];
+  const customTheme = snapshot.customThemes.find(
+    (t) => t._id === Config.customThemeId
+  );
   if (customTheme === undefined) {
     Notifications.add("Custom theme does not exist!", -1);
     return;
@@ -524,7 +527,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   Loader.show();
   const response = await Ape.users.editCustomThemes(customTheme._id, newTheme);
   if (response.status === 200) {
-    snapshot.customThemes[Config.customThemeIndex] = {
+    snapshot.customThemes[snapshot.customThemes.indexOf(customTheme)] = {
       ...newTheme,
       _id: customTheme._id,
     };
@@ -532,6 +535,6 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   } else Notifications.add(response.message, -1);
   Loader.hide();
 
-  ThemeController.set(Config.customThemeIndex);
+  ThemeController.set(true, Config.customThemeId);
   updateActiveTab(true);
 });

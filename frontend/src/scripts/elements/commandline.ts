@@ -675,13 +675,15 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (DB.getSnapshot().customThemes.length < 1) {
       Notifications.add("No custom themes!", 0);
-      UpdateConfig.setCustomThemeIndex(-1);
+      UpdateConfig.setCustomThemeId("");
       return;
     }
 
     // Turn on the first custom theme
-    if (Config.customThemeIndex === -1) UpdateConfig.setCustomThemeIndex(0);
-    else UpdateConfig.setCustomThemeIndex(-1);
+    const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+    if (Config.customThemeId === "")
+      UpdateConfig.setCustomThemeId(firstCustomThemeId);
+    else UpdateConfig.setCustomThemeId("");
   } else {
     CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
     show();
