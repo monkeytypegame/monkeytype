@@ -35,6 +35,8 @@ async function bootServer(port: number): Promise<Server> {
     return process.exit(1);
   }
 
+  console.log("test");
+
   return app.listen(PORT, () => {
     console.log(`API server listening on port ${port}`);
   });
