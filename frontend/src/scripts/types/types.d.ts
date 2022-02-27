@@ -93,7 +93,7 @@ declare namespace MonkeyTypes {
 
   type CustomBackgroundSize = "cover" | "contain" | "max";
 
-  type CustomBackgroundFilter = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
+  type CustomBackgroundFilter = [number, number, number, number, number];
 
   /*
     off = off
@@ -139,7 +139,7 @@ declare namespace MonkeyTypes {
   interface Preset {
     _id: string;
     name: string;
-    config: PresetConfig;
+    config: ConfigChanges;
   }
 
   interface PersonalBest {
@@ -316,6 +316,10 @@ declare namespace MonkeyTypes {
     showAvg: boolean;
   }
 
+  interface ConfigChanges extends Partial<MonkeyTypes.Config> {
+    tags?: string[];
+  }
+
   interface DefaultConfig extends Config {
     wordCount: WordsModes;
   }
@@ -449,6 +453,19 @@ declare namespace MonkeyTypes {
     now: number;
     expected: number;
     nextDelay: number;
+  }
+
+  interface Global {
+    snapshot(): Snapshot;
+    config: Config;
+    toggleFilterDebug(): void;
+    glarsesMode(): void;
+    stats(): void;
+    replay(): string;
+    enableTimerDebug(): void;
+    getTimerStats(): TimerStats[];
+    toggleUnsmoothedRaw(): void;
+    enableSpacingDebug(): void;
   }
 
   interface GithubRelease {

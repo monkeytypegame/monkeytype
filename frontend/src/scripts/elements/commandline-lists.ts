@@ -291,26 +291,23 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 
 export function updatePresetCommands(): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
+  commandsPresets.list = [];
+  snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
+    const dis = preset.name;
 
-  if (snapshot.presets !== undefined && snapshot.presets.length > 0) {
-    commandsPresets.list = [];
-
-    snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
-      const dis = preset.name;
-
-      commandsPresets.list.push({
-        id: "applyPreset" + preset._id,
-        display: dis,
-        exec: (): void => {
-          Settings.setEventDisabled(true);
-          PresetController.apply(preset._id);
-          Settings.setEventDisabled(false);
-          Settings.update();
-          ModesNotice.update();
-        },
-      });
+    commandsPresets.list.push({
+      id: "applyPreset" + preset._id,
+      display: dis,
+      exec: (): void => {
+        Settings.setEventDisabled(true);
+        PresetController.apply(preset._id);
+        Settings.setEventDisabled(false);
+        Settings.update();
+        ModesNotice.update();
+      },
     });
-  }
+  });
 }
 
 const commandsRepeatQuotes: MonkeyTypes.CommandsGroup = {
@@ -2459,31 +2456,31 @@ const commandsMonkeyPowerLevel: MonkeyTypes.CommandsGroup = {
       id: "monkeyPowerLevelOff",
       display: "off",
       configValue: "off",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("off"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
       id: "monkeyPowerLevel1",
       display: "mellow",
       configValue: "1",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("1"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
       display: "high",
       configValue: "2",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("2"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
       display: "ultra",
       configValue: "3",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("3"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
       display: "over 9000",
       configValue: "4",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("4"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
 };
@@ -2938,7 +2935,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       icon: "fa-tint",
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined) return;
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
@@ -3218,16 +3215,16 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "saveToLocalStorage") {
     defaultCommands.list.filter(
       (command) => command.id == "exportSettingsJSON"
-    )[0].defaultValue = eventValue;
+    )[0].defaultValue = eventValue as string;
   }
   if (eventKey === "customBackground") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomBackground"
-    )[0].defaultValue = eventValue;
+    )[0].defaultValue = eventValue as string;
   }
   if (eventKey === "customLayoutFluid") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomLayoutfluid"
-    )[0].defaultValue = eventValue?.replace(/#/g, " ");
+    )[0].defaultValue = (eventValue as string)?.replace(/#/g, " ");
   }
 });

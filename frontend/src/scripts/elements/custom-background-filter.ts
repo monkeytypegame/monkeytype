@@ -126,7 +126,7 @@ $(".section.customBackgroundFilter  .save.button").click(() => {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customBackgroundFilter") {
-    loadConfig((eventValue as unknown as any[]).map((ev) => parseFloat(ev)));
+    loadConfig((eventValue as string[]).map((ev) => parseFloat(ev)));
     apply();
   }
 });

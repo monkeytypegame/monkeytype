@@ -154,10 +154,10 @@ export function verify(
     } else {
       return null;
     }
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
     Notifications.add(
-      `Something went wrong when verifying challenge: ${e.message}`,
+      `Something went wrong when verifying challenge: ${(e as Error).message}`,
       0
     );
     return null;

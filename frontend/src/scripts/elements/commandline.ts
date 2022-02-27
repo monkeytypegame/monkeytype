@@ -46,7 +46,15 @@ function showFound(): void {
           (obj.configValueMode &&
             obj.configValueMode === "include" &&
             // todo figure this out without using any
-            (Config[list.configKey] as any[]).includes(obj.configValue)) ||
+            (
+              Config[list.configKey] as (
+                | string
+                | number
+                | boolean
+                | number[]
+                | undefined
+              )[]
+            ).includes(obj.configValue)) ||
           Config[list.configKey] === obj.configValue
         ) {
           icon = `<i class="fas fa-fw fa-check"></i>`;
@@ -260,21 +268,22 @@ function addChildCommands(
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
   if ((commandItem as MonkeyTypes.Command).subgroup) {
-    if ((commandItem as any).beforeSubgroup)
-      (commandItem as any).beforeSubgroup();
+    const command = commandItem as MonkeyTypes.Command;
+    if (command.beforeSubgroup) command.beforeSubgroup();
     try {
       (
         (commandItem as MonkeyTypes.Command)
           ?.subgroup as MonkeyTypes.CommandsGroup
       ).list?.forEach((cmd) => {
         (commandItem as MonkeyTypes.CommandsGroup).configKey = (
-          commandItem as any
-        ).subgroup.configKey;
+          (commandItem as MonkeyTypes.Command)
+            .subgroup as MonkeyTypes.CommandsGroup
+        ).configKey;
         addChildCommands(
           unifiedCommands,
           cmd,
           commandItemDisplay,
-          commandItem as any
+          commandItem as MonkeyTypes.CommandsGroup
         );
       });
       // commandItem.exec();
@@ -286,9 +295,13 @@ function addChildCommands(
       // CommandlineLists.current.pop();
     } catch (e) {}
   } else {
-    const tempCommandItem: any = { ...commandItem };
+    const tempCommandItem: MonkeyTypes.Command = {
+      ...(commandItem as MonkeyTypes.Command),
+    };
     if (parentCommand)
-      (tempCommandItem as any).icon = (parentCommand as any).icon;
+      (tempCommandItem as MonkeyTypes.Command).icon = (
+        parentCommand as unknown as MonkeyTypes.Command
+      ).icon;
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
     unifiedCommands.push(tempCommandItem);
   }

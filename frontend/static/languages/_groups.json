@@ -49,6 +49,14 @@
     ]
   },
   {
+    "name": "afrikaans",
+    "languages": [
+      "afrikaans",
+      "afrikaans_1k",
+      "afrikaans_10k"
+    ]
+  },
+  {
     "name": "mongolian",
     "languages": ["mongolian", "mongolian_10k"]
   },
@@ -290,7 +298,8 @@
       "code_swift",
       "code_bash",
       "code_lua",
-      "code_luau"
+      "code_luau",
+      "code_matlab"
     ]
   },
   {

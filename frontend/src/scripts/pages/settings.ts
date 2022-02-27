@@ -982,8 +982,11 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
       $(
         ".pageSettings .section.customLayoutfluid .inputAndButton input"
       ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-    );
-    Notifications.add("Custom layoutfluid saved", 1);
+    ).then(bool => {
+      if (bool) {
+        Notifications.add("Custom layoutfluid saved", 1);
+      }
+    });
   }
 );
 
@@ -994,8 +997,11 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
         ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-      );
-      Notifications.add("Custom layoutfluid saved", 1);
+      ).then(bool => {
+        if (bool) { 
+          Notifications.add("Custom layoutfluid saved", 1);
+        }
+      });
     }
   }
 );

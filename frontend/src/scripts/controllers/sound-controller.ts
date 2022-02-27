@@ -263,5 +263,5 @@ export function setVolume(val: string): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
-  if (eventKey === "soundVolume") setVolume(eventValue);
+  if (eventKey === "soundVolume") setVolume(eventValue as string);
 });

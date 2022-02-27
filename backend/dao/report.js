@@ -1,33 +1,29 @@
-const MonkeyError = require("../handlers/error");
-const { mongoDB } = require("../init/mongodb");
-
-const MAX_REPORTS = 1000;
-const CONTENT_REPORT_LIMIT = 5;
-
+import MonkeyError from "../handlers/error";
+import db from "../init/db";
 class ReportDAO {
-  static async createReport(report) {
-    const reports = await mongoDB().collection("reports").find().toArray();
+  static async createReport(report, maxReports, contentReportLimit) {
+    const reports = await db.collection("reports").find().toArray();
 
-    if (reports.length >= MAX_REPORTS) {
+    if (reports.length >= maxReports) {
       throw new MonkeyError(
         503,
         "Reports are not being accepted at this time. Please try again later."
       );
     }
 
-    const reportAlreadyExists = reports.filter((existingReport) => {
+    const sameReports = reports.filter((existingReport) => {
       return existingReport.details.contentId === report.details.contentId;
     });
 
-    if (reportAlreadyExists.length >= CONTENT_REPORT_LIMIT) {
+    if (sameReports.length >= contentReportLimit) {
       throw new MonkeyError(
         409,
         "A report limit for this content has been reached."
       );
     }
 
-    await mongoDB().collection("reports").insertOne(report);
+    await db.collection("reports").insertOne(report);
   }
 }
 
-module.exports = ReportDAO;
+export default ReportDAO;

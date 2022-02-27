@@ -199,7 +199,7 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
 }
 
 export async function getLayout(
-  layoutName: keyof MonkeyTypes.Layouts & string
+  layoutName: string
 ): Promise<MonkeyTypes.Layout> {
   if (Object.keys(layoutsList).length === 0) {
     await getLayoutsList();
@@ -649,12 +649,16 @@ export function findGetParameter(parameterName: string): string | null {
   return result;
 }
 
-export function objectToQueryString(obj: object): string {
+export function objectToQueryString<T extends string | number | boolean>(
+  obj: Record<string, T | T[]>
+): string {
   const str = [];
   for (const p in obj)
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
-      // @ts-ignore //todo help
-      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      // Arrays get encoded as a comma(%2C)-separated list
+      str.push(
+        encodeURIComponent(p) + "=" + encodeURIComponent(obj[p] as unknown as T)
+      );
     }
   return str.join("&");
 }
@@ -749,8 +753,7 @@ export function cleanTypographySymbols(textToClean: string): string {
   };
   return textToClean.replace(
     /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
-    // @ts-ignore
-    (char) => specials[char] || ""
+    (char) => specials[char as keyof typeof specials] || ""
   );
 }
 
@@ -848,8 +851,13 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
   return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
 }
 
-// @ts-ignore
-String.prototype.lastIndexOfRegex = function (regex: RegExp): number {
+interface LastIndex extends String {
+  lastIndexOfRegex(regex: RegExp): number;
+}
+
+(String.prototype as LastIndex).lastIndexOfRegex = function (
+  regex: RegExp
+): number {
   const match = this.match(regex);
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;
 };

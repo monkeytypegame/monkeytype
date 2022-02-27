@@ -1,3 +1,4 @@
+import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
@@ -25,7 +26,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
-import axiosInstance from "../axios-instance";
 import * as Poetry from "./poetry";
 import * as Wikipedia from "./wikipedia";
 import * as TodayTracker from "./today-tracker";
@@ -986,29 +986,6 @@ export async function init() {
 
 export async function addWord() {
   let bound = 100;
-  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
-    if (
-      Config.mode == "time" &&
-      TestWords.words.length - TestWords.words.currentIndex < 20
-    ) {
-      let section =
-        Config.funbox == "wikipedia"
-          ? await Wikipedia.getSection(Config.language)
-          : await Poetry.getPoem();
-      let wordCount = 0;
-      for (let word of section.words) {
-        if (wordCount >= Config.words && Config.mode == "words") {
-          break;
-        }
-        wordCount++;
-        TestWords.words.push(word);
-        TestUI.addWord(word);
-      }
-    } else {
-      return;
-    }
-  }
-
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
   if (
@@ -1028,6 +1005,27 @@ export async function addWord() {
       TestWords.words.length >= TestWords.randomQuote.textSplit.length)
   )
     return;
+
+  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+      let section =
+        Config.funbox == "wikipedia"
+          ? await Wikipedia.getSection(Config.language)
+          : await Poetry.getPoem();
+      let wordCount = 0;
+      for (let word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        TestWords.words.push(word);
+        TestUI.addWord(word);
+      }
+    } else {
+      return;
+    }
+  }
+
   const language =
     Config.mode !== "custom"
       ? await Misc.getCurrentLanguage(Config.language)
@@ -1058,7 +1056,7 @@ let retrySaving = {
   canRetry: false,
 };
 
-export function retrySavingResult() {
+export async function retrySavingResult() {
   if (!retrySaving.completedEvent) {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
@@ -1079,66 +1077,57 @@ export function retrySavingResult() {
 
   let { completedEvent } = retrySaving;
 
-  axiosInstance
-    .post("/results/add", {
-      result: completedEvent,
-    })
-    .then((response) => {
-      AccountButton.loading(false);
-      Result.hideCrown();
+  const response = await Ape.results.save(completedEvent);
 
-      if (response.status !== 200) {
-        Notifications.add("Result not saved. " + response.data.message, -1);
-      } else {
-        completedEvent._id = response.data.insertedId;
-        if (response.data.isPb) {
-          completedEvent.isPb = true;
-        }
+  AccountButton.loading(false);
+  Result.hideCrown();
 
-        DB.saveLocalResult(completedEvent);
-        DB.updateLocalStats({
-          time:
-            completedEvent.testDuration +
-            completedEvent.incompleteTestSeconds -
-            completedEvent.afkDuration,
-          started: TestStats.restartCount + 1,
-        });
+  if (response.status !== 200) {
+    retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    return Notifications.add("Result not saved. " + response.message, -1);
+  }
 
-        try {
-          firebase.analytics().logEvent("testCompleted", completedEvent);
-        } catch (e) {
-          console.log("Analytics unavailable");
-        }
+  completedEvent._id = response.data.insertedId;
+  if (response.data.isPb) {
+    completedEvent.isPb = true;
+  }
 
-        if (response.data.isPb) {
-          //new pb
-          Result.showCrown();
-          Result.updateCrown();
-          DB.saveLocalPB(
-            Config.mode,
-            completedEvent.mode2,
-            Config.punctuation,
-            Config.language,
-            Config.difficulty,
-            Config.lazyMode,
-            completedEvent.wpm,
-            completedEvent.acc,
-            completedEvent.rawWpm,
-            completedEvent.consistency
-          );
-        }
-      }
+  DB.saveLocalResult(completedEvent);
+  DB.updateLocalStats({
+    time:
+      completedEvent.testDuration +
+      completedEvent.incompleteTestSeconds -
+      completedEvent.afkDuration,
+    started: TestStats.restartCount + 1,
+  });
 
-      $("#retrySavingResultButton").addClass("hidden");
-      Notifications.add("Result saved", 1);
-    })
-    .catch((e) => {
-      AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to save result: " + msg, -1);
-      $("#retrySavingResultButton").removeClass("hidden");
-      retrySaving.canRetry = true;
-    });
+  try {
+    firebase.analytics().logEvent("testCompleted", completedEvent);
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
+
+  if (response.data.isPb) {
+    //new pb
+    Result.showCrown();
+    Result.updateCrown();
+    DB.saveLocalPB(
+      Config.mode,
+      completedEvent.mode2,
+      Config.punctuation,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      completedEvent.wpm,
+      completedEvent.acc,
+      completedEvent.rawWpm,
+      completedEvent.consistency
+    );
+  }
+
+  $("#retrySavingResultButton").addClass("hidden");
+  Notifications.add("Result saved", 1);
 }
 
 function buildCompletedEvent(difficultyFailed) {
@@ -1467,70 +1456,62 @@ export async function finish(difficultyFailed = false) {
   completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   if (!completedEvent.challenge) delete completedEvent.challenge;
   completedEvent.hash = objecthash(completedEvent);
-  axiosInstance
-    .post("/results/add", {
-      result: completedEvent,
-    })
-    .then((response) => {
-      AccountButton.loading(false);
-      Result.hideCrown();
 
-      if (response.status !== 200) {
-        Notifications.add("Result not saved. " + response.data.message, -1);
-      } else {
-        completedEvent._id = response.data.insertedId;
-        if (response.data.isPb) {
-          completedEvent.isPb = true;
-        }
+  const response = await Ape.results.save(completedEvent);
 
-        DB.saveLocalResult(completedEvent);
-        DB.updateLocalStats({
-          time:
-            completedEvent.testDuration +
-            completedEvent.incompleteTestSeconds -
-            completedEvent.afkDuration,
-          started: TestStats.restartCount + 1,
-        });
+  AccountButton.loading(false);
 
-        try {
-          firebase.analytics().logEvent("testCompleted", completedEvent);
-        } catch (e) {
-          console.log("Analytics unavailable");
-        }
+  if (response.status !== 200) {
+    $("#retrySavingResultButton").removeClass("hidden");
+    if (response.message === "Incorrect result hash") {
+      console.log(completedEvent);
+    }
+    retrySaving.completedEvent = completedEvent;
+    retrySaving.canRetry = true;
+    return Notifications.add("Failed to save result: " + response.message, -1);
+  }
 
-        if (response.data.isPb) {
-          //new pb
-          Result.showCrown();
-          Result.updateCrown();
-          DB.saveLocalPB(
-            Config.mode,
-            completedEvent.mode2,
-            Config.punctuation,
-            Config.language,
-            Config.difficulty,
-            Config.lazyMode,
-            completedEvent.wpm,
-            completedEvent.acc,
-            completedEvent.rawWpm,
-            completedEvent.consistency
-          );
-        }
-      }
+  Result.hideCrown();
 
-      $("#retrySavingResultButton").addClass("hidden");
-    })
-    .catch((e) => {
-      AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to save result: " + msg, -1);
-      $("#retrySavingResultButton").removeClass("hidden");
-      if (msg == "Incorrect result hash") {
-        console.log(completedEvent);
-      }
+  completedEvent._id = response.data.insertedId;
+  if (response.data.isPb) {
+    completedEvent.isPb = true;
+  }
 
-      retrySaving.completedEvent = completedEvent;
-      retrySaving.canRetry = true;
-    });
+  DB.saveLocalResult(completedEvent);
+  DB.updateLocalStats({
+    time:
+      completedEvent.testDuration +
+      completedEvent.incompleteTestSeconds -
+      completedEvent.afkDuration,
+    started: TestStats.restartCount + 1,
+  });
+
+  try {
+    firebase.analytics().logEvent("testCompleted", completedEvent);
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
+
+  if (response.data.isPb) {
+    //new pb
+    Result.showCrown();
+    Result.updateCrown();
+    DB.saveLocalPB(
+      Config.mode,
+      completedEvent.mode2,
+      Config.punctuation,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      completedEvent.wpm,
+      completedEvent.acc,
+      completedEvent.rawWpm,
+      completedEvent.consistency
+    );
+  }
+
+  $("#retrySavingResultButton").addClass("hidden");
 }
 
 export function fail(reason) {

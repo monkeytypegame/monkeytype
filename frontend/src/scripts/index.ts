@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-//this file should be concatenated at the top of the legacy js files
+// this file should be concatenated at the top of the legacy js files
 
 // @ts-ignore
 import Chart from "chart.js";
@@ -36,32 +35,26 @@ import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import * as Account from "./pages/account";
 
-// @ts-ignore
-global.snapshot = DB.getSnapshot;
+type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
-// @ts-ignore
-global.config = Config;
+const extendedGlobal = global as ExtendedGlobal;
 
-// @ts-ignore
-global.toggleFilterDebug = Account.toggleFilterDebug;
+extendedGlobal.snapshot = DB.getSnapshot;
 
-// @ts-ignore
-global.glarsesMode = enable;
+extendedGlobal.config = Config;
 
-// @ts-ignore
-global.stats = TestStats.getStats;
+extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
 
-// @ts-ignore
-global.replay = Replay.getReplayExport;
+extendedGlobal.glarsesMode = enable;
 
-// @ts-ignore
-global.enableTimerDebug = TestTimer.enableTimerDebug;
+extendedGlobal.stats = TestStats.getStats;
 
-// @ts-ignore
-global.getTimerStats = TestTimer.getTimerStats;
+extendedGlobal.replay = Replay.getReplayExport;
 
-// @ts-ignore
-global.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
 
-// @ts-ignore
-global.enableSpacingDebug = TestInput.enableSpacingDebug;
+extendedGlobal.getTimerStats = TestTimer.getTimerStats;
+
+extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+
+extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
