@@ -891,51 +891,51 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote;
-    // if (Config.quoteLength != -2) {
-    const quoteLengths = Config.quoteLength;
-    let groupIndex;
-    if (quoteLengths.length > 1) {
-      groupIndex =
-        quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-      while (quotes.groups[groupIndex].length === 0) {
+    if (Config.quoteLength != -2) {
+      const quoteLengths = Config.quoteLength;
+      let groupIndex;
+      if (quoteLengths.length > 1) {
         groupIndex =
           quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        while (quotes.groups[groupIndex].length === 0) {
+          groupIndex =
+            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        }
+      } else {
+        groupIndex = quoteLengths[0];
+        if (quotes.groups[groupIndex].length === 0) {
+          Notifications.add("No quotes found for selected quote length", 0);
+          TestUI.setTestRestarting(false);
+          return;
+        }
       }
-    } else {
-      groupIndex = quoteLengths[0];
-      if (quotes.groups[groupIndex].length === 0) {
-        Notifications.add("No quotes found for selected quote length", 0);
-        TestUI.setTestRestarting(false);
-        return;
-      }
-    }
 
-    rq = quotes.groups[groupIndex][
-      Math.floor(Math.random() * quotes.groups[groupIndex].length)
-    ] as MonkeyTypes.Quote;
-    if (
-      TestWords.randomQuote != null &&
-      typeof rq !== "number" &&
-      rq.id === TestWords.randomQuote.id
-    ) {
       rq = quotes.groups[groupIndex][
         Math.floor(Math.random() * quotes.groups[groupIndex].length)
       ] as MonkeyTypes.Quote;
+      if (
+        TestWords.randomQuote != null &&
+        typeof rq !== "number" &&
+        rq.id === TestWords.randomQuote.id
+      ) {
+        rq = quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
+        ] as MonkeyTypes.Quote;
+      }
+    } else {
+      quotes.groups.forEach((group) => {
+        const filtered = (<MonkeyTypes.Quote[]>group).filter(
+          (quote) => quote.id == QuoteSearchPopup.selectedId
+        );
+        if (filtered.length > 0) {
+          rq = filtered[0];
+        }
+      });
+      if (rq == undefined) {
+        rq = quotes.groups[0][0];
+        Notifications.add("Quote Id Does Not Exist", 0);
+      }
     }
-    // } else {
-    //   quotes.groups.forEach((group) => {
-    //     const filtered = group.filter(
-    //       (quote) => quote.id == QuoteSearchPopup.selectedId
-    //     );
-    //     if (filtered.length > 0) {
-    //       rq = filtered[0];
-    //     }
-    //   });
-    //   if (rq == undefined) {
-    //     rq = quotes.groups[0][0];
-    //     Notifications.add("Quote Id Does Not Exist", 0);
-    //   }
-    // }
     rq.text = rq.text.replace(/ +/gm, " ");
     rq.text = rq.text.replace(/\\\\t/gm, "\t");
     rq.text = rq.text.replace(/\\\\n/gm, "\n");
@@ -1659,14 +1659,14 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
   >parseInt($(e.currentTarget).attr("quoteLength") ?? "");
-  // if (len != -2) {
-  if (len == -1) {
-    len = [0, 1, 2, 3];
+  if (len != -2) {
+    if (len == -1) {
+      len = [0, 1, 2, 3];
+    }
+    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
+    ManualRestart.set();
+    restart();
   }
-  UpdateConfig.setQuoteLength(len, false, e.shiftKey);
-  ManualRestart.set();
-  restart();
-  // }
 });
 
 $(document).on("click", "#top .config .punctuationMode .text-button", () => {
