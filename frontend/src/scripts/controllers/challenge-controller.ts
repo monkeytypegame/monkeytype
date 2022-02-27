@@ -198,7 +198,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
-      CustomText.setWord(parseInt(<string>challenge.parameters[2]));
+      CustomText.setWord(challenge.parameters[2] as number);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -215,7 +215,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] != null) {
-        Funbox.activate(challenge.parameters[2].toString());
+        Funbox.activate(challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);

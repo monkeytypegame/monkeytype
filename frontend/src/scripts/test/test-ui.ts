@@ -132,7 +132,7 @@ export function showWords(): void {
   let wordsHTML = "";
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += getWordHTML(TestWords.words.get(i));
+      wordsHTML += getWordHTML(<string>TestWords.words.get(i));
     }
   } else {
     wordsHTML =
