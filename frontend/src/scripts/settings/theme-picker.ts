@@ -7,7 +7,6 @@ import * as ChartController from "../controllers/chart-controller";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
-import Ape from "../ape";
 
 export function updateActiveButton(): void {
   if (Config.customThemeId !== "") {
@@ -220,6 +219,7 @@ function toggleFavourite(themeName: string): void {
 }
 
 export function updateActiveTab(forced = false): void {
+  // Set force to true only when some change for the active tab has taken place
   // Prevent theme buttons from being added twice by doing an update only when the state has changed
   const $presetTab = $(
     ".pageSettings .section.themes .tabs .button[tab='preset']"
@@ -255,24 +255,18 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
     UpdateConfig.setCustomThemeId("");
   } else {
     const customThemes = DB.getSnapshot().customThemes;
-    if (customThemes.length < 1) {
-      const newCustomTheme = {
-        name: "custom",
-        colors: [...Config.customThemeColors],
-      };
-      Loader.show();
-      const response = await Ape.users.addCustomTheme(newCustomTheme);
-      if (response.status === 200) {
-        Notifications.add("Created new custom theme: custom", 1);
-        DB.getSnapshot().customThemes = [
-          { ...newCustomTheme, _id: response.data.theme._id },
-        ];
-        UpdateConfig.setCustomThemeId(response.data.theme._id);
-      } else {
-        Notifications.add("Could not create custom theme: custom", -1);
-      }
-      Loader.hide();
-    } else UpdateConfig.setCustomThemeId(customThemes[0]._id);
+    if (customThemes.length >= 1) {
+      UpdateConfig.setCustomThemeId(customThemes[0]._id);
+      return;
+    }
+    Loader.show();
+    const createdTheme = await DB.addCustomTheme({
+      name: "custom",
+      colors: [...Config.customThemeColors],
+    });
+    Loader.hide();
+    if (createdTheme)
+      UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
   }
 });
 
@@ -284,21 +278,9 @@ $(".pageSettings .addCustomThemeButton").on("click", async () => {
   };
 
   Loader.show();
-  const response = await Ape.users.addCustomTheme(newCustomTheme);
-
-  if (response.status === 200) {
-    const snapshot = DB.getSnapshot();
-
-    snapshot.customThemes.push({
-      name: newCustomTheme.name,
-      colors: newCustomTheme.colors,
-      _id: response.data.theme._id,
-    });
-
-    Notifications.add("Created new custom theme: 'custom' sucessfully", 1);
-    updateActiveTab(true);
-  } else Notifications.add(response.message, -1);
+  await DB.addCustomTheme(newCustomTheme);
   Loader.hide();
+  updateActiveTab(true);
 });
 
 // Handle click on custom theme button
@@ -331,43 +313,37 @@ $(document).on(
     const parentElement = $(e.currentTarget).parent(".customTheme.button");
     // const customThemeId = $(e.currentTarget).parents(".customTheme.button").attr("customThemeId") ?? "";
     const customThemeId = parentElement.attr("customThemeId") ?? "";
-    const themeActive = parentElement.hasClass("active");
-
-    if (customThemeId !== "") {
-      const customThemes = DB.getSnapshot().customThemes;
-      if (customThemes.length < 1) {
-        Notifications.add("No custom themes!", -1);
-        return;
-      }
-      const customTheme = customThemes.find((t) => t._id === customThemeId);
-      if (!customTheme) {
-        Notifications.add("Custom theme does not exist!");
-        return;
-      }
-      Loader.show();
-      const response = await Ape.users.deleteCustomTheme(customTheme._id);
-
-      if (response.status === 200) {
-        const filteredThemes = customThemes.filter(
-          (customTheme) => customTheme._id !== customThemeId
-        );
-        DB.getSnapshot().customThemes = filteredThemes;
-        if (filteredThemes.length < 1) {
-          UpdateConfig.setCustomThemeId("");
-        } else {
-          if (themeActive)
-            // If active theme was deleted set the first custom theme
-            UpdateConfig.setCustomThemeId(filteredThemes[0]._id);
-          updateActiveTab(true);
-        }
-        Notifications.add("Deleted custom theme sucessfully", 1);
-      } else Notifications.add(response.message, -1);
-      Loader.hide();
-      updateActiveTab();
-    } else
+    if (customThemeId === "") {
       console.error(
-        "Could not find the custom theme index attribute attached to the button clicked!"
+        "Custom Theme Id attribute not found on the button clicked!"
       );
+      return;
+    }
+
+    const themeActive = parentElement.hasClass("active");
+    const customThemes = DB.getSnapshot().customThemes;
+    if (customThemes.length < 1) {
+      Notifications.add("No custom themes!", -1);
+      return;
+    }
+    const customTheme = customThemes.find((t) => t._id === customThemeId);
+    if (!customTheme) {
+      Notifications.add("Custom theme does not exist!");
+      return;
+    }
+    Loader.show();
+    const deletedTheme = await DB.deleteCustomTheme(customTheme._id);
+    Loader.hide();
+
+    if (deletedTheme) {
+      if (DB.getSnapshot().customThemes.length < 1) {
+        UpdateConfig.setCustomThemeId("");
+      } else if (themeActive)
+        // If active theme was deleted set the first custom theme
+        UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+      // updateActiveTab(true);
+    }
+    updateActiveTab(true);
   }
 );
 
@@ -527,14 +503,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     colors: newColors,
   };
   Loader.show();
-  const response = await Ape.users.editCustomTheme(customTheme._id, newTheme);
-  if (response.status === 200) {
-    snapshot.customThemes[snapshot.customThemes.indexOf(customTheme)] = {
-      ...newTheme,
-      _id: customTheme._id,
-    };
-    Notifications.add("Custom theme updated sucessfully!");
-  } else Notifications.add(response.message, -1);
+  await DB.editCustomTheme(customTheme._id, newTheme);
   Loader.hide();
 
   ThemeController.set(true, Config.customThemeId);
