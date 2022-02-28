@@ -48,12 +48,18 @@ function addApiRoutes(app: Application): void {
       // hostname: process.env.MODE === "dev" ? "localhost": process.env.STATS_HOSTNAME,
       // ip: process.env.MODE === "dev" ? "127.0.0.1": process.env.STATS_IP,
       uriPath: "/stats",
-      authentication: process.env.MODE === "dev" ? false : true,
-      onAuthenticate: function (req, username, password) {
+      authentication: process.env.MODE !== "dev",
+      onAuthenticate: (_req, username, password) => {
         return (
           username === process.env.STATS_USERNAME &&
           password === process.env.STATS_PASSWORD
         );
+      },
+      onResponseFinish: (_req, res, rrr) => {
+        const authMethod = rrr.http.request.headers.authorization ?? "None";
+        const authType = authMethod.split(" ");
+        rrr.http.request.headers.authorization = authType[0];
+        rrr.http.request.headers["x-forwarded-for"] = "";
       },
     })
   );
