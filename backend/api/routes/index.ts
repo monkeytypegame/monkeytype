@@ -79,6 +79,16 @@ function addApiRoutes(app: Application): void {
     })
   );
 
+  app.get("/psa", (req, res) => {
+    res.json([
+      {
+        message:
+          "It seems like your client version is very out of date as you're requesting an API endpoint that no longer exists. This will likely cause most of the website to not function correctly. Please clear your cache, or contact support if this message persists.",
+        sticky: true,
+      },
+    ]);
+  });
+
   Object.keys(API_ROUTE_MAP).forEach((route) => {
     const apiRoute = `${BASE_ROUTE}${route}`;
     const router = API_ROUTE_MAP[route];
