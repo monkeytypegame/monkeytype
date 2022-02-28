@@ -1,18 +1,13 @@
 import { UpdateResult } from "mongodb";
 import db from "../init/db";
+import _ from "lodash";
 
 class ConfigDAO {
   static async saveConfig(uid, config): Promise<UpdateResult> {
-    //https://stackoverflow.com/questions/10290621/how-do-i-partially-update-an-object-in-mongodb-so-the-new-object-will-overlay
-    const temp = {};
-    for (const key in config) {
-      const value = config[key];
-      temp["config." + key] = value;
-    }
-
+    const configChanges = _.mapKeys(config, (value, key) => `config.${key}`);
     return await db
       .collection("configs")
-      .updateOne({ uid }, { $set: temp }, { upsert: true });
+      .updateOne({ uid }, { $set: configChanges }, { upsert: true });
   }
 
   static async getConfig(uid): Promise<object> {
