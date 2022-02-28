@@ -40,7 +40,7 @@ export function updateButtons(): void {
 }
 
 function updateActiveButtons(active: string[]): void {
-  if (active === []) return;
+  if (active.length === 0) return;
   $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {

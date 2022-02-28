@@ -10,6 +10,8 @@ const through2 = require("through2");
 const { webpack } = require("webpack");
 const webpackDevConfig = require("./webpack.config.js");
 const webpackProdConfig = require("./webpack-production.config.js");
+const esbuild = require("esbuild");
+const esbuildOptions = require("./esbuild");
 const ts = require("gulp-typescript");
 
 const JSONValidation = require("./json-validation");
@@ -75,6 +77,14 @@ task("webpack-production", async function () {
   });
 });
 
+task("esbuild", async function () {
+  try {
+    await esbuild.build(esbuildOptions);
+  } catch (e) {
+    return new Error(e);
+  }
+});
+
 task("static", function () {
   return src("./static/**/*", { dot: true }).pipe(dest("./public/"));
 });
@@ -125,6 +135,11 @@ task(
 );
 
 task(
+  "compile-esbuild",
+  series("lint", "lint-json", "esbuild", "static", "sass", "updateSwCacheName")
+);
+
+task(
   "compile-production",
   series(
     "lint",
@@ -151,7 +166,23 @@ task("watch", function () {
   watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
 });
 
+task("watch-esbuild", function () {
+  watch("./src/styles/*.scss", series("sass"));
+  watch(
+    [
+      "./src/scripts/**/*.js",
+      "./src/scripts/**/*.ts",
+      "./src/scripts/*.js",
+      "./src/scripts/*.ts",
+    ],
+    series("lint", "esbuild")
+  );
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
+});
+
 task("build", series("clean", "compile"));
+
+task("build-esbuild", series("clean", "compile-esbuild"));
 
 task("build-production", series("clean", "compile-production"));
 
