@@ -7,7 +7,7 @@ class ConfigDAO {
     const configChanges = _.mapKeys(config, (_value, key) => `config.${key}`);
     return await db
       .collection<any>("configs")
-      .updateOne({ uid }, { $set: { configChanges } }, { upsert: true });
+      .updateOne({ uid }, { $set: configChanges }, { upsert: true });
   }
 
   static async getConfig(uid: string): Promise<any> {
