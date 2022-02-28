@@ -172,6 +172,95 @@ export async function getUserResults(): Promise<boolean> {
     return true;
   }
 }
+
+export async function addCustomTheme(
+  theme: MonkeyTypes.RawCustomTheme
+): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  if (dbSnapshot.customThemes.length >= 10) {
+    Notifications.add("Too many custom themes!", 0);
+    return false;
+  }
+
+  const response = await Ape.users.addCustomTheme(theme);
+  if (response.status !== 200) {
+    Notifications.add("Error adding custom theme: " + response.message, -1);
+    return false;
+  }
+
+  const newCustomTheme: MonkeyTypes.CustomTheme = {
+    ...theme,
+    _id: response.data._id as string,
+  };
+
+  dbSnapshot.customThemes.push(newCustomTheme);
+  return true;
+}
+
+export async function editCustomTheme(
+  themeId: string,
+  newTheme: MonkeyTypes.RawCustomTheme
+): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (!customTheme) {
+    Notifications.add(
+      "Editing failed: Custom theme with id: " + themeId + " does not exist",
+      -1
+    );
+    return false;
+  }
+
+  const response = await Ape.users.editCustomTheme(themeId, newTheme);
+  if (response.status !== 200) {
+    Notifications.add("Error editing custom theme: " + response.message, -1);
+    return false;
+  }
+
+  const newCustomTheme: MonkeyTypes.CustomTheme = {
+    ...newTheme,
+    _id: response.data._id as string,
+  };
+
+  dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
+    newCustomTheme;
+
+  return true;
+}
+
+export async function deleteCustomTheme(themeId: string): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (!customTheme) {
+    Notifications.add(
+      "Deletion failed: Custom theme with id: " + themeId + " does not exist",
+      -1
+    );
+    return false;
+  }
+
+  const response = await Ape.users.deleteCustomTheme(themeId);
+  if (response.status !== 200) {
+    Notifications.add("Error deleting custom theme: " + response.message, -1);
+    return false;
+  }
+
+  dbSnapshot.customThemes = dbSnapshot.customThemes.filter(
+    (t) => t._id !== themeId
+  );
+
+  return true;
+}
+
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,

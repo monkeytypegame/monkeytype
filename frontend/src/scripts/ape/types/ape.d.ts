@@ -112,14 +112,14 @@ declare namespace Ape {
       updateEmail: (newEmail: string, previousEmail: string) => EndpointData;
       deletePersonalBests: Endpoint;
       getCustomThemes: () => EndpointData;
-      addCustomThemes: (
+      addCustomTheme: (
         newTheme: Partial<MonkeyTypes.CustomTheme>
       ) => EndpointData;
-      editCustomThemes: (
+      editCustomTheme: (
         themeId: string,
         newTheme: Partial<MonkeyTypes.CustomTheme>
       ) => EndpointData;
-      deleteCustomThemes: (themeId: string) => EndpointData;
+      deleteCustomTheme: (themeId: string) => EndpointData;
       getTags: Endpoint;
       createTag: (tagName: string) => EndpointData;
       editTag: (tagId: string, newName: string) => EndpointData;

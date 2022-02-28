@@ -261,7 +261,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
         colors: [...Config.customThemeColors],
       };
       Loader.show();
-      const response = await Ape.users.addCustomThemes(newCustomTheme);
+      const response = await Ape.users.addCustomTheme(newCustomTheme);
       if (response.status === 200) {
         Notifications.add("Created new custom theme: custom", 1);
         DB.getSnapshot().customThemes = [
@@ -284,7 +284,7 @@ $(".pageSettings .addCustomThemeButton").on("click", async () => {
   };
 
   Loader.show();
-  const response = await Ape.users.addCustomThemes(newCustomTheme);
+  const response = await Ape.users.addCustomTheme(newCustomTheme);
 
   if (response.status === 200) {
     const snapshot = DB.getSnapshot();
@@ -345,7 +345,7 @@ $(document).on(
         return;
       }
       Loader.show();
-      const response = await Ape.users.deleteCustomThemes(customTheme._id);
+      const response = await Ape.users.deleteCustomTheme(customTheme._id);
 
       if (response.status === 200) {
         const filteredThemes = customThemes.filter(
@@ -527,7 +527,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     colors: newColors,
   };
   Loader.show();
-  const response = await Ape.users.editCustomThemes(customTheme._id, newTheme);
+  const response = await Ape.users.editCustomTheme(customTheme._id, newTheme);
   if (response.status === 200) {
     snapshot.customThemes[snapshot.customThemes.indexOf(customTheme)] = {
       ...newTheme,

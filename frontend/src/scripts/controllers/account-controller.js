@@ -44,6 +44,7 @@ export function sendVerificationEmail() {
 
 export async function getDataAndInit() {
   try {
+    console.log(firebase.auth().user);
     console.log("getting account data");
     if (ActivePage.get() === "loading") {
       LoadingPage.updateBar(90);
@@ -61,7 +62,7 @@ export async function getDataAndInit() {
         colors: [...Config.customThemeColors],
       };
       Loader.show();
-      const response = await Ape.users.addCustomThemes(newCustomTheme);
+      const response = await Ape.users.addCustomTheme(newCustomTheme);
 
       if (response.status === 200) {
         Notifications.add("Custom theme: 'custom' successfully created", 1);
@@ -317,7 +318,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       } else {
         const newCustomTheme = { name: "custom", colors: themeColors };
         Loader.show();
-        const response = await Ape.users.addCustomThemes(newCustomTheme);
+        const response = await Ape.users.addCustomTheme(newCustomTheme);
 
         if (response.status === 200) {
           const snapshot = DB.getSnapshot();

@@ -94,7 +94,7 @@ export default function getUsersEndpoints(
     return await apeClient.get(`${BASE_PATH}/customThemes`);
   }
 
-  async function editCustomThemes(
+  async function editCustomTheme(
     themeId: string,
     newTheme: Partial<MonkeyTypes.CustomTheme>
   ): Ape.EndpointData {
@@ -108,14 +108,14 @@ export default function getUsersEndpoints(
     return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
   }
 
-  async function deleteCustomThemes(themeId: string): Ape.EndpointData {
+  async function deleteCustomTheme(themeId: string): Ape.EndpointData {
     const payload = {
       themeId: themeId,
     };
     return await apeClient.delete(`${BASE_PATH}/customThemes`, { payload });
   }
 
-  async function addCustomThemes(
+  async function addCustomTheme(
     newTheme: Partial<MonkeyTypes.CustomTheme>
   ): Ape.EndpointData {
     const payload = { name: newTheme.name, colors: newTheme.colors };
@@ -153,8 +153,8 @@ export default function getUsersEndpoints(
     linkDiscord,
     unlinkDiscord,
     getCustomThemes,
-    addCustomThemes,
-    editCustomThemes,
-    deleteCustomThemes,
+    addCustomTheme,
+    editCustomTheme,
+    deleteCustomTheme,
   };
 }

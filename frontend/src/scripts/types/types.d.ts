@@ -188,10 +188,13 @@ declare namespace MonkeyTypes {
     active?: boolean;
   }
 
-  interface CustomTheme {
-    _id: string;
+  interface RawCustomTheme {
     name: string;
     colors: string[];
+  }
+
+  interface CustomTheme extends RawCustomTheme {
+    _id: string;
   }
 
   interface Stats {
