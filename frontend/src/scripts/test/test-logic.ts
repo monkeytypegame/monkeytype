@@ -401,7 +401,7 @@ export function restart(
     if (
       Config.randomTheme !== "off" &&
       !PageTransition.get() &&
-      Config.customThemeId === -1
+      Config.customThemeId === ""
     ) {
       ThemeController.randomizeTheme();
     }
