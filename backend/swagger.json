@@ -14,14 +14,356 @@
   "schemes": ["https"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
+  "tags": [
+    {
+      "name": "users",
+      "description": ""
+    },
+    {
+      "name": "tags",
+      "description": ""
+    }
+  ],
   "paths": {
     "/users": {
       "get": {
-        "description": "Returns user data",
-        "produces": ["application/json"],
+        "tags": ["users"],
         "responses": {
-          "200": {
-            "description": "User data.",
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/name": {
+      "patch": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "uid": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/checkName/{name}": {
+      "get": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/leaderboardMemory": {
+      "patch": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "mode2": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                },
+                "rank": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/discord/link": {
+      "post": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tokenType": {
+                  "type": "string"
+                },
+                "accessToken": {
+                  "type": "string"
+                },
+                "uid": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/discord/unlink": {
+      "post": {
+        "tags": ["users"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/email": {
+      "patch": {
+        "tags": ["users"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newEmail": {
+                  "type": "string"
+                },
+                "previousEmail": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/personalBests": {
+      "delete": {
+        "tags": ["users"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/tags": {
+      "get": {
+        "tags": ["tags"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["tags"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tagName": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["tags"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tagId": {
+                  "type": "string"
+                },
+                "newName": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/tags/{tagId}": {
+      "delete": {
+        "tags": ["tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tagId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/tags/{tagId}/personalBest": {
+      "delete": {
+        "tags": ["tags"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tagId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
             "schema": {
               "$ref": "#/definitions/Response"
             }
@@ -33,7 +375,7 @@
   "definitions": {
     "Response": {
       "type": "object",
-      "required": ["error", "message", "data"],
+      "required": ["error", "message"],
       "properties": {
         "error": {
           "type": "string"
