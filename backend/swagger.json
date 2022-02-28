@@ -1,0 +1,50 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Monkeytype",
+    "termsOfService": "http://monkeytype.com/terms-of-service",
+    "contact": {
+      "name": "Developer",
+      "email": "jack@monkeytype.com"
+    }
+  },
+  "host": "api.monkeytype.com",
+  "basePath": "/",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/users": {
+      "get": {
+        "description": "Returns user data",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "User data.",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Response": {
+      "type": "object",
+      "required": ["error", "message", "data"],
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}
