@@ -4,6 +4,7 @@ import { hash } from "bcrypt";
 import ApeKeysDAO from "../../dao/ape-keys";
 import MonkeyError from "../../handlers/error";
 import { MonkeyResponse } from "../../handlers/monkey-response";
+import { base64UrlEncode } from "../../handlers/misc";
 
 const APE_KEY_BYTES = 48;
 const SALT_ROUNDS = parseInt(process.env.APE_KEY_SALT_ROUNDS, 10) || 5;
@@ -52,7 +53,7 @@ class ApeKeysController {
     const apeKeyId = await ApeKeysDAO.addApeKey(uid, apeKey);
 
     return new MonkeyResponse("ApeKey generated", {
-      apeKey: apiKey,
+      apeKey: base64UrlEncode(`${apeKeyId}.${apiKey}`),
       apeKeyId,
       apeKeyDetails: cleanApeKey(apeKey),
     });

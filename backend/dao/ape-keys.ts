@@ -8,7 +8,7 @@ function checkIfKeyExists(
   keyId: string
 ): void {
   if (!_.has(apeKeys, keyId)) {
-    throw new MonkeyError("Could not find ApeKey");
+    throw new MonkeyError(400, "Could not find ApeKey");
   }
 }
 
