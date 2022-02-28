@@ -193,7 +193,7 @@ export async function addCustomTheme(
 
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data._id as string,
+    _id: response.data.theme._id as string,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -225,7 +225,7 @@ export async function editCustomTheme(
 
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...newTheme,
-    _id: response.data._id as string,
+    _id: themeId,
   };
 
   dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
