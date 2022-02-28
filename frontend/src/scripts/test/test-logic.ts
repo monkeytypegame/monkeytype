@@ -891,7 +891,20 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (!Config.quoteLength.includes(-2) && Config.quoteLength.length !== 1) {
+    if (Config.quoteLength.includes(-2) && Config.quoteLength.length == 1) {
+      quotes.groups.forEach((group) => {
+        const filtered = (<MonkeyTypes.Quote[]>group).filter(
+          (quote) => quote.id == QuoteSearchPopup.selectedId
+        );
+        if (filtered.length > 0) {
+          rq = filtered[0];
+        }
+      });
+      if (rq === undefined) {
+        rq = <MonkeyTypes.Quote>quotes.groups[0][0];
+        Notifications.add("Quote Id Does Not Exist", 0);
+      }
+    } else {
       const quoteLengths = Config.quoteLength;
       let groupIndex;
       if (quoteLengths.length > 1) {
@@ -921,19 +934,6 @@ export async function init(): Promise<void> {
         rq = quotes.groups[groupIndex][
           Math.floor(Math.random() * quotes.groups[groupIndex].length)
         ] as MonkeyTypes.Quote;
-      }
-    } else {
-      quotes.groups.forEach((group) => {
-        const filtered = (<MonkeyTypes.Quote[]>group).filter(
-          (quote) => quote.id == QuoteSearchPopup.selectedId
-        );
-        if (filtered.length > 0) {
-          rq = filtered[0];
-        }
-      });
-      if (rq === undefined) {
-        rq = <MonkeyTypes.Quote>quotes.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0);
       }
     }
 
