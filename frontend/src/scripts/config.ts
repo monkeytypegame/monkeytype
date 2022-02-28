@@ -7,6 +7,7 @@ import {
   isConfigValueValidAsync,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
+import DefaultConfig from "./constants/default-config";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -26,124 +27,45 @@ export function setChangedBeforeDb(val: boolean): void {
 
 let loadDone: (value?: unknown) => void;
 
-const defaultConfig: MonkeyTypes.Config = {
-  theme: "serika_dark",
-  themeLight: "serika",
-  themeDark: "serika_dark",
-  autoSwitchTheme: false,
-  customTheme: false,
-  customThemeColors: [
-    "#323437",
-    "#e2b714",
-    "#e2b714",
-    "#646669",
-    "#d1d0c5",
-    "#ca4754",
-    "#7e2a33",
-    "#ca4754",
-    "#7e2a33",
-  ],
-  favThemes: [],
-  showKeyTips: true,
-  showLiveWpm: false,
-  showTimerProgress: true,
-  smoothCaret: true,
-  quickTab: false,
-  punctuation: false,
-  numbers: false,
-  words: 50,
-  time: 30,
-  mode: "time",
-  quoteLength: [1],
-  language: "english",
-  fontSize: "15",
-  freedomMode: false,
-  resultFilters: null,
-  difficulty: "normal",
-  blindMode: false,
-  quickEnd: false,
-  caretStyle: "default",
-  paceCaretStyle: "default",
-  flipTestColors: false,
-  layout: "default",
-  funbox: "none",
-  confidenceMode: "off",
-  indicateTypos: "off",
-  timerStyle: "mini",
-  colorfulMode: false,
-  randomTheme: "off",
-  timerColor: "main",
-  timerOpacity: "1",
-  stopOnError: "off",
-  showAllLines: false,
-  keymapMode: "off",
-  keymapStyle: "staggered",
-  keymapLegendStyle: "lowercase",
-  keymapLayout: "overrideSync",
-  fontFamily: "roboto_mono",
-  smoothLineScroll: false,
-  alwaysShowDecimalPlaces: false,
-  alwaysShowWordsHistory: false,
-  singleListCommandLine: "manual",
-  capsLockWarning: true,
-  playSoundOnError: false,
-  playSoundOnClick: "off",
-  soundVolume: "0.5",
-  startGraphsAtZero: true,
-  swapEscAndTab: false,
-  showOutOfFocusWarning: true,
-  paceCaret: "off",
-  paceCaretCustomSpeed: 100,
-  repeatedPace: true,
-  pageWidth: "100",
-  chartAccuracy: true,
-  chartStyle: "line",
-  minWpm: "off",
-  minWpmCustomSpeed: 100,
-  highlightMode: "letter",
-  alwaysShowCPM: false,
-  enableAds: "off",
-  hideExtraLetters: false,
-  strictSpace: false,
-  minAcc: "off",
-  minAccCustom: 90,
-  showLiveAcc: false,
-  showLiveBurst: false,
-  monkey: false,
-  repeatQuotes: "off",
-  oppositeShiftMode: "off",
-  customBackground: "",
-  customBackgroundSize: "cover",
-  customBackgroundFilter: [0, 1, 1, 1, 1],
-  customLayoutfluid: "qwerty#dvorak#colemak",
-  monkeyPowerLevel: "off",
-  minBurst: "off",
-  minBurstCustomSpeed: 100,
-  burstHeatmap: false,
-  britishEnglish: false,
-  lazyMode: false,
-  showAvg: false,
-};
-
 let config = {
-  ...defaultConfig,
+  ...DefaultConfig,
 };
 
-export async function saveToLocalStorage(noDbCheck = false): Promise<void> {
+async function saveToLocalStorage(
+  key: keyof MonkeyTypes.Config,
+  nosave = false,
+  noDbCheck = false
+): Promise<void> {
+  if (!dbConfigLoaded && !noDbCheck && !nosave) {
+    setChangedBeforeDb(true);
+  }
+
+  if (nosave) return;
+
+  const dbToSave = {} as MonkeyTypes.Config;
+  (dbToSave[key] as typeof config[typeof key]) = config[key];
+  const localToSave = config;
+  delete localToSave.resultFilters;
+  delete dbToSave.resultFilters;
+
+  const localToSaveStringified = JSON.stringify(localToSave);
+  window.localStorage.setItem("config", localToSaveStringified);
+  if (!noDbCheck) {
+    await DB.saveConfig(dbToSave);
+  }
+  ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
+}
+
+export async function saveFullConfigToLocalStorage(
+  noDbCheck = false
+): Promise<void> {
   if (!dbConfigLoaded && !noDbCheck) {
     setChangedBeforeDb(true);
   }
-  // let d = new Date();
-  // d.setFullYear(d.getFullYear() + 1);
-  // $.cookie("config", JSON.stringify(config), {
-  //   expires: d,
-  //   path: "/",
-  // });
   const save = config;
   delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
-  // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
@@ -161,7 +83,7 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   } else {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("numbers", nosave);
   ConfigEvent.dispatch("numbers", config.numbers);
 
   return true;
@@ -180,7 +102,7 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   } else {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("punctuation", nosave);
   ConfigEvent.dispatch("punctuation", config.punctuation);
 
   return true;
@@ -211,7 +133,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("mode", nosave);
   ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
   return true;
@@ -222,7 +144,7 @@ export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
     return false;
 
   config.playSoundOnError = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("playSoundOnError", nosave);
   ConfigEvent.dispatch("playSoundOnError", config.playSoundOnError);
 
   return true;
@@ -240,7 +162,7 @@ export function setPlaySoundOnClick(
     return false;
 
   config.playSoundOnClick = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("playSoundOnClick", nosave);
   ConfigEvent.dispatch("playSoundOnClick", config.playSoundOnClick);
 
   return true;
@@ -254,7 +176,7 @@ export function setSoundVolume(
     return false;
 
   config.soundVolume = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("soundVolume", nosave);
   ConfigEvent.dispatch("soundVolume", config.soundVolume);
 
   return true;
@@ -269,7 +191,7 @@ export function setDifficulty(
     return false;
 
   config.difficulty = diff;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("difficulty", nosave);
   ConfigEvent.dispatch("difficulty", config.difficulty, nosave);
 
   return true;
@@ -280,7 +202,7 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
   if (!isConfigValueValid("favorite themes", themes, ["stringArray"]))
     return false;
   config.favThemes = themes;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("favThemes", nosave);
   ConfigEvent.dispatch("favThemes", config.favThemes);
 
   return true;
@@ -291,7 +213,7 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
@@ -301,7 +223,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("blind mode", blind, ["boolean"])) return false;
 
   config.blindMode = blind;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("blindMode", nosave);
   ConfigEvent.dispatch("blindMode", config.blindMode, nosave);
 
   return true;
@@ -315,7 +237,7 @@ export function setChartAccuracy(
     return false;
 
   config.chartAccuracy = chartAccuracy;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("chartAccuracy", nosave);
   ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
 
   return true;
@@ -329,7 +251,7 @@ export function setChartStyle(
     return false;
 
   config.chartStyle = chartStyle;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("chartStyle", nosave);
   ConfigEvent.dispatch("chartStyle", config.chartStyle);
 
   return true;
@@ -346,7 +268,7 @@ export function setStopOnError(
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("stopOnError", nosave);
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 
   return true;
@@ -360,7 +282,7 @@ export function setAlwaysShowDecimalPlaces(
     return false;
 
   config.alwaysShowDecimalPlaces = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("alwaysShowDecimalPlaces", nosave);
   ConfigEvent.dispatch(
     "alwaysShowDecimalPlaces",
     config.alwaysShowDecimalPlaces
@@ -373,7 +295,7 @@ export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("always show CPM", val, ["boolean"])) return false;
 
   config.alwaysShowCPM = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("alwaysShowCPM", nosave);
   ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
 
   return true;
@@ -390,7 +312,7 @@ export function setShowOutOfFocusWarning(
   if (!config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showOutOfFocusWarning", nosave);
   ConfigEvent.dispatch("showOutOfFocusWarning", config.showOutOfFocusWarning);
 
   return true;
@@ -400,7 +322,7 @@ export function setSwapEscAndTab(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("swap esc and tab", val, ["boolean"])) return false;
 
   config.swapEscAndTab = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("swapEscAndTab", nosave);
   ConfigEvent.dispatch("swapEscAndTab", config.swapEscAndTab);
 
   return true;
@@ -427,7 +349,7 @@ export function setPaceCaret(
   //   val = "off";
   // }
   config.paceCaret = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("paceCaret", nosave);
   ConfigEvent.dispatch("paceCaret", config.paceCaret, nosave);
 
   return true;
@@ -441,7 +363,7 @@ export function setPaceCaretCustomSpeed(
     return false;
 
   config.paceCaretCustomSpeed = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("paceCaretCustomSpeed", nosave);
   ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 
   return true;
@@ -451,7 +373,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("repeated pace", pace, ["boolean"])) return false;
 
   config.repeatedPace = pace;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("repeatedPace", nosave);
   ConfigEvent.dispatch("repeatedPace", config.repeatedPace);
 
   return true;
@@ -465,7 +387,7 @@ export function setMinWpm(
   if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
 
   config.minWpm = minwpm;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("minWpm", nosave);
   ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
 
   return true;
@@ -476,7 +398,7 @@ export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
     return false;
 
   config.minWpmCustomSpeed = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("minWpmCustomSpeed", nosave);
   ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
 
   return true;
@@ -490,7 +412,7 @@ export function setMinAcc(
   if (!isConfigValueValid("min acc", min, [["off", "custom"]])) return false;
 
   config.minAcc = min;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("minAcc", nosave);
   ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
 
   return true;
@@ -500,7 +422,7 @@ export function setMinAccCustom(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
 
   config.minAccCustom = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("minAccCustom", nosave);
   ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
 
   return true;
@@ -515,7 +437,7 @@ export function setMinBurst(
     return false;
 
   config.minBurst = min;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("minBurst", nosave);
   ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
 
   return true;
@@ -526,7 +448,7 @@ export function setMinBurstCustomSpeed(val: number, nosave?: boolean): boolean {
     return false;
 
   config.minBurstCustomSpeed = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("minBurstCustomSpeed", nosave);
   ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
 
   return true;
@@ -541,7 +463,7 @@ export function setAlwaysShowWordsHistory(
     return false;
 
   config.alwaysShowWordsHistory = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("alwaysShowWordsHistory", nosave);
   ConfigEvent.dispatch("alwaysShowWordsHistory", config.alwaysShowWordsHistory);
 
   return true;
@@ -558,7 +480,7 @@ export function setSingleListCommandLine(
     return false;
 
   config.singleListCommandLine = option;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("singleListCommandLine", nosave);
   ConfigEvent.dispatch("singleListCommandLine", config.singleListCommandLine);
 
   return true;
@@ -569,7 +491,7 @@ export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("caps lock warning", val, ["boolean"])) return false;
 
   config.capsLockWarning = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("capsLockWarning", nosave);
   ConfigEvent.dispatch("capsLockWarning", config.capsLockWarning);
 
   return true;
@@ -579,9 +501,7 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show all lines", sal, ["boolean"])) return false;
 
   config.showAllLines = sal;
-  if (!nosave) {
-    saveToLocalStorage();
-  }
+  saveToLocalStorage("showAllLines", nosave);
   ConfigEvent.dispatch("showAllLines", config.showAllLines, nosave);
 
   return true;
@@ -591,7 +511,7 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("quick end", qe, ["boolean"])) return false;
 
   config.quickEnd = qe;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("quickEnd", nosave);
   ConfigEvent.dispatch("quickEnd", config.quickEnd);
 
   return true;
@@ -606,7 +526,7 @@ export function setEnableAds(
 
   config.enableAds = val;
   if (!nosave) {
-    saveToLocalStorage();
+    saveToLocalStorage("enableAds", nosave);
     setTimeout(() => {
       location.reload();
     }, 3000);
@@ -624,7 +544,7 @@ export function setRepeatQuotes(
     return false;
 
   config.repeatQuotes = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("repeatQuotes", nosave);
   ConfigEvent.dispatch("repeatQuotes", config.repeatQuotes);
 
   return true;
@@ -635,7 +555,7 @@ export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("flip test colors", flip, ["boolean"])) return false;
 
   config.flipTestColors = flip;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("flipTestColors", nosave);
   ConfigEvent.dispatch("flipTestColors", config.flipTestColors);
 
   return true;
@@ -646,7 +566,7 @@ export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("colorful mode", extra, ["boolean"])) return false;
 
   config.colorfulMode = extra;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("colorfulMode", nosave);
   ConfigEvent.dispatch("colorfulMode", config.colorfulMode);
 
   return true;
@@ -657,7 +577,7 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("strict space", val, ["boolean"])) return false;
 
   config.strictSpace = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("strictSpace", nosave);
   ConfigEvent.dispatch("strictSpace", config.strictSpace);
 
   return true;
@@ -674,7 +594,7 @@ export function setOppositeShiftMode(
     return false;
 
   config.oppositeShiftMode = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("oppositeShiftMode", nosave);
   ConfigEvent.dispatch("oppositeShiftMode", config.oppositeShiftMode);
 
   return true;
@@ -700,7 +620,7 @@ export function setPageWidth(
   if (val !== "100") {
     $("#centerContent").addClass("wide" + val);
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("pageWidth", nosave);
   ConfigEvent.dispatch("pageWidth", config.pageWidth);
 
   return true;
@@ -741,7 +661,7 @@ export function setCaretStyle(
   } else if (caretStyle == "banana") {
     $("#caret").addClass("banana");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("caretStyle", nosave);
   ConfigEvent.dispatch("caretStyle", config.caretStyle);
 
   return true;
@@ -780,7 +700,7 @@ export function setPaceCaretStyle(
   } else if (caretStyle == "banana") {
     $("#paceCaret").addClass("banana");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("paceCaretStyle", nosave);
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
 
   return true;
@@ -794,7 +714,7 @@ export function setShowTimerProgress(
     return false;
 
   config.showTimerProgress = timer;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showTimerProgress", nosave);
   ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
 
   return true;
@@ -804,7 +724,7 @@ export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show live WPM", live, ["boolean"])) return false;
 
   config.showLiveWpm = live;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showLiveWpm", nosave);
   ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
 
   return true;
@@ -814,7 +734,7 @@ export function setShowLiveAcc(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show live acc", live, ["boolean"])) return false;
 
   config.showLiveAcc = live;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showLiveAcc", nosave);
   ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
 
   return true;
@@ -824,7 +744,7 @@ export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show live burst", live, ["boolean"])) return false;
 
   config.showLiveBurst = live;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showLiveBurst", nosave);
   ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
 
   return true;
@@ -834,7 +754,7 @@ export function setShowAvg(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show average", live, ["boolean"])) return false;
 
   config.showAvg = live;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showAvg", nosave);
   ConfigEvent.dispatch("showAvg", config.showAvg, nosave);
 
   return true;
@@ -861,7 +781,7 @@ export function setHighlightMode(
   }
 
   config.highlightMode = mode;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("highlightMode", nosave);
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
 
   return true;
@@ -871,7 +791,7 @@ export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("hide extra letters", val, ["boolean"])) return false;
 
   config.hideExtraLetters = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("hideExtraLetters", nosave);
   ConfigEvent.dispatch("hideExtraLetters", config.hideExtraLetters);
 
   return true;
@@ -885,7 +805,7 @@ export function setTimerStyle(
     return false;
 
   config.timerStyle = style;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("timerStyle", nosave);
   ConfigEvent.dispatch("timerStyle", config.timerStyle);
 
   return true;
@@ -937,7 +857,7 @@ export function setTimerColor(
     $("#miniTimerAndLiveWpm").addClass("timerText");
   }
 
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("timerColor", nosave);
   ConfigEvent.dispatch("timerColor", config.timerColor);
 
   return true;
@@ -954,7 +874,7 @@ export function setTimerOpacity(
     return false;
 
   config.timerOpacity = opacity;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("timerOpacity", nosave);
   ConfigEvent.dispatch("timerOpacity", config.timerOpacity);
 
   return true;
@@ -970,7 +890,7 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
   } else {
     $("#bottom .keyTips").addClass("hidden");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("showKeyTips", nosave);
   ConfigEvent.dispatch("showKeyTips", config.showKeyTips);
 
   return true;
@@ -983,7 +903,7 @@ export function setTimeConfig(
 ): boolean {
   if (!isConfigValueValid("time", time, ["number"])) return false;
 
-  const newTime = isNaN(time) || time < 0 ? defaultConfig.time : time;
+  const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
   $("#top .config .time .text-button").removeClass("active");
 
@@ -994,7 +914,7 @@ export function setTimeConfig(
   $(
     "#top .config .time .text-button[timeConfig='" + timeCustom + "']"
   ).addClass("active");
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("time", nosave);
   ConfigEvent.dispatch("time", config.time);
 
   return true;
@@ -1042,7 +962,7 @@ export function setQuoteLength(
       "#top .config .quoteLength .text-button[quoteLength='" + ql + "']"
     ).addClass("active");
   });
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("quoteLength", nosave);
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 
   return true;
@@ -1055,7 +975,7 @@ export function setWordCount(
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
 
   const newWordCount =
-    wordCount < 0 || wordCount > 100000 ? defaultConfig.words : wordCount;
+    wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
 
   $("#top .config .wordCount .text-button").removeClass("active");
 
@@ -1068,7 +988,7 @@ export function setWordCount(
   $(
     "#top .config .wordCount .text-button[wordCount='" + wordCustom + "']"
   ).addClass("active");
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("words", nosave);
   ConfigEvent.dispatch("words", config.words);
 
   return true;
@@ -1084,7 +1004,7 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
   } else {
     $("#caret").css("animation-name", "caretFlashHard");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
   return true;
@@ -1095,7 +1015,7 @@ export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
     return false;
 
   config.startGraphsAtZero = mode;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("startGraphsAtZero", nosave);
   ConfigEvent.dispatch("startGraphsAtZero", config.startGraphsAtZero);
 
   return true;
@@ -1107,7 +1027,7 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
     return false;
 
   config.smoothLineScroll = mode;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("smoothLineScroll", nosave);
   ConfigEvent.dispatch("smoothLineScroll", config.smoothLineScroll);
 
   return true;
@@ -1129,7 +1049,7 @@ export function setQuickTabMode(mode: boolean, nosave?: boolean): boolean {
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
     <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("quickTab", nosave);
   ConfigEvent.dispatch("quickTab", config.quickTab);
 
   return true;
@@ -1174,7 +1094,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
     "--font",
     `"${font.replace(/_/g, " ")}", "Roboto Mono"`
   );
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("fontFamily", nosave);
   ConfigEvent.dispatch("fontFamily", config.fontFamily);
 
   return true;
@@ -1191,7 +1111,7 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
   if (config.freedomMode && config.confidenceMode !== "off") {
     config.confidenceMode = "off";
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("freedomMode", nosave);
   ConfigEvent.dispatch("freedomMode", config.freedomMode);
 
   return true;
@@ -1209,7 +1129,7 @@ export function setConfidenceMode(
     config.freedomMode = false;
     config.stopOnError = "off";
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("confidenceMode", nosave);
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
 
   return true;
@@ -1225,7 +1145,7 @@ export function setIndicateTypos(
     return false;
 
   config.indicateTypos = value;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("indicateTypos", nosave);
   ConfigEvent.dispatch("indicateTypos", config.indicateTypos);
 
   return true;
@@ -1238,9 +1158,9 @@ export function setAutoSwitchTheme(
   if (!isConfigValueValid("auto switch theme", boolean, ["boolean"]))
     return false;
 
-  boolean = boolean ?? defaultConfig.autoSwitchTheme;
+  boolean = boolean ?? DefaultConfig.autoSwitchTheme;
   config.autoSwitchTheme = boolean;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("autoSwitchTheme", nosave);
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
 
   return true;
@@ -1250,7 +1170,7 @@ export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom theme", boolean, ["boolean"])) return false;
 
   config.customTheme = boolean;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("customTheme", nosave);
   ConfigEvent.dispatch("customTheme", config.customTheme);
 
   return true;
@@ -1261,7 +1181,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
 
   config.theme = name;
   setCustomTheme(false, true);
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
   return true;
@@ -1271,7 +1191,7 @@ export function setThemeLight(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme light", name, ["string"])) return false;
 
   config.themeLight = name;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("themeLight", nosave);
   ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
 
   return true;
@@ -1281,7 +1201,7 @@ export function setThemeDark(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme dark", name, ["string"])) return false;
 
   config.themeDark = name;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("themeDark", nosave);
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
 
   return true;
@@ -1296,7 +1216,7 @@ function setThemes(
 
   config.theme = theme;
   config.customTheme = customState;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("setThemes", customState);
 
   return true;
@@ -1314,7 +1234,7 @@ export function setRandomTheme(
     return false;
 
   config.randomTheme = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("randomTheme", nosave);
   ConfigEvent.dispatch("randomTheme", config.randomTheme);
 
   return true;
@@ -1327,7 +1247,7 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
     val = false;
   }
   config.britishEnglish = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("britishEnglish", nosave);
   ConfigEvent.dispatch("britishEnglish", config.britishEnglish);
 
   return true;
@@ -1340,7 +1260,7 @@ export function setLazyMode(val: boolean, nosave?: boolean): boolean {
     val = false;
   }
   config.lazyMode = val;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("lazyMode", nosave);
   ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 
   return true;
@@ -1358,7 +1278,7 @@ export function setCustomThemeColors(
     // ThemeController.set("custom");
     // applyCustomThemeColors();
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("customThemeColors", nosave);
   ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
 
   return true;
@@ -1375,7 +1295,7 @@ export function setLanguage(language: string, nosave?: boolean): boolean {
   } catch (e) {
     console.log("Analytics unavailable");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
   return true;
@@ -1390,7 +1310,7 @@ export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
   } else {
     $("#monkey").addClass("hidden");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("monkey", nosave);
   ConfigEvent.dispatch("monkey", config.monkey);
 
   return true;
@@ -1410,7 +1330,7 @@ export function setKeymapMode(
   $(".active-key").removeClass("active-key");
   $(".keymap-key").attr("style", "");
   config.keymapMode = mode;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("keymapMode", nosave);
   ConfigEvent.dispatch("keymapMode", config.keymapMode, nosave);
 
   return true;
@@ -1451,7 +1371,7 @@ export function setKeymapLegendStyle(
   // Update and save to cookie for persistence
   $(".keymapLegendStyle").addClass(style);
   config.keymapLegendStyle = style;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("keymapLegendStyle", nosave);
   ConfigEvent.dispatch("keymapLegendStyle", config.keymapLegendStyle);
 
   return true;
@@ -1470,7 +1390,7 @@ export function setKeymapStyle(
 
   style = style || "staggered";
   config.keymapStyle = style;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("keymapStyle", nosave);
   ConfigEvent.dispatch("keymapStyle", config.keymapStyle);
 
   return true;
@@ -1480,7 +1400,7 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("keymap layout", layout, ["string"])) return false;
 
   config.keymapLayout = layout;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("keymapLayout", nosave);
   ConfigEvent.dispatch("keymapLayout", config.keymapLayout);
 
   return true;
@@ -1490,7 +1410,7 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("layout", layout, ["string"])) return false;
 
   config.layout = layout;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("layout", nosave);
   ConfigEvent.dispatch("layout", config.layout, nosave);
 
   return true;
@@ -1560,7 +1480,7 @@ export function setFontSize(
     $("#caret, #paceCaret").addClass("size4");
     $("#miniTimerAndLiveWpm").addClass("size4");
   }
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 
   return true;
@@ -1578,7 +1498,7 @@ export function setCustomBackground(value: string, nosave?: boolean): boolean {
     value == ""
   ) {
     config.customBackground = value;
-    if (!nosave) saveToLocalStorage();
+    saveToLocalStorage("customBackground", nosave);
     ConfigEvent.dispatch("customBackground", config.customBackground);
   } else {
     Notifications.add("Invalid custom background URL", 0);
@@ -1605,7 +1525,7 @@ export async function setCustomLayoutfluid(
   $(".pageSettings .section.customLayoutfluid input").val(
     customLayoutfluid.replace(/#/g, " ")
   );
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 
   return true;
@@ -1626,7 +1546,7 @@ export function setCustomBackgroundSize(
     value = "cover";
   }
   config.customBackgroundSize = value;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("customBackgroundSize", nosave);
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
 
   return true;
@@ -1640,7 +1560,7 @@ export function setCustomBackgroundFilter(
     return false;
 
   config.customBackgroundFilter = array;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("customBackgroundFilter", nosave);
   ConfigEvent.dispatch("customBackgroundFilter", config.customBackgroundFilter);
 
   return true;
@@ -1659,7 +1579,7 @@ export function setMonkeyPowerLevel(
 
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
   config.monkeyPowerLevel = level;
-  if (!nosave) saveToLocalStorage();
+  saveToLocalStorage("monkeyPowerLevel", nosave);
   ConfigEvent.dispatch("monkeyPowerLevel", config.monkeyPowerLevel);
 
   return true;
@@ -1672,24 +1592,21 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
     value = false;
   }
   config.burstHeatmap = value;
-  if (!nosave) {
-    saveToLocalStorage();
-  }
+  saveToLocalStorage("burstHeatmap", nosave);
   ConfigEvent.dispatch("burstHeatmap", config.burstHeatmap);
 
   return true;
 }
 
-export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
-  if (configObj == null || configObj == undefined || configObj === "null") {
-    Notifications.add("Could not apply config", -1, 3);
-    return;
-  }
-  (Object.keys(defaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
+export function apply(
+  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
+): void {
+  if (!configToApply) return;
+  const configObj = configToApply as MonkeyTypes.Config;
+  (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
     (configKey) => {
       if (configObj[configKey] === undefined) {
-        const newValue = defaultConfig[configKey];
-
+        const newValue = DefaultConfig[configKey];
         (configObj[configKey] as typeof newValue) = newValue;
       }
     }
@@ -1893,7 +1810,6 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
       $("#ad_about1").remove();
       $("#ad_about2").remove();
     }
-
     ConfigEvent.dispatch(
       "configApplied",
       undefined,
@@ -1905,8 +1821,8 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
 }
 
 export function reset(): void {
-  apply(defaultConfig);
-  saveToLocalStorage();
+  apply(DefaultConfig);
+  saveFullConfigToLocalStorage();
 }
 
 export function loadFromLocalStorage(): void {
@@ -1927,7 +1843,7 @@ export function loadFromLocalStorage(): void {
     apply(newConfig);
     console.log("applying localStorage config");
     localStorageConfig = newConfig;
-    saveToLocalStorage(true);
+    saveFullConfigToLocalStorage(true);
     console.log("saving localStorage config");
   }
   // TestLogic.restart(false, true);
@@ -1938,7 +1854,7 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
   (Object.keys(config) as (keyof MonkeyTypes.Config)[])
     .filter((key) => {
-      return config[key] != defaultConfig[key];
+      return config[key] != DefaultConfig[key];
     })
     .forEach((key) => {
       (configChanges[key] as typeof config[typeof key]) = config[key];

@@ -143,7 +143,7 @@ export async function getDataAndInit() {
       AccountButton.loading(false);
       UpdateConfig.apply(snapshot.config);
       Settings.update();
-      UpdateConfig.saveToLocalStorage(true);
+      UpdateConfig.saveFullConfigToLocalStorage(true);
       TestLogic.restart(false, true);
     } else if (snapshot.config !== undefined) {
       //loading db config, keep for now
@@ -182,7 +182,7 @@ export async function getDataAndInit() {
         AccountButton.loading(false);
         UpdateConfig.apply(snapshot.config);
         Settings.update();
-        UpdateConfig.saveToLocalStorage(true);
+        UpdateConfig.saveFullConfigToLocalStorage(true);
         if (ActivePage.get() == "test") {
           TestLogic.restart(false, true);
         }
