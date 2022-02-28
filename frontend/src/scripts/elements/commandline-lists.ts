@@ -1219,7 +1219,7 @@ const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateCustomThemeCommands(): void {
-  const customThemes = DB.getSnapshot().customThemes;
+  const customThemes = DB.getSnapshot()?.customThemes;
   commandsCustomTheme.list = [];
 
   commandsCustomTheme.list.push({
@@ -1231,11 +1231,11 @@ export function updateCustomThemeCommands(): void {
     },
   });
   if (customThemes !== undefined && customThemes.length > 0) {
-    DB.getSnapshot().customThemes?.forEach((theme, index) => {
+    DB.getSnapshot().customThemes?.forEach((theme) => {
       commandsCustomTheme.list.push({
         id: "setCustomThemeOn" + theme._id,
         display: theme.name,
-        configValue: index,
+        configValue: theme._id,
         hover: (): void => {
           // previewTheme(theme.name);
           ThemeController.preview(true, theme._id);

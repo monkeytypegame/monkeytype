@@ -74,7 +74,7 @@ export async function getDataAndInit() {
       }
       Loader.hide();
     }
-    ThemeController.set(Config.customThemeId);
+    ThemeController.set(true, Config.customThemeId);
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {

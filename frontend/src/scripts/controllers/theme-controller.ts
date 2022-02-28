@@ -176,12 +176,6 @@ export const apply = async (
   themeIdentifier: string,
   isPreview = false
 ): Promise<void> => {
-  if (!themeIdentifier) {
-    // Rizwan TODO: Investigate why themeName is undefined / null and remove this if statement later
-    console.log("Investigate these");
-    console.log(themeIdentifier);
-    return;
-  }
   if (custom === true && themeIdentifier !== "")
     apply_custom(themeIdentifier, isPreview);
   else
