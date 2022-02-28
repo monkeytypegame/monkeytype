@@ -318,48 +318,6 @@ $(document).on(
   }
 );
 
-// Handle click on delete custom theme button
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .customTheme .delButton",
-  async (e) => {
-    const parentElement = $(e.currentTarget).parent(".customTheme.button");
-    // const customThemeId = $(e.currentTarget).parents(".customTheme.button").attr("customThemeId") ?? "";
-    const customThemeId = parentElement.attr("customThemeId") ?? "";
-    if (customThemeId === "") {
-      console.error(
-        "Custom Theme Id attribute not found on the button clicked!"
-      );
-      return;
-    }
-
-    const themeActive = parentElement.hasClass("active");
-    const customThemes = DB.getSnapshot().customThemes;
-    if (customThemes.length < 1) {
-      Notifications.add("No custom themes!", -1);
-      return;
-    }
-    const customTheme = customThemes.find((t) => t._id === customThemeId);
-    if (!customTheme) {
-      Notifications.add("Custom theme does not exist!");
-      return;
-    }
-    Loader.show();
-    const deletedTheme = await DB.deleteCustomTheme(customTheme._id);
-    Loader.hide();
-
-    if (deletedTheme) {
-      if (DB.getSnapshot().customThemes.length < 1) {
-        UpdateConfig.setCustomThemeId("");
-      } else if (themeActive)
-        // If active theme was deleted set the first custom theme
-        UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
-      // updateActiveTab(true);
-    }
-    updateActiveTab(true);
-  }
-);
-
 // Handle click on favorite preset theme button
 $(document).on(
   "click",

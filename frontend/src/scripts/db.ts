@@ -240,13 +240,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   if (dbSnapshot === null) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
-  if (!customTheme) {
-    Notifications.add(
-      "Deletion failed: Custom theme with id: " + themeId + " does not exist",
-      -1
-    );
-    return false;
-  }
+  if (!customTheme) return false;
 
   const response = await Ape.users.deleteCustomTheme(themeId);
   if (response.status !== 200) {
