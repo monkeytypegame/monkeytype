@@ -2,6 +2,7 @@ import Ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
+import DefaultConfig from "./constants/default-config";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
 
@@ -94,7 +95,16 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      snap.config = configData.config;
+      const newConfig = DefaultConfig;
+
+      for (const key in configData.config) {
+        const value = configData.config[key];
+        (newConfig[
+          key as keyof MonkeyTypes.Config
+        ] as typeof configData[typeof key]) = value;
+      }
+
+      snap.config = newConfig;
     }
     // if (ActivePage.get() == "loading") {
     //   LoadingPage.updateBar(67.5);
