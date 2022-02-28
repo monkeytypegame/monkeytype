@@ -1212,17 +1212,16 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
+export const customThemeCommands: MonkeyTypes.CommandsGroup = {
   title: "Custom theme...",
   configKey: "customThemeId",
   list: [],
 };
 
 export function updateCustomThemeCommands(): void {
-  const customThemes = DB.getSnapshot()?.customThemes;
-  commandsCustomTheme.list = [];
+  customThemeCommands.list = [];
 
-  commandsCustomTheme.list.push({
+  customThemeCommands.list.push({
     id: "setCustomThemeOff",
     display: "off",
     configValue: "",
@@ -1230,9 +1229,11 @@ export function updateCustomThemeCommands(): void {
       UpdateConfig.setCustomThemeId("");
     },
   });
-  if (customThemes !== undefined && customThemes.length > 0) {
-    DB.getSnapshot().customThemes?.forEach((theme) => {
-      commandsCustomTheme.list.push({
+  if (firebase.auth().currentUser === null) {
+    Notifications.add("Custom themes are available to logged in users only", 0);
+  } else if (DB.getSnapshot().customThemes.length > 0) {
+    DB.getSnapshot().customThemes.forEach((theme) => {
+      customThemeCommands.list.push({
         id: "setCustomThemeOn" + theme._id,
         display: theme.name,
         configValue: theme._id,
@@ -2811,7 +2812,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "setCustomTheme",
       display: "Custom theme...",
       icon: "fa-palette",
-      subgroup: commandsCustomTheme,
+      subgroup: customThemeCommands,
       beforeSubgroup: (): void => {
         updateCustomThemeCommands();
       },

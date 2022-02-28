@@ -235,6 +235,10 @@ export function updateActiveTab(forced = false): void {
       refreshButtons();
     }
   } else {
+    if (firebase.auth().currentUser === null) {
+      $presetTab.addClass("active");
+      return;
+    }
     $presetTab.removeClass("active");
     if (!$customTab.hasClass("active") || forced) {
       $customTab.addClass("active");
@@ -247,8 +251,17 @@ export function updateActiveTab(forced = false): void {
 
 // Handle click on theme: preset or custom tab
 $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
-  $(".pageSettings .section.themes .tabs .button").removeClass("active");
   const $target = $(e.currentTarget);
+  if (firebase.auth().currentUser === null) {
+    if ($target.attr("tab") === "custom")
+      Notifications.add(
+        "Custom themes are available to logged in users only",
+        0
+      );
+
+    return;
+  }
+  $(".pageSettings .section.themes .tabs .button").removeClass("active");
   // $target.addClass("active"); Don't uncomment it. updateActiveTab() will add the active class itself
   setCustomInputs();
   if ($target.attr("tab") == "preset") {

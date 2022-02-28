@@ -686,6 +686,13 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
+    if (firebase.auth().currentUser === null) {
+      Notifications.add(
+        "Custom themes are available to logged in users only",
+        0
+      );
+      return;
+    }
     if (DB.getSnapshot().customThemes.length < 1) {
       Notifications.add("No custom themes!", 0);
       UpdateConfig.setCustomThemeId("");
@@ -698,7 +705,11 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
       UpdateConfig.setCustomThemeId(firstCustomThemeId);
     else UpdateConfig.setCustomThemeId("");
   } else {
-    CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
+    CommandlineLists.pushCurrent(
+      Config.customThemeId === ""
+        ? CommandlineLists.themeCommands
+        : CommandlineLists.customThemeCommands
+    );
     show();
   }
 });

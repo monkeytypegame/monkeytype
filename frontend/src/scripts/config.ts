@@ -1249,9 +1249,15 @@ export function setAutoSwitchTheme(
 export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom theme id", customId, ["string"]))
     return false;
-  if (customId !== "") setRandomTheme("off");
 
-  config.customThemeId = customId;
+  if (firebase.auth().currentUser === null) {
+    config.customThemeId = "";
+    return true;
+  } else {
+    if (customId !== "") setRandomTheme("off");
+    config.customThemeId = customId;
+  }
+
   if (!nosave) saveToLocalStorage();
   ConfigEvent.dispatch("customThemeId", config.customThemeId);
 
