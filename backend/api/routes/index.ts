@@ -28,21 +28,6 @@ function addApiRoutes(app: Application): void {
   let requestsProcessed = 0;
 
   app.use(
-    (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
-      const inMaintenance =
-        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
-
-      if (inMaintenance) {
-        res.status(503).json({ message: "Server is down for maintenance" });
-        return;
-      }
-
-      requestsProcessed++;
-      next();
-    }
-  );
-
-  app.use(
     swStats.getMiddleware({
       name: "Monkeytype API",
       // hostname: process.env.MODE === "dev" ? "localhost": process.env.STATS_HOSTNAME,
@@ -65,6 +50,21 @@ function addApiRoutes(app: Application): void {
         rrr.http.request.headers["x-forwarded-for"] = "";
       },
     })
+  );
+
+  app.use(
+    (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
+      const inMaintenance =
+        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+
+      if (inMaintenance) {
+        res.status(503).json({ message: "Server is down for maintenance" });
+        return;
+      }
+
+      requestsProcessed++;
+      next();
+    }
   );
 
   app.get(
