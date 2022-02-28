@@ -891,7 +891,7 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (!Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
+    if (!Config.quoteLength.includes(-2) && Config.quoteLength.length !== 1) {
       const quoteLengths = Config.quoteLength;
       let groupIndex;
       if (quoteLengths.length > 1) {
