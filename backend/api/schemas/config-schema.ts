@@ -60,7 +60,9 @@ const CONFIG_SCHEMA = joi.object({
   keymapStyle: joi
     .string()
     .valid("staggered", "alice", "matrix", "split", "split_matrix"),
-  keymapLegendStyle: joi.string().valid("lowercase", "uppercase", "blank"),
+  keymapLegendStyle: joi
+    .string()
+    .valid("lowercase", "uppercase", "blank", "dynamic"),
   keymapLayout: joi.string().valid(),
   fontFamily: joi.string(),
   smoothLineScroll: joi.boolean(),

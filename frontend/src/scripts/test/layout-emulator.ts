@@ -1,17 +1,21 @@
 import Config from "../config";
 import * as Misc from "../misc";
+import { capsState } from "./caps-warning";
 
-export async function getCharFromEvent(event) {
-  function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
-    const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
-    if (isCapsLockHeld)
-      return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+export async function getCharFromEvent(
+  event: JQuery.KeyDownEvent
+): Promise<string | null> {
+  function emulatedLayoutShouldShiftKey(
+    event: JQuery.KeyDownEvent,
+    newKeyPreview: string
+  ): boolean {
+    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
 
   const layout = await Misc.getLayout(Config.layout);
 
-  let keyEventCodes = [];
+  let keyEventCodes: string[] = [];
 
   if (layout.type === "ansi") {
     keyEventCodes = [
@@ -170,6 +174,7 @@ export async function getCharFromEvent(event) {
   }
 
   const layoutKeys = layout.keys;
+
   const layoutMap = layoutKeys["row1"]
     .concat(layoutKeys["row2"])
     .concat(layoutKeys["row3"])

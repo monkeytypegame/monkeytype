@@ -25,6 +25,11 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
+//todo remove when pace caret is converted to ts
+type PaceCaretSettings = {
+  wpm: number;
+};
+
 export async function update(): Promise<void> {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
@@ -45,10 +50,7 @@ export async function update(): Promise<void> {
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      // remove as any once test state is in ts
-      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${
-        (TestState.activeChallenge as any).display
-      }</div>`
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
@@ -93,7 +95,9 @@ export async function update(): Promise<void> {
   ) {
     let speed = "";
     try {
-      speed = ` (${Math.round((PaceCaret.settings as any).wpm)} wpm)`; //remove as any once pace caret is ts
+      speed = ` (${Math.round(
+        (PaceCaret.settings as unknown as PaceCaretSettings).wpm
+      )} wpm)`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${

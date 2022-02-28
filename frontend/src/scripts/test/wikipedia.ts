@@ -2,14 +2,19 @@ import * as Loader from "../elements/loader";
 import * as Misc from "../misc";
 
 export class Section {
-  constructor(title, author, words) {
+  public title: string;
+  public author: string;
+  public words: string[];
+  constructor(title: string, author: string, words: string[]) {
     this.title = title;
     this.author = author;
     this.words = words;
   }
 }
 
-export async function getTLD(languageGroup) {
+export async function getTLD(
+  languageGroup: MonkeyTypes.LanguageGroup
+): Promise<"en" | "es" | "fr" | "de" | "pt" | "it" | "nl"> {
   // language group to tld
   switch (languageGroup.name) {
     case "english":
@@ -38,22 +43,34 @@ export async function getTLD(languageGroup) {
   }
 }
 
-export async function getSection(language) {
+interface Post {
+  title: string;
+  author: string;
+  pageid: number;
+}
+
+interface SectionObject {
+  title: string;
+  author: string;
+}
+
+export async function getSection(language: string): Promise<Section> {
   // console.log("Getting section");
   Loader.show();
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
-  let currentLanguageGroup = await Misc.findCurrentGroup(language);
-  urlTLD = await getTLD(currentLanguageGroup);
+  const currentLanguageGroup = await Misc.findCurrentGroup(language);
+  if (currentLanguageGroup !== undefined)
+    urlTLD = await getTLD(currentLanguageGroup);
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
-  let sectionObj = {};
-  let randomPostReq = await fetch(randomPostURL);
+  const sectionObj: SectionObject = { title: "", author: "" };
+  const randomPostReq = await fetch(randomPostURL);
   let pageid = 0;
 
   if (randomPostReq.status == 200) {
-    let postObj = await randomPostReq.json();
+    const postObj: Post = await randomPostReq.json();
     sectionObj.title = postObj.title;
     sectionObj.author = postObj.author;
     pageid = postObj.pageid;
@@ -67,14 +84,13 @@ export async function getSection(language) {
 
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
-    let sectionReq = new XMLHttpRequest();
-    sectionReq.onload = () => {
+    const sectionReq = new XMLHttpRequest();
+    sectionReq.onload = (): void => {
       if (sectionReq.readyState == 4) {
         if (sectionReq.status == 200) {
-          let sectionText = JSON.parse(sectionReq.responseText).query.pages[
-            pageid.toString()
-          ].extract;
-          let words = [];
+          let sectionText: string = JSON.parse(sectionReq.responseText).query
+            .pages[pageid.toString()].extract;
+          const words: string[] = [];
 
           // Remove double whitespaces and finally trailing whitespaces.
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
@@ -92,7 +108,11 @@ export async function getSection(language) {
             words.push(word);
           });
 
-          let section = new Section(sectionObj.title, sectionObj.author, words);
+          const section = new Section(
+            sectionObj.title,
+            sectionObj.author,
+            words
+          );
           Loader.hide();
           res(section);
         } else {

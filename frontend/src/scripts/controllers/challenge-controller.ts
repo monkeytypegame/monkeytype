@@ -154,10 +154,10 @@ export function verify(
     } else {
       return null;
     }
-  } catch (e: any) {
+  } catch (e) {
     console.error(e);
     Notifications.add(
-      `Something went wrong when verifying challenge: ${e.message}`,
+      `Something went wrong when verifying challenge: ${(e as Error).message}`,
       0
     );
     return null;
@@ -215,7 +215,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] != null) {
-        Funbox.activate(challenge.parameters[2]);
+        Funbox.activate(<string>challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);

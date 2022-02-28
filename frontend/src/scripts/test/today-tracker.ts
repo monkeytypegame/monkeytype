@@ -3,12 +3,11 @@ import * as DB from "../db";
 
 let seconds = 0;
 let addedAllToday = false;
-let dayToday = null;
+let dayToday: number;
 
-export function addSeconds(s) {
+export function addSeconds(s: number): void {
   if (addedAllToday) {
-    let nowDate = new Date();
-    nowDate = nowDate.getDate();
+    const nowDate = new Date().getDate();
     if (nowDate > dayToday) {
       seconds = s;
       return;
@@ -17,33 +16,33 @@ export function addSeconds(s) {
   seconds += s;
 }
 
-export function getString() {
-  let secString = Misc.secondsToString(Math.round(seconds), true, true);
+export function getString(): string {
+  const secString = Misc.secondsToString(Math.round(seconds), true, true);
   return secString + (addedAllToday === true ? " today" : " session");
 }
 
-export async function addAllFromToday() {
-  let todayDate = new Date();
+export function addAllFromToday(): void {
+  const todayDate = new Date();
   todayDate.setSeconds(0);
   todayDate.setMinutes(0);
   todayDate.setHours(0);
   todayDate.setMilliseconds(0);
   dayToday = todayDate.getDate();
-  todayDate = todayDate.getTime();
+  const todayDateMS = todayDate.getTime();
 
   seconds = 0;
 
-  let results = await DB.getSnapshot().results;
+  const results = DB.getSnapshot().results;
 
-  results.forEach((result) => {
-    let resultDate = new Date(result.timestamp);
+  results?.forEach((result) => {
+    const resultDate = new Date(result.timestamp);
     resultDate.setSeconds(0);
     resultDate.setMinutes(0);
     resultDate.setHours(0);
     resultDate.setMilliseconds(0);
-    resultDate = resultDate.getTime();
+    const resultDateMS = resultDate.getTime();
 
-    if (resultDate >= todayDate) {
+    if (resultDateMS >= todayDateMS) {
       seconds +=
         result.testDuration + result.incompleteTestSeconds - result.afkDuration;
     }

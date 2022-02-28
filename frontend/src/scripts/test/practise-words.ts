@@ -5,22 +5,30 @@ import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 
-export let before = {
+interface Before {
+  mode: MonkeyTypes.Mode | null;
+  punctuation: boolean | null;
+  numbers: boolean | null;
+}
+
+export const before: Before = {
   mode: null,
   punctuation: null,
   numbers: null,
 };
 
-export function init(missed, slow) {
+export function init(missed: boolean, slow: boolean): void {
   if (Config.mode === "zen") return;
   let limit;
   if ((missed && !slow) || (!missed && slow)) {
     limit = 20;
   } else if (missed && slow) {
     limit = 10;
+  } else {
+    limit = 10;
   }
 
-  let sortableMissedWords = [];
+  let sortableMissedWords: [string, number][] = [];
   if (missed) {
     Object.keys(TestInput.missedWords).forEach((missedWord) => {
       sortableMissedWords.push([missedWord, TestInput.missedWords[missedWord]]);
@@ -36,11 +44,12 @@ export function init(missed, slow) {
     return;
   }
 
-  let sortableSlowWords = [];
+  let sortableSlowWords: [string, number][] = [];
   if (slow) {
-    sortableSlowWords = TestWords.words.get().map(function (e, i) {
-      return [e, TestInput.burstHistory[i]];
-    });
+    sortableSlowWords = (TestWords.words.get() as string[]).map((e, i) => [
+      e,
+      TestInput.burstHistory[i],
+    ]);
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
     });
@@ -58,7 +67,7 @@ export function init(missed, slow) {
     return;
   }
 
-  let newCustomText = [];
+  const newCustomText: string[] = [];
   sortableMissedWords.forEach((missed) => {
     for (let i = 0; i < missed[1]; i++) {
       newCustomText.push(missed[0]);
@@ -73,10 +82,10 @@ export function init(missed, slow) {
 
   // console.log(newCustomText);
 
-  let mode = before.mode === null ? Config.mode : before.mode;
-  let punctuation =
+  const mode = before.mode === null ? Config.mode : before.mode;
+  const punctuation =
     before.punctuation === null ? Config.punctuation : before.punctuation;
-  let numbers = before.numbers === null ? Config.numbers : before.numbers;
+  const numbers = before.numbers === null ? Config.numbers : before.numbers;
   UpdateConfig.setMode("custom");
 
   CustomText.setText(newCustomText);
@@ -90,13 +99,13 @@ export function init(missed, slow) {
   before.numbers = numbers;
 }
 
-export function resetBefore() {
+export function resetBefore(): void {
   before.mode = null;
   before.punctuation = null;
   before.numbers = null;
 }
 
-export function showPopup(focus = false) {
+export function showPopup(focus = false): void {
   if ($("#practiseWordsPopupWrapper").hasClass("hidden")) {
     if (Config.mode === "zen") {
       Notifications.add("Practice words is unsupported in zen mode", 0);
@@ -115,7 +124,7 @@ export function showPopup(focus = false) {
   }
 }
 
-export function hidePopup() {
+export function hidePopup(): void {
   if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
@@ -125,7 +134,7 @@ export function hidePopup() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#practiseWordsPopupWrapper").addClass("hidden");
         }
       );

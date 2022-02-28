@@ -13,19 +13,19 @@ import * as GlarsesMode from "../states/glarses-mode";
 import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 
-let result;
-let maxChartVal;
+let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
+let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
 
-export function toggleUnsmoothedRaw() {
+export function toggleUnsmoothedRaw(): void {
   useUnsmoothedRaw = !useUnsmoothedRaw;
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
 }
 
-async function updateGraph() {
+async function updateGraph(): Promise<void> {
   ChartController.result.options.annotation.annotations = [];
-  let labels = [];
+  const labels = [];
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
       labels.push(Misc.roundTo2(result.testDuration).toString());
@@ -37,16 +37,19 @@ async function updateGraph() {
   ChartController.result.data.labels = labels;
   ChartController.result.options.scales.yAxes[0].scaleLabel.labelString =
     Config.alwaysShowCPM ? "Character per Minute" : "Words per Minute";
-  let chartData1 = Config.alwaysShowCPM
+  const chartData1 = Config.alwaysShowCPM
     ? TestInput.wpmHistory.map((a) => a * 5)
     : TestInput.wpmHistory;
 
-  let chartData2;
+  let chartData2: number[];
+
+  if (result.chartData === "toolong") return;
 
   if (useUnsmoothedRaw) {
-    chartData2 = Config.alwaysShowCPM
-      ? result.chartData.unsmoothedRaw.map((a) => a * 5)
-      : result.chartData.unsmoothedRaw;
+    chartData2 =
+      (Config.alwaysShowCPM
+        ? result.chartData.unsmoothedRaw?.map((a) => a * 5)
+        : result.chartData.unsmoothedRaw) ?? [];
   } else {
     chartData2 = Config.alwaysShowCPM
       ? result.chartData.raw.map((a) => a * 5)
@@ -62,7 +65,7 @@ async function updateGraph() {
 
   maxChartVal = Math.max(...[Math.max(...chartData2), Math.max(...chartData1)]);
   if (!Config.startGraphsAtZero) {
-    let minChartVal = Math.min(
+    const minChartVal = Math.min(
       ...[Math.min(...chartData2), Math.min(...chartData1)]
     );
     ChartController.result.options.scales.yAxes[0].ticks.min = minChartVal;
@@ -74,7 +77,7 @@ async function updateGraph() {
 
   ChartController.result.data.datasets[2].data = result.chartData.err;
 
-  let fc = await ThemeColors.get("sub");
+  const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = Config.funbox;
     if (Config.funbox === "layoutfluid") {
@@ -113,19 +116,21 @@ async function updateGraph() {
   ChartController.result.resize();
 }
 
-export async function updateGraphPBLine() {
-  let themecolors = await ThemeColors.getAll();
-  let lpb = await DB.getLocalPB(
+export async function updateGraphPBLine(): Promise<void> {
+  const themecolors = await ThemeColors.getAll();
+  const lpb = await DB.getLocalPB(
     result.mode,
     result.mode2,
-    result.punctuation,
+    result.punctuation ?? false,
     result.language,
     result.difficulty,
-    result.lazyMode,
-    result.funbox
+    result.lazyMode ?? false,
+    result.funbox ?? "none"
   );
   if (lpb == 0) return;
-  let chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(2);
+  const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
+    2
+  );
   ChartController.result.options.annotation.annotations.push({
     enabled: false,
     type: "line",
@@ -162,7 +167,7 @@ export async function updateGraphPBLine() {
   ChartController.result.update();
 }
 
-function updateWpmAndAcc() {
+function updateWpmAndAcc(): void {
   let inf = false;
   if (result.wpm >= 1000) {
     inf = true;
@@ -247,7 +252,7 @@ function updateWpmAndAcc() {
   }
 }
 
-function updateConsistency() {
+function updateConsistency(): void {
   if (Config.alwaysShowDecimalPlaces) {
     $("#result .stats .consistency .bottom").text(
       Misc.roundTo2(result.consistency).toFixed(2) + "%"
@@ -267,8 +272,8 @@ function updateConsistency() {
   }
 }
 
-function updateTime() {
-  let afkSecondsPercent = Misc.roundTo2(
+function updateTime(): void {
+  const afkSecondsPercent = Misc.roundTo2(
     (result.afkDuration / result.testDuration) * 100
   );
   $("#result .stats .time .bottom .afk").text("");
@@ -300,11 +305,11 @@ function updateTime() {
   }
 }
 
-export function updateTodayTracker() {
+export function updateTodayTracker(): void {
   $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
 }
 
-function updateKey() {
+function updateKey(): void {
   $("#result .stats .key .bottom").text(
     result.charStats[0] +
       "/" +
@@ -316,16 +321,16 @@ function updateKey() {
   );
 }
 
-export function showCrown() {
+export function showCrown(): void {
   PbCrown.show();
 }
 
-export function hideCrown() {
+export function hideCrown(): void {
   PbCrown.hide();
   $("#result .stats .wpm .crown").attr("aria-label", "");
 }
 
-export async function updateCrown() {
+export async function updateCrown(): Promise<void> {
   let pbDiff = 0;
   const lpb = await DB.getLocalPB(
     Config.mode,
@@ -343,10 +348,10 @@ export async function updateCrown() {
   );
 }
 
-function updateTags(dontSave) {
-  let activeTags = [];
+function updateTags(dontSave: boolean): void {
+  const activeTags: MonkeyTypes.Tag[] = [];
   try {
-    DB.getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTags.push(tag);
       }
@@ -363,7 +368,7 @@ function updateTags(dontSave) {
   let annotationSide = "left";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
-    let tpb = await DB.getLocalTagPB(
+    const tpb = await DB.getLocalTagPB(
       tag._id,
       Config.mode,
       result.mode2,
@@ -400,7 +405,7 @@ function updateTags(dontSave) {
         );
         // console.log("new pb for tag " + tag.name);
       } else {
-        let themecolors = await ThemeColors.getAll();
+        const themecolors = await ThemeColors.getAll();
         ChartController.result.options.annotation.annotations.push({
           enabled: false,
           type: "line",
@@ -439,28 +444,18 @@ function updateTags(dontSave) {
   });
 }
 
-function updateTestType() {
+function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   let testType = "";
 
-  if (Config.mode === "quote") {
-    let qlen = "";
-    if (Config.quoteLength === 0) {
-      qlen = "short ";
-    } else if (Config.quoteLength === 1) {
-      qlen = "medium ";
-    } else if (Config.quoteLength === 2) {
-      qlen = "long ";
-    } else if (Config.quoteLength === 3) {
-      qlen = "thicc ";
-    }
-    testType += qlen + Config.mode;
-  } else {
-    testType += Config.mode;
-  }
-  if (Config.mode == "time") {
+  testType += Config.mode;
+
+  if (Config.mode === "time") {
     testType += " " + Config.time;
-  } else if (Config.mode == "words") {
+  } else if (Config.mode === "words") {
     testType += " " + Config.words;
+  } else if (Config.mode === "quote") {
+    if (randomQuote.group !== undefined)
+      testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
   }
   if (
     Config.mode != "custom" &&
@@ -495,12 +490,12 @@ function updateTestType() {
 }
 
 function updateOther(
-  difficultyFailed,
-  failReason,
-  afkDetected,
-  isRepeated,
-  tooShort
-) {
+  difficultyFailed: boolean,
+  failReason: string,
+  afkDetected: boolean,
+  isRepeated: boolean,
+  tooShort: boolean
+): void {
   let otherText = "";
   if (difficultyFailed) {
     otherText += `<br>failed (${failReason})`;
@@ -543,9 +538,9 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote) {
+export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
   if (Config.mode === "quote") {
-    let userqr =
+    const userqr =
       DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (userqr) {
       $(".pageTest #result #rateQuoteButton .icon")
@@ -554,7 +549,7 @@ export function updateRateQuote(randomQuote) {
     }
     QuoteRatePopup.getQuoteStats(randomQuote).then((quoteStats) => {
       $(".pageTest #result #rateQuoteButton .rating").text(
-        quoteStats.average?.toFixed(1) ?? ""
+        quoteStats?.average?.toFixed(1) ?? ""
       );
       $(".pageTest #result #rateQuoteButton")
         .css({ opacity: 0 })
@@ -564,7 +559,7 @@ export function updateRateQuote(randomQuote) {
   }
 }
 
-function updateQuoteSource(randomQuote) {
+function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
     $("#result .stats .source .bottom").html(randomQuote.source);
@@ -574,15 +569,15 @@ function updateQuoteSource(randomQuote) {
 }
 
 export function update(
-  res,
-  difficultyFailed,
-  failReason,
-  afkDetected,
-  isRepeated,
-  tooShort,
-  randomQuote,
-  dontSave
-) {
+  res: MonkeyTypes.Result<MonkeyTypes.Mode>,
+  difficultyFailed: boolean,
+  failReason: string,
+  afkDetected: boolean,
+  isRepeated: boolean,
+  tooShort: boolean,
+  randomQuote: MonkeyTypes.Quote,
+  dontSave: boolean
+): void {
   result = res;
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
@@ -604,7 +599,7 @@ export function update(
   updateConsistency();
   updateTime();
   updateKey();
-  updateTestType();
+  updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
   updateGraph();
   updateGraphPBLine();

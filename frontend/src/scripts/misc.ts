@@ -102,13 +102,14 @@ export async function getSortedThemesList(): Promise<Theme[]> {
   }
 }
 
-type Funbox = { name: string; type: string; info: string };
-
-let funboxList: Funbox[] = [];
-export async function getFunboxList(): Promise<Funbox[]> {
+let funboxList: MonkeyTypes.FunboxObject[] = [];
+export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
   if (funboxList.length === 0) {
     return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (a: Funbox, b: Funbox) {
+      funboxList = data.sort(function (
+        a: MonkeyTypes.FunboxObject,
+        b: MonkeyTypes.FunboxObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -122,8 +123,10 @@ export async function getFunboxList(): Promise<Funbox[]> {
   }
 }
 
-export async function getFunbox(funbox: string): Promise<Funbox | undefined> {
-  const list: Funbox[] = await getFunboxList();
+export async function getFunbox(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObject | undefined> {
+  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
   return list.find(function (element) {
     return element.name == funbox;
   });
@@ -196,7 +199,7 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
 }
 
 export async function getLayout(
-  layoutName: keyof MonkeyTypes.Layouts & string
+  layoutName: string
 ): Promise<MonkeyTypes.Layout> {
   if (Object.keys(layoutsList).length === 0) {
     await getLayoutsList();
@@ -274,15 +277,10 @@ export async function getLanguageGroups(): Promise<
   }
 }
 
-type Language = {
-  name: string;
-  leftToRight: boolean;
-  noLazyMode?: boolean;
-  words: string[];
-};
-
-let currentLanguage: Language;
-export async function getLanguage(lang: string): Promise<Language> {
+let currentLanguage: MonkeyTypes.LanguageObject;
+export async function getLanguage(
+  lang: string
+): Promise<MonkeyTypes.LanguageObject> {
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
       console.log("getting language json");
@@ -303,7 +301,7 @@ export async function getLanguage(lang: string): Promise<Language> {
 
 export async function getCurrentLanguage(
   languageName: string
-): Promise<Language> {
+): Promise<MonkeyTypes.LanguageObject> {
   return await getLanguage(languageName);
 }
 
@@ -595,7 +593,9 @@ export function getASCII(): string {
   const randLen = Math.floor(Math.random() * 10) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+    let ran = 33 + Math.floor(Math.random() * 94);
+    while (ran == 96 || ran == 94) ran = 33 + Math.floor(Math.random() * 94); //todo remove when input rewrite is fixed
+    ret += String.fromCharCode(ran);
   }
   return ret;
 }
@@ -808,9 +808,10 @@ export function canQuickRestart(
   }
 }
 
-export function clearTimeouts(timeouts: number[]): void {
+export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   timeouts.forEach((to) => {
-    clearTimeout(to);
+    if (typeof to === "number") clearTimeout(to);
+    else clearTimeout(to);
   });
 }
 
@@ -934,19 +935,19 @@ export function getMode2(
   randomQuote: MonkeyTypes.Quote
 ): string {
   const mode = config.mode;
-  let mode2 = "";
   if (mode === "time") {
-    mode2 = config.time.toString();
+    return config.time.toString();
   } else if (mode === "words") {
-    mode2 = config.words.toString();
+    return config.words.toString();
   } else if (mode === "custom") {
-    mode2 = "custom";
+    return "custom";
   } else if (mode === "zen") {
-    mode2 = "zen";
+    return "zen";
   } else if (mode === "quote") {
-    mode2 = randomQuote.id.toString();
+    return randomQuote.id.toString();
   }
-  return mode2;
+
+  return "";
 }
 
 export async function downloadResultsCSV(

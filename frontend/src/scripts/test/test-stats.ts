@@ -173,7 +173,7 @@ export function calculateTestSeconds(now?: number): number {
   }
 }
 
-export function calculateWpmAndRaw(): { wpm: number; raw: number } {
+export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;

@@ -293,16 +293,16 @@ window
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "customThemeId") {
-    set(true, eventValue);
+    set(true, eventValue as string);
   }
   if (eventKey === "theme") {
     clearPreview();
-    set(false, eventValue);
+    set(false, eventValue as string);
   }
   if (eventKey === "setThemes") {
     clearPreview();
     if (eventValue) {
-      set(true, eventValue);
+      set(true, eventValue as string);
     } else {
       if (Config.autoSwitchTheme) {
         if (

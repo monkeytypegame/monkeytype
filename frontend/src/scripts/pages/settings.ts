@@ -876,8 +876,8 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
 
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
-  const funbox = $(e.currentTarget).attr("funbox");
-  const type = $(e.currentTarget).attr("type");
+  const funbox = <string>$(e.currentTarget).attr("funbox");
+  const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
   Funbox.setFunbox(funbox, type);
   setActiveFunboxButton();
 });
@@ -958,8 +958,11 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
       $(
         ".pageSettings .section.customLayoutfluid .inputAndButton input"
       ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-    );
-    Notifications.add("Custom layoutfluid saved", 1);
+    ).then((bool) => {
+      if (bool) {
+        Notifications.add("Custom layoutfluid saved", 1);
+      }
+    });
   }
 );
 
@@ -970,8 +973,11 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
         ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-      );
-      Notifications.add("Custom layoutfluid saved", 1);
+      ).then((bool) => {
+        if (bool) {
+          Notifications.add("Custom layoutfluid saved", 1);
+        }
+      });
     }
   }
 );
