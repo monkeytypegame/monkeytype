@@ -36,6 +36,7 @@ function addApiRoutes(app: Application): void {
       // ip: process.env.MODE === "dev" ? "127.0.0.1": process.env.STATS_IP,
       uriPath: "/stats",
       authentication: process.env.MODE !== "dev",
+      apdexThreshold: 100,
       onAuthenticate: (_req, username, password) => {
         return (
           username === process.env.STATS_USERNAME &&
