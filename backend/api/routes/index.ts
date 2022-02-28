@@ -56,6 +56,9 @@ function addApiRoutes(app: Application): void {
         );
       },
       onResponseFinish: (_req, _res, rrr) => {
+        if (process.env.MODE === "dev") {
+          return;
+        }
         const authHeader = rrr.http.request.headers.authorization ?? "None";
         const authType = authHeader.split(" ");
         rrr.http.request.headers.authorization = authType[0];
