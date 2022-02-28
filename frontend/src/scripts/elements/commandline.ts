@@ -670,6 +670,7 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
   const commands = CommandlineLists.getList(
     $(event.currentTarget).attr("commands") as string
   );
+
   const func = $(event.currentTarget).attr("function");
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
