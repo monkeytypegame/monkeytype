@@ -1598,16 +1598,15 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
-  if (configObj == null || configObj == undefined || configObj === "null") {
-    Notifications.add("Could not apply config", -1, 3);
-    return;
-  }
+export function apply(
+  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
+): void {
+  if (!configToApply) return;
+  const configObj = configToApply as MonkeyTypes.Config;
   (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
     (configKey) => {
       if (configObj[configKey] === undefined) {
         const newValue = DefaultConfig[configKey];
-
         (configObj[configKey] as typeof newValue) = newValue;
       }
     }
