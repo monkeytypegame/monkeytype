@@ -57,25 +57,21 @@ export async function getDataAndInit() {
 
     const customThemes = DB.getSnapshot().customThemes ?? [];
     if (Config.customThemeColors.length > 0 && customThemes.length < 1) {
-      const newCustomTheme = {
-        name: "custom",
-        colors: [...Config.customThemeColors],
-      };
       Loader.show();
-      const response = await Ape.users.addCustomTheme(newCustomTheme);
-
-      if (response.status === 200) {
-        Notifications.add("Custom theme: 'custom' successfully created", 1);
-        DB.getSnapshot().customThemes.push({
-          ...newCustomTheme,
-          _id: response.data.theme._id,
-        });
-      } else {
-        Notifications.add("Could not create custom theme: 'custom'", -1);
-      }
+      if (
+        !(await DB.addCustomTheme({
+          name: "custom",
+          colors: [...Config.customThemeColors],
+        }))
+      )
+        Notifications.add("Could not create a new custom theme!", -1);
       Loader.hide();
     }
-    ThemeController.set(true, Config.customThemeId);
+    const customThemeActive = Config.customThemeId !== "";
+    ThemeController.set(
+      customThemeActive,
+      customThemeActive ? Config.customThemeId : Config.theme
+    );
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {
@@ -305,49 +301,35 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   }
 
   let themeColors = Misc.findGetParameter("customTheme");
-  const oldCustomThemeIndex = Config.customThemeId;
+  const oldCustomThemeId = Config.customThemeId;
   if (themeColors !== null) {
     try {
       themeColors = themeColors.split(",");
-      // Create a new custom theme if under limit else inform the user
-      const customThemesLength = DB.getSnapshot().customThemes
-        ? DB.getSnapshot().customThemes.length
-        : 0;
-      if (customThemesLength >= 10) {
-        Notifications.add("Too many custom themes!", 0);
-      } else {
-        const newCustomTheme = { name: "custom", colors: themeColors };
-        Loader.show();
-        const response = await Ape.users.addCustomTheme(newCustomTheme);
+      // Create a new custom theme
+      Loader.show();
+      const createdTheme = await DB.addCustomTheme({
+        name: "custom",
+        colors: themeColors,
+      });
+      Loader.hide();
 
-        if (response.status === 200) {
-          const snapshot = DB.getSnapshot();
-          if (customThemesLength === 0)
-            snapshot.customThemes = [
-              { ...newCustomTheme, _id: response.data.theme._id },
-            ];
-          else
-            snapshot.customThemes.push({
-              ...newCustomTheme,
-              _id: response.data.theme._id,
-            });
-
-          UpdateConfig.setCustomThemeId(customThemesLength);
-          Notifications.add(
-            "Custom theme: 'custom' sucessfully created and applied.",
-            1
-          );
-        } else {
-          Notifications.add(response.message, -1);
-        }
-        Loader.hide();
+      if (createdTheme) {
+        UpdateConfig.setCustomThemeId(
+          DB.getSnapshot().customThemes[
+            DB.getSnapshot().customThemes.length - 1
+          ]._id
+        );
+        Notifications.add(
+          "Custom theme: 'custom' sucessfully created and applied.",
+          1
+        );
       }
     } catch (e) {
       Notifications.add(
         "Something went wrong. Reverting to previous state.",
         0
       );
-      UpdateConfig.setCustomThemeId(oldCustomThemeIndex);
+      UpdateConfig.setCustomThemeId(oldCustomThemeId);
     }
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
