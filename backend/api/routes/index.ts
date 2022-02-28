@@ -30,6 +30,31 @@ function addApiRoutes(app: Application): void {
   let requestsProcessed = 0;
 
   app.use(
+    swStats.getMiddleware({
+      name: "Monkeytype API",
+      // hostname: process.env.MODE === "dev" ? "localhost": process.env.STATS_HOSTNAME,
+      // ip: process.env.MODE === "dev" ? "127.0.0.1": process.env.STATS_IP,
+      uriPath: "/stats",
+      authentication: process.env.MODE !== "dev",
+      onAuthenticate: (_req, username, password) => {
+        return (
+          username === process.env.STATS_USERNAME &&
+          password === process.env.STATS_PASSWORD
+        );
+      },
+      onResponseFinish: (_req, _res, rrr) => {
+        if (process.env.MODE === "dev") {
+          return;
+        }
+        const authHeader = rrr.http.request.headers.authorization ?? "None";
+        const authType = authHeader.split(" ");
+        rrr.http.request.headers.authorization = authType[0];
+        rrr.http.request.headers["x-forwarded-for"] = "";
+      },
+    })
+  );
+
+  app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       const inMaintenance =
         process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
@@ -42,22 +67,6 @@ function addApiRoutes(app: Application): void {
       requestsProcessed++;
       next();
     }
-  );
-
-  app.use(
-    swStats.getMiddleware({
-      name: "Monkeytype API",
-      // hostname: process.env.MODE === "dev" ? "localhost": process.env.STATS_HOSTNAME,
-      // ip: process.env.MODE === "dev" ? "127.0.0.1": process.env.STATS_IP,
-      uriPath: "/stats",
-      authentication: process.env.MODE === "dev" ? false : true,
-      onAuthenticate: function (req, username, password) {
-        return (
-          username === process.env.STATS_USERNAME &&
-          password === process.env.STATS_PASSWORD
-        );
-      },
-    })
   );
 
   app.get(
