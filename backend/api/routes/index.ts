@@ -5,6 +5,7 @@ import presets from "./presets";
 import psas from "./psas";
 import leaderboards from "./leaderboards";
 import quotes from "./quotes";
+import apeKeys from "./ape-keys";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 import { Application, NextFunction, Response } from "express";
@@ -22,6 +23,7 @@ const API_ROUTE_MAP = {
   "/psas": psas,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
+  "/ape-keys": apeKeys,
 };
 
 function addApiRoutes(app: Application): void {
@@ -73,6 +75,16 @@ function addApiRoutes(app: Application): void {
     const router = API_ROUTE_MAP[route];
     app.use(apiRoute, router);
   });
+
+  app.use(
+    asyncHandler(async (req, _res) => {
+      return new MonkeyResponse(
+        `Unknown request URL (${req.method}: ${req.path})`,
+        null,
+        404
+      );
+    })
+  );
 }
 
 export default addApiRoutes;
