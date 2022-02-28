@@ -1,8 +1,6 @@
 // eslint-disable-next-line
-import esbuild from "esbuild";
-import path from "path";
-// import babel from "esbuild-plugin-babel";
-// import babelConfig from "./babel.config";
+const esbuild = require("esbuild");
+const path = require("path");
 
 /**
  * @type {esbuild.BuildOptions}

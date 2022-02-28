@@ -12,7 +12,7 @@ const webpackDevConfig = require("./webpack.config.js");
 const webpackProdConfig = require("./webpack-production.config.js");
 const esbuild = require("esbuild");
 const esbuildOptions = require("./esbuild.config");
-const esbuildProductionOptions = require("./esbuild-production.config.mjs");
+const esbuildProductionOptions = require("./esbuild-production.config.js");
 const ts = require("gulp-typescript");
 
 const JSONValidation = require("./json-validation");
