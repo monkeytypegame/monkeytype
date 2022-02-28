@@ -6,7 +6,7 @@ import MonkeyError from "../../handlers/error";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 
 const APE_KEY_BYTES = 48;
-const SALT_ROUNDS = 5;
+const SALT_ROUNDS = parseInt(process.env.APE_KEY_SALT_ROUNDS, 10) || 5;
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
   return _.omit(apeKey, "hash");
