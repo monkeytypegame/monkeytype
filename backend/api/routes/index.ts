@@ -43,7 +43,9 @@ function addApiRoutes(app: Application): void {
           password === process.env.STATS_PASSWORD
         );
       },
-      onResponseFinish: (_req, _res, rrr) => {
+      onResponseFinish: (_req, res, rrr) => {
+        //@ts-ignore ignored because monkeyMessage doesnt exist on the type
+        rrr.http.response.message = res.monkeyMessage;
         if (process.env.MODE === "dev") {
           return;
         }

@@ -14,7 +14,7 @@ export function handleMonkeyResponse(handlerData, res) {
   const { message, data, status } = monkeyResponse;
 
   res.status(status);
-
+  res.monkeyMessage = message; // so that we can see message in swagger stats
   if ([301, 302].includes(status)) {
     return res.redirect(data);
   }
