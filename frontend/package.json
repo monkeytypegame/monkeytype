@@ -38,6 +38,7 @@
     "dart-sass": "^1.25.0",
     "del": "^6.0.0",
     "esbuild": "^0.14.23",
+    "esbuild-plugin-babel": "^0.2.3",
     "eslint-webpack-plugin": "^3.1.1",
     "grecaptcha": "^1.0.3",
     "gulp": "^4.0.2",

@@ -11,7 +11,8 @@ const { webpack } = require("webpack");
 const webpackDevConfig = require("./webpack.config.js");
 const webpackProdConfig = require("./webpack-production.config.js");
 const esbuild = require("esbuild");
-const esbuildOptions = require("./esbuild");
+const esbuildOptions = require("./esbuild.config");
+const esbuildProductionOptions = require("./esbuild-production.config.mjs");
 const ts = require("gulp-typescript");
 
 const JSONValidation = require("./json-validation");
@@ -80,6 +81,18 @@ task("webpack-production", async function () {
 task("esbuild", async function () {
   try {
     const buildResult = await esbuild.build(esbuildOptions);
+
+    console.log(
+      `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
+    );
+  } catch (e) {
+    return new Error(e);
+  }
+});
+
+task("esbuild-production", async function () {
+  try {
+    const buildResult = await esbuild.build(esbuildProductionOptions);
 
     console.log(
       `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
