@@ -44,7 +44,6 @@ export function sendVerificationEmail() {
 
 export async function getDataAndInit() {
   try {
-    console.log(firebase.auth().user);
     console.log("getting account data");
     if (ActivePage.get() === "loading") {
       LoadingPage.updateBar(90);
