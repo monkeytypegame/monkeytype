@@ -23,7 +23,7 @@ main();
 async function refactor(): Promise<void> {
   console.log("getting all users");
 
-  const usersCollection = db.collection("users");
+  const usersCollection = db.collection<any>("users");
   const users = await usersCollection.find({}).toArray();
   console.log(users.length);
 

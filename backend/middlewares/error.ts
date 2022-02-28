@@ -43,7 +43,7 @@ async function errorHandlingMiddleware(
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid
       );
-      await db.collection("errors").insertOne({
+      await db.collection<any>("errors").insertOne({
         _id: errorId,
         timestamp: Date.now(),
         status: monkeyResponse.status,

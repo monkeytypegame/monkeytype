@@ -1,8 +1,11 @@
 import { InsertManyResult, InsertOneResult } from "mongodb";
 import db from "../init/db";
 
-async function addCommand(command, commandArguments): Promise<InsertOneResult> {
-  return await db.collection("bot-commands").insertOne({
+async function addCommand(
+  command,
+  commandArguments
+): Promise<InsertOneResult<any>> {
+  return await db.collection<any>("bot-commands").insertOne({
     command,
     arguments: commandArguments,
     executed: false,
