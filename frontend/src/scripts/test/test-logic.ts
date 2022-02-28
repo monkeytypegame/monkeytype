@@ -1251,18 +1251,25 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  const keyConsistencyArray =
+  let keyConsistencyArray =
     TestInput.keypressTimings.spacing.array === "toolong"
       ? []
       : TestInput.keypressTimings.spacing.array.slice();
-  keyConsistencyArray.splice(0, keyConsistencyArray.length - 1);
-  const keyConsistency = Misc.roundTo2(
+  if (keyConsistencyArray.length > 0)
+    keyConsistencyArray = keyConsistencyArray.slice(
+      0,
+      keyConsistencyArray.length - 1
+    );
+  let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
       Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray)
     )
   );
-  if (isNaN(consistency)) {
+  if (!consistency || isNaN(consistency)) {
     consistency = 0;
+  }
+  if (!keyConsistency || isNaN(keyConsistency)) {
+    keyConsistency = 0;
   }
   completedEvent.keyConsistency = keyConsistency;
   completedEvent.consistency = consistency;
