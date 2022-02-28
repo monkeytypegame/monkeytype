@@ -79,7 +79,11 @@ task("webpack-production", async function () {
 
 task("esbuild", async function () {
   try {
-    await esbuild.build(esbuildOptions);
+    const buildResult = await esbuild.build(esbuildOptions);
+
+    console.log(
+      `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
+    );
   } catch (e) {
     return new Error(e);
   }
