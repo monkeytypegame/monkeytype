@@ -1289,21 +1289,6 @@ export function setThemeDark(name: string, nosave?: boolean): boolean {
   return true;
 }
 
-function setThemes(
-  theme: string,
-  customState: string,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("themes", theme, ["string"])) return false;
-
-  config.theme = theme;
-  config.customThemeId = customState;
-  if (!nosave) saveToLocalStorage();
-  ConfigEvent.dispatch("setThemes", customState);
-
-  return true;
-}
-
 export function setRandomTheme(
   val: MonkeyTypes.RandomTheme,
   nosave?: boolean
@@ -1702,7 +1687,8 @@ export function apply(configObj: MonkeyTypes.Config | null | "null"): void {
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setAutoSwitchTheme(configObj.autoSwitchTheme, true);
-    setThemes(configObj.theme, configObj.customThemeId, true);
+    setTheme(configObj.theme, true);
+    setCustomThemeId(configObj.customThemeId, true);
     // setTheme(configObj.theme, true);
     // setCustomTheme(configObj.customTheme, true, true);
     setCustomLayoutfluid(configObj.customLayoutfluid, true);

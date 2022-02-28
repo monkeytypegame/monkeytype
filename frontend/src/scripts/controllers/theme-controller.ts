@@ -293,25 +293,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     clearPreview();
     set(false, eventValue as string);
   }
-  if (eventKey === "setThemes") {
-    clearPreview();
-    if (eventValue) {
-      set(true, eventValue as string);
-    } else {
-      if (Config.autoSwitchTheme) {
-        if (
-          window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-        ) {
-          set(false, Config.themeDark);
-        } else {
-          set(false, Config.themeLight);
-        }
-      } else {
-        set(false, Config.theme);
-      }
-    }
-  }
   if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
