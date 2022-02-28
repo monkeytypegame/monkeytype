@@ -1,5 +1,4 @@
 import ConfigDAO from "../../dao/config";
-import { validateConfig } from "../../handlers/validation";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 
 class ConfigController {
@@ -14,7 +13,6 @@ class ConfigController {
     const { config } = req.body;
     const { uid } = req.ctx.decodedToken;
 
-    validateConfig(config);
     await ConfigDAO.saveConfig(uid, config);
 
     return new MonkeyResponse("Config updated");
