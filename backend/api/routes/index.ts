@@ -55,9 +55,9 @@ function addApiRoutes(app: Application): void {
           password === process.env.STATS_PASSWORD
         );
       },
-      onResponseFinish: (_req, res, rrr) => {
-        const authMethod = rrr.http.request.headers.authorization ?? "None";
-        const authType = authMethod.split(" ");
+      onResponseFinish: (_req, _res, rrr) => {
+        const authHeader = rrr.http.request.headers.authorization ?? "None";
+        const authType = authHeader.split(" ");
         rrr.http.request.headers.authorization = authType[0];
         rrr.http.request.headers["x-forwarded-for"] = "";
       },
