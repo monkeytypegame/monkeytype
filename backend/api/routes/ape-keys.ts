@@ -33,7 +33,7 @@ router.get(
   "/",
   RateLimit.apeKeysGet,
   authenticateRequest(),
-  asyncHandler(ApeKeysController.getApeKey)
+  asyncHandler(ApeKeysController.getApeKeys)
 );
 
 router.post(
