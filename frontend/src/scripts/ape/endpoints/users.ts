@@ -105,7 +105,7 @@ export default function getUsersEndpoints(
         colors: newTheme.colors,
       },
     };
-    return await apeClient.put(`${BASE_PATH}/customThemes`, { payload });
+    return await apeClient.patch(`${BASE_PATH}/customThemes`, { payload });
   }
 
   async function deleteCustomTheme(themeId: string): Ape.EndpointData {
