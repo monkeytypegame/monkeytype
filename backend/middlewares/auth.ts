@@ -98,7 +98,7 @@ async function authenticateWithAuthHeader(
   throw new MonkeyError(
     401,
     "Unknown authentication scheme",
-    `The authentication scheme "${authScheme}" is not implemented.`
+    `The authentication scheme "${authScheme}" is not implemented`
   );
 }
 
@@ -120,13 +120,13 @@ async function authenticateWithBearerToken(
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
-        "Token expired. Please login again.",
+        "Token expired. Please login again",
         "authenticateWithBearerToken"
       );
     } else if (error?.errorInfo?.code?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
-        "Token revoked. Please login again.",
+        "Token revoked. Please login again",
         "authenticateWithBearerToken"
       );
     } else {
@@ -141,11 +141,11 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {
-    throw new MonkeyError(403, "ApeKeys are not being accepted at this time.");
+    throw new MonkeyError(403, "ApeKeys are not being accepted at this time");
   }
 
   if (!options.acceptApeKeys) {
-    throw new MonkeyError(401, "This endpoint does not accept ApeKeys.");
+    throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
   }
 
   try {
@@ -165,7 +165,7 @@ async function authenticateWithApeKey(
       email: keyOwner.email,
     };
   } catch (error) {
-    throw new MonkeyError(400, "Invalid ApeKey.");
+    throw new MonkeyError(400, "Invalid ApeKey");
   }
 }
 
