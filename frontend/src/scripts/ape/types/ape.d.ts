@@ -130,5 +130,16 @@ declare namespace Ape {
       updateTags: (resultId: string, tagIds: string[]) => EndpointData;
       deleteAll: Endpoint;
     };
+
+    apeKeys: {
+      get: Endpoint;
+      generate: (name: string, enabled: boolean) => EndpointData;
+      update: (
+        apeKeyId: string,
+        name: string,
+        enabled: boolean
+      ) => EndpointData;
+      delete: (apeKeyId: string) => EndpointData;
+    };
   }
 }
