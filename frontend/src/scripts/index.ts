@@ -8,120 +8,61 @@ import chartAnnotation from "chartjs-plugin-annotation";
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
-import firebase from "firebase";
+import "./controllers/account-controller";
+import "./test/caps-warning";
+import "./popups/support-popup";
+import "./popups/contact-popup";
+import "./popups/version-popup";
+import "./popups/edit-preset-popup";
+import "./popups/simple-popups";
+import "./controllers/input-controller";
+import "./ready";
+import "./ui";
+import "./pages/about";
+import "./popups/pb-tables-popup";
+import "./elements/scroll-to-top";
+import "./popups/mobile-test-config-popup";
+import "./popups/edit-tags-popup";
+import * as DB from "./db";
+import Config from "./config";
+import * as TestStats from "./test/test-stats";
+import * as Replay from "./test/replay";
+import * as TestTimer from "./test/test-timer";
+import * as Result from "./test/result";
+import * as TestInput from "./test/test-input";
+import * as Account from "./pages/account";
+import { enable } from "./states/glarses-mode";
 
-fetch("/__/firebase/init.json")
-  .then(async (res) => firebase.initializeApp(await res.json()))
-  .then(() => {
-    console.log("firebase initialized");
+declare global {
+  // eslint-disable-next-line
+  var config: MonkeyTypes.Config;
+  function snapshot(): MonkeyTypes.Snapshot;
+  function toggleFilterDebug(): void;
+  function glarsesMode(): void;
+  function stats(): void;
+  function replay(): string;
+  function enableTimerDebug(): void;
+  function getTimerStats(): MonkeyTypes.TimerStats[];
+  function toggleUnsmoothedRaw(): void;
+  function enableSpacingDebug(): void;
+}
 
-    type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
+global.snapshot = DB.getSnapshot;
 
-    const extendedGlobal = global as ExtendedGlobal;
+global.config = Config;
 
-    import("./controllers/account-controller").then(() => {
-      console.log("imported account-controller");
-    });
+global.stats = TestStats.getStats;
 
-    import("./test/caps-warning").then(() => {
-      console.log("imported caps-warning");
-    });
+global.replay = Replay.getReplayExport;
 
-    import("./popups/support-popup").then(() => {
-      console.log("imported support-popup");
-    });
+global.enableTimerDebug = TestTimer.enableTimerDebug;
 
-    import("./popups/contact-popup").then(() => {
-      console.log("imported contact-popup");
-    });
+global.getTimerStats = TestTimer.getTimerStats;
 
-    import("./popups/version-popup").then(() => {
-      console.log("imported version-popup");
-    });
+global.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
-    import("./popups/edit-preset-popup").then(() => {
-      console.log("imported edit-preset-popup");
-    });
+global.enableSpacingDebug = TestInput.enableSpacingDebug;
 
-    import("./popups/simple-popups").then(() => {
-      console.log("imported simple-popups");
-    });
+global.toggleFilterDebug = Account.toggleFilterDebug;
 
-    import("./controllers/input-controller").then(() => {
-      console.log("imported input-controller");
-    });
-
-    import("./ready").then(() => {
-      console.log("imported ready");
-    });
-
-    import("./ui").then(() => {
-      console.log("imported ui");
-    });
-
-    import("./pages/about").then(() => {
-      console.log("imported about");
-    });
-
-    import("./popups/pb-tables-popup").then(() => {
-      console.log("imported pb-tables-popup");
-    });
-
-    import("./elements/scroll-to-top").then(() => {
-      console.log("imported scroll-to-top");
-    });
-
-    import("./popups/mobile-test-config-popup").then(() => {
-      console.log("imported mobile-test-config-popup");
-    });
-
-    import("./popups/edit-tags-popup").then(() => {
-      console.log("imported edit-tags-popup");
-    });
-
-    import("./db").then((DB) => {
-      extendedGlobal.snapshot = DB.getSnapshot;
-    });
-
-    import("./config").then(({ default: Config }) => {
-      console.log("imported config");
-      extendedGlobal.config = Config;
-    });
-
-    import("./test/test-stats").then((TestStats) => {
-      console.log("imported test-stats");
-      extendedGlobal.stats = TestStats.getStats;
-    });
-
-    import("./test/replay").then((Replay) => {
-      console.log("imported replay");
-      extendedGlobal.replay = Replay.getReplayExport;
-    });
-
-    import("./test/test-timer").then((TestTimer) => {
-      console.log("imported test-timer");
-      extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
-      extendedGlobal.getTimerStats = TestTimer.getTimerStats;
-    });
-
-    import("./test/result").then((Result) => {
-      console.log("imported result");
-      extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
-    });
-
-    import("./test/test-input").then((TestInput) => {
-      console.log("imported test-input");
-      extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
-    });
-
-    import("./states/glarses-mode").then(({ enable }) => {
-      console.log("imported glarses-mode");
-      extendedGlobal.glarsesMode = enable;
-    });
-
-    import("./pages/account").then((Account) => {
-      console.log("imported account");
-      extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
-    });
-  })
-  .catch(console.error);
+global.glarsesMode = enable;

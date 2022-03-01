@@ -480,19 +480,6 @@ declare namespace MonkeyTypes {
     nextDelay: number;
   }
 
-  interface Global {
-    snapshot(): Snapshot;
-    config: Config;
-    toggleFilterDebug(): void;
-    glarsesMode(): void;
-    stats(): void;
-    replay(): string;
-    enableTimerDebug(): void;
-    getTimerStats(): TimerStats[];
-    toggleUnsmoothedRaw(): void;
-    enableSpacingDebug(): void;
-  }
-
   interface GithubRelease {
     url: string;
     assets_url: string;
