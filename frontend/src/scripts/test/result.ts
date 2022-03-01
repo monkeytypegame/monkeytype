@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import * as TestUI from "./test-ui";
 import Config from "../config";
 import * as Misc from "../misc";

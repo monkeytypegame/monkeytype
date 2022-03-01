@@ -1,10 +1,10 @@
-const { task, src, dest, series, watch } = require("gulp");
+const { task, src, dest, series, watch, parallel } = require("gulp");
 // const axios = require("axios");
 const concat = require("gulp-concat");
 const del = require("del");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint-new");
-const sass = require("gulp-sass")(require("dart-sass"));
+const sass = require("gulp-sass")(require("sass"));
 const replace = require("gulp-replace");
 const through2 = require("through2");
 const { webpack } = require("webpack");
@@ -14,11 +14,11 @@ const esbuild = require("esbuild");
 const esbuildOptions = require("./esbuild.config");
 const esbuildProductionOptions = require("./esbuild-production.config.js");
 const ts = require("gulp-typescript");
+const tsProject = ts.createProject("tsconfig.json", { noEmit: true });
 
 const JSONValidation = require("./json-validation");
 
 const eslintConfig = "../.eslintrc.json";
-const tsProject = ts.createProject("tsconfig.json");
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -40,14 +40,6 @@ task("lint-json", function () {
 
 task("validate-json-schema", function () {
   return JSONValidation.validateAll();
-});
-
-task("copy-src-contents", function () {
-  return src("./src/scripts/**").pipe(dest("./dist/"));
-});
-
-task("transpile-ts", function () {
-  return tsProject.src().pipe(tsProject()).js.pipe(dest("dist"));
 });
 
 task("webpack", async function () {
@@ -102,6 +94,10 @@ task("esbuild-production", async function () {
   }
 });
 
+task("typescript", function () {
+  return tsProject.src().pipe(tsProject(ts.reporter.defaultReporter()));
+});
+
 task("static", function () {
   return src("./static/**/*", { dot: true }).pipe(dest("./public/"));
 });
@@ -153,7 +149,14 @@ task(
 
 task(
   "compile-esbuild",
-  series("lint", "lint-json", "esbuild", "static", "sass", "updateSwCacheName")
+  series(
+    "lint",
+    "lint-json",
+    parallel("typescript", "esbuild"),
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
 );
 
 task(
@@ -163,6 +166,20 @@ task(
     "lint-json",
     "validate-json-schema",
     "webpack-production",
+    "static",
+    "sass",
+    "updateSwCacheName"
+  )
+);
+
+task(
+  "compile-production-esbuild",
+  series(
+    "lint",
+    "lint-json",
+    "validate-json-schema",
+    "typescript",
+    "esbuild-production",
     "static",
     "sass",
     "updateSwCacheName"
@@ -192,7 +209,7 @@ task("watch-esbuild", function () {
       "./src/scripts/*.js",
       "./src/scripts/*.ts",
     ],
-    series("lint", "esbuild")
+    series("lint", parallel("typescript", "esbuild"))
   );
   watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
 });
@@ -202,6 +219,8 @@ task("build", series("clean", "compile"));
 task("build-esbuild", series("clean", "compile-esbuild"));
 
 task("build-production", series("clean", "compile-production"));
+
+task("build-production-esbuild", series("clean", "compile-production-esbuild"));
 
 //PR CHECK
 

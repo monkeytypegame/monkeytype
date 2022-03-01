@@ -1,4 +1,5 @@
 import * as DB from "../db";
+import moment from "moment";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;

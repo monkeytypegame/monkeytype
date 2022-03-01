@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";

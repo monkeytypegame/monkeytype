@@ -465,7 +465,7 @@ declare namespace MonkeyTypes {
     };
     funbox: {
       none?: boolean;
-      [funbox: string]: boolean;
+      [funbox: string]: boolean | undefined;
     };
   }
 

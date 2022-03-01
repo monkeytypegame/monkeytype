@@ -1,5 +1,3 @@
-// this file should be concatenated at the top of the legacy js files
-
 // @ts-ignore
 import Chart from "chart.js";
 // @ts-ignore
@@ -7,8 +5,7 @@ import chartTrendline from "chartjs-plugin-trendline";
 // @ts-ignore
 import chartAnnotation from "chartjs-plugin-annotation";
 
-Chart.plugins.register(chartTrendline);
-Chart.plugins.register(chartAnnotation);
+import "./init-firebase";
 
 import * as DB from "./db";
 import Config from "./config";
@@ -34,6 +31,9 @@ import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import * as Account from "./pages/account";
+
+Chart.plugins.register(chartTrendline);
+Chart.plugins.register(chartAnnotation);
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 

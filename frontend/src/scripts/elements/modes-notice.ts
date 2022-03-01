@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";

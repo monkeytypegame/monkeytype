@@ -13,6 +13,7 @@
     "install:windows": ".\\bin\\install.cmd",
     "lint": "eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
     "build:live": "cd ./frontend && npm run build:live",
+    "build:live:esbuild": "cd ./frontend && npm run build:live:esbuild",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
     "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",

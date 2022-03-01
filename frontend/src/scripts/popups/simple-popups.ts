@@ -1,4 +1,4 @@
-import type FirebaseTypes from "firebase";
+import firebase from "firebase";
 import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
@@ -223,11 +223,14 @@ list["updateEmail"] = new SimplePopup(
   async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
+
+      if (user === null || user.email === null) return;
+
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
         return;
       }
-      if (user.providerData[0].providerId === "password") {
+      if (user.providerData[0]?.providerId === "password") {
         const credential = firebase.auth.EmailAuthProvider.credential(
           user.email,
           password
@@ -251,7 +254,7 @@ list["updateEmail"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
-      const typedError = e as FirebaseTypes.FirebaseError;
+      const typedError = e as firebase.FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -260,7 +263,10 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    const user = firebase.auth().currentUser;
+
+    if (user === null) return;
+
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -290,13 +296,16 @@ list["updateName"] = new SimplePopup(
   async (_thisPopup, pass, newName) => {
     try {
       const user = firebase.auth().currentUser;
-      if (user.providerData[0].providerId === "password") {
+
+      if (user === null || user.email === null) return;
+
+      if (user.providerData[0]?.providerId === "password") {
         const credential = firebase.auth.EmailAuthProvider.credential(
           user.email,
           pass
         );
         await user.reauthenticateWithCredential(credential);
-      } else if (user.providerData[0].providerId === "google.com") {
+      } else if (user.providerData[0]?.providerId === "google.com") {
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
@@ -323,7 +332,7 @@ list["updateName"] = new SimplePopup(
       DB.getSnapshot().name = newName;
       $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      const typedError = e as FirebaseTypes.FirebaseError;
+      const typedError = e as firebase.FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
@@ -334,7 +343,7 @@ list["updateName"] = new SimplePopup(
   },
   (thisPopup) => {
     const user = firebase.auth().currentUser;
-    if (user.providerData[0].providerId === "google.com") {
+    if (user?.providerData[0]?.providerId === "google.com") {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
@@ -367,6 +376,9 @@ list["updatePassword"] = new SimplePopup(
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
       const user = firebase.auth().currentUser;
+
+      if (user === null || user.email === null) return;
+
       const credential = firebase.auth.EmailAuthProvider.credential(
         user.email,
         previousPass
@@ -384,7 +396,7 @@ list["updatePassword"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
-      const typedError = e as FirebaseTypes.FirebaseError;
+      const typedError = e as firebase.FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
@@ -394,7 +406,10 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    const user = firebase.auth().currentUser;
+
+    if (user === null) return;
+
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -469,13 +484,16 @@ list["deleteAccount"] = new SimplePopup(
     //
     try {
       const user = firebase.auth().currentUser;
-      if (user.providerData[0].providerId === "password") {
+
+      if (user === null || user.email === null) return;
+
+      if (user.providerData[0]?.providerId === "password") {
         const credential = firebase.auth.EmailAuthProvider.credential(
           user.email,
           password
         );
         await user.reauthenticateWithCredential(credential);
-      } else if (user.providerData[0].providerId === "google.com") {
+      } else if (user.providerData[0]?.providerId === "google.com") {
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
@@ -503,7 +521,7 @@ list["deleteAccount"] = new SimplePopup(
       }
 
       Notifications.add("Deleting login information...", 0);
-      await firebase.auth().currentUser.delete();
+      await firebase.auth().currentUser?.delete();
 
       Notifications.add("Goodbye", 1, 5);
 
@@ -511,7 +529,7 @@ list["deleteAccount"] = new SimplePopup(
         location.reload();
       }, 3000);
     } catch (e) {
-      const typedError = e as FirebaseTypes.FirebaseError;
+      const typedError = e as firebase.FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
@@ -522,7 +540,10 @@ list["deleteAccount"] = new SimplePopup(
   },
   (thisPopup) => {
     const user = firebase.auth().currentUser;
-    if (user.providerData[0].providerId === "google.com") {
+
+    if (user === null) return;
+
+    if (user.providerData[0]?.providerId === "google.com") {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -605,13 +626,16 @@ list["resetPersonalBests"] = new SimplePopup(
   async (_thisPopup, password: string) => {
     try {
       const user = firebase.auth().currentUser;
-      if (user.providerData[0].providerId === "password") {
+
+      if (user === null || user.email === null) return;
+
+      if (user.providerData[0]?.providerId === "password") {
         const credential = firebase.auth.EmailAuthProvider.credential(
           user.email,
           password
         );
         await user.reauthenticateWithCredential(credential);
-      } else if (user.providerData[0].providerId === "google.com") {
+      } else if (user.providerData[0]?.providerId === "google.com") {
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
@@ -640,7 +664,10 @@ list["resetPersonalBests"] = new SimplePopup(
   },
   (thisPopup) => {
     const user = firebase.auth().currentUser;
-    if (user.providerData[0].providerId === "google.com") {
+
+    if (user === null) return;
+
+    if (user.providerData[0]?.providerId === "google.com") {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }

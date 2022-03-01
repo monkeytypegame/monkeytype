@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import * as Misc from "../misc";
 
 export function loading(truefalse: boolean): void {

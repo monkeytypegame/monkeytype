@@ -1,6 +1,7 @@
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../misc";
+import moment from "moment";
 
 export function update(): void {
   $(".pageAccount .timePbTable tbody").html(`

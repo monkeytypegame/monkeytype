@@ -12,6 +12,7 @@ const buildOptions = {
   loader: {
     ".ts": "ts",
     ".js": "ts",
+    ".firebaserc": "json",
   },
   minify: false,
   platform: "browser",

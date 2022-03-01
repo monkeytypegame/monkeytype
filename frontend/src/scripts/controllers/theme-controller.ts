@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../misc";

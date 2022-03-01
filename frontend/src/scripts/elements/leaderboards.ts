@@ -1,8 +1,10 @@
+import firebase from "firebase";
 import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../misc";
 import * as Notifications from "./notifications";
+import moment from "moment";
 
 const currentLeaderboard = "time_15";
 

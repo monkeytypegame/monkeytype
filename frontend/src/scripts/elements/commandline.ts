@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
