@@ -1229,7 +1229,19 @@ export function setRandomTheme(
     return false;
 
   if (val === "custom") {
-    if (firebase.auth().currentUser === null) return false;
+    if (firebase.auth().currentUser === null) {
+      // This is needed because the local config is fired before firebase is initialized
+      let setValue = false;
+      firebase.auth().onAuthStateChanged((user: any) => {
+        console.log("I was finally called");
+        console.log(setValue);
+        if (user && !setValue) {
+          setValue = true;
+          setRandomTheme(val);
+        }
+      });
+      return true;
+    }
     if (!DB.getSnapshot()) return true;
     if (DB.getSnapshot().customThemes.length === 0) {
       config.randomTheme = "off";
