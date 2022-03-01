@@ -6,9 +6,6 @@ import MonkeyError from "../../handlers/error";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 import { base64UrlEncode } from "../../handlers/misc";
 
-const APE_KEY_BYTES = 48;
-const SALT_ROUNDS = parseInt(process.env.APE_KEY_SALT_ROUNDS, 10) || 5;
-
 function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
   return _.omit(apeKey, "hash");
 }
@@ -28,7 +25,8 @@ class ApeKeysController {
   ): Promise<MonkeyResponse> {
     const { name, enabled } = req.body;
     const { uid } = req.ctx.decodedToken;
-    const { maxKeysPerUser } = req.ctx.configuration.apeKeys;
+    const { maxKeysPerUser, apeKeyBytes, apeKeySaltRounds } =
+      req.ctx.configuration.apeKeys;
 
     const currentNumberOfApeKeys = await ApeKeysDAO.countApeKeysForUser(uid);
 
@@ -39,8 +37,8 @@ class ApeKeysController {
       );
     }
 
-    const apiKey = randomBytes(APE_KEY_BYTES).toString("base64url");
-    const saltyHash = await hash(apiKey, SALT_ROUNDS);
+    const apiKey = randomBytes(apeKeyBytes).toString("base64url");
+    const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
     const apeKey: MonkeyTypes.ApeKey = {
       name,
@@ -53,7 +51,7 @@ class ApeKeysController {
     const apeKeyId = await ApeKeysDAO.addApeKey(uid, apeKey);
 
     return new MonkeyResponse("ApeKey generated", {
-      apeKey: base64UrlEncode(`${apeKeyId}.${apiKey}`),
+      apeKey: base64UrlEncode(`${uid}.${apeKeyId}.${apiKey}`),
       apeKeyId,
       apeKeyDetails: cleanApeKey(apeKey),
     });

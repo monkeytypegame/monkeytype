@@ -20,6 +20,8 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     endpointsEnabled: false,
     acceptKeys: false,
     maxKeysPerUser: 0,
+    apeKeyBytes: 24,
+    apeKeySaltRounds: 5,
   },
   enableSavingResults: {
     enabled: false,
