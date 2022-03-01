@@ -9,7 +9,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 
 let isPreviewingTheme = false;
-export let randomTheme: string | null | MonkeyTypes.CustomTheme = null;
+export let randomTheme: string | null = null;
 
 export const colorVars = [
   "--bg-color",
@@ -229,10 +229,13 @@ export function randomizeTheme(): void {
     }
 
     // const previousTheme = randomTheme;
-    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+    const randomIndex = Math.floor(Math.random() * randomList.length);
+    if (Config.randomTheme === "custom")
+      randomTheme = (randomList[randomIndex] as MonkeyTypes.CustomTheme)._id;
+    else randomTheme = randomList[randomIndex] as string;
 
     if (Config.randomTheme === "custom") {
-      preview(true, (randomTheme as MonkeyTypes.CustomTheme)._id, true);
+      preview(true, randomTheme as string, true);
     } else {
       preview(false, randomTheme as string, true);
     }
