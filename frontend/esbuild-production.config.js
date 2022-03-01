@@ -8,7 +8,9 @@ const babelConfig = require("./babel.config.json");
  * @type {esbuild.BuildOptions}
  */
 const buildOptions = {
-  entryPoints: [path.join(path.resolve(__dirname, "src/scripts"), "index.ts")],
+  entryPoints: [
+    path.join(path.resolve(__dirname, "src/scripts"), "index.firebase-init.ts"),
+  ],
   bundle: true,
   outfile: path.join(path.resolve(__dirname, "public/js/"), "monkeytype.js"),
   loader: {
