@@ -13,7 +13,7 @@ const buildOptions = {
     ".ts": "ts",
     ".js": "ts",
   },
-  minify: true,
+  minify: false,
   platform: "browser",
   define: {
     global: "window",
