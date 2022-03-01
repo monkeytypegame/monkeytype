@@ -5,56 +5,61 @@ import chartTrendline from "chartjs-plugin-trendline";
 // @ts-ignore
 import chartAnnotation from "chartjs-plugin-annotation";
 
-import "./init-firebase";
+import firebase from "firebase";
 
-import * as DB from "./db";
-import Config from "./config";
-import * as TestStats from "./test/test-stats";
-import * as Replay from "./test/replay";
-import * as TestTimer from "./test/test-timer";
-import * as Result from "./test/result";
-import * as TestInput from "./test/test-input";
-import "./controllers/account-controller";
-import { enable } from "./states/glarses-mode";
-import "./test/caps-warning";
-import "./popups/support-popup";
-import "./popups/contact-popup";
-import "./popups/version-popup";
-import "./popups/edit-preset-popup";
-import "./popups/simple-popups";
-import "./controllers/input-controller";
-import "./ready";
-import "./ui";
-import "./pages/about";
-import "./popups/pb-tables-popup";
-import "./elements/scroll-to-top";
-import "./popups/mobile-test-config-popup";
-import "./popups/edit-tags-popup";
-import * as Account from "./pages/account";
+fetch("/__/firebase/init.json")
+  .then(async (res) => firebase.initializeApp(await res.json()))
+  .finally(async () => {
+    import("./controllers/account-controller");
+    import("./test/caps-warning");
+    import("./popups/support-popup");
+    import("./popups/contact-popup");
+    import("./popups/version-popup");
+    import("./popups/edit-preset-popup");
+    import("./popups/simple-popups");
+    import("./controllers/input-controller");
+    import("./ready");
+    import("./ui");
+    import("./pages/about");
+    import("./popups/pb-tables-popup");
+    import("./elements/scroll-to-top");
+    import("./popups/mobile-test-config-popup");
+    import("./popups/edit-tags-popup");
 
-Chart.plugins.register(chartTrendline);
-Chart.plugins.register(chartAnnotation);
+    const DB = await import("./db");
+    const Config = (await import("./config")).default;
+    const TestStats = await import("./test/test-stats");
+    const Replay = await import("./test/replay");
+    const TestTimer = await import("./test/test-timer");
+    const Result = await import("./test/result");
+    const TestInput = await import("./test/test-input");
+    const { enable } = await import("./states/glarses-mode");
+    const Account = await import("./pages/account");
 
-type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
+    Chart.plugins.register(chartTrendline);
+    Chart.plugins.register(chartAnnotation);
 
-const extendedGlobal = global as ExtendedGlobal;
+    type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
-extendedGlobal.snapshot = DB.getSnapshot;
+    const extendedGlobal = global as ExtendedGlobal;
 
-extendedGlobal.config = Config;
+    extendedGlobal.snapshot = DB.getSnapshot;
 
-extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
+    extendedGlobal.config = Config;
 
-extendedGlobal.glarsesMode = enable;
+    extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
 
-extendedGlobal.stats = TestStats.getStats;
+    extendedGlobal.glarsesMode = enable;
 
-extendedGlobal.replay = Replay.getReplayExport;
+    extendedGlobal.stats = TestStats.getStats;
 
-extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
+    extendedGlobal.replay = Replay.getReplayExport;
 
-extendedGlobal.getTimerStats = TestTimer.getTimerStats;
+    extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
 
-extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+    extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 
-extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
+    extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
+
+    extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
+  });
