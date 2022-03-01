@@ -13,6 +13,7 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
+import * as ActivePage from "../states/active-page";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -868,7 +869,7 @@ export function update(): void {
     ChartController.accountActivity.update();
     LoadingPage.updateBar(100, true);
     setTimeout(() => {
-      SignOutButton.show();
+      if (ActivePage.get() == "account") SignOutButton.show();
     }, 125);
     Focus.set(false);
     Misc.swapElements(
