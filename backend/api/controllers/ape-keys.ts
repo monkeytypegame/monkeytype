@@ -6,7 +6,7 @@ import MonkeyError from "../../handlers/error";
 import { MonkeyResponse } from "../../handlers/monkey-response";
 import { base64UrlEncode } from "../../handlers/misc";
 
-const APE_KEY_BYTES = 48;
+const APE_KEY_BYTES = 24;
 const SALT_ROUNDS = parseInt(process.env.APE_KEY_SALT_ROUNDS, 10) || 5;
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
@@ -53,7 +53,7 @@ class ApeKeysController {
     const apeKeyId = await ApeKeysDAO.addApeKey(uid, apeKey);
 
     return new MonkeyResponse("ApeKey generated", {
-      apeKey: base64UrlEncode(`${apeKeyId}.${apiKey}`),
+      apeKey: base64UrlEncode(`${uid}.${apeKeyId}.${apiKey}`),
       apeKeyId,
       apeKeyDetails: cleanApeKey(apeKey),
     });
