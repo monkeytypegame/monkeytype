@@ -120,13 +120,13 @@ async function authenticateWithBearerToken(
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
-        "Token expired. Please login again",
+        "Token expired. Please login again.",
         "authenticateWithBearerToken"
       );
     } else if (error?.errorInfo?.code?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
-        "Token revoked. Please login again",
+        "Token revoked. Please login again.",
         "authenticateWithBearerToken"
       );
     } else {
