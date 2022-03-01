@@ -64,7 +64,7 @@ class WordGenerator extends Wordset {
           this.ngrams[prefix] = new CharDistribution();
         }
         this.ngrams[prefix].addChar(c);
-        prefix = (prefix + c).substring(-prefixSize);
+        prefix = (prefix + c).substr(-prefixSize);
       }
     }
   }
@@ -72,7 +72,7 @@ class WordGenerator extends Wordset {
   public override randomWord(): string {
     let word = "";
     for (;;) {
-      const prefix = word.substring(-prefixSize);
+      const prefix = word.substr(-prefixSize);
       const charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
         // This shouldn't happen if this.ngrams is complete. If it does
