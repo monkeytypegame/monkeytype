@@ -71,26 +71,26 @@ task("webpack-production", async function () {
 });
 
 task("esbuild", async function () {
-  try {
-    const buildResult = await esbuild.build(esbuildOptions);
+  const buildResult = await esbuild.build(esbuildOptions);
 
-    console.log(
-      `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
-    );
-  } catch (e) {
-    return new Error(e);
+  console.log(
+    `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
+  );
+
+  if (buildResult.errors.length !== 0) {
+    throw new Error("ESBuild failed.");
   }
 });
 
 task("esbuild-production", async function () {
-  try {
-    const buildResult = await esbuild.build(esbuildProductionOptions);
+  const buildResult = await esbuild.build(esbuildProductionOptions);
 
-    console.log(
-      `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
-    );
-  } catch (e) {
-    return new Error(e);
+  console.log(
+    `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
+  );
+
+  if (buildResult.errors.length !== 0) {
+    throw new Error("ESBuild failed.");
   }
 });
 
