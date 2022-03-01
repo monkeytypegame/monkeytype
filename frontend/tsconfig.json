@@ -6,7 +6,7 @@
       "DOM",
       "DOM.Iterable"
     ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
-    "module": "ES6" /* Specify what module code is generated. */,
+    "module": "AMD" /* Specify what module code is generated. */,
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "types": [
       "moment",
