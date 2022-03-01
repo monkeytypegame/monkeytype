@@ -51,7 +51,9 @@ const CONFIG_SCHEMA = joi.object({
   indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("bar", "text", "mini"),
   colorfulMode: joi.boolean(),
-  randomTheme: joi.string().valid("off", "on", "fav", "light", "dark"),
+  randomTheme: joi
+    .string()
+    .valid("off", "on", "fav", "light", "dark", "custom"),
   timerColor: joi.string().valid("black", "sub", "text", "main"),
   timerOpacity: joi.number().valid(0.25, 0.5, 0.75, 1),
   stopOnError: joi.string().valid("off", "word", "letter"),

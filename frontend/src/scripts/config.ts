@@ -1174,7 +1174,8 @@ export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
     config.customThemeId = "";
     return true;
   } else {
-    if (customId !== "") setRandomTheme("off");
+    if (customId !== "" && config.randomTheme !== "custom")
+      setRandomTheme("off");
     config.customThemeId = customId;
   }
 
@@ -1188,6 +1189,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
+  if (config.randomTheme === "custom") setRandomTheme("off");
   setCustomThemeId("", true);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
@@ -1221,12 +1223,21 @@ export function setRandomTheme(
 ): boolean {
   if (
     !isConfigValueValid("random theme", val, [
-      ["off", "on", "fav", "light", "dark"],
+      ["off", "on", "fav", "light", "dark", "custom"],
     ])
   )
     return false;
 
-  if (val !== "off") setCustomThemeId("");
+  if (val === "custom") {
+    if (firebase.auth().currentUser === null) return false;
+    if (!DB.getSnapshot()) return true;
+    if (DB.getSnapshot().customThemes.length === 0) {
+      config.randomTheme = "off";
+      return false;
+    } else setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+  }
+  if (val !== "off" && val !== "custom") setCustomThemeId("");
+
   config.randomTheme = val;
   saveToLocalStorage("randomTheme", nosave);
   ConfigEvent.dispatch("randomTheme", config.randomTheme);

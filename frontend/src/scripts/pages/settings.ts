@@ -1016,7 +1016,24 @@ let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "customThemeId") {
+    const $presetTab = $(
+      ".pageSettings .section.themes .tabs [tabContent='preset']"
+    );
+    const $customTab = $(
+      ".pageSettings .section.themes .tabs [tabContent='custom']"
+    );
+    if (eventValue === "") {
+      // Hide custom themes section
+      $customTab.addClass("hidden");
+      $presetTab.removeClass("hidden");
+    } else {
+      // Hide preset themes section
+      $presetTab.addClass("hidden");
+      $customTab.removeClass("hidden");
+    }
+  }
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings") {
     update();

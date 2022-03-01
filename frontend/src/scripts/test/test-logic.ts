@@ -400,8 +400,8 @@ export function restart(
   if (TestUI.resultVisible) {
     if (
       Config.randomTheme !== "off" &&
-      !PageTransition.get() &&
-      Config.customThemeId === ""
+      !PageTransition.get()
+      // && Config.customThemeId === ""
     ) {
       ThemeController.randomizeTheme();
     }

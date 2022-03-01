@@ -1147,6 +1147,21 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
         UpdateConfig.setRandomTheme("dark");
       },
     },
+    {
+      id: "setRandomCustom",
+      display: "custom",
+      configValue: "custom",
+      exec: (): void => {
+        if (firebase.auth().currentUser === null) {
+          Notifications.add(
+            "Custom themes are available to logged in users only",
+            0
+          );
+          return;
+        }
+        UpdateConfig.setRandomTheme("custom");
+      },
+    },
   ],
 };
 

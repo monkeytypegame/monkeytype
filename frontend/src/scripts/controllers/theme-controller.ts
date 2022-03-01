@@ -9,7 +9,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 
 let isPreviewingTheme = false;
-export let randomTheme: string | null = null;
+export let randomTheme: string | null | MonkeyTypes.CustomTheme = null;
 
 export const colorVars = [
   "--bg-color",
@@ -92,9 +92,8 @@ export async function apply_custom(
   clearCustomTheme();
   if (!DB.getSnapshot()) return; // The user has not yet loaded or is not signed in
   if (themeId.trim() === "" || themeId.trim() === "") {
+    console.error("apply_custom got an empty value. calling apply_preset");
     apply_preset("", isPreview);
-    // Rizwan TODO: Remove this if statement later
-    Notifications.add("apply_custom got an empty value. This shouldn't happen");
   }
 
   const customThemes = DB.getSnapshot().customThemes;
@@ -209,7 +208,7 @@ export const clearPreview = (): void => {
 };
 
 export function randomizeTheme(): void {
-  let randomList;
+  let randomList: string[] | MonkeyTypes.CustomTheme[];
   Misc.getThemesList().then((themes) => {
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
       randomList = Config.favThemes;
@@ -221,16 +220,22 @@ export function randomizeTheme(): void {
       randomList = themes
         .filter((t) => tinycolor(t.bgColor).isDark())
         .map((t) => t.name);
-    } else {
+    } else if (Config.randomTheme === "on") {
       randomList = themes.map((t) => {
         return t.name;
       });
+    } else {
+      randomList = DB.getSnapshot().customThemes;
     }
 
     // const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
 
-    preview(false, randomTheme, true);
+    if (Config.randomTheme === "custom") {
+      preview(true, (randomTheme as MonkeyTypes.CustomTheme)._id, true);
+    } else {
+      preview(false, randomTheme as string, true);
+    }
 
     // if (previousTheme != randomTheme) {
     //   // Notifications.add(randomTheme.replace(/_/g, " "), 0);

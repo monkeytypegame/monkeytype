@@ -17,8 +17,12 @@ export function updateActiveButton(): void {
     ).addClass("active");
   } else {
     let activeThemeName = Config.theme;
-    if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-      activeThemeName = ThemeController.randomTheme;
+    if (
+      Config.randomTheme !== "off" &&
+      Config.randomTheme !== "custom" &&
+      ThemeController.randomTheme !== null
+    ) {
+      activeThemeName = ThemeController.randomTheme as string;
     }
     $(`.pageSettings .section.themes .theme`).removeClass("active");
     $(
@@ -140,8 +144,12 @@ export async function refreshButtons(): Promise<void> {
     ).empty();
 
     let activeThemeName = Config.theme;
-    if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-      activeThemeName = ThemeController.randomTheme;
+    if (
+      Config.randomTheme !== "off" &&
+      Config.randomTheme !== "custom" &&
+      ThemeController.randomTheme !== null
+    ) {
+      activeThemeName = ThemeController.randomTheme as string;
     }
 
     const themes = await Misc.getSortedThemesList();
@@ -221,27 +229,27 @@ function toggleFavourite(themeName: string): void {
 export function updateActiveTab(forced = false): void {
   // Set force to true only when some change for the active tab has taken place
   // Prevent theme buttons from being added twice by doing an update only when the state has changed
-  const $presetTab = $(
+  const $presetTabButton = $(
     ".pageSettings .section.themes .tabs .button[tab='preset']"
   );
-  const $customTab = $(
+  const $customTabButton = $(
     ".pageSettings .section.themes .tabs .button[tab='custom']"
   );
 
   if (Config.customThemeId === "") {
-    $customTab.removeClass("active");
-    if (!$presetTab.hasClass("active") || forced) {
-      $presetTab.addClass("active");
+    $customTabButton.removeClass("active");
+    if (!$presetTabButton.hasClass("active") || forced) {
+      $presetTabButton.addClass("active");
       refreshButtons();
     }
   } else {
     if (firebase.auth().currentUser === null) {
-      $presetTab.addClass("active");
+      $presetTabButton.addClass("active");
       return;
     }
-    $presetTab.removeClass("active");
-    if (!$customTab.hasClass("active") || forced) {
-      $customTab.addClass("active");
+    $presetTabButton.removeClass("active");
+    if (!$customTabButton.hasClass("active") || forced) {
+      $customTabButton.addClass("active");
       refreshButtons();
     }
   }
@@ -265,6 +273,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   // $target.addClass("active"); Don't uncomment it. updateActiveTab() will add the active class itself
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
+    if (Config.randomTheme === "custom") UpdateConfig.setRandomTheme("off");
     UpdateConfig.setCustomThemeId("");
   } else {
     const customThemes = DB.getSnapshot().customThemes;
