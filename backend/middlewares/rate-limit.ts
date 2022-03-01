@@ -20,16 +20,18 @@ const customHandler = (
   throw new MonkeyError(429, "Too many attempts, please try again later.");
 };
 
+const ONE_HOUR = 1000 * 60 * 60;
+
 // Config Routing
 export const configUpdate = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const configGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 120 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -37,7 +39,7 @@ export const configGet = rateLimit({
 
 // Leaderboards Routing
 export const leaderboardsGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -45,21 +47,21 @@ export const leaderboardsGet = rateLimit({
 
 // New Quotes Routing
 export const newQuotesGet = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: ONE_HOUR,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const newQuotesAdd = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const newQuotesAction = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: ONE_HOUR,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -67,14 +69,14 @@ export const newQuotesAction = rateLimit({
 
 // Quote Ratings Routing
 export const quoteRatingsGet = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: ONE_HOUR,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const quoteRatingsSubmit = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: ONE_HOUR,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -90,28 +92,28 @@ export const quoteReportSubmit = rateLimit({
 
 // Presets Routing
 export const presetsGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const presetsAdd = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const presetsRemove = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const presetsEdit = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -127,42 +129,42 @@ export const psaGet = rateLimit({
 
 // Results Routing
 export const resultsGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const resultsAdd = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: ONE_HOUR,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const resultsTagsUpdate = rateLimit({
-  windowMs: 60 * 60 * 1000,
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const resultsDeleteAll = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 10 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const resultsLeaderboardGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const resultsLeaderboardQualificationGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -170,21 +172,21 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 
 // Users Routing
 export const userGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userSignup = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  windowMs: 24 * ONE_HOUR, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userDelete = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  windowMs: 24 * ONE_HOUR, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -198,7 +200,7 @@ export const userCheckName = rateLimit({
 });
 
 export const userUpdateName = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 1 day
+  windowMs: 24 * ONE_HOUR, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -212,56 +214,56 @@ export const userUpdateLBMemory = rateLimit({
 });
 
 export const userUpdateEmail = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userClearPB = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userTagsGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userTagsRemove = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userTagsClearPB = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userTagsEdit = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userTagsAdd = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userDiscordLink = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 15 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
@@ -270,8 +272,27 @@ export const userDiscordLink = rateLimit({
 export const usersTagsEdit = userDiscordLink;
 
 export const userDiscordUnlink = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 15 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
+
+// ApeKeys Routing
+export const apeKeysGet = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 120 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const apeKeysGenerate = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const apeKeysUpdate = apeKeysGenerate;
+
+export const apeKeysDelete = apeKeysGenerate;

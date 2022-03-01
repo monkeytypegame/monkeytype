@@ -891,7 +891,20 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (!Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
+    if (Config.quoteLength.includes(-2) && Config.quoteLength.length == 1) {
+      quotes.groups.forEach((group) => {
+        const filtered = (<MonkeyTypes.Quote[]>group).filter(
+          (quote) => quote.id == QuoteSearchPopup.selectedId
+        );
+        if (filtered.length > 0) {
+          rq = filtered[0];
+        }
+      });
+      if (rq === undefined) {
+        rq = <MonkeyTypes.Quote>quotes.groups[0][0];
+        Notifications.add("Quote Id Does Not Exist", 0);
+      }
+    } else {
       const quoteLengths = Config.quoteLength;
       let groupIndex;
       if (quoteLengths.length > 1) {
@@ -921,19 +934,6 @@ export async function init(): Promise<void> {
         rq = quotes.groups[groupIndex][
           Math.floor(Math.random() * quotes.groups[groupIndex].length)
         ] as MonkeyTypes.Quote;
-      }
-    } else {
-      quotes.groups.forEach((group) => {
-        const filtered = (<MonkeyTypes.Quote[]>group).filter(
-          (quote) => quote.id == QuoteSearchPopup.selectedId
-        );
-        if (filtered.length > 0) {
-          rq = filtered[0];
-        }
-      });
-      if (rq === undefined) {
-        rq = <MonkeyTypes.Quote>quotes.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0);
       }
     }
 
@@ -1251,18 +1251,25 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  const keyConsistencyArray =
+  let keyConsistencyArray =
     TestInput.keypressTimings.spacing.array === "toolong"
       ? []
       : TestInput.keypressTimings.spacing.array.slice();
-  keyConsistencyArray.splice(0, keyConsistencyArray.length - 1);
-  const keyConsistency = Misc.roundTo2(
+  if (keyConsistencyArray.length > 0)
+    keyConsistencyArray = keyConsistencyArray.slice(
+      0,
+      keyConsistencyArray.length - 1
+    );
+  let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
       Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray)
     )
   );
-  if (isNaN(consistency)) {
+  if (!consistency || isNaN(consistency)) {
     consistency = 0;
+  }
+  if (!keyConsistency || isNaN(keyConsistency)) {
+    keyConsistency = 0;
   }
   completedEvent.keyConsistency = keyConsistency;
   completedEvent.consistency = consistency;

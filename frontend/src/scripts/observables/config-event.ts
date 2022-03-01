@@ -1,19 +1,8 @@
-type ConfigValues =
-  | string
-  | number
-  | boolean
-  | string[]
-  | MonkeyTypes.QuoteLength[]
-  | MonkeyTypes.ResultFilters
-  | MonkeyTypes.CustomBackgroundFilter
-  | null
-  | undefined;
-
 type SubscribeFunction = (
   key: string,
-  newValue?: ConfigValues,
+  newValue?: MonkeyTypes.ConfigValues,
   nosave?: boolean,
-  previousValue?: ConfigValues,
+  previousValue?: MonkeyTypes.ConfigValues,
   fullConfig?: MonkeyTypes.Config
 ) => void;
 
@@ -25,9 +14,9 @@ export function subscribe(fn: SubscribeFunction): void {
 
 export function dispatch(
   key: string,
-  newValue?: ConfigValues,
+  newValue?: MonkeyTypes.ConfigValues,
   nosave?: boolean,
-  previousValue?: ConfigValues,
+  previousValue?: MonkeyTypes.ConfigValues,
   fullConfig?: MonkeyTypes.Config
 ): void {
   subscribers.forEach((fn) => {

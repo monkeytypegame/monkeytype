@@ -14,13 +14,16 @@ declare namespace MonkeyTypes {
     resultObjectHashCheck: {
       enabled: boolean;
     };
-    monkeyTokens: {
-      enabled: boolean;
+    apeKeys: {
+      endpointsEnabled: boolean;
+      acceptKeys: boolean;
+      maxKeysPerUser: number;
     };
     enableSavingResults: {
       enabled: boolean;
     };
   }
+
   interface DecodedToken {
     uid?: string;
     email?: string;
@@ -57,5 +60,15 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod: boolean;
     cannotReport: boolean;
+  }
+
+  interface ApeKey {
+    _id: string;
+    name: string;
+    hash: string;
+    uid: string;
+    createdOn: number;
+    modifiedOn: number;
+    enabled: boolean;
   }
 }
