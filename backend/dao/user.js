@@ -355,6 +355,10 @@ class UsersDAO {
       return null;
     }
   }
+
+  static async setApeKeys(uid, apeKeys) {
+    await db.collection("users").updateOne({ uid }, { $set: { apeKeys } });
+  }
 }
 
 export default UsersDAO;
