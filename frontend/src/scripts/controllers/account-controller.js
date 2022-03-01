@@ -1,4 +1,5 @@
 import Ape from "../ape";
+import { authDone } from "../promises/authPromise";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
@@ -345,6 +346,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     // }, 1000);
   }
   PSA.show();
+  authDone();
 });
 
 export function signIn() {
