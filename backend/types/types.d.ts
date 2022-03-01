@@ -18,6 +18,8 @@ declare namespace MonkeyTypes {
       endpointsEnabled: boolean;
       acceptKeys: boolean;
       maxKeysPerUser: number;
+      apeKeyBytes: number;
+      apeKeySaltRounds: number;
     };
     enableSavingResults: {
       enabled: boolean;
