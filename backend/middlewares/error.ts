@@ -34,7 +34,7 @@ async function errorHandlingMiddleware(
       "Oops! Our monkeys dropped their bananas. Please try again later.";
   }
 
-  if (process.env.MODE !== "dev" && monkeyResponse.status > 400) {
+  if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {
     const { uid, errorId } = monkeyResponse.data;
 
     try {
