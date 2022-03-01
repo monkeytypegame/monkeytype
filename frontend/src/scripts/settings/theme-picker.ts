@@ -214,7 +214,7 @@ function toggleFavourite(themeName: string): void {
     newList.push(themeName);
     UpdateConfig.setFavThemes(newList);
   }
-  UpdateConfig.saveToLocalStorage();
+  UpdateConfig.saveFullConfigToLocalStorage();
   refreshButtons();
 }
 

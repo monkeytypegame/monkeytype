@@ -2,7 +2,6 @@ import ResultDAO from "../../dao/result";
 import UserDAO from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
-import { validateObjectValues } from "../../handlers/validation";
 import { roundTo2, stdDev } from "../../handlers/misc";
 import node_object_hash from "node-object-hash";
 import Logger from "../../handlers/logger";
@@ -61,8 +60,6 @@ class ResultController {
     const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
-    if (validateObjectValues(result) > 0)
-      throw new MonkeyError(400, "Bad input");
     if (result.wpm === result.raw && result.acc !== 100) {
       throw new MonkeyError(400, "Bad input");
     }

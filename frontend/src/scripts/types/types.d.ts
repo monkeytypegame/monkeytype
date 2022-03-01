@@ -339,6 +339,17 @@ declare namespace MonkeyTypes {
     showAvg: boolean;
   }
 
+  type ConfigValues =
+    | string
+    | number
+    | boolean
+    | string[]
+    | MonkeyTypes.QuoteLength[]
+    | MonkeyTypes.ResultFilters
+    | MonkeyTypes.CustomBackgroundFilter
+    | null
+    | undefined;
+
   interface ConfigChanges extends Partial<MonkeyTypes.Config> {
     tags?: string[];
   }

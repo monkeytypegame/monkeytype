@@ -3173,7 +3173,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
         if (!input) return;
         try {
           UpdateConfig.apply(JSON.parse(input));
-          UpdateConfig.saveToLocalStorage();
+          UpdateConfig.saveFullConfigToLocalStorage();
           Settings.update();
           Notifications.add("Done", 1);
         } catch (e) {

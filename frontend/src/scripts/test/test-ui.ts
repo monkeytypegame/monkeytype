@@ -149,9 +149,6 @@ export function showWords(): void {
   const wordsHeight = <number>(
     $(<Element>document.querySelector("#words")).outerHeight(true)
   );
-  console.log(
-    `Showing words. wordHeight: ${wordHeight}, wordsHeight: ${wordsHeight}`
-  );
   if (
     Config.showAllLines &&
     Config.mode != "time" &&

@@ -4,12 +4,12 @@ import { NextFunction, Response, Handler } from "express";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
-  acceptMonkeyTokens?: boolean;
+  acceptApeKeys?: boolean;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
-  acceptMonkeyTokens: false,
+  acceptApeKeys: false,
 };
 
 function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
@@ -28,7 +28,11 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
       let token: MonkeyTypes.DecodedToken = {};
 
       if (authHeader) {
-        token = await authenticateWithAuthHeader(authHeader, options);
+        token = await authenticateWithAuthHeader(
+          authHeader,
+          req.ctx.configuration,
+          options
+        );
       } else if (options.isPublic) {
         return next();
       } else if (process.env.MODE === "dev") {
@@ -72,6 +76,7 @@ function authenticateWithBody(
 
 async function authenticateWithAuthHeader(
   authHeader: string,
+  configuration: MonkeyTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   const token = authHeader.split(" ");
@@ -82,8 +87,8 @@ async function authenticateWithAuthHeader(
   switch (authScheme) {
     case "Bearer":
       return await authenticateWithBearerToken(credentials);
-    case "MonkeyToken":
-      return await authenticateWithMonkeyToken(credentials, options);
+    case "ApeKey":
+      return await authenticateWithApeKey(credentials, configuration, options);
   }
 
   throw new MonkeyError(
@@ -126,15 +131,19 @@ async function authenticateWithBearerToken(
   }
 }
 
-async function authenticateWithMonkeyToken(
-  token: string,
+async function authenticateWithApeKey(
+  key: string,
+  configuration: MonkeyTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
-  if (!options.acceptMonkeyTokens) {
-    throw new MonkeyError(401, "This endpoint does not accept MonkeyTokens.");
+  if (!configuration.apeKeys.acceptKeys) {
+    throw new MonkeyError(403, "ApeKeys are not being accepted at this time.");
+  }
+  if (!options.acceptApeKeys) {
+    throw new MonkeyError(401, "This endpoint does not accept ApeKeys.");
   }
 
-  throw new MonkeyError(401, "MonkeyTokens are not implemented.");
+  throw new MonkeyError(401, "ApeKeys are not implemented.");
 }
 
 export { authenticateRequest };

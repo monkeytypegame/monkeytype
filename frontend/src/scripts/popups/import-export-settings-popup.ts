@@ -37,7 +37,7 @@ function hide(): void {
           -1
         );
       }
-      UpdateConfig.saveToLocalStorage();
+      UpdateConfig.saveFullConfigToLocalStorage();
     }
     $("#settingsImportWrapper")
       .stop(true, true)
