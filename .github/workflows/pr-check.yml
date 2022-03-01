@@ -70,9 +70,6 @@ jobs:
         if: steps.filter.outputs.changes != '[]'
         run: npm run install:all
 
-      # - name: Run webpack
-      #   run: npm run build:live
-
       - name: Lint JSON
         if: steps.filter.outputs.any-json == 'true'
         run: npm run pr-check-lint-json
@@ -101,6 +98,6 @@ jobs:
         if: steps.filter.outputs.ts-be == 'true'
         run: npm run pr-check-build-be
 
-      - name: Run webpack
+      - name: Run esbuild
         if: steps.filter.outputs.ts-fe == 'true'
         run: npm run pr-check-ts
