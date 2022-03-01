@@ -101,7 +101,6 @@ export async function apply_custom(
     ? customThemes.find((t) => t._id === themeId)
     : undefined;
   if (!customTheme) {
-    console.log(Config.customThemeId);
     Notifications.add(`No custom theme with id: ${themeId}`, 0);
     if (customThemes && customThemes.length > 1)
       UpdateConfig.setCustomThemeId(customThemes[0]._id);

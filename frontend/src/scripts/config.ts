@@ -1628,6 +1628,8 @@ export function apply(
       }
     }
   );
+  // @ts-ignore This is to prevent users from getting errors related to old customTheme key
+  delete config.customTheme;
   if (configObj !== undefined && configObj !== null) {
     setCustomThemeColors(configObj.customThemeColors, true);
     setThemeLight(configObj.themeLight, true);
