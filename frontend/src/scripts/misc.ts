@@ -1,8 +1,10 @@
+import firebase from "firebase";
+import moment from "moment";
 import * as Loader from "./elements/loader";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
-  console.log(firebase.auth().currentUser.uid);
+  console.log(firebase.auth().currentUser?.uid);
   console.error("Only share this uid with Miodec and nobody else!");
 }
 

@@ -1,6 +1,8 @@
 // eslint-disable-next-line
 const esbuild = require("esbuild");
 const path = require("path");
+const babel = require("esbuild-plugin-babel");
+const babelConfig = require("./babel.config.json");
 
 /**
  * @type {esbuild.BuildOptions}
@@ -12,15 +14,15 @@ const buildOptions = {
   loader: {
     ".ts": "ts",
     ".js": "ts",
+    ".firebaserc": "json",
   },
-  minify: true,
+  minify: false,
   platform: "browser",
   define: {
     global: "window",
   },
   logLevel: "warning",
-  mainFields: ["module", "main"],
-  // plugins: [babel({ config: babelConfig })],
+  plugins: [babel(babelConfig)],
 };
 
 module.exports = buildOptions;

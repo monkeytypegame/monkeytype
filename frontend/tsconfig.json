@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es6" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "target": "ES6" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "lib": [
       "ESNext",
       "DOM",
@@ -17,7 +17,6 @@
     "allowUmdGlobalAccess": true /* Allow accessing UMD globals from modules. */,
     "resolveJsonModule": true /* Enable importing .json files */,
     "allowJs": true /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */,
-    "outDir": "./build" /* Specify an output folder for all emitted files. */,
     "newLine": "lf" /* Set the newline character for emitting files. */,
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */,
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
@@ -43,7 +42,7 @@
 
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    "skipLibCheck": false /* Skip type checking all .d.ts files. */
   },
   "include": ["./src/**/*.ts"],
   "files": ["src/scripts/modules.d.ts"]

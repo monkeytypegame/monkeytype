@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import Ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";

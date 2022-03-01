@@ -14,6 +14,7 @@ import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
 import * as ActivePage from "../states/active-page";
+import moment from "moment";
 
 let filterDebug = false;
 //toggle filterdebug

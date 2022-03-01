@@ -103,9 +103,9 @@ declare namespace Ape {
       getNameAvailability: (name: string) => EndpointData;
       delete: Endpoint;
       updateName: (name: string) => EndpointData;
-      updateLeaderboardMemory: (
-        mode: string,
-        mode2: MonkeyTypes.Mode2<any>,
+      updateLeaderboardMemory: <M extends MonkeyTypes.Mode>(
+        mode: M,
+        mode2: MonkeyTypes.Mode2<M>,
         language: string,
         rank: number
       ) => EndpointData;

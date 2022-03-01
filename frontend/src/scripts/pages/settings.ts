@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
@@ -982,7 +983,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
       $(
         ".pageSettings .section.customLayoutfluid .inputAndButton input"
       ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-    ).then(bool => {
+    ).then((bool) => {
       if (bool) {
         Notifications.add("Custom layoutfluid saved", 1);
       }
@@ -997,8 +998,8 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
         ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-      ).then(bool => {
-        if (bool) { 
+      ).then((bool) => {
+        if (bool) {
           Notifications.add("Custom layoutfluid saved", 1);
         }
       });

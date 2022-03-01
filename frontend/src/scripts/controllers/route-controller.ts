@@ -1,6 +1,5 @@
-// import * as Funbox from "../test/funbox";
+import firebase from "firebase";
 import * as PageController from "./page-controller";
-// import Config from "../config";
 import * as ActivePage from "../states/active-page";
 
 const mappedRoutes = {

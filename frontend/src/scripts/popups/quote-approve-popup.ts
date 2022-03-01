@@ -1,6 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import moment from "moment";
 
 type Quote = {
   _id: string;
@@ -43,9 +44,9 @@ function updateList(): void {
 }
 
 function updateQuoteLength(index: number): void {
-  const len = ($(
-    `#quoteApprovePopup .quote[id=${index}] .text`
-  ).val() as string)?.length;
+  const len = (
+    $(`#quoteApprovePopup .quote[id=${index}] .text`).val() as string
+  )?.length;
   $(`#quoteApprovePopup .quote[id=${index}] .length`).text(
     "Quote length: " + len
   );

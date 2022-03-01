@@ -1,3 +1,5 @@
+import firebase from "firebase";
+import NodeObjectHash from "node-object-hash";
 import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -47,7 +49,6 @@ import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
-import NodeObjectHash from "node-object-hash";
 
 const objecthash = NodeObjectHash().hash;
 
@@ -1501,7 +1502,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.resetIncomplete();
   }
 
-  completedEvent.uid = firebase.auth().currentUser.uid;
+  const user = firebase.auth().currentUser;
+
+  if (user === null) return;
+
+  completedEvent.uid = user.uid;
   Result.updateRateQuote(TestWords.randomQuote);
 
   Result.updateGraphPBLine();
