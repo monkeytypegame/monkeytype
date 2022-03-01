@@ -234,7 +234,7 @@ router.delete(
   asyncHandler(UserController.removeCustomTheme)
 );
 
-router.put(
+router.patch(
   "/customThemes",
   RateLimit.userCustomThemeEdit,
   authenticateRequest(),
