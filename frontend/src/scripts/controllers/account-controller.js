@@ -1,5 +1,7 @@
 import firebase from "firebase";
 import Ape from "../ape";
+// eslint-disable-next-line
+import * as Index from "../index";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
