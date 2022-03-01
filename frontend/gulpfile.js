@@ -7,9 +7,6 @@ const eslint = require("gulp-eslint-new");
 const sass = require("gulp-sass")(require("sass"));
 const replace = require("gulp-replace");
 const through2 = require("through2");
-const { webpack } = require("webpack");
-const webpackDevConfig = require("./webpack.config.js");
-const webpackProdConfig = require("./webpack-production.config.js");
 const esbuild = require("esbuild");
 const esbuildOptions = require("./esbuild.config");
 const esbuildProductionOptions = require("./esbuild-production.config.js");
@@ -40,34 +37,6 @@ task("lint-json", function () {
 
 task("validate-json-schema", function () {
   return JSONValidation.validateAll();
-});
-
-task("webpack", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackDevConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
-    });
-  });
-});
-
-task("webpack-production", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackProdConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
-    });
-  });
 });
 
 task("esbuild", async function () {
@@ -144,11 +113,6 @@ task("updateSwCacheName", function () {
 
 task(
   "compile",
-  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
-);
-
-task(
-  "compile-esbuild",
   series(
     "lint",
     "lint-json",
@@ -161,19 +125,6 @@ task(
 
 task(
   "compile-production",
-  series(
-    "lint",
-    "lint-json",
-    "validate-json-schema",
-    "webpack-production",
-    "static",
-    "sass",
-    "updateSwCacheName"
-  )
-);
-
-task(
-  "compile-production-esbuild",
   series(
     "lint",
     "lint-json",
@@ -195,20 +146,6 @@ task("watch", function () {
       "./src/scripts/*.js",
       "./src/scripts/*.ts",
     ],
-    series("lint", "webpack")
-  );
-  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
-});
-
-task("watch-esbuild", function () {
-  watch("./src/styles/*.scss", series("sass"));
-  watch(
-    [
-      "./src/scripts/**/*.js",
-      "./src/scripts/**/*.ts",
-      "./src/scripts/*.js",
-      "./src/scripts/*.ts",
-    ],
     series("lint", parallel("typescript", "esbuild"))
   );
   watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
@@ -216,11 +153,7 @@ task("watch-esbuild", function () {
 
 task("build", series("clean", "compile"));
 
-task("build-esbuild", series("clean", "compile-esbuild"));
-
 task("build-production", series("clean", "compile-production"));
-
-task("build-production-esbuild", series("clean", "compile-production-esbuild"));
 
 //PR CHECK
 
@@ -244,4 +177,4 @@ task("pr-check-other-json", series("validate-other-json-schema"));
 task("pr-check-lint", series("lint"));
 task("pr-check-scss", series("sass"));
 
-task("pr-check-ts", series("webpack-production"));
+task("pr-check-ts", series("esbuild-production"));

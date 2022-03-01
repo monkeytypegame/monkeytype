@@ -3,6 +3,7 @@ const esbuild = require("esbuild");
 const path = require("path");
 const babel = require("esbuild-plugin-babel");
 const babelConfig = require("./babel.config.json");
+const circular = require("./esbuild-circular-plugin");
 
 /**
  * @type {esbuild.BuildOptions}
@@ -24,7 +25,7 @@ const buildOptions = {
     global: "window",
   },
   logLevel: "warning",
-  plugins: [babel(babelConfig)],
+  plugins: [circular, babel(babelConfig)],
 };
 
 module.exports = buildOptions;
