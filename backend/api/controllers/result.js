@@ -13,6 +13,7 @@ import {
   validateResult,
   validateKeys,
 } from "../../anticheat/index";
+import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 
 const objecthash = node_object_hash().hash;
 
@@ -60,6 +61,10 @@ class ResultController {
     const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
+    if (result.acc !== 100) {
+      const status = MonkeyStatusCodes.GIT_GUD;
+      throw new MonkeyError(status.code, status.message);
+    }
     if (result.wpm === result.raw && result.acc !== 100) {
       throw new MonkeyError(400, "Bad input");
     }
