@@ -14,5 +14,3 @@ $(document.body).on("click", "#contactPopupWrapper", (e) => {
       });
   }
 });
-
-export {};
