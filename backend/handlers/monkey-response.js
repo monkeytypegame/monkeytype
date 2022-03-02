@@ -1,3 +1,5 @@
+import { getCodesRangeStart } from "../constants/monkey-status-codes";
+
 export class MonkeyResponse {
   constructor(message, data, status = 200) {
     this.message = message;
@@ -14,6 +16,8 @@ export function handleMonkeyResponse(handlerData, res) {
   const { message, data, status } = monkeyResponse;
 
   res.status(status);
+  if (status >= getCodesRangeStart()) res.statusMessage = message;
+
   res.monkeyMessage = message; // so that we can see message in swagger stats
   if ([301, 302].includes(status)) {
     return res.redirect(data);
