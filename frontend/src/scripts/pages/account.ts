@@ -529,7 +529,7 @@ export function update(): void {
             tt = (result.mode2 / result.wpm) * 60;
           }
         } else {
-          tt = result.testDuration;
+          tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
         }
         if (result.incompleteTestSeconds != undefined) {
           tt += result.incompleteTestSeconds;
