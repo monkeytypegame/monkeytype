@@ -8,8 +8,9 @@ const sass = require("gulp-sass")(require("sass"));
 const replace = require("gulp-replace");
 const through2 = require("through2");
 const esbuild = require("esbuild");
-const esbuildOptions = require("./esbuild.config");
-const esbuildProductionOptions = require("./esbuild-production.config.js");
+const esbuildConfig = require("./esbuild.config");
+const babel = require("gulp-babel");
+const babelConfig = require("./babel.config.json");
 const ts = require("gulp-typescript");
 const tsProject = ts.createProject("tsconfig.json", { noEmit: true });
 
@@ -40,7 +41,7 @@ task("validate-json-schema", function () {
 });
 
 task("esbuild", async function () {
-  const buildResult = await esbuild.build(esbuildOptions);
+  const buildResult = await esbuild.build(esbuildConfig);
 
   console.log(
     `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
@@ -52,7 +53,7 @@ task("esbuild", async function () {
 });
 
 task("esbuild-production", async function () {
-  const buildResult = await esbuild.build(esbuildProductionOptions);
+  const buildResult = await esbuild.build(esbuildConfig);
 
   console.log(
     `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
@@ -61,6 +62,12 @@ task("esbuild-production", async function () {
   if (buildResult.errors.length !== 0) {
     throw new Error("ESBuild failed.");
   }
+});
+
+task("babel", function () {
+  return src("./public/js/monkeytype.js")
+    .pipe(babel(babelConfig))
+    .pipe(dest("./public/js"));
 });
 
 task("typescript", function () {
@@ -131,6 +138,7 @@ task(
     "validate-json-schema",
     "typescript",
     "esbuild-production",
+    "babel",
     "static",
     "sass",
     "updateSwCacheName"

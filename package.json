@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "start:dev": "concurrently --kill-others \"cd ./frontend && npm run start:dev\" \"cd ./backend && npm run start:dev\"",
-    "start:dev:esbuild": "concurrently --kill-others \"cd ./frontend && npm run start:dev:esbuild\" \"cd ./backend && npm run start:dev\"",
     "start:dev:be": "cd backend && npm run start:dev",
     "start:dev:fe": "cd frontend && npm run start:dev",
     "deploy:live": "cd frontend && npm run deploy:live",
@@ -13,7 +12,6 @@
     "install:windows": ".\\bin\\install.cmd",
     "lint": "eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
     "build:live": "cd ./frontend && npm run build:live",
-    "build:live:esbuild": "cd ./frontend && npm run build:live:esbuild",
     "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
     "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
@@ -42,7 +40,7 @@
     "jsonschema": "1.4.0",
     "prettier": "2.5.1",
     "pretty-quick": "3.1.0",
-    "typescript": "^4.5.5"
+    "typescript": "4.5.5"
   },
   "husky": {
     "hooks": {
