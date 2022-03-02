@@ -17,13 +17,15 @@ const buildOptions = {
     ".js": "ts",
     ".firebaserc": "json",
   },
-  minify: false,
+  minify: true,
   platform: "browser",
   define: {
     global: "window",
   },
   logLevel: "warning",
   plugins: [circular],
+  format: "esm",
+  splitting: true,
 };
 
 module.exports = buildOptions;
