@@ -1241,7 +1241,7 @@ export function updateCustomThemeCommands(): void {
     display: "off",
     configValue: "",
     exec: (): void => {
-      UpdateConfig.setCustomThemeId("");
+      UpdateConfig.setCustomTheme(false);
     },
   });
   if (firebase.auth().currentUser === null) {
@@ -1258,6 +1258,7 @@ export function updateCustomThemeCommands(): void {
         },
         exec: (): void => {
           UpdateConfig.setCustomThemeId(theme._id);
+          UpdateConfig.setCustomTheme(true);
         },
       });
     });

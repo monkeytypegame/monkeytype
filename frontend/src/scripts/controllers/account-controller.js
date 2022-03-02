@@ -301,6 +301,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   }
 
   let themeColors = Misc.findGetParameter("customTheme");
+  const oldCustomTheme = Config.customTheme;
   const oldCustomThemeId = Config.customThemeId;
   if (themeColors !== null) {
     try {
@@ -319,6 +320,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
             DB.getSnapshot().customThemes.length - 1
           ]._id
         );
+        UpdateConfig.setCustomTheme(true);
         Notifications.add(
           "Custom theme: 'custom' sucessfully created and applied.",
           1
@@ -330,6 +332,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
         0
       );
       UpdateConfig.setCustomThemeId(oldCustomThemeId);
+      UpdateConfig.setCustomTheme(oldCustomTheme);
     }
   }
   if (/challenge_.+/g.test(window.location.pathname)) {

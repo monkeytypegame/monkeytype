@@ -16,6 +16,7 @@ const CONFIG_SCHEMA = joi.object({
   themeLight: joi.string(),
   themeDark: joi.string(),
   autoSwitchTheme: joi.boolean(),
+  customTheme: joi.boolean(),
   customThemeId: joi.string().min(0).max(24),
   customThemeColors: joi
     .array()

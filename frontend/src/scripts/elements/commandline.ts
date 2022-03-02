@@ -695,22 +695,24 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     }
     if (DB.getSnapshot().customThemes.length < 1) {
       Notifications.add("No custom themes!", 0);
+      UpdateConfig.setCustomTheme(false);
       UpdateConfig.setCustomThemeId("");
       return;
     }
 
     // Turn on the first custom theme
     const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
-    if (Config.customThemeId === "")
+    if (Config.customTheme) {
       UpdateConfig.setCustomThemeId(firstCustomThemeId);
-    else UpdateConfig.setCustomThemeId("");
+      UpdateConfig.setCustomTheme(true);
+    } else UpdateConfig.setCustomTheme(false);
   } else {
     if (Config.customThemeId !== "")
       CommandlineLists.updateCustomThemeCommands();
     CommandlineLists.pushCurrent(
-      Config.customThemeId === ""
-        ? CommandlineLists.themeCommands
-        : CommandlineLists.customThemeCommands
+      Config.customTheme
+        ? CommandlineLists.customThemeCommands
+        : CommandlineLists.themeCommands
     );
     show();
   }
@@ -721,7 +723,7 @@ $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
   show();
 });
 
-$(".supportButtons .button.ads").click(() => {
+$(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
   show();
 });

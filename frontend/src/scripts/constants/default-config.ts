@@ -3,6 +3,7 @@ export default <MonkeyTypes.Config>{
   themeLight: "serika",
   themeDark: "serika_dark",
   autoSwitchTheme: false,
+  customTheme: false,
   customThemeId: "",
   customThemeColors: [
     "#323437",

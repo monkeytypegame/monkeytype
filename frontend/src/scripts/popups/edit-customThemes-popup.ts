@@ -69,6 +69,7 @@ async function apply(): Promise<void> {
 
     if (deletedTheme) {
       if (DB.getSnapshot().customThemes.length < 1) {
+        UpdateConfig.setCustomTheme(false);
         UpdateConfig.setCustomThemeId("");
       } else if (themeActive)
         // If active theme was deleted set the first custom theme

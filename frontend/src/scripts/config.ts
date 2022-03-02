@@ -1167,6 +1167,27 @@ export function setAutoSwitchTheme(
   return true;
 }
 
+export function setCustomTheme(bool: boolean, nosave?: boolean): boolean {
+  if (!isConfigValueValid("custom theme", bool, ["boolean"])) return false;
+
+  if (firebase.auth().currentUser === null) {
+    config.customTheme = false;
+    return true;
+  }
+  if (bool && config.randomTheme !== "custom") setRandomTheme("off");
+
+  if (bool && DB.getSnapshot().customThemes.length < 1) {
+    config.customTheme = false;
+    return true;
+  }
+  config.customTheme = bool;
+
+  saveToLocalStorage("customTheme", nosave);
+  ConfigEvent.dispatch("customTheme", config.customTheme);
+
+  return true;
+}
+
 export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom theme id", customId, ["string"]))
     return false;
@@ -1241,9 +1262,12 @@ export function setRandomTheme(
     if (DB.getSnapshot().customThemes.length === 0) {
       config.randomTheme = "off";
       return false;
-    } else setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+    } else {
+      setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+      setCustomTheme(true);
+    }
   }
-  if (val !== "off" && val !== "custom") setCustomThemeId("");
+  if (val !== "off" && val !== "custom") setCustomTheme(false);
 
   config.randomTheme = val;
   saveToLocalStorage("randomTheme", nosave);
@@ -1623,13 +1647,13 @@ export function apply(
       }
     }
   );
-  delete config.customTheme; // Remove config.customTheme
   if (configObj !== undefined && configObj !== null) {
     setCustomThemeColors(configObj.customThemeColors, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setAutoSwitchTheme(configObj.autoSwitchTheme, true);
     setTheme(configObj.theme, true);
+    setCustomTheme(configObj.customTheme, true);
     setCustomThemeId(configObj.customThemeId, true);
     // setTheme(configObj.theme, true);
     // setCustomTheme(configObj.customTheme, true, true);

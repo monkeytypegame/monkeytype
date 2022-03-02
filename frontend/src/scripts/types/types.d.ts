@@ -255,7 +255,7 @@ declare namespace MonkeyTypes {
     themeLight: string;
     themeDark: string;
     autoSwitchTheme: boolean;
-    customTheme?: bool | undefined; // This is a legacy key. Replaced by more powerful customThemeId
+    customTheme: bool;
     customThemeId: string;
     customThemeColors: string[];
     favThemes: string[];

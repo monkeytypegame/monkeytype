@@ -104,7 +104,10 @@ export async function apply_custom(
     Notifications.add(`No custom theme with id: ${themeId}`, 0);
     if (customThemes && customThemes.length > 1)
       UpdateConfig.setCustomThemeId(customThemes[0]._id);
-    else UpdateConfig.setCustomThemeId("");
+    else {
+      UpdateConfig.setCustomThemeId("");
+      UpdateConfig.setCustomTheme(false);
+    }
     return;
   }
   const themeName = customTheme.name;
@@ -293,8 +296,15 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  // Rizwan TODO: REmove this if statement
+  if (eventKey === "customTheme" || eventKey === "customThemeId")
+    console.log(`Event Key: ${eventKey}\nEvent Value: ${eventValue}`);
   if (eventKey === "customThemeId") {
-    set(true, eventValue as string);
+    if (Config.customTheme) set(true, eventValue as string);
+  }
+  if (eventKey === "customTheme") {
+    if (eventValue) set(true, Config.customThemeId);
+    else set(false, Config.theme);
   }
   if (eventKey === "theme") {
     clearPreview();

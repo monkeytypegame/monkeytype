@@ -1017,21 +1017,21 @@ export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customThemeId") {
+  if (eventKey === "customTheme") {
     const $presetTab = $(
-      ".pageSettings .section.themes .tabs [tabContent='preset']"
+      ".pageSettings .section.themes .tabs [tabcontent='preset']"
     );
     const $customTab = $(
-      ".pageSettings .section.themes .tabs [tabContent='custom']"
+      ".pageSettings .section.themes .tabs [tabcontent='custom']"
     );
-    if (eventValue === "") {
-      // Hide custom themes section
-      $customTab.addClass("hidden");
-      $presetTab.removeClass("hidden");
-    } else {
+    if (eventValue) {
       // Hide preset themes section
       $presetTab.addClass("hidden");
       $customTab.removeClass("hidden");
+    } else {
+      // Hide custom themes section
+      $customTab.addClass("hidden");
+      $presetTab.removeClass("hidden");
     }
   }
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;

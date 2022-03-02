@@ -105,11 +105,11 @@ function updateColors(
 }
 
 export async function refreshButtons(): Promise<void> {
-  if (Config.customThemeId !== "") {
-    // Update custom theme buttons
+  if (Config.customTheme) {
     const customThemesEl = $(
       ".pageSettings .section.themes .allCustomThemes.buttons"
     ).empty();
+    // Update custom theme buttons
     const customThemes = DB.getSnapshot().customThemes;
 
     if (customThemes.length < 1) {
@@ -236,7 +236,7 @@ export function updateActiveTab(forced = false): void {
     ".pageSettings .section.themes .tabs .button[tab='custom']"
   );
 
-  if (Config.customThemeId === "") {
+  if (!Config.customTheme) {
     $customTabButton.removeClass("active");
     if (!$presetTabButton.hasClass("active") || forced) {
       $presetTabButton.addClass("active");
@@ -272,13 +272,14 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   // $target.addClass("active"); Don't uncomment it. updateActiveTab() will add the active class itself
   setCustomInputs();
-  if ($target.attr("tab") == "preset") {
+  if ($target.attr("tab") === "preset") {
     if (Config.randomTheme === "custom") UpdateConfig.setRandomTheme("off");
-    UpdateConfig.setCustomThemeId("");
+    UpdateConfig.setCustomTheme(false);
   } else {
     const customThemes = DB.getSnapshot().customThemes;
     if (customThemes.length >= 1) {
       UpdateConfig.setCustomThemeId(customThemes[0]._id);
+      UpdateConfig.setCustomTheme(true);
       return;
     }
     Loader.show();
@@ -287,8 +288,10 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
       colors: [...Config.customThemeColors],
     });
     Loader.hide();
-    if (createdTheme)
+    if (createdTheme) {
       UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+      UpdateConfig.setCustomTheme(true);
+    }
   }
 });
 
