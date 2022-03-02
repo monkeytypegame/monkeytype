@@ -475,6 +475,11 @@ function handleChar(char: string, charIndex: number): void {
     TestInput.input.current = resultingWord;
   }
 
+  Replay.addReplayEvent(
+    thisCharCorrect ? "correctLetter" : "incorrectLetter",
+    char
+  );
+
   if (!thisCharCorrect && Config.difficulty == "master") {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
@@ -485,11 +490,6 @@ function handleChar(char: string, charIndex: number): void {
   if (Config.stopOnError == "letter" && !thisCharCorrect) {
     return;
   }
-
-  Replay.addReplayEvent(
-    thisCharCorrect ? "correctLetter" : "incorrectLetter",
-    char
-  );
 
   //update the active word top, but only once
   if (
