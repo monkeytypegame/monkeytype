@@ -1228,28 +1228,58 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
 };
 
 export const customThemeCommands: MonkeyTypes.CommandsGroup = {
-  title: "Custom theme...",
+  title: "Custom theme",
+  configKey: "customTheme",
+  list: [
+    {
+      id: "setCustomThemeOff",
+      display: "off",
+      configValue: false,
+      exec: (): void => {
+        UpdateConfig.setCustomTheme(false);
+      },
+    },
+    {
+      id: "setCustomThemeOn",
+      display: "on",
+      configValue: true,
+      exec: (): void => {
+        if (DB.getSnapshot().customThemes.length === 0) {
+          Notifications.add("You need to create a custom theme first", 0);
+          return;
+        }
+        if (!DB.getCustomThemeById(Config.customThemeId))
+          UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+        UpdateConfig.setCustomTheme(true);
+      },
+    },
+  ],
+};
+
+export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
+  title: "Custom themes list...",
   configKey: "customThemeId",
   list: [],
 };
 
-export function updateCustomThemeCommands(): void {
-  customThemeCommands.list = [];
+export function updateCustomThemeListCommands(): void {
+  customThemeListCommands.list = [];
 
-  customThemeCommands.list.push({
-    id: "setCustomThemeOff",
-    display: "off",
-    configValue: "",
-    exec: (): void => {
-      UpdateConfig.setCustomTheme(false);
-    },
-  });
+  // customThemeListCommands.list.push({
+  //   id: "setCustomThemeOff",
+  //   display: "off",
+  //   configValue: "",
+  //   exec: (): void => {
+  //     UpdateConfig.setCustomTheme(false);
+  //     UpdateConfig.setCustomThemeId("");
+  //   },
+  // });
   if (firebase.auth().currentUser === null) {
     Notifications.add("Custom themes are available to logged in users only", 0);
   } else if (DB.getSnapshot().customThemes.length > 0) {
     DB.getSnapshot().customThemes.forEach((theme) => {
-      customThemeCommands.list.push({
-        id: "setCustomThemeOn" + theme._id,
+      customThemeListCommands.list.push({
+        id: "setCustomThemeId" + theme._id,
         display: theme.name,
         configValue: theme._id,
         hover: (): void => {
@@ -2829,8 +2859,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: customThemeCommands,
+    },
+    {
+      id: "setCustomThemeId",
+      display: "Custom themes...",
+      icon: "fa-palette",
+      subgroup: customThemeListCommands,
       beforeSubgroup: (): void => {
-        updateCustomThemeCommands();
+        updateCustomThemeListCommands();
       },
     },
     {

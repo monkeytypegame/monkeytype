@@ -183,6 +183,12 @@ export async function getUserResults(): Promise<boolean> {
   }
 }
 
+export function getCustomThemeById(
+  themeID: string
+): MonkeyTypes.CustomTheme | undefined {
+  return dbSnapshot.customThemes.find((t) => t._id === themeID);
+}
+
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {

@@ -385,10 +385,12 @@ async function initGroups(): Promise<void> {
 export function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
+  $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
   $(".pageSettings select").empty().select2("destroy");
   $(".pageSettings .section.funbox .buttons").empty();
   $(".pageSettings .section.fontFamily .buttons").empty();
+  ThemePicker.refreshButtons();
 }
 
 export async function fillSettingsPage(): Promise<void> {
@@ -1018,12 +1020,10 @@ export function setEventDisabled(value: boolean): void {
 }
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customTheme") {
-    const $presetTab = $(
-      ".pageSettings .section.themes .tabs [tabcontent='preset']"
-    );
-    const $customTab = $(
-      ".pageSettings .section.themes .tabs [tabcontent='custom']"
-    );
+    const $presetTab = $(".pageSettings .section.themes [tabcontent='preset']");
+    const $customTab = $(".pageSettings .section.themes [tabcontent='custom']");
+    console.log(eventValue);
+    console.log($customTab);
     if (eventValue) {
       // Hide preset themes section
       $presetTab.addClass("hidden");

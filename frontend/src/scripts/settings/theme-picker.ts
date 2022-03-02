@@ -278,7 +278,8 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   } else {
     const customThemes = DB.getSnapshot().customThemes;
     if (customThemes.length >= 1) {
-      UpdateConfig.setCustomThemeId(customThemes[0]._id);
+      if (!DB.getCustomThemeById(Config.customThemeId))
+        UpdateConfig.setCustomThemeId(customThemes[0]._id);
       UpdateConfig.setCustomTheme(true);
       return;
     }

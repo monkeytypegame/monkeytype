@@ -1260,12 +1260,13 @@ export function setRandomTheme(
     }
     if (!DB.getSnapshot()) return true;
     if (DB.getSnapshot().customThemes.length === 0) {
+      Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;
-    } else {
-      setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
-      setCustomTheme(true);
     }
+    if (!DB.getCustomThemeById(config.customThemeId))
+      setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+    setCustomTheme(true);
   }
   if (val !== "off" && val !== "custom") setCustomTheme(false);
 

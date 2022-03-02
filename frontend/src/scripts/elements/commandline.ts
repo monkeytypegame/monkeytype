@@ -693,25 +693,27 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
       );
       return;
     }
-    if (DB.getSnapshot().customThemes.length < 1) {
-      Notifications.add("No custom themes!", 0);
-      UpdateConfig.setCustomTheme(false);
-      UpdateConfig.setCustomThemeId("");
-      return;
-    }
 
-    // Turn on the first custom theme
-    const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
-    if (Config.customTheme) {
-      UpdateConfig.setCustomThemeId(firstCustomThemeId);
+    if (!Config.customTheme) {
+      if (DB.getSnapshot().customThemes.length < 1) {
+        Notifications.add("No custom themes!", 0);
+        UpdateConfig.setCustomTheme(false);
+        UpdateConfig.setCustomThemeId("");
+        return;
+      }
+      if (!DB.getCustomThemeById(Config.customThemeId)) {
+        // Turn on the first custom theme
+        const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+        UpdateConfig.setCustomThemeId(firstCustomThemeId);
+      }
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);
   } else {
     if (Config.customThemeId !== "")
-      CommandlineLists.updateCustomThemeCommands();
+      CommandlineLists.updateCustomThemeListCommands();
     CommandlineLists.pushCurrent(
       Config.customTheme
-        ? CommandlineLists.customThemeCommands
+        ? CommandlineLists.customThemeListCommands
         : CommandlineLists.themeCommands
     );
     show();
