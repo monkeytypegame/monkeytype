@@ -61,12 +61,9 @@ class ResultController {
     const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
-    if (result.acc !== 100) {
-      const status = MonkeyStatusCodes.GIT_GUD;
-      throw new MonkeyError(status.code, status.message);
-    }
     if (result.wpm === result.raw && result.acc !== 100) {
-      throw new MonkeyError(400, "Bad input");
+      const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
+      throw new MonkeyError(status.code, "Bad input"); // todo move this
     }
     if (
       (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
@@ -93,7 +90,8 @@ class ResultController {
         result.customText.isTimeRandom &&
         result.customText.time < 15)
     ) {
-      throw new MonkeyError(400, "Test too short");
+      const status = MonkeyStatusCodes.TEST_TOO_SHORT;
+      throw new MonkeyError(status.code, status.message);
     }
 
     let resulthash = result.hash;
@@ -114,13 +112,15 @@ class ResultController {
           },
           uid
         );
-        throw new MonkeyError(400, "Incorrect result hash");
+        const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
+        throw new MonkeyError(status.code, "Incorrect result hash");
       }
     }
 
     if (anticheatImplemented()) {
       if (!validateResult(result)) {
-        throw new MonkeyError(400, "Result data doesn't make sense");
+        const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
+        throw new MonkeyError(status.code, "Result data doesn't make sense");
       }
     } else {
       if (process.env.MODE === "dev") {
@@ -185,7 +185,8 @@ class ResultController {
         },
         uid
       );
-      throw new MonkeyError(400, "Invalid result spacing");
+      const status = MonkeyStatusCodes.RESULT_SPACING_INVALID;
+      throw new MonkeyError(status.code, "Invalid result spacing");
     }
 
     try {
@@ -226,7 +227,8 @@ class ResultController {
         ) {
           if (anticheatImplemented()) {
             if (!validateKeys(result, uid)) {
-              throw new MonkeyError(400, "Possible bot detected");
+              const status = MonkeyStatusCodes.BOT_DETECTED;
+              throw new MonkeyError(status.code, "Possible bot detected");
             }
           } else {
             if (process.env.MODE === "dev") {
@@ -238,7 +240,8 @@ class ResultController {
             }
           }
         } else {
-          throw new MonkeyError(400, "Missing key data");
+          const status = MonkeyStatusCodes.MISSING_KEY_DATA;
+          throw new MonkeyError(status.code, "Missing key data");
         }
       }
     }
