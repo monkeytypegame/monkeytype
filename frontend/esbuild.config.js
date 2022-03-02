@@ -24,8 +24,8 @@ const buildOptions = {
   },
   logLevel: "warning",
   plugins: [circular],
-  format: "esm",
-  splitting: true,
+  // format: "esm",
+  // splitting: true,
 };
 
 module.exports = buildOptions;
