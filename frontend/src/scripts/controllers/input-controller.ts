@@ -466,6 +466,11 @@ function handleChar(char: string, charIndex: number): void {
   TestInput.updateLastKeypress();
   TestInput.pushKeypressWord(TestWords.words.currentIndex);
 
+  Replay.addReplayEvent(
+    thisCharCorrect ? "correctLetter" : "incorrectLetter",
+    char
+  );
+
   if (!thisCharCorrect && Config.difficulty == "master") {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
