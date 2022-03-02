@@ -5,6 +5,7 @@ import getPsasEndpoints from "./psas";
 import getQuotesEndpoints from "./quotes";
 import getResultsEndpoints from "./results";
 import getUsersEndpoints from "./users";
+import getApeKeysEndpoints from "./ape-keys";
 
 export default {
   getConfigsEndpoints,
@@ -14,4 +15,5 @@ export default {
   getQuotesEndpoints,
   getResultsEndpoints,
   getUsersEndpoints,
+  getApeKeysEndpoints,
 };

@@ -18,6 +18,8 @@ declare namespace MonkeyTypes {
       endpointsEnabled: boolean;
       acceptKeys: boolean;
       maxKeysPerUser: number;
+      apeKeyBytes: number;
+      apeKeySaltRounds: number;
     };
     enableSavingResults: {
       enabled: boolean;
@@ -42,7 +44,6 @@ declare namespace MonkeyTypes {
 
   interface User {
     // TODO, Complete the typings for the user model
-    _id: string;
     addedAt: number;
     bananas: number;
     completedTests: number;
@@ -53,20 +54,19 @@ declare namespace MonkeyTypes {
     lbPersonalBests: object;
     name: string;
     personalBests: object;
-    quoteRatings: Record<string, Record<string, number>>;
+    quoteRatings?: Record<string, Record<string, number>>;
     startedTests: number;
     tags: object[];
     timeTyping: number;
     uid: string;
-    quoteMod: boolean;
-    cannotReport: boolean;
+    quoteMod?: boolean;
+    cannotReport?: boolean;
+    apeKeys?: Record<string, ApeKey>;
   }
 
   interface ApeKey {
-    _id: string;
     name: string;
     hash: string;
-    uid: string;
     createdOn: number;
     modifiedOn: number;
     enabled: boolean;
