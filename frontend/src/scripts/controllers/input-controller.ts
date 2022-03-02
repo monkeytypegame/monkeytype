@@ -466,20 +466,6 @@ function handleChar(char: string, charIndex: number): void {
   TestInput.updateLastKeypress();
   TestInput.pushKeypressWord(TestWords.words.currentIndex);
 
-  //max length of the input is 20 unless in zen mode then its 30
-  if (
-    (Config.mode === "zen" && charIndex < 30) ||
-    (Config.mode !== "zen" &&
-      charIndex < TestWords.words.getCurrent().length + 20)
-  ) {
-    TestInput.input.current = resultingWord;
-  }
-
-  Replay.addReplayEvent(
-    thisCharCorrect ? "correctLetter" : "incorrectLetter",
-    char
-  );
-
   if (!thisCharCorrect && Config.difficulty == "master") {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
@@ -499,6 +485,15 @@ function handleChar(char: string, charIndex: number): void {
     TestUI.setActiveWordTop(
       (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
     );
+  }
+
+  //max length of the input is 20 unless in zen mode then its 30
+  if (
+    (Config.mode === "zen" && charIndex < 30) ||
+    (Config.mode !== "zen" &&
+      charIndex < TestWords.words.getCurrent().length + 20)
+  ) {
+    TestInput.input.current = resultingWord;
   }
 
   //keymap
