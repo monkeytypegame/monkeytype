@@ -1230,16 +1230,27 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
 export const customThemeCommands: MonkeyTypes.CommandsGroup = {
   title: "Custom theme",
   configKey: "customTheme",
-  list: [
-    {
-      id: "setCustomThemeOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setCustomTheme(false);
-      },
+  list: [],
+};
+
+export function updateCustomThemeCommands(): void {
+  customThemeCommands.list = [];
+
+  if (firebase.auth().currentUser === null) {
+    Notifications.add("Custom themes are available to logged in users only", 0);
+    return;
+  }
+  customThemeCommands.list.push({
+    id: "setCustomThemeOff",
+    display: "off",
+    configValue: false,
+    exec: (): void => {
+      UpdateConfig.setCustomTheme(false);
     },
-    {
+  });
+
+  if (DB.getSnapshot().customThemes.length > 0) {
+    customThemeCommands.list.push({
       id: "setCustomThemeOn",
       display: "on",
       configValue: true,
@@ -1252,9 +1263,9 @@ export const customThemeCommands: MonkeyTypes.CommandsGroup = {
           UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
         UpdateConfig.setCustomTheme(true);
       },
-    },
-  ],
-};
+    });
+  } else Notifications.add("You need to create a custom theme first");
+}
 
 export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
   title: "Custom themes list...",
@@ -1265,15 +1276,6 @@ export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
 export function updateCustomThemeListCommands(): void {
   customThemeListCommands.list = [];
 
-  // customThemeListCommands.list.push({
-  //   id: "setCustomThemeOff",
-  //   display: "off",
-  //   configValue: "",
-  //   exec: (): void => {
-  //     UpdateConfig.setCustomTheme(false);
-  //     UpdateConfig.setCustomThemeId("");
-  //   },
-  // });
   if (firebase.auth().currentUser === null) {
     Notifications.add("Custom themes are available to logged in users only", 0);
   } else if (DB.getSnapshot().customThemes.length > 0) {
@@ -1292,7 +1294,7 @@ export function updateCustomThemeListCommands(): void {
         },
       });
     });
-  }
+  } else Notifications.add("You need to create a custom theme first", 0);
 }
 
 const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
@@ -2859,15 +2861,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: customThemeCommands,
+      beforeSubgroup: (): void => updateCustomThemeCommands(),
     },
     {
       id: "setCustomThemeId",
       display: "Custom themes...",
       icon: "fa-palette",
       subgroup: customThemeListCommands,
-      beforeSubgroup: (): void => {
-        updateCustomThemeListCommands();
-      },
+      beforeSubgroup: (): void => updateCustomThemeListCommands(),
     },
     {
       id: "changeRandomTheme",
