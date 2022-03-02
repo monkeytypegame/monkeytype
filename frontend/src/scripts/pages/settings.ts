@@ -1022,8 +1022,6 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customTheme") {
     const $presetTab = $(".pageSettings .section.themes [tabcontent='preset']");
     const $customTab = $(".pageSettings .section.themes [tabcontent='custom']");
-    console.log(eventValue);
-    console.log($customTab);
     if (eventValue) {
       // Hide preset themes section
       $presetTab.addClass("hidden");

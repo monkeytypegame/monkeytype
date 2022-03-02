@@ -296,9 +296,6 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  // Rizwan TODO: REmove this if statement
-  if (eventKey === "customTheme" || eventKey === "customThemeId")
-    console.log(`Event Key: ${eventKey}\nEvent Value: ${eventValue}`);
   if (eventKey === "customThemeId") {
     if (Config.customTheme) set(true, eventValue as string);
   }
