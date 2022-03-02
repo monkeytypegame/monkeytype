@@ -1,5 +1,9 @@
+import _ from "lodash";
+import { compare } from "bcrypt";
+import UsersDAO from "../dao/user";
 import MonkeyError from "../handlers/error";
 import { verifyIdToken } from "../handlers/auth";
+import { base64UrlDecode } from "../handlers/misc";
 import { NextFunction, Response, Handler } from "express";
 
 interface RequestAuthenticationOptions {
@@ -94,7 +98,7 @@ async function authenticateWithAuthHeader(
   throw new MonkeyError(
     401,
     "Unknown authentication scheme",
-    `The authentication scheme "${authScheme}" is not implemented.`
+    `The authentication scheme "${authScheme}" is not implemented`
   );
 }
 
@@ -137,13 +141,32 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {
-    throw new MonkeyError(403, "ApeKeys are not being accepted at this time.");
-  }
-  if (!options.acceptApeKeys) {
-    throw new MonkeyError(401, "This endpoint does not accept ApeKeys.");
+    throw new MonkeyError(403, "ApeKeys are not being accepted at this time");
   }
 
-  throw new MonkeyError(401, "ApeKeys are not implemented.");
+  if (!options.acceptApeKeys) {
+    throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
+  }
+
+  try {
+    const decodedKey = base64UrlDecode(key);
+    const [uid, keyId, apeKey] = decodedKey.split(".");
+
+    const keyOwner = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+    const targetApeKey = _.get(keyOwner.apeKeys, keyId);
+    const isKeyValid = await compare(apeKey, targetApeKey?.hash);
+
+    if (!isKeyValid) {
+      throw new MonkeyError(400);
+    }
+
+    return {
+      uid,
+      email: keyOwner.email,
+    };
+  } catch (error) {
+    throw new MonkeyError(400, "Invalid ApeKey");
+  }
 }
 
 export { authenticateRequest };

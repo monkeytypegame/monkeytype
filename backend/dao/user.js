@@ -434,6 +434,10 @@ class UsersDAO {
       throw new MonkeyError(404, "User not found", "Get custom themes");
     return user.customThemes ?? [];
   }
+
+  static async setApeKeys(uid, apeKeys) {
+    await db.collection("users").updateOne({ uid }, { $set: { apeKeys } });
+  }
 }
 
 export default UsersDAO;

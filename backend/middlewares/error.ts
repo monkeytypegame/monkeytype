@@ -34,7 +34,7 @@ async function errorHandlingMiddleware(
       "Oops! Our monkeys dropped their bananas. Please try again later.";
   }
 
-  if (process.env.MODE !== "dev" && monkeyResponse.status > 400) {
+  if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {
     const { uid, errorId } = monkeyResponse.data;
 
     try {
@@ -43,7 +43,7 @@ async function errorHandlingMiddleware(
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid
       );
-      await db.collection("errors").insertOne({
+      await db.collection<any>("errors").insertOne({
         _id: errorId,
         timestamp: Date.now(),
         status: monkeyResponse.status,

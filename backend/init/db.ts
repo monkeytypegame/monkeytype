@@ -1,7 +1,6 @@
 import {
   AuthMechanism,
   Collection,
-  Document,
   Db,
   MongoClient,
   MongoClientOptions,
@@ -10,7 +9,7 @@ import {
 class DatabaseClient {
   static mongoClient: MongoClient = null;
   static db: Db = null;
-  static collections: Record<string, Collection<Document>> = {};
+  static collections: Record<string, Collection<any>> = {};
   static connected = false;
 
   static async connect(): Promise<void> {
@@ -64,13 +63,13 @@ class DatabaseClient {
     }
   }
 
-  static collection(collectionName: string): Collection<Document> {
+  static collection<T>(collectionName: string): Collection<T> {
     if (!this.connected) {
       return null;
     }
 
     if (!(collectionName in this.collections)) {
-      this.collections[collectionName] = this.db.collection(collectionName);
+      this.collections[collectionName] = this.db.collection<T>(collectionName);
     }
 
     return this.collections[collectionName];

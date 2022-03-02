@@ -1,3 +1,4 @@
+import _ from "lodash";
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import { isUsernameValid } from "../../handlers/validation";
@@ -6,6 +7,10 @@ import fetch from "node-fetch";
 import Logger from "./../../handlers/logger.js";
 import uaparser from "ua-parser-js";
 import { MonkeyResponse } from "../../handlers/monkey-response";
+
+function cleanUser(user) {
+  return _.omit(user, "apeKeys");
+}
 
 class UserController {
   static async createNewUser(req, _res) {
@@ -123,7 +128,7 @@ class UserController {
         agent.device.type;
     }
     Logger.log("user_data_requested", logobj, uid);
-    return new MonkeyResponse("User data retrieved", userInfo);
+    return new MonkeyResponse("User data retrieved", cleanUser(userInfo));
   }
 
   static async linkDiscord(req, _res) {

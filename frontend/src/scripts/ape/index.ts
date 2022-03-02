@@ -118,6 +118,7 @@ const Ape: Ape.Endpoints = {
   quotes: endpoints.getQuotesEndpoints(apeClient),
   leaderboards: endpoints.getLeaderboardsEndpoints(apeClient),
   presets: endpoints.getPresetsEndpoints(apeClient),
+  apeKeys: endpoints.getApeKeysEndpoints(apeClient),
 };
 
 export default Ape;

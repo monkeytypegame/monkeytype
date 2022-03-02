@@ -1860,6 +1860,7 @@ export function apply(
 }
 
 export function reset(): void {
+  config = DefaultConfig;
   apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }

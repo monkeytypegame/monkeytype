@@ -32,3 +32,11 @@ export function identity(value) {
     .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
     .toLowerCase();
 }
+
+export function base64UrlEncode(string) {
+  return Buffer.from(string).toString("base64url");
+}
+
+export function base64UrlDecode(string) {
+  return Buffer.from(string, "base64url").toString();
+}

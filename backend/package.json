@@ -16,6 +16,7 @@
     "npm": "8.1.2"
   },
   "dependencies": {
+    "bcrypt": "5.0.1",
     "cors": "2.8.5",
     "cron": "1.8.2",
     "dotenv": "10.0.0",
@@ -38,6 +39,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
     "@types/lodash": "4.14.178",
