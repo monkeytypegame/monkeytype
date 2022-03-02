@@ -263,28 +263,28 @@ export const userTagsAdd = rateLimit({
 });
 
 export const userCustomThemeGet = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userCustomThemeAdd = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userCustomThemeRemove = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });
 
 export const userCustomThemeEdit = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 min
+  windowMs: ONE_HOUR,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
