@@ -466,21 +466,18 @@ function handleChar(char: string, charIndex: number): void {
   TestInput.updateLastKeypress();
   TestInput.pushKeypressWord(TestWords.words.currentIndex);
 
+  if (
+    Config.difficulty !== "master" &&
+    Config.stopOnError == "letter" &&
+    !thisCharCorrect
+  ) {
+    return;
+  }
+
   Replay.addReplayEvent(
     thisCharCorrect ? "correctLetter" : "incorrectLetter",
     char
   );
-
-  if (!thisCharCorrect && Config.difficulty == "master") {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
-    TestLogic.fail("difficulty");
-    return;
-  }
-
-  if (Config.stopOnError == "letter" && !thisCharCorrect) {
-    return;
-  }
 
   //update the active word top, but only once
   if (
@@ -499,6 +496,13 @@ function handleChar(char: string, charIndex: number): void {
       charIndex < TestWords.words.getCurrent().length + 20)
   ) {
     TestInput.input.current = resultingWord;
+  }
+
+  if (!thisCharCorrect && Config.difficulty == "master") {
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    TestLogic.fail("difficulty");
+    return;
   }
 
   //keymap
