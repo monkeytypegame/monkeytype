@@ -1,5 +1,5 @@
 import db from "../init/db";
-import { roundTo2 } from "../handlers/misc";
+import { roundTo2 } from "../utils/misc";
 
 class PublicStatsDAO {
   //needs to be rewritten, this is public stats not user stats

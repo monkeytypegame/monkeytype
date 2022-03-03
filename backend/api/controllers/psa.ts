@@ -1,5 +1,5 @@
 import PsaDAO from "../../dao/psa";
-import { MonkeyResponse } from "../../handlers/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 class PsaController {
   static async get(_req: MonkeyTypes.Request): Promise<MonkeyResponse> {
