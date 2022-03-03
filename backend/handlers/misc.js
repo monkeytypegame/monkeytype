@@ -2,6 +2,10 @@ export function roundTo2(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
+export function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function stdDev(array) {
   const n = array.length;
   const mean = array.reduce((a, b) => a + b) / n;
