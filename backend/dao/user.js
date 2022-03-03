@@ -166,10 +166,7 @@ class UsersDAO {
     );
   }
 
-  static async checkIfPb(uid, result) {
-    const user = await db.collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "check if pb");
-
+  static async checkIfPb(uid, user, result) {
     const {
       mode,
       mode2,
@@ -225,10 +222,7 @@ class UsersDAO {
     }
   }
 
-  static async checkIfTagPb(uid, result) {
-    const user = await db.collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "check if tag pb");
-
+  static async checkIfTagPb(uid, user, result) {
     if (user.tags === undefined || user.tags.length === 0) {
       return [];
     }
@@ -305,10 +299,6 @@ class UsersDAO {
   }
 
   static async updateTypingStats(uid, restartCount, timeTyping) {
-    const user = await db.collection("users").findOne({ uid });
-    if (!user)
-      throw new MonkeyError(404, "User not found", "update typing stats");
-
     return await db.collection("users").updateOne(
       { uid },
       {
