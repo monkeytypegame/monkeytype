@@ -3,6 +3,7 @@ import { updateAuthEmail } from "../handlers/auth";
 import { checkAndUpdatePb } from "../handlers/pb";
 import db from "../init/db";
 import MonkeyError from "../handlers/error";
+import { escapeRegExp } from "../handlers/misc";
 import { ObjectId } from "mongodb";
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -21,7 +22,8 @@ class UsersDAO {
   static async updateName(uid, name) {
     const nameDoc = await db
       .collection("users")
-      .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
+      //todo dont use case insensitive regex
+      .findOne({ name: `/^${escapeRegExp(name)}$/i` });
     if (nameDoc) throw new MonkeyError(409, "Username already taken", name);
     let user = await db.collection("users").findOne({ uid });
     if (
