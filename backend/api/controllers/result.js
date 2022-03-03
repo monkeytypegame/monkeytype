@@ -123,13 +123,10 @@ class ResultController {
         throw new MonkeyError(status.code, "Result data doesn't make sense");
       }
     } else {
-      if (process.env.MODE === "dev") {
-        console.error(
-          "No anticheat module found. Continuing in dev mode, results will not be validated."
-        );
-      } else {
-        throw new Error("No anticheat module found");
-      }
+      if (process.env.MODE !== "dev") throw new Error("No anticheat module found");
+      console.error(
+        "No anticheat module found. Continuing in dev mode, results will not be validated."
+      );
     }
 
     result.timestamp = Math.round(result.timestamp / 1000) * 1000;
@@ -218,31 +215,26 @@ class ResultController {
     if (
       result.mode === "time" &&
       result.wpm > 130 &&
-      result.testDuration < 122
+      result.testDuration < 122 &&
+      (user.verified === false || user.verified === undefined)
     ) {
-      if (user.verified === false || user.verified === undefined) {
-        if (
-          result.keySpacingStats !== null &&
-          result.keyDurationStats !== null
-        ) {
-          if (anticheatImplemented()) {
-            if (!validateKeys(result, uid)) {
-              const status = MonkeyStatusCodes.BOT_DETECTED;
-              throw new MonkeyError(status.code, "Possible bot detected");
-            }
-          } else {
-            if (process.env.MODE === "dev") {
-              console.error(
-                "No anticheat module found. Continuing in dev mode, results will not be validated."
-              );
-            } else {
-              throw new Error("No anticheat module found");
-            }
-          }
-        } else {
-          const status = MonkeyStatusCodes.MISSING_KEY_DATA;
-          throw new MonkeyError(status.code, "Missing key data");
+      if (
+        !result.keySpacingStats ||
+        !result.keyDurationStats
+      ) {
+        const status = MonkeyStatusCodes.MISSING_KEY_DATA;
+        throw new MonkeyError(status.code, "Missing key data");
+      }
+      if (anticheatImplemented()) {
+        if (!validateKeys(result, uid)) {
+          const status = MonkeyStatusCodes.BOT_DETECTED;
+          throw new MonkeyError(status.code, "Possible bot detected");
         }
+      } else {
+        if (process.env.MODE !== "dev") throw new Error("No anticheat module found");
+        console.error(
+          "No anticheat module found. Continuing in dev mode, results will not be validated."
+        );
       }
     }
 
