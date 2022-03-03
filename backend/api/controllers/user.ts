@@ -63,7 +63,7 @@ class UserController {
 
     const available = await UsersDAO.isNameAvailable(name);
     if (!available) {
-      throw new MonkeyError(400, "Username unavailable");
+      throw new MonkeyError(409, "Username unavailable");
     }
 
     return new MonkeyResponse("Username available");
