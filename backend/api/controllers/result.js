@@ -8,6 +8,7 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
+import { isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -65,31 +66,7 @@ class ResultController {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Bad input"); // todo move this
     }
-    if (
-      (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
-      (result.mode === "time" &&
-        result.mode2 == 0 &&
-        result.testDuration < 15) ||
-      (result.mode === "words" && result.mode2 < 10 && result.mode2 > 0) ||
-      (result.mode === "words" &&
-        result.mode2 == 0 &&
-        result.testDuration < 15) ||
-      (result.mode === "custom" &&
-        result.customText !== undefined &&
-        !result.customText.isWordRandom &&
-        !result.customText.isTimeRandom &&
-        result.customText.textLen < 10) ||
-      (result.mode === "custom" &&
-        result.customText !== undefined &&
-        result.customText.isWordRandom &&
-        !result.customText.isTimeRandom &&
-        result.customText.word < 10) ||
-      (result.mode === "custom" &&
-        result.customText !== undefined &&
-        !result.customText.isWordRandom &&
-        result.customText.isTimeRandom &&
-        result.customText.time < 15)
-    ) {
+    if (isTestTooShort(result)) {
       const status = MonkeyStatusCodes.TEST_TOO_SHORT;
       throw new MonkeyError(status.code, status.message);
     }
@@ -123,7 +100,8 @@ class ResultController {
         throw new MonkeyError(status.code, "Result data doesn't make sense");
       }
     } else {
-      if (process.env.MODE !== "dev") throw new Error("No anticheat module found");
+      if (process.env.MODE !== "dev")
+        throw new Error("No anticheat module found");
       console.error(
         "No anticheat module found. Continuing in dev mode, results will not be validated."
       );
@@ -218,10 +196,7 @@ class ResultController {
       result.testDuration < 122 &&
       (user.verified === false || user.verified === undefined)
     ) {
-      if (
-        !result.keySpacingStats ||
-        !result.keyDurationStats
-      ) {
+      if (!result.keySpacingStats || !result.keyDurationStats) {
         const status = MonkeyStatusCodes.MISSING_KEY_DATA;
         throw new MonkeyError(status.code, "Missing key data");
       }
@@ -231,7 +206,8 @@ class ResultController {
           throw new MonkeyError(status.code, "Possible bot detected");
         }
       } else {
-        if (process.env.MODE !== "dev") throw new Error("No anticheat module found");
+        if (process.env.MODE !== "dev")
+          throw new Error("No anticheat module found");
         console.error(
           "No anticheat module found. Continuing in dev mode, results will not be validated."
         );
