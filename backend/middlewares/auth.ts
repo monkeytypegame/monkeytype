@@ -157,7 +157,7 @@ async function authenticateWithApeKey(
     const isKeyValid = await compare(apeKey, targetApeKey?.hash);
 
     if (!isKeyValid) {
-      throw new MonkeyError(400);
+      throw new MonkeyError(400, "Invalid ApeKey");
     }
 
     return {
