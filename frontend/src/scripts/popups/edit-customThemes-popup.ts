@@ -3,6 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import { updateActiveTab } from "../settings/theme-picker";
+import defaultConfig from "../constants/default-config";
 
 export function show(action: string, id: string, name: string): void {
   if (action === "remove") {
@@ -65,6 +66,7 @@ async function apply(): Promise<void> {
     const themeActive = Config.customThemeId === customThemeId;
     Loader.show();
     const deletedTheme = await DB.deleteCustomTheme(customThemeId);
+    UpdateConfig.setCustomThemeColors(defaultConfig.customThemeColors);
     Loader.hide();
 
     if (deletedTheme) {

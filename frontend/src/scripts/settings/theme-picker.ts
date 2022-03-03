@@ -436,7 +436,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
 $("#shareCustomThemeButton").on("click", () => {
   const share: string[] = [];
   $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
+    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
     (_, element) => {
       share.push($(element).attr("value") as string);
     }
@@ -458,13 +458,13 @@ $("#shareCustomThemeButton").on("click", () => {
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   let themeName = $(
-    ".pageSettings .section.customTheme input#name"
+    ".pageSettings .customTheme .customThemeEdit input#name"
   ).val() as string;
   if (themeName.trim() === "") themeName = "custom";
 
   const newColors: string[] = [];
   $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
+    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
     (_index, element) => {
       newColors.push($(element).attr("value") as string);
     }
