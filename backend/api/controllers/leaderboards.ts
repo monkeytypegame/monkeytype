@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { MonkeyResponse } from "../../handlers/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import LeaderboardsDAO from "../../dao/leaderboards";
 
 class LeaderboardsController {

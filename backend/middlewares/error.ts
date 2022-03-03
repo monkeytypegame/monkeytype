@@ -1,11 +1,8 @@
 import db from "../init/db";
 import { v4 as uuidv4 } from "uuid";
-import Logger from "../handlers/logger";
-import MonkeyError from "../handlers/error";
-import {
-  MonkeyResponse,
-  handleMonkeyResponse,
-} from "../handlers/monkey-response";
+import Logger from "../utils/logger";
+import MonkeyError from "../utils/error";
+import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { NextFunction, Response } from "express";
 
 async function errorHandlingMiddleware(

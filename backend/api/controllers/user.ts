@@ -1,11 +1,11 @@
 import _ from "lodash";
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
-import MonkeyError from "../../handlers/error";
-import Logger from "../../handlers/logger.js";
-import { MonkeyResponse } from "../../handlers/monkey-response";
-import { linkAccount } from "../../handlers/discord";
-import { buildAgentLog } from "../../handlers/misc";
+import MonkeyError from "../../utils/error";
+import Logger from "../../utils/logger.js";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import { linkAccount } from "../../utils/discord";
+import { buildAgentLog } from "../../utils/misc";
 
 function cleanUser(user: MonkeyTypes.User): Omit<MonkeyTypes.User, "apeKeys"> {
   return _.omit(user, "apeKeys");

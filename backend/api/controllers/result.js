@@ -2,12 +2,12 @@ import ResultDAO from "../../dao/result";
 import UserDAO from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
-import { roundTo2, stdDev } from "../../handlers/misc";
+import { roundTo2, stdDev } from "../../utils/misc";
 import node_object_hash from "node-object-hash";
-import Logger from "../../handlers/logger";
+import Logger from "../../utils/logger";
 import "dotenv/config";
-import { MonkeyResponse } from "../../handlers/monkey-response";
-import MonkeyError from "../../handlers/error";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import MonkeyError from "../../utils/error";
 import {
   implemented as anticheatImplemented,
   validateResult,
