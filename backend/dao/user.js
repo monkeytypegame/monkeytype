@@ -1,10 +1,11 @@
+import _ from "lodash";
 import { isUsernameValid } from "../handlers/validation";
 import { updateAuthEmail } from "../handlers/auth";
 import { checkAndUpdatePb } from "../handlers/pb";
 import db from "../init/db";
 import MonkeyError from "../handlers/error";
 import { ObjectId } from "mongodb";
-import _ from "lodash";
+
 class UsersDAO {
   static async addUser(name, email, uid) {
     const user = await db.collection("users").findOne({ uid });
