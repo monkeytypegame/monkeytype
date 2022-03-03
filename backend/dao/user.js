@@ -20,11 +20,8 @@ class UsersDAO {
   }
 
   static async updateName(uid, name) {
-    const nameDoc = await db
-      .collection("users")
-      //todo dont use case insensitive regex
-      .findOne({ name: `/^${escapeRegExp(name)}$/i` });
-    if (nameDoc) throw new MonkeyError(409, "Username already taken", name);
+    if (!this.isNameAvailable(name))
+      throw new MonkeyError(409, "Username already taken", name);
     let user = await db.collection("users").findOne({ uid });
     if (
       Date.now() - user.lastNameChange < 2592000000 &&
@@ -44,7 +41,9 @@ class UsersDAO {
   }
 
   static async isNameAvailable(name) {
-    const nameDoc = await db.collection("users").findOne({ name });
+    const nameDoc = await db
+      .collection("users")
+      .findOne({ name: new RegExp(`^${escapeRegExp(name)}$`, "i") });
     if (nameDoc) {
       return false;
     } else {
