@@ -281,7 +281,7 @@ export function calculateBurst(): number {
   const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
   let wordLength;
   wordLength = TestInput.input.current.length;
-  if (Config.mode === "zen" && wordLength == 0) {
+  if (wordLength == 0) {
     wordLength = TestInput.input.getHistoryLast().length;
   }
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
