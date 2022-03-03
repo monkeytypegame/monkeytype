@@ -266,8 +266,10 @@ class ResultController {
     let tagPbs = [];
 
     if (!result.bailedOut) {
-      isPb = await UserDAO.checkIfPb(uid, result);
-      tagPbs = await UserDAO.checkIfTagPb(uid, result);
+      [isPb, tagPbs] = await Promise.all([
+        UserDAO.checkIfPb(uid, user, result),
+        UserDAO.checkIfTagPb(uid, user, result),
+      ]);
     }
 
     if (isPb) {
@@ -293,10 +295,8 @@ class ResultController {
       afk = 0;
     }
     tt = result.testDuration + result.incompleteTestSeconds - afk;
-
-    await UserDAO.updateTypingStats(uid, result.restartCount, tt);
-
-    await PublicStatsDAO.updateStats(result.restartCount, tt);
+    UserDAO.updateTypingStats(uid, result.restartCount, tt);
+    PublicStatsDAO.updateStats(result.restartCount, tt);
 
     if (result.bailedOut === false) delete result.bailedOut;
     if (result.blindMode === false) delete result.blindMode;
