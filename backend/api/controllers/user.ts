@@ -7,7 +7,7 @@ import { MonkeyResponse } from "../../handlers/monkey-response";
 import { linkAccount } from "../../handlers/discord";
 import { buildAgentLog } from "../../handlers/misc";
 
-function cleanUser(user: MonkeyTypes.User): Partial<MonkeyTypes.User> {
+function cleanUser(user: MonkeyTypes.User): Omit<MonkeyTypes.User, "apeKeys"> {
   return _.omit(user, "apeKeys");
 }
 
