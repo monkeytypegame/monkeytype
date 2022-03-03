@@ -1,5 +1,5 @@
 import db from "../init/db";
-import Logger from "../utils/logger";
+import Logger from "../handlers/logger";
 import { performance } from "perf_hooks";
 
 class LeaderboardsDAO {

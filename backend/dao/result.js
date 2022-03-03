@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../handlers/error";
 import db from "../init/db";
 
 import UserDAO from "./user";

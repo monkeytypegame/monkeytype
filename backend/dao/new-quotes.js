@@ -4,7 +4,7 @@ import stringSimilarity from "string-similarity";
 import path from "path";
 import fs from "fs";
 import db from "../init/db";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../handlers/error";
 
 let git;
 try {

@@ -1,8 +1,8 @@
-import { isUsernameValid } from "../utils/validation";
-import { updateAuthEmail } from "../utils/auth";
-import { checkAndUpdatePb } from "../utils/pb";
+import { isUsernameValid } from "../handlers/validation";
+import { updateAuthEmail } from "../handlers/auth";
+import { checkAndUpdatePb } from "../handlers/pb";
 import db from "../init/db";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../handlers/error";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 class UsersDAO {

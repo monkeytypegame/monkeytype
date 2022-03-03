@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import rateLimit, { Options } from "express-rate-limit";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../handlers/error";
 
 const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 100 : 1;
 
