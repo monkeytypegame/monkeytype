@@ -1,9 +1,10 @@
-import { isUsernameValid } from "../handlers/validation";
-import { updateAuthEmail } from "../handlers/auth";
-import { checkAndUpdatePb } from "../handlers/pb";
+import { isUsernameValid } from "../utils/validation";
+import { updateAuthEmail } from "../utils/auth";
+import { checkAndUpdatePb } from "../utils/pb";
 import db from "../init/db";
-import MonkeyError from "../handlers/error";
+import MonkeyError from "../utils/error";
 import { ObjectId } from "mongodb";
+import _ from "lodash";
 class UsersDAO {
   static async addUser(name, email, uid) {
     const user = await db.collection("users").findOne({ uid });
@@ -72,11 +73,9 @@ class UsersDAO {
     return user;
   }
 
-  static async getUserByDiscordId(discordId) {
+  static async isDiscordIdAvailable(discordId) {
     const user = await db.collection("users").findOne({ discordId });
-    if (!user)
-      throw new MonkeyError(404, "User not found", "get user by discord id");
-    return user;
+    return _.isNil(user);
   }
 
   static async addTag(uid, name) {
