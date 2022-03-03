@@ -36,13 +36,13 @@ try {
 }
 
 class ResultController {
-  static async getResults(req, _res) {
+  static async getResults(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
     return new MonkeyResponse("Result retrieved", results);
   }
 
-  static async deleteAll(req, _res) {
+  static async deleteAll(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
 
     await ResultDAO.deleteAll(uid);
@@ -50,7 +50,7 @@ class ResultController {
     return new MonkeyResponse("All results deleted");
   }
 
-  static async updateTags(req, _res) {
+  static async updateTags(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { tagIds, resultId } = req.body;
 
@@ -58,7 +58,7 @@ class ResultController {
     return new MonkeyResponse("Result tags updated");
   }
 
-  static async addResult(req, _res) {
+  static async addResult(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
@@ -71,7 +71,7 @@ class ResultController {
       throw new MonkeyError(status.code, status.message);
     }
 
-    let resulthash = result.hash;
+    const resulthash = result.hash;
     delete result.hash;
     if (
       req.ctx.configuration.resultObjectHashCheck.enabled &&
@@ -277,7 +277,7 @@ class ResultController {
 
     if (result.mode !== "custom") delete result.customText;
 
-    let addedResult = await ResultDAO.addResult(uid, result);
+    const addedResult = await ResultDAO.addResult(uid, result);
 
     if (isPb) {
       Logger.log(
