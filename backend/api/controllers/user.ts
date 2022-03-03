@@ -1,78 +1,75 @@
 import _ from "lodash";
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
-import { isUsernameValid } from "../../handlers/validation";
 import MonkeyError from "../../handlers/error";
-import fetch from "node-fetch";
-import Logger from "./../../handlers/logger.js";
-import uaparser from "ua-parser-js";
+import Logger from "../../handlers/logger.js";
 import { MonkeyResponse } from "../../handlers/monkey-response";
+import { linkAccount } from "../../handlers/discord";
+import { buildAgentLog } from "../../handlers/misc";
 
-function cleanUser(user) {
+function cleanUser(user: MonkeyTypes.User): Omit<MonkeyTypes.User, "apeKeys"> {
   return _.omit(user, "apeKeys");
 }
 
 class UserController {
-  static async createNewUser(req, _res) {
+  static async createNewUser(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { name } = req.body;
     const { email, uid } = req.ctx.decodedToken;
 
     await UsersDAO.addUser(name, email, uid);
     Logger.log("user_created", `${name} ${email}`, uid);
+
     return new MonkeyResponse("User created");
   }
 
-  static async deleteUser(req, _res) {
+  static async deleteUser(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    const userInfo = await UsersDAO.getUser(uid);
 
+    const userInfo = await UsersDAO.getUser(uid);
     await UsersDAO.deleteUser(uid);
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+
     return new MonkeyResponse("User deleted");
   }
 
-  static async updateName(req, _res) {
+  static async updateName(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { name } = req.body;
-    if (!isUsernameValid(name))
-      throw new MonkeyError(
-        400,
-        "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
-      );
-    let olduser = await UsersDAO.getUser(uid);
+
+    const oldUser = await UsersDAO.getUser(uid);
     await UsersDAO.updateName(uid, name);
     Logger.log(
       "user_name_updated",
-      `changed name from ${olduser.name} to ${name}`,
+      `changed name from ${oldUser.name} to ${name}`,
       uid
     );
+
     return new MonkeyResponse("User's name updated");
   }
 
-  static async clearPb(req, _res) {
+  static async clearPb(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
 
     await UsersDAO.clearPb(uid);
     Logger.log("user_cleared_pbs", "", uid);
+
     return new MonkeyResponse("User's PB cleared");
   }
 
-  static async checkName(req, _res) {
+  static async checkName(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { name } = req.params;
 
-    if (!isUsernameValid(name)) {
-      throw new MonkeyError(
-        400,
-        "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"
-      );
+    const available = await UsersDAO.isNameAvailable(name);
+    if (!available) {
+      throw new MonkeyError(409, "Username unavailable");
     }
 
-    const available = await UsersDAO.isNameAvailable(name);
-    if (!available) throw new MonkeyError(400, "Username unavailable");
     return new MonkeyResponse("Username available");
   }
 
-  static async updateEmail(req, _res) {
+  static async updateEmail(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { newEmail } = req.body;
 
@@ -81,11 +78,13 @@ class UserController {
     } catch (e) {
       throw new MonkeyError(400, e.message, "update email", uid);
     }
+
     Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
+
     return new MonkeyResponse("Email updated");
   }
 
-  static async getUser(req, _res) {
+  static async getUser(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { email, uid } = req.ctx.decodedToken;
 
     let userInfo;
@@ -103,133 +102,109 @@ class UserController {
         );
       }
     }
-    let agent = uaparser(req.headers["user-agent"]);
-    let logobj = {
-      ip:
-        req.headers["cf-connecting-ip"] ||
-        req.headers["x-forwarded-for"] ||
-        req.ip ||
-        "255.255.255.255",
-      agent:
-        agent.os.name +
-        " " +
-        agent.os.version +
-        " " +
-        agent.browser.name +
-        " " +
-        agent.browser.version,
-    };
-    if (agent.device.vendor) {
-      logobj.device =
-        agent.device.vendor +
-        " " +
-        agent.device.model +
-        " " +
-        agent.device.type;
-    }
-    Logger.log("user_data_requested", logobj, uid);
+
+    const agentLog = buildAgentLog(req);
+    Logger.log("user_data_requested", agentLog, uid);
+
     return new MonkeyResponse("User data retrieved", cleanUser(userInfo));
   }
 
-  static async linkDiscord(req, _res) {
+  static async linkDiscord(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+    const {
+      data: { tokenType, accessToken },
+    } = req.body;
 
-    let requser;
-    try {
-      requser = await UsersDAO.getUser(uid);
-    } catch (e) {
-      requser = null;
-    }
-    if (requser?.banned === true) {
+    const userInfo = await UsersDAO.getUser(uid);
+    if (userInfo.banned) {
       throw new MonkeyError(403, "Banned accounts cannot link with Discord");
     }
 
-    const discordFetch = await fetch("https://discord.com/api/users/@me", {
-      headers: {
-        authorization: `${req.body.data.tokenType} ${req.body.data.accessToken}`,
-      },
-    });
-    const discordFetchJSON = await discordFetch.json();
-    const did = discordFetchJSON.id;
-    if (!did) {
+    const { id: discordId } = await linkAccount(tokenType, accessToken);
+
+    if (!discordId) {
       throw new MonkeyError(
         500,
         "Could not get Discord account info",
-        "did is undefined"
+        "discord id is undefined"
       );
     }
-    let user;
-    try {
-      user = await UsersDAO.getUserByDiscordId(did);
-    } catch (e) {
-      user = null;
-    }
-    if (user !== null) {
+
+    const discordIdAvailable = await UsersDAO.isDiscordIdAvailable(discordId);
+    if (!discordIdAvailable) {
       throw new MonkeyError(
         400,
         "This Discord account is already linked to a different account"
       );
     }
-    await UsersDAO.linkDiscord(uid, did);
-    await BotDAO.linkDiscord(uid, did);
-    Logger.log("user_discord_link", `linked to ${did}`, uid);
-    return new MonkeyResponse("Discord account linked ", did);
+
+    await UsersDAO.linkDiscord(uid, discordId);
+    await BotDAO.linkDiscord(uid, discordId);
+    Logger.log("user_discord_link", `linked to ${discordId}`, uid);
+
+    return new MonkeyResponse("Discord account linked", discordId);
   }
 
-  static async unlinkDiscord(req, _res) {
+  static async unlinkDiscord(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
 
-    let userInfo;
-    try {
-      userInfo = await UsersDAO.getUser(uid);
-    } catch (e) {
-      throw new MonkeyError(400, "User not found.");
-    }
+    const userInfo = await UsersDAO.getUser(uid);
     if (!userInfo.discordId) {
       throw new MonkeyError(400, "User does not have a linked Discord account");
     }
+
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
     await UsersDAO.unlinkDiscord(uid);
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);
-    return new MonkeyResponse("Discord account unlinked ");
+
+    return new MonkeyResponse("Discord account unlinked");
   }
 
-  static async addTag(req, _res) {
+  static async addTag(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { tagName } = req.body;
-    let tag = await UsersDAO.addTag(uid, tagName);
+
+    const tag = await UsersDAO.addTag(uid, tagName);
     return new MonkeyResponse("Tag updated", tag);
   }
 
-  static async clearTagPb(req, _res) {
+  static async clearTagPb(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { tagId } = req.params;
+
     await UsersDAO.removeTagPb(uid, tagId);
+    [];
     return new MonkeyResponse("Tag PB cleared");
   }
 
-  static async editTag(req, _res) {
+  static async editTag(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { tagId, newName } = req.body;
+
     await UsersDAO.editTag(uid, tagId, newName);
     return new MonkeyResponse("Tag updated");
   }
 
-  static async removeTag(req, _res) {
+  static async removeTag(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { tagId } = req.params;
+
     await UsersDAO.removeTag(uid, tagId);
     return new MonkeyResponse("Tag deleted");
   }
 
-  static async getTags(req, _res) {
+  static async getTags(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    let tags = await UsersDAO.getTags(uid);
-    if (tags == undefined) tags = [];
-    return new MonkeyResponse("Tags retrieved", tags);
+
+    const tags = await UsersDAO.getTags(uid);
+    return new MonkeyResponse("Tags retrieved", tags ?? []);
   }
 
-  static async updateLbMemory(req, _res) {
+  static async updateLbMemory(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { mode, mode2, language, rank } = req.body;
 
