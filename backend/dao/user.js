@@ -3,7 +3,6 @@ import { updateAuthEmail } from "../handlers/auth";
 import { checkAndUpdatePb } from "../handlers/pb";
 import db from "../init/db";
 import MonkeyError from "../handlers/error";
-import { escapeRegExp } from "../handlers/misc";
 import { ObjectId } from "mongodb";
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -41,10 +40,13 @@ class UsersDAO {
   }
 
   static async isNameAvailable(name) {
-    const nameDoc = await db
+    const nameDocs = await db
       .collection("users")
-      .findOne({ name: new RegExp(`^${escapeRegExp(name)}$`, "i") });
-    if (nameDoc) {
+      .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray();
+    if (nameDocs.length !== 0) {
       return false;
     } else {
       return true;
