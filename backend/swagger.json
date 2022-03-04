@@ -1,76 +1,62 @@
 {
   "swagger": "2.0",
   "info": {
+    "description": "These are the set of `internal` endpoints dedicated to the Monkeytype web client. Authentication for these endpoints requires a user account.",
     "version": "1.0.0",
     "title": "Monkeytype",
-    "termsOfService": "http://monkeytype.com/terms-of-service",
+    "termsOfService": "https://monkeytype.com/terms-of-service",
     "contact": {
       "name": "Developer",
       "email": "jack@monkeytype.com"
     }
   },
   "host": "api.monkeytype.com",
-  "basePath": "/",
   "schemes": ["https"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "tags": [
     {
       "name": "index",
-      "description": ""
+      "description": "Server status information"
     },
     {
       "name": "users",
-      "description": ""
-    },
-    {
-      "name": "tags",
-      "description": ""
+      "description": "User data and related operations"
     },
     {
       "name": "psas",
-      "description": ""
+      "description": "Public service announcements"
     },
     {
       "name": "presets",
-      "description": ""
+      "description": "Preset data and related operations"
     },
     {
       "name": "configs",
-      "description": ""
+      "description": "User configuration data and related operations"
     },
     {
       "name": "ape-keys",
-      "description": ""
+      "description": "ApeKey data and related operations"
     },
     {
       "name": "leaderboards",
-      "description": ""
+      "description": "Leaderboard data"
     },
     {
       "name": "results",
-      "description": ""
+      "description": "Result data and related operations"
     },
     {
       "name": "quotes",
-      "description": ""
+      "description": "Quote data and related operations"
     }
   ],
   "paths": {
     "/": {
       "get": {
         "tags": ["index"],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["users"],
+        "summary": "Gets the server's status data",
         "responses": {
           "default": {
             "description": "",
@@ -84,6 +70,7 @@
     "/users": {
       "get": {
         "tags": ["users"],
+        "summary": "Returns a user's data",
         "responses": {
           "default": {
             "description": "",
@@ -95,6 +82,7 @@
       },
       "delete": {
         "tags": ["users"],
+        "summary": "Deletes a user's account",
         "responses": {
           "default": {
             "description": "",
@@ -108,6 +96,7 @@
     "/users/name": {
       "patch": {
         "tags": ["users"],
+        "summary": "Updates a user's name",
         "parameters": [
           {
             "in": "body",
@@ -136,6 +125,7 @@
     "/users/signup": {
       "post": {
         "tags": ["users"],
+        "summary": "Creates a new user",
         "parameters": [
           {
             "in": "body",
@@ -170,6 +160,7 @@
     "/users/checkName/{name}": {
       "get": {
         "tags": ["users"],
+        "summary": "Checks to see if a username is available",
         "parameters": [
           {
             "name": "name",
@@ -192,6 +183,7 @@
     "/users/leaderboardMemory": {
       "patch": {
         "tags": ["users"],
+        "summary": "Updates a user's cached leaderboard state",
         "parameters": [
           {
             "in": "body",
@@ -229,6 +221,7 @@
     "/users/discord/link": {
       "post": {
         "tags": ["users"],
+        "summary": "Links a user's account with a discord account",
         "parameters": [
           {
             "in": "body",
@@ -263,6 +256,7 @@
     "/users/discord/unlink": {
       "post": {
         "tags": ["users"],
+        "summary": "Unlinks a user's account with a discord account",
         "responses": {
           "default": {
             "description": "",
@@ -276,6 +270,7 @@
     "/users/email": {
       "patch": {
         "tags": ["users"],
+        "summary": "Updates a user's email",
         "parameters": [
           {
             "in": "body",
@@ -307,6 +302,7 @@
     "/users/personalBests": {
       "delete": {
         "tags": ["users"],
+        "summary": "Gets a user's personal bests",
         "responses": {
           "default": {
             "description": "",
@@ -319,7 +315,8 @@
     },
     "/users/tags": {
       "get": {
-        "tags": ["tags"],
+        "tags": ["users"],
+        "summary": "Gets a user's tags",
         "responses": {
           "default": {
             "description": "",
@@ -330,7 +327,8 @@
         }
       },
       "post": {
-        "tags": ["tags"],
+        "tags": ["users"],
+        "summary": "Creates a new tag",
         "parameters": [
           {
             "in": "body",
@@ -356,7 +354,8 @@
         }
       },
       "patch": {
-        "tags": ["tags"],
+        "tags": ["users"],
+        "summary": "Updates an existing tag",
         "parameters": [
           {
             "in": "body",
@@ -387,7 +386,8 @@
     },
     "/users/tags/{tagId}": {
       "delete": {
-        "tags": ["tags"],
+        "tags": ["users"],
+        "summary": "Deletes a tag",
         "parameters": [
           {
             "in": "path",
@@ -408,7 +408,8 @@
     },
     "/users/tags/{tagId}/personalBest": {
       "delete": {
-        "tags": ["tags"],
+        "tags": ["users"],
+        "summary": "Removes personal bests associated with a tag",
         "parameters": [
           {
             "in": "path",
@@ -430,6 +431,7 @@
     "/psas": {
       "get": {
         "tags": ["psas"],
+        "summary": "Gets the latest public service announcements",
         "responses": {
           "default": {
             "description": "",
@@ -443,6 +445,7 @@
     "/presets": {
       "get": {
         "tags": ["presets"],
+        "summary": "Gets saved preset configurations",
         "responses": {
           "default": {
             "description": "",
@@ -454,6 +457,7 @@
       },
       "post": {
         "tags": ["presets"],
+        "summary": "Creates a preset configuration",
         "parameters": [
           {
             "in": "body",
@@ -483,6 +487,7 @@
       },
       "patch": {
         "tags": ["presets"],
+        "summary": "Updates an existing preset configuration",
         "parameters": [
           {
             "in": "body",
@@ -517,6 +522,7 @@
     "/presets/{presetId}": {
       "delete": {
         "tags": ["presets"],
+        "summary": "Deletes a preset configuration",
         "parameters": [
           {
             "in": "path",
@@ -538,6 +544,7 @@
     "/configs": {
       "get": {
         "tags": ["configs"],
+        "summary": "Gets the user's current configuration",
         "responses": {
           "default": {
             "description": "",
@@ -549,6 +556,7 @@
       },
       "patch": {
         "tags": ["configs"],
+        "summary": "Updates a user's configuration",
         "parameters": [
           {
             "in": "body",
@@ -577,6 +585,7 @@
     "/ape-keys": {
       "get": {
         "tags": ["ape-keys"],
+        "summary": "Gets ApeKeys created by a user",
         "responses": {
           "default": {
             "description": "",
@@ -588,6 +597,7 @@
       },
       "post": {
         "tags": ["ape-keys"],
+        "summary": "Creates an ApeKey",
         "parameters": [
           {
             "in": "body",
@@ -619,6 +629,7 @@
     "/ape-keys/{apeKeyId}": {
       "patch": {
         "tags": ["ape-keys"],
+        "summary": "Updates an ApeKey",
         "parameters": [
           {
             "in": "path",
@@ -638,6 +649,7 @@
       },
       "delete": {
         "tags": ["ape-keys"],
+        "summary": "Deletes an ApeKey",
         "parameters": [
           {
             "in": "path",
@@ -659,6 +671,7 @@
     "/leaderboards": {
       "get": {
         "tags": ["leaderboards"],
+        "summary": "Gets a leaderboard",
         "parameters": [
           {
             "in": "query",
@@ -699,6 +712,7 @@
     "/leaderboards/rank": {
       "get": {
         "tags": ["leaderboards"],
+        "summary": "Gets a user's rank from a leaderboard",
         "parameters": [
           {
             "in": "query",
@@ -729,6 +743,7 @@
     "/results": {
       "get": {
         "tags": ["results"],
+        "summary": "Gets a history of a user's results",
         "responses": {
           "default": {
             "description": "",
@@ -740,6 +755,7 @@
       },
       "post": {
         "tags": ["results"],
+        "summary": "Save a user's result",
         "parameters": [
           {
             "in": "body",
@@ -766,6 +782,7 @@
       },
       "delete": {
         "tags": ["results"],
+        "summary": "Deletes all results",
         "responses": {
           "default": {
             "description": "",
@@ -779,6 +796,7 @@
     "/results/tags": {
       "patch": {
         "tags": ["results"],
+        "summary": "Labels a result with the specified tags",
         "parameters": [
           {
             "in": "body",
@@ -813,6 +831,7 @@
     "/quotes": {
       "get": {
         "tags": ["quotes"],
+        "summary": "Gets a list of quote submissions",
         "responses": {
           "default": {
             "description": "",
@@ -824,6 +843,7 @@
       },
       "post": {
         "tags": ["quotes"],
+        "summary": "Creates a quote submission",
         "parameters": [
           {
             "in": "body",
@@ -861,6 +881,7 @@
     "/quotes/approve": {
       "post": {
         "tags": ["quotes"],
+        "summary": "Approves a quote submission",
         "parameters": [
           {
             "in": "body",
@@ -895,6 +916,7 @@
     "/quotes/reject": {
       "post": {
         "tags": ["quotes"],
+        "summary": "Rejects a quote submission",
         "parameters": [
           {
             "in": "body",
@@ -923,6 +945,7 @@
     "/quotes/rating": {
       "get": {
         "tags": ["quotes"],
+        "summary": "Gets a rating for a quote",
         "parameters": [
           {
             "in": "body",
@@ -952,6 +975,7 @@
       },
       "post": {
         "tags": ["quotes"],
+        "summary": "Adds a rating for a quote",
         "parameters": [
           {
             "in": "body",
@@ -986,6 +1010,7 @@
     "/quotes/report": {
       "post": {
         "tags": ["quotes"],
+        "summary": "Reports a quote",
         "parameters": [
           {
             "in": "body",
@@ -1027,7 +1052,7 @@
   "definitions": {
     "Response": {
       "type": "object",
-      "required": ["error", "message"],
+      "required": ["message", "data"],
       "properties": {
         "message": {
           "type": "string"
