@@ -49,7 +49,7 @@ class QuotesController {
 
     const data = await QuoteRatingsDAO.get(
       parseInt(quoteId as string),
-      language
+      language as string
     );
 
     return new MonkeyResponse("Rating retrieved", data);
@@ -107,24 +107,17 @@ class QuotesController {
       throw new MonkeyError(400, "Captcha check failed.");
     }
 
-    const newReport = {
+    const newReport: MonkeyTypes.Report = {
       id: uuidv4(),
       type: "quote",
       timestamp: new Date().getTime(),
       uid,
-      details: {
-        contentId: `${quoteLanguage}-${quoteId}`,
-        reason,
-        comment,
-      },
+      contentId: `${quoteLanguage}-${quoteId}`,
+      reason,
+      comment,
     };
 
     await ReportDAO.createReport(newReport, maxReports, contentReportLimit);
-
-    Logger.log("report_created", {
-      type: newReport.type,
-      details: newReport.details,
-    });
 
     return new MonkeyResponse("Quote reported");
   }
