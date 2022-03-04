@@ -50,7 +50,7 @@ const CUSTOM_STATUS_CODES = new Set(
   _.map(statuses, (status: Status) => status.code)
 );
 
-export function isInCustomCodeRange(code: number): boolean {
+export function isCustomCode(code: number): boolean {
   return CUSTOM_STATUS_CODES.has(code);
 }
 
