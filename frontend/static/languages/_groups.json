@@ -303,6 +303,10 @@
     ]
   },
   {
+    "name": "nepali",
+    "languages": ["nepali"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
