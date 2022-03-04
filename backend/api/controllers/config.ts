@@ -1,5 +1,5 @@
 import ConfigDAO from "../../dao/config";
-import { MonkeyResponse } from "../../handlers/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 class ConfigController {
   static async getConfig(req: MonkeyTypes.Request): Promise<MonkeyResponse> {

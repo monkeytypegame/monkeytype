@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { compare } from "bcrypt";
 import UsersDAO from "../dao/user";
-import MonkeyError from "../handlers/error";
-import { verifyIdToken } from "../handlers/auth";
-import { base64UrlDecode } from "../handlers/misc";
+import MonkeyError from "../utils/error";
+import { verifyIdToken } from "../utils/auth";
+import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 
 interface RequestAuthenticationOptions {
@@ -157,7 +157,7 @@ async function authenticateWithApeKey(
     const isKeyValid = await compare(apeKey, targetApeKey?.hash);
 
     if (!isKeyValid) {
-      throw new MonkeyError(400);
+      throw new MonkeyError(400, "Invalid ApeKey");
     }
 
     return {

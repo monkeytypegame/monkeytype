@@ -4,6 +4,7 @@ import { Router } from "express";
 import UserController from "../controllers/user";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
+import { isUsernameValid } from "../../utils/validation";
 
 const router = Router();
 
@@ -56,6 +57,18 @@ const customThemeIdValidation = joi
     "string.length": "The themeId must be 24 characters long",
     "string.pattern.base": "The themeId must be valid hexadecimal string",
   });
+const usernameValidation = joi
+  .string()
+  .required()
+  .custom((value, helpers) => {
+    return isUsernameValid(value)
+      ? value
+      : helpers.error("string.pattern.base");
+  })
+  .messages({
+    "string.pattern.base":
+      "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
+  });
 
 router.get(
   "/",
@@ -71,7 +84,7 @@ router.post(
   validateRequest({
     body: {
       email: joi.string().email(),
-      name: joi.string().required(),
+      name: usernameValidation,
       uid: joi.string(),
     },
   }),
@@ -83,7 +96,7 @@ router.get(
   RateLimit.userCheckName,
   validateRequest({
     params: {
-      name: joi.string().required(),
+      name: usernameValidation,
     },
   }),
   asyncHandler(UserController.checkName)
@@ -102,7 +115,7 @@ router.patch(
   authenticateRequest(),
   validateRequest({
     body: {
-      name: joi.string().required(),
+      name: usernameValidation,
     },
   }),
   asyncHandler(UserController.updateName)

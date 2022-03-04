@@ -1,9 +1,11 @@
-import { isUsernameValid } from "../handlers/validation";
-import { updateAuthEmail } from "../handlers/auth";
-import { checkAndUpdatePb } from "../handlers/pb";
+import _ from "lodash";
+import { isUsernameValid } from "../utils/validation";
+import { updateAuthEmail } from "../utils/auth";
+import { checkAndUpdatePb } from "../utils/pb";
 import db from "../init/db";
-import MonkeyError from "../handlers/error";
+import MonkeyError from "../utils/error";
 import { ObjectId } from "mongodb";
+
 class UsersDAO {
   static async addUser(name, email, uid) {
     const user = await db.collection("users").findOne({ uid });
@@ -19,10 +21,8 @@ class UsersDAO {
   }
 
   static async updateName(uid, name) {
-    const nameDoc = await db
-      .collection("users")
-      .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
-    if (nameDoc) throw new MonkeyError(409, "Username already taken", name);
+    if (!this.isNameAvailable(name))
+      throw new MonkeyError(409, "Username already taken", name);
     let user = await db.collection("users").findOne({ uid });
     if (
       Date.now() - user.lastNameChange < 2592000000 &&
@@ -42,8 +42,13 @@ class UsersDAO {
   }
 
   static async isNameAvailable(name) {
-    const nameDoc = await db.collection("users").findOne({ name });
-    if (nameDoc) {
+    const nameDocs = await db
+      .collection("users")
+      .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray();
+    if (nameDocs.length !== 0) {
       return false;
     } else {
       return true;
@@ -72,11 +77,9 @@ class UsersDAO {
     return user;
   }
 
-  static async getUserByDiscordId(discordId) {
+  static async isDiscordIdAvailable(discordId) {
     const user = await db.collection("users").findOne({ discordId });
-    if (!user)
-      throw new MonkeyError(404, "User not found", "get user by discord id");
-    return user;
+    return _.isNil(user);
   }
 
   static async addTag(uid, name) {
@@ -163,10 +166,7 @@ class UsersDAO {
     );
   }
 
-  static async checkIfPb(uid, result) {
-    const user = await db.collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "check if pb");
-
+  static async checkIfPb(uid, user, result) {
     const {
       mode,
       mode2,
@@ -222,10 +222,7 @@ class UsersDAO {
     }
   }
 
-  static async checkIfTagPb(uid, result) {
-    const user = await db.collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "check if tag pb");
-
+  static async checkIfTagPb(uid, user, result) {
     if (user.tags === undefined || user.tags.length === 0) {
       return [];
     }
@@ -302,10 +299,6 @@ class UsersDAO {
   }
 
   static async updateTypingStats(uid, restartCount, timeTyping) {
-    const user = await db.collection("users").findOne({ uid });
-    if (!user)
-      throw new MonkeyError(404, "User not found", "update typing stats");
-
     return await db.collection("users").updateOne(
       { uid },
       {

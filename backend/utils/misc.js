@@ -1,5 +1,11 @@
+import uaparser from "ua-parser-js";
+
 export function roundTo2(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+export function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 export function stdDev(array) {
@@ -39,4 +45,26 @@ export function base64UrlEncode(string) {
 
 export function base64UrlDecode(string) {
   return Buffer.from(string, "base64url").toString();
+}
+
+export function buildAgentLog(req) {
+  const agent = uaparser(req.headers["user-agent"]);
+
+  const agentLog = {
+    ip:
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "255.255.255.255",
+    agent: `${agent.os.name} ${agent.os.version} ${agent.browser.name} ${agent.browser.version}`,
+  };
+
+  const {
+    device: { vendor, model, type },
+  } = agent;
+  if (vendor) {
+    agentLog.device = `${vendor} ${model} ${type}`;
+  }
+
+  return agentLog;
 }

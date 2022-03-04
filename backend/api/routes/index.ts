@@ -7,7 +7,7 @@ import leaderboards from "./leaderboards";
 import quotes from "./quotes";
 import apeKeys from "./ape-keys";
 import { asyncHandler } from "../../middlewares/api-utils";
-import { MonkeyResponse } from "../../handlers/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { Application, NextFunction, Response } from "express";
 import swStats from "swagger-stats";
 
