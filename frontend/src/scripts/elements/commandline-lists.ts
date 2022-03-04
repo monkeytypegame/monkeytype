@@ -3215,8 +3215,28 @@ export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
   current.push(val);
 }
 
-export function getList(list: string): MonkeyTypes.CommandsGroup {
-  return eval(list);
+const listsObject = {
+  commandsChallenges,
+  commandsLanguages,
+  commandsDifficulty,
+  commandsLazyMode,
+  commandsPaceCaret,
+  commandsShowAvg,
+  commandsMinWpm,
+  commandsMinAcc,
+  commandsMinBurst,
+  commandsFunbox,
+  commandsConfidenceMode,
+  commandsStopOnError,
+  commandsLayouts,
+  commandsOppositeShiftMode,
+  commandsTags,
+};
+
+export type ListsObjectKeys = keyof typeof listsObject;
+
+export function getList(list: ListsObjectKeys): MonkeyTypes.CommandsGroup {
+  return listsObject[list];
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

@@ -668,17 +668,14 @@ $(document).on("click", "#keymap .r5 .key-space", () => {
 
 $(document).on("click", "#testModesNotice .text-button", (event) => {
   const commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands") as string
+    $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
   );
-  const func = $(event.currentTarget).attr("function");
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
       CommandlineLists.updateTagCommands();
     }
     CommandlineLists.pushCurrent(commands);
     show();
-  } else if (func != undefined) {
-    eval(func);
   }
 });
 
