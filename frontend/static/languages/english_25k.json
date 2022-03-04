@@ -10,7 +10,7 @@
     "learner",
     "timekeeper",
     "muddle",
-    //"scrotum",//Potentially Offensive
+    "scrotum",
     "cicatrice",
     "archpriest",
     "heterogeneity",
@@ -233,7 +233,7 @@
     "brew",
     "miscellaneous",
     "conspiration",
-    "Swazi",//Demonym
+    "Swazi",
     "jade",
     "threadlike",
     "retrospective",
@@ -246,7 +246,7 @@
     "prato",
     "inspissate",
     "citrine",
-    "Ares",//Proper Noun; Name, Deity
+    "Ares",
     "swagman",
     "puissant",
     "wurst",
@@ -257,14 +257,12 @@
     "eraser",
     "repentant",
     "mandolin",
-    //"Poole",Proper Noun; Placename; City in England
     "tainted",
     "hierarchic",
     "cochineal",
     "insinuation",
     "Faraday",
     "ablative",
-    //"nime", Abbreviation, obscure.
     "bygone",
     "scheduled",
     "streamline",
@@ -279,13 +277,12 @@
     "brainstorming",
     "diffusion",
     "upland",
-    //"Teresina",Proper Noun, Placename; City in Brazil
     "spoof",
     "grannie",
     "nene",
     "disjointed",
     "pneumatic",
-    "Oceanus",//Proper Noun; Name; Deity
+    "Oceanus",
     "hopscotch",
     "kobold",
     "pyrexia",
@@ -644,7 +641,6 @@
     "suzy",
     "auditorium",
     "hyaena",
-    //"feck",//Potentially Offensive
     "Tory",
     "maven",
     "teenage",
@@ -694,7 +690,6 @@
     "pertussis",
     "temerity",
     "chamfer",
-    //"Michelle",//Proper Noun; Name
     "gaper",
     "dens",
     "unadulterated",
@@ -1051,7 +1046,7 @@
     "erysipelas",
     "jeer",
     "asset",
-    "Quetzalcoatl",//Proper Noun; Name; Deity
+    "Quetzalcoatl",
     "Wesleyanism",
     "neptunian",
     "flack",
@@ -1072,7 +1067,6 @@
     "thrush",
     "beleaguer",
     "environs",
-    //"Winnipeg",//Proper Noun; Placename; City, River
     "conventicle",
     "cephalopod",
     "stow",
@@ -1167,7 +1161,6 @@
     "cascade",
     "tantalum",
     "crippleware",
-    //"jackass",Potentially Offensive
     "abderites",
     "pairing",
     "flounder",
@@ -1398,7 +1391,6 @@
     "astounding",
     "aries",
     "debarkation",
-    //"invagination",//Potentially Offensive
     "nares",
     "noxious",
     "accuser",
@@ -1937,7 +1929,6 @@
     "quebracho",
     "abstrusely",
     "scarred",
-    //"whorehouse",//Potentially Offensive
     "archive",
     "hashish",
     "membership",
@@ -2138,7 +2129,6 @@
     "porcine",
     "yeah",
     "thrift",
-    //"poop",//Potentially Offensive
     "patois",
     "yucca",
     "immigrate",
@@ -4032,7 +4022,6 @@
     "outdoor",
     "dictum",
     "publicize",
-    //"anus", 
     "boardwalk",
     "bemused",
     "wooly",
@@ -4066,7 +4055,6 @@
     "verification",
     "prepositional",
     "ciconia",
-    //"damnable",//Potentially Offensive
     "alphabetized",
     "amative",
     "salzburg",
@@ -4249,7 +4237,6 @@
     "fadge",
     "ingrained",
     "exclave",
-    //"damnation",//Potentially Offensive
     "sunup",
     "conventual",
     "overijssel",
@@ -5083,7 +5070,6 @@
     "jollification",
     "axiom",
     "birding",
-    //"wank",//Potentially Offensive
     "coincident",
     "barrow",
     "gleed",
@@ -6238,7 +6224,6 @@
     "stumble",
     "copal",
     "google",
-    //"helluva",//Potentially Offensive
     "mascara",
     "limpet",
     "boathouse",
@@ -6564,7 +6549,6 @@
     "chiasmus",
     "ferret",
     "grana",
-    //"dumbass",Potentially Offensive
     "radiata",
     "portmanteau",
     "suitcase",
@@ -6899,7 +6883,6 @@
     "peppercorn",
     "anteater",
     "nirvana",
-    //"boner",Potentially Offensive
     "midway",
     "filbert",
     "jihad",
@@ -7234,7 +7217,6 @@
     "heliostat",
     "percent",
     "radiophone",
-    //"massimo",Proper Noun; Name
     "flirt",
     "doer",
     "eructation",
@@ -7764,12 +7746,11 @@
     "scrapbook",
     "sarabande",
     "install",
-    //"teledildonics",//Potentially Offensive
     "caterpillar",
     "datolite",
     "thriving",
     "bodkin",
-    "SATA",//Abbreviation
+    "SATA",
     "cony",
     "classroom",
     "ticked",
@@ -8279,7 +8260,6 @@
     "cuboid",
     "praecipe",
     "tropism",
-    //"whoremonger",//Potentially Offensive
     "Sudan",
     "Erin",
     "turnstile",
@@ -8450,7 +8430,6 @@
     "macau",
     "benzol",
     "supposititious",
-    //"slut",//Potentially Offensive
     "labuan",
     "meretricious",
     "syncopated",
@@ -8491,7 +8470,6 @@
     "xhosa",
     "borage",
     "safar",
-    "asswage",//Obsolete
     "totalitarian",
     "logistics",
     "mozarabic",
@@ -9166,11 +9144,11 @@
     "nonconformist",
     "inclusive",
     "escheated",
-    "WWII",//Abbreviation
+    "WWII",
     "unhoused",
     "Zimbabwe",
     "cypress",
-    "Uranus",//Capitalize Proper Noun; Planet, Deity
+    "Uranus",
     "commute",
     "uniquely",
     "heuristics",
@@ -9280,7 +9258,6 @@
     "rune",
     "linty",
     "epilepsy",
-    //"shitting",//Potentially Offensive
     "dragoman",
     "Barnet",
     "alimentary",
@@ -9573,12 +9550,12 @@
     "obstruent",
     "cochlea",
     "yill",
-    "Janus",//Capitalize Proper Noun; Name; Deity
+    "Janus",
     "nuff",
     "lifelessly",
     "narrator",
     "equine",
-    "Leicestershire",//Proper Noun; Placename
+    "Leicestershire",
     "matta",
     "developer",
     "Euphrates",
@@ -9694,7 +9671,6 @@
     "becket",
     "liquorice",
     "crackers",
-    //"bullshit",//Potentially Offensive
     "photology",
     "omelette",
     "jaunt",
@@ -9868,7 +9844,6 @@
     "backhander",
     "vaporous",
     "Melbourne",
-    //"arse",Potentially Offensive
     "survival",
     "tangle",
     "abet",
@@ -9877,7 +9852,6 @@
     "sift",
     "crud",
     "surcease",
-    //"turd",//Potentially Offensive
     "storing",
     "upsidedown",
     "caddis",
@@ -9933,7 +9907,6 @@
     "sensed",
     "subfamily",
     "assigns",
-    //"asshole",Potentially Offensive
     "warble",
     "typify",
     "yellowknife",
@@ -10021,9 +9994,8 @@
     "tepid",
     "faker",
     "panicle",
-    "passover",//Religious
+    "passover",
     "orate",
-    //"Meuse",Proper Name; Placename; River in Europe
     "crossbeam",
     "pilum",
     "structural",
@@ -10328,7 +10300,6 @@
     "uncooked",
     "esker",
     "glyph",
-    //"clitoris",//Potentially Offensive
     "Nehemiah",
     "Inca",
     "evolve",
@@ -10374,7 +10345,6 @@
     "airlines",
     "unchallengeable",
     "altruistic",
-    //"fagot",//Potentially Offensive
     "verifiable",
     "backsliding",
     "iaea",
@@ -10602,23 +10572,21 @@
     "insert",
     "circumfluent",
     "passer",
-    "Kobe",//Proper Noun; Placename; City
-    //"fellatio",Potentially Offensive
     "wickedly",
     "Berber",
-    "ghanaian",//Demonym
+    "Ghanaian",
     "arsenal",
     "accra",
     "tenso",
     "corkscrews",
     "empower",
-    "Santorini",//Proper Noun; Placename; Island near Italy
+    "Santorini",
     "battler",
     "angelic",
     "sushi",
     "abbreviator",
     "radioactive",
-    "Zebadiah",//Proper Noun; Name; Biblical
+    "Zebadiah",
     "zeroes",
     "slag",
     "humdrum",
@@ -11595,7 +11563,6 @@
     "horoscope",
     "reproducible",
     "euphorbia",
-    //"Tallahassee",//Proper Noun; Placename; City in Florida
     "vivisection",
     "liverwort",
     "blacklist",
@@ -11610,7 +11577,7 @@
     "accursing",
     "acquiesce",
     "reflex",
-    "mori",//latin
+    "mori",
     "dribbling",
     "srinagar",
     "scribble",
@@ -11628,9 +11595,9 @@
     "palaeozoic",
     "decrypt",
     "cooee",
-    "Abkhazia",//Proper Noun; Placename; State in Georgia; Disputed
+    "Abkhazia",
     "strangulation",
-    "Burmese",//Demonym
+    "Burmese",
     "antelope",
     "charlatan",
     "innings",
@@ -11875,7 +11842,7 @@
     "pyrotechnic",
     "cinnabar",
     "livonian",
-    "Abbasid",//Proper Noun, Demonym; Religious; Caliphate
+    "Abbasid",
     "evangelist",
     "indiscreet",
     "experimenting",
@@ -11883,7 +11850,7 @@
     "nymph",
     "nightshirt",
     "thermodynamics",
-    "Nassau",//Proper Noun; Placename; City and Island
+    "Nassau",
     "vulnerary",
     "Luxembourg",
     "exaltedly",
@@ -12112,11 +12079,9 @@
     "elasmobranchii",
     "withy",
     "calliope",
-    //"pube",//Potentially Offensive
     "hight",
     "garnish",
     "impartiality",
-    //"penises",//Potentially Offensive
     "retina",
     "logarithm",
     "hexapoda",
@@ -12534,7 +12499,6 @@
     "sideshow",
     "estop",
     "lank",
-    //"dyke",//Potentially Offensive
     "Armenian",
     "octant",
     "allegro",
@@ -12551,7 +12515,6 @@
     "redhanded",
     "cuneate",
     "coupe",
-    //"vagina",//Potentially Offensive
     "gorgon",
     "carbonade",
     "hedonic",
@@ -13387,7 +13350,6 @@
     "tocsin",
     "vibrator",
     "intermittently",
-    //"hellas",//Potentially Offensive
     "loathing",
     "caprimulgus",
     "probation",
@@ -13554,7 +13516,7 @@
     "scaffolding",
     "pimpernel",
     "digital",
-    "Passamaquoddy",//Demonym
+    "Passamaquoddy",
     "trainer",
     "disabuse",
     "crore",
@@ -13566,7 +13528,7 @@
     "counterpoise",
     "sisal",
     "strap",
-    "Angola",//Proper Noun 
+    "Angola",
     "cuspidor",
     "heaver",
     "washroom",
@@ -13606,7 +13568,6 @@
     "arum",
     "churchy",
     "cassiope",
-    //"Geraldine",//Proper Noun; Name 
     "bypass",
     "refute",
     "flashback",
@@ -14104,7 +14065,6 @@
     "Rutland",
     "functioning",
     "polygamy",
-    //"pussy",//Potentially Offensive
     "figuration",
     "contraception",
     "emoticon",
@@ -14521,7 +14481,6 @@
     "percolator",
     "creeper",
     "opine",
-    //"coon",//Potentially Offensive; Racial slur
     "arsenic",
     "acuity",
     "insolvency",
@@ -14848,7 +14807,6 @@
     "keratin",
     "clavichord",
     "peterborough",
-    //"whore",//Potentially Offensive
     "ethnicity",
     "abstinent",
     "vivacious",
@@ -15260,7 +15218,6 @@
     "contritely",
     "dispiteously",
     "swelter",
-    //"vaginal",//Potentially Offensive
     "cactuses",
     "laud",
     "lupine",
@@ -15459,7 +15416,6 @@
     "markings",
     "hellenic",
     "magnific",
-    //"analyse", British
     "viceregal",
     "pores",
     "jettison",
@@ -15863,9 +15819,9 @@
     "laconic",
     "prolific",
     "pans",
-    "Cassiopeia",//Proper Noun; Name; Deity, Constellation
+    "Cassiopeia",
     "reversion",
-    "Ugandan",//Demonym
+    "Ugandan",
     "abstracting",
     "commiseration",
     "janitor",
@@ -16039,7 +15995,6 @@
     "unholy",
     "photo",
     "tela",
-    //"shite",//Potentially Offensive
     "sensor",
     "heliometer",
     "camera",
@@ -16878,7 +16833,6 @@
     "venomously",
     "granary",
     "circuitry",
-    //"boob",//Potentially Offensive
     "dentist",
     "illogical",
     "glimmers",
@@ -17572,7 +17526,6 @@
     "freebooter",
     "maintainer",
     "deceptively",
-    //"bastard",//Potentially Offensive
     "vicus",
     "stupefaction",
     "semicircle",
@@ -18177,7 +18130,6 @@
     "gamer",
     "maricopa",
     "rondo",
-    //"labial",//Potentially Offensive
     "dwindle",
     "abstinence",
     "affray",
@@ -18255,7 +18207,6 @@
     "tussle",
     "mega",
     "travail",
-    //"whoreson",//Potentially Offensive
     "binoculars",
     "surfeit",
     "canvasser",
@@ -18514,7 +18465,6 @@
     "technically",
     "ornate",
     "portends",
-    //"hellen",//Proper Noun; Name
     "quaternary",
     "preferment",
     "stigma",
@@ -18538,9 +18488,8 @@
     "lingam",
     "accosts",
     "inflame",
-    //"Abdullah",//Proper Noun; Biographical Name;
     "rattler",
-    "Zoroastrianism",//Proper Noun; Religion
+    "Zoroastrianism",
     "petting",
     "suprarenal",
     "coeducation",
@@ -19096,7 +19045,6 @@
     "qualm",
     "implike",
     "ulcerous",
-    //"penis",//Potentially Offensive
     "mort",
     "dolt",
     "woodcock",
@@ -19804,7 +19752,6 @@
     "federate",
     "atramentous",
     "etch",
-    //"smegma",//Potentially Offensive
     "centennial",
     "grunge",
     "accelerated",
@@ -20697,7 +20644,6 @@
     "withershins",
     "pate",
     "necropolis",
-    //"hella",//potentially offensive
     "benzoline",
     "seraphic",
     "potpourri",
@@ -20721,7 +20667,6 @@
     "Groningen",
     "ebullient",
     "searing",
-    //"cocks",//Potentially Offensive
     "lens",
     "expand",
     "mimic",
@@ -20886,7 +20831,6 @@
     "weasel",
     "upstanding",
     "chef",
-    //"whoremaster",//Potentially Offensive
     "sandarac",
     "achan",
     "styli",
@@ -21162,9 +21106,7 @@
     "centrepiece",
     "subliminal",
     "unplanned",
-    //"goddamn",//Potentially Offensive
     "leggings",
-    "shillong",
     "bedlam",
     "abstractness",
     "waymark",
@@ -21898,7 +21840,6 @@
     "ashame",
     "subtlety",
     "irenic",
-    //"piss",//Potentially Offensive
     "extirpate",
     "permeable",
     "licit",
@@ -22195,7 +22136,7 @@
     "igneous",
     "castellated",
     "wreathes",
-    "Guadalcanal",//Capitalize Proper Noun; placename
+    "Guadalcanal",
     "predominance",
     "truncate",
     "disclaimed",
@@ -22264,7 +22205,6 @@
     "flection",
     "celadon",
     "altercate",
-    //"shit",//Potentially Offensive
     "bowfin",
     "shucks",
     "frenchwoman",
@@ -22298,7 +22238,6 @@
     "neurology",
     "bogy",
     "frabjous",
-    //"muff",//Potentially Offensive
     "chaffer",
     "salacious",
     "riparian",
@@ -22425,7 +22364,6 @@
     "zimbabwean",
     "postcardware",
     "pneuma",
-    //"spunk",//Potentially Offensive
     "ensign",
     "sambar",
     "rebus",
@@ -23091,7 +23029,6 @@
     "macers",
     "mushroom",
     "trape",
-    //"whores",//Potentially Offensive
     "litany",
     "arcana",
     "nave",
@@ -23111,7 +23048,6 @@
     "stasis",
     "vitamin",
     "sleeper",
-    //"labia",//Potentially Offensive
     "acclimatize",
     "blower",
     "peahen",
@@ -23630,7 +23566,6 @@
     "elegantly",
     "dyestuff",
     "rime",
-    //"anal",
     "nutriment",
     "hyphen",
     "indemnification",
@@ -23775,7 +23710,6 @@
     "solfatara",
     "bodega",
     "acidly",
-    //"crap",//Potentially Offensive
     "unsettling",
     "aborted",
     "dendrite",
@@ -23947,7 +23881,6 @@
     "denounce",
     "punchinello",
     "rejuvenate",
-    //"Hitler",//Proper Noun; Name; Biographical
     "hyperbole",
     "argentic",
     "terrorism",
@@ -24287,7 +24220,7 @@
     "stinger",
     "blister",
     "preen",
-    "turkmen",
+    "Turkmen",
     "doggedly",
     "torr",
     "transfigure"
