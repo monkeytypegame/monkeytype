@@ -1,30 +1,25 @@
+import _ from "lodash";
 import uaparser from "ua-parser-js";
 
 export function roundTo2(num: number): number {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
-
-export function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return _.round(num, 2);
 }
 
 export function stdDev(population: number[]): number {
   const n = population.length;
-  const mean = population.reduce((a, b) => a + b) / n;
-  return Math.sqrt(
-    population.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-  );
+  if (n === 0) {
+    return 0;
+  }
+
+  const populationMean = mean(population);
+  const variance = _.sumBy(population, (x) => (x - populationMean) ** 2) / n;
+
+  return Math.sqrt(variance);
 }
 
 export function mean(population: number[]): number {
-  try {
-    return (
-      population.reduce((previous, current) => (current += previous)) /
-      population.length
-    );
-  } catch (e) {
-    return 0;
-  }
+  const n = population.length;
+  return n > 0 ? _.sum(population) / n : 0;
 }
 
 export function kogasa(cov: number): number {
