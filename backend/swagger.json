@@ -64,15 +64,7 @@
           "default": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "uptime": {
-                  "type": "number"
-                },
-                "requestsProcessed": {
-                  "type": "number"
-                }
-              }
+              "$ref": "#/definitions/Response"
             }
           }
         }
@@ -1037,9 +1029,6 @@
       "type": "object",
       "required": ["error", "message"],
       "properties": {
-        "error": {
-          "type": "string"
-        },
         "message": {
           "type": "string"
         },
