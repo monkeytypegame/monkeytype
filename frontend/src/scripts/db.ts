@@ -95,7 +95,9 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      const newConfig = DefaultConfig;
+      const newConfig = {
+        ...DefaultConfig,
+      };
 
       for (const key in configData.config) {
         const value = configData.config[key];
