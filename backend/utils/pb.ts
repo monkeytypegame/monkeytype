@@ -34,40 +34,7 @@ export function checkAndUpdatePb(
     userPb[mode][mode2].push(buildPersonalBest(result));
   }
 
-  if (shouldUpdateLeaderboardPersonalBests(lbPersonalBests, result)) {
-    lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
-
-    const lbMode2 = lbPersonalBests[mode][mode2];
-    if (!lbMode2 || Array.isArray(lbMode2)) {
-      lbPersonalBests[mode][mode2] = {};
-    }
-
-    const bestForEveryLanguage = {};
-
-    userPb[mode][mode2].forEach((pb: MonkeyTypes.PersonalBest) => {
-      const language = pb.language;
-      if (
-        !bestForEveryLanguage[language] ||
-        bestForEveryLanguage[language].wpm < pb.wpm
-      ) {
-        bestForEveryLanguage[language] = pb;
-      }
-    });
-
-    _.each(
-      bestForEveryLanguage,
-      (pb: MonkeyTypes.PersonalBest, language: string) => {
-        const languageDoesNotExist = !lbPersonalBests[mode][mode2][language];
-
-        if (
-          languageDoesNotExist ||
-          lbPersonalBests[mode][mode2][language].wpm < pb.wpm
-        ) {
-          lbPersonalBests[mode][mode2][language] = pb;
-        }
-      }
-    );
-  }
+  updateLeaderboardPersonalBests(userPb, lbPersonalBests, result);
 
   return {
     isPb,
@@ -123,6 +90,50 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
     wpm: result.wpm,
     timestamp: Date.now(),
   };
+}
+
+function updateLeaderboardPersonalBests(
+  userPersonalBests: MonkeyTypes.User["personalBests"],
+  lbPersonalBests: MonkeyTypes.User["lbPersonalBests"],
+  result: Result
+): void {
+  if (!shouldUpdateLeaderboardPersonalBests(lbPersonalBests, result)) {
+    return;
+  }
+
+  const { mode, mode2 } = result;
+
+  lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
+  const lbMode2 = lbPersonalBests[mode][mode2];
+  if (!lbMode2 || Array.isArray(lbMode2)) {
+    lbPersonalBests[mode][mode2] = {};
+  }
+
+  const bestForEveryLanguage = {};
+
+  userPersonalBests[mode][mode2].forEach((pb: MonkeyTypes.PersonalBest) => {
+    const language = pb.language;
+    if (
+      !bestForEveryLanguage[language] ||
+      bestForEveryLanguage[language].wpm < pb.wpm
+    ) {
+      bestForEveryLanguage[language] = pb;
+    }
+  });
+
+  _.each(
+    bestForEveryLanguage,
+    (pb: MonkeyTypes.PersonalBest, language: string) => {
+      const languageDoesNotExist = !lbPersonalBests[mode][mode2][language];
+
+      if (
+        languageDoesNotExist ||
+        lbPersonalBests[mode][mode2][language].wpm < pb.wpm
+      ) {
+        lbPersonalBests[mode][mode2][language] = pb;
+      }
+    }
+  );
 }
 
 function shouldUpdateLeaderboardPersonalBests(
