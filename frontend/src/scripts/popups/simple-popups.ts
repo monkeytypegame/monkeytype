@@ -566,7 +566,6 @@ list["clearTagPb"] = new SimplePopup(
     } else {
       Notifications.add("Something went wrong: " + response.message, -1);
     }
-    // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
   (thisPopup) => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
