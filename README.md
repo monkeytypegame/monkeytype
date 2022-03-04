@@ -33,7 +33,7 @@ On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added 
 
 # Bug report or Feature request
 
-If you encounter a bug or have a feature request, [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, [send us an email](jack@monkeytype.com), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
 # Want to Contribute?
 
