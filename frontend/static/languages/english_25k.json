@@ -233,7 +233,7 @@
     "brew",
     "miscellaneous",
     "conspiration",
-    "swazi",
+    "Swazi",//Demonym
     "jade",
     "threadlike",
     "retrospective",
@@ -246,7 +246,7 @@
     "prato",
     "inspissate",
     "citrine",
-    "ares",
+    "Ares",//Proper Noun; Name, Deity
     "swagman",
     "puissant",
     "wurst",
@@ -257,14 +257,14 @@
     "eraser",
     "repentant",
     "mandolin",
-    "Poole",
+    //"Poole",Proper Noun; Placename; City in England
     "tainted",
     "hierarchic",
     "cochineal",
     "insinuation",
     "Faraday",
     "ablative",
-    "nime",
+    //"nime", Abbreviation, obscure.
     "bygone",
     "scheduled",
     "streamline",
@@ -279,13 +279,13 @@
     "brainstorming",
     "diffusion",
     "upland",
-    "teresina",
+    //"Teresina",Proper Noun, Placename; City in Brazil
     "spoof",
     "grannie",
     "nene",
     "disjointed",
     "pneumatic",
-    "oceanus",
+    "Oceanus",//Proper Noun; Name; Deity
     "hopscotch",
     "kobold",
     "pyrexia",
@@ -1051,8 +1051,8 @@
     "erysipelas",
     "jeer",
     "asset",
-    "quetzalcoatl",
-    "wesleyanism",
+    "Quetzalcoatl",//Proper Noun; Name; Deity
+    "Wesleyanism",
     "neptunian",
     "flack",
     "syrup",
@@ -1072,7 +1072,7 @@
     "thrush",
     "beleaguer",
     "environs",
-    "Winnipeg",
+    //"Winnipeg",//Proper Noun; Placename; City, River
     "conventicle",
     "cephalopod",
     "stow",
@@ -1167,7 +1167,7 @@
     "cascade",
     "tantalum",
     "crippleware",
-    "jackass",
+    //"jackass",Potentially Offensive
     "abderites",
     "pairing",
     "flounder",
@@ -4032,7 +4032,7 @@
     "outdoor",
     "dictum",
     "publicize",
-    "anus",
+    //"anus", 
     "boardwalk",
     "bemused",
     "wooly",
@@ -6564,7 +6564,7 @@
     "chiasmus",
     "ferret",
     "grana",
-    "dumbass",
+    //"dumbass",Potentially Offensive
     "radiata",
     "portmanteau",
     "suitcase",
@@ -7234,7 +7234,7 @@
     "heliostat",
     "percent",
     "radiophone",
-    "massimo",
+    //"massimo",Proper Noun; Name
     "flirt",
     "doer",
     "eructation",
@@ -7769,7 +7769,7 @@
     "datolite",
     "thriving",
     "bodkin",
-    "sata",
+    "SATA",//Abbreviation
     "cony",
     "classroom",
     "ticked",
@@ -8491,7 +8491,7 @@
     "xhosa",
     "borage",
     "safar",
-    "asswage",
+    "asswage",//Obsolete
     "totalitarian",
     "logistics",
     "mozarabic",
@@ -9166,11 +9166,11 @@
     "nonconformist",
     "inclusive",
     "escheated",
-    "wwii",
+    "WWII",//Abbreviation
     "unhoused",
     "Zimbabwe",
     "cypress",
-    "uranus",
+    "Uranus",//Capitalize Proper Noun; Planet, Deity
     "commute",
     "uniquely",
     "heuristics",
@@ -9573,12 +9573,12 @@
     "obstruent",
     "cochlea",
     "yill",
-    "janus",
+    "Janus",//Capitalize Proper Noun; Name; Deity
     "nuff",
     "lifelessly",
     "narrator",
     "equine",
-    "Leicestershire",
+    "Leicestershire",//Proper Noun; Placename
     "matta",
     "developer",
     "Euphrates",
@@ -9868,7 +9868,7 @@
     "backhander",
     "vaporous",
     "Melbourne",
-    "arse",
+    //"arse",Potentially Offensive
     "survival",
     "tangle",
     "abet",
@@ -9933,7 +9933,7 @@
     "sensed",
     "subfamily",
     "assigns",
-    "asshole",
+    //"asshole",Potentially Offensive
     "warble",
     "typify",
     "yellowknife",
@@ -10021,9 +10021,9 @@
     "tepid",
     "faker",
     "panicle",
-    "passover",
+    "passover",//Religious
     "orate",
-    "Meuse",
+    //"Meuse",Proper Name; Placename; River in Europe
     "crossbeam",
     "pilum",
     "structural",
@@ -10602,23 +10602,23 @@
     "insert",
     "circumfluent",
     "passer",
-    "kobe",
-    "fellatio",
+    "Kobe",//Proper Noun; Placename; City
+    //"fellatio",Potentially Offensive
     "wickedly",
     "Berber",
-    "ghanaian",
+    "ghanaian",//Demonym
     "arsenal",
     "accra",
     "tenso",
     "corkscrews",
     "empower",
-    "santorini",
+    "Santorini",//Proper Noun; Placename; Island near Italy
     "battler",
     "angelic",
     "sushi",
     "abbreviator",
     "radioactive",
-    "Zebadiah",
+    "Zebadiah",//Proper Noun; Name; Biblical
     "zeroes",
     "slag",
     "humdrum",
@@ -11595,7 +11595,7 @@
     "horoscope",
     "reproducible",
     "euphorbia",
-    "tallahassee",
+    //"Tallahassee",//Proper Noun; Placename; City in Florida
     "vivisection",
     "liverwort",
     "blacklist",
@@ -11610,7 +11610,7 @@
     "accursing",
     "acquiesce",
     "reflex",
-    "mori",
+    "mori",//latin
     "dribbling",
     "srinagar",
     "scribble",
@@ -11628,9 +11628,9 @@
     "palaeozoic",
     "decrypt",
     "cooee",
-    "abkhazia",
+    "Abkhazia",//Proper Noun; Placename; State in Georgia; Disputed
     "strangulation",
-    "Burmese",
+    "Burmese",//Demonym
     "antelope",
     "charlatan",
     "innings",
@@ -11875,7 +11875,7 @@
     "pyrotechnic",
     "cinnabar",
     "livonian",
-    "abbasid",
+    "Abbasid",//Proper Noun, Demonym; Religious; Caliphate
     "evangelist",
     "indiscreet",
     "experimenting",
@@ -11883,7 +11883,7 @@
     "nymph",
     "nightshirt",
     "thermodynamics",
-    "Nassau",
+    "Nassau",//Proper Noun; Placename; City and Island
     "vulnerary",
     "Luxembourg",
     "exaltedly",
@@ -13554,7 +13554,7 @@
     "scaffolding",
     "pimpernel",
     "digital",
-    "passamaquoddy",
+    "Passamaquoddy",//Demonym
     "trainer",
     "disabuse",
     "crore",
@@ -13566,7 +13566,7 @@
     "counterpoise",
     "sisal",
     "strap",
-    "Angola",
+    "Angola",//Proper Noun 
     "cuspidor",
     "heaver",
     "washroom",
@@ -13606,7 +13606,7 @@
     "arum",
     "churchy",
     "cassiope",
-    "Geraldine",
+    //"Geraldine",//Proper Noun; Name 
     "bypass",
     "refute",
     "flashback",
@@ -14742,7 +14742,6 @@
     "lapidation",
     "evolutionary",
     "overwhelm",
-    "simp",
     "pollution",
     "escalator",
     "coup",
@@ -15460,7 +15459,7 @@
     "markings",
     "hellenic",
     "magnific",
-    "analyse",
+    //"analyse", British
     "viceregal",
     "pores",
     "jettison",
@@ -15864,9 +15863,9 @@
     "laconic",
     "prolific",
     "pans",
-    "cassiopeia",
+    "Cassiopeia",//Proper Noun; Name; Deity, Constellation
     "reversion",
-    "Ugandan",
+    "Ugandan",//Demonym
     "abstracting",
     "commiseration",
     "janitor",
@@ -17075,7 +17074,6 @@
     "burkinabe",
     "Cole",
     "ravioli",
-    "gook",
     "Tobago",
     "ramada",
     "endocrine",
@@ -18540,9 +18538,9 @@
     "lingam",
     "accosts",
     "inflame",
-    "Abdullah",
+    //"Abdullah",//Proper Noun; Biographical Name;
     "rattler",
-    "zoroastrianism",
+    "Zoroastrianism",//Proper Noun; Religion
     "petting",
     "suprarenal",
     "coeducation",
@@ -21517,7 +21515,6 @@
     "ultraism",
     "gree",
     "glycogen",
-    "assoyle",
     "vintner",
     "falstaff",
     "depredate",
@@ -22198,7 +22195,7 @@
     "igneous",
     "castellated",
     "wreathes",
-    "guadalcanal",
+    "Guadalcanal",//Capitalize Proper Noun; placename
     "predominance",
     "truncate",
     "disclaimed",
@@ -23633,7 +23630,7 @@
     "elegantly",
     "dyestuff",
     "rime",
-    "anal",
+    //"anal",
     "nutriment",
     "hyphen",
     "indemnification",
