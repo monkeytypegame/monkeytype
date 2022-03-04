@@ -1,6 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
+    "description": "These are the set of `internal` endpoints dedicated to the Monkeytype web client. Authentication for these endpoints requires a user account.",
     "version": "1.0.0",
     "title": "Monkeytype",
     "termsOfService": "https://monkeytype.com/terms-of-service",
@@ -1046,13 +1047,6 @@
           }
         }
       }
-    }
-  },
-  "securityDefinitions": {
-    "ApeKey": {
-      "type": "apiKey",
-      "name": "ApeKey",
-      "in": "header"
     }
   },
   "definitions": {
