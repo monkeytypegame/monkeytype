@@ -5,7 +5,7 @@
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
   - [Text Editor](#text-editor)
-  - [Git ](#git)
+  - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
   - [Mongo Setup](#mongo-setup)
@@ -18,11 +18,11 @@
 
 ## Getting Started
 
-When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in Javascript, CSS, and HTML (in order of language usage within the project); thus, we assume you are comfortable in these languages or have basic knowledge of them. Our backend is in NodeJS and we use MongoDB to store our user data. Furthermore, we use Prettier to format our code.
+When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in ~~JavaScript~~ TypeScript, CSS, and HTML (in order of language usage within the project); thus, we assume you are comfortable in these languages or have basic knowledge of them. Our backend is in NodeJS and we use MongoDB to store our user data. Firebase is used for authentication. Furthermore, we use Prettier to format our code.
 
 ## Prerequisites
 
-While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
+While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2.
 
 #### Text Editor
 
@@ -34,7 +34,7 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 #### NodeJS and NPM
 
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `14.18.1 LTS`.
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `16.13.2 LTS`.
 
 Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
 
@@ -49,7 +49,8 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
-1. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+   - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
+1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -92,8 +93,10 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
-1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` (`npm run start:dev:nodb` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+1. Run `npm run install:all` in the project root to install all dependencies.
+   - If you are on Windows, use `npm run install:windows`.
+   - If none of this works, you will have to run `npm install` in root, frontend, and backend directories.
+2. Run `npm run start:dev` (`npm run start:dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 **Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
 
@@ -122,6 +125,8 @@ Before submitting a theme make sure...
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
+
+(If you want to contribute languages but don't know how to, check [LANGUAGES.md](https://github.com/Miodec/monkeytype/blob/master/LANGUAGES.md))
 
 #### Quote Guidelines
 

@@ -80,14 +80,14 @@ serviceAccountKey*.json
 
 #generated files
 dist/
-public/
+frontend/public/
 
 #cloudflare y
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 purgeCfCache.sh
 
-static/adtest.html
+frontend/static/adtest.html
 backend/lastId.txt
 backend/log_success.txt
 backend/credentials/*.json
@@ -96,4 +96,9 @@ backend/.env
 static/adtest.html
 backend/migrationStats.txt
 
-backend/anticheat
+
+# Madge
+dep-graph.png
+
+# TypeScript
+build/

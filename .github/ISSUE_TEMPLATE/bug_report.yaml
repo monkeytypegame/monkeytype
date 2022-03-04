@@ -1,15 +1,15 @@
 name: Bug report
 description: Create a report to help us improve
-title: "<title>"
 labels: [bug]
 body:
-  - type: checkboxes
+  - type: markdown
     attributes:
-      label: Is there an existing issue for this?
-      description: Please search to see if an issue already exists for the bug you encountered.
-      options:
-        - label: I have searched the existing issues
-          required: true
+      value: |
+        # Welcome
+        ```
+        Thanks for taking the time to fill out this bug! If you need real-time help, join us on Discord: discord.gg/monkeytype
+        ```
+
   - type: checkboxes
     attributes:
       label: Did you clear cache before opening an issue?
@@ -17,6 +17,78 @@ body:
       options:
         - label: I have cleared my cache
           required: true
+
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        # Basic debugging
+        ```
+        Below fields are very important to quickly track down the issue, so please take the time to carefully check when the issue happens and when it does not.
+        ```
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen when logged in?
+      options: ["Yes", "No", "N/A"]
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen when logged out?
+      options: ["Yes", "No"]
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen in incognito mode when logged in?
+      options: ["Yes", "No", "N/A"]
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Does the issue happen in incognito mode when logged out?
+      options: ["Yes", "No"]
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Account name
+      description: Your Monkeytype account name.
+      placeholder: |
+        Miodec
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Account config
+      description: If your issue only happens when logged in, please provide your config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
+      placeholder: |
+        Miodec
+        {"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        # Issue details
+        ```
+        Please provide a detailed decription of whats happening, and most importantly - solid steps to reproduce the issue. This will help us find it quicker.
+        ```
+
   - type: textarea
     attributes:
       label: Current Behavior
@@ -61,19 +133,5 @@ body:
         Links? References? Anything that will give us more context about the issue you are encountering!
 
         Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
-    validations:
-      required: false
-  - type: checkboxes
-    attributes:
-      label: Did you check incognito mode?
-      description: Sometimes bugs may be dependent on your config. If the issue does not show up in incognito mode, then this could mean it's an issue with your settings.
-      options:
-        - label: I have checked incognito mode
-          required: false
-  - type: textarea
-    attributes:
-      label: Config
-      description: If your issue DOES NOT happen in incognito, please export your config and paste it here. Go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
-      placeholder: '{"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}'
     validations:
       required: false

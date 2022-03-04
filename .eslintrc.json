@@ -16,16 +16,19 @@
   "extends": [
     "eslint:recommended",
     "plugin:json/recommended",
-    "plugin:require-path-exists/recommended"
+    "plugin:require-path-exists/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["json", "require-path-exists"],
+  "plugins": ["json", "require-path-exists", "@typescript-eslint"],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
   },
+  // "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
-    "indent": ["off"], //handled by prettier
+    "indent": ["off"],
     "linebreak-style": ["error", "unix"],
     "quotes": [
       "error",
@@ -33,8 +36,9 @@
       { "allowTemplateLiterals": true, "avoidEscape": true }
     ],
     "semi": ["error", "always"],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
+    "no-var": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
     "require-path-exists/exists": [
@@ -43,15 +47,38 @@
         "extensions": [
           "",
           ".js",
-          ".jsx",
-          ".es.js",
-          ".jsx",
+          ".ts",
+          ".tsx",
+          ".es.ts",
+          ".tsx",
           ".json5",
           ".es",
           ".es6",
           ".coffee"
         ]
       }
-    ]
-  }
+    ],
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-var-requires": "off"
+  },
+  "overrides": [
+    {
+      // enable the rule specifically for TypeScript files
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": ["error"],
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-empty-function": "error",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { "argsIgnorePattern": "^(_|e|event)" }
+        ],
+        "@typescript-eslint/no-var-requires": "error"
+      }
+      // "parserOptions": {
+      //   "project": "./tsconfig.json"
+      // }
+    }
+  ]
 }
