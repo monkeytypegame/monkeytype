@@ -13,11 +13,10 @@ export class MonkeyResponse {
   }
 }
 
-export function handleMonkeyResponse(handlerData: any, res: Response): void {
-  const isMonkeyResponse = handlerData instanceof MonkeyResponse;
-  const monkeyResponse = !isMonkeyResponse
-    ? new MonkeyResponse("ok", handlerData)
-    : handlerData;
+export function handleMonkeyResponse(
+  monkeyResponse: MonkeyResponse,
+  res: Response
+): void {
   const { message, data, status } = monkeyResponse;
 
   res.status(status);
