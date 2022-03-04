@@ -16,6 +16,10 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
   {
+    "name": "nepali",
+    "languages": ["nepali"]
+  },
+  {
     "name": "french",
     "languages": ["french", "french_1k", "french_2k", "french_10k"]
   },
