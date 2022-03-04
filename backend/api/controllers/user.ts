@@ -212,13 +212,13 @@ class UserController {
     return new MonkeyResponse("Leaderboard memory updated");
   }
 
-  static async getCustomThemes(req, _res) {
+  static async getCustomThemes(req, _res): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const customThemes = await UsersDAO.getThemes(uid);
     return new MonkeyResponse("Custom themes retrieved", customThemes);
   }
 
-  static async addCustomTheme(req, _res) {
+  static async addCustomTheme(req, _res): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const customTheme = req.body;
 
@@ -228,14 +228,14 @@ class UserController {
     });
   }
 
-  static async removeCustomTheme(req, _res) {
+  static async removeCustomTheme(req, _res): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { themeId } = req.body;
     await UsersDAO.removeTheme(uid, themeId);
     return new MonkeyResponse("Custom theme removed");
   }
 
-  static async editCustomTheme(req, _res) {
+  static async editCustomTheme(req, _res): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { themeId, theme } = req.body;
 
