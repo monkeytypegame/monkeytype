@@ -734,4 +734,9 @@
     "bgColor": "#7c2142",
     "mainColor": "#deb80b"
   }
+  ,{
+    "name": "sage",
+    "bgColor": "#b5c99a",
+    "mainColor": "#87986a"
+  }
 ]
