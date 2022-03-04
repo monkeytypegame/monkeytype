@@ -1048,6 +1048,13 @@
       }
     }
   },
+  "securityDefinitions": {
+    "ApeKey": {
+      "type": "apiKey",
+      "name": "ApeKey",
+      "in": "header"
+    }
+  },
   "definitions": {
     "Response": {
       "type": "object",
