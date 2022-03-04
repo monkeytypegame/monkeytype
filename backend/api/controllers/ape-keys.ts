@@ -2,9 +2,9 @@ import _ from "lodash";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import ApeKeysDAO from "../../dao/ape-keys";
-import MonkeyError from "../../handlers/error";
-import { MonkeyResponse } from "../../handlers/monkey-response";
-import { base64UrlEncode } from "../../handlers/misc";
+import MonkeyError from "../../utils/error";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import { base64UrlEncode } from "../../utils/misc";
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
   return _.omit(apeKey, "hash");

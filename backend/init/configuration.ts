@@ -1,7 +1,7 @@
 import db from "./db";
 import _ from "lodash";
-import Logger from "../handlers/logger.js";
-import { identity } from "../handlers/misc";
+import Logger from "../utils/logger.js";
+import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes

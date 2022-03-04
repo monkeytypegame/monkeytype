@@ -466,14 +466,11 @@ function handleChar(char: string, charIndex: number): void {
   TestInput.updateLastKeypress();
   TestInput.pushKeypressWord(TestWords.words.currentIndex);
 
-  if (!thisCharCorrect && Config.difficulty == "master") {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
-    TestLogic.fail("difficulty");
-    return;
-  }
-
-  if (Config.stopOnError == "letter" && !thisCharCorrect) {
+  if (
+    Config.difficulty !== "master" &&
+    Config.stopOnError == "letter" &&
+    !thisCharCorrect
+  ) {
     return;
   }
 
@@ -499,6 +496,13 @@ function handleChar(char: string, charIndex: number): void {
       charIndex < TestWords.words.getCurrent().length + 20)
   ) {
     TestInput.input.current = resultingWord;
+  }
+
+  if (!thisCharCorrect && Config.difficulty == "master") {
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    TestLogic.fail("difficulty");
+    return;
   }
 
   //keymap

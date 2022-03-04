@@ -4,10 +4,10 @@ import UserDAO from "../../dao/user";
 import ReportDAO from "../../dao/report";
 import NewQuotesDao from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
-import MonkeyError from "../../handlers/error";
-import { verify } from "../../handlers/captcha";
-import Logger from "../../handlers/logger";
-import { MonkeyResponse } from "../../handlers/monkey-response";
+import MonkeyError from "../../utils/error";
+import { verify } from "../../utils/captcha";
+import Logger from "../../utils/logger";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 class QuotesController {
   static async getQuotes(_req: MonkeyTypes.Request): Promise<MonkeyResponse> {

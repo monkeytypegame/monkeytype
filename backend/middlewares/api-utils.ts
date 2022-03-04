@@ -1,11 +1,8 @@
 import _ from "lodash";
 import joi from "joi";
-import MonkeyError from "../handlers/error";
+import MonkeyError from "../utils/error";
 import { Response, NextFunction, RequestHandler } from "express";
-import {
-  handleMonkeyResponse,
-  MonkeyResponse,
-} from "../handlers/monkey-response";
+import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import UsersDAO from "../dao/user";
 
 interface ValidationOptions<T> {
