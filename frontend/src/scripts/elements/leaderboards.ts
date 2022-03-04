@@ -139,7 +139,7 @@ function updateFooter(lb: LbKey): void {
     <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${moment(entry.timestamp).format(
       "DD MMM YYYY"
-    )}<br><div class='sub'>${moment(entry.timestamp).format("h:mm a")}</div></td>
+    )}<br><span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up"><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></span></td>
   </tr>
   `);
   }
@@ -237,7 +237,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
     <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${moment(entry.timestamp).format(
       "DD MMM YYYY"
-    )}<br><div class='sub'>${moment(entry.timestamp).format("h:mm a")}</div></td>
+    )}<br><span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up"><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></span></td>
   </tr>
   `;
   }

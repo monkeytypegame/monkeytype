@@ -88,9 +88,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>15</td>
@@ -116,9 +116,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
     <td>30</td>
@@ -144,9 +144,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>60</td>
@@ -172,9 +172,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>120</td>
@@ -203,9 +203,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>10</td>
@@ -231,9 +231,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>25</td>
@@ -259,9 +259,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>50</td>
@@ -287,9 +287,9 @@ export function update(): void {
     if (pbData.timestamp) {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
-        "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("h:mm a") +
-        "</div>";
+        "<br>" + `<span aria-label="${moment(entry.timestamp).format("h:mm a")}" data-balloon-pos="up">` + "<div class='sub'>" +
+        moment(pbData.timestamp).format("HH:mm") +
+        "</div></span>";
     }
     text += `<tr>
       <td>100</td>
