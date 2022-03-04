@@ -104,7 +104,7 @@ function updatePersonalBest(
   personalBest.language = result.language;
   personalBest.punctuation = result.punctuation;
   personalBest.lazyMode = result.lazyMode;
-  personalBest.wpm = result.rawWpm;
+  personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
   personalBest.timestamp = Date.now();
 
