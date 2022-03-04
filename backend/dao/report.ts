@@ -1,5 +1,8 @@
 import MonkeyError from "../utils/error";
 import db from "../init/db";
+
+const COLLECTION_NAME = "reports";
+
 class ReportDAO {
   static async createReport(
     report: MonkeyTypes.Report,
@@ -7,7 +10,7 @@ class ReportDAO {
     contentReportLimit: number
   ): Promise<void> {
     const reportsCount = await db
-      .collection<MonkeyTypes.Report>("reports")
+      .collection<MonkeyTypes.Report>(COLLECTION_NAME)
       .estimatedDocumentCount();
 
     if (reportsCount >= maxReports) {
@@ -18,7 +21,7 @@ class ReportDAO {
     }
 
     const sameReports = await db
-      .collection<MonkeyTypes.Report>("reports")
+      .collection<MonkeyTypes.Report>(COLLECTION_NAME)
       .find({ contentId: report.contentId })
       .toArray();
 
@@ -29,7 +32,7 @@ class ReportDAO {
       );
     }
 
-    await db.collection<MonkeyTypes.Report>("reports").insertOne(report);
+    await db.collection<MonkeyTypes.Report>(COLLECTION_NAME).insertOne(report);
   }
 }
 
