@@ -85,7 +85,7 @@ const loadStyle = async function (name: string): Promise<void> {
   });
 };
 
-export async function apply_custom(
+export async function applyCustom(
   themeId: string,
   isPreview = false
 ): Promise<void> {
@@ -93,7 +93,7 @@ export async function apply_custom(
   if (!DB.getSnapshot()) return; // The user has not yet loaded or is not signed in
   if (themeId.trim() === "" || themeId.trim() === "") {
     console.error("apply_custom got an empty value. calling apply_preset");
-    apply_preset("", isPreview);
+    applyPreset("", isPreview);
   }
 
   const customThemes = DB.getSnapshot().customThemes;
@@ -140,7 +140,7 @@ export async function apply_custom(
   $("#metaThemeColor").attr("content", colors.bg);
 }
 
-export async function apply_preset(
+export async function applyPreset(
   themeName: string,
   isPreview = false
 ): Promise<void> {
@@ -178,9 +178,9 @@ export const apply = async (
   isPreview = false
 ): Promise<void> => {
   if (custom === true && themeIdentifier !== "")
-    apply_custom(themeIdentifier, isPreview);
+    applyCustom(themeIdentifier, isPreview);
   else
-    apply_preset(
+    applyPreset(
       themeIdentifier !== "" ? themeIdentifier : Config.theme,
       isPreview
     );
@@ -205,8 +205,8 @@ export const clearPreview = (): void => {
 
   isPreviewingTheme = false;
   randomTheme = null;
-  if (Config.customThemeId !== "") apply_custom(Config.customThemeId);
-  else apply_preset(Config.theme);
+  if (Config.customTheme) applyCustom(Config.customThemeId);
+  else applyPreset(Config.theme);
 };
 
 export function randomizeTheme(): void {
