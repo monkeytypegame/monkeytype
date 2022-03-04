@@ -1860,7 +1860,7 @@ export function apply(
 }
 
 export function reset(): void {
-  config = DefaultConfig;
+  config = Object.assign({}, DefaultConfig);
   apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
