@@ -2,12 +2,13 @@ import ResultDAO from "../../dao/result";
 import UserDAO from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
-import { roundTo2, stdDev } from "../../handlers/misc";
+import { roundTo2, stdDev } from "../../utils/misc";
 import node_object_hash from "node-object-hash";
-import Logger from "../../handlers/logger";
+import Logger from "../../utils/logger";
 import "dotenv/config";
-import { MonkeyResponse } from "../../handlers/monkey-response";
-import MonkeyError from "../../handlers/error";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import MonkeyError from "../../utils/error";
+import { isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -35,13 +36,13 @@ try {
 }
 
 class ResultController {
-  static async getResults(req, _res) {
+  static async getResults(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const results = await ResultDAO.getResults(uid);
     return new MonkeyResponse("Result retrieved", results);
   }
 
-  static async deleteAll(req, _res) {
+  static async deleteAll(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
 
     await ResultDAO.deleteAll(uid);
@@ -49,7 +50,7 @@ class ResultController {
     return new MonkeyResponse("All results deleted");
   }
 
-  static async updateTags(req, _res) {
+  static async updateTags(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { tagIds, resultId } = req.body;
 
@@ -57,7 +58,7 @@ class ResultController {
     return new MonkeyResponse("Result tags updated");
   }
 
-  static async addResult(req, _res) {
+  static async addResult(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { result } = req.body;
     result.uid = uid;
@@ -65,36 +66,12 @@ class ResultController {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Bad input"); // todo move this
     }
-    if (
-      (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
-      (result.mode === "time" &&
-        result.mode2 == 0 &&
-        result.testDuration < 15) ||
-      (result.mode === "words" && result.mode2 < 10 && result.mode2 > 0) ||
-      (result.mode === "words" &&
-        result.mode2 == 0 &&
-        result.testDuration < 15) ||
-      (result.mode === "custom" &&
-        result.customText !== undefined &&
-        !result.customText.isWordRandom &&
-        !result.customText.isTimeRandom &&
-        result.customText.textLen < 10) ||
-      (result.mode === "custom" &&
-        result.customText !== undefined &&
-        result.customText.isWordRandom &&
-        !result.customText.isTimeRandom &&
-        result.customText.word < 10) ||
-      (result.mode === "custom" &&
-        result.customText !== undefined &&
-        !result.customText.isWordRandom &&
-        result.customText.isTimeRandom &&
-        result.customText.time < 15)
-    ) {
+    if (isTestTooShort(result)) {
       const status = MonkeyStatusCodes.TEST_TOO_SHORT;
       throw new MonkeyError(status.code, status.message);
     }
 
-    let resulthash = result.hash;
+    const resulthash = result.hash;
     delete result.hash;
     if (
       req.ctx.configuration.resultObjectHashCheck.enabled &&
@@ -123,13 +100,11 @@ class ResultController {
         throw new MonkeyError(status.code, "Result data doesn't make sense");
       }
     } else {
-      if (process.env.MODE === "dev") {
-        console.error(
-          "No anticheat module found. Continuing in dev mode, results will not be validated."
-        );
-      } else {
+      if (process.env.MODE !== "dev")
         throw new Error("No anticheat module found");
-      }
+      console.error(
+        "No anticheat module found. Continuing in dev mode, results will not be validated."
+      );
     }
 
     result.timestamp = Math.round(result.timestamp / 1000) * 1000;
@@ -218,31 +193,24 @@ class ResultController {
     if (
       result.mode === "time" &&
       result.wpm > 130 &&
-      result.testDuration < 122
+      result.testDuration < 122 &&
+      (user.verified === false || user.verified === undefined)
     ) {
-      if (user.verified === false || user.verified === undefined) {
-        if (
-          result.keySpacingStats !== null &&
-          result.keyDurationStats !== null
-        ) {
-          if (anticheatImplemented()) {
-            if (!validateKeys(result, uid)) {
-              const status = MonkeyStatusCodes.BOT_DETECTED;
-              throw new MonkeyError(status.code, "Possible bot detected");
-            }
-          } else {
-            if (process.env.MODE === "dev") {
-              console.error(
-                "No anticheat module found. Continuing in dev mode, results will not be validated."
-              );
-            } else {
-              throw new Error("No anticheat module found");
-            }
-          }
-        } else {
-          const status = MonkeyStatusCodes.MISSING_KEY_DATA;
-          throw new MonkeyError(status.code, "Missing key data");
+      if (!result.keySpacingStats || !result.keyDurationStats) {
+        const status = MonkeyStatusCodes.MISSING_KEY_DATA;
+        throw new MonkeyError(status.code, "Missing key data");
+      }
+      if (anticheatImplemented()) {
+        if (!validateKeys(result, uid)) {
+          const status = MonkeyStatusCodes.BOT_DETECTED;
+          throw new MonkeyError(status.code, "Possible bot detected");
         }
+      } else {
+        if (process.env.MODE !== "dev")
+          throw new Error("No anticheat module found");
+        console.error(
+          "No anticheat module found. Continuing in dev mode, results will not be validated."
+        );
       }
     }
 
@@ -266,8 +234,10 @@ class ResultController {
     let tagPbs = [];
 
     if (!result.bailedOut) {
-      isPb = await UserDAO.checkIfPb(uid, result);
-      tagPbs = await UserDAO.checkIfTagPb(uid, result);
+      [isPb, tagPbs] = await Promise.all([
+        UserDAO.checkIfPb(uid, user, result),
+        UserDAO.checkIfTagPb(uid, user, result),
+      ]);
     }
 
     if (isPb) {
@@ -293,10 +263,8 @@ class ResultController {
       afk = 0;
     }
     tt = result.testDuration + result.incompleteTestSeconds - afk;
-
-    await UserDAO.updateTypingStats(uid, result.restartCount, tt);
-
-    await PublicStatsDAO.updateStats(result.restartCount, tt);
+    UserDAO.updateTypingStats(uid, result.restartCount, tt);
+    PublicStatsDAO.updateStats(result.restartCount, tt);
 
     if (result.bailedOut === false) delete result.bailedOut;
     if (result.blindMode === false) delete result.blindMode;
@@ -309,7 +277,7 @@ class ResultController {
 
     if (result.mode !== "custom") delete result.customText;
 
-    let addedResult = await ResultDAO.addResult(uid, result);
+    const addedResult = await ResultDAO.addResult(uid, result);
 
     if (isPb) {
       Logger.log(

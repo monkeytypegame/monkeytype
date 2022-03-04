@@ -45,7 +45,9 @@
     "@types/lodash": "4.14.178",
     "@types/mongodb": "4.0.7",
     "@types/node": "17.0.18",
+    "@types/node-fetch": "2.6.1",
     "@types/swagger-stats": "0.95.4",
+    "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "8.3.4"
   }
 }

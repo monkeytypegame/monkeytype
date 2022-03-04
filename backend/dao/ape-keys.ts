@@ -1,7 +1,7 @@
 import _ from "lodash";
 import UsersDAO from "./user";
 import { ObjectId } from "mongodb";
-import MonkeyError from "../handlers/error";
+import MonkeyError from "../utils/error";
 
 function checkIfKeyExists(
   apeKeys: MonkeyTypes.User["apeKeys"],

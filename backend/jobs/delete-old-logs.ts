@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import db from "../init/db";
-import Logger from "../handlers/logger";
+import Logger from "../utils/logger";
 
 const CRON_SCHEDULE = "0 0 0 * * *";
 const LOG_MAX_AGE_DAYS = 7;

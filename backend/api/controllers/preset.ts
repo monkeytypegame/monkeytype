@@ -1,5 +1,5 @@
 import PresetDAO from "../../dao/preset";
-import { MonkeyResponse } from "../../handlers/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 class PresetController {
   static async getPresets(req: MonkeyTypes.Request): Promise<MonkeyResponse> {

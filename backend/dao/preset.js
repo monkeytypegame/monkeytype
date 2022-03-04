@@ -1,4 +1,4 @@
-import MonkeyError from "../handlers/error";
+import MonkeyError from "../utils/error";
 import db from "../init/db";
 import { ObjectId } from "mongodb";
 
