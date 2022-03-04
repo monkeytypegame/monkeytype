@@ -7,7 +7,7 @@ class ReportDAO {
     contentReportLimit: number
   ): Promise<void> {
     const reportsCount = await db
-      .collection<MonkeyTypes.Report>("report")
+      .collection<MonkeyTypes.Report>("reports")
       .estimatedDocumentCount();
 
     if (reportsCount >= maxReports) {
