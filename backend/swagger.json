@@ -22,9 +22,57 @@
     {
       "name": "tags",
       "description": ""
+    },
+    {
+      "name": "psas",
+      "description": ""
+    },
+    {
+      "name": "presets",
+      "description": ""
+    },
+    {
+      "name": "configs",
+      "description": ""
+    },
+    {
+      "name": "index",
+      "description": ""
     }
   ],
   "paths": {
+    "/": {
+      "get": {
+        "tags": ["index"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uptime": {
+                  "type": "number"
+                },
+                "requestsProcessed": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": ["users"],
@@ -359,6 +407,153 @@
             "name": "tagId",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/psas": {
+      "get": {
+        "tags": ["psas"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/presets": {
+      "get": {
+        "tags": ["presets"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["presets"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["presets"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/presets/{presetId}": {
+      "delete": {
+        "tags": ["presets"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "presetId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/configs": {
+      "get": {
+        "tags": ["configs"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["configs"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "config": {
+                  "type": "object"
+                }
+              }
+            }
           }
         ],
         "responses": {
