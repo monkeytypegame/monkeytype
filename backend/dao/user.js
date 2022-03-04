@@ -167,19 +167,7 @@ class UsersDAO {
   }
 
   static async checkIfPb(uid, user, result) {
-    const {
-      mode,
-      mode2,
-      acc,
-      consistency,
-      difficulty,
-      lazyMode,
-      language,
-      punctuation,
-      rawWpm,
-      wpm,
-      funbox,
-    } = result;
+    const { mode, funbox } = result;
 
     if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
       return false;
@@ -192,20 +180,7 @@ class UsersDAO {
     let lbpb = user.lbPersonalBests;
     if (!lbpb) lbpb = {};
 
-    let pb = checkAndUpdatePb(
-      user.personalBests,
-      lbpb,
-      mode,
-      mode2,
-      acc,
-      consistency,
-      difficulty,
-      lazyMode,
-      language,
-      punctuation,
-      rawWpm,
-      wpm
-    );
+    let pb = checkAndUpdatePb(user.personalBests, lbpb, result);
 
     if (pb.isPb) {
       await db
@@ -227,20 +202,7 @@ class UsersDAO {
       return [];
     }
 
-    const {
-      mode,
-      mode2,
-      acc,
-      consistency,
-      difficulty,
-      lazyMode,
-      language,
-      punctuation,
-      rawWpm,
-      wpm,
-      tags,
-      funbox,
-    } = result;
+    const { mode, tags, funbox } = result;
 
     if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
       return [];
@@ -262,20 +224,7 @@ class UsersDAO {
     let ret = [];
 
     tagsToCheck.forEach(async (tag) => {
-      let tagpb = checkAndUpdatePb(
-        tag.personalBests,
-        undefined,
-        mode,
-        mode2,
-        acc,
-        consistency,
-        difficulty,
-        lazyMode,
-        language,
-        punctuation,
-        rawWpm,
-        wpm
-      );
+      let tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
       if (tagpb.isPb) {
         ret.push(tag._id);
         await db
