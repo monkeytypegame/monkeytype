@@ -16,6 +16,10 @@
   "produces": ["application/json"],
   "tags": [
     {
+      "name": "index",
+      "description": ""
+    },
+    {
       "name": "users",
       "description": ""
     },
@@ -36,7 +40,19 @@
       "description": ""
     },
     {
-      "name": "index",
+      "name": "ape-keys",
+      "description": ""
+    },
+    {
+      "name": "leaderboards",
+      "description": ""
+    },
+    {
+      "name": "results",
+      "description": ""
+    },
+    {
+      "name": "quotes",
       "description": ""
     }
   ],
@@ -551,6 +567,455 @@
               "properties": {
                 "config": {
                   "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/ape-keys": {
+      "get": {
+        "tags": ["ape-keys"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["ape-keys"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/ape-keys/{apeKeyId}": {
+      "patch": {
+        "tags": ["ape-keys"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "apeKeyId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ape-keys"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "apeKeyId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/leaderboards": {
+      "get": {
+        "tags": ["leaderboards"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "language",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode2",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "type": "number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/leaderboards/rank": {
+      "get": {
+        "tags": ["leaderboards"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "language",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode2",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/results": {
+      "get": {
+        "tags": ["results"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["results"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["results"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/results/tags": {
+      "patch": {
+        "tags": ["results"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tagIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "resultId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes": {
+      "get": {
+        "tags": ["quotes"],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["quotes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                },
+                "captcha": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/approve": {
+      "post": {
+        "tags": ["quotes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "editText": {
+                  "type": "string"
+                },
+                "editSource": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/reject": {
+      "post": {
+        "tags": ["quotes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/rating": {
+      "get": {
+        "tags": ["quotes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["quotes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "rating": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/report": {
+      "post": {
+        "tags": ["quotes"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "quoteLanguage": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "captcha": {
+                  "type": "string"
                 }
               }
             }
