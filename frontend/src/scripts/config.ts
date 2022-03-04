@@ -1860,8 +1860,10 @@ export function apply(
 }
 
 export function reset(): void {
-  config = Object.assign({}, DefaultConfig);
-  apply(DefaultConfig);
+  config = {
+    ...DefaultConfig,
+  };
+  apply(config);
   saveFullConfigToLocalStorage();
 }
 
