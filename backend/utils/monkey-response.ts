@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { getCodesRangeStart } from "../constants/monkey-status-codes";
+import { isInCustomCodeRange } from "../constants/monkey-status-codes";
 
 export class MonkeyResponse {
   message: string;
@@ -20,7 +20,7 @@ export function handleMonkeyResponse(
   const { message, data, status } = monkeyResponse;
 
   res.status(status);
-  if (status >= getCodesRangeStart()) {
+  if (isInCustomCodeRange(status)) {
     res.statusMessage = message;
   }
 
