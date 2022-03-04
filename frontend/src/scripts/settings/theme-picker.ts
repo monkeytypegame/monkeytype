@@ -488,7 +488,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   };
   Loader.show();
   await DB.editCustomTheme(customTheme._id, newTheme);
-  Notifications.add("Custom theme saved", -1);
+  Notifications.add("Custom theme saved", 1);
   Loader.hide();
 
   ThemeController.set(true, Config.customThemeId);
