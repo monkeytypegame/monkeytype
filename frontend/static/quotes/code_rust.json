@@ -212,12 +212,6 @@
       "text": "let s = format!(\"{:.2}\", x);"
     },
     {
-      "id": 35,
-      "length": 13,
-      "source": "Assign to string the japanese word \u30cd\u30b3 - programming-idioms.org",
-      "text": "let s = \"\u30cd\u30b3\";"
-    },
-    {
       "id": 36,
       "length": 211,
       "source": "Send a value to another thread - programming-idioms.org",
