@@ -1,13 +1,19 @@
-import * as uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 class MonkeyError extends Error {
   status: number;
   errorId: string;
-  uid: string;
-  constructor(status: number, message: string, stack = null, uid = null) {
+  uid?: string;
+
+  constructor(
+    status: number,
+    message: string,
+    stack: string = null,
+    uid: string = null
+  ) {
     super();
     this.status = status ?? 500;
-    this.errorId = uuid.v4();
+    this.errorId = uuidv4();
     this.stack = stack;
     this.uid = uid;
 

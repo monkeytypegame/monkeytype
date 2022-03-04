@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
-import { updateAuthEmail } from "../utils/auth";
+import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -66,7 +66,7 @@ class UsersDAO {
   static async updateEmail(uid, email) {
     const user = await db.collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "update email");
-    await updateAuthEmail(uid, email);
+    await updateUserEmail(uid, email);
     await db.collection("users").updateOne({ uid }, { $set: { email } });
     return true;
   }

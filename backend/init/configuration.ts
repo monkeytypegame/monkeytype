@@ -1,6 +1,6 @@
 import db from "./db";
 import _ from "lodash";
-import Logger from "../utils/logger.js";
+import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
 
