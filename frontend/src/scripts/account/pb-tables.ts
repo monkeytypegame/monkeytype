@@ -89,7 +89,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -117,7 +117,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -145,7 +145,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -173,7 +173,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -204,7 +204,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -232,7 +232,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -260,7 +260,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>
@@ -288,7 +288,7 @@ export function update(): void {
       dateText =
         moment(pbData.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        moment(pbData.timestamp).format("h:mm a") +
         "</div>";
     }
     text += `<tr>

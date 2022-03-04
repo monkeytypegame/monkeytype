@@ -44,7 +44,7 @@ function update(mode: MonkeyTypes.Mode): void {
       dateText =
         moment(pb.timestamp).format("DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pb.timestamp).format("HH:mm") +
+        moment(pb.timestamp).format("h:mm a") +
         "</div>";
     }
     $("#pbTablesPopup table tbody").append(`
