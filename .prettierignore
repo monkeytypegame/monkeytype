@@ -1,9 +1,10 @@
 *.min.js
 *.min.css
-layouts.js
+layouts.ts
 quotes/*
 chartjs-plugin-*.js
 sound/*
 node_modules
 css/balloon.css
 _list.json
+backend/build

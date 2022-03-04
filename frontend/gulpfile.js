@@ -1,27 +1,28 @@
 const { task, src, dest, series, watch } = require("gulp");
 // const axios = require("axios");
-const browserify = require("browserify");
-const babelify = require("babelify");
 const concat = require("gulp-concat");
 const del = require("del");
-const source = require("vinyl-source-stream");
-const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint-new");
-var sass = require("gulp-sass")(require("dart-sass"));
+const sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
-const uglify = require("gulp-uglify");
 const through2 = require("through2");
-// sass.compiler = require("dart-sass");
+const { webpack } = require("webpack");
+const webpackDevConfig = require("./webpack.config.js");
+const webpackProdConfig = require("./webpack-production.config.js");
+const ts = require("gulp-typescript");
 
-let eslintConfig = "../.eslintrc.json";
+const JSONValidation = require("./json-validation");
+
+const eslintConfig = "../.eslintrc.json";
+const tsProject = ts.createProject("tsconfig.json");
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
-task("lint-js", function () {
-  return src("./src/js/**/*.js")
+task("lint", function () {
+  return src(["./src/scripts/**/*.js", "./src/scripts/**/*.ts"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -34,29 +35,44 @@ task("lint-json", function () {
     .pipe(eslint.failAfterError());
 });
 
-task("browserify", function () {
-  const b = browserify({
-    entries: "./src/js/index.js",
-    //a source map isn't very useful right now because
-    //the source files are concatenated together
-    debug: false,
+task("validate-json-schema", function () {
+  return JSONValidation.validateAll();
+});
+
+task("copy-src-contents", function () {
+  return src("./src/scripts/**").pipe(dest("./dist/"));
+});
+
+task("transpile-ts", function () {
+  return tsProject.src().pipe(tsProject()).js.pipe(dest("dist"));
+});
+
+task("webpack", async function () {
+  return new Promise((resolve, reject) => {
+    webpack(webpackDevConfig, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.hasErrors()) {
+        return reject(new Error(stats.compilation.errors.join("\n")));
+      }
+      resolve();
+    });
   });
-  return b
-    .transform(
-      babelify.configure({
-        presets: ["@babel/preset-env"],
-        plugins: ["@babel/transform-runtime"],
-      })
-    )
-    .bundle()
-    .pipe(source("monkeytype.js"))
-    .pipe(buffer())
-    .pipe(
-      uglify({
-        mangle: false,
-      })
-    )
-    .pipe(dest("./public/js"));
+});
+
+task("webpack-production", async function () {
+  return new Promise((resolve, reject) => {
+    webpack(webpackProdConfig, (err, stats) => {
+      if (err) {
+        return reject(err);
+      }
+      if (stats.hasErrors()) {
+        return reject(new Error(stats.compilation.errors.join("\n")));
+      }
+      resolve();
+    });
+  });
 });
 
 task("static", function () {
@@ -64,15 +80,15 @@ task("static", function () {
 });
 
 task("sass", function () {
-  return src("./src/sass/*.scss")
+  return src("./src/styles/*.scss")
     .pipe(concat("style.scss"))
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
     .pipe(dest("public/css"));
 });
 
 task("updateSwCacheName", function () {
-  let date = new Date();
-  let dateString =
+  const date = new Date();
+  const dateString =
     date.getFullYear() +
     "-" +
     (date.getMonth() + 1) +
@@ -84,6 +100,7 @@ task("updateSwCacheName", function () {
     date.getMinutes() +
     "-" +
     date.getSeconds();
+
   return src(["static/sw.js"])
     .pipe(
       replace(
@@ -93,7 +110,7 @@ task("updateSwCacheName", function () {
     )
     .pipe(
       through2.obj(function (file, enc, cb) {
-        var date = new Date();
+        const date = new Date();
         file.stat.atime = date;
         file.stat.mtime = date;
         cb(null, file);
@@ -104,10 +121,16 @@ task("updateSwCacheName", function () {
 
 task(
   "compile",
+  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
+);
+
+task(
+  "compile-production",
   series(
-    "lint-js",
+    "lint",
     "lint-json",
-    "browserify",
+    "validate-json-schema",
+    "webpack-production",
     "static",
     "sass",
     "updateSwCacheName"
@@ -115,9 +138,43 @@ task(
 );
 
 task("watch", function () {
-  watch("./src/sass/**/*.scss", series("sass"));
-  watch("./src/js/**/*.js", series("lint-js", "browserify"));
-  watch("./static/**/*.*", series("lint-json", "static"));
+  watch("./src/styles/*.scss", series("sass"));
+  watch(
+    [
+      "./src/scripts/**/*.js",
+      "./src/scripts/**/*.ts",
+      "./src/scripts/*.js",
+      "./src/scripts/*.ts",
+    ],
+    series("lint", "webpack")
+  );
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
 });
 
 task("build", series("clean", "compile"));
+
+task("build-production", series("clean", "compile-production"));
+
+//PR CHECK
+
+task("validate-quote-json-schema", function () {
+  return JSONValidation.validateQuotes();
+});
+
+task("validate-language-json-schema", function () {
+  return JSONValidation.validateLanguages();
+});
+
+task("validate-other-json-schema", function () {
+  return JSONValidation.validateOthers();
+});
+
+task("pr-check-lint-json", series("lint-json"));
+task("pr-check-quote-json", series("validate-quote-json-schema"));
+task("pr-check-language-json", series("validate-language-json-schema"));
+task("pr-check-other-json", series("validate-other-json-schema"));
+
+task("pr-check-lint", series("lint"));
+task("pr-check-scss", series("sass"));
+
+task("pr-check-ts", series("webpack-production"));

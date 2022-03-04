@@ -96,4 +96,9 @@ backend/.env
 static/adtest.html
 backend/migrationStats.txt
 
-backend/anticheat
+
+# Madge
+dep-graph.png
+
+# TypeScript
+build/

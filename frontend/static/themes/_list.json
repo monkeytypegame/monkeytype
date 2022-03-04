@@ -739,4 +739,9 @@
     "bgColor": "#b5c99a",
     "mainColor": "#87986a"
   }
+  ,{
+    "name": "blue_dolphin",
+    "bgColor": "#003950",
+    "mainColor": "#ffcefb"
+  }
 ]

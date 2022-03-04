@@ -1,0 +1,47 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "globals": {
+    "firebase": "readonly",
+    "$": "readonly",
+    "moment": "readonly",
+    "jQuery": "readonly",
+    "html2canvas": "readonly",
+    "ClipboardItem": "readonly",
+    "grecaptcha": "readonly"
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:json/recommended",
+    "plugin:require-path-exists/recommended"
+  ],
+  "plugins": ["json", "require-path-exists"],
+  "parserOptions": {
+    "ecmaVersion": 13,
+    "sourceType": "module"
+  },
+  "rules": {
+    "json/*": ["error"],
+    "indent": ["off"], //handled by prettier
+    "linebreak-style": ["error", "unix"],
+    "quotes": [
+      "error",
+      "double",
+      { "allowTemplateLiterals": true, "avoidEscape": true }
+    ],
+    "semi": ["error", "always"],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "require-path-exists/notEmpty": 2,
+    "require-path-exists/tooManyArguments": 2,
+    "require-path-exists/exists": [
+      2,
+      {
+        "extensions": ["", ".ts", ".js", ".es.js", ".json5", ".es", ".es6"]
+      }
+    ]
+  }
+}

@@ -49,6 +49,14 @@
     ]
   },
   {
+    "name": "afrikaans",
+    "languages": [
+      "afrikaans",
+      "afrikaans_1k",
+      "afrikaans_10k"
+    ]
+  },
+  {
     "name": "mongolian",
     "languages": ["mongolian", "mongolian_10k"]
   },
@@ -241,41 +249,12 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "armenian",
+    "languages": ["armenian_western", "armenian_western_1k"]
+  },
+  {
     "name": "japanese",
     "languages": ["japanese_hiragana", "japanese_katakana"]
-  },
-  {
-    "name": "code",
-    "languages": [
-      "code_python",
-      "code_c",
-      "code_csharp",
-      "code_c++",
-      "code_dart",
-      "code_javascript",
-      "code_javascript_1k",
-      "code_html",
-      "code_pascal",
-      "code_java",
-      "code_kotlin",
-      "code_go",
-      "code_rust",
-      "code_ruby",
-      "code_r",
-      "code_swift",
-      "code_bash"
-    ]
-  },
-  {
-    "name": "other",
-    "languages": [
-      "lojban_gismu",
-      "lojban_cmavo",
-      "toki_pona",
-      "pig_latin",
-      "twitch_emotes",
-      "git"
-    ]
   },
   {
     "name": "hindi",
@@ -297,5 +276,41 @@
   {
     "name": "malayalam",
     "languages": ["malayalam"]
+  },
+  {
+    "name": "code",
+    "languages": [
+      "code_python",
+      "code_c",
+      "code_csharp",
+      "code_c++",
+      "code_dart",
+      "code_javascript",
+      "code_javascript_1k",
+      "code_html",
+      "code_pascal",
+      "code_java",
+      "code_kotlin",
+      "code_go",
+      "code_rust",
+      "code_ruby",
+      "code_r",
+      "code_swift",
+      "code_bash",
+      "code_lua",
+      "code_luau",
+      "code_matlab"
+    ]
+  },
+  {
+    "name": "other",
+    "languages": [
+      "lojban_gismu",
+      "lojban_cmavo",
+      "toki_pona",
+      "pig_latin",
+      "twitch_emotes",
+      "git"
+    ]
   }
 ]
