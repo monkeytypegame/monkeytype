@@ -11,8 +11,8 @@ async function contextMiddleware(
   req.ctx = {
     configuration,
     decodedToken: {
-      uid: null,
-      email: null,
+      uid: "",
+      email: "",
     },
   };
 
