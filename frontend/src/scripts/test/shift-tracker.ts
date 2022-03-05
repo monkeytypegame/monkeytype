@@ -3,7 +3,9 @@ import * as Misc from "../misc";
 import { capsState } from "./caps-warning";
 
 export let leftState = false;
+
 export let rightState = false;
+
 let caseState = false;
 
 interface KeymapStrings {
@@ -55,12 +57,14 @@ async function buildKeymapStrings(): Promise<void> {
   if (layout === undefined) return;
 
   const layoutKeys = layout.keys;
+
   const layoutKeysEntries = Object.entries(layoutKeys) as [string, string[]][];
 
   keymapStrings.keymap = Config.keymapLayout;
 
   if (!layout) {
     keymapStrings.left = null;
+
     keymapStrings.right = null;
   } else {
     keymapStrings.left = layoutKeysEntries
@@ -99,9 +103,11 @@ async function buildKeymapStrings(): Promise<void> {
 $(document).keydown((e) => {
   if (e.code === "ShiftLeft") {
     leftState = true;
+
     rightState = false;
   } else if (e.code === "ShiftRight") {
     leftState = false;
+
     rightState = true;
   }
 
@@ -113,6 +119,7 @@ $(document).keydown((e) => {
 $(document).keyup((e) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
+
     rightState = false;
   }
 
@@ -123,6 +130,7 @@ $(document).keyup((e) => {
 
 export function reset(): void {
   leftState = false;
+
   rightState = false;
 }
 

@@ -16,38 +16,49 @@ import * as Misc from "../misc";
 import * as ActivePage from "../states/active-page";
 
 let filterDebug = false;
+
 //toggle filterdebug
 export function toggleFilterDebug(): void {
   filterDebug = !filterDebug;
+
   if (filterDebug) {
     console.log("filterDebug is on");
   }
 }
 
 let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
+
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
   if (filteredResults == [] || filteredResults.length == 0) return;
+
   let newVisibleLines;
+
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
   } else {
     newVisibleLines = visibleTableLines + 10;
   }
+
   for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
+
     if (!result) continue;
+
     let diff = result.difficulty;
+
     if (diff == undefined) {
       diff = "normal";
     }
 
     let raw;
+
     try {
       raw = Config.alwaysShowCPM
         ? (result.rawWpm * 5).toFixed(2)
         : result.rawWpm.toFixed(2);
+
       if (raw == undefined) {
         raw = "-";
       }
@@ -109,10 +120,12 @@ function loadMoreLines(lineIndex?: number): void {
           }
         });
       });
+
       tagNames = tagNames.substring(0, tagNames.length - 2);
     }
 
     let restags;
+
     if (result.tags === undefined) {
       restags = "[]";
     } else {
@@ -136,6 +149,7 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     let pb = result.isPb?.toString();
+
     if (pb) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
@@ -143,6 +157,7 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     let charStats = "-";
+
     if (result.charStats) {
       charStats = result.charStats.join("/");
     } else {
@@ -163,7 +178,9 @@ function loadMoreLines(lineIndex?: number): void {
     <td>${moment(result.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
     </tr>`);
   }
+
   visibleTableLines = newVisibleLines;
+
   if (visibleTableLines >= filteredResults.length) {
     $(".pageAccount .loadMoreButton").addClass("hidden");
   } else {
@@ -173,11 +190,17 @@ function loadMoreLines(lineIndex?: number): void {
 
 export function reset(): void {
   $(".pageAccount .history table tbody").empty();
+
   ChartController.accountActivity.data.datasets[0].data = [];
+
   ChartController.accountActivity.data.datasets[1].data = [];
+
   ChartController.accountHistory.data.datasets[0].data = [];
+
   ChartController.accountHistory.data.datasets[1].data = [];
+
   ChartController.accountActivity.update();
+
   ChartController.accountHistory.update();
 }
 
@@ -202,7 +225,9 @@ type AccChartData = {
 };
 
 let totalSecondsFiltered = 0;
+
 let chartData: ChartData[] = [];
+
 let accChartData: AccChartData[] = [];
 
 export function smoothHistory(factor: number): void {
@@ -210,6 +235,7 @@ export function smoothHistory(factor: number): void {
     chartData.map((a) => a.y),
     factor
   );
+
   const smoothedAccData = Misc.smooth(
     accChartData.map((a) => a.y),
     factor
@@ -217,18 +243,24 @@ export function smoothHistory(factor: number): void {
 
   const chartData2 = chartData.map((a, i) => {
     const ret = Object.assign({}, a);
+
     ret.y = smoothedWpmData[i];
+
     return ret;
   });
 
   const accChartData2 = accChartData.map((a, i) => {
     const ret = Object.assign({}, a);
+
     ret.y = smoothedAccData[i];
+
     return ret;
   });
 
   ChartController.accountHistory.data.datasets[0].data = chartData2;
+
   ChartController.accountHistory.data.datasets[1].data = accChartData2;
+
   ChartController.accountHistory.update();
 }
 
@@ -236,38 +268,56 @@ function applyHistorySmoothing(): void {
   const smoothing = $(
     ".pageAccount .content .below .smoothing input"
   ).val() as string;
+
   $(".pageAccount .content .below .smoothing .value").text(smoothing);
+
   smoothHistory(parseInt(smoothing));
 }
 
 export function update(): void {
   function cont(): void {
     LoadingPage.updateText("Displaying stats...");
+
     LoadingPage.updateBar(100);
+
     console.log("updating account page");
+
     ThemeColors.update();
+
     ChartController.accountHistory.updateColors();
+
     ChartController.accountActivity.updateColors();
+
     AllTimeStats.update();
 
     PbTables.update();
 
     chartData = [];
+
     accChartData = [];
+
     const wpmChartData: number[] = [];
+
     visibleTableLines = 0;
 
     let topWpm = 0;
+
     let topMode = "";
+
     let testRestarts = 0;
+
     let totalWpm = 0;
+
     let testCount = 0;
 
     let last10 = 0;
+
     let wpmLast10total = 0;
 
     let topAcc = 0;
+
     let totalAcc = 0;
+
     let totalAcc10 = 0;
 
     const rawWpm = {
@@ -282,8 +332,11 @@ export function update(): void {
     totalSecondsFiltered = 0;
 
     let topCons = 0;
+
     let totalCons = 0;
+
     let totalCons10 = 0;
+
     let consCount = 0;
 
     type ActivityChartData = {
@@ -297,7 +350,9 @@ export function update(): void {
     const activityChartData: ActivityChartData = {};
 
     filteredResults = [];
+
     $(".pageAccount .history table tbody").empty();
+
     DB.getSnapshot().results?.forEach(
       (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
         // totalSeconds += tt;
@@ -305,46 +360,58 @@ export function update(): void {
         //apply filters
         try {
           let resdiff = result.difficulty;
+
           if (resdiff == undefined) {
             resdiff = "normal";
           }
+
           if (!ResultFilters.getFilter("difficulty", resdiff)) {
             if (filterDebug)
               console.log(`skipping result due to difficulty filter`, result);
+
             return;
           }
+
           if (!ResultFilters.getFilter("mode", result.mode)) {
             if (filterDebug)
               console.log(`skipping result due to mode filter`, result);
+
             return;
           }
 
           if (result.mode == "time") {
             let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
+
             if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
               timefilter = result.mode2;
             }
+
             if (!ResultFilters.getFilter("time", timefilter)) {
               if (filterDebug)
                 console.log(`skipping result due to time filter`, result);
+
               return;
             }
           } else if (result.mode == "words") {
             let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
+
             if (
               [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
             ) {
               wordfilter = result.mode2;
             }
+
             if (!ResultFilters.getFilter("words", wordfilter)) {
               if (filterDebug)
                 console.log(`skipping result due to word filter`, result);
+
               return;
             }
           }
 
           if (result.quoteLength != null) {
             let filter: MonkeyTypes.QuoteModes | undefined = undefined;
+
             if (result.quoteLength === 0) {
               filter = "short";
             } else if (result.quoteLength === 1) {
@@ -354,6 +421,7 @@ export function update(): void {
             } else if (result.quoteLength === 3) {
               filter = "thicc";
             }
+
             if (
               filter !== undefined &&
               !ResultFilters.getFilter("quoteLength", filter)
@@ -363,6 +431,7 @@ export function update(): void {
                   `skipping result due to quoteLength filter`,
                   result
                 );
+
               return;
             }
           }
@@ -378,29 +447,37 @@ export function update(): void {
           ) {
             langFilter = true;
           }
+
           if (!langFilter) {
             if (filterDebug)
               console.log(`skipping result due to language filter`, result);
+
             return;
           }
 
           let puncfilter: MonkeyTypes.Filter<"punctuation"> = "off";
+
           if (result.punctuation) {
             puncfilter = "on";
           }
+
           if (!ResultFilters.getFilter("punctuation", puncfilter)) {
             if (filterDebug)
               console.log(`skipping result due to punctuation filter`, result);
+
             return;
           }
 
           let numfilter: MonkeyTypes.Filter<"numbers"> = "off";
+
           if (result.numbers) {
             numfilter = "on";
           }
+
           if (!ResultFilters.getFilter("numbers", numfilter)) {
             if (filterDebug)
               console.log(`skipping result due to numbers filter`, result);
+
             return;
           }
 
@@ -408,17 +485,20 @@ export function update(): void {
             if (!ResultFilters.getFilter("funbox", "none")) {
               if (filterDebug)
                 console.log(`skipping result due to funbox filter`, result);
+
               return;
             }
           } else {
             if (!ResultFilters.getFilter("funbox", result.funbox)) {
               if (filterDebug)
                 console.log(`skipping result due to funbox filter`, result);
+
               return;
             }
           }
 
           let tagHide = true;
+
           if (result.tags === undefined || result.tags.length === 0) {
             //no tags, show when no tag is enabled
             if (DB.getSnapshot().tags?.length || 0 > 0) {
@@ -435,6 +515,7 @@ export function update(): void {
             result.tags.forEach((tag) => {
               //check if i even need to check tags anymore
               if (!tagHide) return;
+
               //check if tag is valid
               if (validTags?.includes(tag)) {
                 //tag valid, check if filter is on
@@ -449,6 +530,7 @@ export function update(): void {
           if (tagHide) {
             if (filterDebug)
               console.log(`skipping result due to tag filter`, result);
+
             return;
           }
 
@@ -473,6 +555,7 @@ export function update(): void {
           if (datehide) {
             if (filterDebug)
               console.log(`skipping result due to date filter`, result);
+
             return;
           }
 
@@ -482,28 +565,40 @@ export function update(): void {
             "Something went wrong when filtering. Resetting filters.",
             0
           );
+
           console.log(result);
+
           console.error(e);
+
           ResultFilters.reset();
+
           ResultFilters.updateActive();
+
           update();
         }
         //filters done
         //=======================================
 
         const resultDate = new Date(result.timestamp);
+
         resultDate.setSeconds(0);
+
         resultDate.setMinutes(0);
+
         resultDate.setHours(0);
+
         resultDate.setMilliseconds(0);
+
         const resultTimestamp = resultDate.getTime();
 
         if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
           activityChartData[resultTimestamp].amount++;
+
           activityChartData[resultTimestamp].time +=
             result.testDuration +
             result.incompleteTestSeconds -
             (result.afkDuration ?? 0);
+
           activityChartData[resultTimestamp].totalWpm += result.wpm;
         } else {
           activityChartData[resultTimestamp] = {
@@ -517,6 +612,7 @@ export function update(): void {
         }
 
         let tt = 0;
+
         if (
           result.testDuration == undefined &&
           result.mode2 !== "custom" &&
@@ -531,6 +627,7 @@ export function update(): void {
         } else {
           tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
         }
+
         if (result.incompleteTestSeconds != undefined) {
           tt += result.incompleteTestSeconds;
         } else if (
@@ -549,17 +646,23 @@ export function update(): void {
 
         if (last10 < 10) {
           last10++;
+
           wpmLast10total += result.wpm;
+
           totalAcc10 += result.acc;
+
           result.consistency !== undefined
             ? (totalCons10 += result.consistency)
             : 0;
         }
+
         testCount++;
 
         if (result.consistency !== undefined) {
           consCount++;
+
           totalCons += result.consistency;
+
           if (result.consistency > topCons) {
             topCons = result.consistency;
           }
@@ -568,10 +671,14 @@ export function update(): void {
         if (result.rawWpm != null) {
           if (rawWpm.last10Count < 10) {
             rawWpm.last10Count++;
+
             rawWpm.last10Total += result.rawWpm;
           }
+
           rawWpm.total += result.rawWpm;
+
           rawWpm.count++;
+
           if (result.rawWpm > rawWpm.max) {
             rawWpm.max = result.rawWpm;
           }
@@ -615,10 +722,13 @@ export function update(): void {
 
         if (result.wpm > topWpm) {
           const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
+
           const numbsctring = result.numbers
             ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
             : "";
+
           topWpm = result.wpm;
+
           if (result.mode == "custom") topMode = result.mode;
           else
             topMode =
@@ -649,20 +759,26 @@ export function update(): void {
     };
 
     const activityChartData_amount: ActivityChartDataPoint[] = [];
+
     const activityChartData_time: ActivityChartDataPoint[] = [];
+
     const activityChartData_avgWpm: ActivityChartDataPoint[] = [];
+
     // let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
       const dateInt = parseInt(date);
+
       activityChartData_amount.push({
         x: dateInt,
         y: activityChartData[dateInt].amount,
       });
+
       activityChartData_time.push({
         x: dateInt,
         y: Misc.roundTo2(activityChartData[dateInt].time),
         amount: activityChartData[dateInt].amount,
       });
+
       activityChartData_avgWpm.push({
         x: dateInt,
         y: Misc.roundTo2(
@@ -685,6 +801,7 @@ export function update(): void {
 
     ChartController.accountActivity.data.datasets[0].data =
       activityChartData_time;
+
     ChartController.accountActivity.data.datasets[1].data =
       activityChartData_avgWpm;
 
@@ -697,10 +814,13 @@ export function update(): void {
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
+
     ChartController.accountHistory.data.datasets[1].data = accChartData;
 
     const wpms = chartData.map((r) => r.y);
+
     const minWpmChartVal = Math.min(...wpms);
+
     const maxWpmChartVal = Math.max(...wpms);
 
     // let accuracies = accChartData.map((r) => r.y);
@@ -716,15 +836,23 @@ export function update(): void {
 
     if (chartData == [] || chartData.length == 0) {
       $(".pageAccount .group.noDataError").removeClass("hidden");
+
       $(".pageAccount .group.chart").addClass("hidden");
+
       $(".pageAccount .group.dailyActivityChart").addClass("hidden");
+
       $(".pageAccount .group.history").addClass("hidden");
+
       $(".pageAccount .triplegroup.stats").addClass("hidden");
     } else {
       $(".pageAccount .group.noDataError").addClass("hidden");
+
       $(".pageAccount .group.chart").removeClass("hidden");
+
       $(".pageAccount .group.dailyActivityChart").removeClass("hidden");
+
       $(".pageAccount .group.history").removeClass("hidden");
+
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
@@ -734,19 +862,23 @@ export function update(): void {
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .highestWpm .title").text("highest cpm");
+
       $(".pageAccount .highestWpm .val").text(Misc.roundTo2(topWpm * 5));
     } else {
       $(".pageAccount .highestWpm .title").text("highest wpm");
+
       $(".pageAccount .highestWpm .val").text(Misc.roundTo2(topWpm));
     }
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .averageWpm .title").text("average cpm");
+
       $(".pageAccount .averageWpm .val").text(
         Math.round((totalWpm * 5) / testCount)
       );
     } else {
       $(".pageAccount .averageWpm .title").text("average wpm");
+
       $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
     }
 
@@ -754,6 +886,7 @@ export function update(): void {
       $(".pageAccount .averageWpm10 .title").text(
         "average cpm (last 10 tests)"
       );
+
       $(".pageAccount .averageWpm10 .val").text(
         Math.round((wpmLast10total * 5) / last10)
       );
@@ -761,6 +894,7 @@ export function update(): void {
       $(".pageAccount .averageWpm10 .title").text(
         "average wpm (last 10 tests)"
       );
+
       $(".pageAccount .averageWpm10 .val").text(
         Math.round(wpmLast10total / last10)
       );
@@ -768,19 +902,23 @@ export function update(): void {
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .highestRaw .title").text("highest raw cpm");
+
       $(".pageAccount .highestRaw .val").text(Misc.roundTo2(rawWpm.max * 5));
     } else {
       $(".pageAccount .highestRaw .title").text("highest raw wpm");
+
       $(".pageAccount .highestRaw .val").text(Misc.roundTo2(rawWpm.max));
     }
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .averageRaw .title").text("average raw cpm");
+
       $(".pageAccount .averageRaw .val").text(
         Math.round((rawWpm.total * 5) / rawWpm.count)
       );
     } else {
       $(".pageAccount .averageRaw .title").text("average raw wpm");
+
       $(".pageAccount .averageRaw .val").text(
         Math.round(rawWpm.total / rawWpm.count)
       );
@@ -790,6 +928,7 @@ export function update(): void {
       $(".pageAccount .averageRaw10 .title").text(
         "average raw cpm (last 10 tests)"
       );
+
       $(".pageAccount .averageRaw10 .val").text(
         Math.round((rawWpm.last10Total * 5) / rawWpm.last10Count)
       );
@@ -797,33 +936,42 @@ export function update(): void {
       $(".pageAccount .averageRaw10 .title").text(
         "average raw wpm (last 10 tests)"
       );
+
       $(".pageAccount .averageRaw10 .val").text(
         Math.round(rawWpm.last10Total / rawWpm.last10Count)
       );
     }
 
     $(".pageAccount .highestWpm .mode").html(topMode);
+
     $(".pageAccount .testsTaken .val").text(testCount);
 
     $(".pageAccount .highestAcc .val").text(topAcc + "%");
+
     $(".pageAccount .avgAcc .val").text(Math.round(totalAcc / testCount) + "%");
+
     $(".pageAccount .avgAcc10 .val").text(
       Math.round(totalAcc10 / last10) + "%"
     );
 
     if (totalCons == 0 || totalCons == undefined) {
       $(".pageAccount .avgCons .val").text("-");
+
       $(".pageAccount .avgCons10 .val").text("-");
     } else {
       $(".pageAccount .highestCons .val").text(topCons + "%");
+
       $(".pageAccount .avgCons .val").text(
         Math.round(totalCons / consCount) + "%"
       );
+
       $(".pageAccount .avgCons10 .val").text(
         Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
       );
     }
+
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
+
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100
@@ -866,36 +1014,48 @@ export function update(): void {
     );
 
     applyHistorySmoothing();
+
     ChartController.accountActivity.update();
+
     LoadingPage.updateBar(100, true);
+
     setTimeout(() => {
       if (ActivePage.get() == "account") SignOutButton.show();
     }, 125);
+
     Focus.set(false);
+
     Misc.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
       250
     );
   }
+
   if (DB.getSnapshot() === null) {
     Notifications.add(`Missing account data. Please refresh.`, -1);
+
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (DB.getSnapshot().results === undefined) {
     LoadingPage.updateBar(45, true);
+
     DB.getUserResults().then((d: boolean) => {
       TodayTracker.addAllFromToday();
+
       if (d) {
         ResultFilters.updateActive();
+
         update();
       }
     });
   } else {
     console.log("using db snap");
+
     try {
       cont();
     } catch (e) {
       console.error(e);
+
       Notifications.add(`Something went wrong: ${e}`, -1);
     }
   }
@@ -908,7 +1068,9 @@ function sortAndRefreshHistory(
 ): void {
   // Removes styling from previous sorting requests:
   $("td").removeClass("header-sorted");
+
   $("td").children("i").remove();
+
   $(headerClass).addClass("header-sorted");
 
   if (filteredResults.length < 2) return;
@@ -917,6 +1079,7 @@ function sortAndRefreshHistory(
 
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
+
   if (forceDescending !== null) {
     if (forceDescending == true) {
       $(headerClass).append(
@@ -924,6 +1087,7 @@ function sortAndRefreshHistory(
       );
     } else {
       descending = false;
+
       $(headerClass).append(
         '<i class="fas fa-sort-up" aria-hidden="true"></i>'
       );
@@ -933,20 +1097,25 @@ function sortAndRefreshHistory(
     parseInt(filteredResults[filteredResults.length - 1][key] as string)
   ) {
     descending = true;
+
     $(headerClass).append(
       '<i class="fas fa-sort-down" aria-hidden="true"></i>'
     );
   } else {
     descending = false;
+
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
   const temp = [];
+
   const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {
     let lowest = Number.MAX_VALUE;
+
     let highest = -1;
+
     let idx = -1;
 
     for (let i = 0; i < filteredResults.length; i++) {
@@ -957,6 +1126,7 @@ function sortAndRefreshHistory(
           !parsedIndexes.includes(i)
         ) {
           lowest = filteredResults[i][key] as number;
+
           idx = i;
         }
       } else {
@@ -965,18 +1135,23 @@ function sortAndRefreshHistory(
           !parsedIndexes.includes(i)
         ) {
           highest = filteredResults[i][key] as number;
+
           idx = i;
         }
       }
     }
 
     temp.push(filteredResults[idx]);
+
     parsedIndexes.push(idx);
   }
+
   filteredResults = temp;
 
   $(".pageAccount .history table tbody").empty();
+
   visibleTableLines = 0;
+
   loadMoreLines();
 }
 
@@ -998,29 +1173,42 @@ $(".pageAccount .loadMoreButton").click(() => {
 
 $(".pageAccount #accountHistoryChart").click(() => {
   const index: number = ChartController.accountHistoryActiveIndex;
+
   loadMoreLines(index);
+
   if (!window) return;
+
   const windowHeight = $(window).height() ?? 0;
+
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
+
   const scrollTo = offset - windowHeight / 2;
+
   $([document.documentElement, document.body]).animate(
     {
       scrollTop: scrollTo,
     },
     500
   );
+
   $(".resultRow").removeClass("active");
+
   $(`#result-${index}`).addClass("active");
 });
 
 $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   console.log("updating");
+
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
+
   if (filteredId === undefined) return;
+
   MiniResultChart.updateData(
     filteredResults[parseInt(filteredId)].chartData as MonkeyTypes.ChartData
   );
+
   MiniResultChart.show();
+
   MiniResultChart.updatePosition(
     event.pageX - ($(".pageAccount .miniResultChartWrapper").outerWidth() ?? 0),
     event.pageY + 30

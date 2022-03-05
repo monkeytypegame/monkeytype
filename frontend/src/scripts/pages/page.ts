@@ -16,11 +16,17 @@ export default class Page {
     afterShow: () => void
   ) {
     this.name = name;
+
     this.element = element;
+
     this.pathname = pathname;
+
     this.beforeHide = beforeHide;
+
     this.afterHide = afterHide;
+
     this.beforeShow = beforeShow;
+
     this.afterShow = afterShow;
   }
 }

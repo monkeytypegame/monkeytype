@@ -15,12 +15,15 @@ function checkIfKeyExists(
 class ApeKeysDAO {
   static async getApeKeys(uid: string): Promise<MonkeyTypes.User["apeKeys"]> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+
     const userApeKeys = user.apeKeys ?? {};
+
     return userApeKeys;
   }
 
   static async countApeKeysForUser(uid: string): Promise<number> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+
     return _.size(user.apeKeys);
   }
 
@@ -49,6 +52,7 @@ class ApeKeysDAO {
     enabled?: boolean
   ): Promise<void> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+
     checkIfKeyExists(user.apeKeys, keyId);
 
     const apeKey = user.apeKeys[keyId];
@@ -67,9 +71,11 @@ class ApeKeysDAO {
 
   static async deleteApeKey(uid: string, keyId: string): Promise<void> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+
     checkIfKeyExists(user.apeKeys, keyId);
 
     const apeKeys = _.omit(user.apeKeys, keyId);
+
     await UsersDAO.setApeKeys(uid, apeKeys);
   }
 }

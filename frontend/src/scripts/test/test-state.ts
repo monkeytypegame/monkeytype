@@ -1,5 +1,7 @@
 export let isRepeated = false;
+
 export let isPaceRepeat = false;
+
 export let activeChallenge: null | MonkeyTypes.Challenge = null;
 
 export function setRepeated(tf: boolean): void {

@@ -7,11 +7,13 @@ export function roundTo2(num: number): number {
 
 export function stdDev(population: number[]): number {
   const n = population.length;
+
   if (n === 0) {
     return 0;
   }
 
   const populationMean = mean(population);
+
   const variance = _.sumBy(population, (x) => (x - populationMean) ** 2) / n;
 
   return Math.sqrt(variance);
@@ -19,6 +21,7 @@ export function stdDev(population: number[]): number {
 
 export function mean(population: number[]): number {
   const n = population.length;
+
   return n > 0 ? _.sum(population) / n : 0;
 }
 
@@ -64,6 +67,7 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const {
     device: { vendor, model, type },
   } = agent;
+
   if (vendor) {
     agentLog.device = `${vendor} ${model} ${type}`;
   }

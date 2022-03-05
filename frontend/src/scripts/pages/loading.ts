@@ -3,6 +3,7 @@ import Page from "./page";
 
 export function updateBar(percentage: number, fast?: boolean): void {
   const speed = fast ? 100 : 1000;
+
   $(".pageLoading .fill, .pageAccount .fill")
     .stop(true, true)
     .animate(
@@ -27,6 +28,7 @@ export function showBar(): Promise<void> {
         resolve();
       }
     );
+
     Misc.swapElements(
       $(".pageAccount .icon"),
       $(".pageAccount .barWrapper"),

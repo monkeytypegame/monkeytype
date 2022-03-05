@@ -1,6 +1,7 @@
 import * as Misc from "../misc";
 
 let id = 0;
+
 class Notification {
   id: number;
   type: string;
@@ -22,8 +23,11 @@ class Notification {
     }
   ) {
     this.type = type;
+
     this.message = message;
+
     this.level = level;
+
     if (type === "banner") {
       this.duration = duration as number;
     } else {
@@ -37,9 +41,13 @@ class Notification {
         this.duration = duration * 1000;
       }
     }
+
     this.customTitle = customTitle;
+
     this.customIcon = customIcon;
+
     this.id = id++;
+
     this.closeCallback = closeCallback;
   }
   //level
@@ -48,16 +56,24 @@ class Notification {
   //-1 - bad
   show(): void {
     let cls = "notice";
+
     let icon = `<i class="fas fa-fw fa-exclamation"></i>`;
+
     let title = "Notice";
+
     if (this.level === 1) {
       cls = "good";
+
       icon = `<i class="fas fa-fw fa-check"></i>`;
+
       title = "Success";
     } else if (this.level === -1) {
       cls = "bad";
+
       icon = `<i class="fas fa-fw fa-times"></i>`;
+
       title = "Error";
+
       console.error(this.message);
     }
 
@@ -76,6 +92,7 @@ class Notification {
     if (this.type === "notification") {
       // moveCurrentToHistory();
       const oldHeight = $("#notificationCenter .history").height() as number;
+
       $("#notificationCenter .history").prepend(`
           
           <div class="notif ${cls}" id=${this.id}>
@@ -84,8 +101,11 @@ class Notification {
           </div>     
 
           `);
+
       const newHeight = $("#notificationCenter .history").height() as number;
+
       $(`#notificationCenter .notif[id='${this.id}']`).remove();
+
       $("#notificationCenter .history")
         .css("margin-top", 0)
         .animate(
@@ -95,6 +115,7 @@ class Notification {
           125,
           () => {
             $("#notificationCenter .history").css("margin-top", 0);
+
             $("#notificationCenter .history").prepend(`
           
                   <div class="notif ${cls}" id=${this.id}>
@@ -103,6 +124,7 @@ class Notification {
                   </div>     
 
               `);
+
             $(`#notificationCenter .notif[id='${this.id}']`)
               .css("opacity", 0)
               .animate(
@@ -117,12 +139,15 @@ class Notification {
                   );
                 }
               );
+
             $(`#notificationCenter .notif[id='${this.id}']`).click(() => {
               this.hide();
+
               this.closeCallback();
             });
           }
         );
+
       $(`#notificationCenter .notif[id='${this.id}']`).hover(() => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
@@ -152,19 +177,25 @@ class Notification {
         </div>
       </div>
       `);
+
       const height = $("#bannerCenter").height() as number;
+
       $("#centerContent").css(
         "padding-top",
         height + Misc.convertRemToPixels(2) + "px"
       );
+
       $("#notificationCenter").css("margin-top", height + "px");
+
       if (this.duration >= 0) {
         $(`#bannerCenter .banner[id='${this.id}'] .closeButton`).click(() => {
           this.hide();
+
           this.closeCallback();
         });
       }
     }
+
     if (this.duration > 0) {
       setTimeout(() => {
         this.hide();
@@ -194,11 +225,14 @@ class Notification {
         );
     } else if (this.type === "banner") {
       $(`#bannerCenter .banner[id='${this.id}']`).remove();
+
       const height = $("#bannerCenter").height() as number;
+
       $("#centerContent").css(
         "padding-top",
         height + Misc.convertRemToPixels(2) + "px"
       );
+
       $("#notificationCenter").css("margin-top", height + "px");
     }
   }

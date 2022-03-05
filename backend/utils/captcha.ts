@@ -11,6 +11,7 @@ export async function verify(captcha: string): Promise<boolean> {
   if (process.env.MODE === "dev") {
     return true;
   }
+
   const response = await fetch(
     `https://www.google.com/recaptcha/api/siteverify`,
     {
@@ -19,6 +20,8 @@ export async function verify(captcha: string): Promise<boolean> {
       body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`,
     }
   );
+
   const captchaData = (await response.json()) as CaptchaData;
+
   return captchaData.success;
 }

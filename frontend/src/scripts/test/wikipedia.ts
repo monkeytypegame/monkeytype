@@ -7,7 +7,9 @@ export class Section {
   public words: string[];
   constructor(title: string, author: string, words: string[]) {
     this.title = title;
+
     this.author = author;
+
     this.words = words;
   }
 }
@@ -60,43 +62,56 @@ export async function getSection(language: string): Promise<Section> {
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
+
   const currentLanguageGroup = await Misc.findCurrentGroup(language);
+
   if (currentLanguageGroup !== undefined)
     urlTLD = await getTLD(currentLanguageGroup);
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
+
   const sectionObj: SectionObject = { title: "", author: "" };
+
   const randomPostReq = await fetch(randomPostURL);
+
   let pageid = 0;
 
   if (randomPostReq.status == 200) {
     const postObj: Post = await randomPostReq.json();
+
     sectionObj.title = postObj.title;
+
     sectionObj.author = postObj.author;
+
     pageid = postObj.pageid;
   }
 
   return new Promise((res, rej) => {
     if (randomPostReq.status != 200) {
       Loader.hide();
+
       rej(randomPostReq.status);
     }
 
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
     const sectionReq = new XMLHttpRequest();
+
     sectionReq.onload = (): void => {
       if (sectionReq.readyState == 4) {
         if (sectionReq.status == 200) {
           let sectionText: string = JSON.parse(sectionReq.responseText).query
             .pages[pageid.toString()].extract;
+
           const words: string[] = [];
 
           // Remove double whitespaces and finally trailing whitespaces.
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
+
           sectionText = $("<div/>").html(sectionText).text();
 
           sectionText = sectionText.replace(/\s+/g, " ");
+
           sectionText = sectionText.trim();
 
           // // Add spaces
@@ -113,15 +128,20 @@ export async function getSection(language: string): Promise<Section> {
             sectionObj.author,
             words
           );
+
           Loader.hide();
+
           res(section);
         } else {
           Loader.hide();
+
           rej(sectionReq.status);
         }
       }
     };
+
     sectionReq.open("GET", sectionURL);
+
     sectionReq.send();
   });
 }

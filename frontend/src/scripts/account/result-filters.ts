@@ -69,8 +69,10 @@ function save(): void {
 export function load(): void {
   // let newTags = $.cookie("activeTags");
   console.log("loading filters");
+
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
+
     if (
       newResultFilters != undefined &&
       newResultFilters !== "" &&
@@ -101,7 +103,9 @@ export function load(): void {
     save();
   } catch {
     console.log("error in loading result filters");
+
     filters = defaultResultFilters;
+
     save();
   }
 }
@@ -133,6 +137,7 @@ export function getFilter<G extends MonkeyTypes.Group>(
 
 export function loadTags(tags: MonkeyTypes.Tag[]): void {
   console.log("loading tags");
+
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -140,6 +145,7 @@ export function loadTags(tags: MonkeyTypes.Tag[]): void {
 
 export function reset(): void {
   filters = defaultResultFilters;
+
   save();
 }
 
@@ -150,11 +156,13 @@ type AboveChartDisplay = MonkeyTypes.PartialRecord<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
+
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
+
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
     ).forEach((filter) => {
@@ -168,7 +176,9 @@ export function updateActive(): void {
         if (groupAboveChartDisplay["all"] !== undefined)
           groupAboveChartDisplay["all"] = false;
       }
+
       let buttonEl;
+
       if (group === "date") {
         buttonEl = $(
           `.pageAccount .group.topFilters .filterGroup[group="${group}"] .button[filter="${filter}"]`
@@ -178,6 +188,7 @@ export function updateActive(): void {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
         );
       }
+
       if (getFilter(group, filter)) {
         buttonEl.addClass("active");
       } else {
@@ -188,7 +199,9 @@ export function updateActive(): void {
 
   function addText(group: MonkeyTypes.Group): string {
     let ret = "";
+
     ret += "<div class='group'>";
+
     if (group == "difficulty") {
       ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
     } else if (group == "mode") {
@@ -219,6 +232,7 @@ export function updateActive(): void {
     } else if (group == "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
+
     if (aboveChartDisplay[group]?.all) {
       ret += "all";
     } else {
@@ -226,11 +240,15 @@ export function updateActive(): void {
         ret += aboveChartDisplay.tags?.array
           ?.map((id) => {
             if (id == "none") return id;
+
             const snapshot = DB.getSnapshot();
+
             const name = snapshot.tags?.filter((t) => t._id == id)[0];
+
             if (name !== undefined) {
               return snapshot.tags?.filter((t) => t._id == id)[0].name;
             }
+
             return name;
           })
           .join(", ");
@@ -238,7 +256,9 @@ export function updateActive(): void {
         ret += aboveChartDisplay[group]?.array?.join(", ").replace(/_/g, " ");
       }
     }
+
     ret += "</span></div>";
+
     return ret;
   }
 
@@ -246,42 +266,51 @@ export function updateActive(): void {
 
   //date
   chartString += addText("date");
+
   chartString += `<div class="spacer"></div>`;
 
   //mode
   chartString += addText("mode");
+
   chartString += `<div class="spacer"></div>`;
 
   //time
   if (aboveChartDisplay.mode?.array?.includes("time")) {
     chartString += addText("time");
+
     chartString += `<div class="spacer"></div>`;
   }
 
   //words
   if (aboveChartDisplay.mode?.array?.includes("words")) {
     chartString += addText("words");
+
     chartString += `<div class="spacer"></div>`;
   }
 
   //diff
   chartString += addText("difficulty");
+
   chartString += `<div class="spacer"></div>`;
 
   //punc
   chartString += addText("punctuation");
+
   chartString += `<div class="spacer"></div>`;
 
   //numbers
   chartString += addText("numbers");
+
   chartString += `<div class="spacer"></div>`;
 
   //language
   chartString += addText("language");
+
   chartString += `<div class="spacer"></div>`;
 
   //funbox
   chartString += addText("funbox");
+
   chartString += `<div class="spacer"></div>`;
 
   //tags
@@ -304,18 +333,24 @@ export function toggle<G extends MonkeyTypes.Group>(
         }
       );
     }
+
     filters[group][filter] = !filters[group][
       filter
     ] as unknown as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
+
     save();
   } catch (e) {
     Notifications.add(
       "Something went wrong toggling filter. Reverting to defaults.",
       0
     );
+
     console.log("toggling filter error");
+
     console.error(e);
+
     reset();
+
     updateActive();
   }
 }
@@ -331,9 +366,11 @@ export function updateTags(): void {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
+
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
+
     snapshot.tags?.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
@@ -352,7 +389,9 @@ $(
   const group = $(e.target)
     .parents(".buttons")
     .attr("group") as MonkeyTypes.Group;
+
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
+
   if ($(e.target).hasClass("allFilters")) {
     (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
       (
@@ -368,6 +407,7 @@ $(
         }
       });
     });
+
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
     (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
@@ -390,6 +430,7 @@ $(
         // @ts-ignore
         filters[group][filter] = false;
       });
+
       // TODO figure out why "filter" is never
       // @ts-ignore
       filters[group][filter] = true;
@@ -398,7 +439,9 @@ $(
       // filters[group][filter] = !filters[group][filter];
     }
   }
+
   updateActive();
+
   save();
 });
 
@@ -418,8 +461,11 @@ $(".pageAccount .topFilters .button.allFilters").click(() => {
       }
     });
   });
+
   filters["date"]["all"] = true;
+
   updateActive();
+
   save();
 });
 
@@ -435,10 +481,13 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   });
 
   filters["difficulty"][Config.difficulty] = true;
+
   filters["mode"][Config.mode] = true;
+
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
       const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
+
       filters["time"][configTime] = true;
     } else {
       filters["time"]["custom"] = true;
@@ -446,6 +495,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
+
       filters["words"][configWords] = true;
     } else {
       filters["words"]["custom"] = true;
@@ -457,6 +507,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
       "long",
       "thicc",
     ];
+
     filterName.forEach((ql, index) => {
       if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
         filters["quoteLength"][ql] = true;
@@ -465,16 +516,19 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
       }
     });
   }
+
   if (Config.punctuation) {
     filters["punctuation"]["on"] = true;
   } else {
     filters["punctuation"]["off"] = true;
   }
+
   if (Config.numbers) {
     filters["numbers"]["on"] = true;
   } else {
     filters["numbers"]["off"] = true;
   }
+
   if (Config.mode === "quote" && /english.*/.test(Config.language)) {
     filters["language"]["english"] = true;
   } else {
@@ -492,17 +546,21 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   DB.getSnapshot().tags?.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
+
       filters["tags"][tag._id] = true;
     }
   });
 
   filters["date"]["all"] = true;
+
   updateActive();
+
   save();
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click(() => {
   $(".pageAccount .filterButtons").slideToggle(250);
+
   $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
     "active"
   );
@@ -524,6 +582,7 @@ Misc.getLanguageList().then((languages) => {
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
 ).append(`<div class="button" filter="none">none</div>`);
+
 Misc.getFunboxList().then((funboxModes) => {
   funboxModes.forEach((funbox) => {
     $(

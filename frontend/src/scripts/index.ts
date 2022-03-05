@@ -8,6 +8,7 @@ import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
 
 Chart.plugins.register(chartTrendline);
+
 Chart.plugins.register(chartAnnotation);
 
 import * as DB from "./db";

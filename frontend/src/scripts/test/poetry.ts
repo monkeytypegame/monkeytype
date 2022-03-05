@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const bannedChars = ["—", "_", " "];
+
 const maxWords = 100;
+
 const apiURL = "https://poetrydb.org/random";
 
 export class Poem {
@@ -10,7 +12,9 @@ export class Poem {
   public words: string[];
   constructor(title: string, author: string, words: string[]) {
     this.title = title;
+
     this.author = author;
+
     this.words = words;
 
     this.cleanUpText();
@@ -18,9 +22,12 @@ export class Poem {
 
   cleanUpText(): void {
     let count = 0;
+
     const scrubbedWords = [];
+
     for (let i = 0; i < this.words.length; i++) {
       let scrubbed = "";
+
       for (let j = 0; j < this.words[i].length; j++) {
         if (!bannedChars.includes(this.words[i][j]))
           scrubbed += this.words[i][j];
@@ -29,6 +36,7 @@ export class Poem {
       if (scrubbed == "") continue;
 
       scrubbedWords.push(scrubbed);
+
       count++;
 
       if (count == maxWords) break;

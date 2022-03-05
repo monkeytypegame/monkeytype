@@ -37,8 +37,11 @@ function apply(): void {
 
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setWordCount(val as MonkeyTypes.WordsModes);
+
     ManualRestart.set();
+
     TestLogic.restart();
+
     if (val > 2000) {
       Notifications.add("Stay safe and take breaks!", 0);
     } else if (val == 0) {
@@ -73,6 +76,7 @@ $("#customWordAmountPopup .button").click(() => {
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
+
   if (wrd == "custom") {
     show();
   }
@@ -84,6 +88,7 @@ $(document).keydown((event) => {
     !$("#customWordAmountPopupWrapper").hasClass("hidden")
   ) {
     hide();
+
     event.preventDefault();
   }
 });

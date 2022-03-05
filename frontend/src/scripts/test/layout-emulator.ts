@@ -10,6 +10,7 @@ export async function getCharFromEvent(
     newKeyPreview: string
   ): boolean {
     if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+
     return event.shiftKey;
   }
 
@@ -182,15 +183,21 @@ export async function getCharFromEvent(
     .concat(layoutKeys["row5"]);
 
   let mapIndex = null;
+
   for (let i = 0; i < keyEventCodes.length; i++) {
     if (event.code == keyEventCodes[i]) {
       mapIndex = i;
     }
   }
+
   if (!mapIndex) return null;
+
   const newKeyPreview = layoutMap[mapIndex][0];
+
   const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
+
   const char = layoutMap[mapIndex][shift];
+
   if (char) {
     return char;
   } else {

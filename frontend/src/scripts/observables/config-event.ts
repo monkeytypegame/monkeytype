@@ -24,6 +24,7 @@ export function dispatch(
       fn(key, newValue, nosave, previousValue, fullConfig);
     } catch (e) {
       console.error("Config event subscriber threw an error");
+
       console.error(e);
     }
   });

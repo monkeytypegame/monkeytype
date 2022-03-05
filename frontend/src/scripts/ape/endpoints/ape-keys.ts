@@ -9,6 +9,7 @@ export default function getApeKeysEndpoints(
 
   async function generate(name: string, enabled: boolean): Ape.EndpointData {
     const payload = { name, enabled };
+
     return await apeClient.post(BASE_PATH, { payload });
   }
 
@@ -18,6 +19,7 @@ export default function getApeKeysEndpoints(
     enabled: boolean
   ): Ape.EndpointData {
     const payload = { name, enabled };
+
     return await apeClient.patch(`${BASE_PATH}/${apeKeyId}`, { payload });
   }
 

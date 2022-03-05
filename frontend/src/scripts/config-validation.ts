@@ -16,7 +16,9 @@ type PossibleTypeAsync = "layoutfluid";
 
 export function isConfigKeyValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
+
   if (name.length > 30) return false;
+
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
 
@@ -55,38 +57,46 @@ export function isConfigValueValid(
     switch (possibleType) {
       case "boolean":
         if (typeof val === "boolean") isValid = true;
+
         break;
 
       case "null":
         if (val === null) isValid = true;
+
         break;
 
       case "number":
         if (typeof val === "number") isValid = true;
+
         break;
 
       case "numberArray":
         if (isArray(val) && val.every((v) => typeof v === "number"))
           isValid = true;
+
         break;
 
       case "string":
         if (typeof val === "string") isValid = true;
+
         break;
 
       case "stringArray":
         if (isArray(val) && val.every((v) => typeof v === "string"))
           isValid = true;
+
         break;
 
       case "undefined":
         if (typeof val === "undefined" || val === undefined) isValid = true;
+
         break;
 
       default:
         if (isArray(possibleType)) {
           if (possibleType.includes(<never>val)) isValid = true;
         }
+
         break;
     }
   }

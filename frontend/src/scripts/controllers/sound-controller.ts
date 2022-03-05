@@ -10,15 +10,18 @@ type ClickSounds = {
 };
 
 let errorSound: Howler.Howl | null = null;
+
 let clickSounds: ClickSounds | null = null;
 
 export function initErrorSound(): void {
   if (errorSound !== null) return;
+
   errorSound = new Howl({ src: ["../sound/error.wav"] });
 }
 
 export function init(): void {
   if (clickSounds !== null) return;
+
   clickSounds = {
     1: [
       {
@@ -228,30 +231,41 @@ export function init(): void {
 
 export function previewClick(val: string): void {
   if (clickSounds === null) init();
+
   (clickSounds as ClickSounds)[val][0].sounds[0].seek(0);
+
   (clickSounds as ClickSounds)[val][0].sounds[0].play();
 }
 
 export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
+
   if (clickSounds === null) init();
 
   const rand = Math.floor(
     Math.random() * (clickSounds as ClickSounds)[Config.playSoundOnClick].length
   );
+
   const randomSound = (clickSounds as ClickSounds)[Config.playSoundOnClick][
     rand
   ];
+
   randomSound.counter++;
+
   if (randomSound.counter === 2) randomSound.counter = 0;
+
   randomSound.sounds[randomSound.counter].seek(0);
+
   randomSound.sounds[randomSound.counter].play();
 }
 
 export function playError(): void {
   if (!Config.playSoundOnError) return;
+
   if (errorSound === null) initErrorSound();
+
   (errorSound as Howler.Howl).seek(0);
+
   (errorSound as Howler.Howl).play();
 }
 
@@ -263,5 +277,6 @@ export function setVolume(val: string): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
+
   if (eventKey === "soundVolume") setVolume(eventValue as string);
 });

@@ -15,6 +15,7 @@ class ApeKeysController {
     const { uid } = req.ctx.decodedToken;
 
     const apeKeys = await ApeKeysDAO.getApeKeys(uid);
+
     const hashlessKeys = _.mapValues(apeKeys, cleanApeKey);
 
     return new MonkeyResponse("ApeKeys retrieved", hashlessKeys);
@@ -24,7 +25,9 @@ class ApeKeysController {
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {
     const { name, enabled } = req.body;
+
     const { uid } = req.ctx.decodedToken;
+
     const { maxKeysPerUser, apeKeyBytes, apeKeySaltRounds } =
       req.ctx.configuration.apeKeys;
 
@@ -38,6 +41,7 @@ class ApeKeysController {
     }
 
     const apiKey = randomBytes(apeKeyBytes).toString("base64url");
+
     const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
     const apeKey: MonkeyTypes.ApeKey = {
@@ -59,7 +63,9 @@ class ApeKeysController {
 
   static async updateApeKey(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { apeKeyId } = req.params;
+
     const { name, enabled } = req.body;
+
     const { uid } = req.ctx.decodedToken;
 
     await ApeKeysDAO.updateApeKey(uid, apeKeyId, name, enabled);
@@ -69,6 +75,7 @@ class ApeKeysController {
 
   static async deleteApeKey(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { apeKeyId } = req.params;
+
     const { uid } = req.ctx.decodedToken;
 
     await ApeKeysDAO.deleteApeKey(uid, apeKeyId);

@@ -46,13 +46,17 @@ class DatabaseClient {
 
     try {
       await this.mongoClient.connect();
+
       this.db = this.mongoClient.db(DB_NAME);
+
       this.connected = true;
     } catch (error) {
       console.error(error.message);
+
       console.error(
         "Failed to connect to database. Exiting with exit status code 1."
       );
+
       process.exit(1);
     }
   }

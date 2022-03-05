@@ -13,7 +13,9 @@ import swStats from "swagger-stats";
 import SwaggerSpec from "../../swagger.json";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
+
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
+
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
@@ -48,12 +50,17 @@ function addApiRoutes(app: Application): void {
       onResponseFinish: (_req, res, rrr) => {
         //@ts-ignore ignored because monkeyMessage doesnt exist on the type
         rrr.http.response.message = res.monkeyMessage;
+
         if (process.env.MODE === "dev") {
           return;
         }
+
         const authHeader = rrr.http.request.headers.authorization ?? "None";
+
         const authType = authHeader.split(" ");
+
         rrr.http.request.headers.authorization = authType[0];
+
         rrr.http.request.headers["x-forwarded-for"] = "";
       },
     })
@@ -66,10 +73,12 @@ function addApiRoutes(app: Application): void {
 
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });
+
         return;
       }
 
       requestsProcessed++;
+
       next();
     }
   );
@@ -96,7 +105,9 @@ function addApiRoutes(app: Application): void {
 
   Object.keys(API_ROUTE_MAP).forEach((route) => {
     const apiRoute = `${BASE_ROUTE}${route}`;
+
     const router = API_ROUTE_MAP[route];
+
     app.use(apiRoute, router);
   });
 

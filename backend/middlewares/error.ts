@@ -14,7 +14,9 @@ async function errorHandlingMiddleware(
   const monkeyError = error as MonkeyError;
 
   const monkeyResponse = new MonkeyResponse();
+
   monkeyResponse.status = 500;
+
   monkeyResponse.data = {
     errorId: monkeyError.errorId ?? uuidv4(),
     uid: monkeyError.uid ?? req.ctx?.decodedToken?.uid,
@@ -25,6 +27,7 @@ async function errorHandlingMiddleware(
       "Could not connect to the database. It may be down.";
   } else if (error instanceof MonkeyError) {
     monkeyResponse.message = error.message;
+
     monkeyResponse.status = error.status;
   } else {
     monkeyResponse.message =
@@ -40,6 +43,7 @@ async function errorHandlingMiddleware(
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid
       );
+
       await db.collection<any>("errors").insertOne({
         _id: errorId,
         timestamp: Date.now(),
@@ -51,10 +55,12 @@ async function errorHandlingMiddleware(
       });
     } catch (e) {
       console.error("Failed to save error.");
+
       console.error(e);
     }
   } else {
     console.error(error.message);
+
     console.error(error.stack);
   }
 

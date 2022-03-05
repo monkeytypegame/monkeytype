@@ -10,6 +10,7 @@ export function saveActiveToLocalStorage(): void {
         tags.push(tag._id);
       }
     });
+
     // let d = new Date();
     // d.setFullYear(d.getFullYear() + 1);
     // $.cookie("activeTags", null);
@@ -31,7 +32,9 @@ export function clear(nosave = false): void {
   });
 
   DB.setSnapshot(snapshot);
+
   ModesNotice.update();
+
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -47,7 +50,9 @@ export function set(tagid: string, state: boolean, nosave = false): void {
   });
 
   DB.setSnapshot(snapshot);
+
   ModesNotice.update();
+
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -61,7 +66,9 @@ export function toggle(tagid: string, nosave = false): void {
       }
     }
   });
+
   ModesNotice.update();
+
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -70,15 +77,18 @@ export function loadActiveFromLocalStorage(): void {
   let newTags: string[] | string = window.localStorage.getItem(
     "activeTags"
   ) as string;
+
   if (newTags != undefined && newTags !== "") {
     try {
       newTags = JSON.parse(newTags) ?? [];
     } catch (e) {
       newTags = [];
     }
+
     (newTags as string[]).forEach((ntag) => {
       toggle(ntag, true);
     });
+
     saveActiveToLocalStorage();
   }
 }

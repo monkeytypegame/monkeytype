@@ -43,12 +43,16 @@ export let result = new Chart($("#wpmChart"), {
         pointStyle: "crossRot",
         radius: function (context) {
           let index = context.dataIndex;
+
           let value = context.dataset.data[index];
+
           return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
           let index = context.dataIndex;
+
           let value = context.dataset.data[index];
+
           return value <= 0 ? 0 : 5;
         },
       },
@@ -67,9 +71,12 @@ export let result = new Chart($("#wpmChart"), {
               TestInput.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
 
             let unique = [...new Set(wordsToHighlight)];
+
             unique.forEach((wordIndex) => {
               let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
+
               let input = wordEl.attr("input");
+
               if (input != undefined)
                 wordEl.append(
                   `<div class="wordInputAfter">${input
@@ -200,6 +207,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
       intersect: false,
       custom: function (tooltip) {
         if (!tooltip) return;
+
         // disable displaying the color box;
         tooltip.displayColors = false;
       },
@@ -211,11 +219,13 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
         beforeLabel: function (tooltipItem, data) {
           let resultData =
             data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+
           if (tooltipItem.datasetIndex !== 0) {
             return `error rate: ${Misc.roundTo2(
               resultData.errorRate
             )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
           }
+
           let label =
             `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
             "\n" +
@@ -232,9 +242,11 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
           }
 
           let diff = resultData.difficulty;
+
           if (diff == undefined) {
             diff = "normal";
           }
+
           label += "\n" + `difficulty: ${diff}`;
 
           label +=
@@ -252,6 +264,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
         },
         afterLabel: function (tooltip) {
           accountHistoryActiveIndex = tooltip.index;
+
           return;
         },
       },
@@ -355,11 +368,13 @@ export let accountActivity = new Chart(
               data.datasets[tooltipItem[0].datasetIndex].data[
                 tooltipItem[0].index
               ];
+
             return moment(resultData.x).format("DD MMM YYYY");
           },
           beforeLabel: function (tooltipItem, data) {
             let resultData =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+
             if (tooltipItem.datasetIndex === 0) {
               return `Time Typing: ${Misc.secondsToString(
                 Math.round(resultData.y),
@@ -490,12 +505,16 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
         pointStyle: "crossRot",
         radius: function (context) {
           let index = context.dataIndex;
+
           let value = context.dataset.data[index];
+
           return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
           let index = context.dataIndex;
+
           let value = context.dataset.data[index];
+
           return value <= 0 ? 0 : 5;
         },
       },
@@ -631,29 +650,39 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
 
 function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
+
   accountHistory.options.scales.yAxes[1].display = Config.chartAccuracy;
+
   accountHistory.update();
 }
 
 function updateStyle() {
   if (Config.chartStyle == "scatter") {
     accountHistory.data.datasets[0].showLine = false;
+
     accountHistory.data.datasets[1].showLine = false;
   } else {
     accountHistory.data.datasets[0].showLine = true;
+
     accountHistory.data.datasets[1].showLine = true;
   }
+
   accountHistory.update();
 }
 
 export async function updateColors(chart) {
   let bgcolor = await ThemeColors.get("bg");
+
   let subcolor = await ThemeColors.get("sub");
+
   let maincolor = await ThemeColors.get("main");
+
   let errorcolor = await ThemeColors.get("error");
 
   chart.data.datasets[0].borderColor = maincolor;
+
   chart.data.datasets[1].borderColor = subcolor;
+
   if (chart.data.datasets[2]) {
     chart.data.datasets[2].borderColor = errorcolor;
   }
@@ -684,33 +713,40 @@ export async function updateColors(chart) {
 
   try {
     chart.options.scales.xAxes[0].ticks.minor.fontColor = subcolor;
+
     chart.options.scales.xAxes[0].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
     chart.options.scales.yAxes[0].ticks.minor.fontColor = subcolor;
+
     chart.options.scales.yAxes[0].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
     chart.options.scales.yAxes[1].ticks.minor.fontColor = subcolor;
+
     chart.options.scales.yAxes[1].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
     chart.options.scales.yAxes[2].ticks.minor.fontColor = subcolor;
+
     chart.options.scales.yAxes[2].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
     chart.data.datasets[0].trendlineLinear.style = subcolor;
+
     chart.data.datasets[1].trendlineLinear.style = subcolor;
   } catch {}
 
   try {
     chart.options.annotation.annotations.forEach((annotation) => {
       annotation.borderColor = subcolor;
+
       annotation.label.backgroundColor = subcolor;
+
       annotation.label.fontColor = bgcolor;
     });
   } catch {}
@@ -752,14 +788,20 @@ export function setDefaultFontFamily(font) {
 
 export function updateAllChartColors() {
   ThemeColors.update();
+
   accountHistory.updateColors();
+
   result.updateColors();
+
   accountActivity.updateColors();
+
   miniResult.updateColors();
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "chartAccuracy") updateAccuracy();
+
   if (eventKey === "chartStyle") updateStyle();
+
   if (eventKey === "fontFamily") setDefaultFontFamily(eventValue);
 });

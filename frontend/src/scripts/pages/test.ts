@@ -13,8 +13,11 @@ export const page = new Page(
   "/",
   async () => {
     TestLogic.restart();
+
     Funbox.clear();
+
     TestConfig.hide();
+
     $("#wordsInput").focusout();
   },
   async () => {
@@ -22,9 +25,13 @@ export const page = new Page(
   },
   () => {
     TestConfig.show();
+
     TestStats.resetIncomplete();
+
     ManualRestart.set();
+
     TestLogic.restart(undefined, undefined, undefined, undefined, true);
+
     Funbox.activate(Config.funbox);
   },
   () => {

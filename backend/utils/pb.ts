@@ -16,7 +16,9 @@ export function checkAndUpdatePb(
   const { mode, mode2 } = result;
 
   const userPb = userPersonalBests ?? {};
+
   userPb[mode] = userPb[mode] ?? {};
+
   userPb[mode][mode2] = userPb[mode][mode2] ?? [];
 
   const personalBestMatch: MonkeyTypes.PersonalBest = userPb[mode][mode2].find(
@@ -29,6 +31,7 @@ export function checkAndUpdatePb(
 
   if (personalBestMatch) {
     const didUpdate = updatePersonalBest(personalBestMatch, result);
+
     isPb = didUpdate;
   } else {
     userPb[mode][mode2].push(buildPersonalBest(result));
@@ -50,8 +53,11 @@ function matchesPersonalBest(
   const sameLazyMode =
     result.lazyMode === personalBest.lazyMode ||
     (!result.lazyMode && !personalBest.lazyMode);
+
   const samePunctuation = result.punctuation === personalBest.punctuation;
+
   const sameDifficulty = result.difficulty === personalBest.difficulty;
+
   const sameLanguage = result.language === personalBest.language;
 
   return sameLazyMode && samePunctuation && sameDifficulty && sameLanguage;
@@ -66,13 +72,21 @@ function updatePersonalBest(
   }
 
   personalBest.acc = result.acc;
+
   personalBest.consistency = result.consistency;
+
   personalBest.difficulty = result.difficulty;
+
   personalBest.language = result.language;
+
   personalBest.punctuation = result.punctuation;
+
   personalBest.lazyMode = result.lazyMode;
+
   personalBest.raw = result.rawWpm;
+
   personalBest.wpm = result.wpm;
+
   personalBest.timestamp = Date.now();
 
   return true;
@@ -104,7 +118,9 @@ function updateLeaderboardPersonalBests(
   const { mode, mode2 } = result;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
+
   const lbMode2 = lbPersonalBests[mode][mode2];
+
   if (!lbMode2 || Array.isArray(lbMode2)) {
     lbPersonalBests[mode][mode2] = {};
   }
@@ -113,6 +129,7 @@ function updateLeaderboardPersonalBests(
 
   userPersonalBests[mode][mode2].forEach((pb: MonkeyTypes.PersonalBest) => {
     const language = pb.language;
+
     if (
       !bestForEveryLanguage[language] ||
       bestForEveryLanguage[language].wpm < pb.wpm
@@ -142,5 +159,6 @@ function shouldUpdateLeaderboardPersonalBests(
 ): boolean {
   const isValidTimeMode =
     result.mode === "time" && (result.mode2 === "15" || result.mode2 === "60");
+
   return lbPersonalBests && isValidTimeMode && !result.lazyMode;
 }

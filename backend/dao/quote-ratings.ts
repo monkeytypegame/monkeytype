@@ -26,6 +26,7 @@ class QuoteRatingsDAO {
     }
 
     const quoteRating = await this.get(quoteId, language);
+
     const average = parseFloat(
       (
         Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10

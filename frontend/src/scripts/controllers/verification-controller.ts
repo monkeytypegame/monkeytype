@@ -18,8 +18,11 @@ export function set(val: Data): void {
 
 export async function verify(uid: string): Promise<void> {
   if (data === null) return;
+
   Notifications.add("Linking Discord account", 0, 3);
+
   Loader.show();
+
   data.uid = uid;
 
   const response = await Ape.users.linkDiscord(data);
@@ -33,7 +36,9 @@ export async function verify(uid: string): Promise<void> {
   Notifications.add("Accounts linked", 1);
 
   const snapshot = DB.getSnapshot();
+
   snapshot.discordId = response.data.did;
+
   DB.setSnapshot(snapshot);
 
   Settings.updateDiscordSection();

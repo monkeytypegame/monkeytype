@@ -7,7 +7,9 @@ import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
 
 let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
+
 let memoryTimer: number | null = null;
+
 let memoryInterval: NodeJS.Timeout | null = null;
 
 type SetFunction = (...params: any[]) => any;
@@ -29,9 +31,11 @@ function rememberSetting(
 
 function loadMemory(): void {
   Notifications.add("Reverting funbox settings", 0);
+
   Object.keys(settingsMemory).forEach((setting) => {
     settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
   });
+
   settingsMemory = {};
 }
 
@@ -56,9 +60,12 @@ function hideMemoryTimer(): void {
 export function resetMemoryTimer(): void {
   if (memoryInterval !== null) {
     clearInterval(memoryInterval);
+
     memoryInterval = null;
   }
+
   memoryTimer = null;
+
   hideMemoryTimer();
 }
 
@@ -70,15 +77,23 @@ function updateMemoryTimer(sec: number): void {
 
 export function startMemoryTimer(): void {
   resetMemoryTimer();
+
   memoryTimer = Math.round(Math.pow(TestWords.words.length, 1.2));
+
   updateMemoryTimer(memoryTimer);
+
   showMemoryTimer();
+
   memoryInterval = setInterval(() => {
     if (memoryTimer === null) return;
+
     memoryTimer -= 1;
+
     memoryTimer == 0 ? hideMemoryTimer() : updateMemoryTimer(memoryTimer);
+
     if (memoryTimer <= 0) {
       resetMemoryTimer();
+
       $("#wordsWrapper").addClass("hidden");
     }
   }, 1000);
@@ -99,19 +114,29 @@ export function setFunbox(
   mode: MonkeyTypes.FunboxObjectType | null
 ): boolean {
   modeSaved = mode;
+
   UpdateConfig.setFunbox(funbox, false);
+
   if (funbox === "none") loadMemory();
+
   return true;
 }
 
 export async function clear(): Promise<boolean> {
   $("#funBoxTheme").attr("href", ``);
+
   $("#words").removeClass("nospace");
+
   $("#words").removeClass("arrows");
+
   reset();
+
   $("#wordsWrapper").removeClass("hidden");
+
   ManualRestart.set();
+
   ModesNotice.update();
+
   return true;
 }
 
@@ -125,19 +150,26 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   const funboxInfo = await Misc.getFunbox(funbox);
 
   $("#funBoxTheme").attr("href", ``);
+
   $("#words").removeClass("nospace");
+
   $("#words").removeClass("arrows");
+
   if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
       );
+
       UpdateConfig.setFunbox("none", true);
+
       await clear();
+
       return;
     }
   }
+
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
     if (funboxInfo?.affectsWordGeneration === true) {
       Notifications.add(
@@ -146,8 +178,11 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         )} mode does not support the ${funbox} funbox`,
         0
       );
+
       UpdateConfig.setFunbox("none", true);
+
       await clear();
+
       return;
     }
   }
@@ -156,6 +191,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   reset();
 
   $("#wordsWrapper").removeClass("hidden");
+
   // }
   if (funbox === "none" && mode === undefined) {
     mode = null;
@@ -164,10 +200,12 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (funbox !== "none" && mode === null)
   ) {
     const list = await Misc.getFunboxList();
+
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
   ManualRestart.set();
+
   if (mode === "style") {
     if (funbox != undefined)
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
@@ -186,7 +224,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+
       UpdateConfig.setKeymapMode("off", true);
+
       UpdateConfig.setHighlightMode("letter", true);
     } else if (funbox === "layoutfluid") {
       UpdateConfig.setLayout(
@@ -195,6 +235,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
           : "qwerty",
         true
       );
+
       UpdateConfig.setKeymapLayout(
         Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")[0]
@@ -203,25 +244,32 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       );
     } else if (funbox === "memory") {
       UpdateConfig.setMode("words", true);
+
       UpdateConfig.setShowAllLines(true, true);
+
       if (Config.keymapMode === "next") {
         UpdateConfig.setKeymapMode("react", true);
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
+
       UpdateConfig.setHighlightMode("letter", true);
     } else if (funbox === "arrows") {
       $("#words").addClass("arrows");
+
       UpdateConfig.setHighlightMode("letter", true);
     }
   }
+
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
   const funbox = Config.funbox;
+
   let mode = modeSaved;
+
   if (funbox === "none" && mode === undefined) {
     mode = null;
   } else if (
@@ -229,8 +277,10 @@ export async function rememberSettings(): Promise<void> {
     (funbox !== "none" && mode === null)
   ) {
     const list = await Misc.getFunboxList();
+
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
+
   if (mode === "style") {
     if (funbox === "simon_says") {
       rememberSetting(
@@ -264,7 +314,9 @@ export async function rememberSettings(): Promise<void> {
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
+
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
+
       rememberSetting(
         "keymapLayout",
         Config.keymapLayout,
@@ -272,11 +324,13 @@ export async function rememberSettings(): Promise<void> {
       );
     } else if (funbox === "memory") {
       rememberSetting("mode", Config.mode, UpdateConfig.setMode);
+
       rememberSetting(
         "showAllLines",
         Config.showAllLines,
         UpdateConfig.setShowAllLines
       );
+
       if (Config.keymapMode === "next") {
         rememberSetting(
           "keymapMode",

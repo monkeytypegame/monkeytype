@@ -26,29 +26,37 @@ class Input {
   length: number;
   constructor() {
     this.current = "";
+
     this.history = [];
+
     this.historyLength = 0;
+
     this.length = 0;
   }
 
   reset(): void {
     this.current = "";
+
     this.history = [];
+
     this.length = 0;
   }
 
   resetHistory(): void {
     this.history = [];
+
     this.length = 0;
   }
 
   setCurrent(val: string): void {
     this.current = val;
+
     this.length = this.current.length;
   }
 
   appendCurrent(val: string): void {
     this.current += val;
+
     this.length = this.current.length;
   }
 
@@ -62,13 +70,17 @@ class Input {
 
   pushHistory(): void {
     this.history.push(this.current);
+
     this.historyLength = this.history.length;
+
     this.resetCurrent();
   }
 
   popHistory(): string {
     const ret = this.history.pop() ?? "";
+
     this.historyLength = this.history.length;
+
     return ret;
   }
 
@@ -90,6 +102,7 @@ class Corrected {
   history: string[];
   constructor() {
     this.current = "";
+
     this.history = [];
   }
   setCurrent(val: string): void {
@@ -110,6 +123,7 @@ class Corrected {
 
   reset(): void {
     this.resetCurrent();
+
     this.resetHistory();
   }
 
@@ -123,29 +137,37 @@ class Corrected {
 
   pushHistory(): void {
     this.history.push(this.current);
+
     this.current = "";
   }
 }
 
 export const input = new Input();
+
 export const corrected = new Corrected();
 
 export let keypressPerSecond: Keypress[] = [];
+
 export let currentKeypress: Keypress = {
   count: 0,
   errors: 0,
   words: [],
   afk: true,
 };
+
 export let lastKeypress: number;
+
 export let currentBurstStart = 0;
+
 export let missedWords: {
   [word: string]: number;
 } = {};
+
 export let accuracy = {
   correct: 0,
   incorrect: 0,
 };
+
 export let keypressTimings: KeypressTimings = {
   spacing: {
     current: -1,
@@ -156,17 +178,24 @@ export let keypressTimings: KeypressTimings = {
     array: [],
   },
 };
+
 export let wpmHistory: number[] = [];
+
 export let rawHistory: number[] = [];
+
 export let burstHistory: number[] = [];
+
 export let bailout = false;
+
 export function setBailout(tf: boolean): void {
   bailout = tf;
 }
 
 export let spacingDebug = false;
+
 export function enableSpacingDebug(): void {
   spacingDebug = true;
+
   console.clear();
 }
 
@@ -196,6 +225,7 @@ export function setBurstStart(time: number): void {
 
 export function pushKeypressesToHistory(): void {
   keypressPerSecond.push(currentKeypress);
+
   currentKeypress = {
     count: 0,
     errors: 0,
@@ -214,6 +244,7 @@ export function incrementAccuracy(correctincorrect: boolean): void {
 
 export function setKeypressTimingsTooLong(): void {
   keypressTimings.spacing.array = "toolong";
+
   keypressTimings.duration.array = "toolong";
 }
 
@@ -235,9 +266,12 @@ function setKeypressSpacing(val: number): void {
 
 export function recordKeypressSpacing(): void {
   const now = performance.now();
+
   const diff = Math.abs(keypressTimings.spacing.current - now);
+
   if (keypressTimings.spacing.current !== -1) {
     pushKeypressSpacing(diff);
+
     if (spacingDebug)
       console.log(
         "spacing debug",
@@ -247,7 +281,9 @@ export function recordKeypressSpacing(): void {
         keypressTimings.spacing.array.length
       );
   }
+
   setKeypressSpacing(now);
+
   if (spacingDebug)
     console.log(
       "spacing debug",
@@ -256,6 +292,7 @@ export function recordKeypressSpacing(): void {
       "length",
       keypressTimings.spacing.array.length
     );
+
   if (spacingDebug)
     console.log(
       "spacing debug",
@@ -276,6 +313,7 @@ export function resetKeypressTimings(): void {
       array: [],
     },
   };
+
   if (spacingDebug) console.clear();
 }
 
@@ -306,21 +344,29 @@ export function pushBurstToHistory(speed: number): void {
 
 export function restart(): void {
   wpmHistory = [];
+
   rawHistory = [];
+
   burstHistory = [];
+
   keypressPerSecond = [];
+
   currentKeypress = {
     count: 0,
     errors: 0,
     words: [],
     afk: true,
   };
+
   currentBurstStart = 0;
+
   missedWords = {};
+
   accuracy = {
     correct: 0,
     incorrect: 0,
   };
+
   keypressTimings = {
     spacing: {
       current: -1,

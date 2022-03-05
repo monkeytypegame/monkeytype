@@ -42,7 +42,9 @@ export function update(
   current: MonkeyTypes.Mode
 ): void {
   if (previous === current) return;
+
   $("#top .config .mode .text-button").removeClass("active");
+
   $("#top .config .mode .text-button[mode='" + current + "']").addClass(
     "active"
   );
@@ -52,6 +54,7 @@ export function update(
     // $("#top .config .time").removeClass("hidden");
     // $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
+
     $("#top .config .numbersMode").removeClass("disabled");
     // $("#top .config .puncAndNum").removeClass("disabled");
     // $("#top .config .punctuationMode").removeClass("hidden");
@@ -62,6 +65,7 @@ export function update(
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
+
     $("#top .config .numbersMode").removeClass("disabled");
     // $("#top .config .puncAndNum").removeClass("disabled");
     // $("#top .config .punctuationMode").removeClass("hidden");
@@ -72,6 +76,7 @@ export function update(
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
+
     $("#top .config .numbersMode").removeClass("disabled");
     // $("#top .config .puncAndNum").removeClass("disabled");
     // $("#top .config .punctuationMode").removeClass("hidden");
@@ -82,6 +87,7 @@ export function update(
     // $("#top .config .time").addClass("hidden");
     // $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("disabled");
+
     $("#top .config .numbersMode").addClass("disabled");
     // $("#top .config .puncAndNum").addClass("disabled");
     // $("#top .config .punctuationMode").removeClass("hidden");
@@ -117,6 +123,7 @@ export function update(
         $(`#top .config .${submenu[previous]}`).addClass("hidden");
       }
     );
+
     $(`#top .config .puncAndNum`).animate(
       {
         opacity: 0,
@@ -126,12 +133,14 @@ export function update(
         $(`#top .config .puncAndNum`).addClass("invisible");
       }
     );
+
     return;
   }
 
   if (previous == "zen") {
     setTimeout(() => {
       $(`#top .config .${submenu[current]}`).removeClass("hidden");
+
       $(`#top .config .${submenu[current]}`)
         .css({ opacity: 0 })
         .animate(
@@ -140,7 +149,9 @@ export function update(
           },
           animTime / 2
         );
+
       $(`#top .config .puncAndNum`).removeClass("invisible");
+
       $(`#top .config .puncAndNum`)
         .css({ opacity: 0 })
         .animate(
@@ -150,6 +161,7 @@ export function update(
           animTime / 2
         );
     }, animTime / 2);
+
     return;
   }
 

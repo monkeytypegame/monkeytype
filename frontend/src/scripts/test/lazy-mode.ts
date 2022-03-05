@@ -36,12 +36,18 @@ export function replaceAccents(
   accentsOverride?: MonkeyTypes.Accents
 ): string {
   let newWord = word;
+
   if (!accents && !accentsOverride) return newWord;
+
   let regex;
+
   const list = accentsOverride || accents;
+
   for (let i = 0; i < list.length; i++) {
     regex = new RegExp(`[${list[i][0]}]`, "gi");
+
     newWord = newWord.replace(regex, list[i][1]);
   }
+
   return newWord;
 }

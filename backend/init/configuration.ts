@@ -22,9 +22,11 @@ function mergeConfigurations(
 
     commonKeys.forEach((key) => {
       const baseValue = base[key];
+
       const sourceValue = source[key];
 
       const isBaseValueObject = _.isPlainObject(baseValue);
+
       const isSourceValueObject = _.isPlainObject(sourceValue);
 
       if (isBaseValueObject && isSourceValueObject) {
@@ -51,8 +53,10 @@ class ConfigurationClient {
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
       console.log("Cached configuration is stale.");
+
       return await this.getLiveConfiguration();
     }
+
     return this.configuration;
   }
 
@@ -66,13 +70,16 @@ class ConfigurationClient {
 
       if (liveConfiguration) {
         const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+
         const liveConfigurationWithoutId = _.omit(
           liveConfiguration,
           "_id"
         ) as MonkeyTypes.Configuration;
+
         mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
         this.pushConfiguration(baseConfiguration);
+
         this.configuration = baseConfiguration;
       } else {
         await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.

@@ -5,7 +5,9 @@ import { performance } from "perf_hooks";
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 50) {
     if (limit > 50 || limit <= 0) limit = 50;
+
     if (skip < 0) skip = 0;
+
     const preset = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
@@ -13,6 +15,7 @@ class LeaderboardsDAO {
       .skip(parseInt(skip))
       .limit(parseInt(limit.toString()))
       .toArray();
+
     return preset;
   }
 
@@ -20,16 +23,20 @@ class LeaderboardsDAO {
     const res = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
+
     if (res)
       res.count = await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .estimatedDocumentCount();
+
     return res;
   }
 
   static async update(mode, mode2, language, uid = undefined) {
     let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
+
     let start1 = performance.now();
+
     let lb = await db
       .collection("users")
       .aggregate(
@@ -71,43 +78,58 @@ class LeaderboardsDAO {
         { allowDiskUse: true }
       )
       .toArray();
+
     let end1 = performance.now();
 
     let start2 = performance.now();
+
     let retval = undefined;
+
     lb.forEach((lbEntry, index) => {
       lbEntry.rank = index + 1;
+
       if (uid && lbEntry.uid === uid) {
         retval = index + 1;
       }
     });
+
     let end2 = performance.now();
+
     let start3 = performance.now();
+
     try {
       await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
     } catch (e) {}
+
     if (lb && lb.length !== 0)
       await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .insertMany(lb);
+
     let end3 = performance.now();
 
     let start4 = performance.now();
+
     await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .createIndex({
         uid: -1,
       });
+
     await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .createIndex({
         rank: 1,
       });
+
     let end4 = performance.now();
 
     let timeToRunAggregate = (end1 - start1) / 1000;
+
     let timeToRunLoop = (end2 - start2) / 1000;
+
     let timeToRunInsert = (end3 - start3) / 1000;
+
     let timeToRunIndex = (end4 - start4) / 1000;
 
     Logger.log(

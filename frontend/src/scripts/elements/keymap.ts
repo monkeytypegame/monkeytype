@@ -6,13 +6,16 @@ import * as Misc from "../misc";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
+
   if (currentKey === "") currentKey = " ";
+
   try {
     if ($(".active-key") != undefined) {
       $(".active-key").removeClass("active-key");
     }
 
     let highlightKey;
+
     if (currentKey == " ") {
       highlightKey = "#keymap .key-space, #keymap .key-split-space";
     } else if (currentKey == '"') {
@@ -95,20 +98,27 @@ export async function refresh(
   layoutName: string = Config.layout
 ): Promise<void> {
   if (!layoutName) return;
+
   try {
     const layouts = await Misc.getLayoutsList();
+
     let lts = layouts[layoutName]; //layout to show
+
     let layoutString = layoutName;
+
     if (Config.keymapLayout === "overrideSync") {
       if (Config.layout === "default") {
         lts = layouts["qwerty"];
+
         layoutString = "default";
       } else {
         lts = layouts[Config.layout as keyof typeof layouts];
+
         layoutString = Config.layout;
       }
     } else {
       lts = layouts[Config.keymapLayout as keyof typeof layouts];
+
       layoutString = Config.keymapLayout;
     }
 
@@ -122,7 +132,9 @@ export async function refresh(
     (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).forEach(
       (row, index) => {
         const rowKeys = lts.keys[row];
+
         let rowElement = "";
+
         if (row === "row1" && !showTopRow) {
           return;
         }
@@ -137,34 +149,45 @@ export async function refresh(
 
         if (row === "row5") {
           let layoutDisplay = layoutString.replace(/_/g, " ");
+
           if (Config.keymapLegendStyle === "blank") {
             layoutDisplay = "";
           }
+
           rowElement += "<div></div>";
+
           rowElement += `<div class="keymap-key key-space">
           <div class="letter">${layoutDisplay}</div>
         </div>`;
+
           rowElement += `<div class="keymap-split-spacer"></div>`;
+
           rowElement += `<div class="keymap-key key-split-space">
           <div class="letter"></div>
         </div>`;
         } else {
           for (let i = 0; i < rowKeys.length; i++) {
             if (row === "row2" && i === 12) continue;
+
             if (
               (Config.keymapStyle === "matrix" ||
                 Config.keymapStyle === "split_matrix") &&
               i >= 10
             )
               continue;
+
             const key = rowKeys[i];
+
             const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
+
             let keyDisplay = key[0];
+
             if (Config.keymapLegendStyle === "blank") {
               keyDisplay = "";
             } else if (Config.keymapLegendStyle === "uppercase") {
               keyDisplay = keyDisplay.toUpperCase();
             }
+
             const keyElement = `<div class="keymap-key" data-key="${key.replace(
               '"',
               "&quot;"
@@ -174,6 +197,7 @@ export async function refresh(
           </div>`;
 
             let splitSpacer = "";
+
             if (
               Config.keymapStyle === "split" ||
               Config.keymapStyle === "split_matrix" ||
@@ -215,10 +239,15 @@ export async function refresh(
     $("#keymap").html(keymapElement);
 
     $("#keymap").removeClass("staggered");
+
     $("#keymap").removeClass("matrix");
+
     $("#keymap").removeClass("split");
+
     $("#keymap").removeClass("split_matrix");
+
     $("#keymap").removeClass("alice");
+
     $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
@@ -233,5 +262,6 @@ export async function refresh(
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
     refresh(Config.keymapLayout);
+
   if (eventKey === "keymapLayout" || eventKey === "keymapStyle") refresh();
 });

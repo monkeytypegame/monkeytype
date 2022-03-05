@@ -26,6 +26,7 @@ function validateConfiguration(
     const configuration = req.ctx.configuration;
 
     const validated = criteria(configuration);
+
     if (!validated) {
       throw new MonkeyError(503, invalidMessage);
     }
@@ -55,6 +56,7 @@ function checkUserPermissions(
       const userData = (await UsersDAO.getUser(
         uid
       )) as unknown as MonkeyTypes.User;
+
       const hasPermission = criteria(userData);
 
       if (!hasPermission) {
@@ -87,6 +89,7 @@ function asyncHandler(handler: AsyncHandler): RequestHandler {
   ) => {
     try {
       const handlerData = await handler(req, res);
+
       return handleMonkeyResponse(handlerData, res);
     } catch (error) {
       next(error);
@@ -115,6 +118,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
   }
 
   const { validationErrorMessage } = validationSchema;
+
   const normalizedValidationSchema: ValidationSchema = _.omit(
     validationSchema,
     "validationErrorMessage"
@@ -127,8 +131,10 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
         const joiSchema = joi.object().keys(schema);
 
         const { error } = joiSchema.validate(req[key] ?? {});
+
         if (error) {
           const errorMessage = error.details[0].message;
+
           throw new MonkeyError(
             400,
             validationErrorMessage ??

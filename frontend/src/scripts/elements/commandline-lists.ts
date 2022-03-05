@@ -54,15 +54,18 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
 
 Misc.getLayoutsList().then((layouts) => {
   commandsLayouts.list = [];
+
   commandsLayouts.list.push({
     id: "changeLayoutDefault",
     display: "off",
     configValue: "default",
     exec: (): void => {
       UpdateConfig.setLayout("default");
+
       TestLogic.restart();
     },
   });
+
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
@@ -71,6 +74,7 @@ Misc.getLayoutsList().then((layouts) => {
       exec: (): void => {
         // UpdateConfig.setSavedLayout(layout);
         UpdateConfig.setLayout(layout);
+
         TestLogic.restart();
       },
     });
@@ -87,17 +91,21 @@ export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
+
 Misc.getLayoutsList().then((layouts) => {
   commandsKeymapLayouts.list = [];
+
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
     display: "emulator sync",
     configValue: "overrideSync",
     exec: (): void => {
       UpdateConfig.setKeymapLayout("overrideSync");
+
       TestLogic.restart();
     },
   });
+
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
@@ -106,6 +114,7 @@ Misc.getLayoutsList().then((layouts) => {
         configValue: layout,
         exec: (): void => {
           UpdateConfig.setKeymapLayout(layout);
+
           TestLogic.restart();
         },
       });
@@ -125,6 +134,7 @@ const commandsLanguages: MonkeyTypes.CommandsGroup = {
 };
 
 commandsLanguages.list = [];
+
 Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     commandsLanguages.list.push({
@@ -133,6 +143,7 @@ Misc.getLanguageList().then((languages) => {
       configValue: language,
       exec: (): void => {
         UpdateConfig.setLanguage(language);
+
         TestLogic.restart();
       },
     });
@@ -192,6 +203,7 @@ Misc.getFontsList().then((fonts) => {
       },
     });
   });
+
   commandsFonts.list.push({
     id: "setFontFamilyCustom",
     display: "custom...",
@@ -201,6 +213,7 @@ Misc.getFontsList().then((fonts) => {
     },
     exec: (name) => {
       if (!name) return;
+
       UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
       // Settings.groups.fontFamily.updateInput();
     },
@@ -230,7 +243,9 @@ export function updateTagCommands(): void {
         });
 
         DB.setSnapshot(snapshot);
+
         ModesNotice.update();
+
         TagController.saveActiveToLocalStorage();
       },
     });
@@ -251,10 +266,12 @@ export function updateTagCommands(): void {
         sticky: true,
         exec: (): void => {
           TagController.toggle(tag._id);
+
           ModesNotice.update();
 
           if (Config.paceCaret === "average") {
             PaceCaret.init();
+
             ModesNotice.update();
           }
 
@@ -265,6 +282,7 @@ export function updateTagCommands(): void {
           } else {
             txt = '<i class="fas fa-fw"></i>' + txt;
           }
+
           if ($("#commandLine").hasClass("allCommands")) {
             $(
               `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
@@ -291,8 +309,11 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 
 export function updatePresetCommands(): void {
   const snapshot = DB.getSnapshot();
+
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
+
   commandsPresets.list = [];
+
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
     const dis = preset.name;
 
@@ -301,9 +322,13 @@ export function updatePresetCommands(): void {
       display: dis,
       exec: (): void => {
         Settings.setEventDisabled(true);
+
         PresetController.apply(preset._id);
+
         Settings.setEventDisabled(false);
+
         Settings.update();
+
         ModesNotice.update();
       },
     });
@@ -650,6 +675,7 @@ const commandsOppositeShiftMode: MonkeyTypes.CommandsGroup = {
       configValue: "off",
       exec: (): void => {
         UpdateConfig.setOppositeShiftMode("off");
+
         ModesNotice.update();
       },
     },
@@ -659,6 +685,7 @@ const commandsOppositeShiftMode: MonkeyTypes.CommandsGroup = {
       configValue: "on",
       exec: (): void => {
         UpdateConfig.setOppositeShiftMode("on");
+
         ModesNotice.update();
       },
     },
@@ -668,6 +695,7 @@ const commandsOppositeShiftMode: MonkeyTypes.CommandsGroup = {
       configValue: "keymap",
       exec: (): void => {
         UpdateConfig.setOppositeShiftMode("keymap");
+
         ModesNotice.update();
       },
     },
@@ -692,6 +720,7 @@ const commandsSoundOnError: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError(true);
+
         Sound.playError();
       },
     },
@@ -708,6 +737,7 @@ const commandsSoundVolume: MonkeyTypes.CommandsGroup = {
       configValue: "0.1",
       exec: (): void => {
         UpdateConfig.setSoundVolume("0.1");
+
         Sound.playClick();
       },
     },
@@ -717,6 +747,7 @@ const commandsSoundVolume: MonkeyTypes.CommandsGroup = {
       configValue: "0.5",
       exec: (): void => {
         UpdateConfig.setSoundVolume("0.5");
+
         Sound.playClick();
       },
     },
@@ -726,6 +757,7 @@ const commandsSoundVolume: MonkeyTypes.CommandsGroup = {
       configValue: "1.0",
       exec: (): void => {
         UpdateConfig.setSoundVolume("1.0");
+
         Sound.playClick();
       },
     },
@@ -857,6 +889,7 @@ const commandsLazyMode: MonkeyTypes.CommandsGroup = {
       configValue: false,
       exec: (): void => {
         UpdateConfig.setLazyMode(false);
+
         TestLogic.restart();
       },
     },
@@ -866,6 +899,7 @@ const commandsLazyMode: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setLazyMode(true);
+
         TestLogic.restart();
       },
     },
@@ -1025,6 +1059,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("1");
+
         Sound.playClick();
       },
     },
@@ -1037,6 +1072,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("2");
+
         Sound.playClick();
       },
     },
@@ -1049,6 +1085,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("3");
+
         Sound.playClick();
       },
     },
@@ -1061,6 +1098,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("4");
+
         Sound.playClick();
       },
     },
@@ -1073,6 +1111,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("5");
+
         Sound.playClick();
       },
     },
@@ -1085,6 +1124,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("6");
+
         Sound.playClick();
       },
     },
@@ -1097,6 +1137,7 @@ const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("7");
+
         Sound.playClick();
       },
     },
@@ -1390,6 +1431,7 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "off",
       exec: (): void => {
         UpdateConfig.setPaceCaret("off");
+
         TestLogic.restart();
       },
     },
@@ -1399,6 +1441,7 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "pb",
       exec: (): void => {
         UpdateConfig.setPaceCaret("pb");
+
         TestLogic.restart();
       },
     },
@@ -1408,6 +1451,7 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "average",
       exec: (): void => {
         UpdateConfig.setPaceCaret("average");
+
         TestLogic.restart();
       },
     },
@@ -1418,8 +1462,11 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setPaceCaretCustomSpeed(parseInt(input));
+
         UpdateConfig.setPaceCaret("custom");
+
         TestLogic.restart();
       },
     },
@@ -1445,7 +1492,9 @@ const commandsMinWpm: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setMinWpmCustomSpeed(parseInt(input));
+
         UpdateConfig.setMinWpm("custom");
       },
     },
@@ -1471,7 +1520,9 @@ const commandsMinAcc: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setMinAccCustom(parseInt(input));
+
         UpdateConfig.setMinAcc("custom");
       },
     },
@@ -1497,7 +1548,9 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setMinBurst("fixed");
+
         UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
     },
@@ -1508,7 +1561,9 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setMinBurst("flex");
+
         UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
     },
@@ -1611,6 +1666,7 @@ const commandsBritishEnglish: MonkeyTypes.CommandsGroup = {
       configValue: false,
       exec: (): void => {
         UpdateConfig.setBritishEnglish(false);
+
         TestLogic.restart();
       },
     },
@@ -1620,6 +1676,7 @@ const commandsBritishEnglish: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setBritishEnglish(true);
+
         TestLogic.restart();
       },
     },
@@ -1822,7 +1879,9 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 10,
       exec: (): void => {
         UpdateConfig.setMode("words");
+
         UpdateConfig.setWordCount(10);
+
         TestLogic.restart();
       },
     },
@@ -1832,7 +1891,9 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 25,
       exec: (): void => {
         UpdateConfig.setMode("words");
+
         UpdateConfig.setWordCount(25);
+
         TestLogic.restart();
       },
     },
@@ -1842,7 +1903,9 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 50,
       exec: (): void => {
         UpdateConfig.setMode("words");
+
         UpdateConfig.setWordCount(50);
+
         TestLogic.restart();
       },
     },
@@ -1852,7 +1915,9 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 100,
       exec: (): void => {
         UpdateConfig.setMode("words");
+
         UpdateConfig.setWordCount(100);
+
         TestLogic.restart();
       },
     },
@@ -1862,7 +1927,9 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       configValue: 200,
       exec: (): void => {
         UpdateConfig.setMode("words");
+
         UpdateConfig.setWordCount(200);
+
         TestLogic.restart();
       },
     },
@@ -1872,8 +1939,11 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setMode("words");
+
         UpdateConfig.setWordCount(parseInt(input));
+
         TestLogic.restart();
       },
     },
@@ -1890,7 +1960,9 @@ const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
       configValue: [0, 1, 2, 3],
       exec: (): void => {
         UpdateConfig.setMode("quote");
+
         UpdateConfig.setQuoteLength([0, 1, 2, 3]);
+
         TestLogic.restart();
       },
     },
@@ -1901,7 +1973,9 @@ const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
       configValueMode: "include",
       exec: (): void => {
         UpdateConfig.setMode("quote");
+
         UpdateConfig.setQuoteLength(0);
+
         TestLogic.restart();
       },
     },
@@ -1912,7 +1986,9 @@ const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
       configValueMode: "include",
       exec: (): void => {
         UpdateConfig.setMode("quote");
+
         UpdateConfig.setQuoteLength(1);
+
         TestLogic.restart();
       },
     },
@@ -1923,7 +1999,9 @@ const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
       configValueMode: "include",
       exec: (): void => {
         UpdateConfig.setMode("quote");
+
         UpdateConfig.setQuoteLength(2);
+
         TestLogic.restart();
       },
     },
@@ -1934,7 +2012,9 @@ const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
       configValueMode: "include",
       exec: (): void => {
         UpdateConfig.setMode("quote");
+
         UpdateConfig.setQuoteLength(3);
+
         TestLogic.restart();
       },
     },
@@ -1951,6 +2031,7 @@ const commandsPunctuation: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setPunctuation(true);
+
         TestLogic.restart();
       },
     },
@@ -1960,6 +2041,7 @@ const commandsPunctuation: MonkeyTypes.CommandsGroup = {
       configValue: false,
       exec: (): void => {
         UpdateConfig.setPunctuation(false);
+
         TestLogic.restart();
       },
     },
@@ -1976,6 +2058,7 @@ const commandsNumbers: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setNumbers(true);
+
         TestLogic.restart();
       },
     },
@@ -1985,6 +2068,7 @@ const commandsNumbers: MonkeyTypes.CommandsGroup = {
       configValue: false,
       exec: (): void => {
         UpdateConfig.setNumbers(false);
+
         TestLogic.restart();
       },
     },
@@ -2047,6 +2131,7 @@ const commandsMode: MonkeyTypes.CommandsGroup = {
       configValue: "time",
       exec: (): void => {
         UpdateConfig.setMode("time");
+
         TestLogic.restart();
       },
     },
@@ -2056,6 +2141,7 @@ const commandsMode: MonkeyTypes.CommandsGroup = {
       configValue: "words",
       exec: (): void => {
         UpdateConfig.setMode("words");
+
         TestLogic.restart();
       },
     },
@@ -2065,6 +2151,7 @@ const commandsMode: MonkeyTypes.CommandsGroup = {
       configValue: "quote",
       exec: (): void => {
         UpdateConfig.setMode("quote");
+
         TestLogic.restart();
       },
     },
@@ -2074,6 +2161,7 @@ const commandsMode: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       exec: (): void => {
         UpdateConfig.setMode("custom");
+
         TestLogic.restart();
       },
     },
@@ -2083,7 +2171,9 @@ const commandsMode: MonkeyTypes.CommandsGroup = {
       configValue: "zen",
       exec: (): void => {
         UpdateConfig.setMode("zen");
+
         ManualRestart.set();
+
         TestLogic.restart();
       },
     },
@@ -2100,7 +2190,9 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 15,
       exec: (): void => {
         UpdateConfig.setMode("time");
+
         UpdateConfig.setTimeConfig(15);
+
         TestLogic.restart();
       },
     },
@@ -2110,7 +2202,9 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 30,
       exec: (): void => {
         UpdateConfig.setMode("time");
+
         UpdateConfig.setTimeConfig(30);
+
         TestLogic.restart();
       },
     },
@@ -2120,7 +2214,9 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 60,
       exec: (): void => {
         UpdateConfig.setMode("time");
+
         UpdateConfig.setTimeConfig(60);
+
         TestLogic.restart();
       },
     },
@@ -2130,7 +2226,9 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       configValue: 120,
       exec: (): void => {
         UpdateConfig.setMode("time");
+
         UpdateConfig.setTimeConfig(120);
+
         TestLogic.restart();
       },
     },
@@ -2140,8 +2238,11 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setMode("time");
+
         UpdateConfig.setTimeConfig(parseInt(input));
+
         TestLogic.restart();
       },
     },
@@ -2220,6 +2321,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       configValue: 1,
       exec: (): void => {
         UpdateConfig.setFontSize("1");
+
         TestLogic.restart();
       },
     },
@@ -2229,6 +2331,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       configValue: 125,
       exec: (): void => {
         UpdateConfig.setFontSize("125");
+
         TestLogic.restart();
       },
     },
@@ -2238,6 +2341,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       configValue: 15,
       exec: (): void => {
         UpdateConfig.setFontSize("15");
+
         TestLogic.restart();
       },
     },
@@ -2247,6 +2351,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       configValue: 2,
       exec: (): void => {
         UpdateConfig.setFontSize("2");
+
         TestLogic.restart();
       },
     },
@@ -2256,6 +2361,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       configValue: 3,
       exec: (): void => {
         UpdateConfig.setFontSize("3");
+
         TestLogic.restart();
       },
     },
@@ -2265,6 +2371,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       configValue: 4,
       exec: (): void => {
         UpdateConfig.setFontSize("4");
+
         TestLogic.restart();
       },
     },
@@ -2327,6 +2434,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
+
         TestLogic.restart(false, false, undefined, true);
       },
     },
@@ -2336,6 +2444,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
+
         TestLogic.restart(false, false, undefined, true);
       },
     },
@@ -2345,6 +2454,7 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
+
         TestLogic.restart(false, false, undefined, true);
       },
     },
@@ -2388,6 +2498,7 @@ Misc.getChallengeList().then((challenges) => {
       display: challenge.display,
       exec: (): void => {
         ChallengeController.setup(challenge.name);
+
         TestLogic.restart(false, true);
       },
     });
@@ -2398,6 +2509,7 @@ Misc.getChallengeList().then((challenges) => {
 export function updateThemeCommands(): void {
   if (Config.favThemes.length > 0) {
     themeCommands.list = [];
+
     Config.favThemes.forEach((theme: string) => {
       themeCommands.list.push({
         id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme),
@@ -2411,9 +2523,11 @@ export function updateThemeCommands(): void {
         },
       });
     });
+
     Misc.getThemesList().then((themes) => {
       themes.forEach((theme) => {
         if ((Config.favThemes as string[]).includes(theme.name)) return;
+
         themeCommands.list.push({
           id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
           display: theme.name.replace(/_/g, " "),
@@ -2880,6 +2994,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         UpdateConfig.setCustomBackground(input);
       },
     },
@@ -2944,9 +3059,11 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-tint",
       exec: (input): void => {
         if (input === undefined) return;
+
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
+
         if (Config.funbox === "layoutfluid") TestLogic.restart();
         // UpdateConfig.setLayout(
         //   Config.customLayoutfluid
@@ -3049,6 +3166,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
             display: "Yes, I am sure",
             exec: (): void => {
               TestInput.setBailout(true);
+
               TestLogic.finish();
             },
             available: (): boolean => {
@@ -3154,10 +3272,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
+
         try {
           UpdateConfig.apply(JSON.parse(input));
+
           UpdateConfig.saveFullConfigToLocalStorage();
+
           Settings.update();
+
           Notifications.add("Done", 1);
         } catch (e) {
           Notifications.add(
@@ -3188,9 +3310,11 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-cog",
       exec: async (): Promise<void> => {
         const clist = await caches.keys();
+
         for (const name of clist) {
           await caches.delete(name);
         }
+
         window.location.reload();
       },
     },
@@ -3245,11 +3369,13 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
       (command) => command.id == "exportSettingsJSON"
     )[0].defaultValue = eventValue as string;
   }
+
   if (eventKey === "customBackground") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomBackground"
     )[0].defaultValue = eventValue as string;
   }
+
   if (eventKey === "customLayoutFluid") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomLayoutfluid"

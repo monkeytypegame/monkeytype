@@ -7,6 +7,7 @@ export function show(mode: string, config?: string): void {
 
     if (mode === "export") {
       $("#settingsImportWrapper .button").addClass("hidden");
+
       $("#settingsImportWrapper input").val(config ?? "");
     } else if (mode === "import") {
       $("#settingsImportWrapper .button").removeClass("hidden");
@@ -18,7 +19,9 @@ export function show(mode: string, config?: string): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         $("#settingsImportWrapper input").focus();
+
         $("#settingsImportWrapper input").select();
+
         $("#settingsImportWrapper input").focus();
       });
   }
@@ -37,8 +40,10 @@ function hide(): void {
           -1
         );
       }
+
       UpdateConfig.saveFullConfigToLocalStorage();
     }
+
     $("#settingsImportWrapper")
       .stop(true, true)
       .css("opacity", 1)

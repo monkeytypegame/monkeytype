@@ -32,6 +32,7 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
+
   DB.getSnapshot().tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
@@ -41,8 +42,10 @@ export function updateButtons(): void {
 
 function updateActiveButtons(active: string[]): void {
   if (active === []) return;
+
   $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid: string = $(obj).attr("tagid") ?? "";
+
     if (active.includes(tagid)) {
       $(obj).addClass("active");
     } else {
@@ -54,10 +57,15 @@ function updateActiveButtons(active: string[]): void {
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   if (DB.getSnapshot().tags?.length || 0 > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
+
     const tags = $(f.target).parents("span").attr("tags") as string;
+
     $("#resultEditTagsPanel").attr("resultid", resultid);
+
     $("#resultEditTagsPanel").attr("tags", tags);
+
     updateActiveButtons(JSON.parse(tags));
+
     show();
   }
 });
@@ -77,18 +85,23 @@ $("#resultEditTagsPanel .confirmButton").click(async () => {
   // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 
   const newTags: string[] = [];
+
   $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid = $(obj).attr("tagid") ?? "";
+
     if ($(obj).hasClass("active")) {
       newTags.push(tagid);
     }
   });
+
   Loader.show();
+
   hide();
 
   const response = await Ape.results.updateTags(resultId, newTags);
 
   Loader.hide();
+
   if (response.status !== 200) {
     return Notifications.add(
       "Failed to update result tags: " + response.message,
@@ -97,6 +110,7 @@ $("#resultEditTagsPanel .confirmButton").click(async () => {
   }
 
   Notifications.add("Tags updated.", 1, 2);
+
   DB.getSnapshot().results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       if (result._id === resultId) {
@@ -115,10 +129,12 @@ $("#resultEditTagsPanel .confirmButton").click(async () => {
         }
       });
     });
+
     tagNames = tagNames.substring(0, tagNames.length - 2);
   }
 
   let restags;
+
   if (newTags === undefined) {
     restags = "[]";
   } else {
@@ -129,8 +145,10 @@ $("#resultEditTagsPanel .confirmButton").click(async () => {
     "tags",
     restags
   );
+
   if (newTags.length > 0) {
     $(`.pageAccount #resultEditTags[resultid='${resultId}']`).css("opacity", 1);
+
     $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
       "aria-label",
       tagNames
@@ -140,6 +158,7 @@ $("#resultEditTagsPanel .confirmButton").click(async () => {
       "opacity",
       0.25
     );
+
     $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
       "aria-label",
       "no tags"

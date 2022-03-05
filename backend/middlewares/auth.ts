@@ -29,6 +29,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
   ): Promise<void> => {
     try {
       const { authorization: authHeader } = req.headers;
+
       let token: MonkeyTypes.DecodedToken = {};
 
       if (authHeader) {
@@ -86,11 +87,13 @@ async function authenticateWithAuthHeader(
   const token = authHeader.split(" ");
 
   const authScheme = token[0].trim();
+
   const credentials = token[1];
 
   switch (authScheme) {
     case "Bearer":
       return await authenticateWithBearerToken(credentials);
+
     case "ApeKey":
       return await authenticateWithApeKey(credentials, configuration, options);
   }
@@ -114,7 +117,9 @@ async function authenticateWithBearerToken(
     };
   } catch (error) {
     console.log("-----------");
+
     console.log(error.errorInfo.code);
+
     console.log("-----------");
 
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
@@ -150,10 +155,13 @@ async function authenticateWithApeKey(
 
   try {
     const decodedKey = base64UrlDecode(key);
+
     const [uid, keyId, apeKey] = decodedKey.split(".");
 
     const keyOwner = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+
     const targetApeKey = _.get(keyOwner.apeKeys, keyId);
+
     const isKeyValid = await compare(apeKey, targetApeKey?.hash);
 
     if (!isKeyValid) {

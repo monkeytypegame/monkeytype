@@ -12,6 +12,7 @@ export function updateKeytips(): void {
     command line (
     <key>tab</key>
     )`);
+
     $("#bottom .keyTips").html(`
     <key>esc</key> - restart test<br>
       <key>tab</key> - command line`);
@@ -21,6 +22,7 @@ export function updateKeytips(): void {
     command line (
     <key>esc</key>
     )`);
+
     $("#bottom .keyTips").html(`
     <key>tab</key> - restart test<br>
       <key>esc</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
@@ -42,12 +44,16 @@ if (window.location.hostname === "localhost") {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
+
   $("#top .logo .top").text("localhost");
+
   $("head title").text($("head title").text() + " (localhost)");
+
   //firebase.functions().useFunctionsEmulator("http://localhost:5001");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
   );
+
   $(".pageSettings .discordIntegration .buttons a").attr(
     "href",
     "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fverify&response_type=token&scope=identify"
@@ -81,6 +87,7 @@ window.addEventListener("beforeunload", (event) => {
   } else {
     if (TestActive.get()) {
       event.preventDefault();
+
       // Chrome requires returnValue to be set.
       event.returnValue = "";
     }
@@ -89,6 +96,7 @@ window.addEventListener("beforeunload", (event) => {
 
 $(window).on("resize", () => {
   console.log("Updating caret position");
+
   Caret.updatePosition();
 });
 

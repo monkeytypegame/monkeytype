@@ -9,12 +9,15 @@ config({ path: path.join(__dirname, ".env") });
 
 async function main(): Promise<void> {
   await db.connect();
+
   admin.initializeApp({
     credential: admin.credential.cert(
       serviceAccount as unknown as ServiceAccount
     ),
   });
+
   console.log("Database Connected!!");
+
   refactor();
 }
 
@@ -24,7 +27,9 @@ async function refactor(): Promise<void> {
   console.log("getting all users");
 
   const usersCollection = db.collection<any>("users");
+
   const users = await usersCollection.find({}).toArray();
+
   console.log(users.length);
 
   for (const user of users) {
@@ -36,7 +41,9 @@ async function refactor(): Promise<void> {
         60: {},
       },
     };
+
     let bestForEveryLanguage = {};
+
     if (obj?.time?.[15]) {
       obj.time[15].forEach((pb) => {
         if (!bestForEveryLanguage[pb.language]) {
@@ -47,11 +54,14 @@ async function refactor(): Promise<void> {
           }
         }
       });
+
       Object.keys(bestForEveryLanguage).forEach((key) => {
         lbPb.time[15][key] = bestForEveryLanguage[key];
       });
+
       bestForEveryLanguage = {};
     }
+
     if (obj?.time?.[60]) {
       obj.time[60].forEach((pb) => {
         if (!bestForEveryLanguage[pb.language]) {
@@ -62,6 +72,7 @@ async function refactor(): Promise<void> {
           }
         }
       });
+
       Object.keys(bestForEveryLanguage).forEach((key) => {
         lbPb.time[60][key] = bestForEveryLanguage[key];
       });
@@ -71,7 +82,9 @@ async function refactor(): Promise<void> {
       { _id: user._id },
       { $set: { lbPersonalBests: lbPb } }
     );
+
     console.log(`updated ${user.name}`);
   }
+
   console.log("done");
 }

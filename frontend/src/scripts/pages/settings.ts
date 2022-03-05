@@ -22,21 +22,25 @@ export const groups: SettingsGroups = {};
 
 async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
+
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
     "button"
   );
+
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
     "button"
   );
+
   groups["quickTab"] = new SettingsGroup(
     "quickTab",
     UpdateConfig.setQuickTabMode,
     "button"
   );
+
   groups["showLiveWpm"] = new SettingsGroup(
     "showLiveWpm",
     UpdateConfig.setShowLiveWpm,
@@ -45,26 +49,31 @@ async function initGroups(): Promise<void> {
       groups["keymapMode"].updateInput();
     }
   );
+
   groups["showLiveAcc"] = new SettingsGroup(
     "showLiveAcc",
     UpdateConfig.setShowLiveAcc,
     "button"
   );
+
   groups["showLiveBurst"] = new SettingsGroup(
     "showLiveBurst",
     UpdateConfig.setShowLiveBurst,
     "button"
   );
+
   groups["showTimerProgress"] = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress,
     "button"
   );
+
   groups["showAvg"] = new SettingsGroup(
     "showAvg",
     UpdateConfig.setShowAvg,
     "button"
   );
+
   groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
@@ -75,30 +84,38 @@ async function initGroups(): Promise<void> {
     () => {
       if (Config.keymapMode === "off") {
         $(".pageSettings .section.keymapStyle").addClass("hidden");
+
         $(".pageSettings .section.keymapLayout").addClass("hidden");
+
         $(".pageSettings .section.keymapLegendStyle").addClass("hidden");
       } else {
         $(".pageSettings .section.keymapStyle").removeClass("hidden");
+
         $(".pageSettings .section.keymapLayout").removeClass("hidden");
+
         $(".pageSettings .section.keymapLegendStyle").removeClass("hidden");
       }
     }
   );
+
   groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
     "button"
   );
+
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
     "select"
   );
+
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
     "button"
   );
+
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
@@ -112,6 +129,7 @@ async function initGroups(): Promise<void> {
       }
     }
   );
+
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
@@ -120,110 +138,132 @@ async function initGroups(): Promise<void> {
       groups["confidenceMode"].updateInput();
     }
   );
+
   groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
     "button"
   );
+
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
     "button"
   );
+
   groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
     "button",
     () => {
       groups["freedomMode"].updateInput();
+
       groups["stopOnError"].updateInput();
     }
   );
+
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
     "button"
   );
+
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
     "button"
   );
+
   groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
     "button"
   );
+
   groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
     "button"
   );
+
   groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
     "button"
   );
+
   groups["enableAds"] = new SettingsGroup(
     "enableAds",
     UpdateConfig.setEnableAds,
     "button"
   );
+
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
     "button"
   );
+
   groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
     "button"
   );
+
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
     "button"
   );
+
   groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
     "button"
   );
+
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
     "button"
   );
+
   groups["swapEscAndTab"] = new SettingsGroup(
     "swapEscAndTab",
     UpdateConfig.setSwapEscAndTab,
     "button"
   );
+
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
     "button"
   );
+
   groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
     "button"
   );
+
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
     "button"
   );
+
   groups["autoSwitchTheme"] = new SettingsGroup(
     "autoSwitchTheme",
     UpdateConfig.setAutoSwitchTheme,
     "button"
   );
+
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
     "button"
   );
+
   groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
@@ -232,11 +272,13 @@ async function initGroups(): Promise<void> {
       groups["confidenceMode"].updateInput();
     }
   );
+
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
     "button"
   );
+
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
@@ -245,6 +287,7 @@ async function initGroups(): Promise<void> {
       if (Config.playSoundOnError) Sound.playError();
     }
   );
+
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
@@ -253,96 +296,115 @@ async function initGroups(): Promise<void> {
       if (Config.playSoundOnClick !== "off") Sound.playClick();
     }
   );
+
   groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
     "button"
   );
+
   groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
     "button"
   );
+
   groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
     "button"
   );
+
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
     UpdateConfig.setMinWpm,
     "button"
   );
+
   groups["minAcc"] = new SettingsGroup(
     "minAcc",
     UpdateConfig.setMinAcc,
     "button"
   );
+
   groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
     "button"
   );
+
   groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
     "button"
   );
+
   groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
     "button"
   );
+
   groups["layout"] = new SettingsGroup(
     "layout",
     UpdateConfig.setLayout,
     "select"
   );
+
   groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
     "select"
   );
+
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
     "button"
   );
+
   groups["pageWidth"] = new SettingsGroup(
     "pageWidth",
     UpdateConfig.setPageWidth,
     "button"
   );
+
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
     "button"
   );
+
   groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
     "button"
   );
+
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
     "button"
   );
+
   groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
     "button"
   );
+
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
     "button"
   );
+
   groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
     "button"
   );
+
   groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
@@ -352,26 +414,31 @@ async function initGroups(): Promise<void> {
       const customButton = $(
         ".pageSettings .section.fontFamily .buttons .custom"
       );
+
       if (
         $(".pageSettings .section.fontFamily .buttons .active").length === 0
       ) {
         customButton.addClass("active");
+
         customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
       } else {
         customButton.text("Custom");
       }
     }
   );
+
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
   );
+
   groups["alwaysShowCPM"] = new SettingsGroup(
     "alwaysShowCPM",
     UpdateConfig.setAlwaysShowCPM,
     "button"
   );
+
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
@@ -385,10 +452,15 @@ async function initGroups(): Promise<void> {
 
 export function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
+
   $(".pageSettings .section.themes .allThemes.buttons").empty();
+
   $(".pageSettings .section.languageGroups .buttons").empty();
+
   $(".pageSettings select").empty().select2("destroy");
+
   $(".pageSettings .section.funbox .buttons").empty();
+
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
 
@@ -401,34 +473,45 @@ export async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
+
   const groups = await Misc.getLanguageGroups();
+
   groups.forEach((group) => {
     let langComboBox = `<optgroup label="${group.name}">`;
+
     group.languages.forEach((language: string) => {
       langComboBox += `<option value="${language}">
         ${language.replace(/_/g, " ")}
       </option>`;
     });
+
     langComboBox += `</optgroup>`;
+
     languageEl.append(langComboBox);
   });
+
   languageEl.select2({
     width: "100%",
   });
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
+
   layoutEl.append(`<option value='default'>off</option>`);
+
   Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
     layoutEl.append(
       `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
   });
+
   layoutEl.select2({
     width: "100%",
   });
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
+
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
+
   Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
@@ -436,6 +519,7 @@ export async function fillSettingsPage(): Promise<void> {
       );
     }
   });
+
   keymapEl.select2({
     width: "100%",
   });
@@ -443,20 +527,25 @@ export async function fillSettingsPage(): Promise<void> {
   const themeEl1 = $(
     ".pageSettings .section.autoSwitchThemeInputs select.light"
   ).empty();
+
   const themeEl2 = $(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
   ).empty();
+
   for (const theme of await Misc.getThemesList()) {
     themeEl1.append(
       `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
     );
+
     themeEl2.append(
       `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
     );
   }
+
   themeEl1.select2({
     width: "100%",
   });
+
   themeEl2.select2({
     width: "100%",
   });
@@ -464,12 +553,15 @@ export async function fillSettingsPage(): Promise<void> {
   $(`.pageSettings .section.autoSwitchThemeInputs select.light`)
     .val(Config.themeLight)
     .trigger("change.select2");
+
   $(`.pageSettings .section.autoSwitchThemeInputs select.dark`)
     .val(Config.themeDark)
     .trigger("change.select2");
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
+
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
+
   Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
       if (funbox.name === "mirror") {
@@ -496,10 +588,13 @@ export async function fillSettingsPage(): Promise<void> {
   });
 
   let isCustomFont = true;
+
   const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+
   Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
       if (Config.fontFamily === font.name) isCustomFont = false;
+
       fontsEl.append(
         `<div class="button${
           Config.fontFamily === font.name ? " active" : ""
@@ -531,9 +626,13 @@ export async function fillSettingsPage(): Promise<void> {
   );
 
   setEventDisabled(true);
+
   await initGroups();
+
   setEventDisabled(false);
+
   await ThemePicker.refreshButtons();
+
   await UpdateConfig.loadPromise;
 }
 
@@ -541,7 +640,9 @@ export async function fillSettingsPage(): Promise<void> {
 
 export function hideAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
+
   $(`.settingsGroup.account`).addClass("hidden");
+
   $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
@@ -551,6 +652,7 @@ export function updateDiscordSection(): void {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (DB.getSnapshot() == null) return;
+
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
     if (DB.getSnapshot().discordId == undefined) {
@@ -558,11 +660,13 @@ export function updateDiscordSection(): void {
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
       );
+
       $(".pageSettings .section.discordIntegration .info").addClass("hidden");
     } else {
       $(".pageSettings .section.discordIntegration .buttons").addClass(
         "hidden"
       );
+
       $(".pageSettings .section.discordIntegration .info").removeClass(
         "hidden"
       );
@@ -572,15 +676,18 @@ export function updateDiscordSection(): void {
 
 export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
+
   $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
 
   const user = firebase.auth().currentUser;
+
   if (!user) return;
 
   const passwordProvider = user.providerData.find(
     //@ts-ignore todo remove then firebase is initialised in code rather than with a script tag
     (provider) => provider.providerId === "password"
   );
+
   const googleProvider = user.providerData.find(
     //@ts-ignore
     (provider) => provider.providerId === "google.com"
@@ -590,6 +697,7 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.passwordAuthSettings #emailPasswordAuth"
     ).removeClass("hidden");
+
     $(
       ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
     ).removeClass("hidden");
@@ -603,6 +711,7 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
     ).removeClass("hidden");
+
     if (passwordProvider) {
       $(
         ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
@@ -621,6 +730,7 @@ export function updateAuthSections(): void {
 
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
+
   $(
     `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
   ).addClass("active");
@@ -629,6 +739,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
+
     DB.getSnapshot().tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
@@ -655,6 +766,7 @@ function refreshTagsSettingsSection(): void {
 
       `);
     });
+
     $(".pageSettings .section.tags").removeClass("hidden");
   } else {
     $(".pageSettings .section.tags").addClass("hidden");
@@ -664,6 +776,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
+
     DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
@@ -680,6 +793,7 @@ function refreshPresetsSettingsSection(): void {
       
       `);
     });
+
     $(".pageSettings .section.presets").removeClass("hidden");
   } else {
     $(".pageSettings .section.presets").addClass("hidden");
@@ -688,10 +802,15 @@ function refreshPresetsSettingsSection(): void {
 
 export function showAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
+
   $(`.settingsGroup.account`).removeClass("hidden");
+
   $(`.pageSettings .section.needsAccount`).removeClass("hidden");
+
   refreshTagsSettingsSection();
+
   refreshPresetsSettingsSection();
+
   updateDiscordSection();
 }
 
@@ -701,24 +820,33 @@ export function update(): void {
   });
 
   refreshTagsSettingsSection();
+
   refreshPresetsSettingsSection();
+
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
+
   ThemePicker.updateActiveTab();
+
   ThemePicker.setCustomInputs(true);
+
   updateDiscordSection();
+
   updateAuthSections();
   // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed
   );
+
   $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
     Config.minWpmCustomSpeed
   );
+
   $(".pageSettings .section.minAcc input.customMinAcc").val(
     Config.minAccCustom
   );
+
   $(".pageSettings .section.minBurst input.customMinBurst").val(
     Config.minBurstCustomSpeed
   );
@@ -741,6 +869,7 @@ function toggleSettingsGroup(groupName: string): void {
     .stop(true, true)
     .slideToggle(250)
     .toggleClass("slideup");
+
   if ($(`.pageSettings .settingsGroup.${groupName}`).hasClass("slideup")) {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
       .stop(true, true)
@@ -878,8 +1007,11 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
+
   const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
+
   Funbox.setFunbox(funbox, type);
+
   setActiveFunboxButton();
 });
 
@@ -889,8 +1021,11 @@ $(document).on(
   ".pageSettings .section.tags .tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
+
     const tagid = $(target).parent(".tag").attr("id") as string;
+
     TagController.toggle(tagid);
+
     $(target).toggleClass("active");
   }
 );
@@ -900,11 +1035,17 @@ $(document).on(
   ".pageSettings .section.presets .presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
+
     const presetid = $(target).parent(".preset").attr("id") as string;
+
     console.log("Applying Preset");
+
     configEventDisabled = true;
+
     PresetController.apply(presetid);
+
     configEventDisabled = false;
+
     update();
   }
 );
@@ -915,6 +1056,7 @@ $("#importSettingsButton").click(() => {
 
 $("#exportSettingsButton").click(() => {
   const configJSON = JSON.stringify(Config);
+
   navigator.clipboard.writeText(configJSON).then(
     function () {
       Notifications.add("JSON Copied to clipboard", 0);
@@ -927,6 +1069,7 @@ $("#exportSettingsButton").click(() => {
 
 $("#shareCustomThemeButton").click(() => {
   const share: string[] = [];
+
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),
     (_, element) => {
@@ -1008,9 +1151,11 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
 
 $(".quickNav .links a").on("click", (e) => {
   const settingsGroup = e.target.innerText;
+
   const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
     "slideup"
   );
+
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
@@ -1019,8 +1164,10 @@ $(document).on(
   `.pageSettings .section.autoSwitchThemeInputs select.light`,
   (e) => {
     const target = $(e.currentTarget);
+
     if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
       return;
+
     UpdateConfig.setThemeLight(target.val() as string);
   }
 );
@@ -1030,18 +1177,23 @@ $(document).on(
   `.pageSettings .section.autoSwitchThemeInputs select.dark`,
   (e) => {
     const target = $(e.currentTarget);
+
     if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
       return;
+
     UpdateConfig.setThemeDark(target.val() as string);
   }
 );
 
 let configEventDisabled = false;
+
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
+
 ConfigEvent.subscribe((eventKey) => {
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
+
   if (ActivePage.get() === "settings") {
     update();
   }
@@ -1059,6 +1211,7 @@ export const page = new Page(
   },
   async () => {
     await fillSettingsPage();
+
     update();
   },
   () => {

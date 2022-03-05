@@ -12,6 +12,7 @@ export function dispatch(key: string, value?: string, value2?: string): void {
       fn(key, value, value2);
     } catch (e) {
       console.error("Timer event subscriber threw an error");
+
       console.error(e);
     }
   });

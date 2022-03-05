@@ -6,11 +6,13 @@ class PresetController {
     const { uid } = req.ctx.decodedToken;
 
     const data = await PresetDAO.getPresets(uid);
+
     return new MonkeyResponse("Preset retrieved", data);
   }
 
   static async addPreset(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { name, config } = req.body;
+
     const { uid } = req.ctx.decodedToken;
 
     const data = await PresetDAO.addPreset(uid, name, config);
@@ -20,6 +22,7 @@ class PresetController {
 
   static async editPreset(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { _id, name, config } = req.body;
+
     const { uid } = req.ctx.decodedToken;
 
     await PresetDAO.editPreset(uid, _id, name, config);
@@ -29,6 +32,7 @@ class PresetController {
 
   static async removePreset(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { presetId } = req.params;
+
     const { uid } = req.ctx.decodedToken;
 
     await PresetDAO.removePreset(uid, presetId);

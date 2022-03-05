@@ -32,6 +32,7 @@ export function hide(): void {
       125,
       () => {
         $(".signOut").css({ transition: "0.25s" });
+
         $(".signOut").addClass("hidden");
       }
     );

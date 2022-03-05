@@ -14,6 +14,7 @@ let quotes: Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
+
   quotes.forEach((quote, index) => {
     const quoteEl = $(`
       <div class="quote" id="${index}" dbid="${quote._id}">
@@ -38,6 +39,7 @@ function updateList(): void {
         </div>
       </div>
     `);
+
     $("#quoteApprovePopupWrapper .quotes").append(quoteEl);
   });
 }
@@ -46,9 +48,11 @@ function updateQuoteLength(index: number): void {
   const len = ($(
     `#quoteApprovePopup .quote[id=${index}] .text`
   ).val() as string)?.length;
+
   $(`#quoteApprovePopup .quote[id=${index}] .length`).text(
     "Quote length: " + len
   );
+
   if (len < 60) {
     $(`#quoteApprovePopup .quote[id=${index}] .length`).addClass("red");
   } else {
@@ -58,7 +62,9 @@ function updateQuoteLength(index: number): void {
 
 async function getQuotes(): Promise<void> {
   Loader.show();
+
   const response = await Ape.quotes.get();
+
   Loader.hide();
 
   if (response.status !== 200) {
@@ -69,13 +75,16 @@ async function getQuotes(): Promise<void> {
   }
 
   quotes = response.data;
+
   updateList();
 }
 
 export async function show(noAnim = false): Promise<void> {
   if ($("#quoteApprovePopupWrapper").hasClass("hidden")) {
     quotes = [];
+
     getQuotes();
+
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -96,6 +105,7 @@ export function hide(): void {
         100,
         () => {
           $("#quoteApprovePopupWrapper").addClass("hidden");
+
           $("#quoteApprovePopupWrapper .quotes").empty();
         }
       );
@@ -104,6 +114,7 @@ export function hide(): void {
 
 function resetButtons(target: string): void {
   $(target).closest(".quote").find(".icon-button").removeClass("disabled");
+
   if ($(target).closest(".quote").find(".edit").hasClass("hidden")) {
     $(target).closest(".quote").find(".undo").addClass("disabled");
   }
@@ -117,34 +128,50 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
   $("#quoteApprovePopupWrapper .quotes").empty();
+
   getQuotes();
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
+
   $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
+
   $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
+
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
+
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).removeClass("hidden");
+
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).addClass("hidden");
+
   updateQuoteLength(index);
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (!confirm("Are you sure?")) return;
+
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
+
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
+
   const target = e.target;
+
   $(target).closest(".quote").find(".icon-button").addClass("disabled");
+
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
 
   Loader.show();
+
   const response = await Ape.quotes.approveSubmission(dbid);
+
   Loader.hide();
 
   if (response.status !== 200) {
     resetButtons(target);
+
     $(target).closest(".quote").find("textarea, input").prop("disabled", false);
+
     return Notifications.add(
       "Failed to approve quote: " + response.message,
       -1
@@ -152,58 +179,82 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   }
 
   Notifications.add("Quote approved. " + response.message ?? "", 1);
+
   quotes.splice(index, 1);
+
   updateList();
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
   if (!confirm("Are you sure?")) return;
+
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
+
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
+
   const target = e.target;
+
   $(target).closest(".quote").find(".icon-button").addClass("disabled");
+
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
 
   Loader.show();
+
   const response = await Ape.quotes.rejectSubmission(dbid);
+
   Loader.hide();
 
   if (response.status !== 200) {
     resetButtons(target);
+
     $(target).closest(".quote").find("textarea, input").prop("disabled", false);
+
     return Notifications.add("Failed to refuse quote: " + response.message, -1);
   }
 
   Notifications.add("Quote refused.", 1);
+
   quotes.splice(index, 1);
+
   updateList();
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   if (!confirm("Are you sure?")) return;
+
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
+
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
+
   const editText = $(
     `#quoteApprovePopup .quote[id=${index}] .text`
   ).val() as string;
+
   const editSource = $(
     `#quoteApprovePopup .quote[id=${index}] .source`
   ).val() as string;
+
   const target = e.target;
+
   $(target).closest(".quote").find(".icon-button").addClass("disabled");
+
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
 
   Loader.show();
+
   const response = await Ape.quotes.approveSubmission(
     dbid,
     editText,
     editSource
   );
+
   Loader.hide();
 
   if (response.status !== 200) {
     resetButtons(target);
+
     $(target).closest(".quote").find("textarea, input").prop("disabled", false);
+
     return Notifications.add(
       "Failed to approve quote: " + response.message,
       -1
@@ -211,21 +262,30 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   }
 
   Notifications.add("Quote edited and approved. " + response.message ?? "", 1);
+
   quotes.splice(index, 1);
+
   updateList();
 });
 
 $(document).on("input", "#quoteApprovePopup .quote .text", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
+
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
+
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
+
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
+
   updateQuoteLength(index);
 });
 
 $(document).on("input", "#quoteApprovePopup .quote .source", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
+
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
+
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
+
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
 });

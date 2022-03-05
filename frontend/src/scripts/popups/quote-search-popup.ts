@@ -16,38 +16,53 @@ export function setSelectedId(val: number): void {
 
 async function updateResults(searchText: string): Promise<void> {
   const quotes = await Misc.getQuotes(Config.language);
+
   const reg = new RegExp(searchText, "i");
+
   const found: MonkeyTypes.Quote[] = [];
+
   quotes.quotes.forEach((quote) => {
     const quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
+
     const test1 = reg.test(quoteText);
+
     if (test1) {
       found.push(quote);
     }
   });
+
   quotes.quotes.forEach((quote) => {
     const quoteSource = quote["source"].replace(
       /[.,'"/#!$%^&*;:{}=\-_`~()]/g,
       ""
     );
+
     const quoteId = quote["id"];
+
     const test2 = reg.test(quoteSource);
+
     const test3 = reg.test(quoteId.toString());
+
     if ((test2 || test3) && found.filter((q) => q.id == quote.id).length == 0) {
       found.push(quote);
     }
   });
+
   $("#quoteSearchResults").remove();
+
   $("#quoteSearchPopup").append(
     '<div class="quoteSearchResults" id="quoteSearchResults"></div>'
   );
+
   const resultsList = $("#quoteSearchResults");
+
   let resultListLength = 0;
 
   const isNotAuthed = !firebase.auth().currentUser;
 
   found.forEach(async (quote) => {
     let lengthDesc;
+
     if (quote.length < 101) {
       lengthDesc = "short";
     } else if (quote.length < 301) {
@@ -57,6 +72,7 @@ async function updateResults(searchText: string): Promise<void> {
     } else {
       lengthDesc = "thicc";
     }
+
     if (resultListLength++ < 100) {
       resultsList.append(`
       <div class="searchResult" id="${quote.id}">
@@ -75,6 +91,7 @@ async function updateResults(searchText: string): Promise<void> {
       `);
     }
   });
+
   if (found.length > 100) {
     $("#extraResults").html(
       found.length +
@@ -113,6 +130,7 @@ export async function show(clearText = true): Promise<void> {
         if (clearText) {
           $("#quoteSearchPopup input").focus().select();
         }
+
         updateResults(quoteSearchInputValue);
       });
   }
@@ -130,6 +148,7 @@ export function hide(noAnim = false, focusWords = true): void {
         noAnim ? 0 : 100,
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
+
           if (focusWords) {
             TestUI.focusWords();
           }
@@ -144,25 +163,35 @@ export function apply(val: number): boolean {
       (<HTMLInputElement>document.getElementById("searchBox")).value as string
     );
   }
+
   let ret;
+
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setQuoteLength(-2 as MonkeyTypes.QuoteLength, false);
+
     selectedId = val;
+
     ManualRestart.set();
+
     ret = true;
   } else {
     Notifications.add("Quote ID must be at least 1", 0);
+
     ret = false;
   }
+
   hide();
+
   return ret;
 }
 
 $("#quoteSearchPopup .searchBox").keydown((e) => {
   if (e.code == "Escape") return;
+
   setTimeout(() => {
     let searchText = (<HTMLInputElement>document.getElementById("searchBox"))
       .value;
+
     searchText = searchText
       .replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "")
       .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -179,19 +208,23 @@ $("#quoteSearchPopupWrapper").click((e) => {
 
 $(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
   hide(true);
+
   QuoteSubmitPopup.show(true);
 });
 
 $(document).on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide(true);
+
   QuoteApprovePopup.show(true);
 });
 
 $(document).on("click", "#quoteSearchPopup .report", async (e) => {
   const quoteId = e.target.closest(".searchResult").id;
+
   const quoteIdSelectedForReport = parseInt(quoteId);
 
   hide(true, false);
+
   QuoteReportPopup.show({
     quoteId: quoteIdSelectedForReport,
     noAnim: true,
@@ -203,6 +236,7 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
+
   if (len == -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     show();
@@ -215,6 +249,7 @@ $(document).keydown((event) => {
     !$("#quoteSearchPopupWrapper").hasClass("hidden")
   ) {
     hide();
+
     event.preventDefault();
   }
 });

@@ -19,6 +19,7 @@ class Score {
   public count: number;
   constructor() {
     this.average = 0.0;
+
     this.count = 0;
   }
 
@@ -26,7 +27,9 @@ class Score {
     if (this.count < perCharCount) {
       this.count++;
     }
+
     const adjustRate = 1.0 / this.count;
+
     // Keep an exponential moving average of the score over time.
     this.average = score * adjustRate + this.average * (1 - adjustRate);
   }
@@ -34,41 +37,56 @@ class Score {
 
 export function updateScore(char: string, isCorrect: boolean): void {
   const timings = TestInput.keypressTimings.spacing.array;
+
   if (timings.length === 0 || typeof timings === "string") {
     return;
   }
+
   let score = timings[timings.length - 1];
+
   if (!isCorrect) {
     score += incorrectPenalty;
   }
+
   if (!(char in scores)) {
     scores[char] = new Score();
   }
+
   scores[char].update(score);
 }
 
 function score(word: string): number {
   let total = 0.0;
+
   let numChars = 0;
+
   for (const c of word) {
     if (c in scores) {
       total += scores[c].average;
+
       numChars++;
     }
   }
+
   return numChars == 0 ? 0.0 : total / numChars;
 }
 
 export function getWord(wordset: Wordset): string {
   let highScore;
+
   let randomWord = "";
+
   for (let i = 0; i < wordSamples; i++) {
     const newWord = wordset.randomWord();
+
     const newScore = score(newWord);
+
     if (i == 0 || highScore === undefined || newScore > highScore) {
       randomWord = newWord;
+
       highScore = newScore;
     }
   }
+
   return randomWord;
 }

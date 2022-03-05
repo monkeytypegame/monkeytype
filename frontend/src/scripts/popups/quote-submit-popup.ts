@@ -26,8 +26,11 @@ import * as Notifications from "../elements/notifications";
 
 async function submitQuote(): Promise<void> {
   const text = $("#quoteSubmitPopup #submitQuoteText").val() as string;
+
   const source = $("#quoteSubmitPopup #submitQuoteSource").val() as string;
+
   const language = $("#quoteSubmitPopup #submitQuoteLanguage").val() as string;
+
   const captcha = $("#quoteSubmitPopup #g-recaptcha-response").val() as string;
 
   if (!text || !source || !language) {
@@ -35,7 +38,9 @@ async function submitQuote(): Promise<void> {
   }
 
   Loader.show();
+
   const response = await Ape.quotes.submit(text, source, language, captcha);
+
   Loader.hide();
 
   if (response.status !== 200) {
@@ -43,10 +48,15 @@ async function submitQuote(): Promise<void> {
   }
 
   Notifications.add("Quote submitted.", 1);
+
   $("#quoteSubmitPopup #submitQuoteText").val("");
+
   $("#quoteSubmitPopup #submitQuoteSource").val("");
+
   $("#quoteSubmitPopup .characterCount").removeClass("red");
+
   $("#quoteSubmitPopup .characterCount").text("-");
+
   grecaptcha.reset();
 }
 
@@ -58,6 +68,7 @@ export async function show(noAnim = false): Promise<void> {
     0,
     5
   );
+
   return;
   // if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
   //   await initDropdown();
@@ -106,7 +117,9 @@ $(document).on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
 $("#quoteSubmitPopup textarea").on("input", () => {
   setTimeout(() => {
     const len = ($("#quoteSubmitPopup textarea").val() as string)?.length;
+
     $("#quoteSubmitPopup .characterCount").text(len);
+
     if (len < 60) {
       $("#quoteSubmitPopup .characterCount").addClass("red");
     } else {

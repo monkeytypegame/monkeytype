@@ -5,9 +5,11 @@ import * as Notifications from "../elements/notifications";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
+
   const seconds = [...input.toLowerCase().matchAll(re)]
     .map((match) => {
       const part = match[0];
+
       const duration = parseFloat(part.replace(/\s+/g, ""));
 
       if (part.includes("h")) {
@@ -25,7 +27,9 @@ function parseInput(input: string): number {
 
 function format(duration: number): string {
   const hours = Math.floor(duration / 3600);
+
   const minutes = Math.floor((duration % 3600) / 60);
+
   const seconds = (duration % 3600) % 60;
 
   const time = [];
@@ -53,7 +57,9 @@ function format(duration: number): string {
 
 function previewDuration(): void {
   const input = $("#customTestDurationPopup input").val() as string;
+
   const duration = parseInput(input);
+
   let formattedDuration = "";
 
   if (duration < 0) {
@@ -103,8 +109,11 @@ function apply(): void {
 
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setTimeConfig(val as MonkeyTypes.TimeModes);
+
     ManualRestart.set();
+
     TestLogic.restart();
+
     if (val >= 1800) {
       Notifications.add("Stay safe and take breaks!", 0);
     } else if (val == 0) {
@@ -141,6 +150,7 @@ $("#customTestDurationPopup .button").click(() => {
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
   const mode = $(e.currentTarget).attr("timeConfig");
+
   if (mode == "custom") {
     show();
   }
@@ -152,6 +162,7 @@ $(document).keydown((event) => {
     !$("#customTestDurationPopupWrapper").hasClass("hidden")
   ) {
     hide();
+
     event.preventDefault();
   }
 });

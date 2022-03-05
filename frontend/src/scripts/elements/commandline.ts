@@ -12,13 +12,21 @@ function showInput(
   defaultValue = ""
 ): void {
   $("#commandLineWrapper").removeClass("hidden");
+
   $("#commandLine").addClass("hidden");
+
   $("#commandInput").removeClass("hidden");
+
   $("#commandInput input").attr("placeholder", placeholder);
+
   $("#commandInput input").val(defaultValue);
+
   $("#commandInput input").focus();
+
   $("#commandInput input").attr("command", "");
+
   $("#commandInput input").attr("command", command);
+
   if (defaultValue != "") {
     $("#commandInput input").select();
   }
@@ -30,17 +38,23 @@ export function isSingleListCommandLineActive(): boolean {
 
 function showFound(): void {
   $("#commandLine .suggestions").empty();
+
   let commandsHTML = "";
+
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
+
   $.each(list.list, (_index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       let icon = obj.icon ?? "fa-chevron-right";
+
       const faIcon = /^fa-/g.test(icon);
+
       if (!faIcon) {
         icon = `<div class="textIcon">${icon}</div>`;
       } else {
         icon = `<i class="fas fa-fw ${icon}"></i>`;
       }
+
       if (list.configKey) {
         if (
           (obj.configValueMode &&
@@ -62,14 +76,19 @@ function showFound(): void {
           icon = `<i class="fas fa-fw"></i>`;
         }
       }
+
       let iconHTML = `<div class="icon">${icon}</div>`;
+
       if (obj.noIcon && !isSingleListCommandLineActive()) {
         iconHTML = "";
       }
+
       commandsHTML += `<div class="entry" command="${obj.id}">${iconHTML}<div>${obj.display}</div></div>`;
     }
   });
+
   $("#commandLine .suggestions").html(commandsHTML);
+
   if ($("#commandLine .suggestions .entry").length == 0) {
     $("#commandLine .separator").css({ height: 0, margin: 0 });
   } else {
@@ -78,9 +97,12 @@ function showFound(): void {
       "margin-bottom": ".5rem",
     });
   }
+
   const entries = $("#commandLine .suggestions .entry");
+
   if (entries.length > 0) {
     $(entries[0]).addClass("activeKeyboard");
+
     try {
       $.each(list.list, (_index, obj) => {
         if (obj.found) {
@@ -89,9 +111,12 @@ function showFound(): void {
             !ThemeController.randomTheme
           )
             ThemeController.clearPreview();
+
           if (!/font/gi.test(obj.id))
             UpdateConfig.previewFontFamily(Config.fontFamily);
+
           if (obj.hover) obj.hover();
+
           return false;
         } else {
           return true;
@@ -99,6 +124,7 @@ function showFound(): void {
       });
     } catch (e) {}
   }
+
   $("#commandLine .listTitle").remove();
 }
 
@@ -107,7 +133,9 @@ function updateSuggested(): void {
     .toLowerCase()
     .split(" ")
     .filter((s, i) => s || i == 0); //remove empty entries after first
+
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
+
   if (
     inputVal[0] === "" &&
     Config.singleListCommandLine === "on" &&
@@ -116,12 +144,16 @@ function updateSuggested(): void {
     $.each(list.list, (_index, obj) => {
       obj.found = false;
     });
+
     showFound();
+
     return;
   }
+
   //ignore the preceeding ">"s in the command line input
   if (inputVal[0] && inputVal[0][0] == ">")
     inputVal[0] = inputVal[0].replace(/^>+/, "");
+
   if (inputVal[0] == "" && inputVal.length == 1) {
     $.each(list.list, (_index, obj) => {
       if (obj.visible !== false) obj.found = true;
@@ -129,13 +161,19 @@ function updateSuggested(): void {
   } else {
     $.each(list.list, (_index, obj) => {
       let foundcount = 0;
+
       $.each(inputVal, (_index2, obj2) => {
         if (obj2 == "") return;
+
         const escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
         const re = new RegExp("\\b" + escaped, "g");
+
         const res = obj.display.toLowerCase().match(re);
+
         const res2 =
           obj.alias !== undefined ? obj.alias.toLowerCase().match(re) : null;
+
         if (
           (res != null && res.length > 0) ||
           (res2 != null && res2.length > 0)
@@ -145,6 +183,7 @@ function updateSuggested(): void {
           foundcount--;
         }
       });
+
       if (foundcount > inputVal.length - 1) {
         obj.found = true;
       } else {
@@ -152,14 +191,19 @@ function updateSuggested(): void {
       }
     });
   }
+
   showFound();
 }
 
 export let show = (): void => {
   if (!$(".page.pageLoading").hasClass("hidden")) return;
+
   Focus.set(false);
+
   $("#commandLine").removeClass("hidden");
+
   $("#commandInput").addClass("hidden");
+
   if ($("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLineWrapper")
       .stop(true, true)
@@ -172,18 +216,24 @@ export let show = (): void => {
         100
       );
   }
+
   $("#commandLine input").val("");
+
   CommandlineLists.updateThemeCommands();
+
   updateSuggested();
+
   $("#commandLine input").focus();
 };
 
 function hide(): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
+
   // applyCustomThemeColors();
   if (!ThemeController.randomTheme) {
     ThemeController.clearPreview();
   }
+
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -194,41 +244,55 @@ function hide(): void {
       100,
       () => {
         $("#commandLineWrapper").addClass("hidden");
+
         $("#commandLine").removeClass("allCommands");
+
         TestUI.focusWords();
       }
     );
+
   TestUI.focusWords();
 }
 
 function trigger(command: string): void {
   let subgroup = false;
+
   let input = false;
+
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
+
   let sticky = false;
+
   $.each(list.list, (_index, obj) => {
     if (obj.id == command) {
       if (obj.input) {
         input = true;
+
         const escaped = obj.display.split("</i>")[1] ?? obj.display;
+
         showInput(obj.id, escaped, obj.defaultValue);
       } else if (obj.subgroup) {
         subgroup = true;
+
         if (obj.beforeSubgroup) {
           obj.beforeSubgroup();
         }
+
         CommandlineLists.current.push(
           obj.subgroup as MonkeyTypes.CommandsGroup
         );
+
         show();
       } else {
         if (obj.exec) obj.exec();
+
         if (obj.sticky === true) {
           sticky = true;
         }
       }
     }
   });
+
   if (!subgroup && !input && !sticky) {
     try {
       firebase.analytics().logEvent("usedCommandLine", {
@@ -237,6 +301,7 @@ function trigger(command: string): void {
     } catch (e) {
       console.log("Analytics unavailable");
     }
+
     hide();
   }
 }
@@ -252,7 +317,9 @@ function addChildCommands(
     /\s?\.\.\.$/g,
     ""
   );
+
   let icon = `<i class="fas fa-fw"></i>`;
+
   if (
     (commandItem as MonkeyTypes.Command).configValue !== undefined &&
     Config[parentCommand?.configKey as keyof MonkeyTypes.Config] ===
@@ -260,6 +327,7 @@ function addChildCommands(
   ) {
     icon = `<i class="fas fa-fw fa-check"></i>`;
   }
+
   if ((commandItem as MonkeyTypes.Command).noIcon) {
     icon = "";
   }
@@ -267,9 +335,12 @@ function addChildCommands(
   if (parentCommandDisplay)
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
+
   if ((commandItem as MonkeyTypes.Command).subgroup) {
     const command = commandItem as MonkeyTypes.Command;
+
     if (command.beforeSubgroup) command.beforeSubgroup();
+
     try {
       (
         (commandItem as MonkeyTypes.Command)
@@ -279,6 +350,7 @@ function addChildCommands(
           (commandItem as MonkeyTypes.Command)
             .subgroup as MonkeyTypes.CommandsGroup
         ).configKey;
+
         addChildCommands(
           unifiedCommands,
           cmd,
@@ -298,11 +370,14 @@ function addChildCommands(
     const tempCommandItem: MonkeyTypes.Command = {
       ...(commandItem as MonkeyTypes.Command),
     };
+
     if (parentCommand)
       (tempCommandItem as MonkeyTypes.Command).icon = (
         parentCommand as unknown as MonkeyTypes.Command
       ).icon;
+
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
+
     unifiedCommands.push(tempCommandItem);
   }
 }
@@ -312,14 +387,19 @@ function generateSingleListOfCommands(): {
   list: MonkeyTypes.Command[];
 } {
   const allCommands: MonkeyTypes.Command[] = [];
+
   const oldShowCommandLine = show;
+
   show = (): void => {
     //
   };
+
   CommandlineLists.defaultCommands.list.forEach((c) =>
     addChildCommands(allCommands, c)
   );
+
   show = oldShowCommandLine;
+
   return {
     title: "All Commands",
     list: allCommands,
@@ -328,33 +408,41 @@ function generateSingleListOfCommands(): {
 
 function useSingleListCommandLine(sshow = true): void {
   const allCommands = generateSingleListOfCommands();
+
   // if (Config.singleListCommandLine == "manual") {
   // CommandlineLists.pushCurrent(allCommands);
   // } else if (Config.singleListCommandLine == "on") {
   CommandlineLists.setCurrent([allCommands]);
+
   // }
   if (Config.singleListCommandLine != "manual")
     $("#commandLine").addClass("allCommands");
+
   if (sshow) show();
 }
 
 function restoreOldCommandLine(sshow = true): void {
   if (isSingleListCommandLineActive()) {
     $("#commandLine").removeClass("allCommands");
+
     CommandlineLists.setCurrent(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
     );
+
     if (CommandlineLists.current.length < 1)
       CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
   }
+
   if (sshow) show();
 }
 
 $("#commandLine input").keyup((e) => {
   commandLineMouseMode = false;
+
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
   );
+
   if (
     e.key === "ArrowUp" ||
     e.key === "ArrowDown" ||
@@ -364,6 +452,7 @@ $("#commandLine input").keyup((e) => {
     (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Delete")
   )
     return;
+
   updateSuggested();
 });
 
@@ -383,9 +472,11 @@ $(document).ready(() => {
       const popups = document.querySelectorAll(".popupWrapper");
 
       let popupVisible = false;
+
       for (const popup of popups) {
         if (!popup.classList.contains("hidden") === true) {
           popupVisible = true;
+
           break;
         }
       }
@@ -395,11 +486,14 @@ $(document).ready(() => {
       if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (CommandlineLists.current.length > 1) {
           CommandlineLists.current.pop();
+
           $("#commandLine").removeClass("allCommands");
+
           show();
         } else {
           hide();
         }
+
         UpdateConfig.setFontFamily(Config.fontFamily, true);
       } else if (event.key === "Tab" || !Config.swapEscAndTab) {
         if (Config.singleListCommandLine == "on") {
@@ -407,6 +501,7 @@ $(document).ready(() => {
         } else {
           CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
         }
+
         show();
       }
     }
@@ -417,18 +512,24 @@ $("#commandInput input").keydown((e) => {
   if (e.key === "Enter") {
     //enter
     e.preventDefault();
+
     const command = $("#commandInput input").attr("command");
+
     const value = $("#commandInput input").val() as string;
+
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
+
     $.each(list.list, (_index, obj) => {
       if (obj.id == command) {
         if (obj.exec) obj.exec(value);
+
         if (obj.subgroup !== null && obj.subgroup !== undefined) {
           //TODO: what is this for?
           // subgroup = obj.subgroup;
         }
       }
     });
+
     try {
       firebase.analytics().logEvent("usedCommandLine", {
         command: command,
@@ -436,8 +537,10 @@ $("#commandInput input").keydown((e) => {
     } catch (e) {
       console.log("Analytics unavailable");
     }
+
     hide();
   }
+
   return;
 });
 
@@ -450,6 +553,7 @@ $(document).on(
   "#commandLineWrapper #commandLine .suggestions .entry",
   (e) => {
     if (!commandLineMouseMode) return;
+
     $(e.target).addClass("activeMouse");
   }
 );
@@ -459,19 +563,24 @@ $(document).on(
   "#commandLineWrapper #commandLine .suggestions .entry",
   (e) => {
     if (!commandLineMouseMode) return;
+
     $(e.target).removeClass("activeMouse");
   }
 );
 
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   if (!commandLineMouseMode) return;
+
   // console.log("clearing keyboard active");
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
+
   const hoverId = $(e.target).attr("command");
+
   try {
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
+
     $.each(list.list, (_index, obj) => {
       if (obj.id == hoverId) {
         if (
@@ -479,8 +588,10 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
           !ThemeController.randomTheme
         )
           ThemeController.clearPreview();
+
         if (!/font/gi.test(obj.id))
           UpdateConfig.previewFontFamily(Config.fontFamily);
+
         if (obj.hover) obj.hover();
       }
     });
@@ -492,6 +603,7 @@ $(document).on(
   "#commandLineWrapper #commandLine .suggestions .entry",
   (e) => {
     $(".suggestions .entry").removeClass("activeKeyboard");
+
     trigger($(e.currentTarget).attr("command") as string);
   }
 );
@@ -499,6 +611,7 @@ $(document).on(
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
+
     UpdateConfig.setFontFamily(Config.fontFamily, true);
     // if (Config.customTheme === true) {
     //   applyCustomThemeColors();
@@ -550,13 +663,16 @@ $(document).keydown((e) => {
   // }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
+
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
         useSingleListCommandLine(false);
+
         return;
       } else if ($("#commandLine input").val() == ">") {
         //so that it will ignore succeeding ">" when input is already ">"
         e.preventDefault();
+
         return;
       }
     }
@@ -564,6 +680,7 @@ $(document).keydown((e) => {
     if (e.key === "Backspace" || e.key === "Delete") {
       setTimeout(() => {
         const inputVal = $("#commandLine input").val() as string;
+
         if (
           Config.singleListCommandLine == "manual" &&
           isSingleListCommandLineActive() &&
@@ -577,43 +694,61 @@ $(document).keydown((e) => {
     if (e.key === "Enter") {
       //enter
       e.preventDefault();
+
       const command = $(".suggestions .entry.activeKeyboard").attr(
         "command"
       ) as string;
+
       trigger(command);
+
       return;
     }
+
     if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Tab") {
       e.preventDefault();
+
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
       );
+
       const entries = $(".suggestions .entry");
+
       let activenum = -1;
+
       let hoverId: string;
+
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
+
       if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
         entries.removeClass("activeKeyboard");
+
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
+
           hoverId = $(entries[entries.length - 1]).attr("command") as string;
         } else {
           $(entries[--activenum]).addClass("activeKeyboard");
+
           hoverId = $(entries[activenum]).attr("command") as string;
         }
       }
+
       if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
         entries.removeClass("activeKeyboard");
+
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");
+
           hoverId = $(entries[0]).attr("command") as string;
         } else {
           $(entries[++activenum]).addClass("activeKeyboard");
+
           hoverId = $(entries[activenum]).attr("command") as string;
         }
       }
+
       try {
         const scroll =
           Math.abs(
@@ -623,15 +758,18 @@ $(document).keydown((e) => {
           ) -
           ($(".suggestions").outerHeight() as number) / 2 +
           ($($(".entry")[0]).outerHeight() as number);
+
         $(".suggestions").scrollTop(scroll);
       } catch (e) {
         if (e instanceof Error)
           console.log("could not scroll suggestions: " + e.message);
       }
+
       // console.log(`scrolling to ${scroll}`);
       try {
         const list =
           CommandlineLists.current[CommandlineLists.current.length - 1];
+
         $.each(list.list, (_index, obj) => {
           if (obj.id == hoverId) {
             if (
@@ -639,8 +777,10 @@ $(document).keydown((e) => {
               !ThemeController.randomTheme
             )
               ThemeController.clearPreview();
+
             if (!/font/gi.test(obj.id))
               UpdateConfig.previewFontFamily(Config.fontFamily);
+
             if (obj.hover) obj.hover();
           }
         });
@@ -649,6 +789,7 @@ $(document).keydown((e) => {
       return false;
     }
   }
+
   return;
 });
 
@@ -658,11 +799,13 @@ $(document).on("click", "#commandLineMobileButton", () => {
   } else {
     CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
   }
+
   show();
 });
 
 $(document).on("click", "#keymap .r5 .key-space", () => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
+
   show();
 });
 
@@ -670,11 +813,14 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
   const commands = CommandlineLists.getList(
     $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
   );
+
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
       CommandlineLists.updateTagCommands();
     }
+
     CommandlineLists.pushCurrent(commands);
+
     show();
   }
 });
@@ -684,16 +830,19 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     UpdateConfig.setCustomTheme(!Config.customTheme);
   } else {
     CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
+
     show();
   }
 });
 
 $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+
   show();
 });
 
 $(".supportButtons .button.ads").click(() => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+
   show();
 });

@@ -16,9 +16,11 @@ class UserController {
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {
     const { name } = req.body;
+
     const { email, uid } = req.ctx.decodedToken;
 
     await UsersDAO.addUser(name, email, uid);
+
     Logger.log("user_created", `${name} ${email}`, uid);
 
     return new MonkeyResponse("User created");
@@ -28,7 +30,9 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
 
     const userInfo = await UsersDAO.getUser(uid);
+
     await UsersDAO.deleteUser(uid);
+
     Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
     return new MonkeyResponse("User deleted");
@@ -36,10 +40,13 @@ class UserController {
 
   static async updateName(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { name } = req.body;
 
     const oldUser = await UsersDAO.getUser(uid);
+
     await UsersDAO.updateName(uid, name);
+
     Logger.log(
       "user_name_updated",
       `changed name from ${oldUser.name} to ${name}`,
@@ -53,6 +60,7 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
 
     await UsersDAO.clearPb(uid);
+
     Logger.log("user_cleared_pbs", "", uid);
 
     return new MonkeyResponse("User's PB cleared");
@@ -62,6 +70,7 @@ class UserController {
     const { name } = req.params;
 
     const available = await UsersDAO.isNameAvailable(name);
+
     if (!available) {
       throw new MonkeyError(409, "Username unavailable");
     }
@@ -71,6 +80,7 @@ class UserController {
 
   static async updateEmail(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { newEmail } = req.body;
 
     try {
@@ -88,6 +98,7 @@ class UserController {
     const { email, uid } = req.ctx.decodedToken;
 
     let userInfo;
+
     try {
       userInfo = await UsersDAO.getUser(uid);
     } catch (e) {
@@ -104,6 +115,7 @@ class UserController {
     }
 
     const agentLog = buildAgentLog(req);
+
     Logger.log("user_data_requested", agentLog, uid);
 
     return new MonkeyResponse("User data retrieved", cleanUser(userInfo));
@@ -111,11 +123,13 @@ class UserController {
 
   static async linkDiscord(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const {
       data: { tokenType, accessToken },
     } = req.body;
 
     const userInfo = await UsersDAO.getUser(uid);
+
     if (userInfo.banned) {
       throw new MonkeyError(403, "Banned accounts cannot link with Discord");
     }
@@ -131,6 +145,7 @@ class UserController {
     }
 
     const discordIdAvailable = await UsersDAO.isDiscordIdAvailable(discordId);
+
     if (!discordIdAvailable) {
       throw new MonkeyError(
         400,
@@ -139,7 +154,9 @@ class UserController {
     }
 
     await UsersDAO.linkDiscord(uid, discordId);
+
     await BotDAO.linkDiscord(uid, discordId);
+
     Logger.log("user_discord_link", `linked to ${discordId}`, uid);
 
     return new MonkeyResponse("Discord account linked", discordId);
@@ -151,12 +168,15 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
 
     const userInfo = await UsersDAO.getUser(uid);
+
     if (!userInfo.discordId) {
       throw new MonkeyError(400, "User does not have a linked Discord account");
     }
 
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
+
     await UsersDAO.unlinkDiscord(uid);
+
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);
 
     return new MonkeyResponse("Discord account unlinked");
@@ -164,33 +184,41 @@ class UserController {
 
   static async addTag(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { tagName } = req.body;
 
     const tag = await UsersDAO.addTag(uid, tagName);
+
     return new MonkeyResponse("Tag updated", tag);
   }
 
   static async clearTagPb(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { tagId } = req.params;
 
     await UsersDAO.removeTagPb(uid, tagId);
+
     return new MonkeyResponse("Tag PB cleared");
   }
 
   static async editTag(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { tagId, newName } = req.body;
 
     await UsersDAO.editTag(uid, tagId, newName);
+
     return new MonkeyResponse("Tag updated");
   }
 
   static async removeTag(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { tagId } = req.params;
 
     await UsersDAO.removeTag(uid, tagId);
+
     return new MonkeyResponse("Tag deleted");
   }
 
@@ -198,6 +226,7 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
 
     const tags = await UsersDAO.getTags(uid);
+
     return new MonkeyResponse("Tags retrieved", tags ?? []);
   }
 
@@ -205,9 +234,11 @@ class UserController {
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
     const { mode, mode2, language, rank } = req.body;
 
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
+
     return new MonkeyResponse("Leaderboard memory updated");
   }
 }

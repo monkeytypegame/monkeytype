@@ -10,10 +10,12 @@ import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 
 ManualRestart.set();
+
 UpdateConfig.loadFromLocalStorage();
 
 if (window.location.hostname === "localhost") {
   $("#bottom .version .text").text("localhost");
+
   $("#bottom .version").css("opacity", 1);
 } else {
   Misc.getReleasesFromGitHub().then((v) => {
@@ -22,15 +24,20 @@ if (window.location.hostname === "localhost") {
 }
 
 Focus.set(true, true);
+
 RouteController.handleInitialPageClasses(window.location.pathname);
+
 $(document).ready(() => {
   if (window.location.pathname === "/") {
     // $("#top .config").removeClass("hidden");
   }
+
   $("body").css("transition", "all .25s, transform .05s");
+
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
+
   if (!window.localStorage.getItem("merchbannerclosed")) {
     Notifications.addBanner(
       `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
@@ -42,6 +49,7 @@ $(document).ready(() => {
       }
     );
   }
+
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
@@ -49,19 +57,25 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250, () => {
       if (window.location.pathname === "/verify") {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
+
         if (fragment.has("access_token")) {
           const accessToken = fragment.get("access_token") as string;
+
           const tokenType = fragment.get("token_type") as string;
+
           VerificationController.set({
             accessToken: accessToken,
             tokenType: tokenType,
           });
+
           history.replaceState("/", "", "/");
         }
+
         const page = window.location.pathname.replace(
           "/",
           ""
         ) as MonkeyTypes.Page;
+
         PageController.change(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
@@ -73,6 +87,7 @@ $(document).ready(() => {
         // PageController.change(page);
       }
     });
+
   // Settings.settingsFillPromise.then(Settings.update);
   MonkeyPower.init();
 });

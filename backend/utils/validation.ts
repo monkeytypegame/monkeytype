@@ -13,6 +13,7 @@ export function isUsernameValid(name: string): boolean {
   const normalizedName = name.toLowerCase();
 
   const beginsWithPeriod = /^\..*/.test(normalizedName);
+
   if (beginsWithPeriod) {
     return false;
   }
@@ -20,6 +21,7 @@ export function isUsernameValid(name: string): boolean {
   const isProfanity = profanities.find((profanity) =>
     normalizedName.includes(profanity)
   );
+
   if (isProfanity) {
     return false;
   }
@@ -40,22 +42,31 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
 
   if (mode === "time") {
     const setTimeTooShort = mode2 > 0 && mode2 < 15;
+
     const infiniteTimeTooShort = mode2 === 0 && testDuration < 15;
+
     return setTimeTooShort || infiniteTimeTooShort;
   }
 
   if (mode === "words") {
     const setWordTooShort = mode2 > 0 && mode2 < 10;
+
     const infiniteWordTooShort = mode2 === 0 && testDuration < 15;
+
     return setWordTooShort || infiniteWordTooShort;
   }
 
   if (mode === "custom") {
     if (!customText) return true;
+
     const { isWordRandom, isTimeRandom, textLen, word, time } = customText;
+
     const setTextTooShort = !isWordRandom && !isTimeRandom && textLen < 10;
+
     const randomWordsTooShort = isWordRandom && !isTimeRandom && word < 10;
+
     const randomTimeTooShort = !isWordRandom && isTimeRandom && time < 15;
+
     return setTextTooShort || randomWordsTooShort || randomTimeTooShort;
   }
 

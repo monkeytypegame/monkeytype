@@ -10,6 +10,7 @@ import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
   const op = Config.showTimerProgress ? Config.timerOpacity : 0;
+
   if (Config.mode != "zen" && Config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
@@ -50,6 +51,7 @@ export function hide(): void {
     },
     125
   );
+
   $("#miniTimerAndLiveWpm .time")
     .stop(true, true)
     .animate(
@@ -61,6 +63,7 @@ export function hide(): void {
         $("#miniTimerAndLiveWpm .time").addClass("hidden");
       }
     );
+
   $("#timerNumber").stop(true, true).animate(
     {
       opacity: 0,
@@ -90,22 +93,27 @@ export function restart(): void {
 }
 
 const timerNumberElement = document.querySelector("#timerNumber");
+
 const miniTimerNumberElement = document.querySelector(
   "#miniTimerAndLiveWpm .time"
 );
 
 export function update(): void {
   const time = Time.get();
+
   if (
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     let maxtime = Config.time;
+
     if (Config.mode === "custom" && CustomText.isTimeRandom) {
       maxtime = CustomText.time;
     }
+
     if (Config.timerStyle === "bar") {
       const percent = 100 - ((time + 1) / maxtime) * 100;
+
       $("#timer")
         .stop(true, true)
         .animate(
@@ -117,16 +125,20 @@ export function update(): void {
         );
     } else if (Config.timerStyle === "text") {
       let displayTime = Misc.secondsToString(maxtime - time);
+
       if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
+
       if (timerNumberElement !== null)
         timerNumberElement.innerHTML = "<div>" + displayTime + "</div>";
     } else if (Config.timerStyle === "mini") {
       let displayTime = Misc.secondsToString(maxtime - time);
+
       if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
+
       if (miniTimerNumberElement !== null)
         miniTimerNumberElement.innerHTML = displayTime;
     }
@@ -136,9 +148,11 @@ export function update(): void {
     Config.mode === "quote"
   ) {
     let outof = TestWords.words.length;
+
     if (Config.mode === "words") {
       outof = Config.words;
     }
+
     if (Config.mode === "custom") {
       if (CustomText.isWordRandom) {
         outof = CustomText.word;
@@ -146,13 +160,16 @@ export function update(): void {
         outof = CustomText.text.length;
       }
     }
+
     if (Config.mode === "quote") {
       outof = TestWords.randomQuote?.textSplit?.length ?? 1;
     }
+
     if (Config.timerStyle === "bar") {
       const percent = Math.floor(
         ((TestWords.words.currentIndex + 1) / outof) * 100
       );
+
       $("#timer")
         .stop(true, true)
         .animate(
@@ -194,8 +211,11 @@ export function update(): void {
 
 export function updateStyle(): void {
   if (!TestActive.get()) return;
+
   hide();
+
   update();
+
   setTimeout(() => {
     show();
   }, 125);
@@ -209,5 +229,6 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
       hide();
     }
   }
+
   if (eventKey === "timerStyle") updateStyle();
 });

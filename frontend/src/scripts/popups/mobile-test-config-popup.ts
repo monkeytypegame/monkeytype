@@ -14,10 +14,15 @@ export function update(): void {
   el.find(".button").removeClass("active");
 
   el.find(`.modeGroup .button[mode='${Config.mode}']`).addClass("active");
+
   el.find(".timeGroup").addClass("hidden");
+
   el.find(".wordsGroup").addClass("hidden");
+
   el.find(".quoteGroup").addClass("hidden");
+
   el.find(".customGroup").addClass("hidden");
+
   el.find(`.${Config.mode}Group`).removeClass("hidden");
 
   if (Config.punctuation) {
@@ -34,23 +39,31 @@ export function update(): void {
 
   if (Config.mode === "time") {
     el.find(`.timeGroup .button[time='${Config.time}']`).addClass("active");
+
     el.find(".punctuation").removeClass("disabled");
+
     el.find(".numbers").removeClass("disabled");
   } else if (Config.mode === "words") {
     el.find(`.wordsGroup .button[words='${Config.words}']`).addClass("active");
+
     el.find(".punctuation").removeClass("disabled");
+
     el.find(".numbers").removeClass("disabled");
   } else if (Config.mode === "quote") {
     el.find(`.quoteGroup .button[quote='${Config.quoteLength}']`).addClass(
       "active"
     );
+
     el.find(".punctuation").addClass("disabled");
+
     el.find(".numbers").addClass("disabled");
   } else if (Config.mode === "zen") {
     el.find(".punctuation").addClass("disabled");
+
     el.find(".numbers").addClass("disabled");
   } else if (Config.mode === "custom") {
     el.find(".punctuation").removeClass("disabled");
+
     el.find(".numbers").removeClass("disabled");
   }
 }
@@ -58,6 +71,7 @@ export function update(): void {
 function showPopup(): void {
   if ($("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
     update();
+
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -98,11 +112,15 @@ el.find(".wordsGroup .button").on("click", (e) => {
 
   if (wrd == "custom") {
     hidePopup();
+
     CustomWordAmountPopup.show();
   } else if (wrd !== undefined) {
     const wrdNum = parseInt(wrd);
+
     UpdateConfig.setWordCount(wrdNum);
+
     ManualRestart.set();
+
     TestLogic.restart();
   }
 });
@@ -112,11 +130,15 @@ el.find(".timeGroup .button").on("click", (e) => {
 
   if (time == "custom") {
     hidePopup();
+
     CustomTestDurationPopup.show();
   } else if (time !== undefined) {
     const timeNum = parseInt(time);
+
     UpdateConfig.setTimeConfig(timeNum);
+
     ManualRestart.set();
+
     TestLogic.restart();
   }
 });
@@ -124,46 +146,60 @@ el.find(".timeGroup .button").on("click", (e) => {
 el.find(".quoteGroup .button").on("click", (e) => {
   let len: number | number[] = ($(e.currentTarget).attr("quote") ??
     0) as number;
+
   if (len == -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     hidePopup();
+
     QuoteSearchPopup.show();
   } else {
     if (len == -1) {
       len = [0, 1, 2, 3];
     }
+
     UpdateConfig.setQuoteLength(
       len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[],
       false,
       e.shiftKey
     );
+
     ManualRestart.set();
+
     TestLogic.restart();
   }
 });
 
 el.find(".customChange").on("click", () => {
   hidePopup();
+
   CustomTextPopup.show();
 });
 
 el.find(".punctuation").on("click", () => {
   UpdateConfig.setPunctuation(!Config.punctuation);
+
   ManualRestart.set();
+
   TestLogic.restart();
 });
 
 el.find(".numbers").on("click", () => {
   UpdateConfig.setNumbers(!Config.numbers);
+
   ManualRestart.set();
+
   TestLogic.restart();
 });
 
 el.find(".modeGroup .button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
+
   const mode = $(e.currentTarget).attr("mode");
+
   UpdateConfig.setMode(mode as MonkeyTypes.Mode);
+
   ManualRestart.set();
+
   TestLogic.restart();
 });
 

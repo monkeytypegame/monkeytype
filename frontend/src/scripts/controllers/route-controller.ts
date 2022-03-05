@@ -16,11 +16,17 @@ export function handleInitialPageClasses(pathname: string): void {
   if (!mappedRoutes[pathname as keyof typeof mappedRoutes]) {
     pathname = "/";
   }
+
   const el = $(".page." + mappedRoutes[pathname as keyof typeof mappedRoutes]);
+
   $(el).removeClass("hidden");
+
   $(el).addClass("active");
+
   let pageName = "loading";
+
   if (pathname === "/account") pageName = "account";
+
   ActivePage.set(pageName as MonkeyTypes.Page);
 }
 
@@ -38,6 +44,7 @@ export function handleInitialPageClasses(pathname: string): void {
 
 $(window).on("popstate", (e) => {
   const state = (e.originalEvent as unknown as PopStateEvent).state;
+
   if (state == "" || state == "/") {
     // show test
     PageController.change("test");

@@ -6,6 +6,7 @@ interface PersonalBest extends MonkeyTypes.PersonalBest {
 
 function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
+
   $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
   const snapshot = DB.getSnapshot();
@@ -19,9 +20,11 @@ function update(mode: MonkeyTypes.Mode): void {
   if (allmode2 === undefined) return;
 
   const list: PersonalBest[] = [];
+
   (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]).forEach(
     function (key) {
       let pbs = allmode2[key];
+
       pbs = pbs.sort(function (a, b) {
         return b.wpm - a.wpm;
         // if (a.difficulty === b.difficulty) {
@@ -29,8 +32,10 @@ function update(mode: MonkeyTypes.Mode): void {
         // }
         // return (a.difficulty < b.difficulty ? -1 : 1)
       });
+
       pbs.forEach(function (pb) {
         pb.mode2 = key;
+
         list.push(pb);
       });
     }
@@ -40,6 +45,7 @@ function update(mode: MonkeyTypes.Mode): void {
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
+
     if (pb.timestamp) {
       dateText =
         moment(pb.timestamp).format("DD MMM YYYY") +
@@ -47,6 +53,7 @@ function update(mode: MonkeyTypes.Mode): void {
         moment(pb.timestamp).format("HH:mm") +
         "</div>";
     }
+
     $("#pbTablesPopup table tbody").append(`
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
@@ -69,6 +76,7 @@ function update(mode: MonkeyTypes.Mode): void {
         <td>${dateText}</td>
       </tr>
     `);
+
     mode2memory = pb.mode2 as never;
   });
 }
@@ -99,6 +107,7 @@ function hide(): void {
         100,
         () => {
           $("#pbTablesPopupWrapper").addClass("hidden");
+
           $("#pbTablesPopup table tbody").empty();
         }
       );

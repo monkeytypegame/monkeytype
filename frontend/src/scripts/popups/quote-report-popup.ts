@@ -38,17 +38,23 @@ export async function show(options = defaultOptions): Promise<void> {
     state.previousPopupShowCallback = previousPopupShowCallback;
 
     const { quotes } = await Misc.getQuotes(Config.language);
+
     state.quoteToReport = quotes.find((quote) => {
       return quote.id === quoteId;
     });
 
     $("#quoteReportPopup .quote").text(state.quoteToReport?.text as string);
+
     $("#quoteReportPopup .reason").val("Grammatical error");
+
     $("#quoteReportPopup .comment").val("");
+
     $("#quoteReportPopup .characterCount").text("-");
+
     $("#quoteReportPopup .reason").select2({
       minimumResultsForSearch: Infinity,
     });
+
     $("#quoteReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -73,7 +79,9 @@ export async function hide(): Promise<void> {
         noAnim ? 0 : 100,
         () => {
           grecaptcha.reset(CAPTCHA_ID);
+
           $("#quoteReportPopupWrapper").addClass("hidden");
+
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
           }
@@ -84,14 +92,19 @@ export async function hide(): Promise<void> {
 
 async function submitReport(): Promise<void> {
   const captchaResponse = grecaptcha.getResponse(CAPTCHA_ID);
+
   if (!captchaResponse) {
     return Notifications.add("Please complete the captcha.");
   }
 
   const quoteId = state.quoteToReport?.id.toString();
+
   const quoteLanguage = Config.language;
+
   const reason = $("#quoteReportPopup .reason").val() as string;
+
   const comment = $("#quoteReportPopup .comment").val() as string;
+
   const captcha = captchaResponse as string;
 
   if (!quoteId) {
@@ -103,6 +116,7 @@ async function submitReport(): Promise<void> {
   }
 
   const characterDifference = comment.length - 250;
+
   if (characterDifference > 0) {
     return Notifications.add(
       `Report comment is ${characterDifference} character(s) too long.`
@@ -110,6 +124,7 @@ async function submitReport(): Promise<void> {
   }
 
   Loader.show();
+
   const response = await Ape.quotes.report(
     quoteId,
     quoteLanguage,
@@ -117,6 +132,7 @@ async function submitReport(): Promise<void> {
     comment,
     captcha
   );
+
   Loader.hide();
 
   if (response.status !== 200) {
@@ -124,6 +140,7 @@ async function submitReport(): Promise<void> {
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
+
   hide();
 }
 
@@ -136,7 +153,9 @@ $("#quoteReportPopupWrapper").on("mousedown", (e) => {
 $("#quoteReportPopup .comment").on("input", () => {
   setTimeout(() => {
     const len = ($("#quoteReportPopup .comment").val() as string).length;
+
     $("#quoteReportPopup .characterCount").text(len);
+
     if (len > 250) {
       $("#quoteReportPopup .characterCount").addClass("red");
     } else {

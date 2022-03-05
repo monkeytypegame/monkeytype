@@ -2,11 +2,14 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import endpoints from "./endpoints";
 
 const DEV_SERVER_HOST = "http://localhost:5005";
+
 const PROD_SERVER_HOST = "https://api.monkeytype.com";
 
 const API_PATH = "";
+
 const BASE_URL =
   window.location.hostname === "localhost" ? DEV_SERVER_HOST : PROD_SERVER_HOST;
+
 const API_URL = `${BASE_URL}${API_PATH}`;
 
 // Adapts the ape client's view of request options to the underlying HTTP client.
@@ -14,6 +17,7 @@ async function adaptRequestOptions(
   options: Ape.RequestOptions
 ): Promise<AxiosRequestConfig> {
   const currentUser = firebase.auth().currentUser;
+
   const idToken = currentUser && (await currentUser.getIdToken());
 
   return {
@@ -57,6 +61,7 @@ function apeifyClientMethod(
       );
 
       let response;
+
       if (methodType === "get" || methodType === "delete") {
         response = await clientMethod(endpoint, requestOptions);
       } else {
@@ -78,6 +83,7 @@ function apeifyClientMethod(
       console.error(error);
 
       const typedError = error as Error;
+
       errorMessage = typedError.message;
 
       if (axios.isAxiosError(typedError)) {

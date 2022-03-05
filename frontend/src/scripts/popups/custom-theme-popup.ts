@@ -13,13 +13,16 @@ export function show(value: string): void {
     // );
     // $("#customThemeShareWrapper input").val(JSON.stringify(save));
     $("#customThemeShareWrapper input").val(value);
+
     $("#customThemeShareWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         $("#customThemeShare input").focus();
+
         $("#customThemeShare input").select();
+
         $("#customThemeShare input").focus();
       });
   }
@@ -41,6 +44,7 @@ function hide(): void {
     // }
     // ThemePicker.setCustomInputs();
     $("#customThemeShareWrapper input").val("");
+
     $("#customThemeShareWrapper")
       .stop(true, true)
       .css("opacity", 1)

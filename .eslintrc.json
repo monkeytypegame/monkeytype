@@ -27,6 +27,11 @@
   },
   // "parser": "@typescript-eslint/parser",
   "rules": {
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "*" },
+      { "blankLine": "never", "prev": "import", "next": "import" }
+    ],
     "json/*": ["error"],
     "indent": ["off"],
     "linebreak-style": ["error", "unix"],

@@ -26,10 +26,15 @@ export default class SettingsGroup {
     updateCallback?: () => void
   ) {
     this.configName = configName;
+
     this.configValue = Config[configName as keyof typeof Config];
+
     this.mode = mode;
+
     this.configFunction = configFunction;
+
     this.setCallback = setCallback;
+
     this.updateCallback = updateCallback;
 
     this.updateInput();
@@ -40,8 +45,10 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} select`,
         (e) => {
           const target = $(e.currentTarget);
+
           if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
             return;
+
           this.setValue(target.val());
         }
       );
@@ -51,13 +58,20 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} .button`,
         (e) => {
           const target = $(e.currentTarget);
+
           if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
             return;
+
           let value: string | boolean = target.attr(configName) as string;
+
           const params = target.attr("params");
+
           if (!value && !params) return;
+
           if (value === "true") value = true;
+
           if (value === "false") value = false;
+
           this.setValue(value, params as unknown as ConfigValues[]);
         }
       );
@@ -70,15 +84,19 @@ export default class SettingsGroup {
     } else {
       this.configFunction(value, ...params);
     }
+
     this.updateInput();
+
     if (this.setCallback) this.setCallback();
   }
 
   updateInput(): void {
     this.configValue = Config[this.configName as keyof typeof Config];
+
     $(`.pageSettings .section.${this.configName} .button`).removeClass(
       "active"
     );
+
     if (this.mode === "select") {
       $(`.pageSettings .section.${this.configName} select`)
         .val(this.configValue as string)
@@ -88,6 +106,7 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
       ).addClass("active");
     }
+
     if (this.updateCallback) this.updateCallback();
   }
 }

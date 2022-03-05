@@ -62,6 +62,7 @@ class BotDAO {
     }
 
     const leaderboardCommands = Array(newRecords.length).fill("sayLbUpdate");
+
     const leaderboardCommandsArguments = newRecords.map((newRecord) => {
       return [
         newRecord.discordId ?? newRecord.name,

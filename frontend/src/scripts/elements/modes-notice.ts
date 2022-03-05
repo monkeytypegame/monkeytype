@@ -32,6 +32,7 @@ type PaceCaretSettings = {
 
 export async function update(): Promise<void> {
   let anim = false;
+
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
   $(".pageTest #testModesNotice").empty();
@@ -94,11 +95,13 @@ export async function update(): Promise<void> {
     (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
     let speed = "";
+
     try {
       speed = ` (${Math.round(
         (PaceCaret.settings as unknown as PaceCaretSettings).wpm
       )} wpm)`;
     } catch {}
+
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
@@ -112,6 +115,7 @@ export async function update(): Promise<void> {
 
   if (Config.showAvg) {
     const val = Last10Average.get();
+
     if (firebase.auth().currentUser && val > 0) {
       $(".pageTest #testModesNotice").append(
         `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${val}wpm</div>`
@@ -153,6 +157,7 @@ export async function update(): Promise<void> {
       `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>confidence</div>`
     );
   }
+
   if (Config.confidenceMode === "max") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>max confidence</div>`
@@ -183,6 +188,7 @@ export async function update(): Promise<void> {
   }
 
   let tagsString = "";
+
   try {
     DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {

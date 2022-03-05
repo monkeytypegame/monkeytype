@@ -12,6 +12,7 @@ export default {
     const logsCollection = db.collection<Log>("logs");
 
     console.log(new Date(), "\t", event, "\t", uid, "\t", message);
+
     await logsCollection.insertOne({
       timestamp: Date.now(),
       uid,

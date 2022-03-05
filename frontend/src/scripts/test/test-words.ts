@@ -4,7 +4,9 @@ class Words {
   public currentIndex: number;
   constructor() {
     this.list = [];
+
     this.length = 0;
+
     this.currentIndex = 0;
   }
   get(i?: undefined, raw?: boolean): string[];
@@ -28,11 +30,14 @@ class Words {
   }
   push(word: string): void {
     this.list.push(word);
+
     this.length = this.list.length;
   }
   reset(): void {
     this.list = [];
+
     this.currentIndex = 0;
+
     this.length = this.list.length;
   }
   resetCurrentIndex(): void {
@@ -48,8 +53,11 @@ class Words {
     for (const s of this.list) {
       if (/ +/.test(s)) {
         const id = this.list.indexOf(s);
+
         const tempList = s.split(" ");
+
         this.list.splice(id, 1);
+
         for (let i = 0; i < tempList.length; i++) {
           this.list.splice(id + i, 0, tempList[i]);
         }
@@ -57,8 +65,11 @@ class Words {
     }
   }
 }
+
 export const words = new Words();
+
 export let hasTab = false;
+
 export let randomQuote = null as unknown as MonkeyTypes.Quote;
 
 export function setRandomQuote(rq: MonkeyTypes.Quote): void {

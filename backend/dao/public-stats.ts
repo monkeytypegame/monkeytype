@@ -18,6 +18,7 @@ class PublicStatsDAO {
       },
       { upsert: true }
     );
+
     return true;
   }
 }

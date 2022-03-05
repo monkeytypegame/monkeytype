@@ -14,19 +14,30 @@ import * as ConfigEvent from "../observables/config-event";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
+
   if (eventKey === "flipTestColors") flipColors(eventValue);
+
   if (eventKey === "colorfulMode") colorful(eventValue);
+
   if (eventKey === "highlightMode") updateWordElement(eventValue);
+
   if (eventKey === "burstHeatmap") applyBurstHeatmap();
 });
 
 export let currentWordElementIndex = 0;
+
 export let resultVisible = false;
+
 export let activeWordTop = 0;
+
 export let testRestarting = false;
+
 export let testRestartingPromise: Promise<unknown>;
+
 export let lineTransition = false;
+
 export let currentTestLine = 0;
+
 export let resultCalculating = false;
 
 export function setResultVisible(val: boolean): void {
@@ -42,14 +53,17 @@ export function setActiveWordTop(val: number): void {
 }
 
 let restartingResolve: null | ((value?: unknown) => void);
+
 export function setTestRestarting(val: boolean): void {
   testRestarting = val;
+
   if (val === true) {
     testRestartingPromise = new Promise((resolve) => {
       restartingResolve = resolve;
     });
   } else {
     if (restartingResolve) restartingResolve();
+
     restartingResolve = null;
   }
 }
@@ -60,6 +74,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
+
   currentWordElementIndex = 0;
 }
 
@@ -71,6 +86,7 @@ export function focusWords(): void {
 
 export function updateActiveElement(backspace?: boolean): void {
   const active = document.querySelector("#words .active");
+
   if (Config.mode == "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
@@ -79,15 +95,21 @@ export function updateActiveElement(backspace?: boolean): void {
         e.classList.remove("correct");
       });
     }
+
     active.classList.remove("active");
   }
+
   try {
     const activeWord =
       document.querySelectorAll("#words .word")[currentWordElementIndex];
+
     activeWord.classList.add("active");
+
     activeWord.classList.remove("error");
+
     activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
       .offsetTop;
+
     if (Config.highlightMode == "word") {
       activeWord.querySelectorAll("letter").forEach((e) => {
         e.classList.add("correct");
@@ -98,18 +120,23 @@ export function updateActiveElement(backspace?: boolean): void {
 
 function getWordHTML(word: string): string {
   let newlineafter = false;
+
   let retval = `<div class='word'>`;
+
   for (let c = 0; c < word.length; c++) {
     if (Config.funbox === "arrows") {
       if (word.charAt(c) === "↑") {
         retval += `<letter><i class="fas fa-arrow-up"></i></letter>`;
       }
+
       if (word.charAt(c) === "↓") {
         retval += `<letter><i class="fas fa-arrow-down"></i></letter>`;
       }
+
       if (word.charAt(c) === "←") {
         retval += `<letter><i class="fas fa-arrow-left"></i></letter>`;
       }
+
       if (word.charAt(c) === "→") {
         retval += `<letter><i class="fas fa-arrow-right"></i></letter>`;
       }
@@ -117,13 +144,17 @@ function getWordHTML(word: string): string {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
       newlineafter = true;
+
       retval += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
     } else {
       retval += "<letter>" + word.charAt(c) + "</letter>";
     }
   }
+
   retval += "</div>";
+
   if (newlineafter) retval += "<div class='newline'></div>";
+
   return retval;
 }
 
@@ -131,6 +162,7 @@ export function showWords(): void {
   $("#words").empty();
 
   let wordsHTML = "";
+
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += getWordHTML(<string>TestWords.words.get(i));
@@ -143,12 +175,15 @@ export function showWords(): void {
   $("#words").html(wordsHTML);
 
   $("#wordsWrapper").removeClass("hidden");
+
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
   );
+
   const wordsHeight = <number>(
     $(<Element>document.querySelector("#words")).outerHeight(true)
   );
+
   if (
     Config.showAllLines &&
     Config.mode != "time" &&
@@ -156,6 +191,7 @@ export function showWords(): void {
     !CustomText.isTimeRandom
   ) {
     $("#words").css("height", "auto");
+
     $("#wordsWrapper").css("height", "auto");
 
     let nh = wordHeight * 3;
@@ -163,14 +199,17 @@ export function showWords(): void {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
+
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
     $("#words")
       .css("height", wordHeight * 4 + "px")
       .css("overflow", "hidden");
+
     $("#wordsWrapper")
       .css("height", wordHeight * 3 + "px")
       .css("overflow", "hidden");
+
     $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
   }
 
@@ -179,6 +218,7 @@ export function showWords(): void {
   }
 
   updateActiveElement();
+
   Caret.updatePosition();
 }
 
@@ -204,26 +244,38 @@ export function colorful(tc: boolean): void {
 
 export async function screenshot(): Promise<void> {
   let revealReplay = false;
+
   function revertScreenshot(): void {
     $("#notificationCenter").removeClass("hidden");
+
     $("#commandLineMobileButton").removeClass("hidden");
+
     $(".pageTest .ssWatermark").addClass("hidden");
+
     $(".pageTest .ssWatermark").text("monkeytype.com");
+
     $(".pageTest .buttons").removeClass("hidden");
+
     if (revealReplay) $("#resultReplay").removeClass("hidden");
+
     if (firebase.auth().currentUser == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
+
     Replay.pauseReplay();
   }
+
   $("#resultReplay").addClass("hidden");
+
   $(".pageTest .ssWatermark").removeClass("hidden");
+
   $(".pageTest .ssWatermark").text(
     moment(Date.now()).format("DD MMM YYYY HH:mm") + " | monkeytype.com "
   );
+
   if (firebase.auth().currentUser != null) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot().name +
@@ -232,22 +284,34 @@ export async function screenshot(): Promise<void> {
         " | monkeytype.com  "
     );
   }
+
   $(".pageTest .buttons").addClass("hidden");
+
   const src = $("#middle");
+
   const sourceX = src.position().left; /*X position from div#target*/
+
   const sourceY = src.position().top; /*Y position from div#target*/
+
   const sourceWidth = <number>(
     src.outerWidth(true)
   ); /*clientWidth/offsetWidth from div#target*/
+
   const sourceHeight = <number>(
     src.outerHeight(true)
   ); /*clientHeight/offsetHeight from div#target*/
+
   $("#notificationCenter").addClass("hidden");
+
   $("#commandLineMobileButton").addClass("hidden");
+
   $(".pageTest .loginTip").addClass("hidden");
+
   try {
     const paddingX = 50;
+
     const paddingY = 25;
+
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
@@ -258,8 +322,10 @@ export async function screenshot(): Promise<void> {
       canvas.toBlob((blob) => {
         try {
           if (blob === null) return;
+
           if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
             open(URL.createObjectURL(blob));
+
             revertScreenshot();
           } else {
             navigator.clipboard
@@ -273,6 +339,7 @@ export async function screenshot(): Promise<void> {
               ])
               .then(() => {
                 Notifications.add("Copied to clipboard", 1, 2);
+
                 revertScreenshot();
               });
           }
@@ -281,14 +348,17 @@ export async function screenshot(): Promise<void> {
             "Error saving image to clipboard: " + e.message,
             -1
           );
+
           revertScreenshot();
         }
       });
     });
   } catch (e: any) {
     Notifications.add("Error creating image: " + e.message, -1);
+
     revertScreenshot();
   }
+
   setTimeout(() => {
     revertScreenshot();
   }, 3000);
@@ -296,8 +366,11 @@ export async function screenshot(): Promise<void> {
 
 export function updateWordElement(showError = !Config.blindMode): void {
   const input = TestInput.input.current;
+
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
+
   const currentWord = TestWords.words.getCurrent();
+
   if (!currentWord && Config.mode !== "zen") return;
 
   let ret = "";
@@ -310,6 +383,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
         ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (TestInput.input.current[i] === "\n") {
         newlineafter = true;
+
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
         ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
@@ -322,6 +396,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
     const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
       ? input.search(Misc.trailingComposeChars)
       : input.length;
+
     if (
       input.search(Misc.trailingComposeChars) < currentWord.length &&
       currentWord.slice(0, inputWithoutComposeLength) ===
@@ -331,6 +406,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
     }
 
     let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
+
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
@@ -339,31 +415,40 @@ export function updateWordElement(showError = !Config.blindMode): void {
       const charCorrect = currentWord[i] == input[i];
 
       let correctClass = "correct";
+
       if (Config.highlightMode == "off") {
         correctClass = "";
       }
 
       let currentLetter = currentWord[i];
+
       let tabChar = "";
+
       let nlChar = "";
+
       if (Config.funbox === "arrows") {
         if (currentLetter === "↑") {
           currentLetter = `<i class="fas fa-arrow-up"></i>`;
         }
+
         if (currentLetter === "↓") {
           currentLetter = `<i class="fas fa-arrow-down"></i>`;
         }
+
         if (currentLetter === "←") {
           currentLetter = `<i class="fas fa-arrow-left"></i>`;
         }
+
         if (currentLetter === "→") {
           currentLetter = `<i class="fas fa-arrow-right"></i>`;
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
+
         currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
       } else if (currentLetter === "\n") {
         nlChar = "nlChar";
+
         currentLetter = `<i class="fas fa-angle-down"></i>`;
       }
 
@@ -398,9 +483,11 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
           let letter = input[i];
+
           if (letter == " " || letter == "\t" || letter == "\n") {
             letter = "_";
           }
+
           ret += `<letter class="${
             Config.highlightMode == "word"
               ? wordHighlightClassString
@@ -427,18 +514,22 @@ export function updateWordElement(showError = !Config.blindMode): void {
     const inputWithSingleComposeLength = Misc.trailingComposeChars.test(input)
       ? input.search(Misc.trailingComposeChars) + 1
       : input.length;
+
     if (inputWithSingleComposeLength < currentWord.length) {
       for (let i = inputWithSingleComposeLength; i < currentWord.length; i++) {
         if (Config.funbox === "arrows") {
           if (currentWord[i] === "↑") {
             ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
           }
+
           if (currentWord[i] === "↓") {
             ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
           }
+
           if (currentWord[i] === "←") {
             ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
           }
+
           if (currentWord[i] === "→") {
             ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
           }
@@ -465,7 +556,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
   }
+
   wordAtIndex.innerHTML = ret;
+
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
@@ -475,22 +568,30 @@ export function lineJump(currentTop: number): void {
     const hideBound = currentTop;
 
     const toHide: JQuery<HTMLElement>[] = [];
+
     const wordElements = $("#words .word");
+
     for (let i = 0; i < currentWordElementIndex; i++) {
       if ($(wordElements[i]).hasClass("hidden")) continue;
+
       const forWordTop = Math.floor(wordElements[i].offsetTop);
+
       if (forWordTop < hideBound - 10) {
         toHide.push($($("#words .word")[i]));
       }
     }
+
     const wordHeight = <number>(
       $(<Element>document.querySelector(".word")).outerHeight(true)
     );
+
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
+
       $("#words").prepend(
         `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
       );
+
       $("#words .smoothScroller").animate(
         {
           height: 0,
@@ -500,6 +601,7 @@ export function lineJump(currentTop: number): void {
           $("#words .smoothScroller").remove();
         }
       );
+
       $("#paceCaret").animate(
         {
           top:
@@ -508,6 +610,7 @@ export function lineJump(currentTop: number): void {
         },
         SlowTimer.get() ? 0 : 125
       );
+
       $("#words").animate(
         {
           marginTop: `-${wordHeight}px`,
@@ -519,14 +622,19 @@ export function lineJump(currentTop: number): void {
           )).offsetTop;
 
           currentWordElementIndex -= toHide.length;
+
           lineTransition = false;
+
           toHide.forEach((el) => el.remove());
+
           $("#words").css("marginTop", "0");
         }
       );
     } else {
       toHide.forEach((el) => el.remove());
+
       currentWordElementIndex -= toHide.length;
+
       $("#paceCaret").css({
         top:
           (<HTMLElement>document.querySelector("#paceCaret")).offsetTop -
@@ -534,30 +642,41 @@ export function lineJump(currentTop: number): void {
       });
     }
   }
+
   currentTestLine++;
 }
 
 export function arrangeCharactersRightToLeft(): void {
   $("#words").addClass("rightToLeftTest");
+
   $("#resultWordsHistory .words").addClass("rightToLeftTest");
+
   $("#resultReplay .words").addClass("rightToLeftTest");
 }
 
 export function arrangeCharactersLeftToRight(): void {
   $("#words").removeClass("rightToLeftTest");
+
   $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+
   $("#resultReplay .words").removeClass("rightToLeftTest");
 }
 
 async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
+
   let wordsHTML = "";
+
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
     const input = <string>TestInput.input.getHistory(i);
+
     const word = TestWords.words.get(i);
+
     let wordEl = "";
+
     try {
       if (input === "") throw new Error("empty input word");
+
       if (
         TestInput.corrected.getHistory(i) !== undefined &&
         TestInput.corrected.getHistory(i) !== ""
@@ -573,6 +692,7 @@ async function loadWordsHistory(): Promise<boolean> {
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
+
       if (i === TestInput.input.history.length - 1) {
         //last word
         const wordstats = {
@@ -580,7 +700,9 @@ async function loadWordsHistory(): Promise<boolean> {
           incorrect: 0,
           missed: 0,
         };
+
         const length = Config.mode == "zen" ? input.length : word.length;
+
         for (let c = 0; c < length; c++) {
           if (c < input.length) {
             //on char that still has a word list pair
@@ -594,6 +716,7 @@ async function loadWordsHistory(): Promise<boolean> {
             wordstats.missed++;
           }
         }
+
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
           if (Config.mode != "zen" && input !== word) {
             wordEl = `<div class='word error' burst="${
@@ -610,6 +733,7 @@ async function loadWordsHistory(): Promise<boolean> {
       }
 
       let loop;
+
       if (Config.mode == "zen" || input.length > word.length) {
         //input is longer - extra characters possible (loop over input)
         loop = input.length;
@@ -620,12 +744,15 @@ async function loadWordsHistory(): Promise<boolean> {
 
       for (let c = 0; c < loop; c++) {
         let correctedChar;
+
         try {
           correctedChar = TestInput.corrected.getHistory(i)[c];
         } catch (e) {
           correctedChar = undefined;
         }
+
         let extraCorrected = "";
+
         if (
           c + 1 === loop &&
           TestInput.corrected.getHistory(i) !== undefined &&
@@ -633,6 +760,7 @@ async function loadWordsHistory(): Promise<boolean> {
         ) {
           extraCorrected = "extraCorrected";
         }
+
         if (Config.mode == "zen" || word[c] !== undefined) {
           if (Config.mode == "zen" || input[c] === word[c]) {
             if (correctedChar === input[c] || correctedChar === undefined) {
@@ -662,20 +790,27 @@ async function loadWordsHistory(): Promise<boolean> {
           wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
         }
       }
+
       wordEl += "</div>";
     } catch (e) {
       try {
         wordEl = "<div class='word'>";
+
         for (let c = 0; c < word.length; c++) {
           wordEl += "<letter>" + word[c] + "</letter>";
         }
+
         wordEl += "</div>";
       } catch {}
     }
+
     wordsHTML += wordEl;
   }
+
   $("#resultWordsHistory .words").html(wordsHTML);
+
   $("#showWordHistoryButton").addClass("loaded");
+
   return true;
 }
 
@@ -688,10 +823,12 @@ export function toggleResultWords(): void {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
+
         loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
             applyBurstHeatmap();
           }
+
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
@@ -705,6 +842,7 @@ export function toggleResultWords(): void {
         if (Config.burstHeatmap) {
           applyBurstHeatmap();
         }
+
         $("#resultWordsHistory")
           .removeClass("hidden")
           .css("display", "none")
@@ -727,6 +865,7 @@ export function applyBurstHeatmap(): void {
     let burstlist = [...TestInput.burstHistory];
 
     burstlist = burstlist.filter((x) => x !== Infinity);
+
     burstlist = burstlist.filter((x) => x < 350);
 
     if (
@@ -737,11 +876,15 @@ export function applyBurstHeatmap(): void {
     }
 
     const median = Misc.median(burstlist);
+
     const adatm: number[] = [];
+
     burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
+
     const step = Misc.mean(adatm);
+
     const steps = [
       {
         val: 0,
@@ -764,26 +907,36 @@ export function applyBurstHeatmap(): void {
         class: "heatmap-4",
       },
     ];
+
     $("#resultWordsHistory .words .word").each((_, word) => {
       const wordBurstVal = parseInt(<string>$(word).attr("burst"));
+
       let cls = "";
+
       steps.forEach((step) => {
         if (wordBurstVal > step.val) cls = step.class;
       });
+
       $(word).addClass(cls);
     });
   } else {
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
+
     $("#resultWordsHistory .words .word").removeClass("heatmap-0");
+
     $("#resultWordsHistory .words .word").removeClass("heatmap-1");
+
     $("#resultWordsHistory .words .word").removeClass("heatmap-2");
+
     $("#resultWordsHistory .words .word").removeClass("heatmap-3");
+
     $("#resultWordsHistory .words .word").removeClass("heatmap-4");
   }
 }
 
 export function highlightBadWord(index: number, showError: boolean): void {
   if (!showError) return;
+
   $($("#words .word")[index]).addClass("error");
 }
 
@@ -798,6 +951,7 @@ $(document).on("click", "#testModesNotice .text-button.blind", () => {
 $(".pageTest #copyWordsListButton").click(async () => {
   try {
     let words;
+
     if (Config.mode == "zen") {
       words = TestInput.input.history.join(" ");
     } else {
@@ -805,7 +959,9 @@ $(".pageTest #copyWordsListButton").click(async () => {
         .slice(0, TestInput.input.history.length)
         .join(" ");
     }
+
     await navigator.clipboard.writeText(words);
+
     Notifications.add("Copied to clipboard", 0, 2);
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
@@ -827,7 +983,9 @@ $("#wpmChart").on("mouseleave", () => {
 $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
+
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
+
     if (input != undefined)
       $(e.currentTarget).append(
         `<div class="wordInputAfter">
@@ -852,6 +1010,7 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
+
   Caret.show();
 });
 
@@ -859,6 +1018,7 @@ $("#wordsInput").on("focusout", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
+
   Caret.hide();
 });
 

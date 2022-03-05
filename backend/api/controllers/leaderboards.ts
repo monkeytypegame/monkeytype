@@ -5,6 +5,7 @@ import LeaderboardsDAO from "../../dao/leaderboards";
 class LeaderboardsController {
   static async get(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { language, mode, mode2, skip, limit = 50 } = req.query;
+
     const { uid } = req.ctx.decodedToken;
 
     const leaderboard = await LeaderboardsDAO.get(
@@ -26,6 +27,7 @@ class LeaderboardsController {
 
   static async getRank(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { language, mode, mode2 } = req.query;
+
     const { uid } = req.ctx.decodedToken;
 
     const data = await LeaderboardsDAO.getRank(mode, mode2, language, uid);

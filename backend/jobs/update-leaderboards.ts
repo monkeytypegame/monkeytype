@@ -4,7 +4,9 @@ import { Document, WithId } from "mongodb";
 import LeaderboardsDAO from "../dao/leaderboards";
 
 const CRON_SCHEDULE = "30 4/5 * * * *";
+
 const RECENT_AGE_MINUTES = 10;
+
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function getTop10(leaderboardTime: string): Promise<WithId<Document>[]> {
@@ -51,6 +53,7 @@ async function updateLeaderboardAndNotifyChanges(
 
 async function updateLeaderboards(): Promise<void> {
   await updateLeaderboardAndNotifyChanges("15");
+
   await updateLeaderboardAndNotifyChanges("60");
 }
 

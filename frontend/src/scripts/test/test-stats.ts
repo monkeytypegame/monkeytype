@@ -80,8 +80,11 @@ type Stats = {
 };
 
 export let invalid = false;
+
 export let start: number, end: number;
+
 export let start2: number, end2: number;
+
 export let lastSecondNotRound = false;
 
 export let lastTestWpm = 0;
@@ -118,6 +121,7 @@ export function getStats(): DebugStats {
   } catch (e) {
     //
   }
+
   try {
     ret.keyDurationStats = {
       average:
@@ -135,12 +139,16 @@ export function getStats(): DebugStats {
 
 export function restart(): void {
   start = 0;
+
   end = 0;
+
   invalid = false;
+
   lastSecondNotRound = false;
 }
 
 export let restartCount = 0;
+
 export let incompleteSeconds = 0;
 
 export function incrementRestartCount(): void {
@@ -153,6 +161,7 @@ export function incrementIncompleteSeconds(val: number): void {
 
 export function resetIncomplete(): void {
   restartCount = 0;
+
   incompleteSeconds = 0;
 }
 
@@ -163,6 +172,7 @@ export function setInvalid(): void {
 export function calculateTestSeconds(now?: number): number {
   if (now === undefined) {
     const endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
+
     if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
       return (TestInput.lastKeypress - start) / 1000;
     } else {
@@ -175,18 +185,23 @@ export function calculateTestSeconds(now?: number): number {
 
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   let chars = 0;
+
   let correctWordChars = 0;
+
   let spaces = 0;
+
   //check input history
   for (let i = 0; i < TestInput.input.history.length; i++) {
     const word =
       Config.mode == "zen"
         ? TestInput.input.getHistory(i)
         : TestWords.words.get(i);
+
     if (TestInput.input.getHistory(i) == word) {
       //the word is correct
       //+1 for space
       correctWordChars += word.length;
+
       if (
         i < TestInput.input.history.length - 1 &&
         Misc.getLastChar(TestInput.input.getHistory(i) as string) !== "\n"
@@ -194,19 +209,23 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
         spaces++;
       }
     }
+
     chars += TestInput.input.getHistory(i).length;
   }
+
   if (TestInput.input.current !== "") {
     const word =
       Config.mode == "zen"
         ? TestInput.input.current
         : TestWords.words.getCurrent();
+
     //check whats currently typed
     const toAdd = {
       correct: 0,
       incorrect: 0,
       missed: 0,
     };
+
     for (let c = 0; c < word.length; c++) {
       if (c < TestInput.input.current.length) {
         //on char that still has a word list pair
@@ -220,23 +239,33 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
         toAdd.missed++;
       }
     }
+
     chars += toAdd.correct;
+
     chars += toAdd.incorrect;
+
     chars += toAdd.missed;
+
     if (toAdd.incorrect == 0) {
       //word is correct so far, add chars
       correctWordChars += toAdd.correct;
     }
   }
+
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
   }
+
   chars += TestInput.input.current.length;
+
   const testSeconds = calculateTestSeconds(performance.now());
+
   const wpm = Math.round(
     ((correctWordChars + spaces) * (60 / testSeconds)) / 5
   );
+
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+
   return {
     wpm: wpm,
     raw: raw,
@@ -245,22 +274,26 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
 
 export function setEnd(e: number): void {
   end = e;
+
   end2 = Date.now();
 }
 
 export function setStart(s: number): void {
   start = s;
+
   start2 = Date.now();
 }
 
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
+
   if (testSeconds !== undefined) {
     if (Config.mode === "time") {
       extraAfk = Math.round(testSeconds) - TestInput.keypressPerSecond.length;
     } else {
       extraAfk = Math.ceil(testSeconds) - TestInput.keypressPerSecond.length;
     }
+
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
@@ -269,7 +302,9 @@ export function calculateAfkSeconds(testSeconds: number): number {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
+
   const ret = TestInput.keypressPerSecond.filter((x) => x.afk).length;
+
   return ret + extraAfk;
 }
 
@@ -279,12 +314,17 @@ export function setLastSecondNotRound(): void {
 
 export function calculateBurst(): number {
   const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
+
   let wordLength;
+
   wordLength = TestInput.input.current.length;
+
   if (wordLength == 0) {
     wordLength = TestInput.input.getHistoryLast().length;
   }
+
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
+
   return Math.round(speed);
 }
 
@@ -293,38 +333,54 @@ export function calculateAccuracy(): number {
     (TestInput.accuracy.correct /
       (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
     100;
+
   return isNaN(acc) ? 100 : acc;
 }
 
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
+
   TestInput.keypressPerSecond.splice(testSeconds);
+
   (TestInput.keypressTimings.duration.array as number[]).splice(testSeconds);
+
   (TestInput.keypressTimings.spacing.array as number[]).splice(testSeconds);
+
   TestInput.wpmHistory.splice(testSeconds);
 }
 
 function countChars(): CharCount {
   let correctWordChars = 0;
+
   let correctChars = 0;
+
   let incorrectChars = 0;
+
   let extraChars = 0;
+
   let missedChars = 0;
+
   let spaces = 0;
+
   let correctspaces = 0;
+
   for (let i = 0; i < TestInput.input.history.length; i++) {
     const word =
       Config.mode == "zen"
         ? TestInput.input.getHistory(i)
         : TestWords.words.get(i);
+
     if (TestInput.input.getHistory(i) === "") {
       //last word that was not started
       continue;
     }
+
     if (TestInput.input.getHistory(i) == word) {
       //the word is correct
       correctWordChars += word.length;
+
       correctChars += word.length;
+
       if (
         i < TestInput.input.history.length - 1 &&
         Misc.getLastChar(TestInput.input.getHistory(i) as string) !== "\n"
@@ -353,6 +409,7 @@ function countChars(): CharCount {
         incorrect: 0,
         missed: 0,
       };
+
       for (let c = 0; c < word.length; c++) {
         if (c < TestInput.input.getHistory(i).length) {
           //on char that still has a word list pair
@@ -366,8 +423,11 @@ function countChars(): CharCount {
           toAdd.missed++;
         }
       }
+
       correctChars += toAdd.correct;
+
       incorrectChars += toAdd.incorrect;
+
       if (i === TestInput.input.history.length - 1 && Config.mode == "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
@@ -375,14 +435,18 @@ function countChars(): CharCount {
         missedChars += toAdd.missed;
       }
     }
+
     if (i < TestInput.input.history.length - 1) {
       spaces++;
     }
   }
+
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
+
     correctspaces = 0;
   }
+
   return {
     spaces: spaces,
     correctWordChars: correctWordChars,
@@ -397,15 +461,21 @@ function countChars(): CharCount {
 
 export function calculateStats(): Stats {
   let testSeconds = calculateTestSeconds();
+
   console.log((end2 - start2) / 1000);
+
   console.log(testSeconds);
+
   if (Config.mode != "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
   }
+
   const chars = countChars();
+
   const wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
+
   const wpmraw = Misc.roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
@@ -414,7 +484,9 @@ export function calculateStats(): Stats {
       (60 / testSeconds)) /
       5
   );
+
   const acc = Misc.roundTo2(calculateAccuracy());
+
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
