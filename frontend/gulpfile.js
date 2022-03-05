@@ -123,7 +123,8 @@ task(
   series(
     "lint",
     "lint-json",
-    parallel("typescript", "esbuild"),
+    "typescript",
+    "esbuild",
     "static",
     "sass",
     "updateSwCacheName"
