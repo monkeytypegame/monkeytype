@@ -12,6 +12,7 @@ type Input = {
   type?: string;
   initVal: string;
   hidden?: boolean;
+  disabled?: boolean;
 };
 
 export const list: { [key: string]: SimplePopup } = {};
@@ -108,6 +109,7 @@ class SimplePopup {
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
+                ${input.disabled ? "" : "disabled"}
                 autocomplete="off"
               >
             `);
@@ -119,6 +121,7 @@ class SimplePopup {
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
+                ${input.disabled ? "" : "disabled"}
                 autocomplete="off"
               >
             `);
