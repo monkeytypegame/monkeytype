@@ -109,7 +109,7 @@ class SimplePopup {
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
-                ${input.disabled ? "" : "disabled"}
+                ${input.disabled ? "disabled" : ""}
                 autocomplete="off"
               >
             `);
@@ -121,7 +121,7 @@ class SimplePopup {
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
-                ${input.disabled ? "" : "disabled"}
+                ${input.disabled ? "disabled" : ""}
                 autocomplete="off"
               >
             `);
