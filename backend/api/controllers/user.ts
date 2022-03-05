@@ -175,7 +175,6 @@ class UserController {
     const { tagId } = req.params;
 
     await UsersDAO.removeTagPb(uid, tagId);
-    [];
     return new MonkeyResponse("Tag PB cleared");
   }
 
