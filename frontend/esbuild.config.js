@@ -1,10 +1,9 @@
 // eslint-disable-next-line
-const esbuild = require("esbuild");
+const { BuildOptions } = require("esbuild");
 const path = require("path");
-const circular = require("./esbuild-circular-plugin");
 
 /**
- * @type {esbuild.BuildOptions}
+ * @type {BuildOptions}
  */
 const buildOptions = {
   entryPoints: [
@@ -15,17 +14,12 @@ const buildOptions = {
   loader: {
     ".ts": "ts",
     ".js": "ts",
-    ".firebaserc": "json",
   },
   minify: true,
   platform: "browser",
   define: {
     global: "window",
   },
-  logLevel: "warning",
-  plugins: [circular],
-  // format: "esm",
-  // splitting: true,
 };
 
 module.exports = buildOptions;

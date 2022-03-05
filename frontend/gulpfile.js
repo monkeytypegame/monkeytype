@@ -1,4 +1,4 @@
-const { task, src, dest, series, watch, parallel } = require("gulp");
+const { task, src, dest, series, watch } = require("gulp");
 // const axios = require("axios");
 const concat = require("gulp-concat");
 const del = require("del");
@@ -13,6 +13,7 @@ const babel = require("gulp-babel");
 const babelConfig = require("./babel.config.json");
 const ts = require("gulp-typescript");
 const tsProject = ts.createProject("tsconfig.json", { noEmit: true });
+const madge = require("madge");
 
 const JSONValidation = require("./json-validation");
 
@@ -52,26 +53,37 @@ task("esbuild", async function () {
   }
 });
 
-task("esbuild-production", async function () {
-  const buildResult = await esbuild.build(esbuildConfig);
-
-  console.log(
-    `ESBuild compiled with ${buildResult.warnings.length} warnings and ${buildResult.errors.length} errors.`
-  );
-
-  if (buildResult.errors.length !== 0) {
-    throw new Error("ESBuild failed.");
-  }
-});
-
 task("babel", function () {
   return src("./public/js/monkeytype.js")
     .pipe(babel(babelConfig))
     .pipe(dest("./public/js"));
 });
 
-task("typescript", function () {
+task("type-check", function () {
   return tsProject.src().pipe(tsProject(ts.reporter.defaultReporter()));
+});
+
+task("dependency-check", async function () {
+  const madgeInstance = await madge("./src/scripts/index.ts", {
+    includeNpm: false,
+    tsConfig: "tsconfig.json",
+  });
+
+  const circularDependencies = madgeInstance.circular();
+
+  if (circularDependencies.length !== 0) {
+    for (const circularDependency of circularDependencies) {
+      console.error(
+        `Found circular dependency: ${circularDependency.join(", ")}`
+      );
+    }
+
+    throw new Error(
+      `Found ${circularDependencies.length} circular dependencies.`
+    );
+  } else {
+    console.log("No circular dependencies found.");
+  }
 });
 
 task("static", function () {
@@ -123,7 +135,8 @@ task(
   series(
     "lint",
     "lint-json",
-    "typescript",
+    "dependency-check",
+    "type-check",
     "esbuild",
     "static",
     "sass",
@@ -137,8 +150,9 @@ task(
     "lint",
     "lint-json",
     "validate-json-schema",
-    "typescript",
-    "esbuild-production",
+    "dependency-check",
+    "type-check",
+    "esbuild",
     "babel",
     "static",
     "sass",
@@ -155,7 +169,7 @@ task("watch", function () {
       "./src/scripts/*.js",
       "./src/scripts/*.ts",
     ],
-    series("lint", parallel("typescript", "esbuild"))
+    series("lint", "type-check", "esbuild")
   );
   watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
 });
@@ -186,4 +200,4 @@ task("pr-check-other-json", series("validate-other-json-schema"));
 task("pr-check-lint", series("lint"));
 task("pr-check-scss", series("sass"));
 
-task("pr-check-ts", series("esbuild-production"));
+task("pr-check-ts", series("type-check"));

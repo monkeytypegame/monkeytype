@@ -14,6 +14,7 @@
       "firebase",
       "select2"
     ] /* Specify type package names to be included without being referenced in a source file. */,
+    "isolatedModules": true,
     "allowUmdGlobalAccess": true /* Allow accessing UMD globals from modules. */,
     "resolveJsonModule": true /* Enable importing .json files */,
     "allowJs": true /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */,
