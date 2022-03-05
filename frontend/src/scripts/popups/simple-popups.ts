@@ -91,7 +91,7 @@ class SimplePopup {
             <input
               type="number"
               min="1"
-              val="${input.initVal}"
+              value="${input.initVal}"
               placeholder="${input.placeholder}"
               class="${input.hidden ? "hidden" : ""}"
               ${input.hidden ? "" : "required"}
@@ -105,7 +105,7 @@ class SimplePopup {
             el.find(".inputs").append(`
               <input
                 type="${input.type}"
-                val="${input.initVal}"
+                value="${input.initVal}"
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
@@ -117,7 +117,7 @@ class SimplePopup {
             el.find(".inputs").append(`
               <input
                 type="text"
-                val="${input.initVal}"
+                value="${input.initVal}"
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
