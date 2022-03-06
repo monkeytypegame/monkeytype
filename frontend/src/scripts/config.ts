@@ -1203,19 +1203,13 @@ export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
     return false;
 
   const propertyName = "customThemeId";
-  let orgValueSet = true;
 
   config.customThemeId = customId;
-
-  if (firebase.auth().currentUser === null) {
-    config.customThemeId = "";
-    orgValueSet = customId !== "" ? false : true;
-  }
 
   saveToLocalStorage(propertyName, nosave);
   ConfigEvent.dispatch(propertyName, config.customThemeId);
 
-  return orgValueSet;
+  return true;
 }
 
 export function setTheme(name: string, nosave?: boolean): boolean {
