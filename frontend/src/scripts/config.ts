@@ -1167,25 +1167,35 @@ export function setAutoSwitchTheme(
   return true;
 }
 
-export function setCustomTheme(bool: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("custom theme", bool, ["boolean"])) return false;
+export function setCustomTheme(
+  customThemeOn: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("custom theme", customThemeOn, ["boolean"]))
+    return false;
 
-  if (firebase.auth().currentUser === null) {
-    config.customTheme = false;
-    return true;
+  const propertyName = "customTheme";
+  const userLoggedIn = firebase.auth().currentUser !== null;
+  let orgValueSet = true;
+
+  config.customTheme = customThemeOn;
+
+  if (!userLoggedIn) setCustomThemeId("");
+  else if (customThemeOn) {
+    if (config.randomTheme !== "custom") setRandomTheme("off");
+    if (
+      DB.getSnapshot().customThemes.length < 1 ||
+      config.customThemeId === ""
+    ) {
+      config.customTheme = false;
+      orgValueSet = customThemeOn ? false : true;
+    }
   }
-  if (bool && config.randomTheme !== "custom") setRandomTheme("off");
 
-  if (bool && DB.getSnapshot().customThemes.length < 1) {
-    config.customTheme = false;
-    return true;
-  }
-  config.customTheme = bool;
+  saveToLocalStorage(propertyName, nosave);
+  ConfigEvent.dispatch(propertyName, config.customTheme);
 
-  saveToLocalStorage("customTheme", nosave);
-  ConfigEvent.dispatch("customTheme", config.customTheme);
-
-  return true;
+  return orgValueSet;
 }
 
 export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
