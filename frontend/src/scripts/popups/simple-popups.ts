@@ -783,11 +783,6 @@ list["generateApeKey"] = new SimplePopup(
     } else {
       const data = response.data;
       list["viewApeKey"].show([data.apeKey]);
-      const snap = DB.getSnapshot();
-      if (snap.apeKeys) {
-        snap.apeKeys[data.apeKeyId] = data.apeKeyDetails;
-        DB.setSnapshot(snap);
-      }
     }
   },
   () => {
@@ -846,11 +841,6 @@ list["deleteApeKey"] = new SimplePopup(
     }
 
     Notifications.add("Key deleted", 1);
-    const snap = DB.getSnapshot();
-    if (snap.apeKeys) {
-      delete snap.apeKeys[_thisPopup.parameters[0]];
-      DB.setSnapshot(snap);
-    }
     ApeKeysPopup.show();
   },
   (_thisPopup) => {
@@ -885,11 +875,6 @@ list["editApeKey"] = new SimplePopup(
     }
 
     Notifications.add("Key updated", 1);
-    const snap = DB.getSnapshot();
-    if (snap.apeKeys) {
-      snap.apeKeys[_thisPopup.parameters[0]].name = input;
-      DB.setSnapshot(snap);
-    }
     ApeKeysPopup.show();
   },
   (_thisPopup) => {
