@@ -52,7 +52,7 @@ const CONFIG_SCHEMA = joi.object({
     joi.string(),
     joi.object({
       keymapShowTopRow: joi.boolean().required(),
-      type: joi.string().valid("ansi", "iso", "ortho", "matrix").required(),
+      type: joi.string().valid("ansi", "iso").required(),
       keys: joi
         .object({
           row1: rowValidation,

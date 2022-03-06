@@ -599,7 +599,7 @@ declare namespace MonkeyTypes {
 
   //  type ActivePage = `page${Page}` | undefined;
 
-  type LayoutType = "iso" | "ansi" | "ortho" | "matrix";
+  type LayoutType = "iso" | "ansi";
 
   interface LayoutObject {
     keymapShowTopRow: boolean;
