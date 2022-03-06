@@ -50,19 +50,22 @@ const CONFIG_SCHEMA = joi.object({
   layout: joi.string(),
   customLayouts: joi.object().pattern(
     joi.string(),
-    joi.object({
-      keymapShowTopRow: joi.boolean().required(),
-      type: joi.string().valid("ansi", "iso").required(),
-      keys: joi
-        .object({
-          row1: rowValidation,
-          row2: rowValidation,
-          row3: rowValidation,
-          row4: rowValidation,
-          row5: rowValidation,
-        })
-        .required(),
-    })
+    joi
+      .object({
+        keymapShowTopRow: joi.boolean().required(),
+        type: joi.string().valid("ansi", "iso").required(),
+        keys: joi
+          .object({
+            row1: rowValidation,
+            row2: rowValidation,
+            row3: rowValidation,
+            row4: rowValidation,
+            row5: rowValidation,
+          })
+          .required(),
+      })
+      .min(0)
+      .max(5)
   ),
   funbox: joi.string(),
   confidenceMode: joi.string().valid("off", "on", "max"),
