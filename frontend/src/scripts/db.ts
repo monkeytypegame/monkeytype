@@ -48,7 +48,6 @@ export async function initSnapshot(): Promise<
     },
     quoteRatings: undefined,
     quoteMod: false,
-    apeKeys: {},
   };
   const snap = defaultSnap;
   try {
