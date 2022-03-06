@@ -29,8 +29,8 @@ export type TextExtractor<T> = (element: T) => string;
 const DEFAULT_OPTIONS: SearchServiceOptions = {
   fuzzyMatchSensitivity: 0.2, // Value between 0-1. Higher = more tolerant to spelling mistakes, too high and you get nonsense.
   substringMatchSensitivity: 0.25, // Value between 0-1. Higher = more tolerant to substring matches, too high and you get nonsene.
-  scoreForSimilarMatch: 0.5, // When ranking results, the score a match gets for how similar it is to a search token.
-  scoreForSubstringMatch: 2, // When ranking results, the score a match gets for having a token that is a substring of the search query.
+  scoreForSimilarMatch: 0.5, // When ranking results, the score a match gets for having a token that is similar to a search token.
+  scoreForSubstringMatch: 2, // When ranking results, the score a match gets for having a token that is a substring of a search query.
 };
 
 function getRatio(a: string, b: string): number {
