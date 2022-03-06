@@ -63,8 +63,11 @@ export function hide(): void {
 }
 
 //show the popup
-export function show(): void {
+export async function show(): Promise<void> {
   if ($("#apeKeysPopupWrapper").hasClass("hidden")) {
+    Loader.show();
+    await DB.getUserApeKeys();
+    Loader.hide();
     refreshList();
     $("#apeKeysPopupWrapper")
       .stop(true, true)

@@ -182,6 +182,28 @@ export async function getUserResults(): Promise<boolean> {
     return true;
   }
 }
+
+export async function getUserApeKeys(): Promise<
+  MonkeyTypes.ApeKeys | undefined
+> {
+  const user = firebase.auth().currentUser;
+  if (user == null) return undefined;
+  if (dbSnapshot === null) return undefined;
+  if (dbSnapshot.apeKeys !== undefined) {
+    return dbSnapshot.apeKeys;
+  } else {
+    const response = await Ape.apeKeys.get();
+
+    if (response.status !== 200) {
+      Notifications.add("Error getting ape keys: " + response.message, -1);
+      return undefined;
+    }
+
+    dbSnapshot.apeKeys = response.data as MonkeyTypes.ApeKeys;
+    return dbSnapshot.apeKeys;
+  }
+}
+
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
