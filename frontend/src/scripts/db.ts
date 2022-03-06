@@ -58,13 +58,12 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const [userData, configData, tagsData, presetsData, apeKeysData] = (
+    const [userData, configData, tagsData, presetsData] = (
       await Promise.all([
         Ape.users.getData(),
         Ape.configs.get(),
         Ape.users.getTags(),
         Ape.presets.get(),
-        Ape.apeKeys.get(),
       ])
     ).map((response: Ape.Response) => response.data);
 
@@ -141,8 +140,6 @@ export async function initSnapshot(): Promise<
         return 0;
       }
     });
-
-    snap.apeKeys = apeKeysData;
 
     dbSnapshot = snap;
     return dbSnapshot;
