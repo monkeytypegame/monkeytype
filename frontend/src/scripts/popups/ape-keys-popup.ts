@@ -1,10 +1,24 @@
-import * as DB from "../db";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 
+let apeKeys: MonkeyTypes.ApeKeys = {};
+
+async function getData(): Promise<void> {
+  Loader.show();
+  const response = await Ape.apeKeys.get();
+
+  if (response.status !== 200) {
+    Notifications.add("Error getting ape keys: " + response.message, -1);
+    return undefined;
+  }
+
+  apeKeys = response.data as MonkeyTypes.ApeKeys;
+  Loader.hide();
+}
+
 function refreshList(): void {
-  const data = DB.getSnapshot().apeKeys;
+  const data = apeKeys;
   if (!data) return;
   const table = $("#apeKeysPopupWrapper table tbody");
   table.empty();
@@ -71,9 +85,7 @@ export function hide(): void {
 //show the popup
 export async function show(): Promise<void> {
   if ($("#apeKeysPopupWrapper").hasClass("hidden")) {
-    Loader.show();
-    await DB.getUserApeKeys();
-    Loader.hide();
+    await getData();
     refreshList();
     $("#apeKeysPopupWrapper")
       .stop(true, true)
@@ -107,17 +119,15 @@ $(document).on("click", "#apeKeysPopup table .keyButtons .button", () => {
 
 $(document).on("click", "#apeKeysPopup table .icon-button", async (e) => {
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  const snap = DB.getSnapshot();
-  const key = snap.apeKeys?.[keyId];
-  if (!key || !snap.apeKeys) return;
+  const key = apeKeys?.[keyId];
+  if (!key || !apeKeys) return;
   Loader.show();
   const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
   Loader.hide();
   if (response.status !== 200) {
     return Notifications.add("Failed to update key: " + response.message, -1);
   }
-  snap.apeKeys[keyId].enabled = !key.enabled;
-  DB.setSnapshot(snap);
+  apeKeys[keyId].enabled = !key.enabled;
   refreshList();
   if (key.enabled) {
     Notifications.add("Key active", 1);

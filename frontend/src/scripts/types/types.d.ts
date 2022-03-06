@@ -415,7 +415,6 @@ declare namespace MonkeyTypes {
     quoteMod?: boolean;
     discordId?: string;
     config?: Config;
-    apeKeys?: ApeKeys;
   }
 
   type PartialRecord<K extends keyof any, T> = {
