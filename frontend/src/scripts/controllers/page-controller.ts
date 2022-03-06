@@ -29,9 +29,19 @@ export function change(page: MonkeyTypes.Page | ""): void {
       "/account": "account",
     };
     // TODO(kim): if /account/${SOME_ACCOUNT_NAME}, then change to this user's account page
+
+    //  TODO(kim): prevent XSS, escape this path
+
     let path = pages[window.location.pathname as keyof typeof pages];
     if (!path) {
-      path = "test";
+      const pathSplit = window.location.pathname.split("/");
+      const subPath = pathSplit[3];
+
+      if (pathSplit[2] === "account" && subPath !== undefined) {
+        path = `account/${subPath}`;
+      } else {
+        path = "test";
+      }
     }
     page = path;
   }
