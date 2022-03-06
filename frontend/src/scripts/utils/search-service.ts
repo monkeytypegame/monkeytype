@@ -1,3 +1,4 @@
+import { stemmer } from "stemmer";
 import levenshtein from "damerau-levenshtein";
 
 export interface SearchService<T> {
@@ -6,13 +7,16 @@ export interface SearchService<T> {
 
 interface SearchServiceOptions {
   fuzzyMatchSensitivity: number;
-  substringMatchSensitivity: number;
   scoreForSimilarMatch: number;
-  scoreForSubstringMatch: number;
+  scoreForExactMatch: number;
 }
 
-interface ReverseIndex<T> {
-  [key: string]: Set<T>;
+interface InternalDocument {
+  id: number;
+}
+
+interface ReverseIndex {
+  [key: string]: Set<InternalDocument>;
 }
 
 interface TokenMap {
@@ -24,45 +28,56 @@ interface SearchResult<T> {
   matchedQueryTerms: string[];
 }
 
-export type TextExtractor<T> = (element: T) => string;
+export type TextExtractor<T> = (document: T) => string;
 
 const DEFAULT_OPTIONS: SearchServiceOptions = {
   fuzzyMatchSensitivity: 0.2, // Value between 0-1. Higher = more tolerant to spelling mistakes, too high and you get nonsense.
-  substringMatchSensitivity: 0.25, // Value between 0-1. Higher = more tolerant to substring matches, too high and you get nonsene.
   scoreForSimilarMatch: 0.5, // When ranking results, the score a match gets for having a token that is similar to a search token.
-  scoreForSubstringMatch: 2, // When ranking results, the score a match gets for having a token that is a substring of a search query.
+  scoreForExactMatch: 1, // When ranking results, the score a match gets for having an exact match with a token in the search query.
 };
 
-function getRatio(a: string, b: string): number {
-  return Math.min(a.length, b.length) / Math.max(a.length, b.length);
+function inverseDocumentFrequency(
+  numberOfDocuments: number,
+  numberOfDocumentsWithTerm: number
+): number {
+  if (numberOfDocumentsWithTerm === 0) {
+    return 0;
+  }
+
+  return Math.log10(numberOfDocuments / numberOfDocumentsWithTerm);
+}
+
+function tokenize(text: string): string[] {
+  return text.match(/[a-zA-Z0-9]+/g) || [];
 }
 
 export const buildSearchService = <T>(
-  data: T[],
+  documents: T[],
   getSearchableText: TextExtractor<T>,
   options: SearchServiceOptions = DEFAULT_OPTIONS
 ): SearchService<T> => {
-  const reverseIndex: ReverseIndex<T> = {};
+  const reverseIndex: ReverseIndex = {};
   const normalizedTokenToOriginal: TokenMap = {};
 
-  const getTokens = (text: string): string[] => {
-    return text.match(/[a-zA-Z0-9]+/g) || [];
-  };
+  documents.forEach((document, documentIndex) => {
+    const rawTokens = tokenize(getSearchableText(document));
 
-  data.forEach((element) => {
-    const tokens = getTokens(getSearchableText(element));
-    tokens.forEach((token) => {
-      const normalizedToken = token.toLocaleLowerCase();
-      if (!(normalizedToken in normalizedTokenToOriginal)) {
-        normalizedTokenToOriginal[normalizedToken] = new Set<string>();
+    const internalDocument: InternalDocument = {
+      id: documentIndex,
+    };
+
+    rawTokens.forEach((token) => {
+      const stemmedToken = stemmer(token);
+
+      if (!(stemmedToken in normalizedTokenToOriginal)) {
+        normalizedTokenToOriginal[stemmedToken] = new Set<string>();
       }
+      normalizedTokenToOriginal[stemmedToken].add(token);
 
-      normalizedTokenToOriginal[normalizedToken].add(token);
-      if (!(normalizedToken in reverseIndex)) {
-        reverseIndex[normalizedToken] = new Set<T>();
+      if (!(stemmedToken in reverseIndex)) {
+        reverseIndex[stemmedToken] = new Set<InternalDocument>();
       }
-
-      reverseIndex[normalizedToken].add(element);
+      reverseIndex[stemmedToken].add(internalDocument);
     });
   });
 
@@ -74,38 +89,45 @@ export const buildSearchService = <T>(
       matchedQueryTerms: [],
     };
 
-    const normalizedSearchQuery = getTokens(searchQuery.toLocaleLowerCase());
-    if (normalizedSearchQuery.length === 0) {
+    const normalizedSearchQuery = new Set<string>(
+      tokenize(searchQuery).map((token) => stemmer(token))
+    );
+    if (normalizedSearchQuery.size === 0) {
       return searchResult;
     }
 
-    const searchQueryRegex = new RegExp(searchQuery, "i");
-
-    const results = new Map<T, number>();
+    const results = new Map<number, number>();
     const matchedTokens = new Set<string>();
 
     normalizedSearchQuery.forEach((searchToken) => {
       tokenSet.forEach((token) => {
-        const { similarity } = levenshtein(token, searchToken);
+        const { similarity } = levenshtein(searchToken, token);
 
-        const lengthRatio = getRatio(token, searchToken);
-
-        const matchesSearchQuery =
-          searchQueryRegex.test(token) &&
-          lengthRatio >= 1 - options.substringMatchSensitivity;
+        const matchesSearchToken = token === searchToken;
         const isSimilar = similarity >= 1 - options.fuzzyMatchSensitivity;
 
-        if (matchesSearchQuery || isSimilar) {
-          const matches = reverseIndex[token];
-          matches.forEach((match) => {
-            const currentCount = results.get(match) ?? 0;
-            const score =
-              (matchesSearchQuery
-                ? options.scoreForSubstringMatch * lengthRatio
-                : 0) + (isSimilar ? options.scoreForSimilarMatch : 0);
+        if (matchesSearchToken || isSimilar) {
+          const documentMatches = reverseIndex[token];
+          documentMatches.forEach((document) => {
+            const currentScore = results.get(document.id) ?? 0;
 
-            results.set(match, currentCount + score);
+            const scoreForExactMatch = matchesSearchToken
+              ? options.scoreForExactMatch
+              : 0;
+            const scoreForSimilarity = isSimilar
+              ? options.scoreForSimilarMatch
+              : 0;
+            const score = scoreForExactMatch + scoreForSimilarity;
+
+            const idf = inverseDocumentFrequency(
+              documents.length,
+              documentMatches.size
+            );
+            const scoreForToken = score * idf;
+
+            results.set(document.id, currentScore + scoreForToken);
           });
+
           normalizedTokenToOriginal[token].forEach((originalToken) => {
             matchedTokens.add(originalToken);
           });
@@ -117,7 +139,7 @@ export const buildSearchService = <T>(
       .sort((match1, match2) => {
         return match2[1] - match1[1];
       })
-      .map((match) => match[0]);
+      .map((match) => documents[match[0]]);
 
     searchResult.results = orderedResults;
     searchResult.matchedQueryTerms = [...matchedTokens];

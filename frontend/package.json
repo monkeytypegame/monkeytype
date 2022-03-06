@@ -64,6 +64,7 @@
     "howler": "^2.2.1",
     "moment-timezone": "^0.5.33",
     "node-object-hash": "2.3.10",
+    "stemmer": "2.0.0",
     "tinycolor2": "^1.4.2"
   }
 }
