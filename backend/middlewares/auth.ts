@@ -75,6 +75,7 @@ function authenticateWithBody(
   }
 
   return {
+    type: "Bearer",
     uid,
   };
 }
@@ -110,6 +111,7 @@ async function authenticateWithBearerToken(
     const decodedToken = await verifyIdToken(token);
 
     return {
+      type: "Bearer",
       uid: decodedToken.uid,
       email: decodedToken.email,
     };
@@ -169,6 +171,7 @@ async function authenticateWithApeKey(
     await ApeKeysDAO.updateLastUsedOn(keyOwner, keyId);
 
     return {
+      type: "ApeKey",
       uid,
       email: keyOwner.email,
     };
