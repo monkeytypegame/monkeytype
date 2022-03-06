@@ -70,6 +70,7 @@ declare namespace MonkeyTypes {
     hash: string;
     createdOn: number;
     modifiedOn: number;
+    lastUsedOn: number;
     enabled: boolean;
   }
 

@@ -46,6 +46,7 @@ class ApeKeysController {
       hash: saltyHash,
       createdOn: Date.now(),
       modifiedOn: Date.now(),
+      lastUsedOn: -1,
     };
 
     const apeKeyId = await ApeKeysDAO.addApeKey(uid, apeKey);
