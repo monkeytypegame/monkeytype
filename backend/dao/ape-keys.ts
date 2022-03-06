@@ -78,7 +78,8 @@ class ApeKeysDAO {
     keyId: string
   ): Promise<void> {
     checkIfKeyExists(user.apeKeys, keyId);
-    _.set(user.apeKeys, `[${keyId}].lastUsedOn`, Date.now());
+
+    user.apeKeys[keyId].lastUsedOn = Date.now();
     await UsersDAO.setApeKeys(user.uid, user.apeKeys);
   }
 }
