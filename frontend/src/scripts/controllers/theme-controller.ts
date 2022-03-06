@@ -140,6 +140,18 @@ export async function applyCustom(
   $("#metaThemeColor").attr("content", colors.bg);
 }
 
+export async function applyTempCustom(): Promise<void> {
+  ThemeColors.reset();
+  await loadStyle("serika_dark");
+  colorVars.forEach((e, index) => {
+    document.documentElement.style.setProperty(
+      e,
+      Config.customThemeColors[index]
+    );
+  });
+  ThemeColors.update();
+}
+
 export async function applyPreset(
   themeName: string,
   isPreview = false
@@ -300,8 +312,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (Config.customTheme) set(true, eventValue as string);
   }
   if (eventKey === "customTheme") {
-    if (eventValue) set(true, Config.customThemeId);
-    else set(false, Config.theme);
+    if (eventValue) {
+      if (firebase.auth().currentUser === null) applyTempCustom();
+      else set(true, Config.customThemeId);
+    } else set(false, Config.theme);
   }
   if (eventKey === "theme") {
     clearPreview();
