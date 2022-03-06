@@ -9,7 +9,6 @@ import {
   validateConfiguration,
   validateRequest,
 } from "../../middlewares/api-utils";
-import SUPPORTED_QUOTE_LANGUAGES from "../../constants/quote-languages";
 
 const quotesRouter = Router();
 
@@ -119,10 +118,7 @@ quotesRouter.post(
   validateRequest({
     body: {
       quoteId: joi.string().required(),
-      quoteLanguage: joi
-        .string()
-        .valid(...SUPPORTED_QUOTE_LANGUAGES)
-        .required(),
+      quoteLanguage: joi.string().required(),
       reason: joi
         .string()
         .valid(
