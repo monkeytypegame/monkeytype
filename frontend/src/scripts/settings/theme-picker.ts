@@ -7,9 +7,10 @@ import * as ChartController from "../controllers/chart-controller";
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
+import * as ConfigEvent from "../observables/config-event";
 
 export function updateActiveButton(): void {
-  if (Config.customThemeId !== "") {
+  if (Config.customTheme) {
     const activeThemeId = Config.customThemeId;
     $(`.pageSettings .section.themes .customTheme`).removeClass("active");
     $(
@@ -109,6 +110,7 @@ export async function refreshButtons(): Promise<void> {
     const customThemesEl = $(
       ".pageSettings .section.themes .allCustomThemes.buttons"
     ).empty();
+    if (firebase.auth().currentUser === null) return;
     // Update custom theme buttons
     const customThemes = DB.getSnapshot().customThemes;
 
@@ -493,4 +495,9 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 
   ThemeController.set(true, Config.customThemeId);
   updateActiveTab(true);
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "customThemeId") refreshButtons();
+  if (eventKey === "customTheme") updateActiveTab();
 });

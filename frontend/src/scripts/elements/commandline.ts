@@ -706,8 +706,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);
   } else {
-    if (Config.customThemeId !== "")
-      CommandlineLists.updateCustomThemeListCommands();
+    if (Config.customTheme) CommandlineLists.updateCustomThemeListCommands();
     CommandlineLists.pushCurrent(
       Config.customTheme
         ? CommandlineLists.customThemeListCommands

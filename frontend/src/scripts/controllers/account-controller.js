@@ -67,10 +67,9 @@ export async function getDataAndInit() {
         Notifications.add("Could not create a new custom theme!", -1);
       Loader.hide();
     }
-    const customThemeActive = Config.customThemeId !== "";
     ThemeController.set(
-      customThemeActive,
-      customThemeActive ? Config.customThemeId : Config.theme
+      Config.customTheme,
+      Config.customTheme ? Config.customThemeId : Config.theme
     );
   } catch (e) {
     AccountButton.loading(false);
@@ -272,6 +271,11 @@ async function loadUser(user) {
 
 const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
+  if (!user) {
+    // Rizwan TODO: Find a more appropriate place for this code
+    ThemeController.applyTempCustom();
+    UpdateConfig.setCustomThemeId("");
+  }
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);
@@ -300,6 +304,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }, 125 / 2);
   }
 
+  // Rizwan TODO: Write code to handle differently if user is logged in or not
   let themeColors = Misc.findGetParameter("customTheme");
   const oldCustomTheme = Config.customTheme;
   const oldCustomThemeId = Config.customThemeId;
