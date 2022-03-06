@@ -86,6 +86,12 @@ class SimplePopup {
       el.find(".button").text(this.buttonText);
     }
 
+    if (this.text === "") {
+      el.find(".text").addClass("hidden");
+    } else {
+      el.find(".text").removeClass("hidden");
+    }
+
     // }
   }
 
