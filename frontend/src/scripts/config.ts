@@ -1202,27 +1202,30 @@ export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom theme id", customId, ["string"]))
     return false;
 
+  const propertyName = "customThemeId";
+  let orgValueSet = true;
+
+  config.customThemeId = customId;
+
   if (firebase.auth().currentUser === null) {
     config.customThemeId = "";
-    return true;
-  } else {
-    if (customId !== "" && config.randomTheme !== "custom")
-      setRandomTheme("off");
-    config.customThemeId = customId;
+    orgValueSet = customId !== "" ? false : true;
   }
 
-  saveToLocalStorage("customThemeId", nosave);
-  ConfigEvent.dispatch("customThemeId", config.customThemeId);
+  saveToLocalStorage(propertyName, nosave);
+  ConfigEvent.dispatch(propertyName, config.customThemeId);
 
-  return true;
+  return orgValueSet;
 }
 
 export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
+
   if (config.randomTheme === "custom") setRandomTheme("off");
-  setCustomThemeId("", true);
+  if (config.customTheme) setCustomTheme(false, true);
+
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
