@@ -72,6 +72,15 @@ class ApeKeysDAO {
     const apeKeys = _.omit(user.apeKeys, keyId);
     await UsersDAO.setApeKeys(uid, apeKeys);
   }
+
+  static async updateLastUsedOn(
+    user: MonkeyTypes.User,
+    keyId: string
+  ): Promise<void> {
+    checkIfKeyExists(user.apeKeys, keyId);
+    _.set(user.apeKeys, `[${keyId}].lastUsedOn`, Date.now());
+    await UsersDAO.setApeKeys(user.uid, user.apeKeys);
+  }
 }
 
 export default ApeKeysDAO;

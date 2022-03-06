@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { compare } from "bcrypt";
 import UsersDAO from "../dao/user";
+import ApeKeysDAO from "../dao/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
@@ -164,6 +165,8 @@ async function authenticateWithApeKey(
     if (!isKeyValid) {
       throw new MonkeyError(400, "Invalid ApeKey");
     }
+
+    await ApeKeysDAO.updateLastUsedOn(keyOwner, keyId);
 
     return {
       uid,
