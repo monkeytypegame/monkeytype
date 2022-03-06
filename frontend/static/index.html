@@ -551,6 +551,30 @@
         <div id="submitQuoteButton" class="button">Submit</div>
       </div>
     </div>
+    <div id="apeKeysPopupWrapper" class="hidden popupWrapper">
+      <div id="apeKeysPopup" mode="">
+        <div class="top">
+          <div class="title">Ape Keys</div>
+          <div class="button generateApeKey">
+            <i class="fas fa-plus"></i>
+            Generate new key
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <td width="1px">active</td>
+              <td>name</td>
+              <td>created on</td>
+              <td>modified on</td>
+              <td>last used on</td>
+              <td width="1px"></td>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
     <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
       <div id="quoteReportPopup" mode="">
         <div class="title">Report a Quote</div>
@@ -4112,6 +4136,22 @@
                     onclick="this.blur();"
                   >
                     sellout
+                  </div>
+                </div>
+              </div>
+              <div class="section apeKeys needsAccount">
+                <h1>ape keys</h1>
+                <div class="text">
+                  Generate Ape Keys to access certain API endpoints.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    id="showApeKeysPopup"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    open
                   </div>
                 </div>
               </div>
