@@ -4,6 +4,13 @@ export interface SearchService<T> {
   query: (query: string) => SearchResult<T>;
 }
 
+interface SearchServiceOptions {
+  fuzzyMatchSensitivity: number;
+  substringMatchSensitivity: number;
+  scoreForSimilarMatch: number;
+  scoreForSubstringMatch: number;
+}
+
 interface ReverseIndex<T> {
   [key: string]: Set<T>;
 }
@@ -19,9 +26,21 @@ interface SearchResult<T> {
 
 export type TextExtractor<T> = (element: T) => string;
 
+const DEFAULT_OPTIONS: SearchServiceOptions = {
+  fuzzyMatchSensitivity: 0.2, // Value between 0-1. Higher = more tolerant to spelling mistakes, too high and you get nonsense.
+  substringMatchSensitivity: 0.25, // Value between 0-1. Higher = more tolerant to substring matches, too high and you get nonsene.
+  scoreForSimilarMatch: 0.5, // When ranking results, the score a match gets for how similar it is to a search token.
+  scoreForSubstringMatch: 2, // When ranking results, the score a match gets for having a token that is a substring of the search query.
+};
+
+function getRatio(a: string, b: string): number {
+  return Math.min(a.length, b.length) / Math.max(a.length, b.length);
+}
+
 export const buildSearchService = <T>(
   data: T[],
-  getSearchableText: TextExtractor<T>
+  getSearchableText: TextExtractor<T>,
+  options: SearchServiceOptions = DEFAULT_OPTIONS
 ): SearchService<T> => {
   const reverseIndex: ReverseIndex<T> = {};
   const normalizedTokenToOriginal: TokenMap = {};
@@ -50,8 +69,6 @@ export const buildSearchService = <T>(
   const tokenSet = Object.keys(reverseIndex);
 
   const query = (searchQuery: string): SearchResult<T> => {
-    const searchQueryRegex = new RegExp(searchQuery, "i");
-
     const searchResult: SearchResult<T> = {
       results: [],
       matchedQueryTerms: [],
@@ -62,17 +79,32 @@ export const buildSearchService = <T>(
       return searchResult;
     }
 
-    const results = new Set<T>();
+    const searchQueryRegex = new RegExp(searchQuery, "i");
+
+    const results = new Map<T, number>();
     const matchedTokens = new Set<string>();
 
     normalizedSearchQuery.forEach((searchToken) => {
       tokenSet.forEach((token) => {
         const { similarity } = levenshtein(token, searchToken);
 
-        if (searchQueryRegex.test(token) || similarity >= 0.75) {
+        const lengthRatio = getRatio(token, searchToken);
+
+        const matchesSearchQuery =
+          searchQueryRegex.test(token) &&
+          lengthRatio >= 1 - options.substringMatchSensitivity;
+        const isSimilar = similarity >= 1 - options.fuzzyMatchSensitivity;
+
+        if (matchesSearchQuery || isSimilar) {
           const matches = reverseIndex[token];
           matches.forEach((match) => {
-            results.add(match);
+            const currentCount = results.get(match) ?? 0;
+            const score =
+              (matchesSearchQuery
+                ? options.scoreForSubstringMatch * lengthRatio
+                : 0) + (isSimilar ? options.scoreForSimilarMatch : 0);
+
+            results.set(match, currentCount + score);
           });
           normalizedTokenToOriginal[token].forEach((originalToken) => {
             matchedTokens.add(originalToken);
@@ -81,10 +113,14 @@ export const buildSearchService = <T>(
       });
     });
 
-    searchResult.results = [...results];
-    searchResult.matchedQueryTerms = [...matchedTokens];
+    const orderedResults = [...results]
+      .sort((match1, match2) => {
+        return match2[1] - match1[1];
+      })
+      .map((match) => match[0]);
 
-    console.log(searchQuery, searchResult.matchedQueryTerms);
+    searchResult.results = orderedResults;
+    searchResult.matchedQueryTerms = [...matchedTokens];
 
     return searchResult;
   };
@@ -93,35 +129,3 @@ export const buildSearchService = <T>(
     query,
   };
 };
-
-// const reg = new RegExp(searchText, "i");
-// const found: MonkeyTypes.Quote[] = [];
-// quotes.quotes.forEach((quote) => {
-//   const quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
-//   const test1 = reg.test(quoteText);
-//   if (test1) {
-//     found.push(quote);
-//   }
-// });
-// quotes.quotes.forEach((quote) => {
-//   const quoteSource = quote["source"].replace(
-//     /[.,'"/#!$%^&*;:{}=\-_`~()]/g,
-//     ""
-//   );
-//   const quoteId = quote["id"];
-//   const test2 = reg.test(quoteSource);
-//   const test3 = reg.test(quoteId.toString());
-//   if ((test2 || test3) && found.filter((q) => q.id == quote.id).length == 0) {
-//     found.push(quote);
-//   }
-// });
-
-// setTimeout(() => {
-//   let searchText = (<HTMLInputElement>document.getElementById("searchBox"))
-//     .value;
-//   searchText = searchText
-//     .replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "")
-//     .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-//   updateResults(searchText);
-// }, 0.1); //arbitrarily v. small time as it's only to allow text to input before searching

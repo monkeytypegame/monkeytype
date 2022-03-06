@@ -41,8 +41,9 @@ function highlightMatches(text: string, matchedText: string[]): string {
   if (matchedText.length === 0) {
     return text;
   }
-
-  const words = text.split(" ");
+  const words = text.split(
+    /(?=[.,'"/#!$%^&*;:{}=\-_`~()\s])|(?<=[.,'"/#!$%^&*;:{}=\-_`~()\s])/g
+  );
 
   const normalizedWords = words.map((word) => {
     const shouldHighlight = matchedText.find((match) => {
@@ -51,7 +52,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
     return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
   });
 
-  return normalizedWords.join(" ");
+  return normalizedWords.join("");
 }
 
 async function updateResults(searchText: string): Promise<void> {
@@ -196,7 +197,7 @@ export function apply(val: number): boolean {
 
 const debouncedSearch = debounce(updateResults);
 
-$("#quoteSearchPopup .searchBox").keydown((e) => {
+$("#quoteSearchPopup .searchBox").on("keyup", (e) => {
   if (e.code == "Escape") return;
 
   const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
