@@ -14,10 +14,9 @@ export default function getApeKeysEndpoints(
 
   async function update(
     apeKeyId: string,
-    name: string,
-    enabled: boolean
+    updates: { name?: string; enabled?: boolean }
   ): Ape.EndpointData {
-    const payload = { name, enabled };
+    const payload = { ...updates };
     return await apeClient.patch(`${BASE_PATH}/${apeKeyId}`, { payload });
   }
 

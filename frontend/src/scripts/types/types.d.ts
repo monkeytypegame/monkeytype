@@ -241,6 +241,18 @@ declare namespace MonkeyTypes {
     hash?: string;
   }
 
+  type ApeKey = {
+    name: string;
+    enabled: boolean;
+    createdOn: number;
+    modifiedOn: number;
+    lastUsedOn: number;
+  };
+
+  interface ApeKeys {
+    [key: string]: ApeKey;
+  }
+
   interface Config {
     theme: string;
     themeLight: string;
@@ -405,6 +417,7 @@ declare namespace MonkeyTypes {
     quoteMod?: boolean;
     discordId?: string;
     config?: Config;
+    apeKeys?: ApeKeys;
   }
 
   type PartialRecord<K, T> = {

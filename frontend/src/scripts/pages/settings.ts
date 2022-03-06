@@ -12,6 +12,7 @@ import * as ImportExportSettingsPopup from "../popups/import-export-settings-pop
 import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
+import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
 
 type SettingsGroups = {
@@ -991,8 +992,12 @@ $("#shareCustomThemeButton").click(() => {
   );
 });
 
-$(".pageSettings .sectionGroupTitle").click((e) => {
+$(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
+});
+
+$(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
+  ApeKeysPopup.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
