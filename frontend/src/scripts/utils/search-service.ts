@@ -108,6 +108,12 @@ export const buildSearchService = <T>(
 
         if (matchesSearchToken || isSimilar) {
           const documentMatches = reverseIndex[token];
+
+          const idf = inverseDocumentFrequency(
+            documents.length,
+            documentMatches.size
+          );
+
           documentMatches.forEach((document) => {
             const currentScore = results.get(document.id) ?? 0;
 
@@ -119,10 +125,6 @@ export const buildSearchService = <T>(
               : 0;
             const score = scoreForExactMatch + scoreForSimilarity;
 
-            const idf = inverseDocumentFrequency(
-              documents.length,
-              documentMatches.size
-            );
             const scoreForToken = score * idf;
 
             results.set(document.id, currentScore + scoreForToken);
