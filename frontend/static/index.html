@@ -372,7 +372,10 @@
     </div>
     <div id="customTextPopupWrapper" class="popupWrapper hidden">
       <div id="customTextPopup" action="">
-        <div class="wordfilter button">
+        <div class="button storedCustomTextPopupButton">
+          Show Stored Custom Text
+        </div>
+        <div class="button wordfilter">
           <i class="fas fa-filter"></i>
           Words filter
         </div>
@@ -416,6 +419,18 @@
             </span>
           </label>
         </div>
+        <div class="button apply">ok</div>
+      </div>
+      <div id="storedCustomTextPopup" class="hidden" action="">
+        <textarea class="textarea" placeholder="Custom text"></textarea>
+        <label>
+          Custom text name:
+          <input type="text" />
+          <div class="button save">
+            <i class="fas fa-save fa-fw"></i>
+          </div>
+        </label>
+          <div class="storedCustomTextList hidden"></div>
         <div class="button apply">ok</div>
       </div>
     </div>

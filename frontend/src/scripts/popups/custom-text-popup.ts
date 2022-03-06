@@ -9,11 +9,15 @@ import * as Notifications from "../elements/notifications";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
+const storedPopup = "#storedCustomTextPopup";
 
 export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
     if ($(`${popup} .checkbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
+      $(`${popup} .inputs .button.storedCustomTextPopupButton`).removeClass(
+        "hidden"
+      );
     } else {
       $(`${popup} .inputs .randomInputFields`).addClass("hidden");
     }
@@ -33,6 +37,46 @@ export function show(): void {
   setTimeout(() => {
     $(`${popup} textarea`).focus();
   }, 150);
+}
+
+function showStored(): void {
+  $(popup).addClass("hidden");
+  $(storedPopup).removeClass("hidden");
+
+  refreshStoredList();
+}
+
+function refreshStoredList(): void {
+  const names = CustomText.getCustomTextNames();
+
+  const listEl = $(`${storedPopup} .storedCustomTextList`).empty();
+
+  if (names.length !== 0) {
+    listEl.removeClass("hidden");
+
+    let list = "";
+
+    for (const name of names) {
+      list += `<div class="storedCustomText">
+      <div class="button storedCustomTextButton">${name}</div>
+      <div class="button removeButton">
+        <i class="fas fa-trash"></i>
+      </div>
+      </div>`;
+    }
+
+    listEl.html(list);
+  } else {
+    listEl.addClass("hidden");
+  }
+}
+
+function hideStored(): void {
+  if (!$(storedPopup).hasClass("hidden")) {
+    $(storedPopup).addClass("hidden");
+
+    $(popup).removeClass("hidden");
+  }
 }
 
 $(`${popup} .delimiterCheck input`).change(() => {
@@ -81,6 +125,7 @@ export function isVisible(): boolean {
 
 $(wrapper).mousedown((e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
+    hideStored();
     hide();
   }
 });
@@ -107,8 +152,16 @@ $(`${popup} .randomInputFields .time input`).keypress(() => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
-$("#customTextPopup .apply").click(() => {
-  let text = ($("#customTextPopup textarea").val() as string).normalize();
+function applyStored(): void {
+  const text = ($(`${storedPopup} textarea`).val() as string).normalize();
+
+  $(`${popup} textarea`).val(text);
+
+  hideStored();
+}
+
+function apply(): void {
+  let text = ($(`${popup} textarea`).val() as string).normalize();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -120,26 +173,20 @@ $("#customTextPopup .apply").click(() => {
   // text = text.replace(/(\n)+/g, "\n");
   // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
+  if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
-  CustomText.setWord(
-    parseInt($("#customTextPopup .wordcount input").val() as string)
-  );
-  CustomText.setTime(
-    parseInt($("#customTextPopup .time input").val() as string)
-  );
+  CustomText.setWord(parseInt($(`${popup} .wordcount input`).val() as string));
+  CustomText.setTime(parseInt($(`${popup} .time input`).val() as string));
 
   CustomText.setIsWordRandom(
-    $("#customTextPopup .checkbox input").prop("checked") &&
-      !isNaN(CustomText.word)
+    $(`${popup} .checkbox input`).prop("checked") && !isNaN(CustomText.word)
   );
   CustomText.setIsTimeRandom(
-    $("#customTextPopup .checkbox input").prop("checked") &&
-      !isNaN(CustomText.time)
+    $(`${popup} .checkbox input`).prop("checked") && !isNaN(CustomText.time)
   );
 
   if (
@@ -183,10 +230,15 @@ $("#customTextPopup .apply").click(() => {
   ManualRestart.set();
   if (Config.mode !== "custom") UpdateConfig.setMode("custom");
   TestLogic.restart();
+  hideStored();
   hide();
+}
+
+$(document).on("click", `${popup} .button.apply`, () => {
+  apply();
 });
 
-$("#customTextPopup .wordfilter").click(() => {
+$(document).on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
@@ -194,11 +246,68 @@ $(document).on("click", "#top .config .customText .text-button", () => {
   show();
 });
 
+$(document).on("click", `${popup} .button.storedCustomTextPopupButton`, () => {
+  showStored();
+});
+
+$(document).on("click", `${storedPopup} .button.save`, () => {
+  const text = ($(`${storedPopup} textarea`).val() as string).normalize();
+
+  const name = $(`${storedPopup} input`).val() as string;
+
+  if (!name) {
+    Notifications.add("Empty name value", -1);
+
+    return;
+  }
+
+  CustomText.setCustomText(name, text);
+
+  $(`${storedPopup} textarea`).val("");
+
+  $(`${storedPopup} input`).val("");
+
+  refreshStoredList();
+});
+
+$(document).on("click", `${storedPopup} .button.apply`, () => {
+  applyStored();
+});
+
+$(document).on(
+  "click",
+  `${storedPopup} .storedCustomTextList .storedCustomText .button.storedCustomTextButton`,
+  (e) => {
+    const target = $(e.currentTarget);
+
+    const name = target.html();
+
+    const text = CustomText.getCustomText(name).join(" ");
+
+    $(`${storedPopup} textarea`).val(text);
+  }
+);
+
+$(document).on(
+  "click",
+  `${storedPopup} .storedCustomTextList .storedCustomText .button.removeButton`,
+  (e) => {
+    const target = $(e.currentTarget);
+
+    const name = target.siblings(".storedCustomTextButton").html();
+
+    CustomText.deleteCustomText(name);
+
+    refreshStoredList();
+  }
+);
+
 $(document).keydown((event) => {
   if (
     event.key === "Escape" &&
     !$("#customTextPopupWrapper").hasClass("hidden")
   ) {
+    hideStored();
     hide();
     event.preventDefault();
   }

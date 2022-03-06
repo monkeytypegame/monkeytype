@@ -20,6 +20,7 @@
     display: grid;
     gap: 1rem;
     width: 60vw;
+
     .wordfilter {
       width: 33%;
       justify-self: right;
@@ -48,6 +49,10 @@
       gap: 1rem;
       align-items: center;
       justify-items: left;
+
+      .storedCustomTextPopupButton {
+        width: 100%;
+      }
     }
 
     .randomInputFields {
@@ -57,6 +62,32 @@
       align-items: center;
       width: 100%;
       gap: 1rem;
+    }
+  }
+
+  #storedCustomTextPopup {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 60vw;
+
+    textarea {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      color: var(--main-color);
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      font-family: var(--font);
+      width: 100%;
+      border-radius: var(--roundness);
+      resize: vertical;
+      height: 200px;
+      color: var(--text-color);
+      overflow-x: hidden;
+      overflow-y: scroll;
     }
   }
 }
