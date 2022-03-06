@@ -247,6 +247,7 @@ declare namespace MonkeyTypes {
       enabled: boolean;
       createdOn: number;
       modifiedOn: number;
+      lastUsedOn: number;
     };
   }
 
