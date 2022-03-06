@@ -203,8 +203,8 @@ export function hide(): void {
 }
 
 $("#simplePopupWrapper").mousedown((e) => {
-  if (activePopup) return activePopup.hide();
   if ($(e.target).attr("id") === "simplePopupWrapper") {
+    if (activePopup) return activePopup.hide();
     $("#simplePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
