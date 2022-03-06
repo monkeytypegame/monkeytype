@@ -39,6 +39,13 @@ router.get(
   asyncHandler(UserController.getUser)
 );
 
+router.get(
+  "/:name",
+  RateLimit.userGetByName,
+  authenticateRequest(),
+  asyncHandler(UserController.getUserByName)
+);
+
 router.post(
   "/signup",
   RateLimit.userSignup,

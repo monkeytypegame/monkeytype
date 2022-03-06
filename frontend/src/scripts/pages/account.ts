@@ -883,7 +883,11 @@ export function update(): void {
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (DB.getSnapshot().results === undefined) {
     LoadingPage.updateBar(45, true);
-    DB.getUserResults().then((d: boolean) => {
+
+    const accountName = decodeURI(window.location.pathname.split("/")[2]);
+    // TODO(kim): gotta be an easier way to pick out the 2nd path
+
+    DB.getUserResults(accountName).then((d: boolean) => {
       TodayTracker.addAllFromToday();
       if (d) {
         ResultFilters.updateActive();

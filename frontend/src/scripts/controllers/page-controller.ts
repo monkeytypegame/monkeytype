@@ -28,6 +28,7 @@ export function change(page: MonkeyTypes.Page | ""): void {
       "/about": "about",
       "/account": "account",
     };
+    // TODO(kim): if /account/${SOME_ACCOUNT_NAME}, then change to this user's account page
     let path = pages[window.location.pathname as keyof typeof pages];
     if (!path) {
       path = "test";

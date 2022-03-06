@@ -149,8 +149,15 @@ export async function initSnapshot(): Promise<
   }
 }
 
-export async function getUserResults(): Promise<boolean> {
-  const user = firebase.auth().currentUser;
+export async function getUserResults(accountName?: string): Promise<boolean> {
+  let user = null;
+  if (accountName) {
+    user = "kim-tester";
+  } else {
+    user = firebase.auth().currentUser;
+  }
+
+  // take in param from FE
   if (user == null) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {

@@ -12,6 +12,9 @@ const mappedRoutes = {
   "/verify": "pageLoading",
 };
 
+// TODO(kim): take subset of route and if it's /account/:name,
+// then make a call to ${BASE_ROUTE}/users/kim-tester
+
 export function handleInitialPageClasses(pathname: string): void {
   if (!mappedRoutes[pathname as keyof typeof mappedRoutes]) {
     pathname = "/";
@@ -38,6 +41,7 @@ export function handleInitialPageClasses(pathname: string): void {
 
 $(window).on("popstate", (e) => {
   const state = (e.originalEvent as unknown as PopStateEvent).state;
+  console.log("popstaet", state);
   if (state == "" || state == "/") {
     // show test
     PageController.change("test");
@@ -45,6 +49,7 @@ $(window).on("popstate", (e) => {
     // show about
     PageController.change("about");
   } else if (state == "account" || state == "login") {
+    // TODO(kim): here we can dynamically generate slugs for accounts: e.g., /account/kimception
     if (firebase.auth().currentUser) {
       PageController.change("account");
     } else {

@@ -77,6 +77,12 @@ class UsersDAO {
     return user;
   }
 
+  static async getUserByName(name) {
+    const user = await db.collection("users").findOne({ name });
+    if (!user) throw new MonkeyError(404, "User not found", "get user");
+    return user;
+  }
+
   static async isDiscordIdAvailable(discordId) {
     const user = await db.collection("users").findOne({ discordId });
     return _.isNil(user);

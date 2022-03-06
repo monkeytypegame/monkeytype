@@ -178,6 +178,13 @@ export const userGet = rateLimit({
   handler: customHandler,
 });
 
+export const userGetByName = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
 export const userSignup = rateLimit({
   windowMs: 24 * ONE_HOUR, // 1 day
   max: 3 * REQUEST_MULTIPLIER,

@@ -109,6 +109,25 @@ class UserController {
     return new MonkeyResponse("User data retrieved", cleanUser(userInfo));
   }
 
+  static async getUserByName(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { name } = req.params;
+
+    let userInfo;
+    try {
+      userInfo = await UsersDAO.getUserByName(name);
+    } catch (e) {
+      throw new MonkeyError(400, "User not found.");
+    }
+
+    const agentLog = buildAgentLog(req);
+    Logger.log("user_by_name_data_requested", agentLog, uid);
+
+    return new MonkeyResponse("User data retrieved", { name: userInfo.name });
+  }
+
   static async linkDiscord(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const {

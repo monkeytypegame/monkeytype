@@ -67,12 +67,12 @@ function authenticateWithBody(
 ): MonkeyTypes.DecodedToken {
   const { uid } = body;
 
-  if (!uid) {
-    throw new MonkeyError(
-      400,
-      "Running authorization in dev mode but still no uid was provided"
-    );
-  }
+  // if (!uid) {
+  //   throw new MonkeyError(
+  //     400,
+  //     "Running authorization in dev mode but still no uid was provided"
+  //   );
+  // }
 
   return {
     uid,
