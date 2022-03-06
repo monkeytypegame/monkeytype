@@ -15,6 +15,8 @@ type Input = {
   disabled?: boolean;
 };
 
+let activePopup: SimplePopup | null = null;
+
 export const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
   parameters: string[];
@@ -42,7 +44,7 @@ class SimplePopup {
       ...params: string[]
     ) => void | Promise<void>,
     beforeInitFn: (thisPopup: SimplePopup) => void,
-    beforeShowFn: (thisPopup: SimplePopup) => void,
+    beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
@@ -117,7 +119,7 @@ class SimplePopup {
                   autocomplete="off"
                 >${input.initVal}</textarea>
               `);
-            }else{
+            } else {
               el.find(".inputs").append(`
               <input
               type="${input.type}"
@@ -162,6 +164,7 @@ class SimplePopup {
   }
 
   show(parameters: string[] = []): void {
+    activePopup = this;
     this.parameters = parameters;
     this.beforeInitFn(this);
     this.init();
@@ -177,6 +180,7 @@ class SimplePopup {
 
   hide(): void {
     if (!this.canClose) return;
+    activePopup = null;
     this.wrapper
       .stop(true, true)
       .css("opacity", 1)
@@ -188,6 +192,7 @@ class SimplePopup {
 }
 
 export function hide(): void {
+  if (activePopup) return activePopup.hide();
   $("#simplePopupWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -198,6 +203,7 @@ export function hide(): void {
 }
 
 $("#simplePopupWrapper").mousedown((e) => {
+  if (activePopup) return activePopup.hide();
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     $("#simplePopupWrapper")
       .stop(true, true)
