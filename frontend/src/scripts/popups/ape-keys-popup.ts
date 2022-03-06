@@ -16,7 +16,7 @@ function refreshList(): void {
     return;
   }
   apeKeyIds.forEach((apeKeyId) => {
-    const key = data[apeKeyId];
+    const key = data[apeKeyId] as MonkeyTypes.ApeKey;
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
@@ -31,7 +31,11 @@ function refreshList(): void {
         <td>${key.name}</td>
         <td>${moment(key.createdOn).format("DD MMM YYYY HH:mm")}</td>
         <td>${moment(key.modifiedOn).format("DD MMM YYYY HH:mm")}</td>
-        <td>-</td>
+        <td>${
+          key.lastUsedOn === -1
+            ? "-"
+            : moment(key.lastUsedOn).format("DD MMM YYYY HH:mm")
+        }</td>
         <td>
           <div class="keyButtons">
             <div class="button edit">

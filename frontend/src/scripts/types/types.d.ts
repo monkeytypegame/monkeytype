@@ -241,14 +241,16 @@ declare namespace MonkeyTypes {
     hash?: string;
   }
 
+  type ApeKey = {
+    name: string;
+    enabled: boolean;
+    createdOn: number;
+    modifiedOn: number;
+    lastUsedOn: number;
+  };
+
   interface ApeKeys {
-    [key: string]: {
-      name: string;
-      enabled: boolean;
-      createdOn: number;
-      modifiedOn: number;
-      lastUsedOn: number;
-    };
+    [key: string]: ApeKey;
   }
 
   interface Config {
