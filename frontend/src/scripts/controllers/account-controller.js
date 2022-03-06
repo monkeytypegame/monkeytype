@@ -448,7 +448,7 @@ export async function signInWithGoogle() {
       }
       //create database object for the new user
       // try {
-      const response = Ape.users.create(name);
+      const response = await Ape.users.create(name);
       if (response.status !== 200) {
         throw response;
       }
@@ -500,6 +500,7 @@ export async function signInWithGoogle() {
       await Ape.users.delete();
       await signedInUser.user.delete();
     }
+    signOut();
     return;
   }
 }

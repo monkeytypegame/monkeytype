@@ -46,7 +46,7 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
 
   if (mode === "words") {
     const setWordTooShort = mode2 > 0 && mode2 < 10;
-    const infiniteWordTooShort = mode2 == 0 && testDuration < 15;
+    const infiniteWordTooShort = mode2 === 0 && testDuration < 15;
     return setWordTooShort || infiniteWordTooShort;
   }
 

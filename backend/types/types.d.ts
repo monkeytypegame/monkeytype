@@ -70,6 +70,7 @@ declare namespace MonkeyTypes {
     hash: string;
     createdOn: number;
     modifiedOn: number;
+    lastUsedOn: number;
     enabled: boolean;
   }
 
@@ -78,6 +79,7 @@ declare namespace MonkeyTypes {
   type Mode2<M extends Mode> = keyof PersonalBests[M];
 
   type Difficulty = "normal" | "expert" | "master";
+
   interface PersonalBest {
     acc: number;
     consistency: number;
@@ -89,6 +91,7 @@ declare namespace MonkeyTypes {
     wpm: number;
     timestamp: number;
   }
+
   interface PersonalBests {
     time: {
       [key: number]: PersonalBest[];
@@ -168,5 +171,40 @@ declare namespace MonkeyTypes {
     time: number;
     delimiter: string;
     textLen?: number;
+  }
+
+  interface PSA {
+    sticky?: boolean;
+    message: string;
+    level?: number;
+  }
+
+  type ReportTypes = "quote";
+
+  interface Report {
+    id: string;
+    type: ReportTypes;
+    timestamp: number;
+    uid: string;
+    contentId: string;
+    reason: string;
+    comment: string;
+  }
+
+  interface PublicStats {
+    _id: string;
+    testsCompleted: number;
+    testsStarted: number;
+    timeTyping: number;
+    type: string;
+  }
+
+  interface QuoteRating {
+    _id: string;
+    average: number;
+    language: string;
+    quoteId: number;
+    ratings: number;
+    totalRating: number;
   }
 }
