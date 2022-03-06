@@ -397,8 +397,8 @@ function countChars(): CharCount {
 
 export function calculateStats(): Stats {
   let testSeconds = calculateTestSeconds();
-  console.log((end2 - start2) / 1000);
-  console.log(testSeconds);
+  // console.log((end2 - start2) / 1000);
+  // console.log(testSeconds);
   if (Config.mode != "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
   }
@@ -428,7 +428,7 @@ export function calculateStats(): Stats {
       chars.spaces +
       chars.incorrectChars +
       chars.extraChars,
-    time: testSeconds,
+    time: Misc.roundTo2(testSeconds),
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
   };
