@@ -32,7 +32,7 @@ class ApeKeysController {
 
     if (currentNumberOfApeKeys >= maxKeysPerUser) {
       throw new MonkeyError(
-        500,
+        400,
         "Maximum number of ApeKeys have been generated"
       );
     }
