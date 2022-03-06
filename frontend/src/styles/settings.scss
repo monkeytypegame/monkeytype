@@ -280,6 +280,46 @@
       }
     }
 
+    &.customLayouts {
+      .customLayoutsListAndButton {
+        grid-area: buttons;
+      }
+
+      .customLayout {
+        grid-template-columns: 6fr 1fr 1fr 1fr;
+        margin-bottom: 0.5rem;
+      }
+
+      .addButton {
+        margin-top: 0.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: 0.25s;
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0, 0, 0, 0.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        height: min-content;
+        height: -moz-min-content;
+
+        &.active {
+          background: var(--main-color);
+          color: var(--bg-color);
+        }
+
+        &:hover,
+        &:focus {
+          color: var(--bg-color);
+          background: var(--text-color);
+          outline: none;
+        }
+      }
+    }
+
     &.fontSize .buttons {
       grid-template-columns: 1fr 1fr 1fr 1fr;
     }

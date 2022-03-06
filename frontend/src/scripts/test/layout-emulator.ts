@@ -13,7 +13,7 @@ export async function getCharFromEvent(
     return event.shiftKey;
   }
 
-  const layout = await Misc.getLayout(Config.layout);
+  const layout = await Misc.getLayout(Config.layout, Config);
 
   let keyEventCodes: string[] = [];
 
@@ -175,11 +175,13 @@ export async function getCharFromEvent(
 
   const layoutKeys = layout.keys;
 
-  const layoutMap = layoutKeys["row1"]
-    .concat(layoutKeys["row2"])
-    .concat(layoutKeys["row3"])
-    .concat(layoutKeys["row4"])
-    .concat(layoutKeys["row5"]);
+  const layoutMap = [
+    ...layoutKeys.row1,
+    ...layoutKeys.row2,
+    ...layoutKeys.row3,
+    ...layoutKeys.row4,
+    ...layoutKeys.row5,
+  ];
 
   let mapIndex = null;
   for (let i = 0; i < keyEventCodes.length; i++) {

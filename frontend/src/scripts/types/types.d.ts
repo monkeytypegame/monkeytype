@@ -271,6 +271,7 @@ declare namespace MonkeyTypes {
     paceCaretStyle: CaretStyle;
     flipTestColors: boolean;
     layout: string;
+    customLayouts: LayoutsObject;
     funbox: string;
     confidenceMode: ConfidenceMode;
     indicateTypos: IndicateTypos;
@@ -335,9 +336,10 @@ declare namespace MonkeyTypes {
     | number
     | boolean
     | string[]
-    | MonkeyTypes.QuoteLength[]
-    | MonkeyTypes.ResultFilters
-    | MonkeyTypes.CustomBackgroundFilter
+    | QuoteLength[]
+    | ResultFilters
+    | CustomBackgroundFilter
+    | LayoutsObject
     | null
     | undefined;
 
@@ -405,7 +407,7 @@ declare namespace MonkeyTypes {
     config?: Config;
   }
 
-  type PartialRecord<K extends keyof any, T> = {
+  type PartialRecord<K, T> = {
     [P in K]?: T;
   };
 
@@ -527,7 +529,7 @@ declare namespace MonkeyTypes {
     prerelease: boolean;
     created_at: string;
     published_at: string;
-    assets: any[];
+    assets: unknown[];
     tarball_url: string;
     zipball_url: string;
     body: string;
@@ -597,14 +599,16 @@ declare namespace MonkeyTypes {
 
   //  type ActivePage = `page${Page}` | undefined;
 
-  interface Layout {
+  type LayoutType = "iso" | "ansi" | "ortho" | "matrix";
+
+  interface LayoutObject {
     keymapShowTopRow: boolean;
-    type: "iso" | "ansi" | "ortho" | "matrix";
+    type: LayoutType;
     keys: Keys;
   }
 
-  interface Layouts {
-    [layout: string]: Layout;
+  interface LayoutsObject {
+    [layout: string]: LayoutObject;
   }
   interface Keys {
     row1: string[];

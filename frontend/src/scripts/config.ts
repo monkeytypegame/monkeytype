@@ -27,9 +27,7 @@ export function setChangedBeforeDb(val: boolean): void {
 
 let loadDone: (value?: unknown) => void;
 
-let config = {
-  ...DefaultConfig,
-};
+let config = { ...DefaultConfig };
 
 async function saveToLocalStorage(
   key: keyof MonkeyTypes.Config,
@@ -1416,6 +1414,24 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
   return true;
 }
 
+export async function setCustomLayouts(
+  customLayouts: MonkeyTypes.LayoutsObject,
+  nosave?: boolean
+): Promise<boolean> {
+  if (
+    !(await isConfigValueValidAsync("custom layouts", customLayouts, [
+      "customLayouts",
+    ]))
+  )
+    return false;
+
+  config.customLayouts = customLayouts;
+  saveToLocalStorage("customLayouts", nosave);
+  ConfigEvent.dispatch("customLayouts", config.customLayouts, nosave);
+
+  return true;
+}
+
 // export function setSavedLayout(layout: string, nosave?: boolean): boolean {
 //   if (layout == null || layout == undefined) {
 //     layout = "qwerty";
@@ -1513,7 +1529,14 @@ export async function setCustomLayoutfluid(
 ): Promise<boolean> {
   const trimmed = value.trim();
 
-  if (!(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"])))
+  if (
+    !(await isConfigValueValidAsync(
+      "layoutfluid",
+      trimmed,
+      ["layoutfluid"],
+      config
+    ))
+  )
     return false;
 
   const customLayoutfluid = trimmed.replace(
@@ -1631,6 +1654,7 @@ export function apply(
     setLanguage(configObj.language, true);
     // setSavedLayout(configObj.savedLayout, true);
     setLayout(configObj.layout, true);
+    setCustomLayouts(configObj.customLayouts, true);
     setFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
@@ -1863,10 +1887,6 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
       (configChanges[key] as typeof config[typeof key]) = config[key];
     });
   return configChanges;
-}
-
-export function setConfig(newConfig: MonkeyTypes.Config): void {
-  config = newConfig;
 }
 
 export const loadPromise = new Promise((v) => {

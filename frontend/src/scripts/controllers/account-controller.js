@@ -151,7 +151,7 @@ export async function getDataAndInit() {
       Object.keys(Config).forEach((key) => {
         if (!configsDifferent) {
           try {
-            if (key !== "resultFilters") {
+            if (key !== "resultFilters" && key !== "customLayouts") {
               if (Array.isArray(Config[key])) {
                 Config[key].forEach((arrval, index) => {
                   if (arrval != snapshot.config[key][index]) {

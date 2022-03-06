@@ -32,9 +32,9 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
   if (layoutKeys.filter((v) => v === undefined).length > 2) return;
 
   if ((uppercase && caseState) || (!uppercase && !caseState)) return;
-  
+
   caseState = uppercase;
-  
+
   const index = caseState ? 1 : 0;
 
   for (let i = 0; i < layoutKeys.length; i++) {
@@ -50,7 +50,7 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
 async function buildKeymapStrings(): Promise<void> {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
-  const layout = await Misc.getLayout(Config.keymapLayout);
+  const layout = await Misc.getLayout(Config.keymapLayout, Config);
 
   if (layout === undefined) return;
 

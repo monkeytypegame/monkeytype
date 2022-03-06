@@ -418,7 +418,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+  Object.keys(await Misc.getLayoutsList(Config)).forEach((layout) => {
     layoutEl.append(
       `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
@@ -429,7 +429,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+  Object.keys(await Misc.getLayoutsList(Config)).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
@@ -686,6 +686,34 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
+function refreshCustomLayoutsSettingsSection(): void {
+  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
+    const customLayoutsEl = $(
+      ".pageSettings .section.customLayouts .customLayoutsList"
+    ).empty();
+
+    Object.keys(Config.customLayouts).forEach((customLayoutName) => {
+      customLayoutsEl.append(`
+      <div class="buttons customLayout" name="${customLayoutName}">
+        <div class="button customLayoutButton">
+          <div class="title">${customLayoutName}</div>
+        </div>
+        <div class="editButton button">
+          <i class="fas fa-pen fa-fw"></i>
+        </div>
+        <div class="removeButton button">
+          <i class="fas fa-trash fa-fw"></i>
+        </div>
+      </div>
+
+      `);
+    });
+    $(".pageSettings .section.customLayouts").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.customLayouts").addClass("hidden");
+  }
+}
+
 export function showAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
@@ -702,6 +730,7 @@ export function update(): void {
 
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
+  refreshCustomLayoutsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
@@ -909,6 +938,20 @@ $(document).on(
   }
 );
 
+$(document).on(
+  "click",
+  ".pageSettings .section.customLayouts .customLayoutsList .customLayout .customLayoutButton",
+  (e) => {
+    const target = e.currentTarget;
+
+    const name = $(target).parent(".customLayout").attr("name") as string;
+
+    UpdateConfig.setLayout(name);
+
+    Notifications.add(`Set layout emulator to custom layout ${name}.`, 1);
+  }
+);
+
 $("#importSettingsButton").click(() => {
   ImportExportSettingsPopup.show("import");
 });
@@ -975,6 +1018,23 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   }
 );
 
+$(".pageSettings .section.customLayouts .inputAndButton .save").on(
+  "click",
+  () => {
+    UpdateConfig.setCustomLayouts(
+      JSON.parse(
+        $(
+          ".pageSettings .section.customLayouts .inputAndButton input"
+        ).val() as string
+      )
+    ).then((bool) => {
+      if (bool) {
+        Notifications.add("Custom layouts saved", 1);
+      }
+    });
+  }
+);
+
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   () => {
@@ -982,7 +1042,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
       $(
         ".pageSettings .section.customLayoutfluid .inputAndButton input"
       ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-    ).then(bool => {
+    ).then((bool) => {
       if (bool) {
         Notifications.add("Custom layoutfluid saved", 1);
       }
@@ -997,8 +1057,8 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
         ).val() as MonkeyTypes.CustomLayoutFluidSpaces
-      ).then(bool => {
-        if (bool) { 
+      ).then((bool) => {
+        if (bool) {
           Notifications.add("Custom layoutfluid saved", 1);
         }
       });

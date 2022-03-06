@@ -616,6 +616,36 @@
         <div class="button"><i class="fas fa-plus"></i></div>
       </div>
     </div>
+    <div id="customLayoutsWrapper" class="popupWrapper hidden">
+      <div id="customLayoutsEdit" action="" name="">
+        <div class="title"></div>
+        <label>
+          Name:
+          <input type="text" id="customLayoutName" />
+        </label>
+        <label>
+          Layout type:
+          <select>
+            <option value="ansi" selected>ansi</option>
+            <option value="iso">iso</option>
+            <option value="ortho">ortho</option>
+            <option value="matrix">matrix</option>
+          </select>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" />
+          <div class="customTextCheckbox"></div>
+          Show top row
+        </label>
+        <label>
+          Keys
+          <div id="customLayoutKeysEditor"></div>
+        </label>
+        <div class="button">
+          <i class="fas fa-plus"></i>
+        </div>
+      </div>
+    </div>
     <div id="leaderboardsWrapper" class="popupWrapper hidden">
       <div id="leaderboards">
         <div class="leaderboardsTop">
@@ -2166,6 +2196,28 @@
                   website or the looks). Give each one of them a try!
                 </div>
                 <div class="buttons"></div>
+              </div>
+              <div class="sectionSpacer"></div>
+              <div class="section customLayouts">
+                <h1>custom layouts</h1>
+                <div class="text">Add or remove custom keyboard layouts</div>
+                <div class="customLayoutsListAndButton">
+                  <div class="customLayoutsList">
+                    <div class="customLayout">
+                      <div class="active">
+                        <i class="fas fa-check-square"></i>
+                      </div>
+                      <div class="title"></div>
+                      <div class="editButton"><i class="fas fa-pen"></i></div>
+                      <div class="removeButton">
+                        <i class="fas fa-trash"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="addButton">
+                    <i class="fas fa-plus"></i>
+                  </div>
+                </div>
               </div>
               <div class="sectionSpacer"></div>
               <div class="section customLayoutfluid">

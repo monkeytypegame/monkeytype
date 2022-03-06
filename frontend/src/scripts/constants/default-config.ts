@@ -38,6 +38,7 @@ export default <MonkeyTypes.Config>{
   paceCaretStyle: "default",
   flipTestColors: false,
   layout: "default",
+  customLayouts: {},
   funbox: "none",
   confidenceMode: "off",
   indicateTypos: "off",

@@ -12,7 +12,7 @@ type PossibleType =
   | string[]
   | number[];
 
-type PossibleTypeAsync = "layoutfluid";
+type PossibleTypeAsync = "layoutfluid" | "customLayouts";
 
 export function isConfigKeyValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
@@ -99,7 +99,8 @@ export function isConfigValueValid(
 export async function isConfigValueValidAsync(
   key: string,
   val: unknown,
-  possibleTypes: PossibleTypeAsync[]
+  possibleTypes: PossibleTypeAsync[],
+  config?: MonkeyTypes.Config
 ): Promise<boolean> {
   let isValid = false;
 
@@ -116,7 +117,7 @@ export async function isConfigValueValidAsync(
 
         // convert the layout names to layouts
         const layouts = await Promise.all(
-          layoutNames.map((layoutName) => Misc.getLayout(layoutName))
+          layoutNames.map((layoutName) => Misc.getLayout(layoutName, config))
         );
 
         // check if all layouts exist
@@ -141,10 +142,92 @@ export async function isConfigValueValidAsync(
 
         break;
       }
+
+      case "customLayouts":
+        customLayouts: {
+          if (!isLayoutsObject(val)) break;
+
+          const layoutsList = await Misc.getLayoutsList(undefined, true);
+
+          if (Object.keys(val).length > 5) {
+            customMessage =
+              "You have reached the maximum amount of custom layouts (5).";
+
+            break;
+          }
+
+          for (const layoutName in val) {
+            if (layoutName in layoutsList) {
+              customMessage = "This layout already exists.";
+
+              break customLayouts;
+            }
+
+            if (layoutName.length > 20) {
+              customMessage = "Layout name is too long (Max 20 characters).";
+
+              break customLayouts;
+            }
+
+            const layout = val[layoutName];
+
+            if (
+              layout.keymapShowTopRow === undefined ||
+              layout.keys === undefined ||
+              layout.type === undefined ||
+              typeof layout.keymapShowTopRow !== "boolean" ||
+              typeof layout.keys !== "object" ||
+              typeof layout.type !== "string"
+            )
+              break customLayouts;
+
+            if (layout.keys.row1 === undefined) break customLayouts;
+            if (layout.keys.row2 === undefined) break customLayouts;
+            if (layout.keys.row3 === undefined) break customLayouts;
+            if (layout.keys.row4 === undefined) break customLayouts;
+            if (layout.keys.row5 === undefined) break customLayouts;
+
+            if (layout.keys.row1.length !== 13) break customLayouts;
+            if (layout.type === "iso") {
+              if (layout.keys.row2.length !== 12) break customLayouts;
+              if (layout.keys.row3.length !== 12) break customLayouts;
+              if (layout.keys.row4.length !== 11) break customLayouts;
+            } else {
+              if (layout.keys.row2.length !== 13) break customLayouts;
+              if (layout.keys.row3.length !== 11) break customLayouts;
+              if (layout.keys.row4.length !== 10) break customLayouts;
+            }
+            if (layout.keys.row5.length !== 1) break customLayouts;
+
+            const { row1, row2, row3, row4, row5 } = layout.keys;
+
+            const keysArray = [...row1, ...row2, ...row3, ...row4, ...row5];
+
+            if (keysArray.some((key) => key.length !== 2 && key !== " ")) {
+              customMessage = "One or more keys are not 2 characters";
+
+              break customLayouts;
+            }
+          }
+
+          isValid = true;
+
+          break;
+        }
     }
   }
 
   if (!isValid) invalid(key, val, customMessage);
 
   return isValid;
+}
+
+function isLayoutsObject(val: unknown): val is MonkeyTypes.LayoutsObject {
+  if (typeof val !== "object") return false;
+
+  if (val === null) return false;
+
+  if (!Object.values(val).every((v) => typeof v === "object")) return false;
+
+  return true;
 }

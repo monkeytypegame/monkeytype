@@ -52,31 +52,6 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-Misc.getLayoutsList().then((layouts) => {
-  commandsLayouts.list = [];
-  commandsLayouts.list.push({
-    id: "changeLayoutDefault",
-    display: "off",
-    configValue: "default",
-    exec: (): void => {
-      UpdateConfig.setLayout("default");
-      TestLogic.restart();
-    },
-  });
-  Object.keys(layouts).forEach((layout) => {
-    commandsLayouts.list.push({
-      id: "changeLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
-      display: layout === "default" ? "off" : layout.replace(/_/g, " "),
-      configValue: layout,
-      exec: (): void => {
-        // UpdateConfig.setSavedLayout(layout);
-        UpdateConfig.setLayout(layout);
-        TestLogic.restart();
-      },
-    });
-  });
-});
-
 export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
   title: "Change keymap layout...",
   configKey: "keymapLayout",
@@ -87,8 +62,20 @@ export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
-Misc.getLayoutsList().then((layouts) => {
+
+async function updateLayoutList(): Promise<void> {
+  const layouts = await Misc.getLayoutsList(Config, true);
+  commandsLayouts.list = [];
   commandsKeymapLayouts.list = [];
+  commandsLayouts.list.push({
+    id: "changeLayoutDefault",
+    display: "off",
+    configValue: "default",
+    exec: (): void => {
+      UpdateConfig.setLayout("default");
+      TestLogic.restart();
+    },
+  });
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
     display: "emulator sync",
@@ -99,7 +86,18 @@ Misc.getLayoutsList().then((layouts) => {
     },
   });
   Object.keys(layouts).forEach((layout) => {
-    if (layout.toString() != "default") {
+    commandsLayouts.list.push({
+      id: "changeLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
+      display: layout === "default" ? "off" : layout.replace(/_/g, " "),
+      configValue: layout,
+      exec: (): void => {
+        UpdateConfig.setLayout(layout);
+        TestLogic.restart();
+      },
+    });
+  });
+  Object.keys(layouts).forEach((layout) => {
+    if (layout != "default") {
       commandsKeymapLayouts.list.push({
         id: "changeKeymapLayout" + Misc.capitalizeFirstLetterOfEachWord(layout),
         display: layout.replace(/_/g, " "),
@@ -111,7 +109,9 @@ Misc.getLayoutsList().then((layouts) => {
       });
     }
   });
-});
+}
+
+updateLayoutList();
 
 const commandsLanguages: MonkeyTypes.CommandsGroup = {
   title: "Language...",
@@ -3254,5 +3254,8 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomLayoutfluid"
     )[0].defaultValue = (eventValue as string)?.replace(/#/g, " ");
+  }
+  if (eventKey === "customLayouts") {
+    updateLayoutList();
   }
 });

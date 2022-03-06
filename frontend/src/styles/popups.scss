@@ -894,3 +894,112 @@
     overflow-y: scroll;
   }
 }
+
+#customLayoutsWrapper {
+  #customLayoutsEdit {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+
+    #customLayoutKeysEditor {
+      // this is very similar to keymap
+      display: grid;
+      grid-template-rows: 1fr 1fr 1fr;
+      justify-content: center;
+      white-space: nowrap;
+      gap: 0.25rem;
+      user-select: none;
+
+      .key {
+        display: flex;
+        background-color: transparent;
+        color: var(--sub-color);
+        border-radius: var(--roundness);
+        border: 0.05rem solid;
+        border-color: var(--sub-color);
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        width: 2rem;
+        height: 2rem;
+        position: relative;
+
+        input {
+          background: transparent;
+          border: none;
+          font-size: small;
+          text-align: center;
+          justify-content: center;
+          align-items: center;
+          width: 2rem;
+          position: relative;
+        }
+
+        .bump {
+          width: 0.75rem;
+          height: 0.05rem;
+          background: var(--sub-color);
+          position: absolute;
+          border-radius: var(--roundness);
+          bottom: 0.15rem;
+        }
+
+        &.key-space {
+          width: 100%;
+          &:hover {
+            cursor: pointer;
+            color: var(--main-color);
+          }
+        }
+
+        &.key-split-space {
+          width: 100%;
+          opacity: 0;
+        }
+      }
+      .hidden-key,
+      .hide-key {
+        opacity: 0;
+      }
+
+      .keymap-split-spacer,
+      .keymap-stagger-split-spacer,
+      .keymap-matrix-split-spacer {
+        display: none;
+      }
+
+      .row {
+        height: 2rem;
+        gap: 0.25rem;
+      }
+
+      .r1 {
+        display: grid;
+        grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      }
+
+      .r2 {
+        display: grid;
+        grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1rem;
+      }
+
+      .r3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      }
+
+      .r4 {
+        display: grid;
+        grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.75fr;
+      }
+
+      .r5 {
+        display: grid;
+        grid-template-columns: 3.5fr 6fr 3.5fr;
+      }
+    }
+  }
+}

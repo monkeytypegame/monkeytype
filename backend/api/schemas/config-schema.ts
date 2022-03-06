@@ -11,6 +11,8 @@ const CARET_STYLES = [
   "banana",
 ];
 
+const rowValidation = joi.array().items(joi.string().min(1).max(2)).required();
+
 const CONFIG_SCHEMA = joi.object({
   theme: joi.string(),
   themeLight: joi.string(),
@@ -46,6 +48,22 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretStyle: joi.string().valid(...CARET_STYLES),
   flipTestColors: joi.boolean(),
   layout: joi.string(),
+  customLayouts: joi.object().pattern(
+    joi.string(),
+    joi.object({
+      keymapShowTopRow: joi.boolean().required(),
+      type: joi.string().valid("ansi", "iso", "ortho", "matrix").required(),
+      keys: joi
+        .object({
+          row1: rowValidation,
+          row2: rowValidation,
+          row3: rowValidation,
+          row4: rowValidation,
+          row5: rowValidation,
+        })
+        .required(),
+    })
+  ),
   funbox: joi.string(),
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),

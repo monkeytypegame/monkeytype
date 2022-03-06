@@ -96,7 +96,7 @@ export async function refresh(
 ): Promise<void> {
   if (!layoutName) return;
   try {
-    const layouts = await Misc.getLayoutsList();
+    const layouts = await Misc.getLayoutsList(Config);
     let lts = layouts[layoutName]; //layout to show
     let layoutString = layoutName;
     if (Config.keymapLayout === "overrideSync") {

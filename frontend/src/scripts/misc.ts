@@ -186,23 +186,38 @@ export async function getQuotes(language: string): Promise<QuoteCollection> {
   }
 }
 
-let layoutsList: MonkeyTypes.Layouts = {};
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  if (Object.keys(layoutsList).length === 0) {
-    return $.getJSON("layouts/_list.json", function (data) {
-      layoutsList = data;
-      return layoutsList;
-    });
-  } else {
-    return layoutsList;
+let layoutsList: MonkeyTypes.LayoutsObject = {};
+export async function getLayoutsList(
+  config?: MonkeyTypes.Config,
+  reset?: boolean
+): Promise<MonkeyTypes.LayoutsObject> {
+  if (Object.keys(layoutsList).length === 0 || reset) {
+    const layoutsListJSON: MonkeyTypes.LayoutsObject = await $.getJSON(
+      "layouts/_list.json"
+    );
+
+    layoutsList = layoutsListJSON;
   }
+
+  // custom layouts
+  if (
+    config !== undefined &&
+    Object.keys(config.customLayouts ?? {}).length !== 0
+  ) {
+    for (const customLayout in config.customLayouts) {
+      layoutsList[customLayout] = config.customLayouts[customLayout];
+    }
+  }
+
+  return layoutsList;
 }
 
 export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
+  layoutName: string,
+  config?: MonkeyTypes.Config
+): Promise<MonkeyTypes.LayoutObject> {
   if (Object.keys(layoutsList).length === 0) {
-    await getLayoutsList();
+    await getLayoutsList(config);
   }
   return layoutsList[layoutName];
 }
