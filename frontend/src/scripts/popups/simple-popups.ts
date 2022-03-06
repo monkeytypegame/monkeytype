@@ -27,7 +27,9 @@ class SimplePopup {
   text: string;
   buttonText: string;
   execFn: (thisPopup: SimplePopup, ...params: string[]) => void | Promise<void>;
+  beforeInitFn: (thisPopup: SimplePopup) => void;
   beforeShowFn: (thisPopup: SimplePopup) => void;
+  canClose: boolean;
   constructor(
     id: string,
     type: string,
@@ -39,7 +41,8 @@ class SimplePopup {
       thisPopup: SimplePopup,
       ...params: string[]
     ) => void | Promise<void>,
-    beforeShowFn: (thisPopup: SimplePopup) => void
+    beforeInitFn: (thisPopup: SimplePopup) => void,
+    beforeShowFn: (thisPopup: SimplePopup) => void,
   ) {
     this.parameters = [];
     this.id = id;
@@ -52,7 +55,9 @@ class SimplePopup {
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
+    this.beforeInitFn = (thisPopup): void => beforeInitFn(thisPopup);
     this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
+    this.canClose = true;
   }
   reset(): void {
     this.element.html(`
@@ -102,17 +107,29 @@ class SimplePopup {
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
           if (input.type) {
-            el.find(".inputs").append(`
+            if (input.type === "textarea") {
+              el.find(".inputs").append(`
+                <textarea
+                  placeholder="${input.placeholder}"
+                  class="${input.hidden ? "hidden" : ""}"
+                  ${input.hidden ? "" : "required"}
+                  ${input.disabled ? "disabled" : ""}
+                  autocomplete="off"
+                >${input.initVal}</textarea>
+              `);
+            }else{
+              el.find(".inputs").append(`
               <input
-                type="${input.type}"
-                value="${input.initVal}"
-                placeholder="${input.placeholder}"
-                class="${input.hidden ? "hidden" : ""}"
-                ${input.hidden ? "" : "required"}
-                ${input.disabled ? "disabled" : ""}
-                autocomplete="off"
+              type="${input.type}"
+              value="${input.initVal}"
+              placeholder="${input.placeholder}"
+              class="${input.hidden ? "hidden" : ""}"
+              ${input.hidden ? "" : "required"}
+              ${input.disabled ? "disabled" : ""}
+              autocomplete="off"
               >
-            `);
+              `);
+            }
           } else {
             el.find(".inputs").append(`
               <input
@@ -135,6 +152,7 @@ class SimplePopup {
   }
 
   exec(): void {
+    if (!this.canClose) return;
     const vals: string[] = [];
     $.each($("#simplePopup input"), (_, el) => {
       vals.push($(el).val() as string);
@@ -145,8 +163,9 @@ class SimplePopup {
 
   show(parameters: string[] = []): void {
     this.parameters = parameters;
-    this.beforeShowFn(this);
+    this.beforeInitFn(this);
     this.init();
+    this.beforeShowFn(this);
     this.wrapper
       .stop(true, true)
       .css("opacity", 0)
@@ -157,6 +176,7 @@ class SimplePopup {
   }
 
   hide(): void {
+    if (!this.canClose) return;
     this.wrapper
       .stop(true, true)
       .css("opacity", 1)
@@ -269,6 +289,9 @@ list["updateEmail"] = new SimplePopup(
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -341,6 +364,9 @@ list["updateName"] = new SimplePopup(
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -403,6 +429,9 @@ list["updatePassword"] = new SimplePopup(
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -451,6 +480,9 @@ list["addPasswordAuth"] = new SimplePopup(
     }, 1000);
   },
   () => {
+    //
+  },
+  (_thisPopup) => {
     //
   }
 );
@@ -529,6 +561,9 @@ list["deleteAccount"] = new SimplePopup(
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -572,6 +607,9 @@ list["clearTagPb"] = new SimplePopup(
   },
   (thisPopup) => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -587,6 +625,9 @@ list["applyCustomFont"] = new SimplePopup(
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
   },
   () => {
+    //
+  },
+  (_thisPopup) => {
     //
   }
 );
@@ -646,6 +687,9 @@ list["resetPersonalBests"] = new SimplePopup(
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -663,6 +707,9 @@ list["resetSettings"] = new SimplePopup(
     // }, 1000);
   },
   () => {
+    //
+  },
+  (_thisPopup) => {
     //
   }
 );
