@@ -308,12 +308,12 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  if (eventKey === "customThemeId") {
-    if (Config.customTheme) set(true, eventValue as string);
-  }
+  const userLoggedIn = firebase.auth().currentUser !== null;
+  if (eventKey === "customThemeId")
+    if (userLoggedIn && Config.customTheme) set(true, eventValue as string);
   if (eventKey === "customTheme") {
     if (eventValue) {
-      if (firebase.auth().currentUser === null) applyTempCustom();
+      if (!userLoggedIn) applyTempCustom();
       else set(true, Config.customThemeId);
     } else set(false, Config.theme);
   }
