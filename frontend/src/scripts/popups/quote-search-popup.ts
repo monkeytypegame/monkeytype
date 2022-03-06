@@ -198,15 +198,11 @@ export function apply(val: number): boolean {
 const debouncedSearch = debounce(updateResults);
 
 $("#quoteSearchPopup .searchBox").on("keyup", (e) => {
-  if (e.code == "Escape") return;
+  if (e.code === "Escape") return;
 
   const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
     .value;
-  const normalizedSearchText = searchText
-    .replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "")
-    .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-  debouncedSearch(normalizedSearchText);
+  debouncedSearch(searchText);
 });
 
 $("#quoteSearchPopupWrapper").click((e) => {
