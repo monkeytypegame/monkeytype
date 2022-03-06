@@ -210,6 +210,16 @@ class UserController {
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
     return new MonkeyResponse("Leaderboard memory updated");
   }
+
+  static async getPersonalBests(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { mode, mode2 } = req.params;
+
+    const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
+    return new MonkeyResponse("Personal bests retrieved", data);
+  }
 }
 
 export default UserController;
