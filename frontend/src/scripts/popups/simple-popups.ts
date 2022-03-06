@@ -6,6 +6,7 @@ import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
+import * as ApeKeysPopup from "../popups/ape-keys-popup";
 
 type Input = {
   placeholder: string;
@@ -751,6 +752,145 @@ list["unlinkDiscord"] = new SimplePopup(
   },
   () => {
     //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["generateApeKey"] = new SimplePopup(
+  "generateApeKey",
+  "text",
+  "Generate new key",
+  [
+    {
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  "",
+  "Generate",
+  async (_thisPopup, name) => {
+    Loader.show();
+    const response = await Ape.apeKeys.generate(name, false);
+    Loader.hide();
+
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to generate key: " + response.message,
+        -1
+      );
+    } else {
+      const data = response.data;
+      list["viewApeKey"].show([data.apeKey]);
+      const snap = DB.getSnapshot();
+      snap.apeKeys[data.apeKeyId] = data.apeKeyDetails;
+      DB.setSnapshot(snap);
+    }
+  },
+  () => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["viewApeKey"] = new SimplePopup(
+  "viewApeKey",
+  "text",
+  "Ape Key",
+  [
+    {
+      type: "textarea",
+      disabled: true,
+      placeholder: "Key",
+      initVal: "",
+    },
+  ],
+  "This is your new Ape Key. Please keep it safe. You will only see it once!",
+  "Close",
+  (_thisPopup) => {
+    ApeKeysPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.inputs[0].initVal = _thisPopup.parameters[0];
+  },
+  (_thisPopup) => {
+    _thisPopup.canClose = false;
+    $("#simplePopup textarea").css("height", "110px");
+    $("#simplePopup .button").addClass("hidden");
+    setTimeout(() => {
+      _thisPopup.canClose = true;
+      $("#simplePopup .button").removeClass("hidden");
+    }, 3000);
+  }
+);
+
+list["deleteApeKey"] = new SimplePopup(
+  "deleteApeKey",
+  "text",
+  "Delete Ape Key",
+  [],
+  "Are you sure?",
+  "Delete",
+  async (_thisPopup) => {
+    Loader.show();
+    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0]);
+    Loader.hide();
+
+    if (response.status !== 200) {
+      return Notifications.add("Failed to delete key: " + response.message, -1);
+    }
+
+    Notifications.add("Key deleted", 1);
+    const snap = DB.getSnapshot();
+    delete snap.apeKeys[_thisPopup.parameters[0]];
+    DB.setSnapshot(snap);
+    ApeKeysPopup.show();
+  },
+  (_thisPopup) => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["editApeKey"] = new SimplePopup(
+  "editApeKey",
+  "text",
+  "Edit Ape Key",
+  [
+    {
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  "",
+  "Edit",
+  async (_thisPopup, input) => {
+    Loader.show();
+    const response = await Ape.apeKeys.update(_thisPopup.parameters[0], {
+      name: input,
+    });
+    Loader.hide();
+
+    if (response.status !== 200) {
+      return Notifications.add("Failed to update key: " + response.message, -1);
+    }
+
+    Notifications.add("Key updated", 1);
+    const snap = DB.getSnapshot();
+    snap.apeKeys[_thisPopup.parameters[0]].name = input;
+    DB.setSnapshot(snap);
+    ApeKeysPopup.show();
+  },
+  (_thisPopup) => {
+    //
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -786,6 +926,20 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
 
 $(".pageSettings #deleteAccount").on("click", () => {
   list["deleteAccount"].show();
+});
+
+$("#apeKeysPopup .generateApeKey").on("click", () => {
+  list["generateApeKey"].show();
+});
+
+$(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+  const keyId = $(e.target).closest("tr").attr("keyId") as string;
+  list["deleteApeKey"].show([keyId]);
+});
+
+$(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+  const keyId = $(e.target).closest("tr").attr("keyId") as string;
+  list["editApeKey"].show([keyId]);
 });
 
 $(document).on(
