@@ -324,7 +324,6 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
               DB.getSnapshot().customThemes.length - 1
             ]._id
           );
-          UpdateConfig.setCustomTheme(true);
           Notifications.add(
             "Custom theme: 'custom' sucessfully created and applied",
             1
@@ -334,6 +333,8 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
         UpdateConfig.setCustomThemeColors(themeColors);
         Notifications.add("Custom theme applied", 1);
       }
+
+      if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
     } catch (e) {
       Notifications.add(
         "Something went wrong. Reverting to previous state.",

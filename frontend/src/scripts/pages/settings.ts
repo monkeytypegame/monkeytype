@@ -927,29 +927,6 @@ $("#exportSettingsButton").click(() => {
   );
 });
 
-$("#shareCustomThemeButton").on("click", () => {
-  const share: string[] = [];
-  $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
-    (_, element) => {
-      share.push($(element).attr("value") as string);
-    }
-  );
-
-  const url =
-    "https://monkeytype.com?" +
-    Misc.objectToQueryString({ customTheme: share });
-
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 0);
-    },
-    function () {
-      // CustomThemePopup.show(url);
-    }
-  );
-});
-
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
 });
