@@ -9,6 +9,12 @@ import { verify } from "../../utils/captcha";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
+async function verifyCaptcha(captcha: string): Promise<void> {
+  if (!(await verify(captcha))) {
+    throw new MonkeyError(422, "Captcha check failed");
+  }
+}
+
 class QuotesController {
   static async getQuotes(_req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const data = await NewQuotesDao.get();
@@ -19,9 +25,7 @@ class QuotesController {
     const { uid } = req.ctx.decodedToken;
     const { text, source, language, captcha } = req.body;
 
-    if (!(await verify(captcha))) {
-      throw new MonkeyError(400, "Captcha check failed");
-    }
+    await verifyCaptcha(captcha);
 
     await NewQuotesDao.add(text, source, language, uid);
     return new MonkeyResponse("Quote submission added");
@@ -103,9 +107,7 @@ class QuotesController {
 
     const { quoteId, quoteLanguage, reason, comment, captcha } = req.body;
 
-    if (!(await verify(captcha))) {
-      throw new MonkeyError(400, "Captcha check failed.");
-    }
+    await verifyCaptcha(captcha);
 
     const newReport: MonkeyTypes.Report = {
       id: uuidv4(),

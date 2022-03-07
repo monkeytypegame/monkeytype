@@ -6,6 +6,7 @@ import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
+import statuses from "../constants/monkey-status-codes";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -69,7 +70,7 @@ function authenticateWithBody(
 
   if (!uid) {
     throw new MonkeyError(
-      400,
+      401,
       "Running authorization in dev mode but still no uid was provided"
     );
   }
@@ -152,33 +153,31 @@ async function authenticateWithApeKey(
     throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
   }
 
-  try {
-    const decodedKey = base64UrlDecode(key);
-    const [uid, keyId, apeKey] = decodedKey.split(".");
+  const decodedKey = base64UrlDecode(key);
+  const [uid, keyId, apeKey] = decodedKey.split(".");
 
-    const keyOwner = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    const targetApeKey = _.get(keyOwner.apeKeys, keyId);
+  const keyOwner = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+  const targetApeKey = _.get(keyOwner.apeKeys, keyId);
 
-    if (!targetApeKey?.enabled) {
-      throw new MonkeyError(400, "ApeKey is disabled");
-    }
-
-    const isKeyValid = await compare(apeKey, targetApeKey?.hash ?? "");
-
-    if (!isKeyValid) {
-      throw new MonkeyError(400, "Invalid ApeKey");
-    }
-
-    await ApeKeysDAO.updateLastUsedOn(keyOwner, keyId);
-
-    return {
-      type: "ApeKey",
-      uid,
-      email: keyOwner.email,
-    };
-  } catch (error) {
-    throw new MonkeyError(400, "Invalid ApeKey");
+  if (!targetApeKey?.enabled) {
+    const { code, message } = statuses.APE_KEY_INACTIVE;
+    throw new MonkeyError(code, message);
   }
+
+  const isKeyValid = await compare(apeKey, targetApeKey?.hash ?? "");
+
+  if (!isKeyValid) {
+    const { code, message } = statuses.APE_KEY_INVALID;
+    throw new MonkeyError(code, message);
+  }
+
+  await ApeKeysDAO.updateLastUsedOn(keyOwner, keyId);
+
+  return {
+    type: "ApeKey",
+    uid,
+    email: keyOwner.email,
+  };
 }
 
 export { authenticateRequest };

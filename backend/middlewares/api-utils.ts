@@ -130,7 +130,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
         if (error) {
           const errorMessage = error.details[0].message;
           throw new MonkeyError(
-            400,
+            422,
             validationErrorMessage ??
               `${errorMessage} (${error.details[0]?.context?.value})`
           );
