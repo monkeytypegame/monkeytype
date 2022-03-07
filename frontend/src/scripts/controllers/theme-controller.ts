@@ -85,146 +85,91 @@ const loadStyle = async function (name: string): Promise<void> {
   });
 };
 
-const updateThemeColors = async (
-  themeName: string,
-  colors: string[] | undefined = undefined
-): Promise<void> => {
-  ThemeColors.reset();
-  await loadStyle(themeName);
-  if (colors) {
-    colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(e, colors[index]);
-    });
-  }
-  ThemeColors.update();
-};
-
-const updateUI = async (themeName: string): Promise<void> => {
-  const colors = await ThemeColors.getAll();
-  $(".current-theme .text").text(themeName.replace(/_/g, " "));
-  $(".keymap-key").attr("style", "");
-  ChartController.updateAllChartColors();
-  updateFavicon(128, 32);
-  $("#metaThemeColor").attr("content", colors.bg);
-};
-
-export const applyCustom = async (
-  themeId: string,
-  isPreview = false
-): Promise<void> => {
-  clearCustomTheme();
-  if (!DB.getSnapshot()) return; // The user has not yet loaded or is not signed in
-
-  if (themeId.trim() === "" || themeId.trim() === "") {
-    console.error("apply_custom got an empty value. calling apply_preset");
-    applyPreset(Config.theme, isPreview);
-  }
-
+export function changeCustomTheme(themeId: string, nosave = false): void {
   const customThemes = DB.getSnapshot().customThemes;
-  const customTheme = DB.getCustomThemeById(themeId);
+  const colors = customThemes.find((e) => e._id === themeId)
+    ?.colors as string[];
+  UpdateConfig.setCustomThemeId(themeId, nosave);
+  UpdateConfig.setCustomThemeColors(colors, nosave);
+  apply("custom");
+}
 
-  if (!customTheme) {
-    Notifications.add(`No custom theme with id: ${themeId}`, 0);
-    if (customThemes.length > 1)
-      UpdateConfig.setCustomThemeId(customThemes[0]._id);
-    else {
-      UpdateConfig.setCustomTheme(false);
-      UpdateConfig.setCustomThemeId("");
-    }
-    return;
-  }
-
-  await updateThemeColors("serika_dark", customTheme.colors);
-
-  try {
-    firebase
-      .analytics()
-      .logEvent("changedCustomTheme", { theme: customTheme.name });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-
-  if (isPreview) return;
-
-  UpdateConfig.setCustomThemeColors([...customTheme.colors]);
-  updateUI("custom: " + customTheme.name);
-};
-
-export const applyTempCustom = async (isPreview = false): Promise<void> => {
-  clearCustomTheme();
-  await updateThemeColors("serika_dark", Config.customThemeColors);
-
-  try {
-    firebase.analytics().logEvent("changedCustomTheme");
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-
-  if (!isPreview) updateUI("custom");
-};
-
-export const applyPreset = async (
-  themeName: string,
-  isPreview = false
-): Promise<void> => {
+export function apply(themeName: string, isPreview = false): void {
   clearCustomTheme();
 
-  if (themeName.trim() === "") themeName = Config.theme;
-  await updateThemeColors(themeName);
-
-  try {
-    firebase.analytics().logEvent("changedTheme", { theme: themeName });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-
-  if (!isPreview) updateUI(themeName);
-};
-
-export const apply = async (
-  custom: boolean,
-  themeIdentifier: string,
-  isPreview = false
-): Promise<void> => {
-  if (custom) {
-    if (firebase.auth().currentUser !== null)
-      applyCustom(themeIdentifier, isPreview);
-    else applyTempCustom(isPreview);
-  } else
-    applyPreset(
-      themeIdentifier !== "" ? themeIdentifier : Config.theme,
-      isPreview
+  let name = "serika_dark";
+  if (themeName !== "custom") {
+    name = themeName;
+    Misc.swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
     );
-};
+  } else {
+    //is custom
+    Misc.swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
+  }
 
-export const preview = (
-  custom: boolean,
-  themeIdentifier: string,
-  randomTheme = false
-): void => {
-  apply(custom, themeIdentifier, !randomTheme);
+  ThemeColors.reset();
+
+  $(".keymap-key").attr("style", "");
+  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  loadStyle(name).then(() => {
+    ThemeColors.update();
+    if (themeName === "custom") {
+      colorVars.forEach((e, index) => {
+        document.documentElement.style.setProperty(
+          e,
+          Config.customThemeColors[index]
+        );
+      });
+    }
+
+    try {
+      firebase.analytics().logEvent("changedTheme", {
+        theme: themeName,
+      });
+    } catch (e) {
+      console.log("Analytics unavailable");
+    }
+    if (!isPreview) {
+      ThemeColors.getAll().then((colors) => {
+        $(".current-theme .text").text(themeName.replace(/_/g, " "));
+        $(".keymap-key").attr("style", "");
+        ChartController.updateAllChartColors();
+        updateFavicon(128, 32);
+        $("#metaThemeColor").attr("content", colors.bg);
+      });
+    }
+  });
+}
+
+export function preview(themeIdentifier: string, randomTheme = false): void {
   isPreviewingTheme = true;
-};
+  apply(themeIdentifier, !randomTheme);
+}
 
-export const set = async (
-  custom: boolean,
-  themeIdentifier: string
-): Promise<void> => apply(custom, themeIdentifier);
+export function set(themeIdentifier: string): void {
+  apply(themeIdentifier);
+}
 
-export const clearPreview = (): void => {
-  if (!isPreviewingTheme) return;
-
-  isPreviewingTheme = false;
-  randomTheme = null;
-  if (Config.customTheme) {
-    if (firebase.auth().currentUser === null) applyTempCustom();
-    else applyCustom(Config.customThemeId);
-  } else applyPreset(Config.theme);
-};
+export function clearPreview(): void {
+  if (isPreviewingTheme) {
+    isPreviewingTheme = false;
+    randomTheme = null;
+    if (Config.customTheme) {
+      apply("custom");
+    } else {
+      apply(Config.theme);
+    }
+  }
+}
 
 export function randomizeTheme(): void {
-  if (Config.randomTheme === "custom" && firebase.auth().currentUser === null)
-    return;
   let randomList: string[] | MonkeyTypes.CustomTheme[];
   Misc.getThemesList().then((themes) => {
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
@@ -242,24 +187,21 @@ export function randomizeTheme(): void {
         return t.name;
       });
     } else {
-      randomList = DB.getSnapshot().customThemes;
+      randomList = DB.getSnapshot().customThemes.map((ct) => ct._id);
     }
 
-    // const previousTheme = randomTheme;
-    const randomIndex = Math.floor(Math.random() * randomList.length);
-    if (Config.randomTheme === "custom")
-      randomTheme = (randomList[randomIndex] as MonkeyTypes.CustomTheme)._id;
-    else randomTheme = randomList[randomIndex] as string;
+    const previousTheme = randomTheme;
+    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
 
     if (Config.randomTheme === "custom") {
-      preview(true, randomTheme as string, true);
+      changeCustomTheme(randomTheme, true);
     } else {
-      preview(false, randomTheme as string, true);
+      preview(randomTheme, true);
     }
 
-    // if (previousTheme != randomTheme) {
-    //   // Notifications.add(randomTheme.replace(/_/g, " "), 0);
-    // }
+    if (previousTheme != randomTheme) {
+      Notifications.add(randomTheme.replace(/_/g, " "), 0);
+    }
   });
 }
 
@@ -302,27 +244,40 @@ export function applyCustomBackground(): void {
 window
   .matchMedia("(prefers-color-scheme: dark)")
   ?.addEventListener("change", (event) => {
-    if (!Config.autoSwitchTheme || Config.customThemeId !== "") return;
+    if (!Config.autoSwitchTheme || Config.customTheme) return;
     if (event.matches) {
-      set(false, Config.themeDark);
+      set(Config.themeDark);
     } else {
-      set(false, Config.themeLight);
+      set(Config.themeLight);
     }
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  const userLoggedIn = firebase.auth().currentUser !== null;
+  if (eventKey === "customTheme")
+    eventValue ? set("custom") : set(Config.theme);
   if (eventKey === "theme") {
-    applyPreset(eventValue as string);
+    clearPreview();
+    set(eventValue as string);
   }
-  if (eventKey === "customTheme" || eventKey === "customThemeId") {
-    if (Config.customTheme) {
-      if (userLoggedIn) applyCustom(Config.customThemeId);
-      else applyTempCustom();
-    } else applyPreset(Config.theme);
+  if (eventKey === "setThemes") {
+    clearPreview();
+    if (eventValue) {
+      set("custom");
+    } else {
+      if (Config.autoSwitchTheme) {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          set(Config.themeDark);
+        } else {
+          set(Config.themeLight);
+        }
+      } else {
+        set(Config.theme);
+      }
+    }
   }
-  if (eventKey === "customThemeColors" && !userLoggedIn && Config.customTheme)
-    applyTempCustom();
   if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
@@ -332,12 +287,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
-        set(false, Config.themeDark);
+        set(Config.themeDark);
       } else {
-        set(false, Config.themeLight);
+        set(Config.themeLight);
       }
     } else {
-      set(false, Config.theme);
+      set(Config.theme);
     }
   }
   if (
@@ -349,7 +304,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) &&
     !nosave
   ) {
-    set(false, Config.themeLight);
+    set(Config.themeLight);
   }
   if (
     eventKey === "themeDark" &&
@@ -358,6 +313,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
-    set(false, Config.themeDark);
+    set(Config.themeDark);
   }
 });

@@ -9,6 +9,7 @@ import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
+import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
@@ -391,7 +392,6 @@ export function reset(): void {
   $(".pageSettings select").empty().select2("destroy");
   $(".pageSettings .section.funbox .buttons").empty();
   $(".pageSettings .section.fontFamily .buttons").empty();
-  ThemePicker.refreshButtons();
 }
 
 export async function fillSettingsPage(): Promise<void> {
@@ -400,9 +400,6 @@ export async function fillSettingsPage(): Promise<void> {
   } else {
     $(".pageSettings .tip").addClass("hidden");
   }
-
-  // Themes
-  ThemePicker.refreshButtons();
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
@@ -538,7 +535,7 @@ export async function fillSettingsPage(): Promise<void> {
   setEventDisabled(true);
   await initGroups();
   setEventDisabled(false);
-  // await ThemePicker.refreshButtons();
+  await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
 
@@ -930,6 +927,29 @@ $("#exportSettingsButton").click(() => {
   );
 });
 
+$("#shareCustomThemeButton").click(() => {
+  const share: string[] = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (_, element) => {
+      share.push($(element).attr("value") as string);
+    }
+  );
+
+  const url =
+    "https://monkeytype.com?" +
+    Misc.objectToQueryString({ customTheme: share });
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function () {
+      CustomThemePopup.show(url);
+    }
+  );
+});
+
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
 });
@@ -1026,20 +1046,7 @@ let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customTheme") {
-    const $presetTab = $(".pageSettings .section.themes [tabcontent='preset']");
-    const $customTab = $(".pageSettings .section.themes [tabcontent='custom']");
-    if (eventValue) {
-      // Hide preset themes section
-      $presetTab.addClass("hidden");
-      $customTab.removeClass("hidden");
-    } else {
-      // Hide custom themes section
-      $customTab.addClass("hidden");
-      $presetTab.removeClass("hidden");
-    }
-  }
+ConfigEvent.subscribe((eventKey) => {
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings") {
     update();

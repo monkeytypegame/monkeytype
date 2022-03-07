@@ -331,17 +331,8 @@ $(document).on(
     // Do not apply if user wanted to delete it
     if ($(e.target).hasClass("delButton")) return;
     const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-    const customThemes = DB.getSnapshot().customThemes ?? [];
-    if (
-      customThemeId !== "" &&
-      customThemes.filter((t) => t._id === customThemeId)[0]
-    ) {
-      UpdateConfig.setCustomThemeId(customThemeId);
-      updateActiveButton();
-    } else
-      console.error(
-        "Could not find the custom theme id attribute attached to the button clicked!"
-      );
+    ThemeController.changeCustomTheme(customThemeId);
+    updateActiveButton();
   }
 );
 
@@ -502,15 +493,11 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
       colors: newColors,
     };
     Loader.show();
-    if (await DB.editCustomTheme(customTheme._id, newTheme))
-      Notifications.add("Edited custom theme", 1);
+    await DB.editCustomTheme(customTheme._id, newTheme);
     Loader.hide();
-
-    ThemeController.set(true, Config.customThemeId);
-  } else {
-    UpdateConfig.setCustomThemeColors(newColors);
-    Notifications.add("Custom theme saved", 1);
   }
+  UpdateConfig.setCustomThemeColors(newColors);
+  Notifications.add("Custom theme saved", 1);
 
   updateActiveTab(true);
 });

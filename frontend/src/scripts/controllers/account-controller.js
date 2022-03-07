@@ -22,8 +22,6 @@ import * as PaceCaret from "../test/pace-caret";
 import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
-import * as ThemeController from "../controllers/theme-controller";
-import { refreshButtons } from "../settings/theme-picker";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -54,24 +52,6 @@ export async function getDataAndInit() {
     LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
-
-    const customThemes = DB.getSnapshot().customThemes ?? [];
-    if (Config.customThemeColors.length > 0 && customThemes.length < 1) {
-      Loader.show();
-      if (
-        !(await DB.addCustomTheme({
-          name: "custom",
-          colors: [...Config.customThemeColors],
-        }))
-      )
-        Notifications.add("Could not create a new custom theme!", -1);
-      Loader.hide();
-    }
-    ThemeController.set(
-      Config.customTheme,
-      Config.customTheme ? Config.customThemeId : Config.theme
-    );
-    refreshButtons();
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {
@@ -272,10 +252,6 @@ async function loadUser(user) {
 
 const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
-  if (!user && Config.customTheme) {
-    ThemeController.applyTempCustom();
-    UpdateConfig.setCustomThemeId("");
-  }
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);

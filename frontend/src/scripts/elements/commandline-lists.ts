@@ -1286,7 +1286,7 @@ export function updateCustomThemeListCommands(): void {
       configValue: theme._id,
       hover: (): void => {
         // previewTheme(theme.name);
-        ThemeController.preview(true, theme._id);
+        ThemeController.preview(theme._id);
       },
       exec: (): void => {
         UpdateConfig.setCustomThemeId(theme._id);
@@ -2426,7 +2426,7 @@ Misc.getThemesList().then((themes) => {
       configValue: theme.name,
       hover: (): void => {
         // previewTheme(theme.name);
-        ThemeController.preview(false, theme.name);
+        ThemeController.preview(theme.name);
       },
       exec: (): void => {
         UpdateConfig.setTheme(theme.name);
@@ -2465,7 +2465,7 @@ export function updateThemeCommands(): void {
         display: theme.replace(/_/g, " "),
         hover: (): void => {
           // previewTheme(theme);
-          ThemeController.preview(false, theme);
+          ThemeController.preview(theme);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme);
@@ -2480,7 +2480,7 @@ export function updateThemeCommands(): void {
           display: theme.name.replace(/_/g, " "),
           hover: (): void => {
             // previewTheme(theme.name);
-            ThemeController.preview(false, theme.name);
+            ThemeController.preview(theme.name);
           },
           exec: (): void => {
             UpdateConfig.setTheme(theme.name);
