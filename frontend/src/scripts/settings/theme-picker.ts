@@ -503,6 +503,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     Loader.show();
     await DB.editCustomTheme(customTheme._id, newTheme);
     Loader.hide();
+    Notifications.add("Edited custom theme");
 
     ThemeController.set(true, Config.customThemeId);
   } else UpdateConfig.setCustomThemeColors(newColors);
