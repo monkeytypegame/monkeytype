@@ -21,9 +21,23 @@
     gap: 1rem;
     width: 60vw;
 
-    .wordfilter {
-      width: 33%;
-      justify-self: right;
+    .buttonsTop {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .savedTexts {
+      display: grid;
+      gap: 0.5rem;
+      .title {
+        color: var(--sub-color);
+      }
+      .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
     }
 
     textarea {
@@ -49,10 +63,6 @@
       gap: 1rem;
       align-items: center;
       justify-items: left;
-
-      .storedCustomTextPopupButton {
-        width: 100%;
-      }
     }
 
     .randomInputFields {
@@ -64,30 +74,34 @@
       gap: 1rem;
     }
   }
+}
 
-  #storedCustomTextPopup {
+#savedTextsPopupWrapper {
+  #savedTextsPopup {
+    color: var(--sub-color);
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 60vw;
+    width: 400px;
 
-    textarea {
-      background: rgba(0, 0, 0, 0.1);
-      padding: 1rem;
-      color: var(--main-color);
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      font-family: var(--font);
-      width: 100%;
-      border-radius: var(--roundness);
-      resize: vertical;
-      height: 200px;
-      color: var(--text-color);
-      overflow-x: hidden;
-      overflow-y: scroll;
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+
+    .list {
+      display: grid;
+      gap: 1rem;
+      .savedText {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 1fr 3rem;
+        .button .fas {
+          pointer-events: none;
+        }
+      }
     }
   }
 }
