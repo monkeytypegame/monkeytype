@@ -502,7 +502,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     };
     Loader.show();
     if (await DB.editCustomTheme(customTheme._id, newTheme))
-      Notifications.add("Edited custom theme", 0);
+      Notifications.add("Edited custom theme", 1);
     Loader.hide();
 
     ThemeController.set(true, Config.customThemeId);
