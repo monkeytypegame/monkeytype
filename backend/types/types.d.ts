@@ -72,6 +72,7 @@ declare namespace MonkeyTypes {
     createdOn: number;
     modifiedOn: number;
     lastUsedOn: number;
+    useCount: number;
     enabled: boolean;
   }
 

@@ -7,7 +7,7 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
-  return _.omit(apeKey, "hash", "_id", "uid");
+  return _.omit(apeKey, "hash", "_id", "uid", "useCount");
 }
 
 class ApeKeysController {
@@ -48,6 +48,7 @@ class ApeKeysController {
       createdOn: Date.now(),
       modifiedOn: Date.now(),
       lastUsedOn: -1,
+      useCount: 0,
     };
 
     const apeKeyId = await ApeKeysDAO.addApeKey(apeKey);

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import db from "../init/db";
-import { Filter, ObjectId, UpdateFilter } from "mongodb";
+import { Filter, ObjectId, MatchKeysAndValues } from "mongodb";
 
 const COLLECTION_NAME = "ape-keys";
 
@@ -50,11 +50,12 @@ class ApeKeysDAO {
   private static async updateApeKey(
     uid: string,
     keyId: string,
-    updates: UpdateFilter<MonkeyTypes.ApeKey>
+    updates: MatchKeysAndValues<MonkeyTypes.ApeKey>
   ): Promise<void> {
     await db
       .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
       .updateOne(getApeKeyFilter(uid, keyId), {
+        $inc: { useCount: updates.lastUsedOn ? 1 : 0 },
         $set: _.pickBy(updates, (value) => !_.isNil(value)),
       });
   }
