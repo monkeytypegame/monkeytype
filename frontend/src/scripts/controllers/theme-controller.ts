@@ -121,35 +121,37 @@ export const applyCustom = async (
   }
 
   const customThemes = DB.getSnapshot().customThemes;
-  const customTheme = customThemes
-    ? customThemes.find((t) => t._id === themeId)
-    : undefined;
+  const customTheme = DB.getCustomThemeById(themeId);
+
   if (!customTheme) {
     Notifications.add(`No custom theme with id: ${themeId}`, 0);
-    if (customThemes && customThemes.length > 1)
+    if (customThemes.length > 1)
       UpdateConfig.setCustomThemeId(customThemes[0]._id);
     else {
-      UpdateConfig.setCustomThemeId("");
       UpdateConfig.setCustomTheme(false);
+      UpdateConfig.setCustomThemeId("");
     }
     return;
   }
-  const themeName = customTheme.name;
 
   await updateThemeColors("serika_dark", customTheme.colors);
 
   try {
-    firebase.analytics().logEvent("changedCustomTheme", { theme: themeName });
+    firebase
+      .analytics()
+      .logEvent("changedCustomTheme", { theme: customTheme.name });
   } catch (e) {
     console.log("Analytics unavailable");
   }
+
   if (isPreview) return;
 
   UpdateConfig.setCustomThemeColors([...customTheme.colors]);
-  updateUI("custom: " + themeName);
+  updateUI("custom: " + customTheme.name);
 };
 
 export const applyTempCustom = async (isPreview = false): Promise<void> => {
+  clearCustomTheme();
   await updateThemeColors("serika_dark", Config.customThemeColors);
 
   try {
