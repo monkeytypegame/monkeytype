@@ -1154,7 +1154,7 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
       exec: (): void => {
         if (firebase.auth().currentUser === null) {
           Notifications.add(
-            "Multiple Custom themes are available to logged in users only",
+            "Multiple custom themes are available to logged in users only",
             0
           );
           return;
@@ -1270,7 +1270,7 @@ export function updateCustomThemeListCommands(): void {
 
   if (firebase.auth().currentUser === null) {
     Notifications.add(
-      "Multiple Custom themes are available to logged in users only",
+      "Multiple custom themes are available to logged in users only",
       0
     );
     return;

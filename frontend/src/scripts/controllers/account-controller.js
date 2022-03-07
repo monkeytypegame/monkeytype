@@ -271,12 +271,9 @@ async function loadUser(user) {
 
 const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
-  if (!user) {
-    // Rizwan TODO: Find a more appropriate place for this code
-    if (Config.customTheme) {
-      ThemeController.applyTempCustom();
-      UpdateConfig.setCustomThemeId("");
-    }
+  if (!user && Config.customTheme) {
+    ThemeController.applyTempCustom();
+    UpdateConfig.setCustomThemeId("");
   }
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
@@ -306,7 +303,6 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }, 125 / 2);
   }
 
-  // Rizwan TODO: Write code to handle differently if user is logged in or not
   let themeColors = Misc.findGetParameter("customTheme");
   const oldCustomTheme = Config.customTheme;
   const oldCustomThemeId = Config.customThemeId;
@@ -314,24 +310,29 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     try {
       themeColors = themeColors.split(",");
       // Create a new custom theme
-      Loader.show();
-      const createdTheme = await DB.addCustomTheme({
-        name: "custom",
-        colors: themeColors,
-      });
-      Loader.hide();
+      if (firebase.auth().currentUser !== null) {
+        Loader.show();
+        const createdTheme = await DB.addCustomTheme({
+          name: "custom",
+          colors: themeColors,
+        });
+        Loader.hide();
 
-      if (createdTheme) {
-        UpdateConfig.setCustomThemeId(
-          DB.getSnapshot().customThemes[
-            DB.getSnapshot().customThemes.length - 1
-          ]._id
-        );
-        UpdateConfig.setCustomTheme(true);
-        Notifications.add(
-          "Custom theme: 'custom' sucessfully created and applied.",
-          1
-        );
+        if (createdTheme) {
+          UpdateConfig.setCustomThemeId(
+            DB.getSnapshot().customThemes[
+              DB.getSnapshot().customThemes.length - 1
+            ]._id
+          );
+          UpdateConfig.setCustomTheme(true);
+          Notifications.add(
+            "Custom theme: 'custom' sucessfully created and applied",
+            1
+          );
+        }
+      } else {
+        UpdateConfig.setCustomThemeColors(themeColors);
+        Notifications.add("Custom theme applied", 1);
       }
     } catch (e) {
       Notifications.add(

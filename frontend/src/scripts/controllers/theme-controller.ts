@@ -313,7 +313,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     eventKey === "theme" ||
     eventKey === "customTheme" ||
-    eventKey === "customThemeId"
+    eventKey === "customThemeId" ||
+    eventKey === "customThemeColors"
   ) {
     clearPreview();
     if (Config.customTheme) {

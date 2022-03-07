@@ -683,25 +683,19 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    if (firebase.auth().currentUser === null) {
-      Notifications.add(
-        "Custom themes are available to logged in users only",
-        0
-      );
-      return;
-    }
-
     if (!Config.customTheme) {
-      if (DB.getSnapshot().customThemes.length < 1) {
-        Notifications.add("No custom themes!", 0);
-        UpdateConfig.setCustomTheme(false);
-        UpdateConfig.setCustomThemeId("");
-        return;
-      }
-      if (!DB.getCustomThemeById(Config.customThemeId)) {
-        // Turn on the first custom theme
-        const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
-        UpdateConfig.setCustomThemeId(firstCustomThemeId);
+      if (firebase.auth().currentUser !== null) {
+        if (DB.getSnapshot().customThemes.length < 1) {
+          Notifications.add("No custom themes!", 0);
+          UpdateConfig.setCustomTheme(false);
+          UpdateConfig.setCustomThemeId("");
+          return;
+        }
+        if (!DB.getCustomThemeById(Config.customThemeId)) {
+          // Turn on the first custom theme
+          const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+          UpdateConfig.setCustomThemeId(firstCustomThemeId);
+        }
       }
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);
