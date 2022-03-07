@@ -3,6 +3,15 @@ import UsersDAO from "./user";
 import { ObjectId } from "mongodb";
 import MonkeyError from "../utils/error";
 
+function checkIfKeyExists(
+  apeKeys: MonkeyTypes.User["apeKeys"],
+  keyId: string
+): void {
+  if (!_.has(apeKeys, keyId)) {
+    throw new MonkeyError(400, "Could not find ApeKey");
+  }
+}
+
 class ApeKeysDAO {
   static async getApeKeys(uid: string): Promise<MonkeyTypes.User["apeKeys"]> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
@@ -40,11 +49,9 @@ class ApeKeysDAO {
     enabled?: boolean
   ): Promise<void> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    if (_.isNil(user.apeKeys) || !_.has(user.apeKeys, keyId)) {
-      throw new MonkeyError(400, "Could not find ApeKey");
-    }
+    checkIfKeyExists(user.apeKeys, keyId);
 
-    const apeKey = user.apeKeys[keyId];
+    const apeKey = user.apeKeys![keyId];
 
     const updatedApeKey: MonkeyTypes.ApeKey = {
       ...apeKey,
@@ -53,16 +60,14 @@ class ApeKeysDAO {
       enabled: _.isNil(enabled) ? apeKey.enabled : enabled,
     };
 
-    user.apeKeys[keyId] = updatedApeKey;
+    user.apeKeys![keyId] = updatedApeKey;
 
     await UsersDAO.setApeKeys(uid, user.apeKeys);
   }
 
   static async deleteApeKey(uid: string, keyId: string): Promise<void> {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    if (_.isNil(user.apeKeys) || !_.has(user.apeKeys, keyId)) {
-      throw new MonkeyError(400, "Could not find ApeKey");
-    }
+    checkIfKeyExists(user.apeKeys, keyId);
 
     const apeKeys = _.omit(user.apeKeys, keyId);
     await UsersDAO.setApeKeys(uid, apeKeys);
@@ -74,7 +79,7 @@ class ApeKeysDAO {
   ): Promise<void> {
     checkIfKeyExists(user.apeKeys, keyId);
 
-    user.apeKeys[keyId].lastUsedOn = Date.now();
+    user.apeKeys![keyId].lastUsedOn = Date.now();
     await UsersDAO.setApeKeys(user.uid, user.apeKeys);
   }
 }
