@@ -68,6 +68,6 @@ function getCustomTextObject(): CustomTextObject {
   return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
 }
 
-export function getCustomTextNames(): (keyof CustomTextObject)[] {
+export function getCustomTextNames(): string[] {
   return Object.keys(getCustomTextObject());
 }
