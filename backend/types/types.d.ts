@@ -27,9 +27,9 @@ declare namespace MonkeyTypes {
   }
 
   interface DecodedToken {
-    type?: "Bearer" | "ApeKey";
-    uid?: string;
-    email?: string;
+    type: "Bearer" | "ApeKey" | "None";
+    uid: string;
+    email: string;
   }
 
   interface Context {

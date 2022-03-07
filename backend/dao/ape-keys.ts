@@ -51,16 +51,16 @@ class ApeKeysDAO {
     const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
     checkIfKeyExists(user.apeKeys, keyId);
 
-    const apeKey = user.apeKeys[keyId];
+    const apeKey = user.apeKeys![keyId];
 
-    const updatedApeKey = {
+    const updatedApeKey: MonkeyTypes.ApeKey = {
       ...apeKey,
       modifiedOn: Date.now(),
       name: name ?? apeKey.name,
       enabled: _.isNil(enabled) ? apeKey.enabled : enabled,
     };
 
-    user.apeKeys[keyId] = updatedApeKey;
+    user.apeKeys![keyId] = updatedApeKey;
 
     await UsersDAO.setApeKeys(uid, user.apeKeys);
   }
@@ -79,7 +79,7 @@ class ApeKeysDAO {
   ): Promise<void> {
     checkIfKeyExists(user.apeKeys, keyId);
 
-    user.apeKeys[keyId].lastUsedOn = Date.now();
+    user.apeKeys![keyId].lastUsedOn = Date.now();
     await UsersDAO.setApeKeys(user.uid, user.apeKeys);
   }
 }

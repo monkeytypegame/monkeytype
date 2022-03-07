@@ -14,7 +14,7 @@ const quotesRouter = Router();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
-    return user.quoteMod;
+    return !!user.quoteMod;
   },
 });
 

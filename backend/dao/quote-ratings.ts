@@ -28,7 +28,7 @@ class QuoteRatingsDAO {
     const quoteRating = await this.get(quoteId, language);
     const average = parseFloat(
       (
-        Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10
+        Math.round((quoteRating!.totalRating / quoteRating!.ratings) * 10) / 10
       ).toFixed(1)
     );
 
@@ -40,7 +40,7 @@ class QuoteRatingsDAO {
   static async get(
     quoteId: number,
     language: string
-  ): Promise<MonkeyTypes.QuoteRating> {
+  ): Promise<MonkeyTypes.QuoteRating | null> {
     return await db
       .collection<MonkeyTypes.QuoteRating>("quote-rating")
       .findOne({ quoteId, language });

@@ -1,3 +1,4 @@
+import _ from "lodash";
 import users from "./users";
 import configs from "./configs";
 import results from "./results";
@@ -8,7 +9,7 @@ import quotes from "./quotes";
 import apeKeys from "./ape-keys";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { Application, NextFunction, Response } from "express";
+import { Application, NextFunction, Response, Router } from "express";
 import swStats from "swagger-stats";
 import SwaggerSpec from "../../swagger.json";
 
@@ -51,10 +52,10 @@ function addApiRoutes(app: Application): void {
         if (process.env.MODE === "dev") {
           return;
         }
-        const authHeader = rrr.http.request.headers.authorization ?? "None";
+        const authHeader = rrr.http.request.headers?.authorization ?? "None";
         const authType = authHeader.split(" ");
-        rrr.http.request.headers.authorization = authType[0];
-        rrr.http.request.headers["x-forwarded-for"] = "";
+        _.set(rrr.http.request, "headers.authorization", authType[0]);
+        _.set(rrr.http.request, "headers['x-forwarded-for']", "");
       },
     })
   );
@@ -94,9 +95,8 @@ function addApiRoutes(app: Application): void {
     ]);
   });
 
-  Object.keys(API_ROUTE_MAP).forEach((route) => {
+  _.each(API_ROUTE_MAP, (router: Router, route) => {
     const apiRoute = `${BASE_ROUTE}${route}`;
-    const router = API_ROUTE_MAP[route];
     app.use(apiRoute, router);
   });
 

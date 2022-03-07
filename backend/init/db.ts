@@ -7,8 +7,8 @@ import {
 } from "mongodb";
 
 class DatabaseClient {
-  static mongoClient: MongoClient = null;
-  static db: Db = null;
+  static mongoClient: MongoClient;
+  static db: Db;
   static collections: Record<string, Collection<any>> = {};
   static connected = false;
 
@@ -21,6 +21,10 @@ class DatabaseClient {
       DB_URI,
       DB_NAME,
     } = process.env;
+
+    if (!DB_URI || !DB_NAME) {
+      throw new Error("No database configuration provided");
+    }
 
     const connectionOptions: MongoClientOptions = {
       connectTimeoutMS: 2000,
@@ -64,10 +68,6 @@ class DatabaseClient {
   }
 
   static collection<T>(collectionName: string): Collection<T> {
-    if (!this.connected) {
-      return null;
-    }
-
     if (!(collectionName in this.collections)) {
       this.collections[collectionName] = this.db.collection<T>(collectionName);
     }
