@@ -42,7 +42,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
     return text;
   }
   const words = text.split(
-    /(?=[.,'"/#!$%^&*;:{}=\-_`~()\s])|(?<=[.,'"/#!$%^&*;:{}=\-_`~()\s])/g
+    /(?=[.,"/#!$%^&*;:{}=\-_`~()\s])|(?<=[.,"/#!$%^&*;:{}=\-_`~()\s])/g
   );
 
   const normalizedWords = words.map((word) => {
