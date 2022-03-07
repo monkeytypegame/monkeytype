@@ -102,3 +102,4 @@ dep-graph.png
 
 # TypeScript
 build/
+backend/worker.*
