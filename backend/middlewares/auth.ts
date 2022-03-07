@@ -160,7 +160,7 @@ async function authenticateWithApeKey(
     const targetApeKey = _.get(keyOwner.apeKeys, keyId);
 
     if (!targetApeKey?.enabled) {
-      throw new MonkeyError(400, "ApeKey is disabled");
+      throw new MonkeyError(400, "ApeKey is inactive");
     }
 
     const isKeyValid = await compare(apeKey, targetApeKey?.hash ?? "");
