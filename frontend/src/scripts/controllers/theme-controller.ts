@@ -89,7 +89,6 @@ export function changeCustomTheme(themeId: string, nosave = false): void {
   const customThemes = DB.getSnapshot().customThemes;
   const colors = customThemes.find((e) => e._id === themeId)
     ?.colors as string[];
-  UpdateConfig.setCustomThemeId(themeId, nosave);
   UpdateConfig.setCustomThemeColors(colors, nosave);
   apply("custom");
 }
