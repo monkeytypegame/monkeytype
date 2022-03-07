@@ -8,6 +8,7 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
+import defaultConfig from "../constants/default-config";
 
 export function updateActiveButton(): void {
   if (Config.customTheme) {
@@ -295,7 +296,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
       Loader.show();
       const createdTheme = await DB.addCustomTheme({
         name: "custom",
-        colors: [...Config.customThemeColors],
+        colors: [...defaultConfig.customThemeColors],
       });
       Loader.hide();
       if (createdTheme) {
@@ -313,7 +314,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
 $(".pageSettings .addCustomThemeButton").on("click", async () => {
   const newCustomTheme = {
     name: "custom",
-    colors: [...Config.customThemeColors],
+    colors: [...defaultConfig.customThemeColors],
   };
 
   Loader.show();
