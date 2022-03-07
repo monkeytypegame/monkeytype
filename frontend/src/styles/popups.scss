@@ -412,6 +412,10 @@
 }
 
 #quoteSearchPopupWrapper {
+  .highlight {
+    color: var(--main-color);
+  }
+
   #quoteSearchPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);

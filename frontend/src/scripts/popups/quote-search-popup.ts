@@ -7,6 +7,12 @@ import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
 import * as Misc from "../misc";
+import {
+  buildSearchService,
+  SearchService,
+  TextExtractor,
+} from "../utils/search-service";
+import { debounce } from "../utils/debounce";
 
 export let selectedId = 1;
 
@@ -14,39 +20,65 @@ export function setSelectedId(val: number): void {
   selectedId = val;
 }
 
+const searchServiceCache: Record<string, SearchService<any>> = {};
+
+function getSearchService<T>(
+  language: string,
+  data: T[],
+  textExtractor: TextExtractor<T>
+): SearchService<T> {
+  if (language in searchServiceCache) {
+    return searchServiceCache[language];
+  }
+
+  const newSearchService = buildSearchService<T>(data, textExtractor);
+  searchServiceCache[language] = newSearchService;
+
+  return newSearchService;
+}
+
+function highlightMatches(text: string, matchedText: string[]): string {
+  if (matchedText.length === 0) {
+    return text;
+  }
+  const words = text.split(
+    /(?=[.,'"/#!$%^&*;:{}=\-_`~()\s])|(?<=[.,'"/#!$%^&*;:{}=\-_`~()\s])/g
+  );
+
+  const normalizedWords = words.map((word) => {
+    const shouldHighlight = matchedText.find((match) => {
+      return word.startsWith(match);
+    });
+    return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
+  });
+
+  return normalizedWords.join("");
+}
+
 async function updateResults(searchText: string): Promise<void> {
-  const quotes = await Misc.getQuotes(Config.language);
-  const reg = new RegExp(searchText, "i");
-  const found: MonkeyTypes.Quote[] = [];
-  quotes.quotes.forEach((quote) => {
-    const quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
-    const test1 = reg.test(quoteText);
-    if (test1) {
-      found.push(quote);
+  const { quotes } = await Misc.getQuotes(Config.language);
+
+  const quoteSearchService = getSearchService<MonkeyTypes.Quote>(
+    Config.language,
+    quotes,
+    (quote: MonkeyTypes.Quote) => {
+      return `${quote.text} ${quote.id} ${quote.source}`;
     }
-  });
-  quotes.quotes.forEach((quote) => {
-    const quoteSource = quote["source"].replace(
-      /[.,'"/#!$%^&*;:{}=\-_`~()]/g,
-      ""
-    );
-    const quoteId = quote["id"];
-    const test2 = reg.test(quoteSource);
-    const test3 = reg.test(quoteId.toString());
-    if ((test2 || test3) && found.filter((q) => q.id == quote.id).length == 0) {
-      found.push(quote);
-    }
-  });
+  );
+  const { results: matches, matchedQueryTerms } =
+    quoteSearchService.query(searchText);
+
   $("#quoteSearchResults").remove();
   $("#quoteSearchPopup").append(
     '<div class="quoteSearchResults" id="quoteSearchResults"></div>'
   );
-  const resultsList = $("#quoteSearchResults");
-  let resultListLength = 0;
 
+  const resultsList = $("#quoteSearchResults");
   const isNotAuthed = !firebase.auth().currentUser;
 
-  found.forEach(async (quote) => {
+  const quotesToShow = searchText === "" ? quotes : matches;
+
+  quotesToShow.slice(0, 100).forEach((quote) => {
     let lengthDesc;
     if (quote.length < 101) {
       lengthDesc = "short";
@@ -57,15 +89,21 @@ async function updateResults(searchText: string): Promise<void> {
     } else {
       lengthDesc = "thicc";
     }
-    if (resultListLength++ < 100) {
-      resultsList.append(`
+    resultsList.append(`
       <div class="searchResult" id="${quote.id}">
-        <div class="text">${quote.text}</div>
-        <div class="id"><div class="sub">id</div><span class="quote-id">${
-          quote.id
-        }</span></div>
+        <div class="text">${highlightMatches(
+          quote.text,
+          matchedQueryTerms
+        )}</div>
+        <div class="id"><div class="sub">id</div><span class="quote-id">${highlightMatches(
+          quote.id.toString(),
+          matchedQueryTerms
+        )}</span></div>
         <div class="length"><div class="sub">length</div>${lengthDesc}</div>
-        <div class="source"><div class="sub">source</div>${quote.source}</div>
+        <div class="source"><div class="sub">source</div>${highlightMatches(
+          quote.source,
+          matchedQueryTerms
+        )}</div>
         <div class="icon-button report ${
           isNotAuthed && "hidden"
         }" aria-label="Report quote" data-balloon-pos="left">
@@ -73,15 +111,14 @@ async function updateResults(searchText: string): Promise<void> {
         </div>
       </div>
       `);
-    }
   });
-  if (found.length > 100) {
+  if (quotesToShow.length > 100) {
     $("#extraResults").html(
-      found.length +
+      quotesToShow.length +
         " results <span style='opacity: 0.5'>(only showing 100)</span>"
     );
   } else {
-    $("#extraResults").html(found.length + " results");
+    $("#extraResults").html(quotesToShow.length + " results");
   }
 }
 
@@ -158,17 +195,14 @@ export function apply(val: number): boolean {
   return ret;
 }
 
-$("#quoteSearchPopup .searchBox").keydown((e) => {
-  if (e.code == "Escape") return;
-  setTimeout(() => {
-    let searchText = (<HTMLInputElement>document.getElementById("searchBox"))
-      .value;
-    searchText = searchText
-      .replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "")
-      .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+const debouncedSearch = debounce(updateResults);
 
-    updateResults(searchText);
-  }, 0.1); //arbitrarily v. small time as it's only to allow text to input before searching
+$("#quoteSearchPopup .searchBox").on("keyup", (e) => {
+  if (e.code === "Escape") return;
+
+  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+    .value;
+  debouncedSearch(searchText);
 });
 
 $("#quoteSearchPopupWrapper").click((e) => {
@@ -218,17 +252,3 @@ $(document).keydown((event) => {
     event.preventDefault();
   }
 });
-
-// $("#quoteSearchPopup input").keypress((e) => {
-//   if (e.keyCode == 13) {
-//     if (!isNaN(document.getElementById("searchBox").value)) {
-//       apply();
-//     } else {
-//       let results = document.getElementsByClassName("searchResult");
-//       if (results.length > 0) {
-//         selectedId = parseInt(results[0].getAttribute("id"));
-//         apply(selectedId);
-//       }
-//     }
-//   }
-// });
