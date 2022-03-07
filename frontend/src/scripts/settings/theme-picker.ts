@@ -213,10 +213,10 @@ export function setCustomInputs(noThemeUpdate = false): void {
     $nameField.val(
       DB.getCustomThemeById(Config.customThemeId)?.name ?? "custom"
     );
-    $nameField.attr("readonly", "false");
+    $nameField.attr({ readonly: false });
   } else {
     $nameField.val("custom");
-    $nameField.attr("readonly", "true");
+    $nameField.attr({ readonly: true });
   }
 
   $(
