@@ -223,6 +223,8 @@ export const clearPreview = (): void => {
 };
 
 export function randomizeTheme(): void {
+  if (Config.randomTheme === "custom" && firebase.auth().currentUser === null)
+    return;
   let randomList: string[] | MonkeyTypes.CustomTheme[];
   Misc.getThemesList().then((themes) => {
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {

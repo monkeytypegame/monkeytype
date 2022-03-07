@@ -8,7 +8,6 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
-import { authCompleted } from "./promises/authPromise";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -1258,12 +1257,10 @@ export function setRandomTheme(
     return false;
 
   if (val === "custom") {
+    setCustomTheme(true);
     if (firebase.auth().currentUser === null) {
-      // This is needed because the local config is fired before firebase is initialized
-      if (authCompleted) {
-        config.randomTheme = val;
-        return true;
-      } else return false;
+      config.randomTheme = val;
+      return false;
     }
     if (!DB.getSnapshot()) return true;
     if (DB.getSnapshot().customThemes.length === 0) {
@@ -1271,9 +1268,6 @@ export function setRandomTheme(
       config.randomTheme = "off";
       return false;
     }
-    if (!DB.getCustomThemeById(config.customThemeId))
-      setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
-    setCustomTheme(true);
   }
   if (val !== "off" && val !== "custom") setCustomTheme(false);
 
