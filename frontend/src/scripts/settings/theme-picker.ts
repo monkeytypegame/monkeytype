@@ -501,9 +501,9 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
       colors: newColors,
     };
     Loader.show();
-    await DB.editCustomTheme(customTheme._id, newTheme);
+    if (await DB.editCustomTheme(customTheme._id, newTheme))
+      Notifications.add("Edited custom theme", 0);
     Loader.hide();
-    Notifications.add("Edited custom theme");
 
     ThemeController.set(true, Config.customThemeId);
   } else UpdateConfig.setCustomThemeColors(newColors);
