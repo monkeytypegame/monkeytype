@@ -1244,15 +1244,6 @@ export const customThemeCommands: MonkeyTypes.CommandsGroup = {
       display: "on",
       configValue: true,
       exec: (): void => {
-        if (firebase.auth().currentUser !== null) {
-          if (DB.getSnapshot().customThemes.length === 0) {
-            Notifications.add("You need to create a custom theme first", 0);
-            return;
-          }
-
-          if (!DB.getCustomThemeById(Config.customThemeId))
-            UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
-        }
         UpdateConfig.setCustomTheme(true);
       },
     },
@@ -1261,7 +1252,7 @@ export const customThemeCommands: MonkeyTypes.CommandsGroup = {
 
 export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
   title: "Custom themes list...",
-  configKey: "customThemeId",
+  // configKey: "customThemeId",
   list: [],
 };
 
@@ -1289,7 +1280,7 @@ export function updateCustomThemeListCommands(): void {
         ThemeController.preview(theme._id);
       },
       exec: (): void => {
-        UpdateConfig.setCustomThemeId(theme._id);
+        // UpdateConfig.setCustomThemeId(theme._id);
         UpdateConfig.setCustomTheme(true);
       },
     });

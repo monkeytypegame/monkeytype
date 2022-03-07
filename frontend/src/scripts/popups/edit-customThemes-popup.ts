@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import Config, * as UpdateConfig from "../config";
+import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import { updateActiveTab } from "../settings/theme-picker";
@@ -63,7 +63,7 @@ async function apply(): Promise<void> {
       return;
     }
 
-    const themeActive = Config.customThemeId === customThemeId;
+    // const themeActive = Config.customThemeId === customThemeId;
     Loader.show();
     const deletedTheme = await DB.deleteCustomTheme(customThemeId);
     UpdateConfig.setCustomThemeColors(defaultConfig.customThemeColors);
@@ -72,12 +72,14 @@ async function apply(): Promise<void> {
     if (deletedTheme) {
       if (DB.getSnapshot().customThemes.length < 1) {
         UpdateConfig.setCustomTheme(false);
-        UpdateConfig.setCustomThemeId("");
-      } else if (themeActive)
-        // If active theme was deleted set the first custom theme
-        UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
-      // updateActiveTab(true);
+        // UpdateConfig.setCustomThemeId("");
+      }
     }
+    // } else if (themeActive)
+    // If active theme was deleted set the first custom theme
+    // UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+    // updateActiveTab(true);
+    // }
     updateActiveTab(true);
 
     if (deletedTheme) Notifications.add("Custom theme removed", 1);

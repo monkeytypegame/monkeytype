@@ -688,14 +688,14 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
         if (DB.getSnapshot().customThemes.length < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
-          UpdateConfig.setCustomThemeId("");
+          // UpdateConfig.setCustomThemeId("");
           return;
         }
-        if (!DB.getCustomThemeById(Config.customThemeId)) {
-          // Turn on the first custom theme
-          const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
-          UpdateConfig.setCustomThemeId(firstCustomThemeId);
-        }
+        // if (!DB.getCustomThemeById(Config.customThemeId)) {
+        //   // Turn on the first custom theme
+        //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+        //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
+        // }
       }
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);

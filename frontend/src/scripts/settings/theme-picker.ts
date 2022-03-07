@@ -12,14 +12,14 @@ import defaultConfig from "../constants/default-config";
 
 export function updateActiveButton(): void {
   if (Config.customTheme) {
-    if (firebase.auth().currentUser === null) return;
-    const activeThemeId = Config.customThemeId;
-    $(`.pageSettings .section.themes .customTheme.button`).removeClass(
-      "active"
-    );
-    $(
-      `.pageSettings .section.themes .customTheme.button[customThemeId=${activeThemeId}]`
-    ).addClass("active");
+    // if (firebase.auth().currentUser === null) return;
+    // const activeThemeId = Config.customThemeId;
+    // $(`.pageSettings .section.themes .customTheme.button`).removeClass(
+    //   "active"
+    // );
+    // $(
+    //   `.pageSettings .section.themes .customTheme.button[customThemeId=${activeThemeId}]`
+    // ).addClass("active");
   } else {
     let activeThemeName = Config.theme;
     if (
@@ -132,15 +132,13 @@ export async function refreshButtons(): Promise<void> {
     }
 
     customThemes.forEach((customTheme) => {
-      const activeTheme =
-        Config.customThemeId === customTheme._id ? "active" : "";
+      // const activeTheme =
+      //   Config.customThemeId === customTheme._id ? "active" : "";
       const bgColor = customTheme.colors[0];
       const mainColor = customTheme.colors[1];
 
       customThemesEl.append(
-        `<div class="customTheme button ${activeTheme}" customThemeId='${
-          customTheme._id
-        }' 
+        `<div class="customTheme button" customThemeId='${customTheme._id}' 
         style="color:${mainColor};background:${bgColor}">
         <div class="activeIndicator"><i class="fas fa-circle"></i></div>
         <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
@@ -210,15 +208,15 @@ export function setCustomInputs(noThemeUpdate = false): void {
     ".pageSettings .section.themes .tabContainer .customThemeEdit #name"
   );
 
-  if (firebase.auth().currentUser !== null) {
-    $nameField.val(
-      DB.getCustomThemeById(Config.customThemeId)?.name ?? "custom"
-    );
-    $nameField.attr({ readonly: false });
-  } else {
-    $nameField.val("custom");
-    $nameField.attr({ readonly: true });
-  }
+  // if (firebase.auth().currentUser !== null) {
+  //   $nameField.val(
+  //     DB.getCustomThemeById(Config.customThemeId)?.name ?? "custom"
+  //   );
+  //   $nameField.attr({ readonly: false });
+  // } else {
+  $nameField.val("custom");
+  $nameField.attr({ readonly: true });
+  // }
 
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
@@ -288,8 +286,8 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
     if (firebase.auth().currentUser !== null) {
       const customThemes = DB.getSnapshot().customThemes;
       if (customThemes.length >= 1) {
-        if (!DB.getCustomThemeById(Config.customThemeId))
-          UpdateConfig.setCustomThemeId(customThemes[0]._id);
+        // if (!DB.getCustomThemeById(Config.customThemeId))
+        // UpdateConfig.setCustomThemeId(customThemes[0]._id);
         UpdateConfig.setCustomTheme(true);
         return;
       }
@@ -300,11 +298,11 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
       });
       Loader.hide();
       if (createdTheme) {
-        UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
+        // UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
         UpdateConfig.setCustomTheme(true);
       }
     } else {
-      UpdateConfig.setCustomThemeId("");
+      // UpdateConfig.setCustomThemeId("");
       UpdateConfig.setCustomTheme(true);
     }
   }
@@ -474,28 +472,28 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
       newColors.push($(element).attr("value") as string);
     }
   );
-  if (firebase.auth().currentUser !== null) {
-    const snapshot = DB.getSnapshot();
-    if (snapshot.customThemes.length < 1) {
-      Notifications.add("No custom themes!", -1);
-      return;
-    }
+  // if (firebase.auth().currentUser !== null) {
+  //   const snapshot = DB.getSnapshot();
+  //   if (snapshot.customThemes.length < 1) {
+  //     Notifications.add("No custom themes!", -1);
+  //     return;
+  //   }
 
-    const customTheme = snapshot.customThemes.find(
-      (t) => t._id === Config.customThemeId
-    );
-    if (customTheme === undefined) {
-      Notifications.add("Custom theme does not exist!", -1);
-      return;
-    }
-    const newTheme = {
-      name: themeName,
-      colors: newColors,
-    };
-    Loader.show();
-    await DB.editCustomTheme(customTheme._id, newTheme);
-    Loader.hide();
-  }
+  //   const customTheme = snapshot.customThemes.find(
+  //     (t) => t._id === Config.customThemeId
+  //   );
+  //   if (customTheme === undefined) {
+  //     Notifications.add("Custom theme does not exist!", -1);
+  //     return;
+  //   }
+  //   const newTheme = {
+  //     name: themeName,
+  //     colors: newColors,
+  //   };
+  //   Loader.show();
+  //   await DB.editCustomTheme(customTheme._id, newTheme);
+  //   Loader.hide();
+  // }
   UpdateConfig.setCustomThemeColors(newColors);
   Notifications.add("Custom theme saved", 1);
 
