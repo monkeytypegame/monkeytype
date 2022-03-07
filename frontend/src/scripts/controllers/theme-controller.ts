@@ -186,7 +186,7 @@ export const apply = async (
   themeIdentifier: string,
   isPreview = false
 ): Promise<void> => {
-  if (custom === true) {
+  if (custom) {
     if (firebase.auth().currentUser !== null)
       applyCustom(themeIdentifier, isPreview);
     else applyTempCustom(isPreview);
@@ -310,18 +310,16 @@ window
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   const userLoggedIn = firebase.auth().currentUser !== null;
-  if (
-    eventKey === "theme" ||
-    eventKey === "customTheme" ||
-    eventKey === "customThemeId" ||
-    eventKey === "customThemeColors"
-  ) {
-    clearPreview();
-    if (Config.customTheme) {
-      if (userLoggedIn) applyCustom(Config.customThemeId);
-      else applyTempCustom();
-    } else applyPreset(Config.theme);
+  if (eventKey === "theme") {
+    applyPreset(eventValue as string);
   }
+  if (eventKey === "customTheme" || eventKey === "customThemeId") {
+    if (!Config.customTheme) return;
+    if (userLoggedIn) applyCustom(Config.customThemeId);
+    else applyTempCustom();
+  }
+  if (eventKey === "customThemeColors" && !userLoggedIn && Config.customTheme)
+    applyTempCustom();
   if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();

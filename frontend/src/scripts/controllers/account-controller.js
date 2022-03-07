@@ -24,6 +24,7 @@ import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as ThemeController from "../controllers/theme-controller";
+import { refreshButtons } from "../settings/theme-picker";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -71,6 +72,7 @@ export async function getDataAndInit() {
       Config.customTheme,
       Config.customTheme ? Config.customThemeId : Config.theme
     );
+    refreshButtons();
   } catch (e) {
     AccountButton.loading(false);
     if (e?.response?.status === 429) {
