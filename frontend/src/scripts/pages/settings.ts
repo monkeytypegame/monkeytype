@@ -401,6 +401,9 @@ export async function fillSettingsPage(): Promise<void> {
     $(".pageSettings .tip").addClass("hidden");
   }
 
+  // Themes
+  ThemePicker.refreshButtons();
+
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
   const groups = await Misc.getLanguageGroups();
