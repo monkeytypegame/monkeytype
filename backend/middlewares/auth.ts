@@ -1,6 +1,4 @@
-import _ from "lodash";
 import { compare } from "bcrypt";
-import UsersDAO from "../dao/user";
 import ApeKeysDAO from "../dao/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
@@ -156,10 +154,13 @@ async function authenticateWithApeKey(
   const decodedKey = base64UrlDecode(key);
   const [uid, keyId, apeKey] = decodedKey.split(".");
 
-  const keyOwner = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-  const targetApeKey = _.get(keyOwner.apeKeys, keyId);
+  const targetApeKey = await ApeKeysDAO.getApeKey(uid, keyId);
 
-  if (!targetApeKey?.enabled) {
+  if (!targetApeKey) {
+    throw new MonkeyError(404, "ApeKey not found");
+  }
+
+  if (!targetApeKey.enabled) {
     const { code, message } = statuses.APE_KEY_INACTIVE;
     throw new MonkeyError(code, message);
   }
@@ -171,12 +172,12 @@ async function authenticateWithApeKey(
     throw new MonkeyError(code, message);
   }
 
-  await ApeKeysDAO.updateLastUsedOn(keyOwner, keyId);
+  await ApeKeysDAO.updateLastUsedOn(uid, keyId);
 
   return {
     type: "ApeKey",
     uid,
-    email: keyOwner.email,
+    email: "",
   };
 }
 

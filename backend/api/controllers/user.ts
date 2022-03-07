@@ -1,4 +1,3 @@
-import _ from "lodash";
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
@@ -6,10 +5,6 @@ import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
-
-function cleanUser(user: MonkeyTypes.User): Omit<MonkeyTypes.User, "apeKeys"> {
-  return _.omit(user, "apeKeys");
-}
 
 class UserController {
   static async createNewUser(
@@ -106,7 +101,7 @@ class UserController {
     const agentLog = buildAgentLog(req);
     Logger.log("user_data_requested", agentLog, uid);
 
-    return new MonkeyResponse("User data retrieved", cleanUser(userInfo));
+    return new MonkeyResponse("User data retrieved", userInfo);
   }
 
   static async linkDiscord(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
