@@ -11,6 +11,7 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
+import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
 
 type SettingsGroups = {
@@ -926,8 +927,35 @@ $("#exportSettingsButton").click(() => {
   );
 });
 
-$(".pageSettings .sectionGroupTitle").click((e) => {
+$("#shareCustomThemeButton").on("click", () => {
+  const share: string[] = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (_, element) => {
+      share.push($(element).attr("value") as string);
+    }
+  );
+
+  const url =
+    "https://monkeytype.com?" +
+    Misc.objectToQueryString({ customTheme: share });
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function () {
+      // CustomThemePopup.show(url);
+    }
+  );
+});
+
+$(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
+});
+
+$(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
+  ApeKeysPopup.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(

@@ -211,13 +211,17 @@ class UserController {
     return new MonkeyResponse("Leaderboard memory updated");
   }
 
-  static async getCustomThemes(req, _res): Promise<MonkeyResponse> {
+  static async getCustomThemes(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const customThemes = await UsersDAO.getThemes(uid);
     return new MonkeyResponse("Custom themes retrieved", customThemes);
   }
 
-  static async addCustomTheme(req, _res): Promise<MonkeyResponse> {
+  static async addCustomTheme(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const customTheme = req.body;
 
@@ -227,19 +231,33 @@ class UserController {
     });
   }
 
-  static async removeCustomTheme(req, _res): Promise<MonkeyResponse> {
+  static async removeCustomTheme(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { themeId } = req.body;
     await UsersDAO.removeTheme(uid, themeId);
     return new MonkeyResponse("Custom theme removed");
   }
 
-  static async editCustomTheme(req, _res): Promise<MonkeyResponse> {
+  static async editCustomTheme(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
     const { themeId, theme } = req.body;
 
     await UsersDAO.editTheme(uid, themeId, theme);
     return new MonkeyResponse("Custom theme updated");
+  }
+
+  static async getPersonalBests(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { mode, mode2 } = req.params;
+
+    const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
+    return new MonkeyResponse("Personal bests retrieved", data);
   }
 }
 

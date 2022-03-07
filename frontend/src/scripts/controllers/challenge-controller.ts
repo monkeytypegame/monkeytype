@@ -271,6 +271,7 @@ export async function setup(challengeName: string): Promise<boolean> {
 ConfigEvent.subscribe((eventKey) => {
   if (
     [
+      "difficulty",
       "numbers",
       "punctuation",
       "mode",

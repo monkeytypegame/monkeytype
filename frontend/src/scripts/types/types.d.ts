@@ -250,6 +250,18 @@ declare namespace MonkeyTypes {
     hash?: string;
   }
 
+  type ApeKey = {
+    name: string;
+    enabled: boolean;
+    createdOn: number;
+    modifiedOn: number;
+    lastUsedOn: number;
+  };
+
+  interface ApeKeys {
+    [key: string]: ApeKey;
+  }
+
   interface Config {
     theme: string;
     themeLight: string;

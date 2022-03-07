@@ -145,8 +145,7 @@ declare namespace Ape {
       generate: (name: string, enabled: boolean) => EndpointData;
       update: (
         apeKeyId: string,
-        name: string,
-        enabled: boolean
+        updates: { name?: string; enabled?: boolean }
       ) => EndpointData;
       delete: (apeKeyId: string) => EndpointData;
     };
