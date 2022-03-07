@@ -17,7 +17,7 @@
   },
   {
     "name": "nepali",
-    "languages": ["nepali"]
+    "languages": ["nepali", "nepali_1k"]
   },
   {
     "name": "french",
@@ -174,7 +174,7 @@
   },
   {
     "name": "persian",
-    "languages": ["persian"]
+    "languages": ["persian", "persian_1k", "persian_5k"]
   },
   {
     "name": "kazakh",
