@@ -268,7 +268,6 @@ declare namespace MonkeyTypes {
     themeDark: string;
     autoSwitchTheme: boolean;
     customTheme: bool;
-    customThemeId: string;
     customThemeColors: string[];
     favThemes: string[];
     showKeyTips: boolean;

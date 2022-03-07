@@ -1183,20 +1183,6 @@ export function setCustomTheme(
   return true;
 }
 
-export function setCustomThemeId(customId: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("custom theme id", customId, ["string"]))
-    return false;
-
-  const propertyName = "customThemeId";
-
-  config.customThemeId = customId;
-
-  saveToLocalStorage(propertyName, nosave);
-  ConfigEvent.dispatch(propertyName, config.customThemeId);
-
-  return true;
-}
-
 export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
@@ -1231,14 +1217,12 @@ export function setThemeDark(name: string, nosave?: boolean): boolean {
 function setThemes(
   theme: string,
   customState: boolean,
-  customId: string,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("themes", theme, ["string"])) return false;
 
   config.theme = theme;
   config.customTheme = customState;
-  config.customThemeId = customId;
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("setThemes", customState);
 
@@ -1654,12 +1638,7 @@ export function apply(
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setAutoSwitchTheme(configObj.autoSwitchTheme, true);
-    setThemes(
-      configObj.theme,
-      configObj.customTheme,
-      configObj.customThemeId,
-      true
-    );
+    setThemes(configObj.theme, configObj.customTheme, true);
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
