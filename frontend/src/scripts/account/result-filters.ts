@@ -67,7 +67,6 @@ function save(): void {
 }
 
 export function load(): void {
-  // let newTags = $.cookie("activeTags");
   console.log("loading filters");
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
