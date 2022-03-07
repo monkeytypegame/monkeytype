@@ -1,86 +1,92 @@
 import _ from "lodash";
-import UsersDAO from "./user";
-import { ObjectId } from "mongodb";
-import MonkeyError from "../utils/error";
+import db from "../init/db";
+import { Filter, ObjectId, MatchKeysAndValues } from "mongodb";
 
-function checkIfKeyExists(
-  apeKeys: MonkeyTypes.User["apeKeys"],
+const COLLECTION_NAME = "ape-keys";
+
+function getApeKeyFilter(
+  uid: string,
   keyId: string
-): void {
-  if (!_.has(apeKeys, keyId)) {
-    throw new MonkeyError(404, "Could not find ApeKey");
-  }
+): Filter<MonkeyTypes.ApeKey> {
+  return {
+    _id: new ObjectId(keyId),
+    uid,
+  };
 }
 
 class ApeKeysDAO {
-  static async getApeKeys(uid: string): Promise<MonkeyTypes.User["apeKeys"]> {
-    const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    const userApeKeys = user.apeKeys ?? {};
-    return userApeKeys;
+  static async getApeKeys(uid: string): Promise<MonkeyTypes.ApeKey[]> {
+    return await db
+      .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
+      .find({ uid })
+      .toArray();
+  }
+
+  static async getApeKey(
+    uid: string,
+    keyId: string
+  ): Promise<MonkeyTypes.ApeKey | null> {
+    return await db
+      .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
+      .findOne(getApeKeyFilter(uid, keyId));
   }
 
   static async countApeKeysForUser(uid: string): Promise<number> {
-    const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    return _.size(user.apeKeys);
+    const apeKeys = await this.getApeKeys(uid);
+    return _.size(apeKeys);
   }
 
-  static async addApeKey(
-    uid: string,
-    apeKey: MonkeyTypes.ApeKey
-  ): Promise<string> {
-    const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
+  static async addApeKey(apeKey: MonkeyTypes.ApeKey): Promise<string> {
+    const apeKeyId = new ObjectId();
 
-    const apeKeyId = new ObjectId().toHexString();
+    await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).insertOne({
+      _id: apeKeyId,
+      ...apeKey,
+    });
 
-    const apeKeys = {
-      ...user.apeKeys,
-      [apeKeyId]: apeKey,
-    };
-
-    await UsersDAO.setApeKeys(uid, apeKeys);
-
-    return apeKeyId;
+    return apeKeyId.toHexString();
   }
 
-  static async updateApeKey(
+  private static async updateApeKey(
     uid: string,
     keyId: string,
-    name?: string,
-    enabled?: boolean
+    updates: MatchKeysAndValues<MonkeyTypes.ApeKey>
   ): Promise<void> {
-    const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    checkIfKeyExists(user.apeKeys, keyId);
+    await db
+      .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
+      .updateOne(getApeKeyFilter(uid, keyId), {
+        $inc: { useCount: _.has(updates, "lastUsedOn") ? 1 : 0 },
+        $set: _.pickBy(updates, (value) => !_.isNil(value)),
+      });
+  }
 
-    const apeKey = user.apeKeys![keyId];
-
-    const updatedApeKey: MonkeyTypes.ApeKey = {
-      ...apeKey,
+  static async editApeKey(
+    uid: string,
+    keyId: string,
+    name: string,
+    enabled: boolean
+  ): Promise<void> {
+    const apeKeyUpdates = {
+      name,
+      enabled,
       modifiedOn: Date.now(),
-      name: name ?? apeKey.name,
-      enabled: _.isNil(enabled) ? apeKey.enabled : enabled,
     };
 
-    user.apeKeys![keyId] = updatedApeKey;
+    await this.updateApeKey(uid, keyId, apeKeyUpdates);
+  }
 
-    await UsersDAO.setApeKeys(uid, user.apeKeys);
+  static async updateLastUsedOn(uid: string, keyId: string): Promise<void> {
+    const apeKeyUpdates = {
+      lastUsedOn: Date.now(),
+    };
+
+    await this.updateApeKey(uid, keyId, apeKeyUpdates);
   }
 
   static async deleteApeKey(uid: string, keyId: string): Promise<void> {
-    const user = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
-    checkIfKeyExists(user.apeKeys, keyId);
-
-    const apeKeys = _.omit(user.apeKeys, keyId);
-    await UsersDAO.setApeKeys(uid, apeKeys);
-  }
-
-  static async updateLastUsedOn(
-    user: MonkeyTypes.User,
-    keyId: string
-  ): Promise<void> {
-    checkIfKeyExists(user.apeKeys, keyId);
-
-    user.apeKeys![keyId].lastUsedOn = Date.now();
-    await UsersDAO.setApeKeys(user.uid, user.apeKeys);
+    await db
+      .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
+      .deleteOne(getApeKeyFilter(uid, keyId));
   }
 }
 

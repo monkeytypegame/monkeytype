@@ -62,16 +62,17 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     cannotReport?: boolean;
-    apeKeys?: Record<string, ApeKey>;
     banned?: boolean;
   }
 
   interface ApeKey {
+    uid: string;
     name: string;
     hash: string;
     createdOn: number;
     modifiedOn: number;
     lastUsedOn: number;
+    useCount: number;
     enabled: boolean;
   }
 
