@@ -372,9 +372,23 @@
     </div>
     <div id="customTextPopupWrapper" class="popupWrapper hidden">
       <div id="customTextPopup" action="">
-        <div class="wordfilter button">
-          <i class="fas fa-filter"></i>
-          Words filter
+        <div class="buttonsTop">
+          <div class="button saveCustomText">
+            <i class="fas fa-save"></i>
+            Save
+          </div>
+          <div class="button showSavedTexts">
+            <i class="fas fa-folder"></i>
+            Show saved texts
+          </div>
+          <div class="button wordfilter">
+            <i class="fas fa-filter"></i>
+            Words filter
+          </div>
+        </div>
+        <div class="savedTexts hidden" style="display: none">
+          <div class="title">saved texts</div>
+          <div class="buttons"></div>
         </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
@@ -417,6 +431,12 @@
           </label>
         </div>
         <div class="button apply">ok</div>
+      </div>
+    </div>
+    <div id="savedTextsPopupWrapper" class="popupWrapper hidden">
+      <div id="savedTextsPopup">
+        <div class="title">Saved texts</div>
+        <div class="list"></div>
       </div>
     </div>
     <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
