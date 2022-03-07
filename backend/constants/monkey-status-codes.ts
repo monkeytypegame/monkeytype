@@ -13,6 +13,8 @@ type Statuses = {
   MISSING_KEY_DATA: Status;
   BOT_DETECTED: Status;
   GIT_GUD: Status;
+  APE_KEY_INVALID: Status;
+  APE_KEY_INACTIVE: Status;
 };
 
 const statuses: Statuses = {
@@ -43,6 +45,14 @@ const statuses: Statuses = {
   GIT_GUD: {
     code: 469,
     message: "Git gud scrub",
+  },
+  APE_KEY_INVALID: {
+    code: 470,
+    message: "Invalid ApeKey",
+  },
+  APE_KEY_INACTIVE: {
+    code: 471,
+    message: "Ape is inactive",
   },
 };
 

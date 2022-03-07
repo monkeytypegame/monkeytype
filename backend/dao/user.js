@@ -10,7 +10,7 @@ class UsersDAO {
   static async addUser(name, email, uid) {
     const user = await db.collection("users").findOne({ uid });
     if (user)
-      throw new MonkeyError(400, "User document already exists", "addUser");
+      throw new MonkeyError(409, "User document already exists", "addUser");
     return await db
       .collection("users")
       .insertOne({ name, email, uid, addedAt: Date.now() });

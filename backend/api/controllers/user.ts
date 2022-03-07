@@ -76,7 +76,7 @@ class UserController {
     try {
       await UsersDAO.updateEmail(uid, newEmail);
     } catch (e) {
-      throw new MonkeyError(400, e.message, "update email", uid);
+      throw new MonkeyError(404, e.message, "update email", uid);
     }
 
     Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
@@ -95,7 +95,7 @@ class UserController {
         userInfo = await UsersDAO.addUser(undefined, email, uid);
       } else {
         throw new MonkeyError(
-          400,
+          404,
           "User not found. Could not recreate user document.",
           "Tried to recreate user document but either email or uid is nullish",
           uid
@@ -133,7 +133,7 @@ class UserController {
     const discordIdAvailable = await UsersDAO.isDiscordIdAvailable(discordId);
     if (!discordIdAvailable) {
       throw new MonkeyError(
-        400,
+        409,
         "This Discord account is already linked to a different account"
       );
     }
@@ -152,7 +152,7 @@ class UserController {
 
     const userInfo = await UsersDAO.getUser(uid);
     if (!userInfo.discordId) {
-      throw new MonkeyError(400, "User does not have a linked Discord account");
+      throw new MonkeyError(404, "User does not have a linked Discord account");
     }
 
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
