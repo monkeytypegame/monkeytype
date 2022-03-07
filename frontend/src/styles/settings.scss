@@ -358,7 +358,8 @@
       }
 
       .customTheme.button {
-        .delButton {
+        .delButton,
+        .editButton {
           overflow: hidden;
           width: 1.25rem;
           transition: 0.25s;
@@ -377,6 +378,10 @@
           }
         }
         &:hover {
+          .editButton {
+            width: 1.25rem;
+            opacity: 1;
+          }
           .delButton {
             width: 1.25rem;
             opacity: 1;

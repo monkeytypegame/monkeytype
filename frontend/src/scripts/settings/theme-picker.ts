@@ -129,7 +129,7 @@ export async function refreshButtons(): Promise<void> {
       customThemesEl.append(
         `<div class="customTheme button" customThemeId='${customTheme._id}' 
         style="color:${mainColor};background:${bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+        <div class="editButton"><i class="fas fa-pen"></i></div>
         <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
         <div class="delButton"><i class="fas fa-trash fa-fw"></i></div>
         </div>`
@@ -193,20 +193,6 @@ export async function refreshButtons(): Promise<void> {
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
-  const $nameField = $(
-    ".pageSettings .section.themes .tabContainer .customThemeEdit #name"
-  );
-
-  // if (firebase.auth().currentUser !== null) {
-  //   $nameField.val(
-  //     DB.getCustomThemeById(Config.customThemeId)?.name ?? "custom"
-  //   );
-  //   $nameField.attr({ readonly: false });
-  // } else {
-  $nameField.val("custom");
-  $nameField.attr({ readonly: true });
-  // }
-
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((_index, element: HTMLElement) => {
