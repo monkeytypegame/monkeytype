@@ -55,7 +55,7 @@ class ApeKeysDAO {
     await db
       .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
       .updateOne(getApeKeyFilter(uid, keyId), {
-        $inc: { useCount: updates.lastUsedOn ? 1 : 0 },
+        $inc: { useCount: _.has(updates, "lastUsedOn") ? 1 : 0 },
         $set: _.pickBy(updates, (value) => !_.isNil(value)),
       });
   }
