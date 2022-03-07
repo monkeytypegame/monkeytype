@@ -10,6 +10,7 @@ import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { Application, NextFunction, Response } from "express";
 import swStats from "swagger-stats";
+import SwaggerSpec from "../../swagger.json";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -37,6 +38,7 @@ function addApiRoutes(app: Application): void {
       uriPath: "/stats",
       authentication: process.env.MODE !== "dev",
       apdexThreshold: 100,
+      swaggerSpec: SwaggerSpec,
       onAuthenticate: (_req, username, password) => {
         return (
           username === process.env.STATS_USERNAME &&

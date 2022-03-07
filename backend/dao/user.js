@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
-import { updateAuthEmail } from "../utils/auth";
+import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -66,7 +66,7 @@ class UsersDAO {
   static async updateEmail(uid, email) {
     const user = await db.collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "update email");
-    await updateAuthEmail(uid, email);
+    await updateUserEmail(uid, email);
     await db.collection("users").updateOne({ uid }, { $set: { email } });
     return true;
   }
@@ -167,19 +167,7 @@ class UsersDAO {
   }
 
   static async checkIfPb(uid, user, result) {
-    const {
-      mode,
-      mode2,
-      acc,
-      consistency,
-      difficulty,
-      lazyMode,
-      language,
-      punctuation,
-      rawWpm,
-      wpm,
-      funbox,
-    } = result;
+    const { mode, funbox } = result;
 
     if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
       return false;
@@ -192,20 +180,7 @@ class UsersDAO {
     let lbpb = user.lbPersonalBests;
     if (!lbpb) lbpb = {};
 
-    let pb = checkAndUpdatePb(
-      user.personalBests,
-      lbpb,
-      mode,
-      mode2,
-      acc,
-      consistency,
-      difficulty,
-      lazyMode,
-      language,
-      punctuation,
-      rawWpm,
-      wpm
-    );
+    let pb = checkAndUpdatePb(user.personalBests, lbpb, result);
 
     if (pb.isPb) {
       await db
@@ -227,20 +202,7 @@ class UsersDAO {
       return [];
     }
 
-    const {
-      mode,
-      mode2,
-      acc,
-      consistency,
-      difficulty,
-      lazyMode,
-      language,
-      punctuation,
-      rawWpm,
-      wpm,
-      tags,
-      funbox,
-    } = result;
+    const { mode, tags, funbox } = result;
 
     if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
       return [];
@@ -262,20 +224,7 @@ class UsersDAO {
     let ret = [];
 
     tagsToCheck.forEach(async (tag) => {
-      let tagpb = checkAndUpdatePb(
-        tag.personalBests,
-        undefined,
-        mode,
-        mode2,
-        acc,
-        consistency,
-        difficulty,
-        lazyMode,
-        language,
-        punctuation,
-        rawWpm,
-        wpm
-      );
+      let tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
       if (tagpb.isPb) {
         ret.push(tag._id);
         await db
@@ -351,6 +300,15 @@ class UsersDAO {
 
   static async setApeKeys(uid, apeKeys) {
     await db.collection("users").updateOne({ uid }, { $set: { apeKeys } });
+  }
+
+  static async getPersonalBests(uid, mode, mode2) {
+    const user = await db.collection("users").findOne({ uid });
+    if (mode2) {
+      return user?.personalBests?.[mode]?.[mode2];
+    } else {
+      return user?.personalBests?.[mode];
+    }
   }
 }
 

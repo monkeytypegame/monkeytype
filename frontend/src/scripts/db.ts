@@ -95,7 +95,9 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      const newConfig = DefaultConfig;
+      const newConfig = {
+        ...DefaultConfig,
+      };
 
       for (const key in configData.config) {
         const value = configData.config[key];
@@ -180,6 +182,7 @@ export async function getUserResults(): Promise<boolean> {
     return true;
   }
 }
+
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,

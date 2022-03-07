@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { compare } from "bcrypt";
 import UsersDAO from "../dao/user";
+import ApeKeysDAO from "../dao/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
@@ -74,6 +75,7 @@ function authenticateWithBody(
   }
 
   return {
+    type: "Bearer",
     uid,
   };
 }
@@ -109,6 +111,7 @@ async function authenticateWithBearerToken(
     const decodedToken = await verifyIdToken(token);
 
     return {
+      type: "Bearer",
       uid: decodedToken.uid,
       email: decodedToken.email,
     };
@@ -154,13 +157,21 @@ async function authenticateWithApeKey(
 
     const keyOwner = (await UsersDAO.getUser(uid)) as MonkeyTypes.User;
     const targetApeKey = _.get(keyOwner.apeKeys, keyId);
+
+    if (!targetApeKey.enabled) {
+      throw new MonkeyError(400, "ApeKey is disabled");
+    }
+
     const isKeyValid = await compare(apeKey, targetApeKey?.hash);
 
     if (!isKeyValid) {
       throw new MonkeyError(400, "Invalid ApeKey");
     }
 
+    await ApeKeysDAO.updateLastUsedOn(keyOwner, keyId);
+
     return {
+      type: "ApeKey",
       uid,
       email: keyOwner.email,
     };

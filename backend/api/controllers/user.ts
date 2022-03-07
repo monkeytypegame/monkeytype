@@ -2,7 +2,7 @@ import _ from "lodash";
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
-import Logger from "../../utils/logger.js";
+import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
@@ -175,7 +175,6 @@ class UserController {
     const { tagId } = req.params;
 
     await UsersDAO.removeTagPb(uid, tagId);
-    [];
     return new MonkeyResponse("Tag PB cleared");
   }
 
@@ -210,6 +209,16 @@ class UserController {
 
     await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
     return new MonkeyResponse("Leaderboard memory updated");
+  }
+
+  static async getPersonalBests(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { mode, mode2 } = req.params;
+
+    const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
+    return new MonkeyResponse("Personal bests retrieved", data);
   }
 }
 

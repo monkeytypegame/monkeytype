@@ -32,7 +32,7 @@ class ApeKeysController {
 
     if (currentNumberOfApeKeys >= maxKeysPerUser) {
       throw new MonkeyError(
-        500,
+        400,
         "Maximum number of ApeKeys have been generated"
       );
     }
@@ -46,6 +46,7 @@ class ApeKeysController {
       hash: saltyHash,
       createdOn: Date.now(),
       modifiedOn: Date.now(),
+      lastUsedOn: -1,
     };
 
     const apeKeyId = await ApeKeysDAO.addApeKey(uid, apeKey);

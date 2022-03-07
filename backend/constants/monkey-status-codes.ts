@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 type Status = {
   code: number;
   message: string;
@@ -12,10 +14,6 @@ type Statuses = {
   BOT_DETECTED: Status;
   GIT_GUD: Status;
 };
-
-export function getCodesRangeStart(): number {
-  return 460;
-}
 
 const statuses: Statuses = {
   TEST_TOO_SHORT: {
@@ -47,5 +45,13 @@ const statuses: Statuses = {
     message: "Git gud scrub",
   },
 };
+
+const CUSTOM_STATUS_CODES = new Set(
+  _.map(statuses, (status: Status) => status.code)
+);
+
+export function isCustomCode(code: number): boolean {
+  return CUSTOM_STATUS_CODES.has(code);
+}
 
 export default statuses;
