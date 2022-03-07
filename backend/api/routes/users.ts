@@ -28,7 +28,7 @@ const customThemeNameValidation = joi
   .messages({
     "string.max": "The name must not exceed 16 characters",
     "string.pattern.base":
-      "The name can only contain numbers, alphabets and the following: _ . -",
+      "Name cannot contain special characters. Can include _ . and -",
   });
 
 const customThemeColorsValidation = joi
