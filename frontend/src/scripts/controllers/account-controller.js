@@ -273,8 +273,10 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   if (!user) {
     // Rizwan TODO: Find a more appropriate place for this code
-    ThemeController.applyTempCustom();
-    UpdateConfig.setCustomThemeId("");
+    if (Config.customTheme) {
+      ThemeController.applyTempCustom();
+      UpdateConfig.setCustomThemeId("");
+    }
   }
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
