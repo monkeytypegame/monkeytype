@@ -202,24 +202,18 @@ router.post(
 );
 
 router.get(
-  "/personalBests/:mode/",
+  "/personalBests",
   RateLimit.userGet,
   authenticateRequest({
-    isPublic: false,
     acceptApeKeys: true,
   }),
   ApeRateLimit,
-  asyncHandler(UserController.getPersonalBests)
-);
-
-router.get(
-  "/personalBests/:mode/:mode2",
-  RateLimit.userGet,
-  authenticateRequest({
-    isPublic: false,
-    acceptApeKeys: true,
+  validateRequest({
+    query: {
+      mode: joi.string().required(),
+      mode2: joi.string(),
+    },
   }),
-  ApeRateLimit,
   asyncHandler(UserController.getPersonalBests)
 );
 

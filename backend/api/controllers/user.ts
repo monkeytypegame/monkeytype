@@ -215,7 +215,7 @@ class UserController {
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    const { mode, mode2 } = req.params;
+    const { mode, mode2 } = req.query;
 
     const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
     return new MonkeyResponse("Personal bests retrieved", data);
