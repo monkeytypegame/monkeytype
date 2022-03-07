@@ -509,7 +509,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     ThemeController.set(true, Config.customThemeId);
   } else {
     UpdateConfig.setCustomThemeColors(newColors);
-    Notifications.add("Custom theme saved to config", 1);
+    Notifications.add("Custom theme saved", 1);
   }
 
   updateActiveTab(true);
