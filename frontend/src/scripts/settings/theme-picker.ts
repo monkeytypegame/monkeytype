@@ -11,29 +11,18 @@ import * as ConfigEvent from "../observables/config-event";
 import defaultConfig from "../constants/default-config";
 
 export function updateActiveButton(): void {
-  if (Config.customTheme) {
-    // if (firebase.auth().currentUser === null) return;
-    // const activeThemeId = Config.customThemeId;
-    // $(`.pageSettings .section.themes .customTheme.button`).removeClass(
-    //   "active"
-    // );
-    // $(
-    //   `.pageSettings .section.themes .customTheme.button[customThemeId=${activeThemeId}]`
-    // ).addClass("active");
-  } else {
-    let activeThemeName = Config.theme;
-    if (
-      Config.randomTheme !== "off" &&
-      Config.randomTheme !== "custom" &&
-      ThemeController.randomTheme !== null
-    ) {
-      activeThemeName = ThemeController.randomTheme as string;
-    }
-    $(`.pageSettings .section.themes .theme`).removeClass("active");
-    $(
-      `.pageSettings .section.themes .theme[theme=${activeThemeName}]`
-    ).addClass("active");
+  let activeThemeName = Config.theme;
+  if (
+    Config.randomTheme !== "off" &&
+    Config.randomTheme !== "custom" &&
+    ThemeController.randomTheme !== null
+  ) {
+    activeThemeName = ThemeController.randomTheme as string;
   }
+  $(`.pageSettings .section.themes .theme`).removeClass("active");
+  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
+    "active"
+  );
 }
 
 function updateColors(
