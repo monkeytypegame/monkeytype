@@ -1154,7 +1154,7 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
       exec: (): void => {
         if (firebase.auth().currentUser === null) {
           Notifications.add(
-            "Custom themes are available to logged in users only",
+            "Multiple Custom themes are available to logged in users only",
             0
           );
           return;
@@ -1230,42 +1230,34 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
 export const customThemeCommands: MonkeyTypes.CommandsGroup = {
   title: "Custom theme",
   configKey: "customTheme",
-  list: [],
-};
-
-export function updateCustomThemeCommands(): void {
-  customThemeCommands.list = [];
-
-  if (firebase.auth().currentUser === null) {
-    Notifications.add("Custom themes are available to logged in users only", 0);
-    return;
-  }
-  customThemeCommands.list.push({
-    id: "setCustomThemeOff",
-    display: "off",
-    configValue: false,
-    exec: (): void => {
-      UpdateConfig.setCustomTheme(false);
+  list: [
+    {
+      id: "setCustomThemeOff",
+      display: "off",
+      configValue: false,
+      exec: (): void => {
+        UpdateConfig.setCustomTheme(false);
+      },
     },
-  });
-
-  if (DB.getSnapshot().customThemes.length > 0) {
-    customThemeCommands.list.push({
+    {
       id: "setCustomThemeOn",
       display: "on",
       configValue: true,
       exec: (): void => {
-        if (DB.getSnapshot().customThemes.length === 0) {
-          Notifications.add("You need to create a custom theme first", 0);
-          return;
+        if (firebase.auth().currentUser !== null) {
+          if (DB.getSnapshot().customThemes.length === 0) {
+            Notifications.add("You need to create a custom theme first", 0);
+            return;
+          }
+
+          if (!DB.getCustomThemeById(Config.customThemeId))
+            UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
         }
-        if (!DB.getCustomThemeById(Config.customThemeId))
-          UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
         UpdateConfig.setCustomTheme(true);
       },
-    });
-  } else Notifications.add("You need to create a custom theme first");
-}
+    },
+  ],
+};
 
 export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
   title: "Custom themes list...",
@@ -1277,24 +1269,31 @@ export function updateCustomThemeListCommands(): void {
   customThemeListCommands.list = [];
 
   if (firebase.auth().currentUser === null) {
-    Notifications.add("Custom themes are available to logged in users only", 0);
-  } else if (DB.getSnapshot().customThemes.length > 0) {
-    DB.getSnapshot().customThemes.forEach((theme) => {
-      customThemeListCommands.list.push({
-        id: "setCustomThemeId" + theme._id,
-        display: theme.name,
-        configValue: theme._id,
-        hover: (): void => {
-          // previewTheme(theme.name);
-          ThemeController.preview(true, theme._id);
-        },
-        exec: (): void => {
-          UpdateConfig.setCustomThemeId(theme._id);
-          UpdateConfig.setCustomTheme(true);
-        },
-      });
+    Notifications.add(
+      "Multiple Custom themes are available to logged in users only",
+      0
+    );
+    return;
+  }
+  if (DB.getSnapshot().customThemes.length < 0) {
+    Notifications.add("You need to create a custom theme first", 0);
+    return;
+  }
+  DB.getSnapshot().customThemes.forEach((theme) => {
+    customThemeListCommands.list.push({
+      id: "setCustomThemeId" + theme._id,
+      display: theme.name,
+      configValue: theme._id,
+      hover: (): void => {
+        // previewTheme(theme.name);
+        ThemeController.preview(true, theme._id);
+      },
+      exec: (): void => {
+        UpdateConfig.setCustomThemeId(theme._id);
+        UpdateConfig.setCustomTheme(true);
+      },
     });
-  } else Notifications.add("You need to create a custom theme first", 0);
+  });
 }
 
 const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
@@ -2861,7 +2860,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: customThemeCommands,
-      beforeSubgroup: (): void => updateCustomThemeCommands(),
     },
     {
       id: "setCustomThemeId",
