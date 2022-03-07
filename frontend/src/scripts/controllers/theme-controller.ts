@@ -85,15 +85,39 @@ const loadStyle = async function (name: string): Promise<void> {
   });
 };
 
-export async function applyCustom(
+const updateThemeColors = async (
+  themeName: string,
+  colors: string[] | undefined = undefined
+): Promise<void> => {
+  ThemeColors.reset();
+  await loadStyle(themeName);
+  if (colors) {
+    colorVars.forEach((e, index) => {
+      document.documentElement.style.setProperty(e, colors[index]);
+    });
+  }
+  ThemeColors.update();
+};
+
+const updateUI = async (themeName: string): Promise<void> => {
+  const colors = await ThemeColors.getAll();
+  $(".current-theme .text").text(themeName.replace(/_/g, " "));
+  $(".keymap-key").attr("style", "");
+  ChartController.updateAllChartColors();
+  updateFavicon(128, 32);
+  $("#metaThemeColor").attr("content", colors.bg);
+};
+
+export const applyCustom = async (
   themeId: string,
   isPreview = false
-): Promise<void> {
+): Promise<void> => {
   clearCustomTheme();
   if (!DB.getSnapshot()) return; // The user has not yet loaded or is not signed in
+
   if (themeId.trim() === "" || themeId.trim() === "") {
     console.error("apply_custom got an empty value. calling apply_preset");
-    applyPreset("", isPreview);
+    applyPreset(Config.theme, isPreview);
   }
 
   const customThemes = DB.getSnapshot().customThemes;
@@ -111,18 +135,8 @@ export async function applyCustom(
     return;
   }
   const themeName = customTheme.name;
-  Misc.swapElements(
-    $('.pageSettings [tabContent="preset"]'),
-    $('.pageSettings [tabContent="custom"]'),
-    250
-  );
 
-  ThemeColors.reset();
-  await loadStyle("serika_dark");
-  colorVars.forEach((e, index) => {
-    document.documentElement.style.setProperty(e, customTheme.colors[index]);
-  });
-  ThemeColors.update();
+  await updateThemeColors("serika_dark", customTheme.colors);
 
   try {
     firebase.analytics().logEvent("changedCustomTheme", { theme: themeName });
@@ -132,41 +146,29 @@ export async function applyCustom(
   if (isPreview) return;
 
   UpdateConfig.setCustomThemeColors([...customTheme.colors]);
-  const colors = await ThemeColors.getAll();
-  $(".current-theme .text").text("custom: " + themeName.replace(/_/g, " "));
-  $(".keymap-key").attr("style", "");
-  ChartController.updateAllChartColors();
-  updateFavicon(128, 32);
-  $("#metaThemeColor").attr("content", colors.bg);
-}
+  updateUI("custom: " + themeName);
+};
 
-export async function applyTempCustom(): Promise<void> {
-  ThemeColors.reset();
-  await loadStyle("serika_dark");
-  colorVars.forEach((e, index) => {
-    document.documentElement.style.setProperty(
-      e,
-      Config.customThemeColors[index]
-    );
-  });
-  ThemeColors.update();
-}
+export const applyTempCustom = async (isPreview = false): Promise<void> => {
+  await updateThemeColors("serika_dark", Config.customThemeColors);
 
-export async function applyPreset(
+  try {
+    firebase.analytics().logEvent("changedCustomTheme");
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
+
+  if (!isPreview) updateUI("custom");
+};
+
+export const applyPreset = async (
   themeName: string,
   isPreview = false
-): Promise<void> {
+): Promise<void> => {
   clearCustomTheme();
 
   if (themeName.trim() === "") themeName = Config.theme;
-  Misc.swapElements(
-    $('.pageSettings [tabContent="custom"]'),
-    $('.pageSettings [tabContent="preset"]'),
-    250
-  );
-  ThemeColors.reset();
-  await loadStyle(themeName);
-  ThemeColors.update();
+  await updateThemeColors(themeName);
 
   try {
     firebase.analytics().logEvent("changedTheme", { theme: themeName });
@@ -174,38 +176,33 @@ export async function applyPreset(
     console.log("Analytics unavailable");
   }
 
-  if (isPreview) return;
-
-  const colors = await ThemeColors.getAll();
-  $(".current-theme .text").text(themeName.replace(/_/g, " "));
-  $(".keymap-key").attr("style", "");
-  ChartController.updateAllChartColors();
-  updateFavicon(128, 32);
-  $("#metaThemeColor").attr("content", colors.bg);
-}
+  if (!isPreview) updateUI(themeName);
+};
 
 export const apply = async (
   custom: boolean,
   themeIdentifier: string,
   isPreview = false
 ): Promise<void> => {
-  if (custom === true && themeIdentifier !== "")
-    applyCustom(themeIdentifier, isPreview);
-  else
+  if (custom === true) {
+    if (firebase.auth().currentUser !== null)
+      applyCustom(themeIdentifier, isPreview);
+    else applyTempCustom(isPreview);
+  } else
     applyPreset(
       themeIdentifier !== "" ? themeIdentifier : Config.theme,
       isPreview
     );
 };
 
-export function preview(
+export const preview = (
   custom: boolean,
   themeIdentifier: string,
   randomTheme = false
-): void {
+): void => {
   apply(custom, themeIdentifier, !randomTheme);
   isPreviewingTheme = true;
-}
+};
 
 export const set = async (
   custom: boolean,
@@ -217,8 +214,10 @@ export const clearPreview = (): void => {
 
   isPreviewingTheme = false;
   randomTheme = null;
-  if (Config.customTheme) applyCustom(Config.customThemeId);
-  else applyPreset(Config.theme);
+  if (Config.customTheme) {
+    if (firebase.auth().currentUser === null) applyTempCustom();
+    else applyCustom(Config.customThemeId);
+  } else applyPreset(Config.theme);
 };
 
 export function randomizeTheme(): void {
@@ -309,17 +308,16 @@ window
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   const userLoggedIn = firebase.auth().currentUser !== null;
-  if (eventKey === "customThemeId")
-    if (userLoggedIn && Config.customTheme) set(true, eventValue as string);
-  if (eventKey === "customTheme") {
-    if (eventValue) {
-      if (!userLoggedIn) applyTempCustom();
-      else set(true, Config.customThemeId);
-    } else set(false, Config.theme);
-  }
-  if (eventKey === "theme") {
+  if (
+    eventKey === "theme" ||
+    eventKey === "customTheme" ||
+    eventKey === "customThemeId"
+  ) {
     clearPreview();
-    set(false, eventValue as string);
+    if (Config.customTheme) {
+      if (userLoggedIn) applyCustom(Config.customThemeId);
+      else applyTempCustom();
+    } else applyPreset(Config.theme);
   }
   if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
