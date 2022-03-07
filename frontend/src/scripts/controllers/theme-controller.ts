@@ -314,9 +314,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     applyPreset(eventValue as string);
   }
   if (eventKey === "customTheme" || eventKey === "customThemeId") {
-    if (!Config.customTheme) return;
-    if (userLoggedIn) applyCustom(Config.customThemeId);
-    else applyTempCustom();
+    if (Config.customTheme) {
+      if (userLoggedIn) applyCustom(Config.customThemeId);
+      else applyTempCustom();
+    } else applyPreset(Config.theme);
   }
   if (eventKey === "customThemeColors" && !userLoggedIn && Config.customTheme)
     applyTempCustom();
