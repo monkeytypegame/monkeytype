@@ -362,6 +362,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
 });
 
 export function signIn() {
+  UpdateConfig.setChangedBeforeDb(false);
   authListener();
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
@@ -416,6 +417,7 @@ export function signIn() {
 }
 
 export async function signInWithGoogle() {
+  UpdateConfig.setChangedBeforeDb(false);
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
   authListener();
