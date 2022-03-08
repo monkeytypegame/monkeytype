@@ -1166,19 +1166,11 @@ export function setAutoSwitchTheme(
   return true;
 }
 
-export function setCustomTheme(
-  customThemeOn: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("custom theme", customThemeOn, ["boolean"]))
-    return false;
-
-  const propertyName = "customTheme";
-
-  config.customTheme = customThemeOn;
-
-  saveToLocalStorage(propertyName, nosave);
-  ConfigEvent.dispatch(propertyName, config.customTheme);
+export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
+  if (!isConfigValueValid("custom theme", boolean, ["boolean"])) return false;
+  config.customTheme = boolean;
+  saveToLocalStorage("customTheme", nosave);
+  ConfigEvent.dispatch("customTheme", config.customTheme);
 
   return true;
 }
