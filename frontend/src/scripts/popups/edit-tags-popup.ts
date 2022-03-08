@@ -145,13 +145,13 @@ async function apply(): Promise<void> {
   Loader.hide();
 }
 
-$("#tagsWrapper").click((e) => {
+$("#tagsWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "tagsWrapper") {
     hide();
   }
 });
 
-$("#tagsWrapper #tagsEdit .button").click(() => {
+$("#tagsWrapper #tagsEdit .button").on("click", () => {
   apply();
 });
 

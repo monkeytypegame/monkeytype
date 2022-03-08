@@ -141,7 +141,7 @@ export function hidePopup(): void {
   }
 }
 
-$("#practiseWordsPopupWrapper").click((e) => {
+$("#practiseWordsPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "practiseWordsPopupWrapper") {
     hidePopup();
   }

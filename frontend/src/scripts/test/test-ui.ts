@@ -795,7 +795,7 @@ $(document).on("click", "#testModesNotice .text-button.blind", () => {
   UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
-$(".pageTest #copyWordsListButton").click(async () => {
+$(".pageTest #copyWordsListButton").on("click", async () => {
   try {
     let words;
     if (Config.mode == "zen") {
@@ -812,7 +812,7 @@ $(".pageTest #copyWordsListButton").click(async () => {
   }
 });
 
-$(".pageTest #toggleBurstHeatmap").click(async () => {
+$(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 

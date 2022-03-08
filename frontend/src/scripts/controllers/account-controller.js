@@ -685,7 +685,7 @@ async function signUp() {
   }
 }
 
-$(".pageLogin #forgotPasswordButton").click((e) => {
+$(".pageLogin #forgotPasswordButton").on("click", (e) => {
   let email = prompt("Email address");
   if (email) {
     firebase
@@ -709,22 +709,22 @@ $(".pageLogin .login input").keyup((e) => {
   }
 });
 
-$(".pageLogin .login .button.signIn").click((e) => {
+$(".pageLogin .login .button.signIn").on("click", (e) => {
   UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").click((e) => {
+$(".pageLogin .login .button.signInWithGoogle").on("click", (e) => {
   UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
 
-// $(".pageLogin .login .button.signInWithGitHub").click((e) => {
+// $(".pageLogin .login .button.signInWithGitHub").on("click",(e) => {
 // UpdateConfig.setChangedBeforeDb(false);
 // signInWithGitHub();
 // });
 
-$(".signOut").click((e) => {
+$(".signOut").on("click", (e) => {
   signOut();
 });
 
@@ -735,7 +735,7 @@ $(".pageLogin .register input").keyup((e) => {
   }
 });
 
-$(".pageLogin .register .button").click((e) => {
+$(".pageLogin .register .button").on("click", (e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
   signUp();
 });

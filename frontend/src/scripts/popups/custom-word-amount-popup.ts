@@ -55,7 +55,7 @@ function apply(): void {
   hide();
 }
 
-$("#customWordAmountPopupWrapper").click((e) => {
+$("#customWordAmountPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "customWordAmountPopupWrapper") {
     hide();
   }
@@ -67,7 +67,7 @@ $("#customWordAmountPopup input").keypress((e) => {
   }
 });
 
-$("#customWordAmountPopup .button").click(() => {
+$("#customWordAmountPopup .button").on("click", () => {
   apply();
 });
 

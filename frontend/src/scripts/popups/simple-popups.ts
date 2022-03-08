@@ -934,13 +934,14 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
+$(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
+  "click",
   () => {
     list["unlinkDiscord"].show();
   }
 );
 
-$("#resetSettingsButton").click(() => {
+$("#resetSettingsButton").on("click", () => {
   list["resetSettings"].show();
 });
 

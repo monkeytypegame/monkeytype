@@ -347,7 +347,7 @@ export function updateTags(): void {
 
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
-).click(".button", (e) => {
+).on("click", ".button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
     .attr("group") as MonkeyTypes.Group;
@@ -401,7 +401,7 @@ $(
   save();
 });
 
-$(".pageAccount .topFilters .button.allFilters").click(() => {
+$(".pageAccount .topFilters .button.allFilters").on("click", () => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
@@ -422,7 +422,7 @@ $(".pageAccount .topFilters .button.allFilters").click(() => {
   save();
 });
 
-$(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
+$(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
@@ -500,7 +500,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   save();
 });
 
-$(".pageAccount .topFilters .button.toggleAdvancedFilters").click(() => {
+$(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
   $(".pageAccount .filterButtons").slideToggle(250);
   $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
     "active"

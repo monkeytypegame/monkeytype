@@ -56,12 +56,12 @@ function hide(): void {
   }
 }
 
-$("#customThemeShareWrapper").click((e) => {
+$("#customThemeShareWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "customThemeShareWrapper") {
     hide();
   }
 });
 
-$("#customThemeShare .button").click(() => {
+$("#customThemeShare .button").on("click", () => {
   hide();
 });

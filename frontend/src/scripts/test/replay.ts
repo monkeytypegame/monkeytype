@@ -287,7 +287,7 @@ function getReplayExport(): string {
   });
 }
 
-$(".pageTest #playpauseReplayButton").click(() => {
+$(".pageTest #playpauseReplayButton").on("click", () => {
   if (toggleButton?.className === "fas fa-play") {
     playReplay();
   } else if (toggleButton?.className === "fas fa-pause") {

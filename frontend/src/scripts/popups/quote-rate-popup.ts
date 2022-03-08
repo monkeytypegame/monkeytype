@@ -210,7 +210,7 @@ async function submit(): Promise<void> {
   $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
 }
 
-$("#quoteRatePopupWrapper").click((e) => {
+$("#quoteRatePopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "quoteRatePopupWrapper") {
     hide();
   }
@@ -221,7 +221,7 @@ $("#quoteRatePopup .stars .star").hover((e) => {
   refreshStars(ratingHover);
 });
 
-$("#quoteRatePopup .stars .star").click((e) => {
+$("#quoteRatePopup .stars .star").on("click", (e) => {
   const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
   rating = ratingHover;
 });
@@ -231,11 +231,11 @@ $("#quoteRatePopup .stars .star").mouseout(() => {
   refreshStars();
 });
 
-$("#quoteRatePopup .submitButton").click(() => {
+$("#quoteRatePopup .submitButton").on("click", () => {
   submit();
 });
 
-$(".pageTest #rateQuoteButton").click(async () => {
+$(".pageTest #rateQuoteButton").on("click", async () => {
   // TODO remove this when done with TestWords
   show(TestWords.randomQuote as unknown as MonkeyTypes.Quote);
 });

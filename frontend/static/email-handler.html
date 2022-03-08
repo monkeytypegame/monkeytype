@@ -350,7 +350,7 @@
             // Error: invalid mode.
           }
 
-          $("#middle .resetPassword .button").click(() => {
+          $("#middle .resetPassword .button").on("click", () => {
             handleResetPassword(actionCode, continueUrl);
           });
 

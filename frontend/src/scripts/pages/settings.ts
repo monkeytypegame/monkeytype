@@ -910,11 +910,11 @@ $(document).on(
   }
 );
 
-$("#importSettingsButton").click(() => {
+$("#importSettingsButton").on("click", () => {
   ImportExportSettingsPopup.show("import");
 });
 
-$("#exportSettingsButton").click(() => {
+$("#exportSettingsButton").on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
@@ -926,7 +926,7 @@ $("#exportSettingsButton").click(() => {
   );
 });
 
-$("#shareCustomThemeButton").click(() => {
+$("#shareCustomThemeButton").on("click", () => {
   const share: string[] = [];
   $.each(
     $(".pageSettings .section.customTheme [type='color']"),

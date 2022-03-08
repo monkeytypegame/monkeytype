@@ -79,7 +79,8 @@ async function apply(): Promise<void> {
 
     const tags = DB.getSnapshot().tags || [];
 
-    const activeTagIds: string[] = tags.filter((tag: MonkeyTypes.Tag) => tag.active)
+    const activeTagIds: string[] = tags
+      .filter((tag: MonkeyTypes.Tag) => tag.active)
       .map((tag: MonkeyTypes.Tag) => tag._id);
     configChanges.tags = activeTagIds;
   }
@@ -129,13 +130,11 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove preset: " + response.message, -1);
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach(
-        (preset: MonkeyTypes.Preset, index: number) => {
-          if (preset._id === presetId) {
-            snapshotPresets.splice(index, 1);
-          }
+      snapshotPresets.forEach((preset: MonkeyTypes.Preset, index: number) => {
+        if (preset._id === presetId) {
+          snapshotPresets.splice(index, 1);
         }
-      );
+      });
     }
   }
 
@@ -143,13 +142,13 @@ async function apply(): Promise<void> {
   Loader.hide();
 }
 
-$("#presetWrapper").click((e) => {
+$("#presetWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "presetWrapper") {
     hide();
   }
 });
 
-$("#presetWrapper #presetEdit .button").click(() => {
+$("#presetWrapper #presetEdit .button").on("click", () => {
   apply();
 });
 

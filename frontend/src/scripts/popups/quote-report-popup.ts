@@ -149,7 +149,7 @@ $("#quoteReportPopup .submit").on("click", async () => {
   await submitReport();
 });
 
-$(".pageTest #reportQuoteButton").click(async () => {
+$(".pageTest #reportQuoteButton").on("click", async () => {
   show({
     quoteId: TestWords.randomQuote?.id,
     noAnim: false,

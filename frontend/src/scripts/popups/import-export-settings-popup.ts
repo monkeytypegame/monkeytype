@@ -48,11 +48,11 @@ function hide(): void {
   }
 }
 
-$("#settingsImport .button").click(() => {
+$("#settingsImport .button").on("click", () => {
   hide();
 });
 
-$("#settingsImportWrapper").click((e) => {
+$("#settingsImportWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "settingsImportWrapper") {
     hide();
   }

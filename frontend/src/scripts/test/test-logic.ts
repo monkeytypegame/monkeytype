@@ -1700,19 +1700,19 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   restart();
 });
 
-$("#practiseWordsPopup .button.missed").click(() => {
+$("#practiseWordsPopup .button.missed").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, false);
   restart(false, false, undefined, true);
 });
 
-$("#practiseWordsPopup .button.slow").click(() => {
+$("#practiseWordsPopup .button.slow").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(false, true);
   restart(false, false, undefined, true);
 });
 
-$("#practiseWordsPopup .button.both").click(() => {
+$("#practiseWordsPopup .button.both").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, true);
   restart(false, false, undefined, true);

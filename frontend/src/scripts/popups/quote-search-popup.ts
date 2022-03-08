@@ -205,7 +205,7 @@ $("#quoteSearchPopup .searchBox").on("keyup", (e) => {
   debouncedSearch(searchText);
 });
 
-$("#quoteSearchPopupWrapper").click((e) => {
+$("#quoteSearchPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hide();
   }

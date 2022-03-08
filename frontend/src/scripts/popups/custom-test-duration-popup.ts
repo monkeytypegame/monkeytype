@@ -121,7 +121,7 @@ function apply(): void {
   hide();
 }
 
-$("#customTestDurationPopupWrapper").click((e) => {
+$("#customTestDurationPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "customTestDurationPopupWrapper") {
     hide();
   }
@@ -135,7 +135,7 @@ $("#customTestDurationPopup input").keyup((e) => {
   }
 });
 
-$("#customTestDurationPopup .button").click(() => {
+$("#customTestDurationPopup .button").on("click", () => {
   apply();
 });
 

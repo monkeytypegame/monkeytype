@@ -496,7 +496,7 @@ $(document).on(
   }
 );
 
-$("#commandLineWrapper").click((e) => {
+$("#commandLineWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
     UpdateConfig.setFontFamily(Config.fontFamily, true);
@@ -693,7 +693,7 @@ $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
   show();
 });
 
-$(".supportButtons .button.ads").click(() => {
+$(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
   show();
 });
