@@ -198,7 +198,13 @@ export function randomizeTheme(): void {
     }
 
     if (previousTheme != randomTheme) {
-      Notifications.add(randomTheme.replace(/_/g, " "), 0);
+      let name = randomTheme.replace(/_/g, " ");
+      if (Config.randomTheme === "custom") {
+        name = DB.getSnapshot()
+          .customThemes.find((ct) => ct._id === randomTheme)!
+          .name.replace(/_/g, " ");
+      }
+      Notifications.add(name, 0);
     }
   });
 }
