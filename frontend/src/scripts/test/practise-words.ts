@@ -158,7 +158,7 @@ $("#practiseWordsPopup .button.both").on("focusout", (e) => {
   $("#practiseWordsPopup .missed").trigger("focus");
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#practiseWordsPopupWrapper").hasClass("hidden")

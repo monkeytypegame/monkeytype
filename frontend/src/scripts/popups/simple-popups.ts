@@ -1004,7 +1004,7 @@ $(document).on(
   }
 );
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();

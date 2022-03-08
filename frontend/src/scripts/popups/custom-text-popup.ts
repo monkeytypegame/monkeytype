@@ -201,7 +201,7 @@ $(document).on("click", "#top .config .customText .text-button", () => {
   show();
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#customTextPopupWrapper").hasClass("hidden")

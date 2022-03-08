@@ -32,9 +32,9 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
   if (layoutKeys.filter((v) => v === undefined).length > 2) return;
 
   if ((uppercase && caseState) || (!uppercase && !caseState)) return;
-  
+
   caseState = uppercase;
-  
+
   const index = caseState ? 1 : 0;
 
   for (let i = 0; i < layoutKeys.length; i++) {
@@ -96,7 +96,7 @@ async function buildKeymapStrings(): Promise<void> {
   }
 }
 
-$(document).keydown((e) => {
+$(document).on("keydown", (e) => {
   if (e.code === "ShiftLeft") {
     leftState = true;
     rightState = false;

@@ -555,7 +555,7 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   return false;
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();

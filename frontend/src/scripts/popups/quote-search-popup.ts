@@ -243,7 +243,7 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   }
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#quoteSearchPopupWrapper").hasClass("hidden")

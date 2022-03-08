@@ -368,7 +368,7 @@ $("#commandLine input").keyup((e) => {
 });
 
 $(document).ready(() => {
-  $(document).keydown((event) => {
+  $(document).on("keydown", (event) => {
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
       event.key === "Escape" ||
@@ -413,7 +413,7 @@ $(document).ready(() => {
   });
 });
 
-$("#commandInput input").keydown((e) => {
+$("#commandInput input").on("keydown", (e) => {
   if (e.key === "Enter") {
     //enter
     e.preventDefault();
@@ -526,7 +526,7 @@ $("#commandLineWrapper").on("click", (e) => {
 // }
 
 // let shiftedCommands = false;
-// $(document).keydown((e) => {
+// $(document).on("keydown", (e) => {
 //   if (e.key === "Shift") {
 //     if(shiftedCommands === false){
 //       shiftedCommands = true;
@@ -542,7 +542,7 @@ $("#commandLineWrapper").on("click", (e) => {
 //   }
 // });
 
-$(document).keydown((e) => {
+$(document).on("keydown", (e) => {
   // if (isPreviewingTheme) {
   // console.log("applying theme");
   // applyCustomThemeColors();

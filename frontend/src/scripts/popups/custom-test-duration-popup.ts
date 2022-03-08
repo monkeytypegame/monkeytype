@@ -146,7 +146,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   }
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#customTestDurationPopupWrapper").hasClass("hidden")

@@ -78,7 +78,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   }
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#customWordAmountPopupWrapper").hasClass("hidden")
