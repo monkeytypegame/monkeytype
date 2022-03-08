@@ -1168,6 +1168,7 @@ export function setAutoSwitchTheme(
 
 export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom theme", boolean, ["boolean"])) return false;
+
   config.customTheme = boolean;
   saveToLocalStorage("customTheme", nosave);
   ConfigEvent.dispatch("customTheme", config.customTheme);
