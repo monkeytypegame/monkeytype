@@ -28,11 +28,11 @@ export function show(): void {
         $(`${popup} textarea`).val(newtext);
         $(`${popup} .wordcount input`).val(CustomText.word);
         $(`${popup} .time input`).val(CustomText.time);
-        $(`${popup} textarea`).focus();
+        $(`${popup} textarea`).trigger("focus");
       });
   }
   setTimeout(() => {
-    $(`${popup} textarea`).focus();
+    $(`${popup} textarea`).trigger("focus");
   }, 150);
 }
 

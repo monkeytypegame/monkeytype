@@ -670,7 +670,7 @@ export function update(
       if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
-      $("#result").focus();
+      $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
     },

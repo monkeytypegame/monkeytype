@@ -118,7 +118,7 @@ export function showPopup(focus = false): void {
       .animate({ opacity: 1 }, 100, () => {
         if (focus) {
           console.log("focusing");
-          $("#practiseWordsPopup .missed").focus();
+          $("#practiseWordsPopup .missed").trigger("focus");
         }
       });
   }
@@ -155,7 +155,7 @@ $("#practiseWordsPopup .button").keypress((e) => {
 
 $("#practiseWordsPopup .button.both").on("focusout", (e) => {
   e.preventDefault();
-  $("#practiseWordsPopup .missed").focus();
+  $("#practiseWordsPopup .missed").trigger("focus");
 });
 
 $(document).keydown((event) => {

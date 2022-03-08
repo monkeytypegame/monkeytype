@@ -54,7 +54,7 @@ export async function show(options = defaultOptions): Promise<void> {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
-        $("#quoteReportPopup textarea").focus().select();
+        $("#quoteReportPopup textarea").trigger("focus").select();
       });
   }
 }

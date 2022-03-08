@@ -148,7 +148,7 @@ export async function show(clearText = true): Promise<void> {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         if (clearText) {
-          $("#quoteSearchPopup input").focus().select();
+          $("#quoteSearchPopup input").trigger("focus").select();
         }
         updateResults(quoteSearchInputValue);
       });

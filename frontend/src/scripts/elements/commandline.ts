@@ -16,7 +16,7 @@ function showInput(
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
   $("#commandInput input").val(defaultValue);
-  $("#commandInput input").focus();
+  $("#commandInput input").trigger("focus");
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
   if (defaultValue != "") {
@@ -175,7 +175,7 @@ export let show = (): void => {
   $("#commandLine input").val("");
   CommandlineLists.updateThemeCommands();
   updateSuggested();
-  $("#commandLine input").focus();
+  $("#commandLine input").trigger("focus");
 };
 
 function hide(): void {
@@ -549,7 +549,7 @@ $(document).keydown((e) => {
   // previewTheme(Config.theme, false);
   // }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLine input").focus();
+    $("#commandLine input").trigger("focus");
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
         useSingleListCommandLine(false);

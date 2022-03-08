@@ -65,7 +65,7 @@ export function reset(): void {
 
 export function focusWords(): void {
   if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").focus();
+    $("#wordsInput").trigger("focus");
   }
 }
 

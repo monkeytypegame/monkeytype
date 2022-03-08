@@ -184,7 +184,7 @@ class SimplePopup {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        $($("#simplePopup").find("input")[0]).focus();
+        $($("#simplePopup").find("input")[0]).trigger("focus");
       });
   }
 
