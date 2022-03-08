@@ -128,7 +128,7 @@ class SimplePopup {
                   autocomplete="off"
                 >${input.initVal}</textarea>
               `);
-            }else if (input.type === "checkbox") {
+            } else if (input.type === "checkbox") {
               el.find(".inputs").append(`
                 <label class="checkbox">
                   <input type="checkbox">
@@ -176,7 +176,7 @@ class SimplePopup {
     $.each($("#simplePopup input"), (_, el) => {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
-      }else{
+      } else {
         vals.push($(el).val() as string);
       }
     });
