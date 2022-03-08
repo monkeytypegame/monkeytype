@@ -215,6 +215,18 @@ function toggleFavourite(themeName: string): void {
   refreshButtons();
 }
 
+export function saveCustomThemeColors(): void {
+  const newColors: string[] = [];
+  $.each(
+    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
+    (_index, element) => {
+      newColors.push($(element).attr("value") as string);
+    }
+  );
+  UpdateConfig.setCustomThemeColors(newColors);
+  Notifications.add("Custom theme saved", 1);
+}
+
 export function updateActiveTab(forced = false): void {
   // Set force to true only when some change for the active tab has taken place
   // Prevent theme buttons from being added twice by doing an update only when the state has changed
