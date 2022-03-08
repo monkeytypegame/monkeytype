@@ -1,7 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../misc";
-import Config from "../config";
+import Config, * as UpdateConfig from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
@@ -121,6 +121,12 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     if (isCustom) {
       let colorValues = Config.customThemeColors;
       const snapshot = DB.getSnapshot();
+      if (isCustom && !isPreview && snapshot) {
+        const customColors =
+          snapshot.customThemes.find((e) => e._id === themeName)?.colors ?? [];
+        if (customColors.length > 0)
+          UpdateConfig.setCustomThemeColors(customColors);
+      }
       if (themeName !== "custom" && snapshot) {
         const customThemes = snapshot.customThemes;
         const customThemeById = customThemes.find((e) => e._id === themeName);
@@ -291,7 +297,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
           set(Config.themeLight, false);
         }
       } else {
-        set(Config.theme, true);
+        set(Config.theme, false);
       }
     }
   }
