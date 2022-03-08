@@ -278,19 +278,6 @@ $(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
   }
 });
 
-// Handle click on new custom theme button
-$(".pageSettings .addCustomThemeButton").on("click", async () => {
-  const newCustomTheme = {
-    name: "custom",
-    colors: [...defaultConfig.customThemeColors],
-  };
-
-  Loader.show();
-  await DB.addCustomTheme(newCustomTheme);
-  Loader.hide();
-  updateActiveTab(true);
-});
-
 // Handle click on custom theme button
 $(document).on(
   "click",
@@ -298,9 +285,9 @@ $(document).on(
   (e) => {
     // Do not apply if user wanted to delete it
     if ($(e.target).hasClass("delButton")) return;
+    if ($(e.target).hasClass("editButton")) return;
     const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
     ThemeController.changeCustomTheme(customThemeId);
-    updateActiveButton();
   }
 );
 
