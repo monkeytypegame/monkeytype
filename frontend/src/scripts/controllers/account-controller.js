@@ -282,34 +282,12 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
 
   let themeColors = Misc.findGetParameter("customTheme");
   const oldCustomTheme = Config.customTheme;
-  const oldCustomThemeId = Config.customThemeId;
+  const oldCustomThemeColors = Config.customThemeColors;
   if (themeColors !== null) {
     try {
       themeColors = themeColors.split(",");
-      // Create a new custom theme
-      if (firebase.auth().currentUser !== null) {
-        Loader.show();
-        const createdTheme = await DB.addCustomTheme({
-          name: "custom",
-          colors: themeColors,
-        });
-        Loader.hide();
-
-        if (createdTheme) {
-          UpdateConfig.setCustomThemeId(
-            DB.getSnapshot().customThemes[
-              DB.getSnapshot().customThemes.length - 1
-            ]._id
-          );
-          Notifications.add(
-            "Custom theme: 'custom' sucessfully created and applied",
-            1
-          );
-        }
-      } else {
-        UpdateConfig.setCustomThemeColors(themeColors);
-        Notifications.add("Custom theme applied", 1);
-      }
+      UpdateConfig.setCustomThemeColors(themeColors);
+      Notifications.add("Custom theme applied", 1);
 
       if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
     } catch (e) {
@@ -317,8 +295,9 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
         "Something went wrong. Reverting to previous state.",
         0
       );
-      UpdateConfig.setCustomThemeId(oldCustomThemeId);
+      console.error(e);
       UpdateConfig.setCustomTheme(oldCustomTheme);
+      UpdateConfig.setCustomThemeColors(oldCustomThemeColors);
     }
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
