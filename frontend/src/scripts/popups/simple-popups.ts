@@ -7,13 +7,15 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
+import * as ThemePicker from "../settings/theme-picker";
 
 type Input = {
-  placeholder: string;
+  placeholder?: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
   disabled?: boolean;
+  label?: string;
 };
 
 let activePopup: SimplePopup | null = null;
@@ -126,6 +128,14 @@ class SimplePopup {
                   autocomplete="off"
                 >${input.initVal}</textarea>
               `);
+            }else if (input.type === "checkbox") {
+              el.find(".inputs").append(`
+                <label class="checkbox">
+                  <input type="checkbox">
+                  <div class="customTextCheckbox"></div>
+                  ${input.label}
+                </label>
+              `);
             } else {
               el.find(".inputs").append(`
               <input
@@ -164,7 +174,11 @@ class SimplePopup {
     if (!this.canClose) return;
     const vals: string[] = [];
     $.each($("#simplePopup input"), (_, el) => {
-      vals.push($(el).val() as string);
+      if ($(el).is(":checkbox")) {
+        vals.push($(el).is(":checked") ? "true" : "false");
+      }else{
+        vals.push($(el).val() as string);
+      }
     });
     this.execFn(this, ...vals);
     this.hide();
