@@ -115,11 +115,6 @@ export async function refreshButtons(): Promise<void> {
 
     const customThemes = DB.getSnapshot().customThemes;
 
-    if (customThemes.length < 1) {
-      Notifications.add("No custom themes!", -1);
-      return;
-    }
-
     customThemes.forEach((customTheme) => {
       // const activeTheme =
       //   Config.customThemeId === customTheme._id ? "active" : "";
