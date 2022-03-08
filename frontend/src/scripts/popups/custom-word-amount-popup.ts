@@ -61,7 +61,7 @@ $("#customWordAmountPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#customWordAmountPopup input").keypress((e) => {
+$("#customWordAmountPopup input").on("keypress", (e) => {
   if (e.keyCode == 13) {
     apply();
   }

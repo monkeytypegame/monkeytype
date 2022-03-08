@@ -147,7 +147,7 @@ $("#practiseWordsPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#practiseWordsPopup .button").keypress((e) => {
+$("#practiseWordsPopup .button").on("keypress", (e) => {
   if (e.key == "Enter") {
     $(e.currentTarget).click();
   }

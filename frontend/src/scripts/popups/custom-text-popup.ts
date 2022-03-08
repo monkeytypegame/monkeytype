@@ -94,17 +94,17 @@ $(`${popup} .inputs .checkbox input`).change(() => {
   }
 });
 
-$(`${popup} textarea`).keypress((e) => {
+$(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
     $(`${popup} .button.apply`).click();
   }
 });
 
-$(`${popup} .randomInputFields .wordcount input`).keypress(() => {
+$(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
   $(`${popup} .randomInputFields .time input`).val("");
 });
 
-$(`${popup} .randomInputFields .time input`).keypress(() => {
+$(`${popup} .randomInputFields .time input`).on("keypress", () => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 

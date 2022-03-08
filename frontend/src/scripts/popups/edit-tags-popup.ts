@@ -155,7 +155,7 @@ $("#tagsWrapper #tagsEdit .button").on("click", () => {
   apply();
 });
 
-$("#tagsWrapper #tagsEdit input").keypress((e) => {
+$("#tagsWrapper #tagsEdit input").on("keypress", (e) => {
   if (e.keyCode == 13) {
     apply();
   }
