@@ -90,7 +90,6 @@ export function changeCustomTheme(themeId: string, nosave = false): void {
   const colors = customThemes.find((e) => e._id === themeId)
     ?.colors as string[];
   UpdateConfig.setCustomThemeColors(colors, nosave);
-  apply("custom");
 }
 
 export function apply(themeName: string, isPreview = false): void {
