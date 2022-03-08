@@ -372,6 +372,7 @@
           }
         }
         &:hover {
+          transform: scale(1.1);
           .editButton {
             width: 1.25rem;
             opacity: 1;
