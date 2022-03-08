@@ -1024,7 +1024,7 @@ export function setEventDisabled(value: boolean): void {
 }
 ConfigEvent.subscribe((eventKey) => {
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
-  if (ActivePage.get() === "settings") {
+  if (ActivePage.get() === "settings" && eventKey !== "theme") {
     update();
   }
 });
