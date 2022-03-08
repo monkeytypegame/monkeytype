@@ -899,6 +899,94 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
+list["updateCustomTheme"] = new SimplePopup(
+  "updateCustomTheme",
+  "text",
+  "Update Custom Theme",
+  [
+    {
+      type: "text",
+      placeholder: "Name",
+      initVal: "",
+    },
+    {
+      type: "checkbox",
+      initVal: "false",
+      label: "Update custom theme to current colors",
+    },
+  ],
+  "",
+  "Update",
+  async (_thisPopup, name, updateColors) => {
+    const snapshot = DB.getSnapshot();
+
+    const customTheme = snapshot.customThemes.find(
+      (t) => t._id === _thisPopup.parameters[0]
+    );
+    if (customTheme === undefined) {
+      Notifications.add("Custom theme does not exist!", -1);
+      return;
+    }
+
+    let newColors: string[] = [];
+    if (updateColors === "true") {
+      $.each(
+        $(".pageSettings .customTheme .customThemeEdit [type='color']"),
+        (_index, element) => {
+          newColors.push($(element).attr("value") as string);
+        }
+      );
+    } else {
+      newColors = customTheme.colors;
+    }
+
+    const newTheme = {
+      name: name,
+      colors: newColors,
+    };
+    Loader.show();
+    await DB.editCustomTheme(customTheme._id, newTheme);
+    Loader.hide();
+    UpdateConfig.setCustomThemeColors(newColors);
+    Notifications.add("Custom theme updated", 1);
+    ThemePicker.refreshButtons();
+  },
+  (_thisPopup) => {
+    const snapshot = DB.getSnapshot();
+
+    const customTheme = snapshot.customThemes.find(
+      (t) => t._id === _thisPopup.parameters[0]
+    );
+    if (!customTheme) return;
+    _thisPopup.inputs[0].initVal = customTheme.name;
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["deleteCustomTheme"] = new SimplePopup(
+  "deleteCustomTheme",
+  "text",
+  "Delete Custom Theme",
+  [],
+  "Are you sure?",
+  "Delete",
+  async (_thisPopup) => {
+    Loader.show();
+    await DB.deleteCustomTheme(_thisPopup.parameters[0]);
+    Loader.hide();
+    Notifications.add("Custom theme deleted", 1);
+    ThemePicker.refreshButtons();
+  },
+  (_thisPopup) => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   () => {
     list["unlinkDiscord"].show();
@@ -936,6 +1024,26 @@ $(".pageSettings #deleteAccount").on("click", () => {
 $("#apeKeysPopup .generateApeKey").on("click", () => {
   list["generateApeKey"].show();
 });
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme .delButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    list["deleteCustomTheme"].show([customThemeId]);
+  }
+);
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme .editButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    list["updateCustomTheme"].show([customThemeId]);
+  }
+);
 
 $(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
