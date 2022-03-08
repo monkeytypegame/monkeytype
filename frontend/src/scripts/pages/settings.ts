@@ -705,7 +705,7 @@ export function update(): void {
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
-  ThemePicker.updateActiveTab();
+  ThemePicker.updateActiveTab(true);
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   updateAuthSections();

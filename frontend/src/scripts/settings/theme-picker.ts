@@ -421,5 +421,5 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "customThemeId") refreshButtons();
-  if (eventKey === "customTheme") updateActiveTab();
+  // if (eventKey === "customTheme") updateActiveTab();
 });
