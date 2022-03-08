@@ -1259,13 +1259,6 @@ export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
 export function updateCustomThemeListCommands(): void {
   customThemeListCommands.list = [];
 
-  if (firebase.auth().currentUser === null) {
-    Notifications.add(
-      "Multiple custom themes are available to logged in users only",
-      0
-    );
-    return;
-  }
   if (DB.getSnapshot().customThemes.length < 0) {
     Notifications.add("You need to create a custom theme first", 0);
     return;
@@ -2858,6 +2851,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-palette",
       subgroup: customThemeListCommands,
       beforeSubgroup: (): void => updateCustomThemeListCommands(),
+      available: (): boolean => {
+        return firebase.auth().currentUser !== null;
+      },
     },
     {
       id: "changeRandomTheme",
