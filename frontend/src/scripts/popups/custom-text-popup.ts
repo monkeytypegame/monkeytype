@@ -6,6 +6,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Misc from "../misc";
 import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
+import * as SavedTextsPopup from "./saved-texts-popup";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
@@ -107,8 +108,16 @@ $(`${popup} .randomInputFields .time input`).keypress(() => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
-$("#customTextPopup .apply").click(() => {
-  let text = ($("#customTextPopup textarea").val() as string).normalize();
+$(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
+  SavedTextsPopup.show();
+});
+
+$(`${popup} .buttonsTop .saveCustomText`).on("click", () => {
+  hide();
+});
+
+function apply(): void {
+  let text = ($(`${popup} textarea`).val() as string).normalize();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -120,26 +129,20 @@ $("#customTextPopup .apply").click(() => {
   // text = text.replace(/(\n)+/g, "\n");
   // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
+  if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
-  CustomText.setWord(
-    parseInt($("#customTextPopup .wordcount input").val() as string)
-  );
-  CustomText.setTime(
-    parseInt($("#customTextPopup .time input").val() as string)
-  );
+  CustomText.setWord(parseInt($(`${popup} .wordcount input`).val() as string));
+  CustomText.setTime(parseInt($(`${popup} .time input`).val() as string));
 
   CustomText.setIsWordRandom(
-    $("#customTextPopup .checkbox input").prop("checked") &&
-      !isNaN(CustomText.word)
+    $(`${popup} .checkbox input`).prop("checked") && !isNaN(CustomText.word)
   );
   CustomText.setIsTimeRandom(
-    $("#customTextPopup .checkbox input").prop("checked") &&
-      !isNaN(CustomText.time)
+    $(`${popup} .checkbox input`).prop("checked") && !isNaN(CustomText.time)
   );
 
   if (
@@ -184,9 +187,13 @@ $("#customTextPopup .apply").click(() => {
   if (Config.mode !== "custom") UpdateConfig.setMode("custom");
   TestLogic.restart();
   hide();
+}
+
+$(document).on("click", `${popup} .button.apply`, () => {
+  apply();
 });
 
-$("#customTextPopup .wordfilter").click(() => {
+$(document).on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 

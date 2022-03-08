@@ -1850,7 +1850,6 @@ export function reset(): void {
 
 export function loadFromLocalStorage(): void {
   console.log("loading localStorage config");
-  // let newConfig = $.cookie("config");
   const newConfigString = window.localStorage.getItem("config");
   let newConfig: MonkeyTypes.Config;
   if (

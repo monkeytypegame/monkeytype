@@ -10,13 +10,6 @@ export function saveActiveToLocalStorage(): void {
         tags.push(tag._id);
       }
     });
-    // let d = new Date();
-    // d.setFullYear(d.getFullYear() + 1);
-    // $.cookie("activeTags", null);
-    // $.cookie("activeTags", JSON.stringify(tags), {
-    //   expires: d,
-    //   path: "/",
-    // });
     window.localStorage.setItem("activeTags", JSON.stringify(tags));
   } catch (e) {}
 }
@@ -66,7 +59,6 @@ export function toggle(tagid: string, nosave = false): void {
 }
 
 export function loadActiveFromLocalStorage(): void {
-  // let newTags = $.cookie("activeTags");
   let newTags: string[] | string = window.localStorage.getItem(
     "activeTags"
   ) as string;

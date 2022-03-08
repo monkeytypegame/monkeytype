@@ -8,6 +8,9 @@ import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
+import * as CustomText from "../test/custom-text";
+import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as SavedTextsPopup from "./saved-texts-popup";
 
 type Input = {
   placeholder?: string;
@@ -899,6 +902,52 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
+list["saveCustomText"] = new SimplePopup(
+  "saveCustomText",
+  "text",
+  "Save custom text",
+  [
+    {
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  "",
+  "Save",
+  (_thisPopup, input) => {
+    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
+    CustomText.setCustomText(input, text);
+    Notifications.add("Custom text saved", 1);
+    CustomTextPopup.show();
+  },
+  () => {
+    //
+  },
+  () => {
+    //
+  }
+);
+
+list["deleteCustomText"] = new SimplePopup(
+  "deleteCustomText",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0]);
+    Notifications.add("Custom text deleted", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
 list["updateCustomTheme"] = new SimplePopup(
   "updateCustomTheme",
   "text",
@@ -1025,6 +1074,10 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
   list["generateApeKey"].show();
 });
 
+$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
+  list["saveCustomText"].show();
+});
+
 $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
@@ -1042,6 +1095,15 @@ $(document).on(
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["updateCustomTheme"].show([customThemeId]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .list .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomText"].show([name]);
   }
 );
 
