@@ -106,8 +106,14 @@ export async function refreshButtons(): Promise<void> {
     const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
 
     if (firebase.auth().currentUser === null) {
-      addButton.addClass("hidden");
+      $(
+        ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
+      ).text("save");
       return;
+    } else {
+      $(
+        ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
+      ).text("save as new");
     }
 
     addButton.removeClass("hidden");
