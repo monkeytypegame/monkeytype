@@ -16,7 +16,7 @@ function showInput(
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
   $("#commandInput input").val(defaultValue);
-  $("#commandInput input").focus();
+  $("#commandInput input").trigger("focus");
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
   if (defaultValue != "") {
@@ -175,7 +175,7 @@ export let show = (): void => {
   $("#commandLine input").val("");
   CommandlineLists.updateThemeCommands();
   updateSuggested();
-  $("#commandLine input").focus();
+  $("#commandLine input").trigger("focus");
 };
 
 function hide(): void {
@@ -368,7 +368,7 @@ $("#commandLine input").keyup((e) => {
 });
 
 $(document).ready(() => {
-  $(document).keydown((event) => {
+  $(document).on("keydown", (event) => {
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
       event.key === "Escape" ||
@@ -413,7 +413,7 @@ $(document).ready(() => {
   });
 });
 
-$("#commandInput input").keydown((e) => {
+$("#commandInput input").on("keydown", (e) => {
   if (e.key === "Enter") {
     //enter
     e.preventDefault();
@@ -496,7 +496,7 @@ $(document).on(
   }
 );
 
-$("#commandLineWrapper").click((e) => {
+$("#commandLineWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
     UpdateConfig.setFontFamily(Config.fontFamily, true);
@@ -526,7 +526,7 @@ $("#commandLineWrapper").click((e) => {
 // }
 
 // let shiftedCommands = false;
-// $(document).keydown((e) => {
+// $(document).on("keydown", (e) => {
 //   if (e.key === "Shift") {
 //     if(shiftedCommands === false){
 //       shiftedCommands = true;
@@ -542,14 +542,14 @@ $("#commandLineWrapper").click((e) => {
 //   }
 // });
 
-$(document).keydown((e) => {
+$(document).on("keydown", (e) => {
   // if (isPreviewingTheme) {
   // console.log("applying theme");
   // applyCustomThemeColors();
   // previewTheme(Config.theme, false);
   // }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLine input").focus();
+    $("#commandLine input").trigger("focus");
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
         useSingleListCommandLine(false);
@@ -693,7 +693,7 @@ $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
   show();
 });
 
-$(".supportButtons .button.ads").click(() => {
+$(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
   show();
 });

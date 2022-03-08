@@ -118,7 +118,7 @@ export function showPopup(focus = false): void {
       .animate({ opacity: 1 }, 100, () => {
         if (focus) {
           console.log("focusing");
-          $("#practiseWordsPopup .missed").focus();
+          $("#practiseWordsPopup .missed").trigger("focus");
         }
       });
   }
@@ -141,24 +141,24 @@ export function hidePopup(): void {
   }
 }
 
-$("#practiseWordsPopupWrapper").click((e) => {
+$("#practiseWordsPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "practiseWordsPopupWrapper") {
     hidePopup();
   }
 });
 
-$("#practiseWordsPopup .button").keypress((e) => {
-  if (e.key == "Enter") {
+$("#practiseWordsPopup .button").on("keypress", (e) => {
+  if (e.key === "Enter") {
     $(e.currentTarget).click();
   }
 });
 
 $("#practiseWordsPopup .button.both").on("focusout", (e) => {
   e.preventDefault();
-  $("#practiseWordsPopup .missed").focus();
+  $("#practiseWordsPopup .missed").trigger("focus");
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#practiseWordsPopupWrapper").hasClass("hidden")
@@ -169,7 +169,7 @@ $(document).keydown((event) => {
 });
 
 $(document).on("keypress", "#practiseWordsButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     showPopup(true);
   }
 });

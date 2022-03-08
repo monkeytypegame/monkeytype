@@ -184,7 +184,7 @@ class SimplePopup {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        $($("#simplePopup").find("input")[0]).focus();
+        $($("#simplePopup").find("input")[0]).trigger("focus");
       });
   }
 
@@ -934,13 +934,14 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
+$(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
+  "click",
   () => {
     list["unlinkDiscord"].show();
   }
 );
 
-$("#resetSettingsButton").click(() => {
+$("#resetSettingsButton").on("click", () => {
   list["resetSettings"].show();
 });
 
@@ -1003,7 +1004,7 @@ $(document).on(
   }
 );
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();

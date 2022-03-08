@@ -71,7 +71,7 @@ export async function show(noAnim = false): Promise<void> {
   //     .css("opacity", 0)
   //     .removeClass("hidden")
   //     .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
-  //       $("#quoteSubmitPopup textarea").focus().select();
+  //       $("#quoteSubmitPopup textarea").trigger("focus").select();
   //     });
   // }
 }
@@ -116,7 +116,7 @@ $("#quoteSubmitPopup textarea").on("input", () => {
 });
 
 $("#quoteSubmitPopup input").on("keydown", (e) => {
-  if (e.keyCode === 13) {
+  if (e.key === "Enter") {
     submitQuote();
   }
 });

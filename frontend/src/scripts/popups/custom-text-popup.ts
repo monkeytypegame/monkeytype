@@ -28,11 +28,11 @@ export function show(): void {
         $(`${popup} textarea`).val(newtext);
         $(`${popup} .wordcount input`).val(CustomText.word);
         $(`${popup} .time input`).val(CustomText.time);
-        $(`${popup} textarea`).focus();
+        $(`${popup} textarea`).trigger("focus");
       });
   }
   setTimeout(() => {
-    $(`${popup} textarea`).focus();
+    $(`${popup} textarea`).trigger("focus");
   }, 150);
 }
 
@@ -94,17 +94,17 @@ $(`${popup} .inputs .checkbox input`).change(() => {
   }
 });
 
-$(`${popup} textarea`).keypress((e) => {
+$(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
     $(`${popup} .button.apply`).click();
   }
 });
 
-$(`${popup} .randomInputFields .wordcount input`).keypress(() => {
+$(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
   $(`${popup} .randomInputFields .time input`).val("");
 });
 
-$(`${popup} .randomInputFields .time input`).keypress(() => {
+$(`${popup} .randomInputFields .time input`).on("keypress", () => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
@@ -201,7 +201,7 @@ $(document).on("click", "#top .config .customText .text-button", () => {
   show();
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#customTextPopupWrapper").hasClass("hidden")

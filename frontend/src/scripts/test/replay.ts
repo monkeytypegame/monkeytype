@@ -287,7 +287,7 @@ function getReplayExport(): string {
   });
 }
 
-$(".pageTest #playpauseReplayButton").click(() => {
+$(".pageTest #playpauseReplayButton").on("click", () => {
   if (toggleButton?.className === "fas fa-play") {
     playReplay();
   } else if (toggleButton?.className === "fas fa-pause") {
@@ -310,7 +310,7 @@ $("#replayWords").on("click", "letter", (event) => {
 });
 
 $(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     toggleReplayDisplay();
   }
 });

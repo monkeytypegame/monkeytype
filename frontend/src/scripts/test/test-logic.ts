@@ -1587,7 +1587,7 @@ $(document).on("click", "#testModesNotice .text-button.restart", () => {
 });
 
 $(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key == "Enter") {
+  if (event.key === "Enter") {
     ManualRestart.reset();
     if (
       TestActive.get() &&
@@ -1618,7 +1618,7 @@ $(document.body).on("click", "#restartTestButton", () => {
 $(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     restart();
   }
 });
@@ -1642,7 +1642,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     restart(true);
   }
 });
@@ -1700,19 +1700,19 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   restart();
 });
 
-$("#practiseWordsPopup .button.missed").click(() => {
+$("#practiseWordsPopup .button.missed").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, false);
   restart(false, false, undefined, true);
 });
 
-$("#practiseWordsPopup .button.slow").click(() => {
+$("#practiseWordsPopup .button.slow").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(false, true);
   restart(false, false, undefined, true);
 });
 
-$("#practiseWordsPopup .button.both").click(() => {
+$("#practiseWordsPopup .button.both").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, true);
   restart(false, false, undefined, true);

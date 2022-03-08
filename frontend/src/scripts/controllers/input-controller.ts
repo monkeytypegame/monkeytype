@@ -645,7 +645,7 @@ function handleTab(event: JQuery.KeyDownEvent): void {
           (Config.mode === "zen" && event.shiftKey)
         ) {
           event.preventDefault();
-          $("#restartTestButton").focus();
+          $("#restartTestButton").trigger("focus");
         } else {
           event.preventDefault();
           handleChar("\t", TestInput.input.current.length);
@@ -903,7 +903,7 @@ $("#wordsInput").on("input", (event) => {
   }, 0);
 });
 
-$("#wordsInput").focus((event) => {
+$("#wordsInput").on("focus", (event) => {
   (event.target as HTMLInputElement).selectionStart = (
     event.target as HTMLInputElement
   ).selectionEnd = (event.target as HTMLInputElement).value.length;

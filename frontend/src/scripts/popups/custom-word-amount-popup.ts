@@ -10,7 +10,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customWordAmountPopup input").focus().select();
+        $("#customWordAmountPopup input").trigger("focus").select();
       });
   }
 }
@@ -55,19 +55,19 @@ function apply(): void {
   hide();
 }
 
-$("#customWordAmountPopupWrapper").click((e) => {
+$("#customWordAmountPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "customWordAmountPopupWrapper") {
     hide();
   }
 });
 
-$("#customWordAmountPopup input").keypress((e) => {
-  if (e.keyCode == 13) {
+$("#customWordAmountPopup input").on("keypress", (e) => {
+  if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#customWordAmountPopup .button").click(() => {
+$("#customWordAmountPopup .button").on("click", () => {
   apply();
 });
 
@@ -78,7 +78,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   }
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#customWordAmountPopupWrapper").hasClass("hidden")

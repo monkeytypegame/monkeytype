@@ -422,13 +422,13 @@ export function show(): void {
   }
 }
 
-$("#leaderboardsWrapper").click((e) => {
+$("#leaderboardsWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "leaderboardsWrapper") {
     hide();
   }
 });
 
-// $("#leaderboardsWrapper .buttons .button").click((e) => {
+// $("#leaderboardsWrapper .buttons .button").on("click",(e) => {
 //   currentLeaderboard = $(e.target).attr("board");
 //   update();
 // });
@@ -474,65 +474,79 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   }
 });
 
-$("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").click(async () => {
-  leftScrollEnabled = false;
-  $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
-  await requestNew(15, 0);
-  leftScrollEnabled = true;
-});
+$("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
+  "click",
+  async () => {
+    leftScrollEnabled = false;
+    $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
+    await requestNew(15, 0);
+    leftScrollEnabled = true;
+  }
+);
 
-$("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").click(async () => {
-  if (currentRank[15].rank === undefined) return;
-  leftScrollEnabled = false;
-  await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
-  const rowHeight = $(
-    "#leaderboardsWrapper #leaderboards .leftTableWrapper table tbody td"
-  ).outerHeight() as number;
-  $("#leaderboardsWrapper #leaderboards .leftTableWrapper").animate(
-    {
-      scrollTop:
-        rowHeight * Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
-        ($(
-          "#leaderboardsWrapper #leaderboards .leftTableWrapper"
-        ).outerHeight() as number) /
-          2.25,
-    },
-    0,
-    () => {
-      leftScrollEnabled = true;
-    }
-  );
-});
+$("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
+  "click",
+  async () => {
+    if (currentRank[15].rank === undefined) return;
+    leftScrollEnabled = false;
+    await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
+    const rowHeight = $(
+      "#leaderboardsWrapper #leaderboards .leftTableWrapper table tbody td"
+    ).outerHeight() as number;
+    $("#leaderboardsWrapper #leaderboards .leftTableWrapper").animate(
+      {
+        scrollTop:
+          rowHeight *
+            Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
+          ($(
+            "#leaderboardsWrapper #leaderboards .leftTableWrapper"
+          ).outerHeight() as number) /
+            2.25,
+      },
+      0,
+      () => {
+        leftScrollEnabled = true;
+      }
+    );
+  }
+);
 
-$("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").click(async () => {
-  rightScrollEnabled = false;
-  $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
-  await requestNew(60, 0);
-  rightScrollEnabled = true;
-});
+$("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
+  "click",
+  async () => {
+    rightScrollEnabled = false;
+    $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
+    await requestNew(60, 0);
+    rightScrollEnabled = true;
+  }
+);
 
-$("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async () => {
-  if (currentRank[60].rank === undefined) return;
-  leftScrollEnabled = false;
-  await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
-  const rowHeight = $(
-    "#leaderboardsWrapper #leaderboards .rightTableWrapper table tbody td"
-  ).outerHeight() as number;
-  $("#leaderboardsWrapper #leaderboards .rightTableWrapper").animate(
-    {
-      scrollTop:
-        rowHeight * Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
-        ($(
-          "#leaderboardsWrapper #leaderboards .rightTableWrapper"
-        ).outerHeight() as number) /
-          2.25,
-    },
-    0,
-    () => {
-      leftScrollEnabled = true;
-    }
-  );
-});
+$("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
+  "click",
+  async () => {
+    if (currentRank[60].rank === undefined) return;
+    leftScrollEnabled = false;
+    await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
+    const rowHeight = $(
+      "#leaderboardsWrapper #leaderboards .rightTableWrapper table tbody td"
+    ).outerHeight() as number;
+    $("#leaderboardsWrapper #leaderboards .rightTableWrapper").animate(
+      {
+        scrollTop:
+          rowHeight *
+            Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
+          ($(
+            "#leaderboardsWrapper #leaderboards .rightTableWrapper"
+          ).outerHeight() as number) /
+            2.25,
+      },
+      0,
+      () => {
+        leftScrollEnabled = true;
+      }
+    );
+  }
+);
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
@@ -541,7 +555,7 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   return false;
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();

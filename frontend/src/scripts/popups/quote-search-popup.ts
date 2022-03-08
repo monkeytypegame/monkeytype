@@ -148,7 +148,7 @@ export async function show(clearText = true): Promise<void> {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         if (clearText) {
-          $("#quoteSearchPopup input").focus().select();
+          $("#quoteSearchPopup input").trigger("focus").select();
         }
         updateResults(quoteSearchInputValue);
       });
@@ -205,7 +205,7 @@ $("#quoteSearchPopup .searchBox").on("keyup", (e) => {
   debouncedSearch(searchText);
 });
 
-$("#quoteSearchPopupWrapper").click((e) => {
+$("#quoteSearchPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hide();
   }
@@ -243,7 +243,7 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   }
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#quoteSearchPopupWrapper").hasClass("hidden")
