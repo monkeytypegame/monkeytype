@@ -1281,6 +1281,7 @@ export function updateCustomThemeListCommands(): void {
       exec: (): void => {
         // UpdateConfig.setCustomThemeId(theme._id);
         UpdateConfig.setCustomTheme(true);
+        ThemeController.set(theme._id, true);
       },
     });
   });
