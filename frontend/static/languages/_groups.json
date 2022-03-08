@@ -16,6 +16,10 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
   {
+    "name": "nepali",
+    "languages": ["nepali", "nepali_1k"]
+  },
+  {
     "name": "french",
     "languages": ["french", "french_1k", "french_2k", "french_10k"]
   },
@@ -46,6 +50,14 @@
       "italian_7k",
       "italian_60k",
       "italian_280k"
+    ]
+  },
+  {
+    "name": "afrikaans",
+    "languages": [
+      "afrikaans",
+      "afrikaans_1k",
+      "afrikaans_10k"
     ]
   },
   {
@@ -162,7 +174,7 @@
   },
   {
     "name": "persian",
-    "languages": ["persian"]
+    "languages": ["persian", "persian_1k", "persian_5k"]
   },
   {
     "name": "kazakh",
@@ -241,6 +253,10 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "armenian",
+    "languages": ["armenian_western", "armenian_western_1k"]
+  },
+  {
     "name": "japanese",
     "languages": ["japanese_hiragana", "japanese_katakana"]
   },
@@ -286,7 +302,8 @@
       "code_swift",
       "code_bash",
       "code_lua",
-      "code_luau"
+      "code_luau",
+      "code_matlab"
     ]
   },
   {

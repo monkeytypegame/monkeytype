@@ -11,6 +11,18 @@ declare namespace MonkeyTypes {
 
   type LanguageGroup = { name: string; languages: string[] };
 
+  type Accents = [string, string][];
+
+  interface LanguageObject {
+    name: string;
+    leftToRight: boolean;
+    noLazyMode?: boolean;
+    ligatures?: boolean;
+    words: string[];
+    accents: Accents;
+    bcp47?: string;
+  }
+
   type WordsModes = number;
 
   type TimeModes = number;
@@ -21,11 +33,9 @@ declare namespace MonkeyTypes {
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  type QuoteLength = -1 | 0 | 1 | 2 | 3;
+  type QuoteLength = -2 | -1 | 0 | 1 | 2 | 3;
 
-  type QuoteLengthArray = QuoteLength[];
-
-  type FontSize = 1 | 125 | 15 | 2 | 3 | 4;
+  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
   type CaretStyle =
     | "off"
@@ -57,7 +67,7 @@ declare namespace MonkeyTypes {
     | "split"
     | "split_matrix";
 
-  type KeymapLegendStyle = "lowercase" | "uppercase" | "blank";
+  type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
   type SingleListCommandLine = "manual" | "on";
 
@@ -95,7 +105,7 @@ declare namespace MonkeyTypes {
 
   type CustomBackgroundSize = "cover" | "contain" | "max";
 
-  type CustomBackgroundFilter = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
+  type CustomBackgroundFilter = [number, number, number, number, number];
 
   /*
     off = off
@@ -122,6 +132,7 @@ declare namespace MonkeyTypes {
     name: string;
     type: FunboxObjectType;
     info: string;
+    affectsWordGeneration?: boolean;
   }
 
   interface CustomText {
@@ -131,6 +142,7 @@ declare namespace MonkeyTypes {
     word: number;
     time: number;
     delimiter: string;
+    textLen?: number;
   }
 
   interface PresetConfig extends MonkeyTypes.Config {
@@ -140,7 +152,7 @@ declare namespace MonkeyTypes {
   interface Preset {
     _id: string;
     name: string;
-    config: PresetConfig;
+    config: ConfigChanges;
   }
 
   interface PersonalBest {
@@ -179,13 +191,14 @@ declare namespace MonkeyTypes {
   interface Stats {
     time: number;
     started: number;
-    completed: number;
+    completed?: number;
   }
 
   interface ChartData {
     wpm: number[];
     raw: number[];
     err: number[];
+    unsmoothedRaw?: number[];
   }
 
   interface KeyStats {
@@ -225,10 +238,26 @@ declare namespace MonkeyTypes {
     language: string;
     numbers?: boolean;
     punctuation?: boolean;
+    hash?: string;
+  }
+
+  type ApeKey = {
+    name: string;
+    enabled: boolean;
+    createdOn: number;
+    modifiedOn: number;
+    lastUsedOn: number;
+  };
+
+  interface ApeKeys {
+    [key: string]: ApeKey;
   }
 
   interface Config {
     theme: string;
+    themeLight: string;
+    themeDark: string;
+    autoSwitchTheme: boolean;
     customTheme: boolean;
     customThemeColors: string[];
     favThemes: string[];
@@ -242,7 +271,7 @@ declare namespace MonkeyTypes {
     words: WordsModes;
     time: TimeModes;
     mode: Mode;
-    quoteLength: QuoteLengthArray;
+    quoteLength: QuoteLength[];
     language: string;
     fontSize: FontSize;
     freedomMode: boolean;
@@ -310,6 +339,22 @@ declare namespace MonkeyTypes {
     burstHeatmap: boolean;
     britishEnglish: boolean;
     lazyMode: boolean;
+    showAvg: boolean;
+  }
+
+  type ConfigValues =
+    | string
+    | number
+    | boolean
+    | string[]
+    | MonkeyTypes.QuoteLength[]
+    | MonkeyTypes.ResultFilters
+    | MonkeyTypes.CustomBackgroundFilter
+    | null
+    | undefined;
+
+  interface ConfigChanges extends Partial<MonkeyTypes.Config> {
+    tags?: string[];
   }
 
   interface DefaultConfig extends Config {
@@ -350,7 +395,7 @@ declare namespace MonkeyTypes {
 
   interface QuoteRatings {
     [language: string]: {
-      [id: string | number]: any; // TODO find this
+      [id: number]: number;
     };
   }
 
@@ -447,6 +492,19 @@ declare namespace MonkeyTypes {
     nextDelay: number;
   }
 
+  interface Global {
+    snapshot(): Snapshot;
+    config: Config;
+    toggleFilterDebug(): void;
+    glarsesMode(): void;
+    stats(): void;
+    replay(): string;
+    enableTimerDebug(): void;
+    getTimerStats(): TimerStats[];
+    toggleUnsmoothedRaw(): void;
+    enableSpacingDebug(): void;
+  }
+
   interface GithubRelease {
     url: string;
     assets_url: string;
@@ -492,9 +550,6 @@ declare namespace MonkeyTypes {
     };
   }
 
-  // eslint-disable-next-line no-unused-vars
-  type ExecFunction = (input?: any) => any;
-
   interface Command {
     id: string;
     display: string;
@@ -509,8 +564,8 @@ declare namespace MonkeyTypes {
     defaultValue?: string;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
-    exec?: ExecFunction;
-    hover?: ExecFunction;
+    exec?: (input?: string) => void;
+    hover?: () => void;
     available?: () => void;
     beforeSubgroup?: () => void;
   }
@@ -525,9 +580,10 @@ declare namespace MonkeyTypes {
     text: string;
     source: string;
     length: number;
-    id: number | string;
+    id: number;
     group?: number;
     language: string;
+    textSplit?: string[];
   }
 
   interface PSA {
@@ -555,7 +611,7 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
-    type: "iso" | "ansi" | "ortho";
+    type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }
 
@@ -563,10 +619,29 @@ declare namespace MonkeyTypes {
     [layout: string]: Layout;
   }
   interface Keys {
-    [row1: string]: string[];
-    [row2: string]: string[];
-    [row3: string]: string[];
-    [row4: string]: string[];
-    [row5: string]: string[];
+    row1: string[];
+    row2: string[];
+    row3: string[];
+    row4: string[];
+    row5: string[];
+  }
+
+  interface WordsPerMinuteAndRaw {
+    wpm: number;
+    raw: number;
+  }
+
+  interface Challenge {
+    name: string;
+    display: string;
+    autoRole: boolean;
+    type: string;
+    parameters: (string | number | boolean)[];
+    message: string;
+    requirements: {
+      [requirement: string]: {
+        [parameter: string]: string | number | boolean;
+      };
+    };
   }
 }

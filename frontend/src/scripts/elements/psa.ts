@@ -1,4 +1,4 @@
-import axiosInstance from "../axios-instance";
+import Ape from "../ape";
 import * as Notifications from "./notifications";
 
 function clearMemory(): void {
@@ -6,7 +6,7 @@ function clearMemory(): void {
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "") ?? [];
+  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
 }
 
 function setMemory(id: string): void {
@@ -16,8 +16,17 @@ function setMemory(id: string): void {
 }
 
 async function getLatest(): Promise<MonkeyTypes.PSA[]> {
-  const psa = await axiosInstance.get("/psa");
-  return psa.data;
+  const response = await Ape.psas.get();
+  if (response.message === "Server is down for maintenance") {
+    Notifications.addBanner(
+      "Server is currently under maintenance",
+      -1,
+      "bullhorn",
+      true
+    );
+    return [];
+  }
+  return response.data as MonkeyTypes.PSA[];
 }
 
 export async function show(): Promise<void> {
@@ -28,7 +37,8 @@ export async function show(): Promise<void> {
   }
   const localmemory = getMemory();
   latest.forEach((psa) => {
-    if (localmemory.includes(psa._id) && psa.sticky === false) return;
+    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false)
+      return;
     Notifications.addBanner(
       psa.message,
       psa.level,

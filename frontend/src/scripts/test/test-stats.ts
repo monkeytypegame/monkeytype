@@ -16,7 +16,7 @@ type CharCount = {
 type Keypress = {
   count: number;
   errors: number;
-  words: string[];
+  words: number[];
   afk: boolean;
 };
 
@@ -41,7 +41,7 @@ type DebugStats = {
   currentKeypress: {
     count: number;
     errors: number;
-    words: string[];
+    words: number[];
     afk: boolean;
   };
   lastKeypress: number;
@@ -173,7 +173,7 @@ export function calculateTestSeconds(now?: number): number {
   }
 }
 
-export function calculateWpmAndRaw(): { wpm: number; raw: number } {
+export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
@@ -280,13 +280,9 @@ export function setLastSecondNotRound(): void {
 export function calculateBurst(): number {
   const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
   let wordLength;
-  if (Config.mode === "zen") {
-    wordLength = TestInput.input.current.length;
-    if (wordLength == 0) {
-      wordLength = TestInput.input.getHistoryLast().length;
-    }
-  } else {
-    wordLength = TestWords.words.getCurrent().length;
+  wordLength = TestInput.input.current.length;
+  if (wordLength == 0) {
+    wordLength = TestInput.input.getHistoryLast().length;
   }
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
@@ -401,8 +397,8 @@ function countChars(): CharCount {
 
 export function calculateStats(): Stats {
   let testSeconds = calculateTestSeconds();
-  console.log((end2 - start2) / 1000);
-  console.log(testSeconds);
+  // console.log((end2 - start2) / 1000);
+  // console.log(testSeconds);
   if (Config.mode != "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
   }
@@ -432,7 +428,7 @@ export function calculateStats(): Stats {
       chars.spaces +
       chars.incorrectChars +
       chars.extraChars,
-    time: testSeconds,
+    time: Misc.roundTo2(testSeconds),
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
   };

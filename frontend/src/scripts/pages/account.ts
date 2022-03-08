@@ -13,6 +13,7 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../misc";
+import * as ActivePage from "../states/active-page";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -528,7 +529,7 @@ export function update(): void {
             tt = (result.mode2 / result.wpm) * 60;
           }
         } else {
-          tt = result.testDuration;
+          tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
         }
         if (result.incompleteTestSeconds != undefined) {
           tt += result.incompleteTestSeconds;
@@ -868,7 +869,7 @@ export function update(): void {
     ChartController.accountActivity.update();
     LoadingPage.updateBar(100, true);
     setTimeout(() => {
-      SignOutButton.show();
+      if (ActivePage.get() == "account") SignOutButton.show();
     }, 125);
     Focus.set(false);
     Misc.swapElements(
@@ -979,11 +980,11 @@ function sortAndRefreshHistory(
   loadMoreLines();
 }
 
-$(".pageAccount .toggleAccuracyOnChart").click(() => {
+$(".pageAccount .toggleAccuracyOnChart").on("click", () => {
   UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
-$(".pageAccount .toggleChartStyle").click(() => {
+$(".pageAccount .toggleChartStyle").on("click", () => {
   if (Config.chartStyle == "line") {
     UpdateConfig.setChartStyle("scatter");
   } else {
@@ -991,11 +992,11 @@ $(".pageAccount .toggleChartStyle").click(() => {
   }
 });
 
-$(".pageAccount .loadMoreButton").click(() => {
+$(".pageAccount .loadMoreButton").on("click", () => {
   loadMoreLines();
 });
 
-$(".pageAccount #accountHistoryChart").click(() => {
+$(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (!window) return;
@@ -1070,6 +1071,10 @@ $(
 
 $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
+});
+
+$(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
+  Misc.downloadResultsCSV(filteredResults);
 });
 
 export const page = new Page(

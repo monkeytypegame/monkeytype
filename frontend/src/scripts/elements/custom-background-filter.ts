@@ -116,7 +116,7 @@ $(".section.customBackgroundFilter .opacity input").on("input", () => {
   apply();
 });
 
-$(".section.customBackgroundFilter  .save.button").click(() => {
+$(".section.customBackgroundFilter  .save.button").on("click", () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
   ) as MonkeyTypes.CustomBackgroundFilter;
@@ -126,7 +126,7 @@ $(".section.customBackgroundFilter  .save.button").click(() => {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customBackgroundFilter") {
-    loadConfig((eventValue as unknown as any[]).map((ev) => parseFloat(ev)));
+    loadConfig((eventValue as string[]).map((ev) => parseFloat(ev)));
     apply();
   }
 });

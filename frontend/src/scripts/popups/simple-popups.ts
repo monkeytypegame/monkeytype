@@ -1,18 +1,25 @@
+import type FirebaseTypes from "firebase";
+import Ape from "../ape";
 import * as AccountController from "../controllers/account-controller";
 import * as DB from "../db";
 import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
 import * as Settings from "../pages/settings";
-import { AxiosError } from "axios";
+import * as ApeKeysPopup from "../popups/ape-keys-popup";
+import * as CustomText from "../test/custom-text";
+import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as SavedTextsPopup from "./saved-texts-popup";
 
 type Input = {
   placeholder: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
+  disabled?: boolean;
 };
+
+let activePopup: SimplePopup | null = null;
 
 export const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
@@ -25,8 +32,10 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: any;
-  beforeShowFn: any;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => void | Promise<void>;
+  beforeInitFn: (thisPopup: SimplePopup) => void;
+  beforeShowFn: (thisPopup: SimplePopup) => void;
+  canClose: boolean;
   constructor(
     id: string,
     type: string,
@@ -34,20 +43,27 @@ class SimplePopup {
     inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn: any,
-    beforeShowFn: any
+    execFn: (
+      thisPopup: SimplePopup,
+      ...params: string[]
+    ) => void | Promise<void>,
+    beforeInitFn: (thisPopup: SimplePopup) => void,
+    beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = execFn;
+    this.execFn = (thisPopup, ...vals): Promise<void> | void =>
+      execFn(thisPopup, ...vals);
     this.title = title;
     this.inputs = inputs;
     this.text = text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
-    this.beforeShowFn = beforeShowFn;
+    this.beforeInitFn = (thisPopup): void => beforeInitFn(thisPopup);
+    this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
+    this.canClose = true;
   }
   reset(): void {
     this.element.html(`
@@ -68,10 +84,16 @@ class SimplePopup {
 
     this.initInputs();
 
-    if (!this.buttonText) {
+    if (this.buttonText === "") {
       el.find(".button").remove();
     } else {
       el.find(".button").text(this.buttonText);
+    }
+
+    if (this.text === "") {
+      el.find(".text").addClass("hidden");
+    } else {
+      el.find(".text").removeClass("hidden");
     }
 
     // }
@@ -86,7 +108,7 @@ class SimplePopup {
             <input
               type="number"
               min="1"
-              val="${input.initVal}"
+              value="${input.initVal}"
               placeholder="${input.placeholder}"
               class="${input.hidden ? "hidden" : ""}"
               ${input.hidden ? "" : "required"}
@@ -97,24 +119,38 @@ class SimplePopup {
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
           if (input.type) {
-            el.find(".inputs").append(`
+            if (input.type === "textarea") {
+              el.find(".inputs").append(`
+                <textarea
+                  placeholder="${input.placeholder}"
+                  class="${input.hidden ? "hidden" : ""}"
+                  ${input.hidden ? "" : "required"}
+                  ${input.disabled ? "disabled" : ""}
+                  autocomplete="off"
+                >${input.initVal}</textarea>
+              `);
+            } else {
+              el.find(".inputs").append(`
               <input
-                type="${input.type}"
-                val="${input.initVal}"
-                placeholder="${input.placeholder}"
-                class="${input.hidden ? "hidden" : ""}"
-                ${input.hidden ? "" : "required"}
-                autocomplete="off"
+              type="${input.type}"
+              value="${input.initVal}"
+              placeholder="${input.placeholder}"
+              class="${input.hidden ? "hidden" : ""}"
+              ${input.hidden ? "" : "required"}
+              ${input.disabled ? "disabled" : ""}
+              autocomplete="off"
               >
-            `);
+              `);
+            }
           } else {
             el.find(".inputs").append(`
               <input
                 type="text"
-                val="${input.initVal}"
+                value="${input.initVal}"
                 placeholder="${input.placeholder}"
                 class="${input.hidden ? "hidden" : ""}"
                 ${input.hidden ? "" : "required"}
+                ${input.disabled ? "disabled" : ""}
                 autocomplete="off"
               >
             `);
@@ -128,29 +164,33 @@ class SimplePopup {
   }
 
   exec(): void {
+    if (!this.canClose) return;
     const vals: string[] = [];
     $.each($("#simplePopup input"), (_, el) => {
       vals.push($(el).val() as string);
     });
-    // @ts-ignore todo remove
-    this.execFn(...vals);
+    this.execFn(this, ...vals);
     this.hide();
   }
 
   show(parameters: string[] = []): void {
+    activePopup = this;
     this.parameters = parameters;
-    this.beforeShowFn();
+    this.beforeInitFn(this);
     this.init();
+    this.beforeShowFn(this);
     this.wrapper
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        $($("#simplePopup").find("input")[0]).focus();
+        $($("#simplePopup").find("input")[0]).trigger("focus");
       });
   }
 
   hide(): void {
+    if (!this.canClose) return;
+    activePopup = null;
     this.wrapper
       .stop(true, true)
       .css("opacity", 1)
@@ -162,6 +202,7 @@ class SimplePopup {
 }
 
 export function hide(): void {
+  if (activePopup) return activePopup.hide();
   $("#simplePopupWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -173,6 +214,7 @@ export function hide(): void {
 
 $("#simplePopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
+    if (activePopup) return activePopup.hide();
     $("#simplePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -217,7 +259,7 @@ list["updateEmail"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (password: string, email: string, emailConfirm: string) => {
+  async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       if (email !== emailConfirm) {
@@ -231,48 +273,41 @@ list["updateEmail"] = new SimplePopup(
         );
         await user.reauthenticateWithCredential(credential);
       }
+
       Loader.show();
-      let response;
-      try {
-        response = await axiosInstance.patch("/user/email", {
-          uid: user.uid,
-          previousEmail: user.email,
-          newEmail: email,
-        });
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to update email: " + msg, -1);
-        return;
-      }
+      const response = await Ape.users.updateEmail(email, user.email);
       Loader.hide();
+
       if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      } else {
-        Notifications.add("Email updated", 1);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        return Notifications.add(
+          "Failed to update email: " + response.message,
+          -1
+        );
       }
+
+      Notifications.add("Email updated", 1);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (e) {
-      // @ts-ignore todo help
-      if (e.code == "auth/wrong-password") {
+      const typedError = e as FirebaseTypes.FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
   },
-  () => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore once firebase is initialised with code
-    if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+  (thisPopup) => {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -294,7 +329,7 @@ list["updateName"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (pass: string, newName: string) => {
+  async (_thisPopup, pass, newName) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -308,57 +343,46 @@ list["updateName"] = new SimplePopup(
       }
       Loader.show();
 
-      let response;
-      try {
-        response = await axiosInstance.get(`/user/checkName/${newName}`);
-      } catch (error) {
-        const e = error as AxiosError;
+      const checkNameResponse = await Ape.users.getNameAvailability(newName);
+      if (checkNameResponse.status !== 200) {
         Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to check name: " + msg, -1);
-        return;
+        return Notifications.add(
+          "Failed to check name: " + checkNameResponse.message,
+          -1
+        );
       }
-      Loader.hide();
-      if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      }
-      try {
-        response = await axiosInstance.patch("/user/name", {
-          name: newName,
-        });
-      } catch (error) {
-        const e = error as AxiosError;
+
+      const updateNameResponse = await Ape.users.updateName(newName);
+      if (updateNameResponse.status !== 200) {
         Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to update name: " + msg, -1);
-        return;
+        return Notifications.add(
+          "Failed to update name: " + updateNameResponse.message,
+          -1
+        );
       }
-      Loader.hide();
-      if (response.status !== 200) {
-        Notifications.add(response.data.message);
-        return;
-      } else {
-        Notifications.add("Name updated", 1);
-        DB.getSnapshot().name = newName;
-        $("#menu .icon-button.account .text").text(newName);
-      }
+
+      Notifications.add("Name updated", 1);
+      DB.getSnapshot().name = newName;
+      $("#menu .icon-button.account .text").text(newName);
     } catch (e) {
-      Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      const typedError = e as FirebaseTypes.FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
+    Loader.hide();
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs[0].hidden = true`);
-      eval(`this.buttonText = "Reauthenticate to update"`);
+      thisPopup.inputs[0].hidden = true;
+      thisPopup.buttonText = "Reauthenticate to update";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -385,7 +409,7 @@ list["updatePassword"] = new SimplePopup(
   ],
   "",
   "Update",
-  async (previousPass: string, newPass: string, newPassConfirm: string) => {
+  async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -405,23 +429,25 @@ list["updatePassword"] = new SimplePopup(
         window.location.reload();
       }, 1000);
     } catch (e) {
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
   },
-  () => {
-    const user = firebase.auth().currentUser;
-    // @ts-ignore todo remove ignore
-    if (!user.providerData.find((p) => p.providerId === "password")) {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = undefined`);
-      eval(`this.text = "Password authentication is not enabled";`);
+  (thisPopup) => {
+    const user: FirebaseTypes.User = firebase.auth().currentUser;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -453,12 +479,7 @@ list["addPasswordAuth"] = new SimplePopup(
   ],
   "",
   "Add",
-  async (
-    email: string,
-    emailConfirm: string,
-    pass: string,
-    passConfirm: string
-  ) => {
+  async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
     if (email !== emailConfirm) {
       Notifications.add("Emails don't match", 0);
       return;
@@ -476,6 +497,9 @@ list["addPasswordAuth"] = new SimplePopup(
   },
   () => {
     //
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -492,7 +516,7 @@ list["deleteAccount"] = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     //
     try {
       const user = firebase.auth().currentUser;
@@ -506,34 +530,27 @@ list["deleteAccount"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
       Notifications.add("Deleting stats...", 0);
-      let response;
-      try {
-        response = await axiosInstance.delete("/user");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to delete user stats: " + msg, -1);
-        return;
-      }
-      if (response.status !== 200) {
-        throw response.data.message;
+      const usersResponse = await Ape.users.delete();
+      Loader.hide();
+
+      if (usersResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to delete user stats: " + usersResponse.message,
+          -1
+        );
       }
 
+      Loader.show();
       Notifications.add("Deleting results...", 0);
-      try {
-        response = await axiosInstance.post("/results/deleteAll");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to delete user results: " + msg, -1);
-        return;
-      }
-      if (response.status !== 200) {
-        throw response.data.message;
+      const resultsResponse = await Ape.results.deleteAll();
+      Loader.hide();
+
+      if (resultsResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to delete user results: " + resultsResponse.message,
+          -1
+        );
       }
 
       Notifications.add("Deleting login information...", 0);
@@ -545,21 +562,24 @@ list["deleteAccount"] = new SimplePopup(
         location.reload();
       }, 3000);
     } catch (e) {
+      const typedError = e as FirebaseTypes.FirebaseError;
       Loader.hide();
-      // @ts-ignore todo remove ignore
-      if (e.code == "auth/wrong-password") {
+      if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to delete"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to delete";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -570,46 +590,42 @@ list["clearTagPb"] = new SimplePopup(
   [],
   `Are you sure you want to clear this tags PB?`,
   "Clear",
-  () => {
-    const tagid = eval("this.parameters[0]");
+  async (thisPopup) => {
+    const tagId = thisPopup.parameters[0];
     Loader.show();
-    axiosInstance
-      .delete(`/user/tags/${tagid}/clearPb`)
-      .then((res) => {
-        Loader.hide();
-        if (res.data.resultCode === 1) {
-          const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagid)[0];
+    const response = await Ape.users.deleteTagPersonalBest(tagId);
+    Loader.hide();
 
-          if (tag === undefined) return;
-          tag.personalBests = {
-            time: {},
-            words: {},
-            zen: { zen: [] },
-            quote: { custom: [] },
-            custom: { custom: [] },
-          };
-          $(
-            `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
-          ).attr("aria-label", "No PB found");
-          Notifications.add("Tag PB cleared.", 0);
-        } else {
-          Notifications.add("Something went wrong: " + res.data.message, -1);
-        }
-      })
-      .catch((e) => {
-        Loader.hide();
-        if (e.code == "auth/wrong-password") {
-          Notifications.add("Incorrect password", -1);
-        } else {
-          Notifications.add("Something went wrong: " + e, -1);
-        }
-      });
-    // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to delete tag's PB: " + response.message
+      );
+    }
+
+    if (response.data.resultCode === 1) {
+      const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagId)[0];
+
+      if (tag === undefined) return;
+      tag.personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
+      ).attr("aria-label", "No PB found");
+      Notifications.add("Tag PB cleared.", 0);
+    } else {
+      Notifications.add("Something went wrong: " + response.message, -1);
+    }
   },
-  () => {
-    eval(
-      "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
-    );
+  (thisPopup) => {
+    thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -620,11 +636,14 @@ list["applyCustomFont"] = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying.",
   "Apply",
-  (fontName: string) => {
+  (_thisPopup, fontName: string) => {
     if (fontName === "") return;
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
   },
   () => {
+    //
+  },
+  (_thisPopup) => {
     //
   }
 );
@@ -642,7 +661,7 @@ list["resetPersonalBests"] = new SimplePopup(
   ],
   "",
   "Reset",
-  async (password: string) => {
+  async (_thisPopup, password: string) => {
     try {
       const user = firebase.auth().currentUser;
       if (user.providerData[0].providerId === "password") {
@@ -655,41 +674,38 @@ list["resetPersonalBests"] = new SimplePopup(
         await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
-
-      let response;
-      try {
-        response = await axiosInstance.delete("/user/personalBests");
-      } catch (error) {
-        const e = error as AxiosError;
-        Loader.hide();
-        const msg = e?.response?.data?.message ?? e.message;
-        Notifications.add("Failed to reset personal bests: " + msg, -1);
-        return;
-      }
+      const response = await Ape.users.deletePersonalBests();
       Loader.hide();
+
       if (response.status !== 200) {
-        Notifications.add(response.data.message);
-      } else {
-        Notifications.add("Personal bests have been reset", 1);
-        DB.getSnapshot().personalBests = {
-          time: {},
-          words: {},
-          zen: { zen: [] },
-          quote: { custom: [] },
-          custom: { custom: [] },
-        };
+        return Notifications.add(
+          "Failed to reset personal bests: " + response.message,
+          -1
+        );
       }
+
+      Notifications.add("Personal bests have been reset", 1);
+      DB.getSnapshot().personalBests = {
+        time: {},
+        words: {},
+        zen: { zen: [] },
+        quote: { custom: [] },
+        custom: { custom: [] },
+      };
     } catch (e) {
       Loader.hide();
       Notifications.add(e as string, -1);
     }
   },
-  () => {
+  (thisPopup) => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs = []`);
-      eval(`this.buttonText = "Reauthenticate to reset"`);
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
     }
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -708,6 +724,9 @@ list["resetSettings"] = new SimplePopup(
   },
   () => {
     //
+  },
+  (_thisPopup) => {
+    //
   }
 );
 
@@ -720,37 +739,209 @@ list["unlinkDiscord"] = new SimplePopup(
   "Unlink",
   async () => {
     Loader.show();
-    let response;
-    try {
-      response = await axiosInstance.post("/user/discord/unlink", {});
-    } catch (error) {
-      const e = error as AxiosError;
-      Loader.hide();
-      const msg = e?.response?.data?.message ?? e.message;
-      Notifications.add("Failed to unlink Discord: " + msg, -1);
-      return;
-    }
+    const response = await Ape.users.unlinkDiscord();
     Loader.hide();
+
     if (response.status !== 200) {
-      Notifications.add(response.data.message);
-    } else {
-      Notifications.add("Accounts unlinked", 1);
-      DB.getSnapshot().discordId = undefined;
-      Settings.updateDiscordSection();
+      return Notifications.add(
+        "Failed to unlink Discord: " + response.message,
+        -1
+      );
     }
+
+    Notifications.add("Accounts unlinked", 1);
+    DB.getSnapshot().discordId = undefined;
+    Settings.updateDiscordSection();
+  },
+  () => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["generateApeKey"] = new SimplePopup(
+  "generateApeKey",
+  "text",
+  "Generate new key",
+  [
+    {
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  "",
+  "Generate",
+  async (_thisPopup, name) => {
+    Loader.show();
+    const response = await Ape.apeKeys.generate(name, false);
+    Loader.hide();
+
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to generate key: " + response.message,
+        -1
+      );
+    } else {
+      const data = response.data;
+      list["viewApeKey"].show([data.apeKey]);
+    }
+  },
+  () => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["viewApeKey"] = new SimplePopup(
+  "viewApeKey",
+  "text",
+  "Ape Key",
+  [
+    {
+      type: "textarea",
+      disabled: true,
+      placeholder: "Key",
+      initVal: "",
+    },
+  ],
+  "This is your new Ape Key. Please keep it safe. You will only see it once!",
+  "Close",
+  (_thisPopup) => {
+    ApeKeysPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.inputs[0].initVal = _thisPopup.parameters[0];
+  },
+  (_thisPopup) => {
+    _thisPopup.canClose = false;
+    $("#simplePopup textarea").css("height", "110px");
+    $("#simplePopup .button").addClass("hidden");
+    setTimeout(() => {
+      _thisPopup.canClose = true;
+      $("#simplePopup .button").removeClass("hidden");
+    }, 3000);
+  }
+);
+
+list["deleteApeKey"] = new SimplePopup(
+  "deleteApeKey",
+  "text",
+  "Delete Ape Key",
+  [],
+  "Are you sure?",
+  "Delete",
+  async (_thisPopup) => {
+    Loader.show();
+    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0]);
+    Loader.hide();
+
+    if (response.status !== 200) {
+      return Notifications.add("Failed to delete key: " + response.message, -1);
+    }
+
+    Notifications.add("Key deleted", 1);
+    ApeKeysPopup.show();
+  },
+  (_thisPopup) => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["editApeKey"] = new SimplePopup(
+  "editApeKey",
+  "text",
+  "Edit Ape Key",
+  [
+    {
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  "",
+  "Edit",
+  async (_thisPopup, input) => {
+    Loader.show();
+    const response = await Ape.apeKeys.update(_thisPopup.parameters[0], {
+      name: input,
+    });
+    Loader.hide();
+
+    if (response.status !== 200) {
+      return Notifications.add("Failed to update key: " + response.message, -1);
+    }
+
+    Notifications.add("Key updated", 1);
+    ApeKeysPopup.show();
+  },
+  (_thisPopup) => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["saveCustomText"] = new SimplePopup(
+  "saveCustomText",
+  "text",
+  "Save custom text",
+  [
+    {
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  "",
+  "Save",
+  (_thisPopup, input) => {
+    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
+    CustomText.setCustomText(input, text);
+    Notifications.add("Custom text saved", 1);
+    CustomTextPopup.show();
+  },
+  () => {
+    //
   },
   () => {
     //
   }
 );
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
+list["deleteCustomText"] = new SimplePopup(
+  "deleteCustomText",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0]);
+    Notifications.add("Custom text deleted", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+$(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
+  "click",
   () => {
     list["unlinkDiscord"].show();
   }
 );
 
-$("#resetSettingsButton").click(() => {
+$("#resetSettingsButton").on("click", () => {
   list["resetSettings"].show();
 });
 
@@ -778,6 +969,33 @@ $(".pageSettings #deleteAccount").on("click", () => {
   list["deleteAccount"].show();
 });
 
+$("#apeKeysPopup .generateApeKey").on("click", () => {
+  list["generateApeKey"].show();
+});
+
+$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
+  list["saveCustomText"].show();
+});
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .list .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomText"].show([name]);
+  }
+);
+
+$(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+  const keyId = $(e.target).closest("tr").attr("keyId") as string;
+  list["deleteApeKey"].show([keyId]);
+});
+
+$(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+  const keyId = $(e.target).closest("tr").attr("keyId") as string;
+  list["editApeKey"].show([keyId]);
+});
+
 $(document).on(
   "click",
   ".pageSettings .section.fontFamily .button.custom",
@@ -786,7 +1004,7 @@ $(document).on(
   }
 );
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();

@@ -87,6 +87,6 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   return false;
 });
 
-$(".pageTest .loginTip .link").click(async () => {
+$(".pageTest .loginTip .link").on("click", async () => {
   change("login");
 });

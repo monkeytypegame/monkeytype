@@ -70,7 +70,10 @@
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
-        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          { "argsIgnorePattern": "^(_|e|event)" }
+        ],
         "@typescript-eslint/no-var-requires": "error"
       }
       // "parserOptions": {

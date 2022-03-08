@@ -200,6 +200,7 @@ Misc.getFontsList().then((fonts) => {
       UpdateConfig.previewFontFamily(Config.fontFamily);
     },
     exec: (name) => {
+      if (!name) return;
       UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
       // Settings.groups.fontFamily.updateInput();
     },
@@ -290,26 +291,23 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 
 export function updatePresetCommands(): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
+  commandsPresets.list = [];
+  snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
+    const dis = preset.name;
 
-  if (snapshot.presets !== undefined && snapshot.presets.length > 0) {
-    commandsPresets.list = [];
-
-    snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
-      const dis = preset.name;
-
-      commandsPresets.list.push({
-        id: "applyPreset" + preset._id,
-        display: dis,
-        exec: (): void => {
-          Settings.setEventDisabled(true);
-          PresetController.apply(preset._id);
-          Settings.setEventDisabled(false);
-          Settings.update();
-          ModesNotice.update();
-        },
-      });
+    commandsPresets.list.push({
+      id: "applyPreset" + preset._id,
+      display: dis,
+      exec: (): void => {
+        Settings.setEventDisabled(true);
+        PresetController.apply(preset._id);
+        Settings.setEventDisabled(false);
+        Settings.update();
+        ModesNotice.update();
+      },
     });
-  }
+  });
 }
 
 const commandsRepeatQuotes: MonkeyTypes.CommandsGroup = {
@@ -353,6 +351,29 @@ const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
       configValue: true,
       exec: (): void => {
         UpdateConfig.setShowLiveWpm(true);
+      },
+    },
+  ],
+};
+
+const commandsShowAvg: MonkeyTypes.CommandsGroup = {
+  title: "Show average...",
+  configKey: "showAvg",
+  list: [
+    {
+      id: "setAvgOff",
+      display: "off",
+      configValue: false,
+      exec: (): void => {
+        UpdateConfig.setShowAvg(false);
+      },
+    },
+    {
+      id: "setAvgOn",
+      display: "on",
+      configValue: true,
+      exec: (): void => {
+        UpdateConfig.setShowAvg(true);
       },
     },
   ],
@@ -1396,7 +1417,8 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
-        UpdateConfig.setPaceCaretCustomSpeed(input);
+        if (!input) return;
+        UpdateConfig.setPaceCaretCustomSpeed(parseInt(input));
         UpdateConfig.setPaceCaret("custom");
         TestLogic.restart();
       },
@@ -1422,7 +1444,8 @@ const commandsMinWpm: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
-        UpdateConfig.setMinWpmCustomSpeed(input);
+        if (!input) return;
+        UpdateConfig.setMinWpmCustomSpeed(parseInt(input));
         UpdateConfig.setMinWpm("custom");
       },
     },
@@ -1447,7 +1470,8 @@ const commandsMinAcc: MonkeyTypes.CommandsGroup = {
       configValue: "custom",
       input: true,
       exec: (input): void => {
-        UpdateConfig.setMinAccCustom(input);
+        if (!input) return;
+        UpdateConfig.setMinAccCustom(parseInt(input));
         UpdateConfig.setMinAcc("custom");
       },
     },
@@ -1472,8 +1496,9 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       configValue: "fixed",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMinBurst("fixed");
-        UpdateConfig.setMinBurstCustomSpeed(input);
+        UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
     },
     {
@@ -1482,8 +1507,9 @@ const commandsMinBurst: MonkeyTypes.CommandsGroup = {
       configValue: "flex",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMinBurst("flex");
-        UpdateConfig.setMinBurstCustomSpeed(input);
+        UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
       },
     },
   ],
@@ -1562,6 +1588,14 @@ const commandsKeymapLegendStyle: MonkeyTypes.CommandsGroup = {
       configValue: "blank",
       exec: (): void => {
         UpdateConfig.setKeymapLegendStyle("blank");
+      },
+    },
+    {
+      id: "setKeymapLegendStyleDynamic",
+      display: "dynamic",
+      configValue: "dynamic",
+      exec: (): void => {
+        UpdateConfig.setKeymapLegendStyle("dynamic");
       },
     },
   ],
@@ -1837,8 +1871,9 @@ const commandsWordCount: MonkeyTypes.CommandsGroup = {
       display: "custom...",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMode("words");
-        UpdateConfig.setWordCount(input);
+        UpdateConfig.setWordCount(parseInt(input));
         TestLogic.restart();
       },
     },
@@ -2104,8 +2139,9 @@ const commandsTimeConfig: MonkeyTypes.CommandsGroup = {
       display: "custom...",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setMode("time");
-        UpdateConfig.setTimeConfig(input);
+        UpdateConfig.setTimeConfig(parseInt(input));
         TestLogic.restart();
       },
     },
@@ -2183,7 +2219,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1x",
       configValue: 1,
       exec: (): void => {
-        UpdateConfig.setFontSize(1);
+        UpdateConfig.setFontSize("1");
         TestLogic.restart();
       },
     },
@@ -2192,7 +2228,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.25x",
       configValue: 125,
       exec: (): void => {
-        UpdateConfig.setFontSize(125);
+        UpdateConfig.setFontSize("125");
         TestLogic.restart();
       },
     },
@@ -2201,7 +2237,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "1.5x",
       configValue: 15,
       exec: (): void => {
-        UpdateConfig.setFontSize(15);
+        UpdateConfig.setFontSize("15");
         TestLogic.restart();
       },
     },
@@ -2210,7 +2246,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "2x",
       configValue: 2,
       exec: (): void => {
-        UpdateConfig.setFontSize(2);
+        UpdateConfig.setFontSize("2");
         TestLogic.restart();
       },
     },
@@ -2219,7 +2255,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "3x",
       configValue: 3,
       exec: (): void => {
-        UpdateConfig.setFontSize(3);
+        UpdateConfig.setFontSize("3");
         TestLogic.restart();
       },
     },
@@ -2228,7 +2264,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
       display: "4x",
       configValue: 4,
       exec: (): void => {
-        UpdateConfig.setFontSize(4);
+        UpdateConfig.setFontSize("4");
         TestLogic.restart();
       },
     },
@@ -2428,31 +2464,31 @@ const commandsMonkeyPowerLevel: MonkeyTypes.CommandsGroup = {
       id: "monkeyPowerLevelOff",
       display: "off",
       configValue: "off",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("off"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
       id: "monkeyPowerLevel1",
       display: "mellow",
       configValue: "1",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("1"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
       display: "high",
       configValue: "2",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("2"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
       display: "ultra",
       configValue: "3",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("3"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
       display: "over 9000",
       configValue: "4",
-      exec: (): void => UpdateConfig.setMonkeyPowerLevel("4"),
+      exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
 };
@@ -2831,12 +2867,19 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsHighlightMode,
     },
     {
+      id: "changeShowAvg",
+      display: "Show average...",
+      icon: "fa-tachometer-alt",
+      subgroup: commandsShowAvg,
+    },
+    {
       id: "changeCustomBackground",
       display: "Custom background...",
       icon: "fa-image",
       defaultValue: "",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         UpdateConfig.setCustomBackground(input);
       },
     },
@@ -2900,7 +2943,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       input: true,
       icon: "fa-tint",
       exec: (input): void => {
-        UpdateConfig.setCustomLayoutfluid(input);
+        if (input === undefined) return;
+        UpdateConfig.setCustomLayoutfluid(
+          input as MonkeyTypes.CustomLayoutFluidSpaces
+        );
         if (Config.funbox === "layoutfluid") TestLogic.restart();
         // UpdateConfig.setLayout(
         //   Config.customLayoutfluid
@@ -2938,7 +2984,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "start begin type test",
       icon: "fa-keyboard",
       exec: (): void => {
-        $("#top #menu .icon-button.view-start").click();
+        $("#top #menu .icon-button.view-start").trigger("click");
       },
     },
     {
@@ -2946,7 +2992,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Leaderboards Page",
       icon: "fa-crown",
       exec: (): void => {
-        $("#top #menu .icon-button.view-leaderboards").click();
+        $("#top #menu .icon-button.view-leaderboards").trigger("click");
       },
     },
     {
@@ -2954,7 +3000,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View About Page",
       icon: "fa-info",
       exec: (): void => {
-        $("#top #menu .icon-button.view-about").click();
+        $("#top #menu .icon-button.view-about").trigger("click");
       },
     },
     {
@@ -2962,7 +3008,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Settings Page",
       icon: "fa-cog",
       exec: (): void => {
-        $("#top #menu .icon-button.view-settings").click();
+        $("#top #menu .icon-button.view-settings").trigger("click");
       },
     },
     {
@@ -2972,8 +3018,8 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "stats",
       exec: (): void => {
         $("#top #menu .icon-button.view-account").hasClass("hidden")
-          ? $("#top #menu .icon-button.view-login").click()
-          : $("#top #menu .icon-button.view-account").click();
+          ? $("#top #menu .icon-button.view-login").trigger("click")
+          : $("#top #menu .icon-button.view-account").trigger("click");
       },
     },
     {
@@ -3107,9 +3153,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-cog",
       input: true,
       exec: (input): void => {
+        if (!input) return;
         try {
           UpdateConfig.apply(JSON.parse(input));
-          UpdateConfig.saveToLocalStorage();
+          UpdateConfig.saveFullConfigToLocalStorage();
           Settings.update();
           Notifications.add("Done", 1);
         } catch (e) {
@@ -3168,24 +3215,44 @@ export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
   current.push(val);
 }
 
-export function getList(list: string): MonkeyTypes.CommandsGroup {
-  return eval(list);
+const listsObject = {
+  commandsChallenges,
+  commandsLanguages,
+  commandsDifficulty,
+  commandsLazyMode,
+  commandsPaceCaret,
+  commandsShowAvg,
+  commandsMinWpm,
+  commandsMinAcc,
+  commandsMinBurst,
+  commandsFunbox,
+  commandsConfidenceMode,
+  commandsStopOnError,
+  commandsLayouts,
+  commandsOppositeShiftMode,
+  commandsTags,
+};
+
+export type ListsObjectKeys = keyof typeof listsObject;
+
+export function getList(list: ListsObjectKeys): MonkeyTypes.CommandsGroup {
+  return listsObject[list];
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "saveToLocalStorage") {
     defaultCommands.list.filter(
       (command) => command.id == "exportSettingsJSON"
-    )[0].defaultValue = eventValue;
+    )[0].defaultValue = eventValue as string;
   }
   if (eventKey === "customBackground") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomBackground"
-    )[0].defaultValue = eventValue;
+    )[0].defaultValue = eventValue as string;
   }
   if (eventKey === "customLayoutFluid") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomLayoutfluid"
-    )[0].defaultValue = eventValue?.replace(/#/g, " ");
+    )[0].defaultValue = (eventValue as string)?.replace(/#/g, " ");
   }
 });

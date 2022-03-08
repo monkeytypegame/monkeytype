@@ -207,7 +207,7 @@
     function showResetPassword() {
       $("#middle .preloader").addClass("hidden");
       $("#middle .resetPassword").removeClass("hidden");
-      $("#middle .resetPassword input").focus();
+      $("#middle .resetPassword input").trigger("focus");
     }
 
     function hideResetPassword() {
@@ -350,12 +350,12 @@
             // Error: invalid mode.
           }
 
-          $("#middle .resetPassword .button").click(() => {
+          $("#middle .resetPassword .button").on("click", () => {
             handleResetPassword(actionCode, continueUrl);
           });
 
-          $("#middle .resetPassword input").keypress((e) => {
-            if (e.key == "Enter") handleResetPassword(actionCode, continueUrl);
+          $("#middle .resetPassword input").on("keypress", (e) => {
+            if (e.key === "Enter") handleResetPassword(actionCode, continueUrl);
           });
         } catch (e) {
           $("#middle .preloader .icon").html(

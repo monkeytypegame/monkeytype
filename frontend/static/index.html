@@ -11,7 +11,7 @@
     <title>Monkeytype</title>
     <link rel="stylesheet" href="css/select2.min.css" />
     <link rel="stylesheet" href="css/balloon.min.css" />
-    <link rel="stylesheet" href="css/style.css?v=1" />
+    <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="/images/favicon/favicon.ico" />
@@ -372,9 +372,23 @@
     </div>
     <div id="customTextPopupWrapper" class="popupWrapper hidden">
       <div id="customTextPopup" action="">
-        <div class="wordfilter button">
-          <i class="fas fa-filter"></i>
-          Words filter
+        <div class="buttonsTop">
+          <div class="button saveCustomText">
+            <i class="fas fa-save"></i>
+            Save
+          </div>
+          <div class="button showSavedTexts">
+            <i class="fas fa-folder"></i>
+            Show saved texts
+          </div>
+          <div class="button wordfilter">
+            <i class="fas fa-filter"></i>
+            Words filter
+          </div>
+        </div>
+        <div class="savedTexts hidden" style="display: none">
+          <div class="title">saved texts</div>
+          <div class="buttons"></div>
         </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
@@ -383,7 +397,7 @@
             <div class="customTextCheckbox"></div>
             Random
             <span>
-              randomize the above words, and control how many words are
+              Randomize the above words, and control how many words are
               generated.
             </span>
           </label>
@@ -417,6 +431,12 @@
           </label>
         </div>
         <div class="button apply">ok</div>
+      </div>
+    </div>
+    <div id="savedTextsPopupWrapper" class="popupWrapper hidden">
+      <div id="savedTextsPopup">
+        <div class="title">Saved texts</div>
+        <div class="list"></div>
       </div>
     </div>
     <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
@@ -549,6 +569,30 @@
           data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
         ></div>
         <div id="submitQuoteButton" class="button">Submit</div>
+      </div>
+    </div>
+    <div id="apeKeysPopupWrapper" class="hidden popupWrapper">
+      <div id="apeKeysPopup" mode="">
+        <div class="top">
+          <div class="title">Ape Keys</div>
+          <div class="button generateApeKey">
+            <i class="fas fa-plus"></i>
+            Generate new key
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <td width="1px">active</td>
+              <td>name</td>
+              <td>created on</td>
+              <td>modified on</td>
+              <td>last used on</td>
+              <td width="1px"></td>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
     <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
@@ -1169,9 +1213,9 @@
               </div>
               <div id="miniTimerAndLiveWpm" class="timerMain size15">
                 <div class="time hidden">1:00</div>
-                <div class="wpm">60</div>
-                <div class="acc">100%</div>
-                <div class="burst">1</div>
+                <div class="wpm hidden">60</div>
+                <div class="acc hidden">100%</div>
+                <div class="burst hidden">1</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
@@ -3364,6 +3408,14 @@
                   >
                     blank
                   </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="dynamic"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    dynamic
+                  </div>
                 </div>
               </div>
               <div class="sectionSpacer"></div>
@@ -3513,12 +3565,44 @@
                   </div>
                 </div>
               </div>
+              <div class="section autoSwitchTheme">
+                <h1>auto switch theme</h1>
+                <div class="text">
+                  Enabling this will automatically switch the theme between
+                  light and dark depending on the system theme (this will not
+                  override custom theme).
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    autoSwitchTheme="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    autoSwitchTheme="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section autoSwitchThemeInputs">
+                <div>light</div>
+                <div><select class="light"></select></div>
+                <div>dark</div>
+                <div><select class="dark"></select></div>
+              </div>
               <div class="section randomTheme fullWidth">
                 <h1>randomize theme</h1>
                 <div class="text">
                   After completing a test, the theme will be set to a random
                   one. The random themes are not saved to your config. If set to
-                  'fav' only favourite themes will be randomized. If set to
+                  'favorite' only favorite themes will be randomized. If set to
                   'light' or 'dark', only presets with light or dark background
                   colors will be randomized, respectively.
                 </div>
@@ -3909,6 +3993,30 @@
                   </div>
                 </div>
               </div>
+              <div class="section showAvg">
+                <h1>average</h1>
+                <div class="text">
+                  Displays your average speed over the last 10 tests.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    showAvg="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    hide
+                  </div>
+                  <div
+                    class="button"
+                    showAvg="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    show
+                  </div>
+                </div>
+              </div>
               <div class="section showKeyTips">
                 <h1>key tips</h1>
                 <div class="text">
@@ -4051,6 +4159,22 @@
                   </div>
                 </div>
               </div>
+              <!-- <div class="section apeKeys needsAccount">
+                <h1>ape keys</h1>
+                <div class="text">
+                  Generate Ape Keys to access certain API endpoints.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    id="showApeKeysPopup"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    open
+                  </div>
+                </div>
+              </div> -->
               <div class="section resetSettings">
                 <h1>reset settings</h1>
                 <div class="text">
@@ -4637,6 +4761,12 @@
                 <div class="title">favourite test</div>
                 <div class="val">words 10</div>
               </div> -->
+              </div>
+              <div class="group aboveHistory">
+                <div class="button exportCSV">
+                  <i class="fas fa-file-csv"></i>
+                  Export CSV
+                </div>
               </div>
               <div class="group history">
                 <!-- <div class="title">result history</div> -->

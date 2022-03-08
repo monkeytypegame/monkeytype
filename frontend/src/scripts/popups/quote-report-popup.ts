@@ -1,11 +1,9 @@
+import Ape from "../ape";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
 import * as Misc from "../misc";
-
-import { AxiosError } from "axios";
 
 const CAPTCHA_ID = 1;
 
@@ -56,7 +54,7 @@ export async function show(options = defaultOptions): Promise<void> {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
-        $("#quoteReportPopup textarea").focus().select();
+        $("#quoteReportPopup textarea").trigger("focus").select();
       });
   }
 }
@@ -87,51 +85,46 @@ export async function hide(): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = grecaptcha.getResponse(CAPTCHA_ID);
   if (!captchaResponse) {
-    Notifications.add("Please complete the captcha.");
-    return;
+    return Notifications.add("Please complete the captcha.");
   }
 
-  const requestBody = {
-    quoteId: state.quoteToReport?.id.toString(),
-    quoteLanguage: Config.language,
-    reason: $("#quoteReportPopup .reason").val(),
-    comment: $("#quoteReportPopup .comment").val() as string,
-    captcha: captchaResponse,
-  };
+  const quoteId = state.quoteToReport?.id.toString();
+  const quoteLanguage = Config.language;
+  const reason = $("#quoteReportPopup .reason").val() as string;
+  const comment = $("#quoteReportPopup .comment").val() as string;
+  const captcha = captchaResponse as string;
 
-  if (!requestBody.reason) {
-    Notifications.add("Please select a valid report reason.");
-    return;
+  if (!quoteId) {
+    return Notifications.add("Please select a quote.");
   }
 
-  const characterDifference = requestBody.comment.length - 250;
+  if (!reason) {
+    return Notifications.add("Please select a valid report reason.");
+  }
+
+  const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    Notifications.add(
+    return Notifications.add(
       `Report comment is ${characterDifference} character(s) too long.`
     );
-    return;
   }
 
   Loader.show();
-
-  let response;
-  try {
-    response = await axiosInstance.post("/quotes/report", requestBody);
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to report quote: " + msg, -1);
-    return;
-  }
-
+  const response = await Ape.quotes.report(
+    quoteId,
+    quoteLanguage,
+    reason,
+    comment,
+    captcha
+  );
   Loader.hide();
+
   if (response.status !== 200) {
-    Notifications.add(response.data.message);
-  } else {
-    Notifications.add("Report submitted. Thank you!", 1);
-    hide();
+    return Notifications.add("Failed to report quote: " + response.message, -1);
   }
+
+  Notifications.add("Report submitted. Thank you!", 1);
+  hide();
 }
 
 $("#quoteReportPopupWrapper").on("mousedown", (e) => {
@@ -156,9 +149,9 @@ $("#quoteReportPopup .submit").on("click", async () => {
   await submitReport();
 });
 
-$(".pageTest #reportQuoteButton").click(async () => {
+$(".pageTest #reportQuoteButton").on("click", async () => {
   show({
-    quoteId: parseInt(TestWords.randomQuote?.id as string),
+    quoteId: TestWords.randomQuote?.id,
     noAnim: false,
   });
 });

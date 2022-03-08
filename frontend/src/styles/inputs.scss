@@ -10,6 +10,10 @@ textarea {
   font-family: var(--font);
 }
 
+textarea {
+  resize: vertical;
+}
+
 input[type="range"] {
   -webkit-appearance: none;
   padding: 0;
@@ -20,7 +24,7 @@ input[type="range"] {
     -webkit-appearance: none;
     padding: 0;
     border: none;
-    width: 2rem;
+    width: 25%;
     height: 1rem;
     border-radius: var(--roundness);
     background-color: var(--main-color);
@@ -36,7 +40,7 @@ input[type="range"] {
     -webkit-appearance: none;
     padding: 0;
     border: none;
-    width: 2rem;
+    width: 25%;
     height: 1rem;
     border-radius: var(--roundness);
     background-color: var(--main-color);
@@ -106,8 +110,8 @@ input[type="number"] {
 }
 
 .select2-container--default .select2-results__option--selected {
-  background-color: var(--bg-color);
-  color: var(--sub-color);
+  background-color: var(--main-color);
+  color: var(--bg-color);
 }
 
 .select2-container--open .select2-dropdown--below,

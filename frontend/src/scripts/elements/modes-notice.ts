@@ -1,6 +1,7 @@
 import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as DB from "../db";
+import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
@@ -17,13 +18,19 @@ ConfigEvent.subscribe((eventKey) => {
       "minBurst",
       "confidenceMode",
       "layout",
+      "showAvg",
     ].includes(eventKey)
   ) {
     update();
   }
 });
 
-export function update(): void {
+//todo remove when pace caret is converted to ts
+type PaceCaretSettings = {
+  wpm: number;
+};
+
+export async function update(): Promise<void> {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -43,10 +50,7 @@ export function update(): void {
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      // remove as any once test state is in ts
-      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${
-        (TestState.activeChallenge as any).display
-      }</div>`
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
@@ -91,7 +95,9 @@ export function update(): void {
   ) {
     let speed = "";
     try {
-      speed = ` (${Math.round((PaceCaret.settings as any).wpm)} wpm)`; //remove as any once pace caret is ts
+      speed = ` (${Math.round(
+        (PaceCaret.settings as unknown as PaceCaretSettings).wpm
+      )} wpm)`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
@@ -102,6 +108,15 @@ export function update(): void {
           : "custom"
       } pace${speed}</div>`
     );
+  }
+
+  if (Config.showAvg) {
+    const val = Last10Average.get();
+    if (firebase.auth().currentUser && val > 0) {
+      $(".pageTest #testModesNotice").append(
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${val}wpm</div>`
+      );
+    }
   }
 
   if (Config.minWpm !== "off") {

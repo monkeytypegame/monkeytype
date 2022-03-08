@@ -104,7 +104,8 @@
     .image {
       display: none;
     }
-    .lefticon {
+    .lefticon,
+    .righticon {
       display: none;
     }
     .text {
@@ -117,6 +118,11 @@
     }
     .text {
       padding: 0.25rem 0;
+    }
+  }
+  .pageSettings {
+    .section.autoSwitchThemeInputs {
+      grid-template-columns: 1fr 3fr;
     }
   }
   .pageAccount {

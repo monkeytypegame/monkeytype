@@ -1,0 +1,1066 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "These are the set of `internal` endpoints dedicated to the Monkeytype web client. Authentication for these endpoints requires a user account.",
+    "version": "1.0.0",
+    "title": "Monkeytype",
+    "termsOfService": "https://monkeytype.com/terms-of-service",
+    "contact": {
+      "name": "Developer",
+      "email": "jack@monkeytype.com"
+    }
+  },
+  "host": "api.monkeytype.com",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "tags": [
+    {
+      "name": "index",
+      "description": "Server status information"
+    },
+    {
+      "name": "users",
+      "description": "User data and related operations"
+    },
+    {
+      "name": "psas",
+      "description": "Public service announcements"
+    },
+    {
+      "name": "presets",
+      "description": "Preset data and related operations"
+    },
+    {
+      "name": "configs",
+      "description": "User configuration data and related operations"
+    },
+    {
+      "name": "ape-keys",
+      "description": "ApeKey data and related operations"
+    },
+    {
+      "name": "leaderboards",
+      "description": "Leaderboard data"
+    },
+    {
+      "name": "results",
+      "description": "Result data and related operations"
+    },
+    {
+      "name": "quotes",
+      "description": "Quote data and related operations"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["index"],
+        "summary": "Gets the server's status data",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Returns a user's data",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "Deletes a user's account",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/name": {
+      "patch": {
+        "tags": ["users"],
+        "summary": "Updates a user's name",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Creates a new user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "uid": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/checkName/{name}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Checks to see if a username is available",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/leaderboardMemory": {
+      "patch": {
+        "tags": ["users"],
+        "summary": "Updates a user's cached leaderboard state",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string"
+                },
+                "mode2": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                },
+                "rank": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/discord/link": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Links a user's account with a discord account",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tokenType": {
+                  "type": "string"
+                },
+                "accessToken": {
+                  "type": "string"
+                },
+                "uid": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/discord/unlink": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Unlinks a user's account with a discord account",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/email": {
+      "patch": {
+        "tags": ["users"],
+        "summary": "Updates a user's email",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newEmail": {
+                  "type": "string"
+                },
+                "previousEmail": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/personalBests": {
+      "delete": {
+        "tags": ["users"],
+        "summary": "Gets a user's personal bests",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/tags": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's tags",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["users"],
+        "summary": "Creates a new tag",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tagName": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["users"],
+        "summary": "Updates an existing tag",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tagId": {
+                  "type": "string"
+                },
+                "newName": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/tags/{tagId}": {
+      "delete": {
+        "tags": ["users"],
+        "summary": "Deletes a tag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tagId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/users/tags/{tagId}/personalBest": {
+      "delete": {
+        "tags": ["users"],
+        "summary": "Removes personal bests associated with a tag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tagId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/psas": {
+      "get": {
+        "tags": ["psas"],
+        "summary": "Gets the latest public service announcements",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/presets": {
+      "get": {
+        "tags": ["presets"],
+        "summary": "Gets saved preset configurations",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["presets"],
+        "summary": "Creates a preset configuration",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["presets"],
+        "summary": "Updates an existing preset configuration",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/presets/{presetId}": {
+      "delete": {
+        "tags": ["presets"],
+        "summary": "Deletes a preset configuration",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "presetId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/configs": {
+      "get": {
+        "tags": ["configs"],
+        "summary": "Gets the user's current configuration",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["configs"],
+        "summary": "Updates a user's configuration",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "config": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/ape-keys": {
+      "get": {
+        "tags": ["ape-keys"],
+        "summary": "Gets ApeKeys created by a user",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["ape-keys"],
+        "summary": "Creates an ApeKey",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/ape-keys/{apeKeyId}": {
+      "patch": {
+        "tags": ["ape-keys"],
+        "summary": "Updates an ApeKey",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "apeKeyId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ape-keys"],
+        "summary": "Deletes an ApeKey",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "apeKeyId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/leaderboards": {
+      "get": {
+        "tags": ["leaderboards"],
+        "summary": "Gets a leaderboard",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "language",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode2",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "type": "number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/leaderboards/rank": {
+      "get": {
+        "tags": ["leaderboards"],
+        "summary": "Gets a user's rank from a leaderboard",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "language",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "mode2",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/results": {
+      "get": {
+        "tags": ["results"],
+        "summary": "Gets a history of a user's results",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["results"],
+        "summary": "Save a user's result",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["results"],
+        "summary": "Deletes all results",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/results/tags": {
+      "patch": {
+        "tags": ["results"],
+        "summary": "Labels a result with the specified tags",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tagIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "resultId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes": {
+      "get": {
+        "tags": ["quotes"],
+        "summary": "Gets a list of quote submissions",
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["quotes"],
+        "summary": "Creates a quote submission",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                },
+                "captcha": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/approve": {
+      "post": {
+        "tags": ["quotes"],
+        "summary": "Approves a quote submission",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "editText": {
+                  "type": "string"
+                },
+                "editSource": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/reject": {
+      "post": {
+        "tags": ["quotes"],
+        "summary": "Rejects a quote submission",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/rating": {
+      "get": {
+        "tags": ["quotes"],
+        "summary": "Gets a rating for a quote",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["quotes"],
+        "summary": "Adds a rating for a quote",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "rating": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/report": {
+      "post": {
+        "tags": ["quotes"],
+        "summary": "Reports a quote",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quoteId": {
+                  "type": "string"
+                },
+                "quoteLanguage": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "captcha": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Response": {
+      "type": "object",
+      "required": ["message", "data"],
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

@@ -74,7 +74,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customTestDurationPopup input").focus().select();
+        $("#customTestDurationPopup input").trigger("focus").select();
       });
   }
 
@@ -121,7 +121,7 @@ function apply(): void {
   hide();
 }
 
-$("#customTestDurationPopupWrapper").click((e) => {
+$("#customTestDurationPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "customTestDurationPopupWrapper") {
     hide();
   }
@@ -130,12 +130,12 @@ $("#customTestDurationPopupWrapper").click((e) => {
 $("#customTestDurationPopup input").keyup((e) => {
   previewDuration();
 
-  if (e.keyCode == 13) {
+  if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#customTestDurationPopup .button").click(() => {
+$("#customTestDurationPopup .button").on("click", () => {
   apply();
 });
 
@@ -146,7 +146,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   }
 });
 
-$(document).keydown((event) => {
+$(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
     !$("#customTestDurationPopupWrapper").hasClass("hidden")
