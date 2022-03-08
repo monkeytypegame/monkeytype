@@ -40,6 +40,6 @@ async function bootServer(port: number): Promise<Server> {
   });
 }
 
-const PORT = parseInt(process.env.PORT) || 5005;
+const PORT = parseInt(process.env.PORT ?? "5005", 10);
 
 bootServer(PORT);

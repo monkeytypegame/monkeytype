@@ -231,7 +231,7 @@ class ResultController {
     }
 
     let isPb = false;
-    let tagPbs = [];
+    let tagPbs: any[] = [];
 
     if (!result.bailedOut) {
       [isPb, tagPbs] = await Promise.all([

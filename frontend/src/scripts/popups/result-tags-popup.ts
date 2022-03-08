@@ -66,13 +66,13 @@ $(document).on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
   $(f.target).toggleClass("active");
 });
 
-$("#resultEditTagsPanelWrapper").click((e) => {
+$("#resultEditTagsPanelWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "resultEditTagsPanelWrapper") {
     hide();
   }
 });
 
-$("#resultEditTagsPanel .confirmButton").click(async () => {
+$("#resultEditTagsPanel .confirmButton").on("click", async () => {
   const resultId = $("#resultEditTagsPanel").attr("resultid") as string;
   // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 

@@ -40,7 +40,7 @@ export function show(action: string, id?: string, name?: string): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#tagsWrapper #tagsEdit input").focus();
+        $("#tagsWrapper #tagsEdit input").trigger("focus");
       });
   }
 }
@@ -145,18 +145,18 @@ async function apply(): Promise<void> {
   Loader.hide();
 }
 
-$("#tagsWrapper").click((e) => {
+$("#tagsWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "tagsWrapper") {
     hide();
   }
 });
 
-$("#tagsWrapper #tagsEdit .button").click(() => {
+$("#tagsWrapper #tagsEdit .button").on("click", () => {
   apply();
 });
 
-$("#tagsWrapper #tagsEdit input").keypress((e) => {
-  if (e.keyCode == 13) {
+$("#tagsWrapper #tagsEdit input").on("keypress", (e) => {
+  if (e.key === "Enter") {
     apply();
   }
 });

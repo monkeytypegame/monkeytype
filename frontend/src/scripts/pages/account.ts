@@ -980,11 +980,11 @@ function sortAndRefreshHistory(
   loadMoreLines();
 }
 
-$(".pageAccount .toggleAccuracyOnChart").click(() => {
+$(".pageAccount .toggleAccuracyOnChart").on("click", () => {
   UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
-$(".pageAccount .toggleChartStyle").click(() => {
+$(".pageAccount .toggleChartStyle").on("click", () => {
   if (Config.chartStyle == "line") {
     UpdateConfig.setChartStyle("scatter");
   } else {
@@ -992,11 +992,11 @@ $(".pageAccount .toggleChartStyle").click(() => {
   }
 });
 
-$(".pageAccount .loadMoreButton").click(() => {
+$(".pageAccount .loadMoreButton").on("click", () => {
   loadMoreLines();
 });
 
-$(".pageAccount #accountHistoryChart").click(() => {
+$(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (!window) return;
@@ -1073,7 +1073,7 @@ $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
 });
 
-$(".pageAccount .content .group.aboveHistory .exportCSV").click(() => {
+$(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
 });
 

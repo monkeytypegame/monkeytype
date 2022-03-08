@@ -17,9 +17,9 @@ export function show(mode: string, config?: string): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#settingsImportWrapper input").focus();
+        $("#settingsImportWrapper input").trigger("focus");
         $("#settingsImportWrapper input").select();
-        $("#settingsImportWrapper input").focus();
+        $("#settingsImportWrapper input").trigger("focus");
       });
   }
 }
@@ -48,11 +48,11 @@ function hide(): void {
   }
 }
 
-$("#settingsImport .button").click(() => {
+$("#settingsImport .button").on("click", () => {
   hide();
 });
 
-$("#settingsImportWrapper").click((e) => {
+$("#settingsImportWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "settingsImportWrapper") {
     hide();
   }

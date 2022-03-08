@@ -116,7 +116,7 @@ $(".section.customBackgroundFilter .opacity input").on("input", () => {
   apply();
 });
 
-$(".section.customBackgroundFilter  .save.button").click(() => {
+$(".section.customBackgroundFilter  .save.button").on("click", () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
   ) as MonkeyTypes.CustomBackgroundFilter;

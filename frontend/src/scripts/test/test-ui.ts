@@ -65,7 +65,7 @@ export function reset(): void {
 
 export function focusWords(): void {
   if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").focus();
+    $("#wordsInput").trigger("focus");
   }
 }
 
@@ -795,7 +795,7 @@ $(document).on("click", "#testModesNotice .text-button.blind", () => {
   UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
-$(".pageTest #copyWordsListButton").click(async () => {
+$(".pageTest #copyWordsListButton").on("click", async () => {
   try {
     let words;
     if (Config.mode == "zen") {
@@ -812,7 +812,7 @@ $(".pageTest #copyWordsListButton").click(async () => {
   }
 });
 
-$(".pageTest #toggleBurstHeatmap").click(async () => {
+$(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
@@ -863,7 +863,7 @@ $("#wordsInput").on("focusout", () => {
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     toggleResultWords();
   }
 });

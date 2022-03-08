@@ -62,7 +62,7 @@ router.patch(
       enabled: joi.boolean(),
     },
   }),
-  asyncHandler(ApeKeysController.updateApeKey)
+  asyncHandler(ApeKeysController.editApeKey)
 );
 
 router.delete(

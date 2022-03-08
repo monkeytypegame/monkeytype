@@ -27,9 +27,9 @@ declare namespace MonkeyTypes {
   }
 
   interface DecodedToken {
-    type?: "Bearer" | "ApeKey";
-    uid?: string;
-    email?: string;
+    type: "Bearer" | "ApeKey" | "None";
+    uid: string;
+    email: string;
   }
 
   interface Context {
@@ -62,16 +62,17 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     cannotReport?: boolean;
-    apeKeys?: Record<string, ApeKey>;
     banned?: boolean;
   }
 
   interface ApeKey {
+    uid: string;
     name: string;
     hash: string;
     createdOn: number;
     modifiedOn: number;
     lastUsedOn: number;
+    useCount: number;
     enabled: boolean;
   }
 

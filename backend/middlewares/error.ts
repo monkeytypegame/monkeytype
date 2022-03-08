@@ -23,6 +23,9 @@ async function errorHandlingMiddleware(
   if (/ECONNREFUSED.*27017/i.test(error.message)) {
     monkeyResponse.message =
       "Could not connect to the database. It may be down.";
+  } else if (error instanceof URIError || error instanceof SyntaxError) {
+    monkeyResponse.status = 400;
+    monkeyResponse.message = "Unprocessable request";
   } else if (error instanceof MonkeyError) {
     monkeyResponse.message = error.message;
     monkeyResponse.status = error.status;

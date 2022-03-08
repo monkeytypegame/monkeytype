@@ -53,7 +53,8 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
   if (mode === "custom") {
     if (!customText) return true;
     const { isWordRandom, isTimeRandom, textLen, word, time } = customText;
-    const setTextTooShort = !isWordRandom && !isTimeRandom && textLen < 10;
+    const setTextTooShort =
+      !isWordRandom && !isTimeRandom && _.isNumber(textLen) && textLen < 10;
     const randomWordsTooShort = isWordRandom && !isTimeRandom && word < 10;
     const randomTimeTooShort = !isWordRandom && isTimeRandom && time < 15;
     return setTextTooShort || randomWordsTooShort || randomTimeTooShort;

@@ -48,7 +48,7 @@ function inverseDocumentFrequency(
 }
 
 function tokenize(text: string): string[] {
-  return text.match(/[a-zA-Z0-9]+/g) || [];
+  return text.match(/[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+/g) || [];
 }
 
 export const buildSearchService = <T>(

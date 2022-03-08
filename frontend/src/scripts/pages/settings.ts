@@ -910,11 +910,11 @@ $(document).on(
   }
 );
 
-$("#importSettingsButton").click(() => {
+$("#importSettingsButton").on("click", () => {
   ImportExportSettingsPopup.show("import");
 });
 
-$("#exportSettingsButton").click(() => {
+$("#exportSettingsButton").on("click", () => {
   const configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
@@ -947,7 +947,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
-    if (e.keyCode == 13) {
+    if (e.key === "Enter") {
       UpdateConfig.setCustomBackground(
         $(
           ".pageSettings .section.customBackgroundSize .inputAndButton input"
@@ -974,7 +974,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   (e) => {
-    if (e.keyCode == 13) {
+    if (e.key === "Enter") {
       UpdateConfig.setCustomLayoutfluid(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"

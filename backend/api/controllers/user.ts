@@ -1,4 +1,3 @@
-import _ from "lodash";
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
@@ -6,10 +5,6 @@ import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
-
-function cleanUser(user: MonkeyTypes.User): Omit<MonkeyTypes.User, "apeKeys"> {
-  return _.omit(user, "apeKeys");
-}
 
 class UserController {
   static async createNewUser(
@@ -76,7 +71,7 @@ class UserController {
     try {
       await UsersDAO.updateEmail(uid, newEmail);
     } catch (e) {
-      throw new MonkeyError(400, e.message, "update email", uid);
+      throw new MonkeyError(404, e.message, "update email", uid);
     }
 
     Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
@@ -95,7 +90,7 @@ class UserController {
         userInfo = await UsersDAO.addUser(undefined, email, uid);
       } else {
         throw new MonkeyError(
-          400,
+          404,
           "User not found. Could not recreate user document.",
           "Tried to recreate user document but either email or uid is nullish",
           uid
@@ -106,7 +101,7 @@ class UserController {
     const agentLog = buildAgentLog(req);
     Logger.log("user_data_requested", agentLog, uid);
 
-    return new MonkeyResponse("User data retrieved", cleanUser(userInfo));
+    return new MonkeyResponse("User data retrieved", userInfo);
   }
 
   static async linkDiscord(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
@@ -133,7 +128,7 @@ class UserController {
     const discordIdAvailable = await UsersDAO.isDiscordIdAvailable(discordId);
     if (!discordIdAvailable) {
       throw new MonkeyError(
-        400,
+        409,
         "This Discord account is already linked to a different account"
       );
     }
@@ -152,7 +147,7 @@ class UserController {
 
     const userInfo = await UsersDAO.getUser(uid);
     if (!userInfo.discordId) {
-      throw new MonkeyError(400, "User does not have a linked Discord account");
+      throw new MonkeyError(404, "User does not have a linked Discord account");
     }
 
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
@@ -254,7 +249,7 @@ class UserController {
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    const { mode, mode2 } = req.params;
+    const { mode, mode2 } = req.query;
 
     const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
     return new MonkeyResponse("Personal bests retrieved", data);

@@ -3,14 +3,14 @@ import _ from "lodash";
 interface CheckAndUpdatePbResult {
   isPb: boolean;
   obj: object;
-  lbObj: object;
+  lbObj?: object;
 }
 
 type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
 export function checkAndUpdatePb(
   userPersonalBests: MonkeyTypes.User["personalBests"],
-  lbPersonalBests: MonkeyTypes.User["lbPersonalBests"],
+  lbPersonalBests: MonkeyTypes.User["lbPersonalBests"] | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
   const { mode, mode2 } = result;
@@ -34,7 +34,9 @@ export function checkAndUpdatePb(
     userPb[mode][mode2].push(buildPersonalBest(result));
   }
 
-  updateLeaderboardPersonalBests(userPb, lbPersonalBests, result);
+  if (!_.isNil(lbPersonalBests)) {
+    updateLeaderboardPersonalBests(userPb, lbPersonalBests, result);
+  }
 
   return {
     isPb,
@@ -69,8 +71,8 @@ function updatePersonalBest(
   personalBest.consistency = result.consistency;
   personalBest.difficulty = result.difficulty;
   personalBest.language = result.language;
-  personalBest.punctuation = result.punctuation;
-  personalBest.lazyMode = result.lazyMode;
+  personalBest.punctuation = result.punctuation ?? false;
+  personalBest.lazyMode = result.lazyMode ?? false;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
   personalBest.timestamp = Date.now();
@@ -83,9 +85,9 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
     acc: result.acc,
     consistency: result.consistency,
     difficulty: result.difficulty,
-    lazyMode: result.lazyMode,
+    lazyMode: result.lazyMode ?? false,
     language: result.language,
-    punctuation: result.punctuation,
+    punctuation: result.punctuation ?? false,
     raw: result.rawWpm,
     wpm: result.wpm,
     timestamp: Date.now(),
@@ -97,7 +99,7 @@ function updateLeaderboardPersonalBests(
   lbPersonalBests: MonkeyTypes.User["lbPersonalBests"],
   result: Result
 ): void {
-  if (!shouldUpdateLeaderboardPersonalBests(lbPersonalBests, result)) {
+  if (!shouldUpdateLeaderboardPersonalBests(result)) {
     return;
   }
 
@@ -136,11 +138,8 @@ function updateLeaderboardPersonalBests(
   );
 }
 
-function shouldUpdateLeaderboardPersonalBests(
-  lbPersonalBests: MonkeyTypes.User["lbPersonalBests"],
-  result: Result
-): boolean {
+function shouldUpdateLeaderboardPersonalBests(result: Result): boolean {
   const isValidTimeMode =
     result.mode === "time" && (result.mode2 === "15" || result.mode2 === "60");
-  return lbPersonalBests && isValidTimeMode && !result.lazyMode;
+  return isValidTimeMode && !result.lazyMode;
 }

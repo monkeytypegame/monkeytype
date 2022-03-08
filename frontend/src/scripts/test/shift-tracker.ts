@@ -96,7 +96,7 @@ async function buildKeymapStrings(): Promise<void> {
   }
 }
 
-$(document).keydown((e) => {
+$(document).on("keydown", (e) => {
   if (e.code === "ShiftLeft") {
     leftState = true;
     rightState = false;
