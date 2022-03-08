@@ -8,7 +8,6 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
-import defaultConfig from "../constants/default-config";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -255,38 +254,15 @@ export function updateActiveTab(forced = false): void {
 // Add events to the DOM
 
 // Handle click on theme: preset or custom tab
-$(".pageSettings .section.themes .tabs .button").on("click", async (e) => {
-  const $target = $(e.currentTarget);
-
+$(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  // $target.addClass("active"); Don't uncomment it. updateActiveTab() will add the active class itself
+  const $target = $(e.currentTarget);
+  $target.addClass("active");
   setCustomInputs();
-  if ($target.attr("tab") === "preset") {
-    if (Config.randomTheme === "custom") UpdateConfig.setRandomTheme("off");
-    if (Config.customTheme) UpdateConfig.setCustomTheme(false);
+  if ($target.attr("tab") == "preset") {
+    UpdateConfig.setCustomTheme(false);
   } else {
-    if (firebase.auth().currentUser !== null) {
-      const customThemes = DB.getSnapshot().customThemes;
-      if (customThemes.length >= 1) {
-        // if (!DB.getCustomThemeById(Config.customThemeId))
-        // UpdateConfig.setCustomThemeId(customThemes[0]._id);
-        UpdateConfig.setCustomTheme(true);
-        return;
-      }
-      Loader.show();
-      const createdTheme = await DB.addCustomTheme({
-        name: "custom",
-        colors: [...defaultConfig.customThemeColors],
-      });
-      Loader.hide();
-      if (createdTheme) {
-        // UpdateConfig.setCustomThemeId(DB.getSnapshot().customThemes[0]._id);
-        UpdateConfig.setCustomTheme(true);
-      }
-    } else {
-      // UpdateConfig.setCustomThemeId("");
-      UpdateConfig.setCustomTheme(true);
-    }
+    UpdateConfig.setCustomTheme(true);
   }
 });
 
