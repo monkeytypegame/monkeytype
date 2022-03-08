@@ -130,7 +130,7 @@ $("#customTestDurationPopupWrapper").on("click", (e) => {
 $("#customTestDurationPopup input").keyup((e) => {
   previewDuration();
 
-  if (e.keyCode == 13) {
+  if (e.key === "Enter") {
     apply();
   }
 });

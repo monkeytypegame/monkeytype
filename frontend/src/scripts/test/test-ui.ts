@@ -863,7 +863,7 @@ $("#wordsInput").on("focusout", () => {
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     toggleResultWords();
   }
 });

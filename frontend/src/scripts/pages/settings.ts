@@ -970,7 +970,7 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
-    if (e.keyCode == 13) {
+    if (e.key === "Enter") {
       UpdateConfig.setCustomBackground(
         $(
           ".pageSettings .section.customBackgroundSize .inputAndButton input"
@@ -997,7 +997,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   (e) => {
-    if (e.keyCode == 13) {
+    if (e.key === "Enter") {
       UpdateConfig.setCustomLayoutfluid(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"

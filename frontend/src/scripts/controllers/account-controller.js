@@ -703,7 +703,7 @@ $(".pageLogin #forgotPasswordButton").on("click", (e) => {
 });
 
 $(".pageLogin .login input").keyup((e) => {
-  if (e.key == "Enter") {
+  if (e.key === "Enter") {
     UpdateConfig.setChangedBeforeDb(false);
     signIn();
   }
@@ -730,7 +730,7 @@ $(".signOut").on("click", (e) => {
 
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key == "Enter") {
+  if (e.key === "Enter") {
     signUp();
   }
 });

@@ -310,7 +310,7 @@ $("#replayWords").on("click", "letter", (event) => {
 });
 
 $(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     toggleReplayDisplay();
   }
 });

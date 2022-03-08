@@ -1587,7 +1587,7 @@ $(document).on("click", "#testModesNotice .text-button.restart", () => {
 });
 
 $(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key == "Enter") {
+  if (event.key === "Enter") {
     ManualRestart.reset();
     if (
       TestActive.get() &&
@@ -1618,7 +1618,7 @@ $(document.body).on("click", "#restartTestButton", () => {
 $(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     restart();
   }
 });
@@ -1642,7 +1642,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     restart(true);
   }
 });

@@ -153,7 +153,7 @@ $("#presetWrapper #presetEdit .button").on("click", () => {
 });
 
 $("#presetWrapper #presetEdit input").on("keypress", (e) => {
-  if (e.keyCode === 13) {
+  if (e.key === "Enter") {
     apply();
   }
 });

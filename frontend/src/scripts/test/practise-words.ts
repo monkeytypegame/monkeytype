@@ -148,7 +148,7 @@ $("#practiseWordsPopupWrapper").on("click", (e) => {
 });
 
 $("#practiseWordsPopup .button").on("keypress", (e) => {
-  if (e.key == "Enter") {
+  if (e.key === "Enter") {
     $(e.currentTarget).click();
   }
 });
@@ -169,7 +169,7 @@ $(document).keydown((event) => {
 });
 
 $(document).on("keypress", "#practiseWordsButton", (event) => {
-  if (event.keyCode == 13) {
+  if (event.key === "Enter") {
     showPopup(true);
   }
 });
