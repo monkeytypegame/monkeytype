@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Documentation for the public endpoints supported by the Monketype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY` ",
+    "description": "Documentation for the public endpoints provided by the Monketype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY` ",
     "version": "1.0.0",
     "title": "Monkeytype API",
     "termsOfService": "https://monkeytype.com/terms-of-service",
