@@ -275,7 +275,7 @@ $(document).on(
     if ($(e.target).hasClass("delButton")) return;
     if ($(e.target).hasClass("editButton")) return;
     const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-    ThemeController.changeCustomTheme(customThemeId);
+    ThemeController.set(customThemeId, true);
   }
 );
 
