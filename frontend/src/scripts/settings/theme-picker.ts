@@ -411,18 +411,18 @@ $("#shareCustomThemeButton").on("click", () => {
 });
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
-  saveCustomThemeColors();
-
   const newCustomTheme = {
     name: "custom",
     colors: Config.customThemeColors,
   };
 
   Loader.show();
-  await DB.addCustomTheme(newCustomTheme);
+  const response = await DB.addCustomTheme(newCustomTheme);
   Loader.hide();
-
-  updateActiveTab(true);
+  if (response) {
+    updateActiveTab(true);
+    saveCustomThemeColors();
+  }
 });
 
 ConfigEvent.subscribe((eventKey) => {
