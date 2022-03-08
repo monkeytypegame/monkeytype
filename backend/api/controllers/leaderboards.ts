@@ -7,12 +7,14 @@ class LeaderboardsController {
     const { language, mode, mode2, skip, limit = 50 } = req.query;
     const { uid } = req.ctx.decodedToken;
 
+    const queryLimit = Math.min(parseInt(limit as string), 50);
+
     const leaderboard = await LeaderboardsDAO.get(
       mode,
       mode2,
       language,
       parseInt(skip as string),
-      parseInt(limit as string)
+      queryLimit
     );
 
     const normalizedLeaderboard = _.map(leaderboard, (entry) => {
