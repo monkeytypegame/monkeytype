@@ -260,7 +260,7 @@ window
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "customTheme")
     eventValue ? set("custom") : set(Config.theme);
-  if (eventKey === "customThemeColors") set("custom");
+  if (eventKey === "customThemeColors" && !nosave) set("custom");
   if (eventKey === "theme") {
     clearPreview();
     set(eventValue as string);

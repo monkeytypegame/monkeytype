@@ -1294,7 +1294,7 @@ export function setCustomThemeColors(
     // applyCustomThemeColors();
   }
   saveToLocalStorage("customThemeColors", nosave);
-  ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
+  ConfigEvent.dispatch("customThemeColors", config.customThemeColors, nosave);
 
   return true;
 }
