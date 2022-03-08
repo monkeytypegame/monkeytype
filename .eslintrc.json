@@ -74,7 +74,8 @@
           "error",
           { "argsIgnorePattern": "^(_|e|event)" }
         ],
-        "@typescript-eslint/no-var-requires": "error"
+        "@typescript-eslint/no-var-requires": "error",
+        "@typescript-eslint/no-non-null-assertion": "off"
       }
       // "parserOptions": {
       //   "project": "./tsconfig.json"
