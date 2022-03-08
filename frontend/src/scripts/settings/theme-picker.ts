@@ -429,42 +429,16 @@ $("#shareCustomThemeButton").on("click", () => {
 });
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
-  let themeName = $(
-    ".pageSettings .customTheme .customThemeEdit input#name"
-  ).val() as string;
-  if (themeName.trim() === "") themeName = "custom";
+  saveCustomThemeColors();
 
-  const newColors: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_index, element) => {
-      newColors.push($(element).attr("value") as string);
-    }
-  );
-  // if (firebase.auth().currentUser !== null) {
-  //   const snapshot = DB.getSnapshot();
-  //   if (snapshot.customThemes.length < 1) {
-  //     Notifications.add("No custom themes!", -1);
-  //     return;
-  //   }
+  const newCustomTheme = {
+    name: "custom",
+    colors: Config.customThemeColors,
+  };
 
-  //   const customTheme = snapshot.customThemes.find(
-  //     (t) => t._id === Config.customThemeId
-  //   );
-  //   if (customTheme === undefined) {
-  //     Notifications.add("Custom theme does not exist!", -1);
-  //     return;
-  //   }
-  //   const newTheme = {
-  //     name: themeName,
-  //     colors: newColors,
-  //   };
-  //   Loader.show();
-  //   await DB.editCustomTheme(customTheme._id, newTheme);
-  //   Loader.hide();
-  // }
-  UpdateConfig.setCustomThemeColors(newColors);
-  Notifications.add("Custom theme saved", 1);
+  Loader.show();
+  await DB.addCustomTheme(newCustomTheme);
+  Loader.hide();
 
   updateActiveTab(true);
 });
