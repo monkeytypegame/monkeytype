@@ -9,7 +9,6 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 
 let isPreviewingTheme = false;
-// let previewCustomColors: string[] = [];
 export let randomTheme: string | null = null;
 
 export const colorVars = [
@@ -124,9 +123,8 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
       const snapshot = DB.getSnapshot();
       if (themeName !== "custom" && snapshot) {
         const customThemes = snapshot.customThemes;
-        const colors = customThemes.find((e) => e._id === themeName)
-          ?.colors as string[];
-        colorValues = colors;
+        const customThemeById = customThemes.find((e) => e._id === themeName);
+        colorValues = customThemeById?.colors as string[];
       }
       colorVars.forEach((e, index) => {
         document.documentElement.style.setProperty(e, colorValues[index]);
@@ -142,7 +140,9 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     }
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
-        $(".current-theme .text").text(themeName.replace(/_/g, " "));
+        $(".current-theme .text").text(
+          isCustom ? "custom" : themeName.replace(/_/g, " ")
+        );
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
@@ -158,9 +158,6 @@ export function preview(
   randomTheme = false
 ): void {
   isPreviewingTheme = true;
-  if (isCustom) {
-    // previewCustomColors = Config.customThemeColors;
-  }
   apply(themeIdentifier, isCustom, !randomTheme);
 }
 
