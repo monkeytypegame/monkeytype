@@ -47,6 +47,7 @@ import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
+import * as Monkey from "./monkey";
 import NodeObjectHash from "node-object-hash";
 
 const objecthash = NodeObjectHash().hash;
@@ -260,6 +261,7 @@ export function startTest(): boolean {
   LiveBurst.show();
   TimerProgress.update();
   TestTimer.clear();
+  Monkey.show();
 
   if (Config.funbox === "memory") {
     Funbox.resetMemoryTimer();
@@ -377,6 +379,8 @@ export function restart(
   Replay.pauseReplay();
   TestInput.setBailout(false);
   PaceCaret.reset();
+  Monkey.hide();
+
   if (Config.showAvg) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
@@ -1359,6 +1363,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   OutOfFocus.hide();
   TestTimer.clear();
   Funbox.clear();
+  Monkey.hide();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {

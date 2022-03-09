@@ -1305,11 +1305,6 @@ export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("monkey", monkey, ["boolean"])) return false;
 
   config.monkey = monkey;
-  if (config.monkey) {
-    $("#monkey").removeClass("hidden");
-  } else {
-    $("#monkey").addClass("hidden");
-  }
   saveToLocalStorage("monkey", nosave);
   ConfigEvent.dispatch("monkey", config.monkey);
 

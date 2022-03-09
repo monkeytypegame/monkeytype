@@ -1,5 +1,17 @@
 import { mapRange } from "../misc";
 import Config from "../config";
+import * as ConfigEvent from "../observables/config-event";
+import * as TestActive from "../states/test-active";
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "monkey" && TestActive.get()) {
+    if (Config.monkey) {
+      $("#monkey").removeClass("hidden");
+    } else {
+      $("#monkey").addClass("hidden");
+    }
+  }
+});
 
 let left = false;
 let right = false;
@@ -78,4 +90,20 @@ export function stop(): void {
     right = false;
   }
   update();
+}
+
+export function show(): void {
+  if (!Config.monkey) return;
+  $("#monkey")
+    .css("opacity", 0)
+    .removeClass("hidden")
+    .animate({ opacity: 1 }, 125);
+}
+
+export function hide(): void {
+  $("#monkey")
+    .css("opacity", 1)
+    .animate({ opacity: 1 }, 125, () => {
+      $("#monkey").addClass("hidden");
+    });
 }
