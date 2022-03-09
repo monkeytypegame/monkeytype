@@ -1257,6 +1257,10 @@ export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateCustomThemeListCommands(): void {
+  if (firebase.auth().currentUser === null) {
+    return;
+  }
+
   customThemeListCommands.list = [];
 
   if (DB.getSnapshot().customThemes.length < 0) {
@@ -1278,6 +1282,7 @@ export function updateCustomThemeListCommands(): void {
       },
     });
   });
+  return true;
 }
 
 const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
