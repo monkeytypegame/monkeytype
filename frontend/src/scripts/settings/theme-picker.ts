@@ -397,8 +397,7 @@ $("#shareCustomThemeButton").on("click", () => {
   );
 
   const url =
-    "https://monkeytype.com?" +
-    Misc.objectToQueryString({ customTheme: share });
+    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(share));
 
   navigator.clipboard.writeText(url).then(
     function () {
