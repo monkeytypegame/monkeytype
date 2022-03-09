@@ -194,8 +194,6 @@ export function getCustomThemeById(
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  const user = firebase.auth().currentUser;
-  if (user === null) return false;
   if (dbSnapshot === null) return false;
 
   if (dbSnapshot.customThemes.length >= 10) {
