@@ -377,10 +377,6 @@ class UsersDAO {
     return user.customThemes ?? [];
   }
 
-  static async setApeKeys(uid, apeKeys) {
-    await db.collection("users").updateOne({ uid }, { $set: { apeKeys } });
-  }
-
   static async getPersonalBests(uid, mode, mode2) {
     const user = await db.collection("users").findOne({ uid });
     if (mode2) {
