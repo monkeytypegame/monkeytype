@@ -152,10 +152,9 @@ async function authenticateWithApeKey(
   }
 
   const decodedKey = base64UrlDecode(key);
-  const [uid, keyId, apeKey] = decodedKey.split(".");
+  const [keyId, apeKey] = decodedKey.split(".");
 
-  const targetApeKey = await ApeKeysDAO.getApeKey(uid, keyId);
-
+  const targetApeKey = await ApeKeysDAO.getApeKey(keyId);
   if (!targetApeKey) {
     throw new MonkeyError(404, "ApeKey not found");
   }
@@ -165,18 +164,17 @@ async function authenticateWithApeKey(
     throw new MonkeyError(code, message);
   }
 
-  const isKeyValid = await compare(apeKey, targetApeKey?.hash ?? "");
-
+  const isKeyValid = await compare(apeKey, targetApeKey.hash);
   if (!isKeyValid) {
     const { code, message } = statuses.APE_KEY_INVALID;
     throw new MonkeyError(code, message);
   }
 
-  await ApeKeysDAO.updateLastUsedOn(uid, keyId);
+  await ApeKeysDAO.updateLastUsedOn(targetApeKey.uid, keyId);
 
   return {
     type: "ApeKey",
-    uid,
+    uid: targetApeKey.uid,
     email: "",
   };
 }

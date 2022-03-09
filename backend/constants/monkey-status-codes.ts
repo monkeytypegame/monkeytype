@@ -52,7 +52,7 @@ const statuses: Statuses = {
   },
   APE_KEY_INACTIVE: {
     code: 471,
-    message: "Ape is inactive",
+    message: "ApeKey is inactive",
   },
 };
 
