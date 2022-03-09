@@ -411,15 +411,20 @@ $("#shareCustomThemeButton").on("click", () => {
 });
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
-  const newCustomTheme = {
-    name: "custom",
-    colors: Config.customThemeColors,
-  };
+  if (firebase.auth().currentUser) {
+    const newCustomTheme = {
+      name: "custom",
+      colors: Config.customThemeColors,
+    };
 
-  Loader.show();
-  const response = await DB.addCustomTheme(newCustomTheme);
-  Loader.hide();
-  if (response) {
+    Loader.show();
+    const response = await DB.addCustomTheme(newCustomTheme);
+    Loader.hide();
+    if (response) {
+      updateActiveTab(true);
+      saveCustomThemeColors();
+    }
+  } else {
     updateActiveTab(true);
     saveCustomThemeColors();
   }
