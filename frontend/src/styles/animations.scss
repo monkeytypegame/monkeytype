@@ -54,13 +54,13 @@
 
 @keyframes shake {
   0% {
-    transform: translate(4px, 0) rotate(0deg);
+    transform: translate(2px, 0) rotate(0deg);
   }
   50% {
-    transform: translate(-4px, 0) rotate(0deg);
+    transform: translate(-2px, 0) rotate(0deg);
   }
   100% {
-    transform: translate(4px, 0) rotate(0deg);
+    transform: translate(2px, 0) rotate(0deg);
   }
 }
 
