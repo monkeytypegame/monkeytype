@@ -54,7 +54,7 @@ class ApeKeysController {
     const apeKeyId = await ApeKeysDAO.addApeKey(apeKey);
 
     return new MonkeyResponse("ApeKey generated", {
-      apeKey: base64UrlEncode(`${uid}.${apeKeyId}.${apiKey}`),
+      apeKey: base64UrlEncode(`${apeKeyId}.${apiKey}`),
       apeKeyId,
       apeKeyDetails: cleanApeKey(apeKey),
     });
