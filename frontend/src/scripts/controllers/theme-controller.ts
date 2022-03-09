@@ -78,7 +78,11 @@ const loadStyle = async function (name: string): Promise<void> {
     link.onload = (): void => {
       resolve();
     };
-    link.href = `themes/${name}.css`;
+    if (name === "custom") {
+      link.href = "";
+    } else {
+      link.href = `themes/${name}.css`;
+    }
 
     const headScript = document.querySelector("#currentTheme") as Element;
     headScript.replaceWith(link);
