@@ -1,23 +1,24 @@
 import joi from "joi";
+import { Router } from "express";
+import * as RateLimit from "../../middlewares/rate-limit";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { authenticateRequest } from "../../middlewares/auth";
 import LeaderboardsController from "../controllers/leaderboards";
-import * as RateLimit from "../../middlewares/rate-limit";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
-import { Router } from "express";
 
 const router = Router();
 
 router.get(
   "/",
   RateLimit.leaderboardsGet,
-  authenticateRequest({ isPublic: true }),
+  authenticateRequest({ isPublic: true, acceptApeKeys: true }),
   validateRequest({
     query: {
       language: joi.string().required(),
       mode: joi.string().required(),
       mode2: joi.string().required(),
-      skip: joi.number().min(0).required(),
-      limit: joi.number(),
+      skip: joi.number().min(0),
+      limit: joi.number().min(0).max(50),
     },
     validationErrorMessage: "Missing parameters",
   }),
@@ -27,7 +28,8 @@ router.get(
 router.get(
   "/rank",
   RateLimit.leaderboardsGet,
-  authenticateRequest(),
+  authenticateRequest({ acceptApeKeys: true }),
+  apeRateLimit,
   validateRequest({
     query: {
       language: joi.string().required(),
