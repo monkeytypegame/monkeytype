@@ -298,7 +298,7 @@ class UsersDAO {
     }
   }
 
-  static themeExists(customThemes, id) {
+  static themeDoesNotExists(customThemes, id) {
     return (
       (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0
     );
@@ -336,7 +336,7 @@ class UsersDAO {
     if (!user)
       throw new MonkeyError(404, "User not found", "Remove custom theme");
 
-    if (this.themeExists(user.customThemes, _id))
+    if (this.themeDoesNotExists(user.customThemes, _id))
       throw new MonkeyError(404, "Custom theme not found");
 
     return await db.collection("users").updateOne(
@@ -353,7 +353,7 @@ class UsersDAO {
     if (!user)
       throw new MonkeyError(404, "User not found", "Edit custom theme");
 
-    if (this.themeExists(user.customThemes, _id))
+    if (this.themeDoesNotExists(user.customThemes, _id))
       throw new MonkeyError(404, "Custom Theme not found");
 
     return await db.collection("users").updateOne(
