@@ -79,7 +79,7 @@ const loadStyle = async function (name: string): Promise<void> {
       resolve();
     };
     if (name === "custom") {
-      link.href = "";
+      link.href = `themes/serika_dark.css`;
     } else {
       link.href = `themes/${name}.css`;
     }
