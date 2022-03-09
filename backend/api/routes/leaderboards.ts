@@ -10,7 +10,7 @@ const router = Router();
 router.get(
   "/",
   RateLimit.leaderboardsGet,
-  authenticateRequest({ isPublic: true }),
+  authenticateRequest({ isPublic: true, acceptApeKeys: true }),
   validateRequest({
     query: {
       language: joi.string().required(),
@@ -27,7 +27,7 @@ router.get(
 router.get(
   "/rank",
   RateLimit.leaderboardsGet,
-  authenticateRequest(),
+  authenticateRequest({ acceptApeKeys: true }),
   validateRequest({
     query: {
       language: joi.string().required(),
