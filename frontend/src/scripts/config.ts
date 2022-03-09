@@ -1629,7 +1629,6 @@ export function apply(
     }
   );
   if (configObj !== undefined && configObj !== null) {
-    // setCustomThemeColors(configObj.customThemeColors, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setAutoSwitchTheme(configObj.autoSwitchTheme, true);
