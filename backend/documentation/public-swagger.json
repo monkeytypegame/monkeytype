@@ -94,7 +94,7 @@
             "description": "How many leaderboard entries to request",
             "required": false,
             "type": "number",
-            "minimum": 50,
+            "minimum": 0,
             "maximum": 50
           }
         ],
