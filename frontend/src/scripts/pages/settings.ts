@@ -9,7 +9,6 @@ import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
-import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
@@ -387,6 +386,7 @@ async function initGroups(): Promise<void> {
 export function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
+  $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
   $(".pageSettings select").empty().select2("destroy");
   $(".pageSettings .section.funbox .buttons").empty();
@@ -705,7 +705,7 @@ export function update(): void {
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
-  ThemePicker.updateActiveTab();
+  ThemePicker.updateActiveTab(true);
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   updateAuthSections();
@@ -926,29 +926,6 @@ $("#exportSettingsButton").on("click", () => {
   );
 });
 
-$("#shareCustomThemeButton").on("click", () => {
-  const share: string[] = [];
-  $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
-    (_, element) => {
-      share.push($(element).attr("value") as string);
-    }
-  );
-
-  const url =
-    "https://monkeytype.com?" +
-    Misc.objectToQueryString({ customTheme: share });
-
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 0);
-    },
-    function () {
-      CustomThemePopup.show(url);
-    }
-  );
-});
-
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
 });
@@ -1047,7 +1024,7 @@ export function setEventDisabled(value: boolean): void {
 }
 ConfigEvent.subscribe((eventKey) => {
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
-  if (ActivePage.get() === "settings") {
+  if (ActivePage.get() === "settings" && eventKey !== "theme") {
     update();
   }
 });

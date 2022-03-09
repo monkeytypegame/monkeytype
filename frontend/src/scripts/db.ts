@@ -34,6 +34,7 @@ export async function initSnapshot(): Promise<
       custom: { custom: [] },
     },
     name: undefined,
+    customThemes: [],
     presets: [],
     tags: [],
     favouriteThemes: [],
@@ -114,6 +115,7 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(48);
     // }
     // LoadingPage.updateText("Downloading tags...");
+    snap.customThemes = userData.customThemes ?? [];
     snap.tags = tagsData;
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -181,6 +183,92 @@ export async function getUserResults(): Promise<boolean> {
     dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
     return true;
   }
+}
+
+export function getCustomThemeById(
+  themeID: string
+): MonkeyTypes.CustomTheme | undefined {
+  return dbSnapshot.customThemes.find((t) => t._id === themeID);
+}
+
+export async function addCustomTheme(
+  theme: MonkeyTypes.RawCustomTheme
+): Promise<boolean> {
+  if (dbSnapshot === null) return false;
+
+  if (dbSnapshot.customThemes.length >= 10) {
+    Notifications.add("Too many custom themes!", 0);
+    return false;
+  }
+
+  const response = await Ape.users.addCustomTheme(theme);
+  if (response.status !== 200) {
+    Notifications.add("Error adding custom theme: " + response.message, -1);
+    return false;
+  }
+
+  const newCustomTheme: MonkeyTypes.CustomTheme = {
+    ...theme,
+    _id: response.data.theme._id as string,
+  };
+
+  dbSnapshot.customThemes.push(newCustomTheme);
+  return true;
+}
+
+export async function editCustomTheme(
+  themeId: string,
+  newTheme: MonkeyTypes.RawCustomTheme
+): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (!customTheme) {
+    Notifications.add(
+      "Editing failed: Custom theme with id: " + themeId + " does not exist",
+      -1
+    );
+    return false;
+  }
+
+  const response = await Ape.users.editCustomTheme(themeId, newTheme);
+  if (response.status !== 200) {
+    Notifications.add("Error editing custom theme: " + response.message, -1);
+    return false;
+  }
+
+  const newCustomTheme: MonkeyTypes.CustomTheme = {
+    ...newTheme,
+    _id: themeId,
+  };
+
+  dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
+    newCustomTheme;
+
+  return true;
+}
+
+export async function deleteCustomTheme(themeId: string): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (!customTheme) return false;
+
+  const response = await Ape.users.deleteCustomTheme(themeId);
+  if (response.status !== 200) {
+    Notifications.add("Error deleting custom theme: " + response.message, -1);
+    return false;
+  }
+
+  dbSnapshot.customThemes = dbSnapshot.customThemes.filter(
+    (t) => t._id !== themeId
+  );
+
+  return true;
 }
 
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(

@@ -43,9 +43,9 @@ function updateList(): void {
 }
 
 function updateQuoteLength(index: number): void {
-  const len = ($(
-    `#quoteApprovePopup .quote[id=${index}] .text`
-  ).val() as string)?.length;
+  const len = (
+    $(`#quoteApprovePopup .quote[id=${index}] .text`).val() as string
+  )?.length;
   $(`#quoteApprovePopup .quote[id=${index}] .length`).text(
     "Quote length: " + len
   );

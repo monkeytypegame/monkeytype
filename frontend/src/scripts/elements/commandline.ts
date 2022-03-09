@@ -3,6 +3,8 @@ import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "../test/test-ui";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
 
 let commandLineMouseMode = false;
 
@@ -681,9 +683,29 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    UpdateConfig.setCustomTheme(!Config.customTheme);
+    if (!Config.customTheme) {
+      if (firebase.auth().currentUser !== null) {
+        if (DB.getSnapshot().customThemes.length < 1) {
+          Notifications.add("No custom themes!", 0);
+          UpdateConfig.setCustomTheme(false);
+          // UpdateConfig.setCustomThemeId("");
+          return;
+        }
+        // if (!DB.getCustomThemeById(Config.customThemeId)) {
+        //   // Turn on the first custom theme
+        //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+        //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
+        // }
+      }
+      UpdateConfig.setCustomTheme(true);
+    } else UpdateConfig.setCustomTheme(false);
   } else {
-    CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
+    if (Config.customTheme) CommandlineLists.updateCustomThemeListCommands();
+    CommandlineLists.pushCurrent(
+      Config.customTheme
+        ? CommandlineLists.customThemeListCommands
+        : CommandlineLists.themeCommands
+    );
     show();
   }
 });

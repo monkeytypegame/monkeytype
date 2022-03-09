@@ -83,7 +83,7 @@ class UsersDAO {
   }
 
   static async addTag(uid, name) {
-    let _id = new ObjectId();
+    const _id = new ObjectId();
     await db
       .collection("users")
       .updateOne({ uid }, { $push: { tags: { _id, name } } });
@@ -296,6 +296,85 @@ class UsersDAO {
     } else {
       return null;
     }
+  }
+
+  static themeDoesNotExist(customThemes, id) {
+    return (
+      (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0
+    );
+  }
+
+  static async addTheme(uid, theme) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "Add custom theme");
+
+    if ((user.customThemes ?? []).length >= 10)
+      throw new MonkeyError(409, "Too many custom themes");
+
+    const _id = new ObjectId();
+    await db.collection("users").updateOne(
+      { uid },
+      {
+        $push: {
+          customThemes: {
+            _id,
+            name: theme.name,
+            colors: theme.colors,
+          },
+        },
+      }
+    );
+
+    return {
+      _id,
+      name: theme.name,
+    };
+  }
+
+  static async removeTheme(uid, _id) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user)
+      throw new MonkeyError(404, "User not found", "Remove custom theme");
+
+    if (this.themeDoesNotExist(user.customThemes, _id))
+      throw new MonkeyError(404, "Custom theme not found");
+
+    return await db.collection("users").updateOne(
+      {
+        uid: uid,
+        "customThemes._id": new ObjectId(_id),
+      },
+      { $pull: { customThemes: { _id: new ObjectId(_id) } } }
+    );
+  }
+
+  static async editTheme(uid, _id, theme) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user)
+      throw new MonkeyError(404, "User not found", "Edit custom theme");
+
+    if (this.themeDoesNotExist(user.customThemes, _id))
+      throw new MonkeyError(404, "Custom Theme not found");
+
+    return await db.collection("users").updateOne(
+      {
+        uid: uid,
+        "customThemes._id": new ObjectId(_id),
+      },
+      {
+        $set: {
+          "customThemes.$.name": theme.name,
+          "customThemes.$.colors": theme.colors,
+        },
+      }
+    );
+  }
+
+  static async getThemes(uid) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user)
+      throw new MonkeyError(404, "User not found", "Get custom themes");
+    return user.customThemes ?? [];
   }
 
   static async getPersonalBests(uid, mode, mode2) {

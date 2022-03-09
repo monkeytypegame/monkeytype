@@ -206,6 +206,45 @@ class UserController {
     return new MonkeyResponse("Leaderboard memory updated");
   }
 
+  static async getCustomThemes(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const customThemes = await UsersDAO.getThemes(uid);
+    return new MonkeyResponse("Custom themes retrieved", customThemes);
+  }
+
+  static async addCustomTheme(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { name, colors } = req.body;
+
+    const addedTheme = await UsersDAO.addTheme(uid, { name, colors });
+    return new MonkeyResponse("Custom theme added", {
+      theme: addedTheme,
+    });
+  }
+
+  static async removeCustomTheme(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { themeId } = req.body;
+    await UsersDAO.removeTheme(uid, themeId);
+    return new MonkeyResponse("Custom theme removed");
+  }
+
+  static async editCustomTheme(
+    req: MonkeyTypes.Request
+  ): Promise<MonkeyResponse> {
+    const { uid } = req.ctx.decodedToken;
+    const { themeId, theme } = req.body;
+
+    await UsersDAO.editTheme(uid, themeId, theme);
+    return new MonkeyResponse("Custom theme updated");
+  }
+
   static async getPersonalBests(
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {

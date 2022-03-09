@@ -1210,10 +1210,12 @@ export function setThemeDark(name: string, nosave?: boolean): boolean {
 function setThemes(
   theme: string,
   customState: boolean,
+  customThemeColors: string[],
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("themes", theme, ["string"])) return false;
 
+  config.customThemeColors = customThemeColors;
   config.theme = theme;
   config.customTheme = customState;
   saveToLocalStorage("theme", nosave);
@@ -1228,10 +1230,25 @@ export function setRandomTheme(
 ): boolean {
   if (
     !isConfigValueValid("random theme", val, [
-      ["off", "on", "fav", "light", "dark"],
+      ["off", "on", "fav", "light", "dark", "custom"],
     ])
   )
     return false;
+
+  if (val === "custom") {
+    setCustomTheme(true);
+    if (firebase.auth().currentUser === null) {
+      config.randomTheme = val;
+      return false;
+    }
+    if (!DB.getSnapshot()) return true;
+    if (DB.getSnapshot().customThemes.length === 0) {
+      Notifications.add("You need to create a custom theme first", 0);
+      config.randomTheme = "off";
+      return false;
+    }
+  }
+  if (val !== "off" && val !== "custom") setCustomTheme(false);
 
   config.randomTheme = val;
   saveToLocalStorage("randomTheme", nosave);
@@ -1279,7 +1296,7 @@ export function setCustomThemeColors(
     // applyCustomThemeColors();
   }
   saveToLocalStorage("customThemeColors", nosave);
-  ConfigEvent.dispatch("customThemeColors", config.customThemeColors);
+  ConfigEvent.dispatch("customThemeColors", config.customThemeColors, nosave);
 
   return true;
 }
@@ -1607,13 +1624,15 @@ export function apply(
     }
   );
   if (configObj !== undefined && configObj !== null) {
-    setCustomThemeColors(configObj.customThemeColors, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setAutoSwitchTheme(configObj.autoSwitchTheme, true);
-    setThemes(configObj.theme, configObj.customTheme, true);
-    // setTheme(configObj.theme, true);
-    // setCustomTheme(configObj.customTheme, true, true);
+    setThemes(
+      configObj.theme,
+      configObj.customTheme,
+      configObj.customThemeColors,
+      true
+    );
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
@@ -1624,7 +1643,6 @@ export function apply(
     setQuoteLength(configObj.quoteLength, true);
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
-    // setSavedLayout(configObj.savedLayout, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
