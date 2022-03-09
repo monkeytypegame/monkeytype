@@ -63,7 +63,7 @@ declare namespace MonkeyTypes {
     quoteMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
-    canGenerateApeKeys: boolean;
+    canGenerateApeKeys?: boolean;
   }
 
   interface ApeKey {
