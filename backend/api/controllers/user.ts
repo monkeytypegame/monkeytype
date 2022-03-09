@@ -218,9 +218,9 @@ class UserController {
     req: MonkeyTypes.Request
   ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    const customTheme = req.body;
+    const { name, colors } = req.body;
 
-    const addedTheme = await UsersDAO.addTheme(uid, customTheme);
+    const addedTheme = await UsersDAO.addTheme(uid, { name, colors });
     return new MonkeyResponse("Custom theme added", {
       theme: addedTheme,
     });
