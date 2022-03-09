@@ -58,6 +58,7 @@ const customThemeIdValidation = joi
     "string.length": "The themeId must be 24 characters long",
     "string.pattern.base": "The themeId must be valid hexadecimal string",
   });
+
 const usernameValidation = joi
   .string()
   .required()
