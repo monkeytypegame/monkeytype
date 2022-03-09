@@ -37,7 +37,7 @@ const customThemeColorsValidation = joi
     joi
       .string()
       .length(7)
-      .regex(/^#(?:[0-9a-fA-F]{6})$/)
+      .regex(/^#[0-9a-fA-F]{6}$/)
       .messages({
         "string.pattern.base": "The colors must be valid hexadecimal",
         "string.length": "The colors must be 7 characters long",
