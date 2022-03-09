@@ -22,6 +22,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
+import * as URLHandler from "../utils/url-handler";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -280,26 +281,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }, 125 / 2);
   }
 
-  let themeColors = Misc.findGetParameter("customTheme");
-  const oldCustomTheme = Config.customTheme;
-  const oldCustomThemeColors = Config.customThemeColors;
-  if (themeColors !== null) {
-    try {
-      themeColors = themeColors.split(",");
-      UpdateConfig.setCustomThemeColors(themeColors);
-      Notifications.add("Custom theme applied", 1);
-
-      if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to previous state.",
-        0
-      );
-      console.error(e);
-      UpdateConfig.setCustomTheme(oldCustomTheme);
-      UpdateConfig.setCustomThemeColors(oldCustomThemeColors);
-    }
-  }
+  URLHandler.loadCustomThemeFromUrl();
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
