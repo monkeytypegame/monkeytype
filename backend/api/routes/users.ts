@@ -4,7 +4,7 @@ import { Router } from "express";
 import UserController from "../controllers/user";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
-import ApeRateLimit from "../../middlewares/ape-rate-limit";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { isUsernameValid } from "../../utils/validation";
 
 const router = Router();
@@ -207,7 +207,7 @@ router.get(
   authenticateRequest({
     acceptApeKeys: true,
   }),
-  ApeRateLimit,
+  apeRateLimit,
   validateRequest({
     query: {
       mode: joi.string().required(),

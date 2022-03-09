@@ -1,9 +1,10 @@
 import joi from "joi";
+import { Router } from "express";
+import * as RateLimit from "../../middlewares/rate-limit";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { authenticateRequest } from "../../middlewares/auth";
 import LeaderboardsController from "../controllers/leaderboards";
-import * as RateLimit from "../../middlewares/rate-limit";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
-import { Router } from "express";
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.get(
   "/rank",
   RateLimit.leaderboardsGet,
   authenticateRequest({ acceptApeKeys: true }),
+  apeRateLimit,
   validateRequest({
     query: {
       language: joi.string().required(),
