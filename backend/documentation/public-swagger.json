@@ -57,12 +57,12 @@
     "/leaderboards": {
       "get": {
         "tags": ["leaderboards"],
-        "summary": "Gets up 50 positions from a leaderboard",
+        "summary": "Gets global leaderboard data",
         "parameters": [
           {
             "name": "language",
             "in": "query",
-            "description": "The leaderboards language (i.e., english)",
+            "description": "The leaderboard's language (i.e., english)",
             "required": true,
             "type": "string"
           },
@@ -77,29 +77,32 @@
             "name": "mode2",
             "in": "query",
             "description": "The secondary mode (i.e., 60)",
-            "required": false,
+            "required": true,
             "type": "string"
           },
           {
             "name": "skip",
             "in": "query",
-            "description": "How many leaderboard positions to skip",
+            "description": "How many leaderboard entries to skip",
             "required": false,
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           {
             "name": "limit",
             "in": "query",
-            "description": "How many leaderboard positions to request",
+            "description": "How many leaderboard entries to request",
             "required": false,
-            "type": "number"
+            "type": "number",
+            "minimum": 50,
+            "maximum": 50
           }
         ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/LeaderboardPosition"
+              "$ref": "#/definitions/LeaderboardEntry"
             }
           }
         }
@@ -108,12 +111,12 @@
     "/leaderboards/rank": {
       "get": {
         "tags": ["leaderboards"],
-        "summary": "Gets your position from a leaderboard",
+        "summary": "Gets your qualifying rank from a leaderboard",
         "parameters": [
           {
             "name": "language",
             "in": "query",
-            "description": "The leaderboards language (i.e., english)",
+            "description": "The leaderboard's language (i.e., english)",
             "required": true,
             "type": "string"
           },
@@ -128,29 +131,15 @@
             "name": "mode2",
             "in": "query",
             "description": "The secondary mode (i.e., 60)",
-            "required": false,
+            "required": true,
             "type": "string"
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "description": "How many leaderboard positions to skip",
-            "required": false,
-            "type": "number"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "How many leaderboard positions to request",
-            "required": false,
-            "type": "number"
           }
         ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/LeaderboardPosition"
+              "$ref": "#/definitions/LeaderboardEntry"
             }
           }
         }
@@ -215,9 +204,13 @@
         }
       }
     },
-    "LeaderboardPosition": {
+    "LeaderboardEntry": {
       "type": "object",
       "properties": {
+        "_id": {
+          "type": "string",
+          "example": "6226b17aebc27a4a8d1ce04b"
+        },
         "acc": {
           "type": "number",
           "format": "double",
@@ -228,13 +221,9 @@
           "format": "double",
           "example": 83.29
         },
-        "difficulty": {
-          "type": "string",
-          "example": "normal"
-        },
-        "language": {
-          "type": "string",
-          "example": "english"
+        "lazyMode": {
+          "type": "boolean",
+          "example": false
         },
         "name": {
           "type": "string",
@@ -245,8 +234,7 @@
           "example": false
         },
         "rank": {
-          "type": "number",
-          "format": "double",
+          "type": "integer",
           "example": 3506
         },
         "raw": {
