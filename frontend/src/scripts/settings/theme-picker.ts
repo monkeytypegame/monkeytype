@@ -411,6 +411,7 @@ $("#shareCustomThemeButton").on("click", () => {
 });
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
+  saveCustomThemeColors();
   if (firebase.auth().currentUser) {
     const newCustomTheme = {
       name: "custom",
@@ -422,11 +423,9 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
     Loader.hide();
     if (response) {
       updateActiveTab(true);
-      saveCustomThemeColors();
     }
   } else {
     updateActiveTab(true);
-    saveCustomThemeColors();
   }
 });
 
