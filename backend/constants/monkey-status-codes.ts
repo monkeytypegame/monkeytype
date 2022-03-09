@@ -15,6 +15,7 @@ type Statuses = {
   GIT_GUD: Status;
   APE_KEY_INVALID: Status;
   APE_KEY_INACTIVE: Status;
+  APE_KEY_MALFORMED: Status;
 };
 
 const statuses: Statuses = {
@@ -53,6 +54,10 @@ const statuses: Statuses = {
   APE_KEY_INACTIVE: {
     code: 471,
     message: "ApeKey is inactive",
+  },
+  APE_KEY_MALFORMED: {
+    code: 472,
+    message: "ApeKey is malformed",
   },
 };
 
