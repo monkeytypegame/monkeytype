@@ -7,6 +7,7 @@ let apeKeys: MonkeyTypes.ApeKeys = {};
 async function getData(): Promise<void> {
   Loader.show();
   const response = await Ape.apeKeys.get();
+  Loader.hide();
 
   if (response.status !== 200) {
     Notifications.add("Error getting ape keys: " + response.message, -1);
@@ -14,7 +15,6 @@ async function getData(): Promise<void> {
   }
 
   apeKeys = response.data as MonkeyTypes.ApeKeys;
-  Loader.hide();
 }
 
 function refreshList(): void {
