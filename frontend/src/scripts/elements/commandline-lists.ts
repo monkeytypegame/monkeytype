@@ -1282,7 +1282,7 @@ export function updateCustomThemeListCommands(): void {
       },
     });
   });
-  return true;
+  return;
 }
 
 const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
