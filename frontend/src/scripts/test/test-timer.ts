@@ -68,7 +68,8 @@ function calculateWpmRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
 
 function monkey(wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw): void {
   if (timerDebug) console.time("update monkey");
-  Monkey.updateFastOpacity(wpmAndRaw.wpm);
+  const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
+  Monkey.updateFastOpacity(num);
   if (timerDebug) console.timeEnd("update monkey");
 }
 
@@ -225,16 +226,18 @@ export async function start(): Promise<void> {
         slowTimerCount++;
         if (slowTimerCount > 5) {
           //slow timer
-          
+
           if (window.navigator.userAgent.includes("Edg")) {
-            Notifications.add('This bad performance could be caused by "efficiency mode" on Microsoft Edge.');
+            Notifications.add(
+              'This bad performance could be caused by "efficiency mode" on Microsoft Edge.'
+            );
           }
-          
+
           Notifications.add(
             "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
             -1
           );
-          
+
           TimerEvent.dispatch("fail", "slow timer");
         }
       }
