@@ -2,8 +2,11 @@ import db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 
+const leaderboardUpdating = {};
+
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 50) {
+    if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
     if (limit > 50 || limit <= 0) limit = 50;
     if (skip < 0) skip = 0;
     const preset = await db
@@ -28,6 +31,7 @@ class LeaderboardsDAO {
   }
 
   static async update(mode, mode2, language, uid = undefined) {
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
     let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
     let start1 = performance.now();
     let lb = await db
@@ -116,6 +120,7 @@ class LeaderboardsDAO {
       uid
     );
 
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
     if (retval) {
       return {
         message: "Successfully updated leaderboard",
