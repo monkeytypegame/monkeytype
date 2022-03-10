@@ -214,7 +214,7 @@ export function randomizeTheme(): void {
     // if (Config.randomTheme === "custom") {
     // changeCustomTheme(randomTheme, true);
     // } else {
-    preview(randomTheme, true);
+    preview(randomTheme, Config.randomTheme === "custom");
     // }
 
     if (previousTheme != randomTheme) {
