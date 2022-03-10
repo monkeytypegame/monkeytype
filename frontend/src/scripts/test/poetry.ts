@@ -22,8 +22,9 @@ export class Poem {
     for (let i = 0; i < this.words.length; i++) {
       let scrubbed = "";
       for (let j = 0; j < this.words[i].length; j++) {
-        if (!bannedChars.includes(this.words[i][j]))
+        if (!bannedChars.includes(this.words[i][j])) {
           scrubbed += this.words[i][j];
+        }
       }
 
       if (scrubbed == "") continue;

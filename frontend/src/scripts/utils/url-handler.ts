@@ -21,8 +21,9 @@ export function loadCustomThemeFromUrl(): void {
     colorArray = base64decoded;
   }
 
-  if (colorArray.length === 0)
+  if (colorArray.length === 0) {
     return Notifications.add("Invalid custom theme ", 0);
+  }
 
   const oldCustomTheme = Config.customTheme;
   const oldCustomThemeColors = Config.customThemeColors;

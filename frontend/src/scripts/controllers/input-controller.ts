@@ -63,8 +63,9 @@ function backspaceToPrevious(): void {
   if (
     TestInput.input.history.length == 0 ||
     TestUI.currentWordElementIndex == 0
-  )
+  ) {
     return;
+  }
 
   if (
     (TestInput.input.history[TestWords.words.currentIndex - 1] ==
@@ -190,8 +191,9 @@ function handleSpace(): void {
       return;
     }
     PaceCaret.handleSpace(false, currentWord);
-    if (Config.blindMode && Config.highlightMode !== "off")
+    if (Config.blindMode && Config.highlightMode !== "off") {
       $("#words .word.active letter").addClass("correct");
+    }
     TestInput.input.pushHistory();
     TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
     TestWords.words.increaseCurrentIndex();
@@ -709,7 +711,7 @@ $(document).keydown(async (event) => {
     return;
   }
 
-  if (TestInput.spacingDebug)
+  if (TestInput.spacingDebug) {
     console.log(
       "spacing debug",
       "keypress",
@@ -717,6 +719,7 @@ $(document).keydown(async (event) => {
       "length",
       TestInput.keypressTimings.spacing.array.length
     );
+  }
   TestInput.recordKeypressSpacing();
   TestInput.setKeypressDuration(performance.now());
   TestInput.setKeypressNotAfk();
@@ -749,8 +752,9 @@ $(document).keydown(async (event) => {
 
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
     backspaceToPrevious();
-    if (TestInput.input.current)
+    if (TestInput.input.current) {
       setWordsInput(" " + TestInput.input.current + " ");
+    }
   }
 
   if (event.key === "Enter") {
@@ -871,8 +875,9 @@ $("#wordsInput").on("input", (event) => {
     }
   } else if (inputValue !== TestInput.input.current) {
     let diffStart = 0;
-    while (inputValue[diffStart] === TestInput.input.current[diffStart])
+    while (inputValue[diffStart] === TestInput.input.current[diffStart]) {
       diffStart++;
+    }
 
     for (let i = diffStart; i < inputValue.length; i++) {
       handleChar(inputValue[i], i);

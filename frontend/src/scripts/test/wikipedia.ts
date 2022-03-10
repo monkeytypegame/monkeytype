@@ -61,8 +61,9 @@ export async function getSection(language: string): Promise<Section> {
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
   const currentLanguageGroup = await Misc.findCurrentGroup(language);
-  if (currentLanguageGroup !== undefined)
+  if (currentLanguageGroup !== undefined) {
     urlTLD = await getTLD(currentLanguageGroup);
+  }
 
   const randomPostURL = `https://${urlTLD}.wikipedia.org/api/rest_v1/page/random/summary`;
   const sectionObj: SectionObject = { title: "", author: "" };

@@ -113,8 +113,9 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     !isConfigValueValid("mode", mode, [
       ["time", "words", "quote", "zen", "custom"],
     ])
-  )
+  ) {
     return false;
+  }
 
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
@@ -140,8 +141,9 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
 }
 
 export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("play sound on error", val, ["boolean"]))
+  if (!isConfigValueValid("play sound on error", val, ["boolean"])) {
     return false;
+  }
 
   config.playSoundOnError = val;
   saveToLocalStorage("playSoundOnError", nosave);
@@ -158,8 +160,9 @@ export function setPlaySoundOnClick(
     !isConfigValueValid("play sound on click", val, [
       ["off", "1", "2", "3", "4", "5", "6", "7"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.playSoundOnClick = val;
   saveToLocalStorage("playSoundOnClick", nosave);
@@ -172,8 +175,9 @@ export function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]]))
+  if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]])) {
     return false;
+  }
 
   config.soundVolume = val;
   saveToLocalStorage("soundVolume", nosave);
@@ -187,8 +191,11 @@ export function setDifficulty(
   diff: MonkeyTypes.Difficulty,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("difficulty", diff, [["normal", "expert", "master"]]))
+  if (
+    !isConfigValueValid("difficulty", diff, [["normal", "expert", "master"]])
+  ) {
     return false;
+  }
 
   config.difficulty = diff;
   saveToLocalStorage("difficulty", nosave);
@@ -199,8 +206,9 @@ export function setDifficulty(
 
 //set fav themes
 export function setFavThemes(themes: string[], nosave?: boolean): boolean {
-  if (!isConfigValueValid("favorite themes", themes, ["stringArray"]))
+  if (!isConfigValueValid("favorite themes", themes, ["stringArray"])) {
     return false;
+  }
   config.favThemes = themes;
   saveToLocalStorage("favThemes", nosave);
   ConfigEvent.dispatch("favThemes", config.favThemes);
@@ -233,8 +241,9 @@ export function setChartAccuracy(
   chartAccuracy: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart accuracy", chartAccuracy, ["boolean"]))
+  if (!isConfigValueValid("chart accuracy", chartAccuracy, ["boolean"])) {
     return false;
+  }
 
   config.chartAccuracy = chartAccuracy;
   saveToLocalStorage("chartAccuracy", nosave);
@@ -247,8 +256,9 @@ export function setChartStyle(
   chartStyle: MonkeyTypes.ChartStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart style", chartStyle, [["line", "scatter"]]))
+  if (!isConfigValueValid("chart style", chartStyle, [["line", "scatter"]])) {
     return false;
+  }
 
   config.chartStyle = chartStyle;
   saveToLocalStorage("chartStyle", nosave);
@@ -261,8 +271,9 @@ export function setStopOnError(
   soe: MonkeyTypes.StopOnError,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("stop on error", soe, [["off", "word", "letter"]]))
+  if (!isConfigValueValid("stop on error", soe, [["off", "word", "letter"]])) {
     return false;
+  }
 
   config.stopOnError = soe;
   if (config.stopOnError !== "off") {
@@ -278,8 +289,9 @@ export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("always show decimal places", val, ["boolean"]))
+  if (!isConfigValueValid("always show decimal places", val, ["boolean"])) {
     return false;
+  }
 
   config.alwaysShowDecimalPlaces = val;
   saveToLocalStorage("alwaysShowDecimalPlaces", nosave);
@@ -305,8 +317,9 @@ export function setShowOutOfFocusWarning(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("show out of focus warning", val, ["boolean"]))
+  if (!isConfigValueValid("show out of focus warning", val, ["boolean"])) {
     return false;
+  }
 
   config.showOutOfFocusWarning = val;
   if (!config.showOutOfFocusWarning) {
@@ -335,8 +348,9 @@ export function setPaceCaret(
 ): boolean {
   if (
     !isConfigValueValid("pace caret", val, [["custom", "off", "average", "pb"]])
-  )
+  ) {
     return false;
+  }
 
   if (document.readyState === "complete") {
     if (val == "pb" && firebase.auth().currentUser === null) {
@@ -359,8 +373,9 @@ export function setPaceCaretCustomSpeed(
   val: number,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("pace caret custom speed", val, ["number"]))
+  if (!isConfigValueValid("pace caret custom speed", val, ["number"])) {
     return false;
+  }
 
   config.paceCaretCustomSpeed = val;
   saveToLocalStorage("paceCaretCustomSpeed", nosave);
@@ -394,8 +409,9 @@ export function setMinWpm(
 }
 
 export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min WPM custom speed", val, ["number"]))
+  if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
     return false;
+  }
 
   config.minWpmCustomSpeed = val;
   saveToLocalStorage("minWpmCustomSpeed", nosave);
@@ -433,8 +449,9 @@ export function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("min burst", min, [["off", "fixed", "flex"]]))
+  if (!isConfigValueValid("min burst", min, [["off", "fixed", "flex"]])) {
     return false;
+  }
 
   config.minBurst = min;
   saveToLocalStorage("minBurst", nosave);
@@ -444,8 +461,9 @@ export function setMinBurst(
 }
 
 export function setMinBurstCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min burst custom speed", val, ["number"]))
+  if (!isConfigValueValid("min burst custom speed", val, ["number"])) {
     return false;
+  }
 
   config.minBurstCustomSpeed = val;
   saveToLocalStorage("minBurstCustomSpeed", nosave);
@@ -459,8 +477,9 @@ export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("always show words history", val, ["boolean"]))
+  if (!isConfigValueValid("always show words history", val, ["boolean"])) {
     return false;
+  }
 
   config.alwaysShowWordsHistory = val;
   saveToLocalStorage("alwaysShowWordsHistory", nosave);
@@ -476,8 +495,9 @@ export function setSingleListCommandLine(
 ): boolean {
   if (
     !isConfigValueValid("single list command line", option, [["manual", "on"]])
-  )
+  ) {
     return false;
+  }
 
   config.singleListCommandLine = option;
   saveToLocalStorage("singleListCommandLine", nosave);
@@ -521,8 +541,9 @@ export function setEnableAds(
   val: MonkeyTypes.EnableAds,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("enable ads", val, [["on", "off", "max"]]))
+  if (!isConfigValueValid("enable ads", val, [["on", "off", "max"]])) {
     return false;
+  }
 
   config.enableAds = val;
   if (!nosave) {
@@ -540,8 +561,9 @@ export function setRepeatQuotes(
   val: MonkeyTypes.RepeatQuotes,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("repeat quotes", val, [["off", "typing"]]))
+  if (!isConfigValueValid("repeat quotes", val, [["off", "typing"]])) {
     return false;
+  }
 
   config.repeatQuotes = val;
   saveToLocalStorage("repeatQuotes", nosave);
@@ -590,8 +612,9 @@ export function setOppositeShiftMode(
 ): boolean {
   if (
     !isConfigValueValid("opposite shift mode", val, [["off", "on", "keymap"]])
-  )
+  ) {
     return false;
+  }
 
   config.oppositeShiftMode = val;
   saveToLocalStorage("oppositeShiftMode", nosave);
@@ -608,8 +631,9 @@ export function setPageWidth(
     !isConfigValueValid("page width", val, [
       ["max", "100", "125", "150", "200"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.pageWidth = val;
   $("#centerContent").removeClass("wide125");
@@ -634,8 +658,9 @@ export function setCaretStyle(
     !isConfigValueValid("caret style", caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.caretStyle = caretStyle;
   $("#caret").removeClass("off");
@@ -675,8 +700,9 @@ export function setPaceCaretStyle(
     !isConfigValueValid("pace caret style", caretStyle, [
       ["off", "default", "block", "outline", "underline", "carrot", "banana"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.paceCaretStyle = caretStyle;
   $("#paceCaret").removeClass("off");
@@ -710,8 +736,9 @@ export function setShowTimerProgress(
   timer: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("show timer progress", timer, ["boolean"]))
+  if (!isConfigValueValid("show timer progress", timer, ["boolean"])) {
     return false;
+  }
 
   config.showTimerProgress = timer;
   saveToLocalStorage("showTimerProgress", nosave);
@@ -764,8 +791,11 @@ export function setHighlightMode(
   mode: MonkeyTypes.HighlightMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]]))
+  if (
+    !isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]])
+  ) {
     return false;
+  }
 
   if (
     mode === "word" &&
@@ -801,8 +831,9 @@ export function setTimerStyle(
   style: MonkeyTypes.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]]))
+  if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]])) {
     return false;
+  }
 
   config.timerStyle = style;
   saveToLocalStorage("timerStyle", nosave);
@@ -819,8 +850,9 @@ export function setTimerColor(
     !isConfigValueValid("timer color", color, [
       ["black", "sub", "text", "main"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.timerColor = color;
 
@@ -870,8 +902,9 @@ export function setTimerOpacity(
     !isConfigValueValid("timer opacity", opacity, [
       ["0.25", "0.5", "0.75", "1"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.timerOpacity = opacity;
   saveToLocalStorage("timerOpacity", nosave);
@@ -931,8 +964,9 @@ export function setQuoteLength(
       [-2, -1, 0, 1, 2, 3],
       "numberArray",
     ])
-  )
+  ) {
     return false;
+  }
 
   if (Array.isArray(len)) {
     //config load
@@ -948,8 +982,9 @@ export function setQuoteLength(
       if (!config.quoteLength.includes(len)) {
         config.quoteLength.push(len);
       } else {
-        if (config.quoteLength.length > 1)
+        if (config.quoteLength.length > 1) {
           config.quoteLength = config.quoteLength.filter((ql) => ql !== len);
+        }
       }
     } else {
       config.quoteLength = [len];
@@ -1011,8 +1046,9 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
 }
 
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("start graphs at zero", mode, ["boolean"]))
+  if (!isConfigValueValid("start graphs at zero", mode, ["boolean"])) {
     return false;
+  }
 
   config.startGraphsAtZero = mode;
   saveToLocalStorage("startGraphsAtZero", nosave);
@@ -1023,8 +1059,9 @@ export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
 
 //linescroll
 export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("smooth line scroll", mode, ["boolean"]))
+  if (!isConfigValueValid("smooth line scroll", mode, ["boolean"])) {
     return false;
+  }
 
   config.smoothLineScroll = mode;
   saveToLocalStorage("smoothLineScroll", nosave);
@@ -1056,8 +1093,9 @@ export function setQuickTabMode(mode: boolean, nosave?: boolean): boolean {
 }
 
 export function previewFontFamily(font: string): boolean {
-  if (!isConfigValueValid("preview font family", font, ["string"]))
+  if (!isConfigValueValid("preview font family", font, ["string"])) {
     return false;
+  }
 
   document.documentElement.style.setProperty(
     "--font",
@@ -1121,8 +1159,9 @@ export function setConfidenceMode(
   cm: MonkeyTypes.ConfidenceMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("confidence mode", cm, [["off", "on", "max"]]))
+  if (!isConfigValueValid("confidence mode", cm, [["off", "on", "max"]])) {
     return false;
+  }
 
   config.confidenceMode = cm;
   if (config.confidenceMode !== "off") {
@@ -1141,8 +1180,9 @@ export function setIndicateTypos(
 ): boolean {
   if (
     !isConfigValueValid("indicate typos", value, [["off", "below", "replace"]])
-  )
+  ) {
     return false;
+  }
 
   config.indicateTypos = value;
   saveToLocalStorage("indicateTypos", nosave);
@@ -1155,8 +1195,9 @@ export function setAutoSwitchTheme(
   boolean: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("auto switch theme", boolean, ["boolean"]))
+  if (!isConfigValueValid("auto switch theme", boolean, ["boolean"])) {
     return false;
+  }
 
   boolean = boolean ?? DefaultConfig.autoSwitchTheme;
   config.autoSwitchTheme = boolean;
@@ -1232,8 +1273,9 @@ export function setRandomTheme(
     !isConfigValueValid("random theme", val, [
       ["off", "on", "fav", "light", "dark", "custom"],
     ])
-  )
+  ) {
     return false;
+  }
 
   if (val === "custom") {
     setCustomTheme(true);
@@ -1287,8 +1329,9 @@ export function setCustomThemeColors(
   colors: string[],
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("custom theme colors", colors, ["stringArray"]))
+  if (!isConfigValueValid("custom theme colors", colors, ["stringArray"])) {
     return false;
+  }
 
   if (colors !== undefined) {
     config.customThemeColors = colors;
@@ -1336,8 +1379,9 @@ export function setKeymapMode(
     !isConfigValueValid("keymap mode", mode, [
       ["off", "static", "react", "next"],
     ])
-  )
+  ) {
     return false;
+  }
 
   $(".active-key").removeClass("active-key");
   $(".keymap-key").attr("style", "");
@@ -1356,8 +1400,9 @@ export function setKeymapLegendStyle(
     !isConfigValueValid("keymap legend style", style, [
       ["lowercase", "uppercase", "blank", "dynamic"],
     ])
-  )
+  ) {
     return false;
+  }
 
   // Remove existing styles
   const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
@@ -1397,8 +1442,9 @@ export function setKeymapStyle(
     !isConfigValueValid("keymap style", style, [
       ["staggered", "alice", "matrix", "split", "split_matrix"],
     ])
-  )
+  ) {
     return false;
+  }
 
   style = style || "staggered";
   config.keymapStyle = style;
@@ -1447,8 +1493,9 @@ export function setFontSize(
     !isConfigValueValid("font size", fontSize, [
       ["1", "125", "15", "2", "3", "4"],
     ])
-  )
+  ) {
     return false;
+  }
 
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
@@ -1525,8 +1572,11 @@ export async function setCustomLayoutfluid(
 ): Promise<boolean> {
   const trimmed = value.trim();
 
-  if (!(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"])))
+  if (
+    !(await isConfigValueValidAsync("layoutfluid", trimmed, ["layoutfluid"]))
+  ) {
     return false;
+  }
 
   const customLayoutfluid = trimmed.replace(
     / /g,
@@ -1551,8 +1601,9 @@ export function setCustomBackgroundSize(
     !isConfigValueValid("custom background size", value, [
       ["max", "cover", "contain"],
     ])
-  )
+  ) {
     return false;
+  }
 
   if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
@@ -1568,8 +1619,9 @@ export function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("custom background filter", array, ["numberArray"]))
+  if (!isConfigValueValid("custom background filter", array, ["numberArray"])) {
     return false;
+  }
 
   config.customBackgroundFilter = array;
   saveToLocalStorage("customBackgroundFilter", nosave);
@@ -1586,8 +1638,9 @@ export function setMonkeyPowerLevel(
     !isConfigValueValid("monkey power level", level, [
       ["off", "1", "2", "3", "4"],
     ])
-  )
+  ) {
     return false;
+  }
 
   if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
   config.monkeyPowerLevel = level;

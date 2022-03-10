@@ -179,8 +179,9 @@ export function update(expectedStepEnd: number): void {
         currentLetterHeight === undefined ||
         currentLetterWidth === undefined ||
         caretWidth === undefined
-      )
+      ) {
         throw ``;
+      }
 
       newTop = currentLetter.offsetTop - currentLetterHeight / 5;
       newLeft;
@@ -237,8 +238,9 @@ export function update(expectedStepEnd: number): void {
 }
 
 export function reset(): void {
-  if (settings !== null && settings.timeout !== null)
+  if (settings !== null && settings.timeout !== null) {
     clearTimeout(settings.timeout);
+  }
   settings = null;
 }
 

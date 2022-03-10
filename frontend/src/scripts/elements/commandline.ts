@@ -89,10 +89,12 @@ function showFound(): void {
           if (
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
             !ThemeController.randomTheme
-          )
+          ) {
             ThemeController.clearPreview();
-          if (!/font/gi.test(obj.id))
+          }
+          if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
+          }
           if (obj.hover) obj.hover();
           return false;
         } else {
@@ -122,8 +124,9 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] && inputVal[0][0] == ">")
+  if (inputVal[0] && inputVal[0][0] == ">") {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
+  }
   if (inputVal[0] == "" && inputVal.length == 1) {
     $.each(list.list, (_index, obj) => {
       if (obj.visible !== false) obj.found = true;
@@ -266,9 +269,10 @@ function addChildCommands(
     icon = "";
   }
 
-  if (parentCommandDisplay)
+  if (parentCommandDisplay) {
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
+  }
   if ((commandItem as MonkeyTypes.Command).subgroup) {
     const command = commandItem as MonkeyTypes.Command;
     if (command.beforeSubgroup) command.beforeSubgroup();
@@ -300,10 +304,11 @@ function addChildCommands(
     const tempCommandItem: MonkeyTypes.Command = {
       ...(commandItem as MonkeyTypes.Command),
     };
-    if (parentCommand)
+    if (parentCommand) {
       (tempCommandItem as MonkeyTypes.Command).icon = (
         parentCommand as unknown as MonkeyTypes.Command
       ).icon;
+    }
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
     unifiedCommands.push(tempCommandItem);
   }
@@ -335,8 +340,9 @@ function useSingleListCommandLine(sshow = true): void {
   // } else if (Config.singleListCommandLine == "on") {
   CommandlineLists.setCurrent([allCommands]);
   // }
-  if (Config.singleListCommandLine != "manual")
+  if (Config.singleListCommandLine != "manual") {
     $("#commandLine").addClass("allCommands");
+  }
   if (sshow) show();
 }
 
@@ -346,8 +352,9 @@ function restoreOldCommandLine(sshow = true): void {
     CommandlineLists.setCurrent(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
     );
-    if (CommandlineLists.current.length < 1)
+    if (CommandlineLists.current.length < 1) {
       CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+    }
   }
   if (sshow) show();
 }
@@ -364,8 +371,9 @@ $("#commandLine input").keyup((e) => {
     e.key === "Tab" ||
     e.code == "AltLeft" ||
     (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Delete")
-  )
+  ) {
     return;
+  }
   updateSuggested();
 });
 
@@ -479,10 +487,12 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         if (
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
           !ThemeController.randomTheme
-        )
+        ) {
           ThemeController.clearPreview();
-        if (!/font/gi.test(obj.id))
+        }
+        if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
+        }
         if (obj.hover) obj.hover();
       }
     });
@@ -627,8 +637,9 @@ $(document).on("keydown", (e) => {
           ($($(".entry")[0]).outerHeight() as number);
         $(".suggestions").scrollTop(scroll);
       } catch (e) {
-        if (e instanceof Error)
+        if (e instanceof Error) {
           console.log("could not scroll suggestions: " + e.message);
+        }
       }
       // console.log(`scrolling to ${scroll}`);
       try {
@@ -639,10 +650,12 @@ $(document).on("keydown", (e) => {
             if (
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
               !ThemeController.randomTheme
-            )
+            ) {
               ThemeController.clearPreview();
-            if (!/font/gi.test(obj.id))
+            }
+            if (!/font/gi.test(obj.id)) {
               UpdateConfig.previewFontFamily(Config.fontFamily);
+            }
             if (obj.hover) obj.hover();
           }
         });

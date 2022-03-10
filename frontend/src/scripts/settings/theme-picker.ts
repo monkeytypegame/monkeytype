@@ -33,13 +33,15 @@ function updateColors(
   if (onlyStyle) {
     const colorID = colorPicker.find("input[type=color]").attr("id");
     if (colorID === undefined) console.error("Could not find color ID!");
-    if (!noThemeUpdate && colorID !== undefined)
+    if (!noThemeUpdate && colorID !== undefined) {
       document.documentElement.style.setProperty(colorID, color);
+    }
     const pickerButton = colorPicker.find("label");
     pickerButton.val(color);
     pickerButton.attr("value", color);
-    if (pickerButton.attr("for") !== "--bg-color")
+    if (pickerButton.attr("for") !== "--bg-color") {
       pickerButton.css("background-color", color);
+    }
     colorPicker.find("input[type=text]").val(color);
     colorPicker.find("input[type=color]").attr("value", color);
     return;
@@ -84,15 +86,17 @@ function updateColors(
   const colorID = colorPicker.find("input[type=color]").attr("id");
 
   if (colorID === undefined) console.error("Could not find color ID!");
-  if (!noThemeUpdate && colorID !== undefined)
+  if (!noThemeUpdate && colorID !== undefined) {
     document.documentElement.style.setProperty(colorID, color);
+  }
 
   const pickerButton = colorPicker.find("label");
 
   pickerButton.val(color);
   pickerButton.attr("value", color);
-  if (pickerButton.attr("for") !== "--bg-color")
+  if (pickerButton.attr("for") !== "--bg-color") {
     pickerButton.css("background-color", color);
+  }
   colorPicker.find("input[type=text]").val(color);
   colorPicker.find("input[type=color]").attr("value", color);
 }
@@ -292,10 +296,11 @@ $(document).on(
   (e) => {
     const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
     if (theme !== undefined) toggleFavourite(theme);
-    else
+    else {
       console.error(
         "Could not find the theme attribute attached to the button clicked!"
       );
+    }
   }
 );
 

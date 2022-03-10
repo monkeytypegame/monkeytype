@@ -161,9 +161,10 @@ export function update(
 }
 
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
-  if (eventKey === "mode")
+  if (eventKey === "mode") {
     update(
       eventPreviousValue as MonkeyTypes.Mode,
       eventValue as MonkeyTypes.Mode
     );
+  }
 });
