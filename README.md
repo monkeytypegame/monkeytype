@@ -10,17 +10,17 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features like themes, sounds, a smooth caret, and more.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more.
 
 # Features
 
-- minimalistic design with optional ads
+- minimalistic design with optional adverts
 - look at what you are typing
 - focus mode
 - different test modes
 - punctuation mode
-- themes
 - quotes
+- themes
 - live wpm
 - smooth caret
 - account system
@@ -29,7 +29,7 @@ Monkeytype is a minimalistic and customizable typing test. It features many test
 
 # Discord bot
 
-On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
+On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles. You can find its code over at https://github.com/Miodec/monkey-bot.
 
 # Bug report or Feature request
 
@@ -37,11 +37,11 @@ If you encounter a bug or have a feature request, [send us an email](jack@monkey
 
 # Want to Contribute?
 
-Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
+Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md).
 
 # Code of Conduct
 
-Before contributing to this repository, please read the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
+Before contributing to this repository, please read the [code of conduct](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md).
 
 # Credits
 
