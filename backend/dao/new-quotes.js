@@ -27,7 +27,7 @@ class NewQuotesDAO {
     //check for duplicate first
     const fileDir = path.join(
       __dirname,
-      `../../../monkeytype-new-quotes/static/quotes/${language}.json`
+      `../../../../monkeytype-new-quotes/static/quotes/${language}.json`
     );
     let duplicateId = -1;
     let similarityScore = -1;
