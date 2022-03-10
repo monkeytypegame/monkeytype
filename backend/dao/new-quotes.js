@@ -123,7 +123,7 @@ class NewQuotesDAO {
       );
       message = `Created file ${language}.json and added quote.`;
     }
-    await git.add([`static/quotes/${language}.json`]);
+    await git.add([`frontend/static/quotes/${language}.json`]);
     await git.commit(`Added quote to ${language}.json`);
     await git.push("origin", "master");
     await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });
