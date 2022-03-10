@@ -8,7 +8,7 @@ import MonkeyError from "../utils/error";
 
 let git;
 try {
-  git = simpleGit(path.join(__dirname, "../../../monkeytype-new-quotes"));
+  git = simpleGit(path.join(__dirname, "../../../../monkeytype-new-quotes"));
 } catch (e) {
   git = undefined;
 }
