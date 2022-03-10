@@ -648,13 +648,14 @@ export function objectToQueryString<T extends string | number | boolean>(
   obj: Record<string, T | T[]>
 ): string {
   const str = [];
-  for (const p in obj)
+  for (const p in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, p)) {
       // Arrays get encoded as a comma(%2C)-separated list
       str.push(
         encodeURIComponent(p) + "=" + encodeURIComponent(obj[p] as unknown as T)
       );
     }
+  }
   return str.join("&");
 }
 

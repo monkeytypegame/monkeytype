@@ -286,6 +286,7 @@ ConfigEvent.subscribe((eventKey) => {
       "keymapLayout",
       "layout",
     ].includes(eventKey)
-  )
+  ) {
     clearActive();
+  }
 });

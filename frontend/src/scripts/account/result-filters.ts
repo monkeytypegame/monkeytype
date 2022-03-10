@@ -164,8 +164,9 @@ export function updateActive(): void {
       if (getFilter(group, filter)) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined)
+        if (groupAboveChartDisplay["all"] !== undefined) {
           groupAboveChartDisplay["all"] = false;
+        }
       }
       let buttonEl;
       if (group === "date") {

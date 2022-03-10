@@ -190,8 +190,9 @@ export async function isUsingOppositeShift(
     if (
       !rightSideKeys.includes(event.code) &&
       !leftSideKeys.includes(event.code)
-    )
+    ) {
       return null;
+    }
 
     if (
       (leftState && rightSideKeys.includes(event.code)) ||

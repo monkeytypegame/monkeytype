@@ -23,10 +23,11 @@ class LeaderboardsDAO {
     const res = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
-    if (res)
+    if (res) {
       res.count = await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .estimatedDocumentCount();
+    }
     return res;
   }
 
@@ -90,10 +91,11 @@ class LeaderboardsDAO {
     try {
       await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
     } catch (e) {}
-    if (lb && lb.length !== 0)
+    if (lb && lb.length !== 0) {
       await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .insertMany(lb);
+    }
     let end3 = performance.now();
 
     let start4 = performance.now();

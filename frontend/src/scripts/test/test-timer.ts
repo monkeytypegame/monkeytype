@@ -36,8 +36,9 @@ function premid(): void {
   if (timerDebug) console.time("premid");
   const premidSecondsLeft = document.querySelector("#premidSecondsLeft");
 
-  if (premidSecondsLeft !== null)
+  if (premidSecondsLeft !== null) {
     premidSecondsLeft.innerHTML = (Config.time - Time.get()).toString();
+  }
   if (timerDebug) console.timeEnd("premid");
 }
 

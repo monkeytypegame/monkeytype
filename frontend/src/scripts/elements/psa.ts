@@ -37,8 +37,9 @@ export async function show(): Promise<void> {
   }
   const localmemory = getMemory();
   latest.forEach((psa) => {
-    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false)
+    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
       return;
+    }
     Notifications.addBanner(
       psa.message,
       psa.level,

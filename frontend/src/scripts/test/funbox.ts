@@ -169,8 +169,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   ManualRestart.set();
   if (mode === "style") {
-    if (funbox != undefined)
+    if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
+    }
 
     if (funbox === "simon_says") {
       UpdateConfig.setKeymapMode("next", true);

@@ -100,8 +100,9 @@ class ResultController {
         throw new MonkeyError(status.code, "Result data doesn't make sense");
       }
     } else {
-      if (process.env.MODE !== "dev")
+      if (process.env.MODE !== "dev") {
         throw new Error("No anticheat module found");
+      }
       console.error(
         "No anticheat module found. Continuing in dev mode, results will not be validated."
       );
@@ -206,8 +207,9 @@ class ResultController {
           throw new MonkeyError(status.code, "Possible bot detected");
         }
       } else {
-        if (process.env.MODE !== "dev")
+        if (process.env.MODE !== "dev") {
           throw new Error("No anticheat module found");
+        }
         console.error(
           "No anticheat module found. Continuing in dev mode, results will not be validated."
         );

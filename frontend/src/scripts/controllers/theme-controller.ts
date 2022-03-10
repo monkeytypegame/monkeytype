@@ -128,8 +128,9 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
       if (isCustom && !isPreview && snapshot) {
         const customColors =
           snapshot.customThemes.find((e) => e._id === themeName)?.colors ?? [];
-        if (customColors.length > 0)
+        if (customColors.length > 0) {
           UpdateConfig.setCustomThemeColors(customColors);
+        }
       }
       if (themeName !== "custom" && snapshot) {
         const customThemes = snapshot.customThemes;
@@ -278,10 +279,12 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
-  if (eventKey === "customTheme")
+  if (eventKey === "customTheme") {
     eventValue ? set("custom", true) : set(Config.theme, false);
-  if (eventKey === "customThemeColors")
+  }
+  if (eventKey === "customThemeColors") {
     nosave ? preview("custom", true) : set("custom", true);
+  }
   if (eventKey === "theme") {
     clearPreview();
     set(eventValue as string, false);

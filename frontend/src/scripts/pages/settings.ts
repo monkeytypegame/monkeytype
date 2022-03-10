@@ -1001,8 +1001,9 @@ $(document).on(
   `.pageSettings .section.autoSwitchThemeInputs select.light`,
   (e) => {
     const target = $(e.currentTarget);
-    if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+    if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
       return;
+    }
     UpdateConfig.setThemeLight(target.val() as string);
   }
 );
@@ -1012,8 +1013,9 @@ $(document).on(
   `.pageSettings .section.autoSwitchThemeInputs select.dark`,
   (e) => {
     const target = $(e.currentTarget);
-    if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+    if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
       return;
+    }
     UpdateConfig.setThemeDark(target.val() as string);
   }
 );

@@ -70,7 +70,7 @@ export let result = new Chart($("#wpmChart"), {
             unique.forEach((wordIndex) => {
               let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
               let input = wordEl.attr("input");
-              if (input != undefined)
+              if (input != undefined) {
                 wordEl.append(
                   `<div class="wordInputAfter">${input
                     .replace(/\t/g, "_")
@@ -78,6 +78,7 @@ export let result = new Chart($("#wpmChart"), {
                     .replace(/</g, "&lt")
                     .replace(/>/g, "&gt")}</div>`
                 );
+              }
             });
           } catch {}
         },

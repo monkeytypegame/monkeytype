@@ -175,8 +175,9 @@ export async function getUserResults(): Promise<boolean> {
       if (result.lazyMode === undefined) result.lazyMode = false;
       if (result.difficulty === undefined) result.difficulty = "normal";
       if (result.funbox === undefined) result.funbox = "none";
-      if (result.language === undefined || result.language === null)
+      if (result.language === undefined || result.language === null) {
         result.language = "english";
+      }
       if (result.numbers === undefined) result.numbers = false;
       if (result.punctuation === undefined) result.punctuation = false;
     });
@@ -438,7 +439,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   if (mode == "quote") return;
   function cont(): void {
     let found = false;
-    if (dbSnapshot.personalBests === undefined)
+    if (dbSnapshot.personalBests === undefined) {
       dbSnapshot.personalBests = {
         time: {},
         words: {},
@@ -446,6 +447,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
         quote: { custom: [] },
         custom: { custom: [] },
       };
+    }
 
     if (dbSnapshot.personalBests[mode] === undefined) {
       if (mode === "zen") {
@@ -457,9 +459,10 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
       }
     }
 
-    if (dbSnapshot.personalBests[mode][mode2] === undefined)
+    if (dbSnapshot.personalBests[mode][mode2] === undefined) {
       dbSnapshot.personalBests[mode][mode2] =
         [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+    }
 
     (
       dbSnapshot.personalBests[mode][
@@ -688,15 +691,18 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
       timeMode2 = mode2 as 15 | 60;
 
     const snapshot = getSnapshot();
-    if (snapshot.lbMemory === undefined)
+    if (snapshot.lbMemory === undefined) {
       snapshot.lbMemory = { time: { 15: { english: 0 }, 60: { english: 0 } } };
-    if (snapshot.lbMemory[timeMode] === undefined)
+    }
+    if (snapshot.lbMemory[timeMode] === undefined) {
       snapshot.lbMemory[timeMode] = {
         15: { english: 0 },
         60: { english: 0 },
       };
-    if (snapshot.lbMemory[timeMode][timeMode2] === undefined)
+    }
+    if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
       snapshot.lbMemory[timeMode][timeMode2] = {};
+    }
     const current = snapshot.lbMemory[timeMode][timeMode2][language];
     snapshot.lbMemory[timeMode][timeMode2][language] = rank;
     if (api && current != rank) {
@@ -733,8 +739,9 @@ export function saveLocalResult(
 
 export function updateLocalStats(stats: MonkeyTypes.Stats): void {
   const snapshot = getSnapshot();
-  if (snapshot.globalStats === undefined)
+  if (snapshot.globalStats === undefined) {
     snapshot.globalStats = {} as MonkeyTypes.Stats;
+  }
   if (snapshot !== null && snapshot.globalStats !== undefined) {
     if (snapshot.globalStats.time == undefined) {
       snapshot.globalStats.time = stats.time;
