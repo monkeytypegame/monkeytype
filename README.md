@@ -10,21 +10,20 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate the experience of natural typing during a typing test, by unobtrusively presenting the text prompts and displaying typed characters in-place, providing straightforward, real-time feedback on typos, speed, and accuracy.
 
 # Features
 
-- minimalistic design with optional adverts
-- look at what you are typing
-- focus mode
+- minimalistic design, with optional adverts and focus mode while typing
+- type what you see, see what you type
+- live errors, wpm, and accuracy displays
 - different test modes
-- punctuation mode
+- punctuation and numbers modes
 - quotes
 - themes
-- live wpm
 - smooth caret
 - account system
-- command line
+- challenges and just-for-fun test modifiers
 - and much more
 
 # Discord bot
