@@ -2,8 +2,11 @@ import db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 
+const leaderboardUpdating = {};
+
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 50) {
+    if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
     if (limit > 50 || limit <= 0) limit = 50;
     if (skip < 0) skip = 0;
     const preset = await db
@@ -83,6 +86,7 @@ class LeaderboardsDAO {
     });
     let end2 = performance.now();
     let start3 = performance.now();
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
     try {
       await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
     } catch (e) {}
@@ -103,6 +107,7 @@ class LeaderboardsDAO {
       .createIndex({
         rank: 1,
       });
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
     let end4 = performance.now();
 
     let timeToRunAggregate = (end1 - start1) / 1000;

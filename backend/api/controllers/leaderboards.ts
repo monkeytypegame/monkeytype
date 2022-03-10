@@ -17,7 +17,15 @@ class LeaderboardsController {
       queryLimit
     );
 
-    const normalizedLeaderboard = _.map(leaderboard, (entry) => {
+    if (leaderboard === false) {
+      return new MonkeyResponse(
+        "Leaderboard is currently updating. Please try again in a few seconds.",
+        null,
+        503
+      );
+    }
+
+    const normalizedLeaderboard = _.map(leaderboard as any[], (entry) => {
       return uid && entry.uid === uid
         ? entry
         : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
