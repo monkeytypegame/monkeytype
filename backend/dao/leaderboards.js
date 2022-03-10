@@ -31,7 +31,6 @@ class LeaderboardsDAO {
   }
 
   static async update(mode, mode2, language, uid = undefined) {
-    leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
     let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
     let start1 = performance.now();
     let lb = await db
@@ -87,6 +86,7 @@ class LeaderboardsDAO {
     });
     let end2 = performance.now();
     let start3 = performance.now();
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
     try {
       await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
     } catch (e) {}
@@ -107,6 +107,7 @@ class LeaderboardsDAO {
       .createIndex({
         rank: 1,
       });
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
     let end4 = performance.now();
 
     let timeToRunAggregate = (end1 - start1) / 1000;
@@ -120,7 +121,6 @@ class LeaderboardsDAO {
       uid
     );
 
-    leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
     if (retval) {
       return {
         message: "Successfully updated leaderboard",
