@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -34872,6 +34884,24 @@
       "source": "Mr. Robot",
       "length": 332,
       "id": 5916
+    },
+    {
+      "text": "The most exciting, challenging and significant relationship of all is the one you have with yourself. And if you find someone to love the you that you love, well, that’s just fabulous.",
+      "source": "Sex and the City",
+      "length": 179,
+      "id": 5917
+    },
+    {
+      "text": "The most exciting, challenging and significant relationship of all is the one you have with yourself. And if you find someone to love the you that you love, well, that’s just fabulous.",
+      "source": "Sex and the City",
+      "length": 179,
+      "id": 5918
+    },
+    {
+      "text": "The most exciting, challenging and significant relationship of all is the one you have with yourself. And if you find someone to love the you that you love, well, that’s just fabulous.",
+      "source": "Sex and the City",
+      "length": 179,
+      "id": 5919
     }
   ]
 }
