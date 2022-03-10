@@ -29,7 +29,7 @@ class NewQuotesDAO {
     //check for duplicate first
     const fileDir = path.join(
       __dirname,
-      `${PATH_TO_REPO}/static/quotes/${language}.json`
+      `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
     );
     let duplicateId = -1;
     let similarityScore = -1;
@@ -84,7 +84,7 @@ class NewQuotesDAO {
     let message = "";
     const fileDir = path.join(
       __dirname,
-      `${PATH_TO_REPO}/static/quotes/${language}.json`
+      `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
     );
     await git.pull("upstream", "master");
     if (fs.existsSync(fileDir)) {
