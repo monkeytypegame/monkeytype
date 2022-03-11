@@ -20,6 +20,10 @@
     "languages": ["nepali", "nepali_1k"]
   },
   {
+    "name": "sanskrit",
+    "languages":["sanskrit"]
+  },
+  {
     "name": "french",
     "languages": ["french", "french_1k", "french_2k", "french_10k"]
   },
