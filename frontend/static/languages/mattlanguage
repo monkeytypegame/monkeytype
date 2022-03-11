@@ -1,0 +1,8 @@
+{
+  "name": "mattlanguage",
+  "leftToRight": true,
+  "bcp47": "es-ES",
+  "words": [
+    "words",
+  ]
+}
