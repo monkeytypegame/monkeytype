@@ -261,6 +261,10 @@
     "languages": ["hindi", "hindi_1k"]
   },
   {
+    "name": "sanskrit",
+    "languages": ["sanskrit"]
+  },
+  {
     "name": "macedonian",
     "languages": [
       "macedonian",
