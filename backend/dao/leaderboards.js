@@ -20,6 +20,7 @@ class LeaderboardsDAO {
   }
 
   static async getRank(mode, mode2, language, uid) {
+    if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
     const res = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
