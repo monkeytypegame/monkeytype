@@ -30,6 +30,10 @@ const API_ROUTE_MAP = {
 function addApiRoutes(app: Application): void {
   let requestsProcessed = 0;
 
+  app.get("/leaderboard", (_req, res) => {
+    res.sendStatus(404);
+  });
+
   addSwaggerMiddlewares(app);
 
   app.use(
