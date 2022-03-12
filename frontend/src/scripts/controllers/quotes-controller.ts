@@ -1,18 +1,34 @@
 import { shuffle } from "../utils/misc";
 
-type QuoteCollection = {
+interface Quote {
+  text: string;
+  source: string;
+  length: number;
+  id: number;
+}
+
+interface QuoteData {
+  language: string;
+  quotes: Quote[];
+  groups: number[][];
+}
+
+interface QuoteCollection {
   quotes: MonkeyTypes.Quote[];
-  length?: number;
-  language?: string;
-  groups: number[][] | MonkeyTypes.Quote[][];
+  length: number;
+  language: string | null;
+  groups: MonkeyTypes.Quote[][];
+}
+
+const defaultQuoteCollection: QuoteCollection = {
+  quotes: [],
+  length: 0,
+  language: null,
+  groups: [],
 };
 
 class QuotesController {
-  private quoteCollection: QuoteCollection = {
-    quotes: [],
-    groups: [],
-    length: 0,
-  };
+  private quoteCollection: QuoteCollection = defaultQuoteCollection;
 
   private quoteQueue: MonkeyTypes.Quote[] = [];
   private queueIndex = 0;
@@ -22,21 +38,33 @@ class QuotesController {
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       try {
-        const data: QuoteCollection = await $.getJSON(
-          `quotes/${language}.json`
-        );
+        const data: QuoteData = await $.getJSON(`quotes/${language}.json`);
 
         if (data.quotes === undefined || data.quotes.length === 0) {
-          return {
-            quotes: [],
-            length: 0,
-            groups: [],
-          };
+          return defaultQuoteCollection;
         }
 
-        this.quoteCollection = data;
-        this.quoteCollection.length = data.quotes.length;
-        this.quoteCollection.groups.forEach((quoteGroup, groupIndex) => {
+        this.quoteCollection = {
+          quotes: [],
+          length: data.quotes.length,
+          groups: [],
+          language: data.language,
+        };
+
+        // Transform JSON Quote schema to MonkeyTypes Quote schema
+        data.quotes.forEach((quote: Quote) => {
+          const monkeyTypeQuote: MonkeyTypes.Quote = {
+            text: quote.text,
+            source: quote.source,
+            length: quote.length,
+            id: quote.id,
+            language: language,
+          };
+
+          this.quoteCollection.quotes.push(monkeyTypeQuote);
+        });
+
+        data.groups.forEach((quoteGroup, groupIndex) => {
           const lower = quoteGroup[0];
           const upper = quoteGroup[1];
 
@@ -50,11 +78,7 @@ class QuotesController {
             });
         });
       } catch {
-        return {
-          quotes: [],
-          length: 0,
-          groups: [],
-        };
+        return defaultQuoteCollection;
       }
     }
 
@@ -79,9 +103,7 @@ class QuotesController {
         return;
       }
       this.quoteCollection.groups[group]?.forEach((quote) => {
-        if (typeof quote !== "number") {
-          this.quoteQueue.push(quote);
-        }
+        this.quoteQueue.push(quote);
       });
     });
 
