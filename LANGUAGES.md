@@ -38,7 +38,7 @@ In addition to the language file, you need to add your language to the `_groups.
 },
 {
   "name": "YOUR_LANGUAGE",
-  "languages": ["YOUR_FILES"]
+  "languages": ["YOUR_LANGUAGES"]
 },
 {
   "name": "french",
