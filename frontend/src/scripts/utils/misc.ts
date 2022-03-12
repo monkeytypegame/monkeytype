@@ -944,7 +944,7 @@ export function getMode2(
     return "custom";
   } else if (mode === "zen") {
     return "zen";
-  } else if (mode === "quote" && randomQuote !== null) {
+  } else if (mode === "quote") {
     return randomQuote.id.toString();
   }
 
