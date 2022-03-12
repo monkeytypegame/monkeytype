@@ -1,4 +1,5 @@
 import { shuffle } from "../utils/misc";
+import { subscribe } from "../observables/config-event";
 
 interface Quote {
   text: string;
@@ -33,7 +34,10 @@ class QuotesController {
   private quoteQueue: MonkeyTypes.Quote[] = [];
   private queueIndex = 0;
 
-  async getQuotes(language: string): Promise<QuoteCollection> {
+  async getQuotes(
+    language: string,
+    quoteLengths?: number[]
+  ): Promise<QuoteCollection> {
     const normalizedLanguage = language.replace(/_\d*k$/g, "");
 
     if (this.quoteCollection.language !== normalizedLanguage) {
@@ -77,6 +81,10 @@ class QuotesController {
               return false;
             });
         });
+
+        if (quoteLengths !== undefined) {
+          this.updateQuoteQueue(quoteLengths);
+        }
       } catch {
         return defaultQuoteCollection;
       }
@@ -136,4 +144,12 @@ class QuotesController {
   }
 }
 
-export default new QuotesController();
+const quoteController = new QuotesController();
+
+subscribe((key, newValue) => {
+  if (key === "quoteLength") {
+    quoteController.updateQuoteQueue(newValue as number[]);
+  }
+});
+
+export default quoteController;

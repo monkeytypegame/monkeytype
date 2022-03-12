@@ -883,7 +883,10 @@ export async function init(): Promise<void> {
       }
     }
   } else if (Config.mode === "quote") {
-    const quotesCollection = await QuotesController.getQuotes(Config.language);
+    const quotesCollection = await QuotesController.getQuotes(
+      Config.language,
+      Config.quoteLength
+    );
 
     if (quotesCollection.length === 0) {
       TestUI.setTestRestarting(false);
@@ -911,8 +914,6 @@ export async function init(): Promise<void> {
         rq = targetQuote;
       }
     } else {
-      QuotesController.updateQuoteQueue(Config.quoteLength);
-
       const randomQuote = QuotesController.getRandomQuote();
       if (randomQuote === null) {
         Notifications.add("No quotes found for selected quote length", 0);
