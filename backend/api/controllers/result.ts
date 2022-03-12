@@ -15,6 +15,7 @@ import {
   validateKeys,
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
+import { incrementResult } from "../../utils/prometheus";
 
 const objecthash = node_object_hash().hash;
 
@@ -297,6 +298,8 @@ class ResultController {
       tagPbs,
       insertedId: addedResult.insertedId,
     };
+
+    incrementResult(result);
 
     return new MonkeyResponse("Result saved", data);
   }

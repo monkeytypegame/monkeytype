@@ -5,6 +5,7 @@ import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
+import { incrementAuth } from "../utils/prometheus";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -38,7 +39,11 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           options
         );
       } else if (options.isPublic) {
-        return next();
+        token = {
+          type: "None",
+          uid: "",
+          email: "",
+        };
       } else if (process.env.MODE === "dev") {
         token = authenticateWithBody(req.body);
       } else {
@@ -48,6 +53,8 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           `endpoint: ${req.baseUrl} no authorization header found`
         );
       }
+
+      incrementAuth(token.type);
 
       req.ctx = {
         ...req.ctx,
