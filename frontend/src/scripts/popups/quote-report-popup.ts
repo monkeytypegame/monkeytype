@@ -3,7 +3,7 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 
 const CAPTCHA_ID = 1;
 

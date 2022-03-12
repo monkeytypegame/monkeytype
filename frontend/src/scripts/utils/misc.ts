@@ -1,4 +1,4 @@
-import * as Loader from "./elements/loader";
+import * as Loader from "../elements/loader";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");

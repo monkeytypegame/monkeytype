@@ -1,4 +1,4 @@
-import { capitalizeFirstLetterOfEachWord } from "../misc";
+import { capitalizeFirstLetterOfEachWord } from "../utils/misc";
 
 let list: string[] = [];
 

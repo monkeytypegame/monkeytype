@@ -1,6 +1,6 @@
 import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";

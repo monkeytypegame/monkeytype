@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 

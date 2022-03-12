@@ -1,6 +1,6 @@
 import * as TestUI from "./test-ui";
 import Config from "../config";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as TestStats from "./test-stats";
 import * as Keymap from "../elements/keymap";
 import * as ChartController from "../controllers/chart-controller";
