@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Counter, Histogram } from "prom-client";
+import { Counter, Histogram, Gauge } from "prom-client";
 
 const auth = new Counter({
   name: "api_request_auth_total",
@@ -60,8 +60,26 @@ const resultDuration = new Histogram({
   ],
 });
 
+const leaderboardUpdate = new Gauge({
+  name: "leaderboard_update_seconds",
+  help: "Leaderboard update time",
+  labelNames: ["language", "mode", "mode2", "step"],
+});
+
 export function incrementAuth(type: "Bearer" | "ApeKey" | "None"): void {
   auth.inc({ type });
+}
+
+export function setLeaderboard(
+  language: string,
+  mode: string,
+  mode2: string,
+  times: number[]
+): void {
+  leaderboardUpdate.set({ language, mode, mode2, step: "aggregate" }, times[0]);
+  leaderboardUpdate.set({ language, mode, mode2, step: "loop" }, times[1]);
+  leaderboardUpdate.set({ language, mode, mode2, step: "insert" }, times[2]);
+  leaderboardUpdate.set({ language, mode, mode2, step: "index" }, times[3]);
 }
 
 export function incrementResult(
