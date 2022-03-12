@@ -3,7 +3,7 @@ import BotDAO from "../dao/bot";
 import { Document, WithId } from "mongodb";
 import LeaderboardsDAO from "../dao/leaderboards";
 
-const CRON_SCHEDULE = "30 4/5 * * * *";
+const CRON_SCHEDULE = "30 14/15 * * * *";
 const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 

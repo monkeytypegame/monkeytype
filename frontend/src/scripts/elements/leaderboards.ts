@@ -61,7 +61,7 @@ function stopTimer(): void {
 
 function updateTimerElement(): void {
   const date = new Date();
-  const minutesToNextUpdate = 4 - (date.getMinutes() % 5);
+  const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
   const secondsToNextUpdate = 60 - date.getSeconds();
   const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
   $("#leaderboards .subTitle").text(
