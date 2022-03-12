@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -34872,6 +34884,18 @@
       "source": "Mr. Robot",
       "length": 332,
       "id": 5916
+    },
+    {
+      "text": "Lot 666, then: a chandelier in pieces. Some of you may recall the strange affair of the Phantom of the Opera: a mystery never fully explained. We are told ladies and gentlemen, that this is the very chandelier which figures in the famous disaster. Our workshops have restored it and fitted up parts of it with wiring for the new electric light, so that we may get a hint of what it may look like when re-assembled. Perhaps we may frighten away the ghost of so many years ago with a little illumination, gentlemen?",
+      "source": "The Phantom of the Opera",
+      "length": 513,
+      "id": 5917
+    },
+    {
+      "text": "They say nothing lasts forever; dreams change, trends come and go, but friendships never go out of style.",
+      "source": "Sex and the City",
+      "length": 105,
+      "id": 5918
     }
   ]
 }
