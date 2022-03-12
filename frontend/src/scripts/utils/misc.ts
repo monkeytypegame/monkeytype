@@ -944,7 +944,7 @@ export function getMode2(
     return "custom";
   } else if (mode === "zen") {
     return "zen";
-  } else if (mode === "quote") {
+  } else if (mode === "quote" && randomQuote !== null) {
     return randomQuote.id.toString();
   }
 
@@ -1024,4 +1024,30 @@ export async function downloadResultsCSV(
   link.click();
   link.remove();
   Loader.hide();
+}
+
+/**
+ * Gets an integer between min and max, both are inclusive.
+ * @param min
+ * @param max
+ * @returns Random integer betwen min and max.
+ */
+export function randomIntFromRange(min: number, max: number): number {
+  const minNorm = Math.ceil(min);
+  const maxNorm = Math.floor(max);
+  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
+}
+
+/**
+ * Shuffle an array of elements using the Fisher–Yates algorithm.
+ * This function mutates the input array.
+ * @param elements
+ */
+export function shuffle<T>(elements: T[]): void {
+  for (let i = elements.length - 1; i > 0; --i) {
+    const j = randomIntFromRange(0, i);
+    const temp = elements[j];
+    elements[j] = elements[i];
+    elements[i] = temp;
+  }
 }

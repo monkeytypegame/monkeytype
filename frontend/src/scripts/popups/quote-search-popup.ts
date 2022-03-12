@@ -6,7 +6,6 @@ import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
-import * as Misc from "../utils/misc";
 import {
   buildSearchService,
   SearchService,
@@ -14,6 +13,7 @@ import {
 } from "../utils/search-service";
 import { debounce } from "../utils/debounce";
 import { splitByAndKeep } from "../utils/strings";
+import QuotesController from "../controllers/quotes-controller";
 
 export let selectedId = 1;
 
@@ -55,7 +55,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
 }
 
 async function updateResults(searchText: string): Promise<void> {
-  const { quotes } = await Misc.getQuotes(Config.language);
+  const { quotes } = await QuotesController.getQuotes(Config.language);
 
   const quoteSearchService = getSearchService<MonkeyTypes.Quote>(
     Config.language,
