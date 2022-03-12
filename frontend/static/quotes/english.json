@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -34896,6 +34884,12 @@
       "source": "Sex and the City",
       "length": 105,
       "id": 5918
+    },
+    {
+      "text": "He said: \"One day you'll leave this world behind. So live a life you will remember\". My father told me when I was just a child. \"These are the nights that never die\". My father told me...",
+      "source": "Avicii - The Nights",
+      "length": 187,
+      "id": 5919
     }
   ]
 }
