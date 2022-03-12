@@ -14,7 +14,7 @@ Monkeytype is a minimalistic and customizable typing test. It features many test
 
 # Features
 
-- minimalistic design, with optional adverts and focus mode while typing
+- minimalistic design, with optional advertisements and focus mode while typing
 - type what you see, see what you type
 - live errors, wpm, and accuracy displays
 - variety of test lengths and languages
