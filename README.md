@@ -10,26 +10,25 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features like themes, sounds, a smooth caret, and more.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate the experience of natural typing during a typing test, by unobtrusively presenting the text prompts and displaying typed characters in-place, providing straightforward, real-time feedback on typos, speed, and accuracy.
 
 # Features
 
-- minimalistic design with optional ads
-- look at what you are typing
-- focus mode
-- different test modes
-- punctuation mode
-- themes
+- minimalistic design, with optional advertisements and focus mode while typing
+- type what you see, see what you type
+- live errors, wpm, and accuracy displays
+- variety of test lengths and languages
+- punctuation and numbers modes
 - quotes
-- live wpm
+- themes
 - smooth caret
 - account system
-- command line
+- challenges and just-for-fun test modifiers
 - and much more
 
 # Discord bot
 
-On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
+On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign optional roles based on typing performance and challenge completion. You can find its code over at https://github.com/Miodec/monkey-bot.
 
 # Bug report or Feature request
 
@@ -37,11 +36,11 @@ If you encounter a bug or have a feature request, [send us an email](jack@monkey
 
 # Want to Contribute?
 
-Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
+Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md).
 
 # Code of Conduct
 
-Before contributing to this repository, please read the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
+Before contributing to this repository, please read the [code of conduct](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md).
 
 # Credits
 
