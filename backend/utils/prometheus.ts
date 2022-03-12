@@ -2,7 +2,7 @@ import "dotenv/config";
 import { Counter } from "prom-client";
 
 const auth = new Counter({
-  name: "auth_counter",
+  name: "api_request_auth_total",
   help: "Counts authentication events",
   labelNames: ["type"],
 });
