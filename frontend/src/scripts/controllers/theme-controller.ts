@@ -1,6 +1,6 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import Config, * as UpdateConfig from "../config";
 import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";

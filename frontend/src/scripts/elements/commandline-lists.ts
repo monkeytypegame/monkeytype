@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
 import * as Sound from "../controllers/sound-controller";
 import * as ThemeController from "../controllers/theme-controller";

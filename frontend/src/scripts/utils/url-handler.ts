@@ -1,4 +1,4 @@
-import * as Misc from "../misc";
+import * as Misc from "./misc";
 import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 

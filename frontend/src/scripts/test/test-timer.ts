@@ -9,7 +9,7 @@ import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";

@@ -1,7 +1,7 @@
 import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";

@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { roundTo2 } from "./../misc";
+import { roundTo2 } from "../utils/misc";
 
 type Keypress = {
   count: number;

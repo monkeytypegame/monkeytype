@@ -1,4 +1,4 @@
-import { mapRange } from "../misc";
+import { mapRange } from "../utils/misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestActive from "../states/test-active";

@@ -4,7 +4,7 @@ import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Account from "../pages/account";
 import * as VerificationController from "./verification-controller";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";

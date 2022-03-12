@@ -4,7 +4,7 @@ import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config, * as UpdateConfig from "../config";
 import * as Keymap from "../elements/keymap";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox";

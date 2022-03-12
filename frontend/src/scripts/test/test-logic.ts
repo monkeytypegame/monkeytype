@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
