@@ -210,7 +210,7 @@ export function randomizeTheme(): void {
     }
 
     const previousTheme = randomTheme;
-    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+    randomTheme = Misc.randomElementFromArray(randomList);
 
     // if (Config.randomTheme === "custom") {
     // changeCustomTheme(randomTheme, true);
