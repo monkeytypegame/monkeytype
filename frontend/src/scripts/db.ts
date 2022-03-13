@@ -59,14 +59,33 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const [userData, configData, tagsData, presetsData] = (
+    const [userResponse, configResponse, tagsResponse, presetsResponse] =
       await Promise.all([
         Ape.users.getData(),
         Ape.configs.get(),
         Ape.users.getTags(),
         Ape.presets.get(),
-      ])
-    ).map((response: Ape.Response) => response.data);
+      ]);
+
+    if (userResponse.status !== 200) {
+      throw Error(`${userResponse.message} (user)`);
+    }
+    if (configResponse.status !== 200) {
+      throw Error(`${configResponse.message} (config)`);
+    }
+    if (tagsResponse.status !== 200) {
+      throw Error(`${tagsResponse.message} (tags)`);
+    }
+    if (presetsResponse.status !== 200) {
+      throw Error(`${presetsResponse.message} (presets)`);
+    }
+
+    const [userData, configData, tagsData, presetsData] = [
+      userResponse,
+      configResponse,
+      tagsResponse,
+      presetsResponse,
+    ].map((response: Ape.Response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
