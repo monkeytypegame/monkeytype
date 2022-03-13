@@ -57,6 +57,7 @@ class Words {
     }
   }
 }
+
 export const words = new Words();
 export let hasTab = false;
 export let randomQuote = null as unknown as MonkeyTypes.Quote;
