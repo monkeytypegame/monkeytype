@@ -35,3 +35,25 @@ export async function getSortedThemes(): Promise<Theme[]> {
     return b2.lgt - b1.lgt;
   });
 }
+
+const funboxPromise = getJSON("funbox/_list.json") as Promise<
+  MonkeyTypes.FunboxObject[]
+>;
+
+export async function getFunboxes(): Promise<MonkeyTypes.FunboxObject[]> {
+  return (await funboxPromise).sort(function (a, b) {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
+  });
+}
+
+export async function getFunbox(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObject | undefined> {
+  return (await funboxPromise).find(function (element) {
+    return element.name == funbox;
+  });
+}

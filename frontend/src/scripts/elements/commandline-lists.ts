@@ -158,7 +158,7 @@ const commandsFunbox: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-Misc.getFunboxList().then((funboxes) => {
+JSONLists.getFunboxes().then((funboxes) => {
   funboxes.forEach((funbox) => {
     commandsFunbox.list.push({
       id: "changeFunbox" + funbox.name,

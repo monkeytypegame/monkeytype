@@ -5,6 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
+import { getFunbox, getFunboxes } from "../controllers/json-lists-controller";
 
 let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
 let memoryTimer: number | null = null;
@@ -122,7 +123,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     funbox = Config.funbox;
   }
 
-  const funboxInfo = await Misc.getFunbox(funbox);
+  const funboxInfo = await getFunbox(funbox);
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
@@ -163,7 +164,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (funbox !== "none" && mode === undefined) ||
     (funbox !== "none" && mode === null)
   ) {
-    const list = await Misc.getFunboxList();
+    const list = await getFunboxes();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
@@ -229,7 +230,7 @@ export async function rememberSettings(): Promise<void> {
     (funbox !== "none" && mode === undefined) ||
     (funbox !== "none" && mode === null)
   ) {
-    const list = await Misc.getFunboxList();
+    const list = await getFunboxes();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
   if (mode === "style") {

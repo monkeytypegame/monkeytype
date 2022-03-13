@@ -62,36 +62,6 @@ export function hexToHSL(hex: string): {
   };
 }
 
-let funboxList: MonkeyTypes.FunboxObject[] = [];
-export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
-  if (funboxList.length === 0) {
-    return $.getJSON("funbox/_list.json", function (data) {
-      funboxList = data.sort(function (
-        a: MonkeyTypes.FunboxObject,
-        b: MonkeyTypes.FunboxObject
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return funboxList;
-    });
-  } else {
-    return funboxList;
-  }
-}
-
-export async function getFunbox(
-  funbox: string
-): Promise<MonkeyTypes.FunboxObject | undefined> {
-  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
-  return list.find(function (element) {
-    return element.name == funbox;
-  });
-}
-
 type QuoteCollection = {
   quotes: MonkeyTypes.Quote[];
   length?: number;

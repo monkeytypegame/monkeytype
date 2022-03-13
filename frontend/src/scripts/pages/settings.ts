@@ -472,7 +472,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  Misc.getFunboxList().then((funboxModes) => {
+  JSONLists.getFunboxes().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
       if (funbox.name === "mirror") {
         funboxEl.append(

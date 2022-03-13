@@ -2,6 +2,7 @@ import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import * as JSONLists from "../controllers/json-lists-controller";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   difficulty: {
@@ -524,7 +525,7 @@ Misc.getLanguageList().then((languages) => {
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
 ).append(`<div class="button" filter="none">none</div>`);
-Misc.getFunboxList().then((funboxModes) => {
+JSONLists.getFunboxes().then((funboxModes) => {
   funboxModes.forEach((funbox) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
