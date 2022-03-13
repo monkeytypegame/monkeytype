@@ -28,7 +28,8 @@ $(document).mousemove(function (event) {
   if (
     $("#top").hasClass("focus") &&
     event.originalEvent &&
-    (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
+    // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
+    (event.originalEvent.movementX > 5 || event.originalEvent.movementY > 5)
   ) {
     set(false);
   }
