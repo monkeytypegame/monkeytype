@@ -13,7 +13,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
-import { getLayouts } from "../controllers/json-lists-controller";
+import * as JSONLists from "../controllers/json-lists-controller";
 
 type SettingsGroups = {
   [key: string]: SettingsGroup;
@@ -420,7 +420,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
-  Object.keys(await getLayouts()).forEach((layout) => {
+  Object.keys(await JSONLists.getLayouts()).forEach((layout) => {
     layoutEl.append(
       `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
@@ -431,7 +431,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await getLayouts()).forEach((layout) => {
+  Object.keys(await JSONLists.getLayouts()).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
@@ -448,7 +448,7 @@ export async function fillSettingsPage(): Promise<void> {
   const themeEl2 = $(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
   ).empty();
-  for (const theme of await Misc.getThemesList()) {
+  for (const theme of await JSONLists.getThemes()) {
     themeEl1.append(
       `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
     );
