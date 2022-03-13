@@ -13,6 +13,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
+import { getLayouts } from "../controllers/json-lists-controller";
 
 type SettingsGroups = {
   [key: string]: SettingsGroup;
@@ -419,7 +420,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+  Object.keys(await getLayouts()).forEach((layout) => {
     layoutEl.append(
       `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
     );
@@ -430,7 +431,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+  Object.keys(await getLayouts()).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`

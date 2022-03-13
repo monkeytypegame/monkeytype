@@ -186,25 +186,10 @@ export async function getQuotes(language: string): Promise<QuoteCollection> {
   }
 }
 
-let layoutsList: MonkeyTypes.Layouts = {};
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  if (Object.keys(layoutsList).length === 0) {
-    return $.getJSON("layouts/_list.json", function (data) {
-      layoutsList = data;
-      return layoutsList;
-    });
-  } else {
-    return layoutsList;
-  }
-}
-
-export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
-  if (Object.keys(layoutsList).length === 0) {
-    await getLayoutsList();
-  }
-  return layoutsList[layoutName];
+export function getJSON(url: string): Promise<any> {
+  return new Promise((resolve) => {
+    return $.getJSON(url).then(resolve);
+  });
 }
 
 type Font = { name: string; display?: string };

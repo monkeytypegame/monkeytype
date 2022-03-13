@@ -19,6 +19,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
+import * as JSONLists from "../controllers/json-lists-controller";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -52,7 +53,7 @@ const commandsLayouts: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-Misc.getLayoutsList().then((layouts) => {
+JSONLists.getLayouts().then((layouts) => {
   commandsLayouts.list = [];
   commandsLayouts.list.push({
     id: "changeLayoutDefault",
@@ -87,7 +88,7 @@ export const commandsKeymapLayouts: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
-Misc.getLayoutsList().then((layouts) => {
+JSONLists.getLayouts().then((layouts) => {
   commandsKeymapLayouts.list = [];
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",

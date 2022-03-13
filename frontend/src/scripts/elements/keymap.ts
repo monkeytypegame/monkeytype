@@ -2,7 +2,7 @@ import Config from "../config";
 import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
-import * as Misc from "../utils/misc";
+import { getLayouts } from "../controllers/json-lists-controller";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
@@ -96,7 +96,7 @@ export async function refresh(
 ): Promise<void> {
   if (!layoutName) return;
   try {
-    const layouts = await Misc.getLayoutsList();
+    const layouts = await getLayouts();
     let lts = layouts[layoutName]; //layout to show
     let layoutString = layoutName;
     if (Config.keymapLayout === "overrideSync") {

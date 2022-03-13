@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
+import { getLayout } from "../controllers/json-lists-controller";
 
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
@@ -13,7 +14,7 @@ export async function getCharFromEvent(
     return event.shiftKey;
   }
 
-  const layout = await Misc.getLayout(Config.layout);
+  const layout = await getLayout(Config.layout);
 
   let keyEventCodes: string[] = [];
 

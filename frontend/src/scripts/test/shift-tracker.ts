@@ -1,6 +1,6 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
+import { getLayout } from "../controllers/json-lists-controller";
 
 export let leftState = false;
 export let rightState = false;
@@ -50,7 +50,7 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
 async function buildKeymapStrings(): Promise<void> {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
-  const layout = await Misc.getLayout(Config.keymapLayout);
+  const layout = await getLayout(Config.keymapLayout);
 
   if (layout === undefined) return;
 

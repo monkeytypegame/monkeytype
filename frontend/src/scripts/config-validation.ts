@@ -1,4 +1,4 @@
-import * as Misc from "./utils/misc";
+import { getLayout } from "./controllers/json-lists-controller";
 import * as Notifications from "./elements/notifications";
 
 type PossibleType =
@@ -118,7 +118,7 @@ export async function isConfigValueValidAsync(
 
         // convert the layout names to layouts
         const layouts = await Promise.all(
-          layoutNames.map((layoutName) => Misc.getLayout(layoutName))
+          layoutNames.map((layoutName) => getLayout(layoutName))
         );
 
         // check if all layouts exist
