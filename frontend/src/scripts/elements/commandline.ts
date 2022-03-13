@@ -3,6 +3,8 @@ import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "../test/test-ui";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
 
 let commandLineMouseMode = false;
 
@@ -16,7 +18,7 @@ function showInput(
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
   $("#commandInput input").val(defaultValue);
-  $("#commandInput input").focus();
+  $("#commandInput input").trigger("focus");
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
   if (defaultValue != "") {
@@ -46,7 +48,15 @@ function showFound(): void {
           (obj.configValueMode &&
             obj.configValueMode === "include" &&
             // todo figure this out without using any
-            (Config[list.configKey] as any[]).includes(obj.configValue)) ||
+            (
+              Config[list.configKey] as (
+                | string
+                | number
+                | boolean
+                | number[]
+                | undefined
+              )[]
+            ).includes(obj.configValue)) ||
           Config[list.configKey] === obj.configValue
         ) {
           icon = `<i class="fas fa-fw fa-check"></i>`;
@@ -79,10 +89,12 @@ function showFound(): void {
           if (
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
             !ThemeController.randomTheme
-          )
+          ) {
             ThemeController.clearPreview();
-          if (!/font/gi.test(obj.id))
+          }
+          if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
+          }
           if (obj.hover) obj.hover();
           return false;
         } else {
@@ -112,8 +124,9 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] && inputVal[0][0] == ">")
+  if (inputVal[0] && inputVal[0][0] == ">") {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
+  }
   if (inputVal[0] == "" && inputVal.length == 1) {
     $.each(list.list, (_index, obj) => {
       if (obj.visible !== false) obj.found = true;
@@ -167,7 +180,7 @@ export let show = (): void => {
   $("#commandLine input").val("");
   CommandlineLists.updateThemeCommands();
   updateSuggested();
-  $("#commandLine input").focus();
+  $("#commandLine input").trigger("focus");
 };
 
 function hide(): void {
@@ -256,25 +269,27 @@ function addChildCommands(
     icon = "";
   }
 
-  if (parentCommandDisplay)
+  if (parentCommandDisplay) {
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
+  }
   if ((commandItem as MonkeyTypes.Command).subgroup) {
-    if ((commandItem as any).beforeSubgroup)
-      (commandItem as any).beforeSubgroup();
+    const command = commandItem as MonkeyTypes.Command;
+    if (command.beforeSubgroup) command.beforeSubgroup();
     try {
       (
         (commandItem as MonkeyTypes.Command)
           ?.subgroup as MonkeyTypes.CommandsGroup
       ).list?.forEach((cmd) => {
         (commandItem as MonkeyTypes.CommandsGroup).configKey = (
-          commandItem as any
-        ).subgroup.configKey;
+          (commandItem as MonkeyTypes.Command)
+            .subgroup as MonkeyTypes.CommandsGroup
+        ).configKey;
         addChildCommands(
           unifiedCommands,
           cmd,
           commandItemDisplay,
-          commandItem as any
+          commandItem as MonkeyTypes.CommandsGroup
         );
       });
       // commandItem.exec();
@@ -286,9 +301,14 @@ function addChildCommands(
       // CommandlineLists.current.pop();
     } catch (e) {}
   } else {
-    const tempCommandItem: any = { ...commandItem };
-    if (parentCommand)
-      (tempCommandItem as any).icon = (parentCommand as any).icon;
+    const tempCommandItem: MonkeyTypes.Command = {
+      ...(commandItem as MonkeyTypes.Command),
+    };
+    if (parentCommand) {
+      (tempCommandItem as MonkeyTypes.Command).icon = (
+        parentCommand as unknown as MonkeyTypes.Command
+      ).icon;
+    }
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
     unifiedCommands.push(tempCommandItem);
   }
@@ -320,8 +340,9 @@ function useSingleListCommandLine(sshow = true): void {
   // } else if (Config.singleListCommandLine == "on") {
   CommandlineLists.setCurrent([allCommands]);
   // }
-  if (Config.singleListCommandLine != "manual")
+  if (Config.singleListCommandLine != "manual") {
     $("#commandLine").addClass("allCommands");
+  }
   if (sshow) show();
 }
 
@@ -331,8 +352,9 @@ function restoreOldCommandLine(sshow = true): void {
     CommandlineLists.setCurrent(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
     );
-    if (CommandlineLists.current.length < 1)
+    if (CommandlineLists.current.length < 1) {
       CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+    }
   }
   if (sshow) show();
 }
@@ -349,13 +371,14 @@ $("#commandLine input").keyup((e) => {
     e.key === "Tab" ||
     e.code == "AltLeft" ||
     (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Delete")
-  )
+  ) {
     return;
+  }
   updateSuggested();
 });
 
 $(document).ready(() => {
-  $(document).keydown((event) => {
+  $(document).on("keydown", (event) => {
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
       event.key === "Escape" ||
@@ -400,12 +423,12 @@ $(document).ready(() => {
   });
 });
 
-$("#commandInput input").keydown((e) => {
+$("#commandInput input").on("keydown", (e) => {
   if (e.key === "Enter") {
     //enter
     e.preventDefault();
     const command = $("#commandInput input").attr("command");
-    const value = $("#commandInput input").val();
+    const value = $("#commandInput input").val() as string;
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
       if (obj.id == command) {
@@ -464,10 +487,12 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         if (
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
           !ThemeController.randomTheme
-        )
+        ) {
           ThemeController.clearPreview();
-        if (!/font/gi.test(obj.id))
+        }
+        if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
+        }
         if (obj.hover) obj.hover();
       }
     });
@@ -483,7 +508,7 @@ $(document).on(
   }
 );
 
-$("#commandLineWrapper").click((e) => {
+$("#commandLineWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
     UpdateConfig.setFontFamily(Config.fontFamily, true);
@@ -513,7 +538,7 @@ $("#commandLineWrapper").click((e) => {
 // }
 
 // let shiftedCommands = false;
-// $(document).keydown((e) => {
+// $(document).on("keydown", (e) => {
 //   if (e.key === "Shift") {
 //     if(shiftedCommands === false){
 //       shiftedCommands = true;
@@ -529,14 +554,14 @@ $("#commandLineWrapper").click((e) => {
 //   }
 // });
 
-$(document).keydown((e) => {
+$(document).on("keydown", (e) => {
   // if (isPreviewingTheme) {
   // console.log("applying theme");
   // applyCustomThemeColors();
   // previewTheme(Config.theme, false);
   // }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLine input").focus();
+    $("#commandLine input").trigger("focus");
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
         useSingleListCommandLine(false);
@@ -612,8 +637,9 @@ $(document).keydown((e) => {
           ($($(".entry")[0]).outerHeight() as number);
         $(".suggestions").scrollTop(scroll);
       } catch (e) {
-        if (e instanceof Error)
+        if (e instanceof Error) {
           console.log("could not scroll suggestions: " + e.message);
+        }
       }
       // console.log(`scrolling to ${scroll}`);
       try {
@@ -624,10 +650,12 @@ $(document).keydown((e) => {
             if (
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
               !ThemeController.randomTheme
-            )
+            ) {
               ThemeController.clearPreview();
-            if (!/font/gi.test(obj.id))
+            }
+            if (!/font/gi.test(obj.id)) {
               UpdateConfig.previewFontFamily(Config.fontFamily);
+            }
             if (obj.hover) obj.hover();
           }
         });
@@ -655,25 +683,42 @@ $(document).on("click", "#keymap .r5 .key-space", () => {
 
 $(document).on("click", "#testModesNotice .text-button", (event) => {
   const commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands") as string
+    $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
   );
-  const func = $(event.currentTarget).attr("function");
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
       CommandlineLists.updateTagCommands();
     }
     CommandlineLists.pushCurrent(commands);
     show();
-  } else if (func != undefined) {
-    eval(func);
   }
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    UpdateConfig.setCustomTheme(!Config.customTheme);
+    if (!Config.customTheme) {
+      if (firebase.auth().currentUser !== null) {
+        if (DB.getSnapshot().customThemes.length < 1) {
+          Notifications.add("No custom themes!", 0);
+          UpdateConfig.setCustomTheme(false);
+          // UpdateConfig.setCustomThemeId("");
+          return;
+        }
+        // if (!DB.getCustomThemeById(Config.customThemeId)) {
+        //   // Turn on the first custom theme
+        //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+        //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
+        // }
+      }
+      UpdateConfig.setCustomTheme(true);
+    } else UpdateConfig.setCustomTheme(false);
   } else {
-    CommandlineLists.pushCurrent(CommandlineLists.themeCommands);
+    if (Config.customTheme) CommandlineLists.updateCustomThemeListCommands();
+    CommandlineLists.pushCurrent(
+      Config.customTheme
+        ? CommandlineLists.customThemeListCommands
+        : CommandlineLists.themeCommands
+    );
     show();
   }
 });
@@ -683,7 +728,7 @@ $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
   show();
 });
 
-$(".supportButtons .button.ads").click(() => {
+$(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
   show();
 });

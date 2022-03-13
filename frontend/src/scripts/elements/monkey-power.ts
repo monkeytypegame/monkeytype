@@ -13,7 +13,7 @@ type Particle = {
 
 type CTX = {
   particles: Particle[];
-  caret?: any;
+  caret?: JQuery<HTMLElement>;
   canvas?: HTMLCanvasElement;
   context2d?: CanvasRenderingContext2D;
   rendering: boolean;
@@ -216,8 +216,11 @@ export async function addPower(good = true, extra = false): Promise<void> {
   }
 
   // Sparks
-  const offset = ctx.caret.offset();
-  const coords = [offset.left, offset.top + ctx.caret.height()];
+  const offset = ctx.caret?.offset();
+  const coords = [
+    offset?.left ?? 0,
+    (offset?.top ?? 0) + (ctx.caret?.height() ?? 0),
+  ];
 
   for (
     let i = Math.round(

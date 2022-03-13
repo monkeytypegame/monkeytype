@@ -37,7 +37,7 @@ export function handleInitialPageClasses(pathname: string): void {
 // })(window.history);
 
 $(window).on("popstate", (e) => {
-  const state = (e.originalEvent as unknown as any).state;
+  const state = (e.originalEvent as unknown as PopStateEvent).state;
   if (state == "" || state == "/") {
     // show test
     PageController.change("test");

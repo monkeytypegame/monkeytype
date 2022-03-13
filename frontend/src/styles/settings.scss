@@ -85,6 +85,15 @@
       }
     }
 
+    &.autoSwitchThemeInputs {
+      grid-template-areas: unset;
+      grid-template-columns: 1fr 3fr 1fr 3fr;
+      gap: 2rem;
+      select {
+        width: 100%;
+      }
+    }
+
     &.themes .tabContainer [tabcontent="custom"] {
       label.button:first-child {
         color: var(--text-color);
@@ -122,10 +131,27 @@
       }
     }
 
-    &.customTheme {
+    & .allCustomThemes.buttons {
+      grid-column: 1;
+      grid-row: 1;
+      margin-bottom: 1rem;
+    }
+
+    & .customThemeEdit {
+      grid-row: 3;
+      display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
-      gap: 0.5rem 2rem;
+      gap: 0.5rem 1rem;
+
+      input {
+        width: 100%;
+      }
+
+      label {
+        display: grid;
+        place-content: center start;
+      }
 
       & p {
         grid-area: unset;
@@ -285,7 +311,8 @@
           height: auto;
 
           &.customTheme {
-            margin-top: 0.5rem;
+            grid-template-columns: 1fr;
+            margin-top: 1rem;
             .colorText {
               color: var(--text-color);
             }
@@ -298,25 +325,6 @@
       }
 
       .theme.button {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        .text {
-          color: inherit;
-        }
-        .activeIndicator {
-          overflow: hidden;
-          width: 1.25rem;
-          transition: 0.25s;
-          opacity: 0;
-          color: inherit;
-          .far {
-            margin: 0;
-          }
-          &.active {
-            width: 1.25rem;
-            opacity: 1;
-          }
-        }
         .favButton {
           overflow: hidden;
           width: 1.25rem;
@@ -337,6 +345,62 @@
         }
         &:hover {
           .favButton {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+      }
+
+      .customTheme.button {
+        .delButton,
+        .editButton {
+          overflow: hidden;
+          width: 1.25rem;
+          transition: 0.25s;
+          opacity: 0;
+          .far,
+          .fas {
+            margin: 0;
+            pointer-events: none;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+          &.active {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+        &:hover {
+          transform: scale(1.1);
+          .editButton {
+            width: 1.25rem;
+            opacity: 1;
+          }
+          .delButton {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+      }
+
+      .customTheme.button,
+      .theme.button {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        .text {
+          color: inherit;
+        }
+        .activeIndicator {
+          overflow: hidden;
+          width: 1.25rem;
+          transition: 0.25s;
+          opacity: 0;
+          color: inherit;
+          .far {
+            margin: 0;
+          }
+          &.active {
             width: 1.25rem;
             opacity: 1;
           }
@@ -396,7 +460,7 @@
     }
 
     &.randomTheme .buttons {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 }

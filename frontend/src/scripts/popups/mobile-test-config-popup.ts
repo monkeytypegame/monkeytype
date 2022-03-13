@@ -83,13 +83,13 @@ function hidePopup(): void {
   }
 }
 
-$("#mobileTestConfigPopupWrapper").click((e) => {
+$("#mobileTestConfigPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "mobileTestConfigPopupWrapper") {
     hidePopup();
   }
 });
 
-$("#top .mobileConfig").click(() => {
+$("#top .mobileConfig").on("click", () => {
   showPopup();
 });
 
@@ -133,7 +133,7 @@ el.find(".quoteGroup .button").on("click", (e) => {
       len = [0, 1, 2, 3];
     }
     UpdateConfig.setQuoteLength(
-      len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLengthArray,
+      len as MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[],
       false,
       e.shiftKey
     );
@@ -167,7 +167,7 @@ el.find(".modeGroup .button").on("click", (e) => {
   TestLogic.restart();
 });
 
-$("#mobileTestConfigPopup .button").click(() => {
+$("#mobileTestConfigPopup .button").on("click", () => {
   // hidePopup();
   update();
 });

@@ -1,7 +1,6 @@
+import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import axiosInstance from "../axios-instance";
-import { AxiosError } from "axios";
 
 type Quote = {
   _id: string;
@@ -44,9 +43,9 @@ function updateList(): void {
 }
 
 function updateQuoteLength(index: number): void {
-  const len = ($(
-    `#quoteApprovePopup .quote[id=${index}] .text`
-  ).val() as string)?.length;
+  const len = (
+    $(`#quoteApprovePopup .quote[id=${index}] .text`).val() as string
+  )?.length;
   $(`#quoteApprovePopup .quote[id=${index}] .length`).text(
     "Quote length: " + len
   );
@@ -59,23 +58,18 @@ function updateQuoteLength(index: number): void {
 
 async function getQuotes(): Promise<void> {
   Loader.show();
-  let response;
-  try {
-    response = await axiosInstance.get("/quotes");
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to get new quotes: " + msg, -1);
-    return;
-  }
+  const response = await Ape.quotes.get();
   Loader.hide();
+
   if (response.status !== 200) {
-    Notifications.add(response.data.message);
-  } else {
-    quotes = response.data;
-    updateList();
+    return Notifications.add(
+      "Failed to get new quotes: " + response.message,
+      -1
+    );
   }
+
+  quotes = response.data;
+  updateList();
 }
 
 export async function show(noAnim = false): Promise<void> {
@@ -139,110 +133,86 @@ $(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
 $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (!confirm("Are you sure?")) return;
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
-  const dbid = $(e.target).closest(".quote").attr("dbid");
+  const dbid = $(e.target).closest(".quote").attr("dbid") as string;
   const target = e.target;
   $(target).closest(".quote").find(".icon-button").addClass("disabled");
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
+
   Loader.show();
-  let response;
-  try {
-    response = await axiosInstance.post("/quotes/approve", {
-      quoteId: dbid,
-    });
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to approve quote: " + msg, -1);
-    resetButtons(target);
-    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
-    return;
-  }
+  const response = await Ape.quotes.approveSubmission(dbid);
   Loader.hide();
+
   if (response.status !== 200) {
-    Notifications.add(response.data.message);
     resetButtons(target);
     $(target).closest(".quote").find("textarea, input").prop("disabled", false);
-  } else {
-    Notifications.add("Quote approved. " + response.data.message ?? "", 1);
-    quotes.splice(index, 1);
-    updateList();
+    return Notifications.add(
+      "Failed to approve quote: " + response.message,
+      -1
+    );
   }
+
+  Notifications.add("Quote approved. " + response.message ?? "", 1);
+  quotes.splice(index, 1);
+  updateList();
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
   if (!confirm("Are you sure?")) return;
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
-  const dbid = $(e.target).closest(".quote").attr("dbid");
+  const dbid = $(e.target).closest(".quote").attr("dbid") as string;
   const target = e.target;
   $(target).closest(".quote").find(".icon-button").addClass("disabled");
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
+
   Loader.show();
-  let response;
-  try {
-    response = await axiosInstance.post("/quotes/reject", {
-      quoteId: dbid,
-    });
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to refuse quote: " + msg, -1);
-    resetButtons(target);
-    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
-    return;
-  }
+  const response = await Ape.quotes.rejectSubmission(dbid);
   Loader.hide();
+
   if (response.status !== 200) {
-    Notifications.add(response.data.message);
     resetButtons(target);
     $(target).closest(".quote").find("textarea, input").prop("disabled", false);
-  } else {
-    Notifications.add("Quote refused.", 1);
-    quotes.splice(index, 1);
-    updateList();
+    return Notifications.add("Failed to refuse quote: " + response.message, -1);
   }
+
+  Notifications.add("Quote refused.", 1);
+  quotes.splice(index, 1);
+  updateList();
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   if (!confirm("Are you sure?")) return;
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
-  const dbid = $(e.target).closest(".quote").attr("dbid");
-  const editText = $(`#quoteApprovePopup .quote[id=${index}] .text`).val();
-  const editSource = $(`#quoteApprovePopup .quote[id=${index}] .source`).val();
+  const dbid = $(e.target).closest(".quote").attr("dbid") as string;
+  const editText = $(
+    `#quoteApprovePopup .quote[id=${index}] .text`
+  ).val() as string;
+  const editSource = $(
+    `#quoteApprovePopup .quote[id=${index}] .source`
+  ).val() as string;
   const target = e.target;
   $(target).closest(".quote").find(".icon-button").addClass("disabled");
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
+
   Loader.show();
-  let response;
-  try {
-    response = await axiosInstance.post("/quotes/approve", {
-      quoteId: dbid,
-      editText,
-      editSource,
-    });
-  } catch (error) {
-    const e = error as AxiosError;
-    Loader.hide();
-    const msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to approve quote: " + msg, -1);
-    resetButtons(target);
-    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
-    return;
-  }
+  const response = await Ape.quotes.approveSubmission(
+    dbid,
+    editText,
+    editSource
+  );
   Loader.hide();
+
   if (response.status !== 200) {
-    Notifications.add(response.data.message);
     resetButtons(target);
     $(target).closest(".quote").find("textarea, input").prop("disabled", false);
-  } else {
-    Notifications.add(
-      "Quote edited and approved. " + response.data.message ?? "",
-      1
+    return Notifications.add(
+      "Failed to approve quote: " + response.message,
+      -1
     );
-    quotes.splice(index, 1);
-    updateList();
   }
+
+  Notifications.add("Quote edited and approved. " + response.message ?? "", 1);
+  quotes.splice(index, 1);
+  updateList();
 });
 
 $(document).on("input", "#quoteApprovePopup .quote .text", async (e) => {

@@ -1,4 +1,4 @@
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
@@ -67,7 +67,6 @@ function save(): void {
 }
 
 export function load(): void {
-  // let newTags = $.cookie("activeTags");
   console.log("loading filters");
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
@@ -165,8 +164,9 @@ export function updateActive(): void {
       if (getFilter(group, filter)) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined)
+        if (groupAboveChartDisplay["all"] !== undefined) {
           groupAboveChartDisplay["all"] = false;
+        }
       }
       let buttonEl;
       if (group === "date") {
@@ -348,7 +348,7 @@ export function updateTags(): void {
 
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
-).click(".button", (e) => {
+).on("click", ".button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
     .attr("group") as MonkeyTypes.Group;
@@ -402,7 +402,7 @@ $(
   save();
 });
 
-$(".pageAccount .topFilters .button.allFilters").click(() => {
+$(".pageAccount .topFilters .button.allFilters").on("click", () => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
@@ -423,7 +423,7 @@ $(".pageAccount .topFilters .button.allFilters").click(() => {
   save();
 });
 
-$(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
+$(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
@@ -501,7 +501,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click(() => {
   save();
 });
 
-$(".pageAccount .topFilters .button.toggleAdvancedFilters").click(() => {
+$(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
   $(".pageAccount .filterButtons").slideToggle(250);
   $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
     "active"

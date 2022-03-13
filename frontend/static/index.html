@@ -11,7 +11,7 @@
     <title>Monkeytype</title>
     <link rel="stylesheet" href="css/select2.min.css" />
     <link rel="stylesheet" href="css/balloon.min.css" />
-    <link rel="stylesheet" href="css/style.css?v=1" />
+    <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="/images/favicon/favicon.ico" />
@@ -372,9 +372,23 @@
     </div>
     <div id="customTextPopupWrapper" class="popupWrapper hidden">
       <div id="customTextPopup" action="">
-        <div class="wordfilter button">
-          <i class="fas fa-filter"></i>
-          Words filter
+        <div class="buttonsTop">
+          <div class="button saveCustomText">
+            <i class="fas fa-save"></i>
+            Save
+          </div>
+          <div class="button showSavedTexts">
+            <i class="fas fa-folder"></i>
+            Show saved texts
+          </div>
+          <div class="button wordfilter">
+            <i class="fas fa-filter"></i>
+            Words filter
+          </div>
+        </div>
+        <div class="savedTexts hidden" style="display: none">
+          <div class="title">saved texts</div>
+          <div class="buttons"></div>
         </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
@@ -383,7 +397,7 @@
             <div class="customTextCheckbox"></div>
             Random
             <span>
-              randomize the above words, and control how many words are
+              Randomize the above words, and control how many words are
               generated.
             </span>
           </label>
@@ -417,6 +431,12 @@
           </label>
         </div>
         <div class="button apply">ok</div>
+      </div>
+    </div>
+    <div id="savedTextsPopupWrapper" class="popupWrapper hidden">
+      <div id="savedTextsPopup">
+        <div class="title">Saved texts</div>
+        <div class="list"></div>
       </div>
     </div>
     <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
@@ -551,6 +571,30 @@
         <div id="submitQuoteButton" class="button">Submit</div>
       </div>
     </div>
+    <div id="apeKeysPopupWrapper" class="hidden popupWrapper">
+      <div id="apeKeysPopup" mode="">
+        <div class="top">
+          <div class="title">Ape Keys</div>
+          <div class="button generateApeKey">
+            <i class="fas fa-plus"></i>
+            Generate new key
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <td width="1px">active</td>
+              <td>name</td>
+              <td>created on</td>
+              <td>modified on</td>
+              <td>last used on</td>
+              <td width="1px"></td>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
     <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
       <div id="quoteReportPopup" mode="">
         <div class="title">Report a Quote</div>
@@ -595,6 +639,12 @@
       <div id="tagsEdit" action="" tagid="">
         <div class="title"></div>
         <input type="text" />
+        <div class="button"><i class="fas fa-plus"></i></div>
+      </div>
+    </div>
+    <div id="customThemesWrapper" class="popupWrapper hidden">
+      <div id="customThemesEdit" action="" customThemeId="">
+        <div class="title"></div>
         <div class="button"><i class="fas fa-plus"></i></div>
       </div>
     </div>
@@ -1169,9 +1219,9 @@
               </div>
               <div id="miniTimerAndLiveWpm" class="timerMain size15">
                 <div class="time hidden">1:00</div>
-                <div class="wpm">60</div>
-                <div class="acc">100%</div>
-                <div class="burst">1</div>
+                <div class="wpm hidden">60</div>
+                <div class="acc hidden">100%</div>
+                <div class="burst hidden">1</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
@@ -3364,6 +3414,14 @@
                   >
                     blank
                   </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="dynamic"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    dynamic
+                  </div>
                 </div>
               </div>
               <div class="sectionSpacer"></div>
@@ -3513,14 +3571,47 @@
                   </div>
                 </div>
               </div>
+              <div class="section autoSwitchTheme">
+                <h1>auto switch theme</h1>
+                <div class="text">
+                  Enabling this will automatically switch the theme between
+                  light and dark depending on the system theme (this will not
+                  override custom theme).
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    autoSwitchTheme="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    autoSwitchTheme="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section autoSwitchThemeInputs">
+                <div>light</div>
+                <div><select class="light"></select></div>
+                <div>dark</div>
+                <div><select class="dark"></select></div>
+              </div>
               <div class="section randomTheme fullWidth">
                 <h1>randomize theme</h1>
                 <div class="text">
                   After completing a test, the theme will be set to a random
                   one. The random themes are not saved to your config. If set to
-                  'fav' only favourite themes will be randomized. If set to
+                  'favorite' only favorite themes will be randomized. If set to
                   'light' or 'dark', only presets with light or dark background
-                  colors will be randomized, respectively.
+                  colors will be randomized, respectively. If set to 'custom',
+                  custom themes will be randomized.
                 </div>
                 <div class="buttons">
                   <div
@@ -3563,6 +3654,14 @@
                   >
                     dark
                   </div>
+                  <div
+                    class="button"
+                    randomTheme="custom"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    custom
+                  </div>
                 </div>
               </div>
               <div class="section themes fullWidth">
@@ -3596,203 +3695,208 @@
                 <div class="tabContainer">
                   <div
                     tabContent="custom"
-                    class="tabContent section customTheme hidden"
+                    class="tabContent customTheme hidden"
                   >
-                    <label class="colorText">background</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--bg-color-txt"
-                      />
-                      <label
-                        for="--bg-color"
-                        class="button"
+                    <div class="allCustomThemes buttons"></div>
+                    <div class="customThemeEdit">
+                      <label class="colorText">background</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--bg-color-txt"
+                        />
+                        <label
+                          for="--bg-color"
+                          class="button"
+                          style="
+                            color: var(--text-color);
+                            background: rgba(0, 0, 0, 0.1);
+                          "
+                        >
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--bg-color"
+                        />
+                      </div>
+                      <label class="colorText">main</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--main-color-txt"
+                        />
+                        <label for="--main-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--main-color"
+                        />
+                      </div>
+                      <label class="colorText">caret</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--caret-color-txt"
+                        />
+                        <label for="--caret-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--caret-color"
+                        />
+                      </div>
+                      <label class="colorText">sub</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--sub-color-txt"
+                        />
+                        <label for="--sub-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--sub-color"
+                        />
+                      </div>
+                      <label class="colorText">text</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--text-color-txt"
+                        />
+                        <label for="--text-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--text-color"
+                        />
+                      </div>
+
+                      <span class="spacer"></span>
+
+                      <label class="colorText">error</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--error-color-txt"
+                        />
+                        <label for="--error-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--error-color"
+                        />
+                      </div>
+                      <label class="colorText">extra error</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--error-extra-color-txt"
+                        />
+                        <label for="--error-extra-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--error-extra-color"
+                        />
+                      </div>
+
+                      <p>colorful mode</p>
+
+                      <label class="colorText">error</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--colorful-error-color-txt"
+                        />
+                        <label for="--colorful-error-color" class="button">
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--colorful-error-color"
+                        />
+                      </div>
+
+                      <label class="colorText">extra error</label>
+                      <div class="colorPicker inputAndButton">
+                        <input
+                          type="text"
+                          value="#000000"
+                          class="input"
+                          id="--colorful-error-extra-color-txt"
+                        />
+                        <label
+                          for="--colorful-error-extra-color"
+                          class="button"
+                        >
+                          <i class="fas fa-fw fa-palette"></i>
+                        </label>
+                        <input
+                          type="color"
+                          class="color"
+                          value="#000000"
+                          id="--colorful-error-extra-color"
+                        />
+                      </div>
+                      <div
                         style="
-                          color: var(--text-color);
-                          background: rgba(0, 0, 0, 0.1);
+                          display: grid;
+                          grid-template-columns: 1fr 1fr 1fr;
+                          grid-column: 1/5;
+                          gap: 0.5rem;
                         "
                       >
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--bg-color"
-                      />
+                        <div class="button" id="loadCustomColorsFromPreset">
+                          load from preset
+                        </div>
+                        <div class="button" id="shareCustomThemeButton">
+                          share
+                        </div>
+                        <div class="button saveCustomThemeButton">
+                          save as new
+                        </div>
+                      </div>
                     </div>
-                    <label class="colorText">main</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--main-color-txt"
-                      />
-                      <label for="--main-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--main-color"
-                      />
-                    </div>
-                    <label class="colorText">caret</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--caret-color-txt"
-                      />
-                      <label for="--caret-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--caret-color"
-                      />
-                    </div>
-                    <label class="colorText">sub</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--sub-color-txt"
-                      />
-                      <label for="--sub-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--sub-color"
-                      />
-                    </div>
-                    <label class="colorText">text</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--text-color-txt"
-                      />
-                      <label for="--text-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--text-color"
-                      />
-                    </div>
-
-                    <span class="spacer"></span>
-
-                    <label class="colorText">error</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--error-color-txt"
-                      />
-                      <label for="--error-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--error-color"
-                      />
-                    </div>
-                    <label class="colorText">extra error</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--error-extra-color-txt"
-                      />
-                      <label for="--error-extra-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--error-extra-color"
-                      />
-                    </div>
-
-                    <p>colorful mode</p>
-
-                    <label class="colorText">error</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--colorful-error-color-txt"
-                      />
-                      <label for="--colorful-error-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--colorful-error-color"
-                      />
-                    </div>
-
-                    <label class="colorText">extra error</label>
-                    <div class="colorPicker inputAndButton">
-                      <input
-                        type="text"
-                        value="#000000"
-                        class="input"
-                        id="--colorful-error-extra-color-txt"
-                      />
-                      <label for="--colorful-error-extra-color" class="button">
-                        <i class="fas fa-fw fa-palette"></i>
-                      </label>
-                      <input
-                        type="color"
-                        class="color"
-                        value="#000000"
-                        id="--colorful-error-extra-color"
-                      />
-                    </div>
-                    <!-- <div
-                      style="
-                        display: grid;
-                        gap: 2rem;
-                        grid-auto-flow: column;
-                        grid-column: 1/5;
-                      "
-                    > -->
-                    <div
-                      class="button"
-                      id="loadCustomColorsFromPreset"
-                      style="grid-column: 1/3"
-                    >
-                      load from preset
-                    </div>
-
-                    <div class="button" id="shareCustomThemeButton">share</div>
-                    <div class="button saveCustomThemeButton">save</div>
-                    <!-- </div> -->
                   </div>
                   <div tabContent="preset" class="tabContent">
                     <div class="favThemes buttons"></div>
@@ -3902,6 +4006,30 @@
                   <div
                     class="button"
                     showTimerProgress="true"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showAvg">
+                <h1>average</h1>
+                <div class="text">
+                  Displays your average speed over the last 10 tests.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    showAvg="false"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    hide
+                  </div>
+                  <div
+                    class="button"
+                    showAvg="true"
                     tabindex="0"
                     onclick="this.blur();"
                   >
@@ -4048,6 +4176,30 @@
                     onclick="this.blur();"
                   >
                     sellout
+                  </div>
+                </div>
+              </div>
+              <div class="section apeKeys needsAccount">
+                <h1>ape keys</h1>
+                <div class="text">
+                  Generate Ape Keys to access certain API endpoints.
+                  Documentation is available
+                  <a
+                    href="https://api.monkeytype.com/documentation"
+                    target="_blank"
+                  >
+                    here.
+                  </a>
+                  More endpoints will be added in the future.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    id="showApeKeysPopup"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    open
                   </div>
                 </div>
               </div>
@@ -4637,6 +4789,12 @@
                 <div class="title">favourite test</div>
                 <div class="val">words 10</div>
               </div> -->
+              </div>
+              <div class="group aboveHistory">
+                <div class="button exportCSV">
+                  <i class="fas fa-file-csv"></i>
+                  Export CSV
+                </div>
               </div>
               <div class="group history">
                 <!-- <div class="title">result history</div> -->

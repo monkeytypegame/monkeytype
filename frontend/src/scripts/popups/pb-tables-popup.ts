@@ -105,16 +105,16 @@ function hide(): void {
   }
 }
 
-$("#pbTablesPopupWrapper").click((e) => {
+$("#pbTablesPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "pbTablesPopupWrapper") {
     hide();
   }
 });
 
-$(".pageAccount .button.showAllTimePbs").click(() => {
+$(".pageAccount .button.showAllTimePbs").on("click", () => {
   show("time");
 });
 
-$(".pageAccount .button.showAllWordsPbs").click(() => {
+$(".pageAccount .button.showAllWordsPbs").on("click", () => {
   show("words");
 });

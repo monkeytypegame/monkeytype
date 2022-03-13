@@ -1,20 +1,21 @@
 ### **Table of Contents**
 
 - [Forking Monkeytype](#forking-monkeytype)
-- [Creating Languages](#creating-langauges)
-- [Commiting Langauges](#commiting-languages)
+- [Creating Languages](#creating-languages)
+- [Committing Languages](#committing-languages)
 - [Language Guidelines](#language-guidelines)
 
 ### Forking Monkeytype
 
-First you will have to copy the Monkeytype repository also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Go to the [Monkeytype repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
 
-<img width="1552" alt="Screen Shot 2022-01-12 at 11 51 49 AM" src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
+<img width="1552" alt="Screenshot showing location of the fork button on GitHub." src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
-## Creating Langauges
+## Creating Languages
 
-Once you have forked the repository you can now add your langauge. (If you haven't already forked the repository, refer to this [section](#forking-the-repository).) Create a file in `./frontend/static/languages/`. Create a json file with the language name and the amount of words. e.g `language_1k.json`. The minimum amount of words needed are 200 and if that is the amount of words you chose to add then ignore the `_1k` part of the name. Otherwise the name should look something like this: `language_1k.json`. The inside of the file should look like this:
+Once you have forked the repository you can now add your language. Create a new json file in `./frontend/static/languages/`, named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
 
+The contents of the file should be as follows:
 ```
 {
   "name": "language",
@@ -26,17 +27,28 @@ Once you have forked the repository you can now add your langauge. (If you haven
 }
 ```
 
-(It is recommended that you familiarize yourselves with JSON before adding a language.) For the name varible put the name of your language. Left to right indicates how the language is written. If it is written left to right then put `true` otherwise put false. For bcp47 put your languages IETF language tag. (For more information about the IETF language tag refer to [here]("https://en.wikipedia.org/wiki/IETF_language_tag").) But you aren't done just yet. You need to add your language to the `_groups.json` and `_list.json` files.
-Add the name of the language to the `_groups.json` file like so:
+It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `leftToRight` indicates how the language is written. If it is written left to right then put `true`, otherwise put `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). Finally, add your list of words to the `words` field.
+
+In addition to the language file, you need to add your language to the `_groups.json` and `_list.json` files in the same directory. Add the name of the language to the `_groups.json` file like so:
 
 ```
 {
-     "name": "language",
-     "languages": ["language"]
-}
+  "name": "spanish",
+  "languages": ["spanish", "spanish_1k", "spanish_10k"]
+},
+{
+  "name": "YOUR_LANGUAGE",
+  "languages": ["YOUR_LANGUAGES"]
+},
+{
+  "name": "french",
+  "languages": ["french", "french_1k", "french_2k", "french_10k"]
+},
 ```
 
-And add your language to the `_list.json` file like so:
+The `languages` field is the list of files that you have created for your language (without the `.json` file extension). Make sure to add all your files if you have created multiple word lists of differing length in the same language.
+
+Add your language lists to the `_list.json` file like so:
 
 ```
 ,"spanish"
@@ -48,16 +60,15 @@ And add your language to the `_list.json` file like so:
 ,"french_2k"
 ```
 
-### Commiting Languages
+### Committing Languages
 
-Once you have created your language you now need to create a pull request on the main Monkeytype repository. Go to the branch where you created your languages on GitHub.
-Then make sure your branch is up to date. Once it is up to date click contribute.
+Once you have created your language, you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your languages on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
 
 Update branch:
-<img width="1552" alt="Screen Shot 2022-01-12 at 10 55 19 AM" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
+<img width="1552" alt="Screenshot showing how to update the fork to match the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
 
 Create a pull request:
-<img width="1552" alt="Screen Shot 2022-01-12 at 10 56 42 AM" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
+<img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
 ## Language Guidelines
 

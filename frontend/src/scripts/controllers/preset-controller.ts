@@ -1,4 +1,4 @@
-import * as Config from "../config";
+import * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
@@ -9,7 +9,7 @@ export function apply(_id: string): void {
   const snapshot = DB.getSnapshot();
   snapshot.presets?.forEach((preset) => {
     if (preset._id == _id) {
-      Config.apply(JSON.parse(JSON.stringify(preset.config)));
+      UpdateConfig.apply(preset.config);
       TagController.clear(true);
       if (preset.config.tags) {
         preset.config.tags.forEach((tagid) => {
@@ -18,7 +18,7 @@ export function apply(_id: string): void {
       }
       TestLogic.restart();
       Notifications.add("Preset applied", 1, 2);
-      Config.saveToLocalStorage();
+      UpdateConfig.saveFullConfigToLocalStorage();
     }
   });
 }

@@ -35,13 +35,17 @@
       }
       .closeButton {
         margin-right: 1rem;
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
+        /* margin-top: 0.5rem; */
+        /* margin-bottom: 0.5rem; */
         transition: 0.125s;
+        font-size: 1.4rem;
         &:hover {
           cursor: pointer;
           color: var(--text-color);
         }
+      }
+      .righticon {
+        margin-right: 1rem;
       }
     }
     &.good {

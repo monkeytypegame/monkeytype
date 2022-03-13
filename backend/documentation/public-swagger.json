@@ -1,0 +1,257 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentation for the public endpoints provided by the Monketype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints. Rate limit rates are shared across all ape keys.",
+    "version": "1.0.0",
+    "title": "Monkeytype API",
+    "termsOfService": "https://monkeytype.com/terms-of-service",
+    "contact": {
+      "name": "Developer",
+      "email": "jack@monkeytype.com"
+    }
+  },
+  "basePath": "/",
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "tags": [
+    {
+      "name": "users",
+      "description": "User data and related operations"
+    },
+    {
+      "name": "leaderboards",
+      "description": "Leaderboard data and related operations"
+    }
+  ],
+  "paths": {
+    "/users/personalBests": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's personal best data",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "The primary mode (i.e., time)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode2",
+            "in": "query",
+            "description": "The secondary mode (i.e., 60)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PersonalBest"
+            }
+          }
+        }
+      }
+    },
+    "/leaderboards": {
+      "get": {
+        "tags": ["leaderboards"],
+        "summary": "Gets global leaderboard data",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "description": "The leaderboard's language (i.e., english)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "The primary mode (i.e., time)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode2",
+            "in": "query",
+            "description": "The secondary mode (i.e., 60)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "How many leaderboard entries to skip",
+            "required": false,
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "How many leaderboard entries to request",
+            "required": false,
+            "type": "number",
+            "minimum": 0,
+            "maximum": 50
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LeaderboardEntry"
+            }
+          }
+        }
+      }
+    },
+    "/leaderboards/rank": {
+      "get": {
+        "tags": ["leaderboards"],
+        "summary": "Gets your qualifying rank from a leaderboard",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "description": "The leaderboard's language (i.e., english)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "The primary mode (i.e., time)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode2",
+            "in": "query",
+            "description": "The secondary mode (i.e., 60)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LeaderboardEntry"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Response": {
+      "type": "object",
+      "required": ["message", "data"],
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "PersonalBest": {
+      "type": "object",
+      "properties": {
+        "acc": {
+          "type": "number",
+          "format": "double",
+          "example": 94.44
+        },
+        "consistency": {
+          "type": "number",
+          "format": "double",
+          "example": 75.98
+        },
+        "difficulty": {
+          "type": "string",
+          "example": "normal"
+        },
+        "lazyMode": {
+          "type": "boolean",
+          "example": false
+        },
+        "language": {
+          "type": "string",
+          "example": "english"
+        },
+        "punctuation": {
+          "type": "boolean",
+          "example": false
+        },
+        "raw": {
+          "type": "number",
+          "format": "double",
+          "example": 116.6
+        },
+        "wpm": {
+          "type": "number",
+          "format": "double",
+          "example": 107.6
+        },
+        "timestamp": {
+          "type": "integer",
+          "example": 1644438189583
+        }
+      }
+    },
+    "LeaderboardEntry": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "6226b17aebc27a4a8d1ce04b"
+        },
+        "acc": {
+          "type": "number",
+          "format": "double",
+          "example": 97.96
+        },
+        "consistency": {
+          "type": "number",
+          "format": "double",
+          "example": 83.29
+        },
+        "lazyMode": {
+          "type": "boolean",
+          "example": false
+        },
+        "name": {
+          "type": "string",
+          "example": "Miodec"
+        },
+        "punctuation": {
+          "type": "boolean",
+          "example": false
+        },
+        "rank": {
+          "type": "integer",
+          "example": 3506
+        },
+        "raw": {
+          "type": "number",
+          "format": "double",
+          "example": 145.18
+        },
+        "wpm": {
+          "type": "number",
+          "format": "double",
+          "example": 141.18
+        },
+        "timestamp": {
+          "type": "integer",
+          "example": 1644438189583
+        }
+      }
+    }
+  }
+}

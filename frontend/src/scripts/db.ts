@@ -1,18 +1,10 @@
+import Ape from "./ape";
 import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
-import axiosInstance from "./axios-instance";
 import * as LoadingPage from "./pages/loading";
+import DefaultConfig from "./constants/default-config";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
-
-export function updateName(uid: string, name: string): void {
-  //TODO update
-  axiosInstance.patch("/user/name", {
-    name,
-  });
-
-  name = uid; // this is just so that typescript is happy; Remove once this function is updated.
-}
 
 export function getSnapshot(): MonkeyTypes.Snapshot {
   return dbSnapshot;
@@ -42,6 +34,7 @@ export async function initSnapshot(): Promise<
       custom: { custom: [] },
     },
     name: undefined,
+    customThemes: [],
     presets: [],
     tags: [],
     favouriteThemes: [],
@@ -66,16 +59,14 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const promises = await Promise.all([
-      axiosInstance.get("/user"),
-      axiosInstance.get("/config"),
-      axiosInstance.get("/user/tags"),
-      axiosInstance.get("/presets"),
-    ]);
-    const userData = promises[0].data;
-    const configData = promises[1].data;
-    const tagsData = promises[2].data;
-    const presetsData = promises[3].data;
+    const [userData, configData, tagsData, presetsData] = (
+      await Promise.all([
+        Ape.users.getData(),
+        Ape.configs.get(),
+        Ape.users.getTags(),
+        Ape.presets.get(),
+      ])
+    ).map((response: Ape.Response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -105,7 +96,18 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      snap.config = configData.config;
+      const newConfig = {
+        ...DefaultConfig,
+      };
+
+      for (const key in configData.config) {
+        const value = configData.config[key];
+        (newConfig[
+          key as keyof MonkeyTypes.Config
+        ] as typeof configData[typeof key]) = value;
+      }
+
+      snap.config = newConfig;
     }
     // if (ActivePage.get() == "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -113,6 +115,7 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(48);
     // }
     // LoadingPage.updateText("Downloading tags...");
+    snap.customThemes = userData.customThemes ?? [];
     snap.tags = tagsData;
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -155,68 +158,118 @@ export async function getUserResults(): Promise<boolean> {
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
-    try {
-      LoadingPage.updateText("Downloading results...");
-      LoadingPage.updateBar(90);
-      const resultsData = await axiosInstance.get("/results");
+    LoadingPage.updateText("Downloading results...");
+    LoadingPage.updateBar(90);
 
-      let results = resultsData.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+    const response = await Ape.results.get();
 
-      results.forEach((result) => {
-        if (result.bailedOut === undefined) result.bailedOut = false;
-        if (result.blindMode === undefined) result.blindMode = false;
-        if (result.lazyMode === undefined) result.lazyMode = false;
-        if (result.difficulty === undefined) result.difficulty = "normal";
-        if (result.funbox === undefined) result.funbox = "none";
-        if (result.language === undefined || result.language === null)
-          result.language = "english";
-        if (result.numbers === undefined) result.numbers = false;
-        if (result.punctuation === undefined) result.punctuation = false;
-      });
-      results = results.sort((a, b) => b.timestamp - a.timestamp);
-      dbSnapshot.results = results;
-      return true;
-    } catch (e: any) {
-      Notifications.add("Error getting results: " + e.message, -1);
+    if (response.status !== 200) {
+      Notifications.add("Error getting results: " + response.message, -1);
       return false;
     }
-  }
-  /*
-    try {
-      return await db
-        .collection(`users/${user.uid}/results/`)
-        .orderBy("timestamp", "desc")
-        .limit(1000)
-        .get()
-        .then(async (data) => {
-          dbSnapshot.results = [];
-          data.docs.forEach((doc) => {
-            let result = doc.data();
-            result.id = doc.id;
 
-            //this should be done server-side
-            if (result.bailedOut === undefined) result.bailedOut = false;
-            if (result.blindMode === undefined) result.blindMode = false;
-            if (result.difficulty === undefined) result.difficulty = "normal";
-            if (result.funbox === undefined) result.funbox = "none";
-            if (result.language === undefined) result.language = "english";
-            if (result.numbers === undefined) result.numbers = false;
-            if (result.punctuation === undefined) result.punctuation = false;
-
-            dbSnapshot.results.push(result);
-          });
-          await TodayTracker.addAllFromToday();
-          return true;
-        })
-        .catch((e) => {
-          throw e;
-        });
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
+    const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+    results.forEach((result) => {
+      if (result.bailedOut === undefined) result.bailedOut = false;
+      if (result.blindMode === undefined) result.blindMode = false;
+      if (result.lazyMode === undefined) result.lazyMode = false;
+      if (result.difficulty === undefined) result.difficulty = "normal";
+      if (result.funbox === undefined) result.funbox = "none";
+      if (result.language === undefined || result.language === null) {
+        result.language = "english";
+      }
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.punctuation === undefined) result.punctuation = false;
+    });
+    dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
+    return true;
   }
-  */
+}
+
+export function getCustomThemeById(
+  themeID: string
+): MonkeyTypes.CustomTheme | undefined {
+  return dbSnapshot.customThemes.find((t) => t._id === themeID);
+}
+
+export async function addCustomTheme(
+  theme: MonkeyTypes.RawCustomTheme
+): Promise<boolean> {
+  if (dbSnapshot === null) return false;
+
+  if (dbSnapshot.customThemes.length >= 10) {
+    Notifications.add("Too many custom themes!", 0);
+    return false;
+  }
+
+  const response = await Ape.users.addCustomTheme(theme);
+  if (response.status !== 200) {
+    Notifications.add("Error adding custom theme: " + response.message, -1);
+    return false;
+  }
+
+  const newCustomTheme: MonkeyTypes.CustomTheme = {
+    ...theme,
+    _id: response.data.theme._id as string,
+  };
+
+  dbSnapshot.customThemes.push(newCustomTheme);
+  return true;
+}
+
+export async function editCustomTheme(
+  themeId: string,
+  newTheme: MonkeyTypes.RawCustomTheme
+): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (!customTheme) {
+    Notifications.add(
+      "Editing failed: Custom theme with id: " + themeId + " does not exist",
+      -1
+    );
+    return false;
+  }
+
+  const response = await Ape.users.editCustomTheme(themeId, newTheme);
+  if (response.status !== 200) {
+    Notifications.add("Error editing custom theme: " + response.message, -1);
+    return false;
+  }
+
+  const newCustomTheme: MonkeyTypes.CustomTheme = {
+    ...newTheme,
+    _id: themeId,
+  };
+
+  dbSnapshot.customThemes[dbSnapshot.customThemes.indexOf(customTheme)] =
+    newCustomTheme;
+
+  return true;
+}
+
+export async function deleteCustomTheme(themeId: string): Promise<boolean> {
+  const user = firebase.auth().currentUser;
+  if (user === null) return false;
+  if (dbSnapshot === null) return false;
+
+  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (!customTheme) return false;
+
+  const response = await Ape.users.deleteCustomTheme(themeId);
+  if (response.status !== 200) {
+    Notifications.add("Error deleting custom theme: " + response.message, -1);
+    return false;
+  }
+
+  dbSnapshot.customThemes = dbSnapshot.customThemes.filter(
+    (t) => t._id !== themeId
+  );
+
+  return true;
 }
 
 export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
@@ -313,11 +366,11 @@ export async function getUserAverageWpm10<M extends MonkeyTypes.Mode>(
 
     // Return the last 10 average wpm for quote if the current quote id has never been completed before by the user.
     if (count == 0 && mode == "quote") {
-      return Math.round(last10Wpm / last10Count);
+      return last10Wpm / last10Count;
     }
 
     // Return the average wpm of the last 10 completions for the targeted test mode.
-    return Math.round(wpmSum / count);
+    return wpmSum / count;
   }
 
   const retval =
@@ -386,7 +439,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   if (mode == "quote") return;
   function cont(): void {
     let found = false;
-    if (dbSnapshot.personalBests === undefined)
+    if (dbSnapshot.personalBests === undefined) {
       dbSnapshot.personalBests = {
         time: {},
         words: {},
@@ -394,6 +447,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
         quote: { custom: [] },
         custom: { custom: [] },
       };
+    }
 
     if (dbSnapshot.personalBests[mode] === undefined) {
       if (mode === "zen") {
@@ -405,9 +459,10 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
       }
     }
 
-    if (dbSnapshot.personalBests[mode][mode2] === undefined)
+    if (dbSnapshot.personalBests[mode][mode2] === undefined) {
       dbSnapshot.personalBests[mode][mode2] =
         [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+    }
 
     (
       dbSnapshot.personalBests[mode][
@@ -622,13 +677,13 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
   return;
 }
 
-export function updateLbMemory<M extends MonkeyTypes.Mode>(
+export async function updateLbMemory<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
   language: string,
   rank: number,
   api = false
-): void {
+): Promise<void> {
   //could dbSnapshot just be used here instead of getSnapshot()
 
   if (mode === "time") {
@@ -636,24 +691,22 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
       timeMode2 = mode2 as 15 | 60;
 
     const snapshot = getSnapshot();
-    if (snapshot.lbMemory === undefined)
+    if (snapshot.lbMemory === undefined) {
       snapshot.lbMemory = { time: { 15: { english: 0 }, 60: { english: 0 } } };
-    if (snapshot.lbMemory[timeMode] === undefined)
+    }
+    if (snapshot.lbMemory[timeMode] === undefined) {
       snapshot.lbMemory[timeMode] = {
         15: { english: 0 },
         60: { english: 0 },
       };
-    if (snapshot.lbMemory[timeMode][timeMode2] === undefined)
+    }
+    if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
       snapshot.lbMemory[timeMode][timeMode2] = {};
+    }
     const current = snapshot.lbMemory[timeMode][timeMode2][language];
     snapshot.lbMemory[timeMode][timeMode2][language] = rank;
     if (api && current != rank) {
-      axiosInstance.patch("/user/leaderboardMemory", {
-        mode,
-        mode2,
-        language,
-        rank,
-      });
+      await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
     setSnapshot(snapshot);
   }
@@ -662,17 +715,12 @@ export function updateLbMemory<M extends MonkeyTypes.Mode>(
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    try {
-      await axiosInstance.post("/config/save", { config });
-    } catch (e: any) {
-      AccountButton.loading(false);
-      let msg = e?.response?.data?.message ?? e.message;
-      if (e.response.status === 429) {
-        msg = "Too many requests. Please try again later.";
-      }
-      Notifications.add("Failed to save config: " + msg, -1);
-      return;
+
+    const response = await Ape.configs.save(config);
+    if (response.status !== 200) {
+      Notifications.add("Failed to save config: " + response.message, -1);
     }
+
     AccountButton.loading(false);
   }
 }
@@ -691,8 +739,9 @@ export function saveLocalResult(
 
 export function updateLocalStats(stats: MonkeyTypes.Stats): void {
   const snapshot = getSnapshot();
-  if (snapshot.globalStats === undefined)
+  if (snapshot.globalStats === undefined) {
     snapshot.globalStats = {} as MonkeyTypes.Stats;
+  }
   if (snapshot !== null && snapshot.globalStats !== undefined) {
     if (snapshot.globalStats.time == undefined) {
       snapshot.globalStats.time = stats.time;

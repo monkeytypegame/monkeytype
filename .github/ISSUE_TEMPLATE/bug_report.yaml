@@ -64,8 +64,17 @@ body:
 
   - type: textarea
     attributes:
-      label: Account information
-      description: If your issue only happens when logged in, please provide your account name and config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
+      label: Account name
+      description: Your Monkeytype account name.
+      placeholder: |
+        Miodec
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Account config
+      description: If your issue only happens when logged in, please provide your config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
       placeholder: |
         Miodec
         {"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}

@@ -1,4 +1,4 @@
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import Config, * as UpdateConfig from "../config";
 
 export async function setActiveGroup(

@@ -33,7 +33,7 @@ const accents: [string, string][] = [
 
 export function replaceAccents(
   word: string,
-  accentsOverride?: [accents: string, replace: string][]
+  accentsOverride?: MonkeyTypes.Accents
 ): string {
   let newWord = word;
   if (!accents && !accentsOverride) return newWord;

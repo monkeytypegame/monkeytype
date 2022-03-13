@@ -1,18 +1,29 @@
 import Config from "../config";
 
+type ConfigValues =
+  | string
+  | number
+  | boolean
+  | string[]
+  | MonkeyTypes.QuoteLength[]
+  | MonkeyTypes.ResultFilters
+  | MonkeyTypes.CustomBackgroundFilter
+  | null
+  | undefined;
+
 export default class SettingsGroup {
   public configName: string;
-  public configValue: any;
-  public configFunction: (value: any, params?: any[]) => any;
+  public configValue: ConfigValues;
+  public configFunction: (...params: any[]) => boolean;
   public mode: string;
-  public setCallback?: () => any;
-  public updateCallback?: () => any;
+  public setCallback?: () => void;
+  public updateCallback?: () => void;
   constructor(
     configName: string,
-    configFunction: (...values: any[]) => any,
+    configFunction: (...params: any[]) => boolean,
     mode: string,
-    setCallback?: () => any,
-    updateCallback?: () => any
+    setCallback?: () => void,
+    updateCallback?: () => void
   ) {
     this.configName = configName;
     this.configValue = Config[configName as keyof typeof Config];
@@ -29,8 +40,12 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} select`,
         (e) => {
           const target = $(e.currentTarget);
-          if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+          if (
+            target.hasClass("disabled") ||
+            target.hasClass("no-auto-handle")
+          ) {
             return;
+          }
           this.setValue(target.val());
         }
       );
@@ -40,20 +55,24 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} .button`,
         (e) => {
           const target = $(e.currentTarget);
-          if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+          if (
+            target.hasClass("disabled") ||
+            target.hasClass("no-auto-handle")
+          ) {
             return;
+          }
           let value: string | boolean = target.attr(configName) as string;
           const params = target.attr("params");
           if (!value && !params) return;
           if (value === "true") value = true;
           if (value === "false") value = false;
-          this.setValue(value, params as any);
+          this.setValue(value, params as unknown as ConfigValues[]);
         }
       );
     }
   }
 
-  setValue(value: any, params?: any[]): void {
+  setValue(value: ConfigValues, params?: ConfigValues[]): void {
     if (params === undefined) {
       this.configFunction(value);
     } else {
@@ -70,7 +89,7 @@ export default class SettingsGroup {
     );
     if (this.mode === "select") {
       $(`.pageSettings .section.${this.configName} select`)
-        .val(this.configValue)
+        .val(this.configValue as string)
         .trigger("change.select2");
     } else if (this.mode === "button") {
       $(

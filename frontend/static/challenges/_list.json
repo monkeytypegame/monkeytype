@@ -360,7 +360,9 @@
       "time": {
         "min": 3600
       },
-      "funbox": "round_round_baby"
+      "funbox": {
+        "exact": "round_round_baby"
+      }
     }
   }
   ,{
@@ -373,7 +375,9 @@
       "time": {
         "min": 3600
       },
-      "funbox": "mirror"
+      "funbox": {
+        "exact": "mirror"
+      }
     }
   }
   ,{
@@ -386,7 +390,9 @@
       "time": {
         "min": 3600
       },
-      "funbox": "choo_choo"
+      "funbox": {
+        "exact": "choo_choo"
+      }
     }
   }
   ,{
@@ -405,7 +411,9 @@
       "time": {
         "min": 3600
       },
-      "funbox": "earthquake"
+      "funbox": {
+        "exact": "earthquake"
+      }
     }
   }
   ,{
@@ -418,7 +426,9 @@
       "time": {
         "min": 3600
       },
-      "funbox": "simon_says"
+      "funbox": {
+        "exact": "simon_says"
+      }
     }
   }
   ,{
@@ -431,7 +441,9 @@
       "time": {
         "min": 3600
       },
-      "funbox": "58008"
+      "funbox": {
+        "exact": "58008"
+      }
     }
   }
   ,{
@@ -447,7 +459,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "read_ahead"
+      "funbox": {
+        "exact": "read_ahead"
+      }
     }
   }
   ,{
@@ -463,7 +477,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "read_ahead_hard"
+      "funbox": {
+        "exact": "read_ahead_hard"
+      }
     }
   }
   ,{
@@ -479,7 +495,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "gibberish"
+      "funbox": {
+        "exact": "gibberish"
+      }
     }
   }
   ,{
@@ -495,7 +513,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "specials"
+      "funbox": {
+        "exact": "specials"
+      }
     }
     
   }
@@ -512,7 +532,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "tts"
+      "funbox": {
+        "exact": "tts"
+      }
     }
   }
   ,{
@@ -528,7 +550,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "ascii"
+      "funbox": {
+        "exact": "ascii"
+      }
     }
   }
   ,{
@@ -544,7 +568,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "rAnDoMcAsE"
+      "funbox": {
+        "exact": "rAnDoMcAsE"
+      }
     }
   }
   ,{
@@ -560,7 +586,9 @@
       "time": {
         "min": 60
       },
-      "funbox": "nausea"
+      "funbox": {
+        "exact": "nausea"
+      }
     }
   }
   ,{

@@ -18,9 +18,9 @@ export function show(value: string): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customThemeShare input").focus();
+        $("#customThemeShare input").trigger("focus");
         $("#customThemeShare input").select();
-        $("#customThemeShare input").focus();
+        $("#customThemeShare input").trigger("focus");
       });
   }
 }
@@ -56,12 +56,12 @@ function hide(): void {
   }
 }
 
-$("#customThemeShareWrapper").click((e) => {
+$("#customThemeShareWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "customThemeShareWrapper") {
     hide();
   }
 });
 
-$("#customThemeShare .button").click(() => {
+$("#customThemeShare .button").on("click", () => {
   hide();
 });

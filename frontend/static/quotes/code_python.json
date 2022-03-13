@@ -35,25 +35,25 @@
       "text": "def bruteforce(charset, maxlength):\\n\\treturn (''.join(candidate)\\n\\t\\tfor candidate in itertools.chain.from_iterable(itertools.product(charset, repeat=i)\\n\\t\\tfor i in range(1, maxlength + 1)))\\ndef extractFile(arFile, attempt):\\n\\ttry:\\n\\t\\tarFile.extractall(pwd=attempt)\\n\\t\\tprint \"Password found! password is %s\"%attempt\\n\\t\\texit(0)\\n\\texcept Exception,e:\\n\\t\\tpass\\n\\tif datetime.datetime.now().second%20==0:\\n\\t\\tprint 'At %s'%attempt",
       "source": "GitHub -  GauthamGoli/rar-Password-Cracker",
       "id": 5,
-      "length": 444
+      "length": 442
     },
     {
       "text": "soup = BeautifulSoup(html, features='lxml')\\nprint(soup.h1)\\nprint(line_break, soup.p)\\n\\nall_href = soup.find_all('a')\\nall_href = [l['href'] for l in all_href]\\nprint(line_break, all_href)",
       "source": "GitHub - MorvanZhou/easy-scraping-tutorial",
       "id": 6,
-      "length": 178
+      "length": 190
     },
     {
       "text": "def bubbleSort(arr):\\n\\tn = len(arr)\\n\\tfor i in range(n-1):\\n\\t\\tfor j in range(0, n-i-1):\\n\\t\\t\\tif arr[j] > arr[j + 1] :\\n\\t\\t\\t\\tarr[j], arr[j + 1] = arr[j + 1], arr[j]",
       "source": "geeksforgeeks - Bubble Sort",
       "id": 7,
-      "length": 140
+      "length": 172
     },
     {
       "text": "def search(arr, n, x):\\n\\tfor i in range(0, n):\\n\\t\\tif (arr[i] == x):\\n\\t\\t\\treturn i\\n\\treturn -1",
       "source": "geeksforgeeks - Linear Search",
       "id": 8,
-      "length": 77
+      "length": 99
     }
   ]
 }

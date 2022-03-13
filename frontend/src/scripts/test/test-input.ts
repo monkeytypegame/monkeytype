@@ -1,9 +1,10 @@
 import * as TestWords from "./test-words";
+import { roundTo2 } from "../utils/misc";
 
 type Keypress = {
   count: number;
   errors: number;
-  words: string[];
+  words: number[];
   afk: boolean;
 };
 
@@ -71,7 +72,7 @@ class Input {
     return ret;
   }
 
-  getHistory(i: number): string | string[] {
+  getHistory(i?: number): string | string[] {
     if (i === undefined) {
       return this.history;
     } else {
@@ -185,8 +186,8 @@ export function incrementKeypressErrors(): void {
   currentKeypress.errors++;
 }
 
-export function pushKeypressWord(word: string): void {
-  currentKeypress.words.push(word);
+export function pushKeypressWord(wordIndex: number): void {
+  currentKeypress.words.push(wordIndex);
 }
 
 export function setBurstStart(time: number): void {
@@ -217,19 +218,19 @@ export function setKeypressTimingsTooLong(): void {
 }
 
 export function pushKeypressDuration(val: number): void {
-  (keypressTimings.duration.array as number[]).push(val);
+  (keypressTimings.duration.array as number[]).push(roundTo2(val));
 }
 
 export function setKeypressDuration(val: number): void {
-  keypressTimings.duration.current = val;
+  keypressTimings.duration.current = roundTo2(val);
 }
 
 function pushKeypressSpacing(val: number): void {
-  (keypressTimings.spacing.array as number[]).push(val);
+  (keypressTimings.spacing.array as number[]).push(roundTo2(val));
 }
 
 function setKeypressSpacing(val: number): void {
-  keypressTimings.spacing.current = val;
+  keypressTimings.spacing.current = roundTo2(val);
 }
 
 export function recordKeypressSpacing(): void {
@@ -237,7 +238,7 @@ export function recordKeypressSpacing(): void {
   const diff = Math.abs(keypressTimings.spacing.current - now);
   if (keypressTimings.spacing.current !== -1) {
     pushKeypressSpacing(diff);
-    if (spacingDebug)
+    if (spacingDebug) {
       console.log(
         "spacing debug",
         "push",
@@ -245,9 +246,10 @@ export function recordKeypressSpacing(): void {
         "length",
         keypressTimings.spacing.array.length
       );
+    }
   }
   setKeypressSpacing(now);
-  if (spacingDebug)
+  if (spacingDebug) {
     console.log(
       "spacing debug",
       "set",
@@ -255,13 +257,15 @@ export function recordKeypressSpacing(): void {
       "length",
       keypressTimings.spacing.array.length
     );
-  if (spacingDebug)
+  }
+  if (spacingDebug) {
     console.log(
       "spacing debug",
       "recorded",
       "length",
       keypressTimings.spacing.array.length
     );
+  }
 }
 
 export function resetKeypressTimings(): void {

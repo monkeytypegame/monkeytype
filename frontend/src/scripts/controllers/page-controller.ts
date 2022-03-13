@@ -1,4 +1,4 @@
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
@@ -87,6 +87,6 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   return false;
 });
 
-$(".pageTest .loginTip .link").click(async () => {
+$(".pageTest .loginTip .link").on("click", async () => {
   change("login");
 });

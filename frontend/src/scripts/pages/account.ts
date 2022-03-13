@@ -12,7 +12,8 @@ import * as SignOutButton from "../account/sign-out-button";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
+import * as ActivePage from "../states/active-page";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -308,13 +309,15 @@ export function update(): void {
             resdiff = "normal";
           }
           if (!ResultFilters.getFilter("difficulty", resdiff)) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to difficulty filter`, result);
+            }
             return;
           }
           if (!ResultFilters.getFilter("mode", result.mode)) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to mode filter`, result);
+            }
             return;
           }
 
@@ -324,8 +327,9 @@ export function update(): void {
               timefilter = result.mode2;
             }
             if (!ResultFilters.getFilter("time", timefilter)) {
-              if (filterDebug)
+              if (filterDebug) {
                 console.log(`skipping result due to time filter`, result);
+              }
               return;
             }
           } else if (result.mode == "words") {
@@ -336,8 +340,9 @@ export function update(): void {
               wordfilter = result.mode2;
             }
             if (!ResultFilters.getFilter("words", wordfilter)) {
-              if (filterDebug)
+              if (filterDebug) {
                 console.log(`skipping result due to word filter`, result);
+              }
               return;
             }
           }
@@ -357,11 +362,12 @@ export function update(): void {
               filter !== undefined &&
               !ResultFilters.getFilter("quoteLength", filter)
             ) {
-              if (filterDebug)
+              if (filterDebug) {
                 console.log(
                   `skipping result due to quoteLength filter`,
                   result
                 );
+              }
               return;
             }
           }
@@ -378,8 +384,9 @@ export function update(): void {
             langFilter = true;
           }
           if (!langFilter) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to language filter`, result);
+            }
             return;
           }
 
@@ -388,8 +395,9 @@ export function update(): void {
             puncfilter = "on";
           }
           if (!ResultFilters.getFilter("punctuation", puncfilter)) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to punctuation filter`, result);
+            }
             return;
           }
 
@@ -398,21 +406,24 @@ export function update(): void {
             numfilter = "on";
           }
           if (!ResultFilters.getFilter("numbers", numfilter)) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to numbers filter`, result);
+            }
             return;
           }
 
           if (result.funbox === "none" || result.funbox === undefined) {
             if (!ResultFilters.getFilter("funbox", "none")) {
-              if (filterDebug)
+              if (filterDebug) {
                 console.log(`skipping result due to funbox filter`, result);
+              }
               return;
             }
           } else {
             if (!ResultFilters.getFilter("funbox", result.funbox)) {
-              if (filterDebug)
+              if (filterDebug) {
                 console.log(`skipping result due to funbox filter`, result);
+              }
               return;
             }
           }
@@ -446,8 +457,9 @@ export function update(): void {
           }
 
           if (tagHide) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to tag filter`, result);
+            }
             return;
           }
 
@@ -470,8 +482,9 @@ export function update(): void {
           }
 
           if (datehide) {
-            if (filterDebug)
+            if (filterDebug) {
               console.log(`skipping result due to date filter`, result);
+            }
             return;
           }
 
@@ -528,7 +541,7 @@ export function update(): void {
             tt = (result.mode2 / result.wpm) * 60;
           }
         } else {
-          tt = result.testDuration;
+          tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
         }
         if (result.incompleteTestSeconds != undefined) {
           tt += result.incompleteTestSeconds;
@@ -619,9 +632,10 @@ export function update(): void {
             : "";
           topWpm = result.wpm;
           if (result.mode == "custom") topMode = result.mode;
-          else
+          else {
             topMode =
               result.mode + " " + result.mode2 + puncsctring + numbsctring;
+          }
         }
 
         totalWpm += result.wpm;
@@ -868,7 +882,7 @@ export function update(): void {
     ChartController.accountActivity.update();
     LoadingPage.updateBar(100, true);
     setTimeout(() => {
-      SignOutButton.show();
+      if (ActivePage.get() == "account") SignOutButton.show();
     }, 125);
     Focus.set(false);
     Misc.swapElements(
@@ -979,11 +993,11 @@ function sortAndRefreshHistory(
   loadMoreLines();
 }
 
-$(".pageAccount .toggleAccuracyOnChart").click(() => {
+$(".pageAccount .toggleAccuracyOnChart").on("click", () => {
   UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
-$(".pageAccount .toggleChartStyle").click(() => {
+$(".pageAccount .toggleChartStyle").on("click", () => {
   if (Config.chartStyle == "line") {
     UpdateConfig.setChartStyle("scatter");
   } else {
@@ -991,11 +1005,11 @@ $(".pageAccount .toggleChartStyle").click(() => {
   }
 });
 
-$(".pageAccount .loadMoreButton").click(() => {
+$(".pageAccount .loadMoreButton").on("click", () => {
   loadMoreLines();
 });
 
-$(".pageAccount #accountHistoryChart").click(() => {
+$(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
   if (!window) return;
@@ -1070,6 +1084,10 @@ $(
 
 $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
+});
+
+$(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
+  Misc.downloadResultsCSV(filteredResults);
 });
 
 export const page = new Page(
