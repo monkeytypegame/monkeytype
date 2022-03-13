@@ -1,6 +1,7 @@
 import * as Caret from "./caret";
 import * as ActivePage from "../states/active-page";
 
+const unfocusPx = 5;
 let state = false;
 
 export function set(foc: boolean, withCursor = false): void {
@@ -29,7 +30,7 @@ $(document).mousemove(function (event) {
     $("#top").hasClass("focus") &&
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px
-    (event.originalEvent.movementX > 5 || event.originalEvent.movementY > 5)
+    (event.originalEvent.movementX > unfocusPx || event.originalEvent.movementY > unfocusPx)
   ) {
     set(false);
   }
