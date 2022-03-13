@@ -151,15 +151,15 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     }
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
-        $(".current-theme .text").text(
-          isCustom ? "custom" : themeName.replace(/_/g, " ")
-        );
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
         $("#metaThemeColor").attr("content", colors.bg);
       });
     }
+    $(".current-theme .text").text(
+      isCustom ? "custom" : themeName.replace(/_/g, " ")
+    );
   });
 }
 
