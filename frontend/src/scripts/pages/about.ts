@@ -1,5 +1,8 @@
-import * as Misc from "../utils/misc";
 import Page from "./page";
+import {
+  getSupporters,
+  getContributors,
+} from "../controllers/json-lists-controller";
 
 export function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -7,8 +10,8 @@ export function reset(): void {
 }
 
 export async function fill(): Promise<void> {
-  const supporters = await Misc.getSupportersList();
-  const contributors = await Misc.getContributorsList();
+  const supporters = await getSupporters();
+  const contributors = await getContributors();
   supporters.forEach((supporter) => {
     $(".pageAbout .supporters").append(`
       <div>${supporter}</div>

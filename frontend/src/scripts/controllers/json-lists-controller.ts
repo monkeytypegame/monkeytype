@@ -70,3 +70,15 @@ export async function getFonts(): Promise<Font[]> {
     return 0;
   });
 }
+
+const supportersPromise = getJSON("about/supporters.json") as Promise<string[]>;
+export async function getSupporters(): Promise<string[]> {
+  return await supportersPromise;
+}
+
+const contributorsPromise = getJSON("about/contributors.json") as Promise<
+  string[]
+>;
+export async function getContributors(): Promise<string[]> {
+  return await contributorsPromise;
+}

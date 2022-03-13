@@ -122,30 +122,6 @@ export function getJSON(url: string): Promise<any> {
   });
 }
 
-let supportersList: string[] = [];
-export async function getSupportersList(): Promise<string[]> {
-  if (supportersList.length === 0) {
-    return $.getJSON("about/supporters.json", function (data) {
-      supportersList = data;
-      return supportersList;
-    });
-  } else {
-    return supportersList;
-  }
-}
-
-let contributorsList: string[] = [];
-export async function getContributorsList(): Promise<string[]> {
-  if (contributorsList.length === 0) {
-    return $.getJSON("about/contributors.json", function (data) {
-      contributorsList = data;
-      return contributorsList;
-    });
-  } else {
-    return contributorsList;
-  }
-}
-
 let languageList: string[] = [];
 export async function getLanguageList(): Promise<string[]> {
   if (languageList.length === 0) {
