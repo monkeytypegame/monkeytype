@@ -30,8 +30,7 @@ async function errorHandlingMiddleware(
     monkeyResponse.message = error.message;
     monkeyResponse.status = error.status;
   } else {
-    monkeyResponse.message =
-      "Oops! Our monkeys dropped their bananas. Please try again later.";
+    monkeyResponse.message = `Oops! Our monkeys dropped their bananas. Please try again later. - ${monkeyResponse.data.errorId}`;
   }
 
   if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {

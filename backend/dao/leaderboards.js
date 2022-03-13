@@ -1,9 +1,13 @@
 import db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
+import { setLeaderboard } from "../utils/prometheus";
+
+const leaderboardUpdating = {};
 
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 50) {
+    if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
     if (limit > 50 || limit <= 0) limit = 50;
     if (skip < 0) skip = 0;
     const preset = await db
@@ -17,13 +21,15 @@ class LeaderboardsDAO {
   }
 
   static async getRank(mode, mode2, language, uid) {
+    if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
     const res = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
-    if (res)
+    if (res) {
       res.count = await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .estimatedDocumentCount();
+    }
     return res;
   }
 
@@ -83,13 +89,15 @@ class LeaderboardsDAO {
     });
     let end2 = performance.now();
     let start3 = performance.now();
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
     try {
       await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
     } catch (e) {}
-    if (lb && lb.length !== 0)
+    if (lb && lb.length !== 0) {
       await db
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
         .insertMany(lb);
+    }
     let end3 = performance.now();
 
     let start4 = performance.now();
@@ -103,6 +111,7 @@ class LeaderboardsDAO {
       .createIndex({
         rank: 1,
       });
+    leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
     let end4 = performance.now();
 
     let timeToRunAggregate = (end1 - start1) / 1000;
@@ -115,6 +124,13 @@ class LeaderboardsDAO {
       `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s`,
       uid
     );
+
+    setLeaderboard(language, mode, mode2, [
+      timeToRunAggregate,
+      timeToRunLoop,
+      timeToRunInsert,
+      timeToRunIndex,
+    ]);
 
     if (retval) {
       return {

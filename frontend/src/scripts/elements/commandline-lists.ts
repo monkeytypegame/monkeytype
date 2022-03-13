@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
 import * as Sound from "../controllers/sound-controller";
 import * as ThemeController from "../controllers/theme-controller";
@@ -1147,6 +1147,21 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
         UpdateConfig.setRandomTheme("dark");
       },
     },
+    {
+      id: "setRandomCustom",
+      display: "custom",
+      configValue: "custom",
+      exec: (): void => {
+        if (firebase.auth().currentUser === null) {
+          Notifications.add(
+            "Multiple custom themes are available to logged in users only",
+            0
+          );
+          return;
+        }
+        UpdateConfig.setRandomTheme("custom");
+      },
+    },
   ],
 };
 
@@ -1212,8 +1227,8 @@ export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
-  title: "Custom theme...",
+export const customThemeCommands: MonkeyTypes.CommandsGroup = {
+  title: "Custom theme",
   configKey: "customTheme",
   list: [
     {
@@ -1234,6 +1249,41 @@ const commandsCustomTheme: MonkeyTypes.CommandsGroup = {
     },
   ],
 };
+
+export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
+  title: "Custom themes list...",
+  // configKey: "customThemeId",
+  list: [],
+};
+
+export function updateCustomThemeListCommands(): void {
+  if (firebase.auth().currentUser === null) {
+    return;
+  }
+
+  customThemeListCommands.list = [];
+
+  if (DB.getSnapshot().customThemes.length < 0) {
+    Notifications.add("You need to create a custom theme first", 0);
+    return;
+  }
+  DB.getSnapshot().customThemes.forEach((theme) => {
+    customThemeListCommands.list.push({
+      id: "setCustomThemeId" + theme._id,
+      display: theme.name,
+      configValue: theme._id,
+      hover: (): void => {
+        ThemeController.preview(theme._id, true);
+      },
+      exec: (): void => {
+        // UpdateConfig.setCustomThemeId(theme._id);
+        UpdateConfig.setCustomTheme(true);
+        ThemeController.set(theme._id, true);
+      },
+    });
+  });
+  return;
+}
 
 const commandsCaretStyle: MonkeyTypes.CommandsGroup = {
   title: "Change caret style...",
@@ -2365,7 +2415,7 @@ Misc.getThemesList().then((themes) => {
       configValue: theme.name,
       hover: (): void => {
         // previewTheme(theme.name);
-        ThemeController.preview(theme.name);
+        ThemeController.preview(theme.name, false);
       },
       exec: (): void => {
         UpdateConfig.setTheme(theme.name);
@@ -2404,7 +2454,7 @@ export function updateThemeCommands(): void {
         display: theme.replace(/_/g, " "),
         hover: (): void => {
           // previewTheme(theme);
-          ThemeController.preview(theme);
+          ThemeController.preview(theme, false);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme);
@@ -2419,7 +2469,7 @@ export function updateThemeCommands(): void {
           display: theme.name.replace(/_/g, " "),
           hover: (): void => {
             // previewTheme(theme.name);
-            ThemeController.preview(theme.name);
+            ThemeController.preview(theme.name, false);
           },
           exec: (): void => {
             UpdateConfig.setTheme(theme.name);
@@ -2798,7 +2848,17 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "setCustomTheme",
       display: "Custom theme...",
       icon: "fa-palette",
-      subgroup: commandsCustomTheme,
+      subgroup: customThemeCommands,
+    },
+    {
+      id: "setCustomThemeId",
+      display: "Custom themes...",
+      icon: "fa-palette",
+      subgroup: customThemeListCommands,
+      beforeSubgroup: (): void => updateCustomThemeListCommands(),
+      available: (): boolean => {
+        return firebase.auth().currentUser !== null;
+      },
     },
     {
       id: "changeRandomTheme",

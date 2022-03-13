@@ -1,6 +1,7 @@
 import _ from "lodash";
 import db from "../init/db";
 import { Filter, ObjectId, MatchKeysAndValues } from "mongodb";
+import MonkeyError from "../utils/error";
 
 const COLLECTION_NAME = "ape-keys";
 
@@ -22,13 +23,10 @@ class ApeKeysDAO {
       .toArray();
   }
 
-  static async getApeKey(
-    uid: string,
-    keyId: string
-  ): Promise<MonkeyTypes.ApeKey | null> {
+  static async getApeKey(keyId: string): Promise<MonkeyTypes.ApeKey | null> {
     return await db
       .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
-      .findOne(getApeKeyFilter(uid, keyId));
+      .findOne({ _id: new ObjectId(keyId) });
   }
 
   static async countApeKeysForUser(uid: string): Promise<number> {
@@ -37,14 +35,10 @@ class ApeKeysDAO {
   }
 
   static async addApeKey(apeKey: MonkeyTypes.ApeKey): Promise<string> {
-    const apeKeyId = new ObjectId();
-
-    await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).insertOne({
-      _id: apeKeyId,
-      ...apeKey,
-    });
-
-    return apeKeyId.toHexString();
+    const insertionResult = await db
+      .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
+      .insertOne(apeKey);
+    return insertionResult.insertedId.toHexString();
   }
 
   private static async updateApeKey(
@@ -52,12 +46,16 @@ class ApeKeysDAO {
     keyId: string,
     updates: MatchKeysAndValues<MonkeyTypes.ApeKey>
   ): Promise<void> {
-    await db
+    const updateResult = await db
       .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
       .updateOne(getApeKeyFilter(uid, keyId), {
         $inc: { useCount: _.has(updates, "lastUsedOn") ? 1 : 0 },
         $set: _.pickBy(updates, (value) => !_.isNil(value)),
       });
+
+    if (updateResult.modifiedCount === 0) {
+      throw new MonkeyError(404, "ApeKey not found");
+    }
   }
 
   static async editApeKey(
@@ -84,9 +82,13 @@ class ApeKeysDAO {
   }
 
   static async deleteApeKey(uid: string, keyId: string): Promise<void> {
-    await db
+    const deletionResult = await db
       .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
       .deleteOne(getApeKeyFilter(uid, keyId));
+
+    if (deletionResult.deletedCount === 0) {
+      throw new MonkeyError(404, "ApeKey not found");
+    }
   }
 }
 

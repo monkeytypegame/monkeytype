@@ -1,5 +1,5 @@
 import * as ConfigEvent from "../observables/config-event";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);
@@ -161,9 +161,10 @@ export function update(
 }
 
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
-  if (eventKey === "mode")
+  if (eventKey === "mode") {
     update(
       eventPreviousValue as MonkeyTypes.Mode,
       eventValue as MonkeyTypes.Mode
     );
+  }
 });

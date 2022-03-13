@@ -1,4 +1,4 @@
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
@@ -164,8 +164,9 @@ export function updateActive(): void {
       if (getFilter(group, filter)) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined)
+        if (groupAboveChartDisplay["all"] !== undefined) {
           groupAboveChartDisplay["all"] = false;
+        }
       }
       let buttonEl;
       if (group === "date") {

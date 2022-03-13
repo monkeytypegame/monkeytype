@@ -1,17 +1,16 @@
 import _ from "lodash";
+import psas from "./psas";
 import users from "./users";
+import quotes from "./quotes";
 import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
-import psas from "./psas";
-import leaderboards from "./leaderboards";
-import quotes from "./quotes";
 import apeKeys from "./ape-keys";
+import leaderboards from "./leaderboards";
+import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { Application, NextFunction, Response, Router } from "express";
-import swStats from "swagger-stats";
-import SwaggerSpec from "../../swagger.json";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -31,34 +30,11 @@ const API_ROUTE_MAP = {
 function addApiRoutes(app: Application): void {
   let requestsProcessed = 0;
 
-  app.use(
-    swStats.getMiddleware({
-      name: "Monkeytype API",
-      // hostname: process.env.MODE === "dev" ? "localhost": process.env.STATS_HOSTNAME,
-      // ip: process.env.MODE === "dev" ? "127.0.0.1": process.env.STATS_IP,
-      uriPath: "/stats",
-      authentication: process.env.MODE !== "dev",
-      apdexThreshold: 100,
-      swaggerSpec: SwaggerSpec,
-      onAuthenticate: (_req, username, password) => {
-        return (
-          username === process.env.STATS_USERNAME &&
-          password === process.env.STATS_PASSWORD
-        );
-      },
-      onResponseFinish: (_req, res, rrr) => {
-        //@ts-ignore ignored because monkeyMessage doesnt exist on the type
-        rrr.http.response.message = res.monkeyMessage;
-        if (process.env.MODE === "dev") {
-          return;
-        }
-        const authHeader = rrr.http.request.headers?.authorization ?? "None";
-        const authType = authHeader.split(" ");
-        _.set(rrr.http.request, "headers.authorization", authType[0]);
-        _.set(rrr.http.request, "headers['x-forwarded-for']", "");
-      },
-    })
-  );
+  app.get("/leaderboard", (_req, res) => {
+    res.sendStatus(404);
+  });
+
+  addSwaggerMiddlewares(app);
 
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
@@ -85,7 +61,7 @@ function addApiRoutes(app: Application): void {
     })
   );
 
-  app.get("/psa", (req, res) => {
+  app.get("/psa", (_req, res) => {
     res.json([
       {
         message:

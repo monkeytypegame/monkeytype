@@ -8,8 +8,8 @@ const sass = require("gulp-sass")(require("dart-sass"));
 const replace = require("gulp-replace");
 const through2 = require("through2");
 const { webpack } = require("webpack");
-const webpackDevConfig = require("./webpack.config.js");
-const webpackProdConfig = require("./webpack-production.config.js");
+const webpackDevConfig = require("./webpack.config.dev.js");
+const webpackProdConfig = require("./webpack.config.prod.js");
 const ts = require("gulp-typescript");
 
 const JSONValidation = require("./json-validation");

@@ -9,7 +9,7 @@ import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
@@ -36,8 +36,9 @@ function premid(): void {
   if (timerDebug) console.time("premid");
   const premidSecondsLeft = document.querySelector("#premidSecondsLeft");
 
-  if (premidSecondsLeft !== null)
+  if (premidSecondsLeft !== null) {
     premidSecondsLeft.innerHTML = (Config.time - Time.get()).toString();
+  }
   if (timerDebug) console.timeEnd("premid");
 }
 
@@ -68,7 +69,8 @@ function calculateWpmRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
 
 function monkey(wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw): void {
   if (timerDebug) console.time("update monkey");
-  Monkey.updateFastOpacity(wpmAndRaw.wpm);
+  const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
+  Monkey.updateFastOpacity(num);
   if (timerDebug) console.timeEnd("update monkey");
 }
 
@@ -225,16 +227,18 @@ export async function start(): Promise<void> {
         slowTimerCount++;
         if (slowTimerCount > 5) {
           //slow timer
-          
+
           if (window.navigator.userAgent.includes("Edg")) {
-            Notifications.add('This bad performance could be caused by "efficiency mode" on Microsoft Edge.');
+            Notifications.add(
+              'This bad performance could be caused by "efficiency mode" on Microsoft Edge.'
+            );
           }
-          
+
           Notifications.add(
             "Stopping the test due to bad performance. This would cause test calculations to be incorrect. If this happens a lot, please report this.",
             -1
           );
-          
+
           TimerEvent.dispatch("fail", "slow timer");
         }
       }

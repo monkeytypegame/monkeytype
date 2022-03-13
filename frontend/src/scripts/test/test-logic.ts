@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
@@ -47,6 +47,7 @@ import * as PageTransition from "../states/page-transition";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
+import * as Monkey from "./monkey";
 import NodeObjectHash from "node-object-hash";
 
 const objecthash = NodeObjectHash().hash;
@@ -260,6 +261,7 @@ export function startTest(): boolean {
   LiveBurst.show();
   TimerProgress.update();
   TestTimer.clear();
+  Monkey.show();
 
   if (Config.funbox === "memory") {
     Funbox.resetMemoryTimer();
@@ -270,8 +272,9 @@ export function startTest(): boolean {
     if (
       Config.paceCaret !== "off" ||
       (Config.repeatedPace && TestState.isPaceRepeat)
-    )
+    ) {
       PaceCaret.start();
+    }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(performance.now());
@@ -305,8 +308,9 @@ export function restart(
         )
       ) {
         let message = "Use your mouse to confirm.";
-        if (Config.quickTab)
+        if (Config.quickTab) {
           message = "Press shift + tab or use your mouse to confirm.";
+        }
         Notifications.add("Quick restart disabled. " + message, 0, 3);
         return;
       }
@@ -348,10 +352,12 @@ export function restart(
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    if (PractiseWords.before.punctuation !== null)
+    if (PractiseWords.before.punctuation !== null) {
       UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
-    if (PractiseWords.before.numbers !== null)
+    }
+    if (PractiseWords.before.numbers !== null) {
       UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    }
     UpdateConfig.setMode(PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -377,13 +383,16 @@ export function restart(
   Replay.pauseReplay();
   TestInput.setBailout(false);
   PaceCaret.reset();
+  Monkey.hide();
+
   if (Config.showAvg) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
   QuoteRatePopup.clearQuoteStats();
-  if (ActivePage.get() == "test" && window.scrollY > 0)
+  if (ActivePage.get() == "test" && window.scrollY > 0) {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
   $("#wordsInput").val(" ");
 
   TestUI.reset();
@@ -400,8 +409,8 @@ export function restart(
   if (TestUI.resultVisible) {
     if (
       Config.randomTheme !== "off" &&
-      !PageTransition.get() &&
-      !Config.customTheme
+      !PageTransition.get()
+      // && Config.customThemeId === ""
     ) {
       ThemeController.randomizeTheme();
     }
@@ -568,8 +577,9 @@ export function restart(
             // resetPaceCaret();
             PbCrown.hide();
             TestTimer.clear();
-            if ($("#commandLineWrapper").hasClass("hidden"))
+            if ($("#commandLineWrapper").hasClass("hidden")) {
               TestUI.focusWords();
+            }
             // ChartController.result.update();
             PageTransition.set(false);
             // console.log(TestStats.incompleteSeconds);
@@ -1031,8 +1041,9 @@ export async function addWord(): Promise<void> {
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
       TestWords.words.length >= (TestWords.randomQuote.textSplit?.length ?? 0))
-  )
+  ) {
     return;
+  }
 
   if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
@@ -1255,11 +1266,12 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestInput.keypressTimings.spacing.array === "toolong"
       ? []
       : TestInput.keypressTimings.spacing.array.slice();
-  if (keyConsistencyArray.length > 0)
+  if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
       keyConsistencyArray.length - 1
     );
+  }
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
       Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray)
@@ -1359,6 +1371,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   OutOfFocus.hide();
   TestTimer.clear();
   Funbox.clear();
+  Monkey.hide();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
@@ -1472,8 +1485,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave
   );
 
-  if (completedEvent.chartData !== "toolong")
+  if (completedEvent.chartData !== "toolong") {
     delete completedEvent.chartData.unsmoothedRaw;
+  }
 
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
@@ -1741,8 +1755,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
   if (eventKey === "showAllLines" && !nosave) restart();
   if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
-  if (eventKey === "lazyMode" && eventValue === false && !nosave)
+  if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;
+  }
 });
 
 TimerEvent.subscribe((eventKey, eventValue) => {

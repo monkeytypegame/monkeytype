@@ -2,6 +2,7 @@ import joi from "joi";
 import { Router } from "express";
 import {
   asyncHandler,
+  checkUserPermissions,
   validateConfiguration,
   validateRequest,
 } from "../../middlewares/api-utils";
@@ -18,6 +19,14 @@ const apeKeyNameSchema = joi
     "string.max": "ApeKey name exceeds maximum of 20 characters",
   });
 
+const checkIfUserCanManageApeKeys = checkUserPermissions({
+  criteria: (user) => {
+    // Must be an exact check
+    return user.canManageApeKeys !== false;
+  },
+  invalidMessage: "You have lost access to ape keys, please contact support",
+});
+
 const router = Router();
 
 router.use(
@@ -33,6 +42,7 @@ router.get(
   "/",
   RateLimit.apeKeysGet,
   authenticateRequest(),
+  checkIfUserCanManageApeKeys,
   asyncHandler(ApeKeysController.getApeKeys)
 );
 
@@ -40,6 +50,7 @@ router.post(
   "/",
   RateLimit.apeKeysGenerate,
   authenticateRequest(),
+  checkIfUserCanManageApeKeys,
   validateRequest({
     body: {
       name: apeKeyNameSchema.required(),
@@ -53,6 +64,7 @@ router.patch(
   "/:apeKeyId",
   RateLimit.apeKeysUpdate,
   authenticateRequest(),
+  checkIfUserCanManageApeKeys,
   validateRequest({
     params: {
       apeKeyId: joi.string().required(),
@@ -69,6 +81,7 @@ router.delete(
   "/:apeKeyId",
   RateLimit.apeKeysDelete,
   authenticateRequest(),
+  checkIfUserCanManageApeKeys,
   validateRequest({
     params: {
       apeKeyId: joi.string().required(),

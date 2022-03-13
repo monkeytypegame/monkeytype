@@ -1,4 +1,4 @@
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 
 let initialised = false;

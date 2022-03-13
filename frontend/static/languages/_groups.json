@@ -54,11 +54,7 @@
   },
   {
     "name": "afrikaans",
-    "languages": [
-      "afrikaans",
-      "afrikaans_1k",
-      "afrikaans_10k"
-    ]
+    "languages": ["afrikaans", "afrikaans_1k", "afrikaans_10k"]
   },
   {
     "name": "mongolian",
@@ -263,6 +259,10 @@
   {
     "name": "hindi",
     "languages": ["hindi", "hindi_1k"]
+  },
+  {
+    "name": "sanskrit",
+    "languages": ["sanskrit"]
   },
   {
     "name": "macedonian",

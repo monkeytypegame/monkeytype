@@ -40,8 +40,12 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} select`,
         (e) => {
           const target = $(e.currentTarget);
-          if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+          if (
+            target.hasClass("disabled") ||
+            target.hasClass("no-auto-handle")
+          ) {
             return;
+          }
           this.setValue(target.val());
         }
       );
@@ -51,8 +55,12 @@ export default class SettingsGroup {
         `.pageSettings .section.${this.configName} .button`,
         (e) => {
           const target = $(e.currentTarget);
-          if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+          if (
+            target.hasClass("disabled") ||
+            target.hasClass("no-auto-handle")
+          ) {
             return;
+          }
           let value: string | boolean = target.attr(configName) as string;
           const params = target.attr("params");
           if (!value && !params) return;

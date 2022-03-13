@@ -6,13 +6,14 @@ import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import {
   buildSearchService,
   SearchService,
   TextExtractor,
 } from "../utils/search-service";
 import { debounce } from "../utils/debounce";
+import { splitByAndKeep } from "../utils/strings";
 
 export let selectedId = 1;
 
@@ -41,9 +42,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
   if (matchedText.length === 0) {
     return text;
   }
-  const words = text.split(
-    /(?=[.,"/#!$%^&*;:{}=\-_`~()\s])|(?<=[.,"/#!$%^&*;:{}=\-_`~()\s])/g
-  );
+  const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
 
   const normalizedWords = words.map((word) => {
     const shouldHighlight = matchedText.find((match) => {

@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { roundTo2 } from "./../misc";
+import { roundTo2 } from "../utils/misc";
 
 type Keypress = {
   count: number;
@@ -238,7 +238,7 @@ export function recordKeypressSpacing(): void {
   const diff = Math.abs(keypressTimings.spacing.current - now);
   if (keypressTimings.spacing.current !== -1) {
     pushKeypressSpacing(diff);
-    if (spacingDebug)
+    if (spacingDebug) {
       console.log(
         "spacing debug",
         "push",
@@ -246,9 +246,10 @@ export function recordKeypressSpacing(): void {
         "length",
         keypressTimings.spacing.array.length
       );
+    }
   }
   setKeypressSpacing(now);
-  if (spacingDebug)
+  if (spacingDebug) {
     console.log(
       "spacing debug",
       "set",
@@ -256,13 +257,15 @@ export function recordKeypressSpacing(): void {
       "length",
       keypressTimings.spacing.array.length
     );
-  if (spacingDebug)
+  }
+  if (spacingDebug) {
     console.log(
       "spacing debug",
       "recorded",
       "length",
       keypressTimings.spacing.array.length
     );
+  }
 }
 
 export function resetKeypressTimings(): void {

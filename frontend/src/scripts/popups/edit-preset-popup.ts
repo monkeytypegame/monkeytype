@@ -101,7 +101,7 @@ async function apply(): Promise<void> {
       snapshotPresets.push({
         name: presetName,
         config: configChanges,
-        _id: response.data.insertedId,
+        _id: response.data.presetId,
       });
     }
   } else if (action === "edit") {

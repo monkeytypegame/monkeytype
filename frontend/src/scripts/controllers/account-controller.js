@@ -4,7 +4,7 @@ import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Account from "../pages/account";
 import * as VerificationController from "./verification-controller";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
@@ -22,6 +22,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
+import * as URLHandler from "../utils/url-handler";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -280,21 +281,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     }, 125 / 2);
   }
 
-  let theme = Misc.findGetParameter("customTheme");
-  if (theme !== null) {
-    try {
-      theme = theme.split(",");
-      UpdateConfig.setCustomThemeColors(theme);
-      Notifications.add("Custom theme applied.", 1);
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0
-      );
-      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    UpdateConfig.setCustomTheme(true);
-  }
+  URLHandler.loadCustomThemeFromUrl();
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
@@ -312,6 +299,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
 });
 
 export function signIn() {
+  UpdateConfig.setChangedBeforeDb(false);
   authListener();
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
@@ -366,6 +354,7 @@ export function signIn() {
 }
 
 export async function signInWithGoogle() {
+  UpdateConfig.setChangedBeforeDb(false);
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
   authListener();

@@ -1,6 +1,6 @@
 import Config from "../config";
 import * as CustomText from "./custom-text";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as Time from "../states/time";
@@ -120,15 +120,17 @@ export function update(): void {
       if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
-      if (timerNumberElement !== null)
+      if (timerNumberElement !== null) {
         timerNumberElement.innerHTML = "<div>" + displayTime + "</div>";
+      }
     } else if (Config.timerStyle === "mini") {
       let displayTime = Misc.secondsToString(maxtime - time);
       if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
-      if (miniTimerNumberElement !== null)
+      if (miniTimerNumberElement !== null) {
         miniTimerNumberElement.innerHTML = displayTime;
+      }
     }
   } else if (
     Config.mode === "words" ||
@@ -163,31 +165,37 @@ export function update(): void {
         );
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
-        if (timerNumberElement !== null)
+        if (timerNumberElement !== null) {
           timerNumberElement.innerHTML =
             "<div>" + `${TestInput.input.history.length}` + "</div>";
+        }
       } else {
-        if (timerNumberElement !== null)
+        if (timerNumberElement !== null) {
           timerNumberElement.innerHTML =
             "<div>" + `${TestInput.input.history.length}/${outof}` + "</div>";
+        }
       }
     } else if (Config.timerStyle === "mini") {
       if (Config.words === 0) {
-        if (miniTimerNumberElement !== null)
+        if (miniTimerNumberElement !== null) {
           miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
+        }
       } else {
-        if (miniTimerNumberElement !== null)
+        if (miniTimerNumberElement !== null) {
           miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}/${outof}`;
+        }
       }
     }
   } else if (Config.mode == "zen") {
     if (Config.timerStyle === "text") {
-      if (timerNumberElement !== null)
+      if (timerNumberElement !== null) {
         timerNumberElement.innerHTML =
           "<div>" + `${TestInput.input.history.length}` + "</div>";
+      }
     } else {
-      if (miniTimerNumberElement !== null)
+      if (miniTimerNumberElement !== null) {
         miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
+      }
     }
   }
 }

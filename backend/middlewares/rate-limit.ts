@@ -262,6 +262,34 @@ export const userTagsAdd = rateLimit({
   handler: customHandler,
 });
 
+export const userCustomThemeGet = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 30 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const userCustomThemeAdd = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 30 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const userCustomThemeRemove = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 30 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const userCustomThemeEdit = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 30 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
 export const userDiscordLink = rateLimit({
   windowMs: ONE_HOUR,
   max: 15 * REQUEST_MULTIPLIER,

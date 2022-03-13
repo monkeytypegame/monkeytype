@@ -17,6 +17,7 @@ const CONFIG_SCHEMA = joi.object({
   themeDark: joi.string(),
   autoSwitchTheme: joi.boolean(),
   customTheme: joi.boolean(),
+  customThemeId: joi.string().min(0).max(24),
   customThemeColors: joi
     .array()
     .items(joi.string().pattern(/^#([\da-f]{3}){1,2}$/i))
@@ -51,7 +52,9 @@ const CONFIG_SCHEMA = joi.object({
   indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("bar", "text", "mini"),
   colorfulMode: joi.boolean(),
-  randomTheme: joi.string().valid("off", "on", "fav", "light", "dark"),
+  randomTheme: joi
+    .string()
+    .valid("off", "on", "fav", "light", "dark", "custom"),
   timerColor: joi.string().valid("black", "sub", "text", "main"),
   timerOpacity: joi.number().valid(0.25, 0.5, 0.75, 1),
   stopOnError: joi.string().valid("off", "word", "letter"),

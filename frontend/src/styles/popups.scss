@@ -1049,3 +1049,14 @@
     overflow-y: scroll;
   }
 }
+
+#customThemesWrapper {
+  #customThemesEdit {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+  }
+}

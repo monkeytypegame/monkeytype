@@ -7,16 +7,18 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
+import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
 
 type Input = {
-  placeholder: string;
+  placeholder?: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
   disabled?: boolean;
+  label?: string;
 };
 
 let activePopup: SimplePopup | null = null;
@@ -129,6 +131,14 @@ class SimplePopup {
                   autocomplete="off"
                 >${input.initVal}</textarea>
               `);
+            } else if (input.type === "checkbox") {
+              el.find(".inputs").append(`
+                <label class="checkbox">
+                  <input type="checkbox">
+                  <div class="customTextCheckbox"></div>
+                  ${input.label}
+                </label>
+              `);
             } else {
               el.find(".inputs").append(`
               <input
@@ -167,7 +177,11 @@ class SimplePopup {
     if (!this.canClose) return;
     const vals: string[] = [];
     $.each($("#simplePopup input"), (_, el) => {
-      vals.push($(el).val() as string);
+      if ($(el).is(":checkbox")) {
+        vals.push($(el).is(":checked") ? "true" : "false");
+      } else {
+        vals.push($(el).val() as string);
+      }
     });
     this.execFn(this, ...vals);
     this.hide();
@@ -934,6 +948,94 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
+list["updateCustomTheme"] = new SimplePopup(
+  "updateCustomTheme",
+  "text",
+  "Update Custom Theme",
+  [
+    {
+      type: "text",
+      placeholder: "Name",
+      initVal: "",
+    },
+    {
+      type: "checkbox",
+      initVal: "false",
+      label: "Update custom theme to current colors",
+    },
+  ],
+  "",
+  "Update",
+  async (_thisPopup, name, updateColors) => {
+    const snapshot = DB.getSnapshot();
+
+    const customTheme = snapshot.customThemes.find(
+      (t) => t._id === _thisPopup.parameters[0]
+    );
+    if (customTheme === undefined) {
+      Notifications.add("Custom theme does not exist!", -1);
+      return;
+    }
+
+    let newColors: string[] = [];
+    if (updateColors === "true") {
+      $.each(
+        $(".pageSettings .customTheme .customThemeEdit [type='color']"),
+        (_index, element) => {
+          newColors.push($(element).attr("value") as string);
+        }
+      );
+    } else {
+      newColors = customTheme.colors;
+    }
+
+    const newTheme = {
+      name: name,
+      colors: newColors,
+    };
+    Loader.show();
+    await DB.editCustomTheme(customTheme._id, newTheme);
+    Loader.hide();
+    UpdateConfig.setCustomThemeColors(newColors);
+    Notifications.add("Custom theme updated", 1);
+    ThemePicker.refreshButtons();
+  },
+  (_thisPopup) => {
+    const snapshot = DB.getSnapshot();
+
+    const customTheme = snapshot.customThemes.find(
+      (t) => t._id === _thisPopup.parameters[0]
+    );
+    if (!customTheme) return;
+    _thisPopup.inputs[0].initVal = customTheme.name;
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["deleteCustomTheme"] = new SimplePopup(
+  "deleteCustomTheme",
+  "text",
+  "Delete Custom Theme",
+  [],
+  "Are you sure?",
+  "Delete",
+  async (_thisPopup) => {
+    Loader.show();
+    await DB.deleteCustomTheme(_thisPopup.parameters[0]);
+    Loader.hide();
+    Notifications.add("Custom theme deleted", 1);
+    ThemePicker.refreshButtons();
+  },
+  (_thisPopup) => {
+    //
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
@@ -976,6 +1078,26 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
 $(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
   list["saveCustomText"].show();
 });
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme .delButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    list["deleteCustomTheme"].show([customThemeId]);
+  }
+);
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme .editButton",
+  (e) => {
+    const $parentElement = $(e.currentTarget).parent(".customTheme.button");
+    const customThemeId = $parentElement.attr("customThemeId") as string;
+    list["updateCustomTheme"].show([customThemeId]);
+  }
+);
 
 $(document).on(
   "click",

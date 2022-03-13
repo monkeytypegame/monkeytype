@@ -1,6 +1,6 @@
 import * as TestUI from "./test-ui";
 import Config from "../config";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as TestStats from "./test-stats";
 import * as Keymap from "../elements/keymap";
 import * as ChartController from "../controllers/chart-controller";
@@ -454,8 +454,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
   } else if (Config.mode === "quote") {
-    if (randomQuote.group !== undefined)
+    if (randomQuote.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
+    }
   }
   if (
     Config.mode != "custom" &&
@@ -653,10 +654,11 @@ export function update(
     $("#middle #result #saveScreenshotButton").removeClass("hidden");
   }
 
-  if (window.scrollY > 0)
+  if (window.scrollY > 0) {
     $([document.documentElement, document.body])
       .stop()
       .animate({ scrollTop: 0 }, 250);
+  }
 
   Misc.swapElements(
     $("#typingTest"),

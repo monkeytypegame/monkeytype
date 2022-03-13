@@ -5,6 +5,7 @@ import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
+import { incrementAuth } from "../utils/prometheus";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -38,7 +39,11 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           options
         );
       } else if (options.isPublic) {
-        return next();
+        token = {
+          type: "None",
+          uid: "",
+          email: "",
+        };
       } else if (process.env.MODE === "dev") {
         token = authenticateWithBody(req.body);
       } else {
@@ -48,6 +53,8 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           `endpoint: ${req.baseUrl} no authorization header found`
         );
       }
+
+      incrementAuth(token.type);
 
       req.ctx = {
         ...req.ctx,
@@ -151,34 +158,41 @@ async function authenticateWithApeKey(
     throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
   }
 
-  const decodedKey = base64UrlDecode(key);
-  const [uid, keyId, apeKey] = decodedKey.split(".");
+  try {
+    const decodedKey = base64UrlDecode(key);
+    const [keyId, apeKey] = decodedKey.split(".");
 
-  const targetApeKey = await ApeKeysDAO.getApeKey(uid, keyId);
+    const targetApeKey = await ApeKeysDAO.getApeKey(keyId);
+    if (!targetApeKey) {
+      throw new MonkeyError(404, "ApeKey not found");
+    }
 
-  if (!targetApeKey) {
-    throw new MonkeyError(404, "ApeKey not found");
+    if (!targetApeKey.enabled) {
+      const { code, message } = statuses.APE_KEY_INACTIVE;
+      throw new MonkeyError(code, message);
+    }
+
+    const isKeyValid = await compare(apeKey, targetApeKey.hash);
+    if (!isKeyValid) {
+      const { code, message } = statuses.APE_KEY_INVALID;
+      throw new MonkeyError(code, message);
+    }
+
+    await ApeKeysDAO.updateLastUsedOn(targetApeKey.uid, keyId);
+
+    return {
+      type: "ApeKey",
+      uid: targetApeKey.uid,
+      email: "",
+    };
+  } catch (error) {
+    if (!(error instanceof MonkeyError)) {
+      const { code, message } = statuses.APE_KEY_MALFORMED;
+      throw new MonkeyError(code, message);
+    }
+
+    throw error;
   }
-
-  if (!targetApeKey.enabled) {
-    const { code, message } = statuses.APE_KEY_INACTIVE;
-    throw new MonkeyError(code, message);
-  }
-
-  const isKeyValid = await compare(apeKey, targetApeKey?.hash ?? "");
-
-  if (!isKeyValid) {
-    const { code, message } = statuses.APE_KEY_INVALID;
-    throw new MonkeyError(code, message);
-  }
-
-  await ApeKeysDAO.updateLastUsedOn(uid, keyId);
-
-  return {
-    type: "ApeKey",
-    uid,
-    email: "",
-  };
 }
 
 export { authenticateRequest };

@@ -30,6 +30,7 @@
     "json/*": ["error"],
     "indent": ["off"],
     "linebreak-style": ["error", "unix"],
+    "curly": ["error", "multi-line"],
     "quotes": [
       "error",
       "double",

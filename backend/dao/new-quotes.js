@@ -6,9 +6,11 @@ import fs from "fs";
 import db from "../init/db";
 import MonkeyError from "../utils/error";
 
+const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
+
 let git;
 try {
-  git = simpleGit(path.join(__dirname, "../../../monkeytype-new-quotes"));
+  git = simpleGit(path.join(__dirname, PATH_TO_REPO));
 } catch (e) {
   git = undefined;
 }
@@ -27,7 +29,7 @@ class NewQuotesDAO {
     //check for duplicate first
     const fileDir = path.join(
       __dirname,
-      `../../../monkeytype-new-quotes/static/quotes/${language}.json`
+      `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
     );
     let duplicateId = -1;
     let similarityScore = -1;
@@ -82,7 +84,7 @@ class NewQuotesDAO {
     let message = "";
     const fileDir = path.join(
       __dirname,
-      `../../../monkeytype-new-quotes/static/quotes/${language}.json`
+      `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
     );
     await git.pull("upstream", "master");
     if (fs.existsSync(fileDir)) {
@@ -121,7 +123,7 @@ class NewQuotesDAO {
       );
       message = `Created file ${language}.json and added quote.`;
     }
-    await git.add([`static/quotes/${language}.json`]);
+    await git.add([`frontend/static/quotes/${language}.json`]);
     await git.commit(`Added quote to ${language}.json`);
     await git.push("origin", "master");
     await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });

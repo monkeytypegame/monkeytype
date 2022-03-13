@@ -2,7 +2,7 @@ import Config from "../config";
 import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
@@ -155,8 +155,9 @@ export async function refresh(
               (Config.keymapStyle === "matrix" ||
                 Config.keymapStyle === "split_matrix") &&
               i >= 10
-            )
+            ) {
               continue;
+            }
             const key = rowKeys[i];
             const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
             let keyDisplay = key[0];
@@ -231,7 +232,8 @@ export async function refresh(
 }
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "layout" && Config.keymapLayout === "overrideSync")
+  if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     refresh(Config.keymapLayout);
+  }
   if (eventKey === "keymapLayout" || eventKey === "keymapStyle") refresh();
 });

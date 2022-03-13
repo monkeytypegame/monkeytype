@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
 
 export let leftState = false;
@@ -190,8 +190,9 @@ export async function isUsingOppositeShift(
     if (
       !rightSideKeys.includes(event.code) &&
       !leftSideKeys.includes(event.code)
-    )
+    ) {
       return null;
+    }
 
     if (
       (leftState && rightSideKeys.includes(event.code)) ||

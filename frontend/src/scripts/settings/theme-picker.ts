@@ -1,14 +1,22 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
+import * as CustomThemePopup from "../popups/custom-theme-popup";
+import * as Loader from "../elements/loader";
+import * as DB from "../db";
+import * as ConfigEvent from "../observables/config-event";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
-  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-    activeThemeName = ThemeController.randomTheme;
+  if (
+    Config.randomTheme !== "off" &&
+    Config.randomTheme !== "custom" &&
+    ThemeController.randomTheme !== null
+  ) {
+    activeThemeName = ThemeController.randomTheme as string;
   }
   $(`.pageSettings .section.themes .theme`).removeClass("active");
   $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
@@ -25,13 +33,15 @@ function updateColors(
   if (onlyStyle) {
     const colorID = colorPicker.find("input[type=color]").attr("id");
     if (colorID === undefined) console.error("Could not find color ID!");
-    if (!noThemeUpdate && colorID !== undefined)
+    if (!noThemeUpdate && colorID !== undefined) {
       document.documentElement.style.setProperty(colorID, color);
+    }
     const pickerButton = colorPicker.find("label");
     pickerButton.val(color);
     pickerButton.attr("value", color);
-    if (pickerButton.attr("for") !== "--bg-color")
+    if (pickerButton.attr("for") !== "--bg-color") {
       pickerButton.css("background-color", color);
+    }
     colorPicker.find("input[type=text]").val(color);
     colorPicker.find("input[type=color]").attr("value", color);
     return;
@@ -76,57 +86,102 @@ function updateColors(
   const colorID = colorPicker.find("input[type=color]").attr("id");
 
   if (colorID === undefined) console.error("Could not find color ID!");
-  if (!noThemeUpdate && colorID !== undefined)
+  if (!noThemeUpdate && colorID !== undefined) {
     document.documentElement.style.setProperty(colorID, color);
+  }
 
   const pickerButton = colorPicker.find("label");
 
   pickerButton.val(color);
   pickerButton.attr("value", color);
-  if (pickerButton.attr("for") !== "--bg-color")
+  if (pickerButton.attr("for") !== "--bg-color") {
     pickerButton.css("background-color", color);
+  }
   colorPicker.find("input[type=text]").val(color);
   colorPicker.find("input[type=color]").attr("value", color);
 }
 
 export async function refreshButtons(): Promise<void> {
-  const favThemesEl = $(
-    ".pageSettings .section.themes .favThemes.buttons"
-  ).empty();
-  const themesEl = $(
-    ".pageSettings .section.themes .allThemes.buttons"
-  ).empty();
+  if (Config.customTheme) {
+    // Update custom theme buttons
+    const customThemesEl = $(
+      ".pageSettings .section.themes .allCustomThemes.buttons"
+    ).empty();
+    const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
 
-  let activeThemeName = Config.theme;
-  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-    activeThemeName = ThemeController.randomTheme;
-  }
+    if (firebase.auth().currentUser === null) {
+      $(
+        ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
+      ).text("save");
+      return;
+    } else {
+      $(
+        ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
+      ).text("save as new");
+    }
 
-  const themes = await Misc.getSortedThemesList();
-  //first show favourites
-  if (Config.favThemes.length > 0) {
-    favThemesEl.css({ paddingBottom: "1rem" });
-    themes.forEach((theme) => {
-      // @ts-ignore TODO: Remove this comment once the config.js is converted to ts
-      if (Config.favThemes.includes(theme.name)) {
-        const activeTheme = activeThemeName === theme.name ? "active" : "";
-        favThemesEl.append(
-          `<div class="theme button ${activeTheme}" theme='${
-            theme.name
-          }' style="color:${theme.mainColor};background:${theme.bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
-        <div class="text">${theme.name.replace(/_/g, " ")}</div>
-        <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-        );
-      }
+    addButton.removeClass("hidden");
+
+    const customThemes = DB.getSnapshot().customThemes;
+
+    customThemes.forEach((customTheme) => {
+      // const activeTheme =
+      //   Config.customThemeId === customTheme._id ? "active" : "";
+      const bgColor = customTheme.colors[0];
+      const mainColor = customTheme.colors[1];
+
+      customThemesEl.append(
+        `<div class="customTheme button" customThemeId='${customTheme._id}' 
+        style="color:${mainColor};background:${bgColor}">
+        <div class="editButton"><i class="fas fa-pen"></i></div>
+        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
+        <div class="delButton"><i class="fas fa-trash fa-fw"></i></div>
+        </div>`
+      );
     });
   } else {
-    favThemesEl.css({ paddingBottom: "0" });
-  }
-  //then the rest
-  themes.forEach((theme) => {
-    // @ts-ignore TODO: Remove this comment once the config.js is converted to ts
-    if (!Config.favThemes.includes(theme.name)) {
+    // Update theme buttons
+    const favThemesEl = $(
+      ".pageSettings .section.themes .favThemes.buttons"
+    ).empty();
+    const themesEl = $(
+      ".pageSettings .section.themes .allThemes.buttons"
+    ).empty();
+
+    let activeThemeName = Config.theme;
+    if (
+      Config.randomTheme !== "off" &&
+      Config.randomTheme !== "custom" &&
+      ThemeController.randomTheme !== null
+    ) {
+      activeThemeName = ThemeController.randomTheme as string;
+    }
+
+    const themes = await Misc.getSortedThemesList();
+    //first show favourites
+    if (Config.favThemes.length > 0) {
+      favThemesEl.css({ paddingBottom: "1rem" });
+      themes.forEach((theme) => {
+        if (Config.favThemes.includes(theme.name)) {
+          const activeTheme = activeThemeName === theme.name ? "active" : "";
+          favThemesEl.append(
+            `<div class="theme button ${activeTheme}" theme='${theme.name}' 
+            style="color:${theme.mainColor};background:${theme.bgColor}">
+            <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+            <div class="text">${theme.name.replace(/_/g, " ")}</div>
+            <div class="favButton active"><i class="fas fa-star"></i></div></div>`
+          );
+        }
+      });
+    } else {
+      favThemesEl.css({ paddingBottom: "0" });
+    }
+    //then the rest
+    themes.forEach((theme) => {
+      if (Config.favThemes.includes(theme.name)) {
+        return;
+      }
+
       const activeTheme = activeThemeName === theme.name ? "active" : "";
       themesEl.append(
         `<div class="theme button ${activeTheme}" theme='${
@@ -136,8 +191,8 @@ export async function refreshButtons(): Promise<void> {
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
         <div class="favButton"><i class="far fa-star"></i></div></div>`
       );
-    }
-  });
+    });
+  }
   updateActiveButton();
 }
 
@@ -156,7 +211,6 @@ export function setCustomInputs(noThemeUpdate = false): void {
 }
 
 function toggleFavourite(themeName: string): void {
-  // @ts-ignore TODO: Remove this comment once config.js is converted to typescript
   if (Config.favThemes.includes(themeName)) {
     // already favourite, remove
     UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
@@ -170,21 +224,46 @@ function toggleFavourite(themeName: string): void {
   refreshButtons();
 }
 
-export function updateActiveTab(): void {
-  $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  if (!Config.customTheme) {
-    $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
-      "active"
-    );
+export function saveCustomThemeColors(): void {
+  const newColors: string[] = [];
+  $.each(
+    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
+    (_index, element) => {
+      newColors.push($(element).attr("value") as string);
+    }
+  );
+  UpdateConfig.setCustomThemeColors(newColors);
+  Notifications.add("Custom theme saved", 1);
+}
+
+export function updateActiveTab(forced = false): void {
+  // Set force to true only when some change for the active tab has taken place
+  // Prevent theme buttons from being added twice by doing an update only when the state has changed
+  const $presetTabButton = $(
+    ".pageSettings .section.themes .tabs .button[tab='preset']"
+  );
+  const $customTabButton = $(
+    ".pageSettings .section.themes .tabs .button[tab='custom']"
+  );
+
+  if (Config.customTheme) {
+    $presetTabButton.removeClass("active");
+    if (!$customTabButton.hasClass("active") || forced) {
+      $customTabButton.addClass("active");
+      refreshButtons();
+    }
   } else {
-    $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
-      "active"
-    );
+    $customTabButton.removeClass("active");
+    if (!$presetTabButton.hasClass("active") || forced) {
+      $presetTabButton.addClass("active");
+      refreshButtons();
+    }
   }
 }
 
 // Add events to the DOM
 
+// Handle click on theme: preset or custom tab
 $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   const $target = $(e.currentTarget);
@@ -197,19 +276,35 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   }
 });
 
+// Handle click on custom theme button
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .customTheme.button",
+  (e) => {
+    // Do not apply if user wanted to delete it
+    if ($(e.target).hasClass("delButton")) return;
+    if ($(e.target).hasClass("editButton")) return;
+    const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
+    ThemeController.set(customThemeId, true);
+  }
+);
+
+// Handle click on favorite preset theme button
 $(document).on(
   "click",
   ".pageSettings .section.themes .theme .favButton",
   (e) => {
     const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
     if (theme !== undefined) toggleFavourite(theme);
-    else
+    else {
       console.error(
         "Could not find the theme attribute attached to the button clicked!"
       );
+    }
   }
 );
 
+// Handle click on preset theme button
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
@@ -238,12 +333,14 @@ $(
 
 $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
   .on("blur", (e) => {
+    if (e.target.id === "name") return;
     const $colorVar = $(e.currentTarget).attr("id") as string;
     const $pickedColor = $(e.currentTarget).val() as string;
 
     updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
   })
   .on("keypress", function (e) {
+    if (e.target.id === "name") return;
     if (e.code === "Enter") {
       $(this).attr("disabled", "disabled");
       const $colorVar = $(e.currentTarget).attr("id") as string;
@@ -253,19 +350,6 @@ $(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
       $(this).removeAttr("disabled");
     }
   });
-
-$(".pageSettings .saveCustomThemeButton").on("click", () => {
-  const save: Array<string> = [];
-  $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
-    (_index, element) => {
-      save.push($(element).attr("value") as string);
-    }
-  );
-  UpdateConfig.setCustomThemeColors(save);
-  ThemeController.set("custom");
-  Notifications.add("Custom theme colors saved", 1);
-});
 
 $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
   // previewTheme(Config.theme);
@@ -305,4 +389,51 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
       updateColors($(".colorPicker #" + colorName).parent(), color as string);
     });
   }, 250);
+});
+
+// Handles click on share custom theme button
+$("#shareCustomThemeButton").on("click", () => {
+  const share: string[] = [];
+  $.each(
+    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
+    (_, element) => {
+      share.push($(element).attr("value") as string);
+    }
+  );
+
+  const url =
+    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(share));
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function () {
+      CustomThemePopup.show(url);
+    }
+  );
+});
+
+$(".pageSettings .saveCustomThemeButton").on("click", async () => {
+  saveCustomThemeColors();
+  if (firebase.auth().currentUser) {
+    const newCustomTheme = {
+      name: "custom",
+      colors: Config.customThemeColors,
+    };
+
+    Loader.show();
+    const response = await DB.addCustomTheme(newCustomTheme);
+    Loader.hide();
+    if (response) {
+      updateActiveTab(true);
+    }
+  } else {
+    updateActiveTab(true);
+  }
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "customThemeId") refreshButtons();
+  // if (eventKey === "customTheme") updateActiveTab();
 });

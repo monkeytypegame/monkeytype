@@ -4,7 +4,7 @@ import { Router } from "express";
 import UserController from "../controllers/user";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
-import ApeRateLimit from "../../middlewares/ape-rate-limit";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { isUsernameValid } from "../../utils/validation";
 
 const router = Router();
@@ -18,6 +18,45 @@ const tagNameValidation = joi
     "string.pattern.base":
       "Tag name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
     "string.max": "Tag name exceeds maximum of 16 characters",
+  });
+
+const customThemeNameValidation = joi
+  .string()
+  .max(16)
+  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .required()
+  .messages({
+    "string.max": "The name must not exceed 16 characters",
+    "string.pattern.base":
+      "Name cannot contain special characters. Can include _ . and -",
+  });
+
+const customThemeColorsValidation = joi
+  .array()
+  .items(
+    joi
+      .string()
+      .length(7)
+      .regex(/^#[0-9a-fA-F]{6}$/)
+      .messages({
+        "string.pattern.base": "The colors must be valid hexadecimal",
+        "string.length": "The colors must be 7 characters long",
+      })
+  )
+  .length(9)
+  .required()
+  .messages({
+    "array.length": "The colors array must have 9 colors",
+  });
+
+const customThemeIdValidation = joi
+  .string()
+  .length(24)
+  .regex(/^[0-9a-fA-F]+$/)
+  .required()
+  .messages({
+    "string.length": "The themeId must be 24 characters long",
+    "string.pattern.base": "The themeId must be valid hexadecimal string",
   });
 
 const usernameValidation = joi
@@ -178,6 +217,54 @@ router.delete(
   asyncHandler(UserController.clearTagPb)
 );
 
+router.get(
+  "/customThemes",
+  RateLimit.userCustomThemeGet,
+  authenticateRequest(),
+  asyncHandler(UserController.getCustomThemes)
+);
+
+router.post(
+  "/customThemes",
+  RateLimit.userCustomThemeAdd,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      name: customThemeNameValidation,
+      colors: customThemeColorsValidation,
+    },
+  }),
+  asyncHandler(UserController.addCustomTheme)
+);
+
+router.delete(
+  "/customThemes",
+  RateLimit.userCustomThemeRemove,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      themeId: customThemeIdValidation,
+    },
+  }),
+  asyncHandler(UserController.removeCustomTheme)
+);
+
+router.patch(
+  "/customThemes",
+  RateLimit.userCustomThemeEdit,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      themeId: customThemeIdValidation,
+      theme: {
+        name: customThemeNameValidation,
+        colors: customThemeColorsValidation,
+      },
+    },
+  }),
+  asyncHandler(UserController.editCustomTheme)
+);
+
 router.post(
   "/discord/link",
   RateLimit.userDiscordLink,
@@ -207,7 +294,7 @@ router.get(
   authenticateRequest({
     acceptApeKeys: true,
   }),
-  ApeRateLimit,
+  apeRateLimit,
   validateRequest({
     query: {
       mode: joi.string().required(),

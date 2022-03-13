@@ -15,6 +15,7 @@ import {
   validateKeys,
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
+import { incrementResult } from "../../utils/prometheus";
 
 const objecthash = node_object_hash().hash;
 
@@ -100,8 +101,9 @@ class ResultController {
         throw new MonkeyError(status.code, "Result data doesn't make sense");
       }
     } else {
-      if (process.env.MODE !== "dev")
+      if (process.env.MODE !== "dev") {
         throw new Error("No anticheat module found");
+      }
       console.error(
         "No anticheat module found. Continuing in dev mode, results will not be validated."
       );
@@ -206,8 +208,9 @@ class ResultController {
           throw new MonkeyError(status.code, "Possible bot detected");
         }
       } else {
-        if (process.env.MODE !== "dev")
+        if (process.env.MODE !== "dev") {
           throw new Error("No anticheat module found");
+        }
         console.error(
           "No anticheat module found. Continuing in dev mode, results will not be validated."
         );
@@ -295,6 +298,8 @@ class ResultController {
       tagPbs,
       insertedId: addedResult.insertedId,
     };
+
+    incrementResult(result);
 
     return new MonkeyResponse("Result saved", data);
   }

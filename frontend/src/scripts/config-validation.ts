@@ -1,4 +1,4 @@
-import * as Misc from "./misc";
+import * as Misc from "./utils/misc";
 import * as Notifications from "./elements/notifications";
 
 type PossibleType =
@@ -66,8 +66,9 @@ export function isConfigValueValid(
         break;
 
       case "numberArray":
-        if (isArray(val) && val.every((v) => typeof v === "number"))
+        if (isArray(val) && val.every((v) => typeof v === "number")) {
           isValid = true;
+        }
         break;
 
       case "string":
@@ -75,8 +76,9 @@ export function isConfigValueValid(
         break;
 
       case "stringArray":
-        if (isArray(val) && val.every((v) => typeof v === "string"))
+        if (isArray(val) && val.every((v) => typeof v === "string")) {
           isValid = true;
+        }
         break;
 
       case "undefined":

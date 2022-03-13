@@ -1,6 +1,6 @@
 import * as TestWords from "./test-words";
 import * as Notifications from "../elements/notifications";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
@@ -169,8 +169,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   ManualRestart.set();
   if (mode === "style") {
-    if (funbox != undefined)
+    if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
+    }
 
     if (funbox === "simon_says") {
       UpdateConfig.setKeymapMode("next", true);

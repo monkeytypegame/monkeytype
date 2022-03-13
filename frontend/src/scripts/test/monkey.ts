@@ -1,5 +1,17 @@
-import { mapRange } from "../misc";
+import { mapRange } from "../utils/misc";
 import Config from "../config";
+import * as ConfigEvent from "../observables/config-event";
+import * as TestActive from "../states/test-active";
+
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "monkey" && TestActive.get()) {
+    if (Config.monkey) {
+      $("#monkey").removeClass("hidden");
+    } else {
+      $("#monkey").addClass("hidden");
+    }
+  }
+});
 
 let left = false;
 let right = false;
@@ -51,10 +63,10 @@ function update(): void {
 
 export function updateFastOpacity(num: number): void {
   if (!Config.monkey) return;
-  const opacity = mapRange(num, 100, 200, 0, 1);
+  const opacity = mapRange(num, 130, 180, 0, 1);
   $("#monkey .fast").animate({ opacity: opacity }, 1000);
-  let animDuration = mapRange(num, 100, 200, 0.5, 0.01);
-  if (animDuration == 0.5) animDuration = 0;
+  let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
+  if (animDuration == 0.25) animDuration = 0;
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
@@ -78,4 +90,20 @@ export function stop(): void {
     right = false;
   }
   update();
+}
+
+export function show(): void {
+  if (!Config.monkey) return;
+  $("#monkey")
+    .css("opacity", 0)
+    .removeClass("hidden")
+    .animate({ opacity: 1 }, 125);
+}
+
+export function hide(): void {
+  $("#monkey")
+    .css("opacity", 1)
+    .animate({ opacity: 1 }, 125, () => {
+      $("#monkey").addClass("hidden");
+    });
 }

@@ -50,7 +50,7 @@ declare namespace MonkeyTypes {
 
   type TimerStyle = "bar" | "text" | "mini";
 
-  type RandomTheme = "off" | "on" | "fav" | "light" | "dark";
+  type RandomTheme = "off" | "on" | "fav" | "light" | "dark" | "custom";
 
   type TimerColor = "black" | "sub" | "text" | "main";
 
@@ -186,6 +186,15 @@ declare namespace MonkeyTypes {
     name: string;
     personalBests?: PersonalBests;
     active?: boolean;
+  }
+
+  interface RawCustomTheme {
+    name: string;
+    colors: string[];
+  }
+
+  interface CustomTheme extends RawCustomTheme {
+    _id: string;
   }
 
   interface Stats {
@@ -407,6 +416,7 @@ declare namespace MonkeyTypes {
     verified?: boolean;
     personalBests?: PersonalBests;
     name?: string;
+    customThemes: CustomTheme[];
     presets?: Preset[];
     tags?: Tag[];
     favouriteThemes?: string[];

@@ -9,8 +9,9 @@ import { ObjectId } from "mongodb";
 class UsersDAO {
   static async addUser(name, email, uid) {
     const user = await db.collection("users").findOne({ uid });
-    if (user)
+    if (user) {
       throw new MonkeyError(409, "User document already exists", "addUser");
+    }
     return await db
       .collection("users")
       .insertOne({ name, email, uid, addedAt: Date.now() });
@@ -21,8 +22,9 @@ class UsersDAO {
   }
 
   static async updateName(uid, name) {
-    if (!this.isNameAvailable(name))
+    if (!this.isNameAvailable(name)) {
       throw new MonkeyError(409, "Username already taken", name);
+    }
     let user = await db.collection("users").findOne({ uid });
     if (
       Date.now() - user.lastNameChange < 2592000000 &&
@@ -57,8 +59,9 @@ class UsersDAO {
 
   static async updateQuoteRatings(uid, quoteRatings) {
     const user = await db.collection("users").findOne({ uid });
-    if (!user)
+    if (!user) {
       throw new MonkeyError(404, "User not found", "updateQuoteRatings");
+    }
     await db.collection("users").updateOne({ uid }, { $set: { quoteRatings } });
     return true;
   }
@@ -83,7 +86,7 @@ class UsersDAO {
   }
 
   static async addTag(uid, name) {
-    let _id = new ObjectId();
+    const _id = new ObjectId();
     await db
       .collection("users")
       .updateOne({ uid }, { $push: { tags: { _id, name } } });
@@ -105,8 +108,9 @@ class UsersDAO {
     if (
       user.tags === undefined ||
       user.tags.filter((t) => t._id == _id).length === 0
-    )
+    ) {
       throw new MonkeyError(404, "Tag not found");
+    }
     return await db.collection("users").updateOne(
       {
         uid: uid,
@@ -122,8 +126,9 @@ class UsersDAO {
     if (
       user.tags === undefined ||
       user.tags.filter((t) => t._id == _id).length === 0
-    )
+    ) {
       throw new MonkeyError(404, "Tag not found");
+    }
     return await db.collection("users").updateOne(
       {
         uid: uid,
@@ -139,8 +144,9 @@ class UsersDAO {
     if (
       user.tags === undefined ||
       user.tags.filter((t) => t._id == _id).length === 0
-    )
+    ) {
       throw new MonkeyError(404, "Tag not found");
+    }
     return await db.collection("users").updateOne(
       {
         uid: uid,
@@ -155,8 +161,9 @@ class UsersDAO {
     if (!user) throw new MonkeyError(404, "User not found", "update lb memory");
     if (user.lbMemory === undefined) user.lbMemory = {};
     if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
-    if (user.lbMemory[mode][mode2] === undefined)
+    if (user.lbMemory[mode][mode2] === undefined) {
       user.lbMemory[mode][mode2] = {};
+    }
     user.lbMemory[mode][mode2][language] = rank;
     return await db.collection("users").updateOne(
       { uid },
@@ -278,8 +285,9 @@ class UsersDAO {
 
   static async incrementBananas(uid, wpm) {
     const user = await db.collection("users").findOne({ uid });
-    if (!user)
+    if (!user) {
       throw new MonkeyError(404, "User not found", "increment bananas");
+    }
 
     let best60;
     try {
@@ -296,6 +304,91 @@ class UsersDAO {
     } else {
       return null;
     }
+  }
+
+  static themeDoesNotExist(customThemes, id) {
+    return (
+      (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0
+    );
+  }
+
+  static async addTheme(uid, theme) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "Add custom theme");
+
+    if ((user.customThemes ?? []).length >= 10) {
+      throw new MonkeyError(409, "Too many custom themes");
+    }
+
+    const _id = new ObjectId();
+    await db.collection("users").updateOne(
+      { uid },
+      {
+        $push: {
+          customThemes: {
+            _id,
+            name: theme.name,
+            colors: theme.colors,
+          },
+        },
+      }
+    );
+
+    return {
+      _id,
+      name: theme.name,
+    };
+  }
+
+  static async removeTheme(uid, _id) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user) {
+      throw new MonkeyError(404, "User not found", "Remove custom theme");
+    }
+
+    if (this.themeDoesNotExist(user.customThemes, _id)) {
+      throw new MonkeyError(404, "Custom theme not found");
+    }
+
+    return await db.collection("users").updateOne(
+      {
+        uid: uid,
+        "customThemes._id": new ObjectId(_id),
+      },
+      { $pull: { customThemes: { _id: new ObjectId(_id) } } }
+    );
+  }
+
+  static async editTheme(uid, _id, theme) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user) {
+      throw new MonkeyError(404, "User not found", "Edit custom theme");
+    }
+
+    if (this.themeDoesNotExist(user.customThemes, _id)) {
+      throw new MonkeyError(404, "Custom Theme not found");
+    }
+
+    return await db.collection("users").updateOne(
+      {
+        uid: uid,
+        "customThemes._id": new ObjectId(_id),
+      },
+      {
+        $set: {
+          "customThemes.$.name": theme.name,
+          "customThemes.$.colors": theme.colors,
+        },
+      }
+    );
+  }
+
+  static async getThemes(uid) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user) {
+      throw new MonkeyError(404, "User not found", "Get custom themes");
+    }
+    return user.customThemes ?? [];
   }
 
   static async getPersonalBests(uid, mode, mode2) {

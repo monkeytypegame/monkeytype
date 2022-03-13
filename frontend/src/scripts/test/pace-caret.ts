@@ -4,7 +4,7 @@ import * as TestUI from "./test-ui";
 import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
-import * as Misc from "../misc";
+import * as Misc from "../utils/misc";
 import * as TestActive from "../states/test-active";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
@@ -179,8 +179,9 @@ export function update(expectedStepEnd: number): void {
         currentLetterHeight === undefined ||
         currentLetterWidth === undefined ||
         caretWidth === undefined
-      )
+      ) {
         throw ``;
+      }
 
       newTop = currentLetter.offsetTop - currentLetterHeight / 5;
       newLeft;
@@ -237,8 +238,9 @@ export function update(expectedStepEnd: number): void {
 }
 
 export function reset(): void {
-  if (settings !== null && settings.timeout !== null)
+  if (settings !== null && settings.timeout !== null) {
     clearTimeout(settings.timeout);
+  }
   settings = null;
 }
 
