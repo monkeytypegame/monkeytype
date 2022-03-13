@@ -66,7 +66,7 @@ async function saveToDatabase(key: keyof MonkeyTypes.Config): Promise<void> {
       configToSend = {} as MonkeyTypes.Config;
       clearTimeout(saveTimeout as NodeJS.Timeout);
       saveTimeout = null;
-    }, 3000);
+    }, window.location.hostname === "localhost" ? 0 : 3000);
   }
 }
 
