@@ -102,18 +102,8 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
   let name = "serika_dark";
   if (!isCustom) {
     name = themeName;
-    Misc.swapElements(
-      $('.pageSettings [tabContent="custom"]'),
-      $('.pageSettings [tabContent="preset"]'),
-      250
-    );
   } else {
     name = "custom";
-    Misc.swapElements(
-      $('.pageSettings [tabContent="preset"]'),
-      $('.pageSettings [tabContent="custom"]'),
-      250
-    );
   }
 
   ThemeColors.reset();
