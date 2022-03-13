@@ -6,7 +6,7 @@ export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function hexToHSL(hex: string): {
+export function hexToHSL(hex: string): {
   hue: number;
   sat: number;
   lgt: number;
@@ -60,46 +60,6 @@ function hexToHSL(hex: string): {
     lgt: l,
     string: "hsl(" + h + "," + s + "%," + l + "%)",
   };
-}
-
-type Theme = { name: string; bgColor: string; mainColor: string };
-
-let themesList: Theme[] = [];
-export async function getThemesList(): Promise<Theme[]> {
-  if (themesList.length == 0) {
-    return $.getJSON("themes/_list.json", function (data) {
-      const list = data.sort(function (a: Theme, b: Theme) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      themesList = list;
-      return themesList;
-    });
-  } else {
-    return themesList;
-  }
-}
-
-let sortedThemesList: Theme[] = [];
-export async function getSortedThemesList(): Promise<Theme[]> {
-  if (sortedThemesList.length === 0) {
-    if (themesList.length === 0) {
-      await getThemesList();
-    }
-    let sorted = [...themesList];
-    sorted = sorted.sort((a, b) => {
-      const b1 = hexToHSL(a.bgColor);
-      const b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    sortedThemesList = sorted;
-    return sortedThemesList;
-  } else {
-    return sortedThemesList;
-  }
 }
 
 let funboxList: MonkeyTypes.FunboxObject[] = [];

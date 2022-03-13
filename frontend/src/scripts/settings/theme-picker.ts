@@ -8,6 +8,7 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
+import * as JSONLists from "../controllers/json-lists-controller";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -157,7 +158,7 @@ export async function refreshButtons(): Promise<void> {
       activeThemeName = ThemeController.randomTheme as string;
     }
 
-    const themes = await Misc.getSortedThemesList();
+    const themes = await JSONLists.getSortedThemes();
     //first show favourites
     if (Config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });

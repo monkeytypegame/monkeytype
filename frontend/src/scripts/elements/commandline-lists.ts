@@ -2408,7 +2408,7 @@ export const themeCommands: MonkeyTypes.CommandsGroup = {
   list: [],
 };
 
-Misc.getThemesList().then((themes) => {
+JSONLists.getThemes().then((themes) => {
   themes.forEach((theme) => {
     themeCommands.list.push({
       id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
@@ -2462,7 +2462,7 @@ export function updateThemeCommands(): void {
         },
       });
     });
-    Misc.getThemesList().then((themes) => {
+    JSONLists.getThemes().then((themes) => {
       themes.forEach((theme) => {
         if ((Config.favThemes as string[]).includes(theme.name)) return;
         themeCommands.list.push({

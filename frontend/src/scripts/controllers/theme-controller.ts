@@ -7,6 +7,7 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
+import { getThemes } from "../controllers/json-lists-controller";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
@@ -190,7 +191,7 @@ export function clearPreview(): void {
 
 export function randomizeTheme(): void {
   let randomList: string[] | MonkeyTypes.CustomTheme[];
-  Misc.getThemesList().then((themes) => {
+  getThemes().then((themes) => {
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
       randomList = Config.favThemes;
     } else if (Config.randomTheme === "light") {
