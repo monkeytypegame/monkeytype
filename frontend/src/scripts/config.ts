@@ -60,13 +60,16 @@ async function saveToDatabase(key: keyof MonkeyTypes.Config): Promise<void> {
   (configToSend[key] as typeof config[typeof key]) = config[key];
 
   if (saveTimeout === null) {
-    saveTimeout = setTimeout(async () => {
-      delete configToSend.resultFilters;
-      if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
-      configToSend = {} as MonkeyTypes.Config;
-      clearTimeout(saveTimeout as NodeJS.Timeout);
-      saveTimeout = null;
-    }, window.location.hostname === "localhost" ? 0 : 3000);
+    saveTimeout = setTimeout(
+      async () => {
+        delete configToSend.resultFilters;
+        if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
+        configToSend = {} as MonkeyTypes.Config;
+        clearTimeout(saveTimeout as NodeJS.Timeout);
+        saveTimeout = null;
+      },
+      window.location.hostname === "localhost" ? 0 : 3000
+    );
   }
 }
 
