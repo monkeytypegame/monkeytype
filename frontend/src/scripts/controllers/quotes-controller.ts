@@ -124,13 +124,14 @@ class QuotesController {
       return null;
     }
 
-    const randomQuote = this.quoteQueue[this.queueIndex];
-
-    this.queueIndex += 1;
     if (this.queueIndex >= this.quoteQueue.length) {
       this.queueIndex = 0;
       shuffle(this.quoteQueue);
     }
+
+    const randomQuote = this.quoteQueue[this.queueIndex];
+
+    this.queueIndex += 1;
 
     return randomQuote;
   }
