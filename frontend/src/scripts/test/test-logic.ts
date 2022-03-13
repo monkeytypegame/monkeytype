@@ -228,7 +228,7 @@ export function punctuateWord(
     } else if (Math.random() < 0.25 && currentLanguage == "code") {
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
-      word = specials[Math.floor(Math.random() * 10)];
+      word = Misc.randomElementFromArray(specials);
     }
   }
   return word;

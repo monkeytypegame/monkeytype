@@ -1,6 +1,7 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
+import { randomElementFromArray } from "../utils/misc";
 
 type ClickSounds = {
   [key: string]: {
@@ -236,12 +237,10 @@ export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
   if (clickSounds === null) init();
 
-  const rand = Math.floor(
-    Math.random() * (clickSounds as ClickSounds)[Config.playSoundOnClick].length
+  const randomSound = randomElementFromArray(
+    (clickSounds as ClickSounds)[Config.playSoundOnClick]
   );
-  const randomSound = (clickSounds as ClickSounds)[Config.playSoundOnClick][
-    rand
-  ];
+
   randomSound.counter++;
   if (randomSound.counter === 2) randomSound.counter = 0;
   randomSound.sounds[randomSound.counter].seek(0);
