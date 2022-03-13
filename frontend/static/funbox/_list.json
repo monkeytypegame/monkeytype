@@ -1,0 +1,147 @@
+[
+  {
+    "name": "nausea",
+    "type": "style",
+    "info": "I think I'm gonna be sick."
+  },
+  {
+    "name": "round_round_baby",
+    "type": "style",
+    "info": "...right round, like a record baby. Right, round round round."
+  },
+  {
+    "name": "simon_says",
+    "type": "style",
+    "info": "Type what simon says."
+  },
+  {
+    "name": "mirror",
+    "type": "style",
+    "info": "Everything is mirrored!"
+  },
+  {
+    "name": "tts",
+    "type": "script",
+    "info": "Listen closely."
+  },
+  {
+    "name": "choo_choo",
+    "type": "style",
+    "info": "All the letters are spinning!"
+  },
+  {
+    "name": "arrows",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Eurobeat Intensifies..."
+  },
+  {
+    "name": "rAnDoMcAsE",
+    "type": "script",
+    "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is."
+  },
+  {
+    "name": "capitals",
+    "type": "script",
+    "info": "Capitalize Every Word."
+  },
+  {
+    "name": "layoutfluid",
+    "type": "script",
+    "info": "Switch between layouts specified below proportionately to the length of the test."
+  },
+  {
+    "name": "earthquake",
+    "type": "style",
+    "info": "Everybody get down! The words are shaking!"
+  },
+  {
+    "name": "space_balls",
+    "type": "style",
+    "info": "In a galaxy far far away."
+  },
+  {
+    "name": "gibberish",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Anvbuefl dizzs eoos alsb?"
+  },
+  {
+    "name": "58008",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "A special mode for accountants."
+  },
+  {
+    "name": "ascii",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Where was the ampersand again?. Only ASCII characters."
+  },
+  {
+    "name": "specials",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "!@#$%^&*. Only special characters."
+  },
+  {
+    "name": "plus_one",
+    "type": "script",
+    "info": "React quickly! Only one future word is visible."
+  },
+  {
+    "name": "plus_two",
+    "type": "script",
+    "info": "Only two future word are visible."
+  },
+  {
+    "name": "read_ahead_easy",
+    "type": "style",
+    "info": "Only the current word is invisible."
+  },
+  {
+    "name": "read_ahead",
+    "type": "style",
+    "info": "Current and the next word is invisible!"
+  },
+  {
+    "name": "read_ahead_hard",
+    "type": "style",
+    "info": "Current and the next two words are invisible!"
+  },
+  {
+    "name": "memory",
+    "type": "script",
+    "info": "Test your memory. Remember the words and type them blind."
+  },
+  {
+    "name": "nospace",
+    "type": "script",
+    "info": "Whoneedsspacesanyway?"
+  },
+  {
+    "name": "poetry",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Practice typing some beautiful prose."
+  },
+  {
+    "name": "wikipedia",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Practice typing wikipedia sections."
+  },
+  {
+    "name": "weakspot",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Focus on slow and mistyped letters."
+  },
+  {
+    "name": "pseudolang",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Nonsense words that look like the current language."
+  }
+]
+

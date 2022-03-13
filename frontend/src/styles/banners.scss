@@ -1,0 +1,58 @@
+#bannerCenter {
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  .banner {
+    background: var(--sub-color);
+    color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    .container {
+      max-width: 1000px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      width: 100%;
+      justify-items: center;
+      .image {
+        // background-image: url(images/merchdropwebsite2.png);
+        height: 2.3rem;
+        background-size: cover;
+        aspect-ratio: 6/1;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin-left: 2rem;
+      }
+      .icon {
+        margin-left: 1rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .text {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .closeButton {
+        margin-right: 1rem;
+        /* margin-top: 0.5rem; */
+        /* margin-bottom: 0.5rem; */
+        transition: 0.125s;
+        font-size: 1.4rem;
+        &:hover {
+          cursor: pointer;
+          color: var(--text-color);
+        }
+      }
+      .righticon {
+        margin-right: 1rem;
+      }
+    }
+    &.good {
+      background: var(--main-color);
+    }
+    &.bad {
+      background: var(--error-color);
+    }
+  }
+}

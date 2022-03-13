@@ -1,0 +1,50 @@
+:root {
+  --bg-color: #bfbec2;
+  --main-color: #553d94;
+  --caret-color: #523793;
+  --sub-color: #9f8ad4;
+  --text-color: #2e2e2e;
+  --error-color: #ca4754;
+  --error-extra-color: #7e2a33;
+  --colorful-error-color: #ca4754;
+  --colorful-error-extra-color: #7e2a33;
+}
+
+#menu {
+  gap: 0.5rem;
+}
+
+#top.focus #menu .icon-button,
+#top.focus #menu:before,
+#top.focus #menu:after {
+  background: #99989f;
+}
+
+#menu .icon-button {
+  border-radius: 10rem !important;
+  color: var(--bg-color);
+}
+
+#menu .icon-button:nth-child(1) {
+  background: #553d94;
+}
+#menu .icon-button:nth-child(2) {
+  background: #6851a4;
+}
+#menu .icon-button:nth-child(3) {
+  background: #7962b3;
+}
+#menu .icon-button:nth-child(4) {
+  background: #8c76c3;
+}
+#menu .icon-button:nth-child(5) {
+  background: #9f8ad4;
+}
+#menu .icon-button:nth-child(6),
+#menu .icon-button:nth-child(7) {
+  background: #9f8ad4;
+}
+
+#top.focus #menu .icon-button.discord::after {
+  border-color: transparent;
+}

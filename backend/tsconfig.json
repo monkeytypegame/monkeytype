@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": false,
+    "allowJs": true,
+    "checkJs": true,
+    "outDir": "build",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strictNullChecks": true
+  },
+  "exclude": ["node_modules", "build", "worker.js"]
+}

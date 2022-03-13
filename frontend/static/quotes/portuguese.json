@@ -1,0 +1,359 @@
+{
+  "language": "portuguese",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "O homem é o único animal que não aprende nada sem ser ensinado: não sabe falar, nem caminhar, nem comer, enfim, não sabe fazer nada no estado natural, a não ser chorar.",
+      "source": "Plinio",
+      "length": 168,
+      "id": 1
+    },
+    {
+      "text": "Esquecer é uma necessidade. A vida é uma lousa, em que o destino, para escrever um novo caso, precisa de apagar o caso escrito.",
+      "source": "Machado de Assis",
+      "length": 127,
+      "id": 2
+    },
+    {
+      "text": "Minha Pátria é minha língua. Pouco se me dá que Portugal seja invadido, desde que não mexam comigo.",
+      "source": "Fernando Pessoa",
+      "length": 99,
+      "id": 3
+    },
+    {
+      "text": "Enquanto prevalecer a cultura do 'eles' (os responsáveis por todos os males) e 'nós' (as inocentes vítimas deles), vai ser muito difícil convencer os portugueses de que não há vida para a frente com a vida que levamos.",
+      "source": "Miguel Sousa Tavares",
+      "length": 218,
+      "id": 4
+    },
+    {
+      "text": "Os portugueses são pouco dados a elogios - temem que afecte negativamente a qualidade e positivamente o preço.",
+      "source": "Miguel Esteves Cardoso",
+      "length": 110,
+      "id": 5
+    },
+    {
+      "text": "Dizem não ser possível filosofar em outra língua que não alemão, ou cantar rock em inglês e samba em português.",
+      "source": "Francis Scott Key Fitzgerald",
+      "length": 111,
+      "id": 6
+    },
+    {
+      "text": "As ideias da classe dominante são, em todas as épocas, as ideias dominantes, isto é, a classe que é a força material dominante da sociedade é, ao mesmo tempo, sua força intelectual dominante.",
+      "source": "Karl Marx",
+      "length": 191,
+      "id": 7
+    },
+    {
+      "text": "A primeira condição para modificar a realidade consiste em conhecê-la.",
+      "source": "Eduardo Galeano",
+      "length": 70,
+      "id": 8
+    },
+    {
+      "text": "É necessário que os países do Primeiro Mundo entendam que é preciso preservar também cidades como Salvador, não apenas Roma ou Paris.",
+      "source": "Jorge Amado",
+      "length": 133,
+      "id": 9
+    },
+    {
+      "text": "O que vale na vida não é o ponto de partida e sim a caminhada. Caminhando e semeando, no fim terás o que colher.",
+      "source": "Cora Coralina",
+      "length": 112,
+      "id": 10
+    },
+    {
+      "text": "É na idade da ambição que se prova a têmpera dos homens.",
+      "source": "José de Alencar",
+      "length": 56,
+      "id": 11
+    },
+    {
+      "text": "Ociosos, pertencem às classes perigosas, como os ladrões e os vagabundos. O sujeito se faz padre ou frade só para viver no ócio, e o ócio é garantido pelo número deles. Se fossem, digamos, um em mil almas, os padres teriam tanto o que fazer que não poderiam ficar de papo para o ar comendo capões. E entre os padres mais indignos o governo escolhe os mais estúpidos, e os nomeia bispos.",
+      "source": "Umberto Eco",
+      "length": 386,
+      "id": 12
+    },
+    {
+      "text": "A vida é a arte do encontro, embora haja tanto desencontro pela vida.",
+      "source": "Vinícius de Moraes",
+      "length": 69,
+      "id": 13
+    },
+    {
+      "text": "Te amo como as begônias tarântulas amam seus congêneres, como as serpentes se amam enroscadas lentas algumas muito verdes outras escuras, a cruz na testa lerdas prenhes, dessa agudez que me rodeia, te amo ainda que isso te fulmine ou que um soco na minha cara me faça menos osso e mais verdade.",
+      "source": "Hilda Hilst",
+      "length": 294,
+      "id": 14
+    },
+    {
+      "text": "Escrevo sem pensar, tudo o que o meu inconsciente grita. Penso depois: não só para corrigir, mas para justificar o que escrevi.",
+      "source": "Mário de Andrade",
+      "length": 127,
+      "id": 15
+    },
+    {
+      "text": "A sorte me acompanha, tenho corpo fechado à inveja, a intriga não me amarra os pés, sou imune ao mau-olhado.",
+      "source": "Jorge Amado",
+      "length": 108,
+      "id": 16
+    },
+    {
+      "text": "Amizade é como flores, não podemos deixar de regá-las, mas também não podemos regá-las muito.",
+      "source": "Manuel Bandeira",
+      "length": 93,
+      "id": 17
+    },
+    {
+      "text": "A maior solidão é a do ser que não ama. A maior solidão é a dor do ser que se ausenta, que se defende, que se fecha, que se recusa a participar da vida humana.",
+      "source": "Vinícius de Moraes",
+      "length": 159,
+      "id": 18
+    },
+    {
+      "text": "Liberdade de voar num horizonte qualquer, liberdade de pousar onde o coração quiser.",
+      "source": "Cecília Meireles",
+      "length": 84,
+      "id": 19
+    },
+    {
+      "text": "Viver é negócio muito perigoso.",
+      "source": "João Guimarães Rosa",
+      "length": 31,
+      "id": 20
+    },
+    {
+      "text": "O amor romântico é como um traje, que, como não é eterno, dura tanto quanto dura; e, em breve, sob a veste do ideal que formamos, que se esfacela, surge o corpo real da pessoa humana, em que o vestimos. O amor romântico, portanto, é um caminho de desilusão. Só o não é quando a desilusão, aceite desde o princípio, decide variar de ideal constantemente, tecer constantemente, nas oficinas da alma, novos trajes, com que constantemente se renove o aspecto da criatura, por eles vestida.",
+      "source": "Fernando Pessoa",
+      "length": 485,
+      "id": 21
+    },
+    {
+      "text": "Olhei pro céu além da fumaça cheia de gordura humana e Deus não estava lá. A escuridão fria e sufocante prossegue eternamente e a gente está sozinho. Levamos a vida sem nada melhor pra fazer. A razão, inventamos depois. Nascemos do nada, temos filhos condenados ao inferno como nós, voltamos ao nada. Só existe isso.",
+      "source": "Alan Moore, Watchmen",
+      "length": 316,
+      "id": 22
+    },
+    {
+      "text": "Eles estavam em frente à grade que cercava o pasto. Enquanto assistiam, um adestrado trabalhava com o árabe, usando uma corda para guiá-lo em círculos e fazer o oito. Atrás deles, o corretor rural olhava para o relógio de pulso, aguardando a decisão.",
+      "source": "Chuck Palahniuk, Invente alguma coisa",
+      "length": 250,
+      "id": 23
+    },
+    {
+      "text": "Letra F, quem não arrisca, não petisca. Alô, é da casa da Francisca? Ela se mudou, casou com um delegado de polícia. Quer o número? Tô fora, risquei da minha lista.",
+      "source": "Gabriel, o Pensador, 2345meia78",
+      "length": 164,
+      "id": 24
+    },
+    {
+      "text": "Vou ligar pra Zulmira, mas nem adianta, ela nunca dá mole pra ninguém. Mas se eu já levei um fora do alfabeto inteiro, quê que tem levar um \"não\" dela também?",
+      "source": "Gabriel, o Pensador, 2345meia78",
+      "length": 158,
+      "id": 25
+    },
+    {
+      "text": "Fim de semana chegando, e o coitado tá no osso mas acaba de encontrar a solução. Coloca um caderninho no bolso, apanha umas fichas e corre para um orelhão. É o seu velho caderninho de telefone com o nome e o número de um monte de mulher. E ele vai ligar pra todas até conseguir chamar uma gata pra sair e dar um rolé.",
+      "source": "Gabriel, o Pensador, 2345meia78",
+      "length": 317,
+      "id": 26
+    },
+    {
+      "text": "Do outro lado da sala de estar, na parte mais estreita da garganta, havia um garoto de seis ou sete anos com os joelhos cobertos por cascas de ferida. Ele encarou Helen, seus olhos cintilando na meia-luz, como se esperasse uma deixa.",
+      "source": "Clive Barker, Candyman",
+      "length": 233,
+      "id": 27
+    },
+    {
+      "text": "Ela repetiu as quatro palavras em sua mente. Eu vim por você. Se pretendiam ser uma ameaça, com certeza não foram proferidas como tal.",
+      "source": "Clive Barker, Candyman",
+      "length": 134,
+      "id": 28
+    },
+    {
+      "text": "A existência é aleatória. Sem padrão, a não ser o que imaginamos depois de ficar olhando por muito tempo. Sem sentido, a não ser o que decidimos dar. Não são as forças metafísicas vagas que moldam este mundo. Não é Deus quem mata as crianças. Não é o destino que trucida ou a sina de quem as dá de comer aos cães. Somos nós. Só nós.",
+      "source": "Alan Moore, Watchmen",
+      "length": 332,
+      "id": 29
+    },
+    {
+      "text": "Entendam, eu não estou preso aqui com vocês, vocês estão presos aqui comigo.",
+      "source": "Alan Moore, Watchmen",
+      "length": 76,
+      "id": 30
+    },
+    {
+      "text": "Um corpo vivo e um corpo morto contém o mesmo número de partículas. Estruturalmente não há diferença discernível. Vida e morte são abstrações não quantificáveis, por que deveria me importar?",
+      "source": "Alan Moore, Watchmen",
+      "length": 190,
+      "id": 31
+    },
+    {
+      "text": "Eu revirava a gaveta ao lado procurando fita adesiva. Mamãe queria a fita para prender o bilhete ao bebê. Estava escuro e eu vi a cabeça e os ombros de Al contra o para-brisa iluminado quando ele reduziu a velocidade da van. Segurei a beirada da pia para me equilibrar quando saímos do asfalto para o cascalho. Al apagou as luzes.",
+      "source": "Katherine Dunn, Geek Love",
+      "length": 330,
+      "id": 32
+    },
+    {
+      "text": "Roger lamentou por ele. Era um homem que pensava devagar, mas sabia que o que era útil e valioso não podia ser sacrificado por causa daquilo. Era bom pensar em Atlanta, que para muitos era uma estrela, dormindo em segurança em um quarto a cem metros dali.",
+      "source": "F. Scott Fitzgerald, Eu morreria por ti & outras histórias",
+      "length": 255,
+      "id": 33
+    },
+    {
+      "text": "A data do lançamento era 15 de abril. No dia 14, um silêncio indócil tomou conta das salas no escritório, e na loja abaixo os atendentes olhavam nervosos para os espaços vazios onde as pilhas ficariam e para as vitrines desocupadas onde três habilidosos vitrinistas passariam a noite dispondo o livro em quadrados e montes e pilhas e círculos e estrelas e paralelogramos.",
+      "source": "F. Scott Fitzgerald, Eu morreria por ti & outras histórias",
+      "length": 371,
+      "id": 34
+    },
+    {
+      "text": "Rodrick assistia a um programa sobre o que acontece com os astronautas depois que passam muito tempo no espaço. O programa falava que, quando eles voltavam à Terra, estavam mais altos do que antes de sair. E o motivo para isso é que não há gravidade no espaço, então as colunas deles se descomprimem, ou coisa do tipo.",
+      "source": "Jeff Kinney, Diário de um Banana: Rodrick é o cara",
+      "length": 318,
+      "id": 35
+    },
+    {
+      "text": "As cortinas que ela escolheu parecem de linho. De linho caro. A trama é aberta o bastante para que eu quase sempre possa identificar o estado de espírito de vocês. Consigo ver o rabo de cavalo da menina balançando enquanto ela termina a lição de casa. Consigo ver o menininho jogando bolas de tênis contra o teto a três metros e meio de distância, enquanto a sua esposa, de calça legging, se agacha na sala de estar, arrumando a bagunça do dia.",
+      "source": "Ashley Audrain, O Impulso",
+      "length": 444,
+      "id": 36
+    },
+    {
+      "text": "Mas isso não interessa. Talvez o começo do caos não esteja em 2010, na nossa chegada ao Rio, e sim anos depois, quando já estávamos estabelecidos e tínhamos terminado a faculdade. Uma noite em especial cisma de voltar à minha mente. Era março de 2015, nós ainda morávamos juntos, o calor carioca havia diminuído e subia uma brisa gostosa do mar de Copacabana.",
+      "source": "Raphael Montes, Jantar secreto",
+      "length": 359,
+      "id": 37
+    },
+    {
+      "text": "Considerando-se os traumatismos causados pela implantação da ordem burguesa, compreende-se que esse veio cultural não fosse nem único nem homogêneo. As suas diferenças internas somava-se a existência paralela de um pensamento restaurados e um protesto romântico.",
+      "source": "José Paulo Netto, O que é marxismo",
+      "length": 262,
+      "id": 38
+    },
+    {
+      "text": "Outra equipe levantou as calças dele e então o levaram para casa junto com seu cachorro. Depois disso dependia dele manter segredo de tudo. E não, não esperávamos mais nenhuma repressão ao clube da luta.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 203,
+      "id": 39
+    },
+    {
+      "text": "Gerações têm trabalhado em empregos que odeiam para poder comprar coisas de que realmente não precisam - não temos uma grande depressão, mas na verdade temos, sim, é uma grande guerra de espírito. Temos uma grande revolução contra a cultura. A grande depressão é a nossa vida. Temos uma depressão espiritual.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 308,
+      "id": 40
+    },
+    {
+      "text": "Às vezes você faz algo e se ferra. E às vezes as coisas que você não faz é que ferram você.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 91,
+      "id": 41
+    },
+    {
+      "text": "Esta é a terceira regra do clube da luta, quando alguém diz \"pare\" ou fica desacordado, mesmo que esteja fingindo, a luta acaba. Toda hora você vê aquele garoto, e não pode elogiá-lo pela grande luta que teve.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 209,
+      "id": 42
+    },
+    {
+      "text": "A primeira regra do clube da luta é que você não fala sobre o clube da luta.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 76,
+      "id": 43
+    },
+    {
+      "text": "Ele levanta a sobrancelha e diz que algumas pessoas vão viajar e deixam uma vela acesa daquelas bem grandes em cima de uma poça de gasolina. Pessoas em dificuldades financeiras fazem esse tipo de coisa. Pessoas que querem sair do buraco.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 237,
+      "id": 44
+    },
+    {
+      "text": "Então você fica preso em seu belo ninho e as coisas que costumavam ser suas agora mandam em você.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 97,
+      "id": 45
+    },
+    {
+      "text": "Um monte de soldados de bicicletas motorizadas circula de um lado para o outro, gritando e acenando para as pessoas em uma língua estrangeira. Todos os soldados têm armas. Nenhuma das outras pessoas tem armas. Parece que os soldados querem que as pessoas andem mais rápido.",
+      "source": "Morris Gleitzman, Uma vez",
+      "length": 273,
+      "id": 46
+    },
+    {
+      "text": "O prédio onde estamos não vai estar mais aqui em dez minutos. Pegue uma medida de vapor de ácido nítrico concentrado a noventa e oito porcento e adicione mais três medidas de ácido sulfúrico. Faça isso em uma banheira de gelo. Depois adicione glicerina com um conta-gotas, uma gota de cada vez. Assim conseguirá nitroglicerina. Sei disso porque Tyler sabe.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 356,
+      "id": 47
+    },
+    {
+      "text": "Nos esquecemos completamente das manias de assassinato e suicídio de Tyler enquanto assistimos a outro arquivo deslizar pela lateral do prédio e cair, as gavetas se abrirem no ar e pilhas de papéis brancos serem apanhados por uma corrente de ar e se espalharem no vento.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 270,
+      "id": 48
+    },
+    {
+      "text": "Os ombros de Bob se levantam quando ele respira fundo e então caem, caem e caem em soluços convulsivos.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 103,
+      "id": 49
+    },
+    {
+      "text": "Chorar é o que sobra na escuridão asfixiante de dentro de outra pessoa, quando você vê que tudo o que já conseguiu na vida terminará no lixo.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 141,
+      "id": 50
+    },
+    {
+      "text": "O visto para os Estados Unidos deve ter ficado pronto. Meus pais estavam tentando conseguir vistos antes de me levarem para o orfanato. Por isso eles venderam a livraria para poderem abrir outra nos Estados Unidos. Uma vez meu pai me contou uma história sobre um judeu que era livreiro nos Estados Unidos. lá as estantes são feitas de ouro maciço.",
+      "source": "Morris Gleitzman, Uma vez",
+      "length": 347,
+      "id": 51
+    },
+    {
+      "text": "O que é meditação? O que é o abandono do corpo? Que significa o jejum? E a suspensão do fôlego? São modos de fugirmos de nós mesmos. São momentos durante os quais o homem escapa à tortura de seu eu. Fazem-nos esquecer, passageiramente, o sofrimento e a insensatez da vida.",
+      "source": "Herman Hesse, Sidarta",
+      "length": 272,
+      "id": 52
+    },
+    {
+      "text": "Se aprendesse qualquer coisa, necessitaria aprender mais, e nunca ficaria satisfeito.",
+      "source": "Graciliano Ramos, Vidas Secas",
+      "length": 85,
+      "id": 53
+    },
+    {
+      "text": "Sabia perfeitamente que era assim, acostumara-se a todas as violências, a todas as injustiças. E aos conhecidos que dormiam no tronco e aguentavam cipó de boi oferecia consolações: 'Tenha paciência. Apanhar do governo não é desfeita.'",
+      "source": "Graciliano Ramos, Vidas Secas",
+      "length": 234,
+      "id": 54
+    },
+    {
+      "text": "E nesse ponto abrasou-me de repente como aguda chama a revelação definitiva: todo homem tinha uma 'missão', mas ninguém podia escolher a sua, delimitá-la ou administrá-la a seu prazer. Era errôneo querer novos deuses, era completamente errôneo querer dar algo ao mundo. Para o homem consciente só havia um dever: procurar-se a si mesmo, afirmar-se em si mesmo e seguir sempre adiante o seu próprio caminho, sem se preocupar com o fim a que possa conduzi-lo.",
+      "source": "Herman Hesse, Demian",
+      "length": 457,
+      "id": 55
+    },
+    {
+      "text": "A utopia está lá no horizonte. Me aproximo dois passos, ela se afasta dois passos. Caminho dez passos e o horizonte corre dez passos. Por mais que eu caminhe, jamais alcançarei. Para que serve a utopia? Serve para isso: para que eu não deixe de caminhar.",
+      "source": "Fernando Birri",
+      "length": 254,
+      "id": 56
+    },
+    {
+      "text": "A mulher põe no mundo toda a poesia e toda a doçura.",
+      "source": "Alphonse Daudet",
+      "length": 52,
+      "id": 57
+    },
+    {
+      "text": "Cientistas começaram a realizar experimentos semelhantes, tentando descobrir modos de ajudar as crianças a aumentar suas capacidades autorregulatórias. Descobriram que lhes ensinar truques simples, como distrair-se fazendo um desenho, ou imaginando uma moldura em volta do marshmallow, para que parecesse mais uma foto e menos uma tentação real, ajudava-lhes a aprender o autocontrole.",
+      "source": "Charles Duhigg, O poder do hábito",
+      "length": 385,
+      "id": 58
+    }
+  ]
+}

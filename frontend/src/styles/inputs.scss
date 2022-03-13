@@ -1,0 +1,184 @@
+input,
+textarea {
+  outline: none;
+  border: none;
+  border-radius: var(--roundness);
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-family: var(--font);
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  padding: 0;
+  width: 100%;
+  height: 1rem;
+  border-radius: var(--roundness);
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    padding: 0;
+    border: none;
+    width: 25%;
+    height: 1rem;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+    &:hover {
+      cursor: grab;
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &::-moz-range-thumb {
+    -webkit-appearance: none;
+    padding: 0;
+    border: none;
+    width: 25%;
+    height: 1rem;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+    &:hover {
+      cursor: grab;
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+input[type="color"] {
+  height: 3px; //i dont know why its 3, but safari gods have spoken - 3 makes it work
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+::-moz-color-swatch {
+  border: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.select2-dropdown {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  outline: none;
+}
+
+.select2-selection {
+  background: rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  height: -moz-fit-content;
+  padding: 5px;
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  font: var(--font);
+  border: none;
+  outline: none;
+}
+
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__rendered {
+  color: var(--text-color);
+  outline: none;
+}
+
+.select2-container--default
+  .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+.select2-container--default .select2-results__option--selected {
+  background-color: var(--main-color);
+  color: var(--bg-color);
+}
+
+.select2-container--open .select2-dropdown--below,
+.select2-container--open .select2-dropdown--above {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: var(--bg-color);
+  color: var(--sub-color);
+  border-radius: var(--roundness);
+}
+
+.select2-container--default .select2-selection--single {
+  color: var(--text-color);
+  background: rgba(0, 0, 0, 0.1);
+  outline: none;
+  border: none;
+  height: auto;
+  border-radius: var(--roundness);
+}
+
+.select2-selection:focus {
+  height: fit-content;
+  height: -moz-fit-content;
+  padding: 5px;
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  font: var(--font);
+  border: none;
+  outline: none;
+}
+.select2-selection:active {
+  height: fit-content;
+  height: -moz-fit-content;
+  padding: 5px;
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  font: var(--font);
+  border: none;
+  outline: none;
+}
+
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow {
+  height: 35px;
+}
+
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow
+  b {
+  border-color: var(--text-color) transparent transparent transparent;
+}
+
+.select2-container--default.select2-container--open
+  .select2-selection--single
+  .select2-selection__arrow
+  b {
+  border-color: var(--text-color) transparent;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: var(--bg-color);
+  color: var(--text-color);
+  border-radius: var(--roundness);
+}
+
+.select2-container--default .select2-results__group {
+  color: var(--text-color);
+}

@@ -1,0 +1,106 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            any-json:
+              - 'frontend/**/*.json'
+            language-json:
+              - 'frontend/static/languages/*.json'
+            quotes-json:
+              - 'frontend/static/quotes/*.json'
+            other-json:
+              - 'frontend/static/funbox/*.json'
+              - 'frontend/static/fonts/*.json'
+              - 'frontend/static/themes/*.json'
+              - 'frontend/static/challenges/*.json'
+              - 'frontend/static/layouts/*.json'
+            any-tsscss:
+              - 'frontend/**/*.scss'
+              - 'frontend/**/*.js'
+              - 'frontend/**/*.ts'
+              - 'backend/**/*.{js,ts}'
+            scss:
+              - 'frontend/**/*.scss'
+            ts-fe:
+              - 'frontend/**/*.js'
+              - 'frontend/**/*.ts'
+            ts-be:
+              - 'backend/**/*.{js,ts}'
+            anti-cheat:
+              - 'backend/**/anticheat/**'
+
+      - run: echo ${{ steps.filter.outputs.changes }}
+
+      - name: Check Anti-cheat
+        if: steps.filter.outputs.anti-cheat == 'true'
+        run: exit 1
+
+      - name: Cache node modules
+        if: steps.filter.outputs.changes != '[]'
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Set up Node.js
+        if: steps.filter.outputs.changes != '[]'
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.13.2"
+
+      - name: Install dependencies
+        if: steps.filter.outputs.changes != '[]'
+        run: npm run install:all
+
+      # - name: Run webpack
+      #   run: npm run build:live
+
+      - name: Lint JSON
+        if: steps.filter.outputs.any-json == 'true'
+        run: npm run pr-check-lint-json
+
+      - name: Validate languages JSON
+        if: steps.filter.outputs.language-json == 'true'
+        run: npm run pr-check-language-json
+
+      - name: Validate quotes JSON
+        if: steps.filter.outputs.quotes-json == 'true'
+        run: npm run pr-check-quote-json
+
+      - name: Validate other JSON
+        if: steps.filter.outputs.other-json == 'true'
+        run: npm run pr-check-other-json
+
+      - name: Lint
+        if: steps.filter.outputs.any-tsscss == 'true'
+        run: npm run lint
+
+      - name: Compile SCSS
+        if: steps.filter.outputs.scss == 'true'
+        run: npm run pr-check-scss
+
+      - name: Build backend
+        if: steps.filter.outputs.ts-be == 'true'
+        run: npm run pr-check-build-be
+
+      - name: Run webpack
+        if: steps.filter.outputs.ts-fe == 'true'
+        run: npm run pr-check-ts
