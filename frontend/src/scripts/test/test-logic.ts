@@ -3,6 +3,7 @@ import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
+import QuotesController from "../controllers/quotes-controller";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
@@ -881,12 +882,13 @@ export async function init(): Promise<void> {
         }
       }
     }
-  } else if (Config.mode == "quote") {
-    // setLanguage(Config.language.replace(/_\d*k$/g, ""), true);
+  } else if (Config.mode === "quote") {
+    const quotesCollection = await QuotesController.getQuotes(
+      Config.language,
+      Config.quoteLength
+    );
 
-    const quotes = await Misc.getQuotes(Config.language.replace(/_\d*k$/g, ""));
-
-    if (quotes.length === 0) {
+    if (quotesCollection.length === 0) {
       TestUI.setTestRestarting(false);
       Notifications.add(
         `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
@@ -902,49 +904,24 @@ export async function init(): Promise<void> {
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
     if (Config.quoteLength.includes(-2) && Config.quoteLength.length == 1) {
-      quotes.groups.forEach((group) => {
-        const filtered = (<MonkeyTypes.Quote[]>group).filter(
-          (quote) => quote.id == QuoteSearchPopup.selectedId
-        );
-        if (filtered.length > 0) {
-          rq = filtered[0];
-        }
-      });
-      if (rq === undefined) {
-        rq = <MonkeyTypes.Quote>quotes.groups[0][0];
+      const targetQuote = QuotesController.getQuoteById(
+        QuoteSearchPopup.selectedId
+      );
+      if (targetQuote === undefined) {
+        rq = <MonkeyTypes.Quote>quotesCollection.groups[0][0];
         Notifications.add("Quote Id Does Not Exist", 0);
+      } else {
+        rq = targetQuote;
       }
     } else {
-      const quoteLengths = Config.quoteLength;
-      let groupIndex;
-      if (quoteLengths.length > 1) {
-        groupIndex =
-          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-        while (quotes.groups[groupIndex].length === 0) {
-          groupIndex =
-            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-        }
-      } else {
-        groupIndex = quoteLengths[0];
-        if (quotes.groups[groupIndex].length === 0) {
-          Notifications.add("No quotes found for selected quote length", 0);
-          TestUI.setTestRestarting(false);
-          return;
-        }
+      const randomQuote = QuotesController.getRandomQuote();
+      if (randomQuote === null) {
+        Notifications.add("No quotes found for selected quote length", 0);
+        TestUI.setTestRestarting(false);
+        return;
       }
 
-      rq = quotes.groups[groupIndex][
-        Math.floor(Math.random() * quotes.groups[groupIndex].length)
-      ] as MonkeyTypes.Quote;
-      if (
-        TestWords.randomQuote != null &&
-        typeof rq !== "number" &&
-        rq.id === TestWords.randomQuote.id
-      ) {
-        rq = quotes.groups[groupIndex][
-          Math.floor(Math.random() * quotes.groups[groupIndex].length)
-        ] as MonkeyTypes.Quote;
-      }
+      rq = randomQuote;
     }
 
     if (rq === undefined) return;
