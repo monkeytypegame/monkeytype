@@ -57,3 +57,16 @@ export async function getFunbox(
     return element.name == funbox;
   });
 }
+
+type Font = { name: string; display?: string };
+const fontsPromise = getJSON("fonts/_list.json") as Promise<Font[]>;
+
+export async function getFonts(): Promise<Font[]> {
+  return (await fontsPromise).sort(function (a: Font, b: Font) {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
+  });
+}

@@ -179,7 +179,7 @@ const commandsFonts: MonkeyTypes.CommandsGroup = {
   list: [],
 };
 
-Misc.getFontsList().then((fonts) => {
+JSONLists.getFonts().then((fonts) => {
   fonts.forEach((font) => {
     commandsFonts.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),

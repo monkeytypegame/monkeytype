@@ -122,26 +122,6 @@ export function getJSON(url: string): Promise<any> {
   });
 }
 
-type Font = { name: string; display?: string };
-
-let fontsList: Font[] = [];
-export async function getFontsList(): Promise<Font[]> {
-  if (fontsList.length === 0) {
-    return $.getJSON("fonts/_list.json", function (data) {
-      fontsList = data.sort(function (a: Font, b: Font) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return fontsList;
-    });
-  } else {
-    return fontsList;
-  }
-}
-
 let supportersList: string[] = [];
 export async function getSupportersList(): Promise<string[]> {
   if (supportersList.length === 0) {

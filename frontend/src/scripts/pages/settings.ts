@@ -499,7 +499,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   let isCustomFont = true;
   const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  Misc.getFontsList().then((fonts) => {
+  JSONLists.getFonts().then((fonts) => {
     fonts.forEach((font) => {
       if (Config.fontFamily === font.name) isCustomFont = false;
       fontsEl.append(
