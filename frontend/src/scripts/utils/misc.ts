@@ -1002,8 +1002,8 @@ export function randomElementFromArray<T>(array: T[]): T {
   return array[randomIntFromRange(0, array.length - 1)];
 }
 
-export function randomElementFromObject(object: {
-  [key: string]: unknown;
-}): typeof object[0] {
+export function randomElementFromObject<T extends object>(
+  object: T
+): T[keyof T] {
   return randomElementFromArray(Object.values(object));
 }
