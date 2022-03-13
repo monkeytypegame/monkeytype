@@ -5,7 +5,11 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
-import { getFunbox, getFunboxes } from "../controllers/json-lists-controller";
+import {
+  getFunbox,
+  getFunboxes,
+  getLanguage,
+} from "../controllers/json-lists-controller";
 
 let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
 let memoryTimer: number | null = null;
@@ -128,7 +132,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
+  if ((await getLanguage(Config.language)).ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",

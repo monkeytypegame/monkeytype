@@ -3,6 +3,7 @@ import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "../states/test-active";
+import { getLanguage } from "../controllers/json-lists-controller";
 
 export let caretAnimating = true;
 
@@ -67,7 +68,7 @@ export async function updatePosition(): Promise<void> {
   }
 
   if (Config.mode != "zen" && $(currentLetter).length == 0) return;
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const currentLanguage = await getLanguage(Config.language);
   const isLanguageLeftToRight = currentLanguage.leftToRight;
   const currentLetterPosLeft = isLanguageLeftToRight
     ? currentLetter.offsetLeft

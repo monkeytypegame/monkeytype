@@ -82,3 +82,54 @@ const contributorsPromise = getJSON("about/contributors.json") as Promise<
 export async function getContributors(): Promise<string[]> {
   return await contributorsPromise;
 }
+
+const languagesPromise = getJSON("languages/_list.json") as Promise<string[]>;
+export async function getLanguages(): Promise<string[]> {
+  return await languagesPromise;
+}
+
+const languageGroupsPromise = getJSON("languages/_groups.json") as Promise<
+  MonkeyTypes.LanguageGroup[]
+>;
+export async function getLanguageGroups(): Promise<
+  MonkeyTypes.LanguageGroup[]
+> {
+  return await languageGroupsPromise;
+}
+
+let currentLanguage: MonkeyTypes.LanguageObject | undefined;
+let currentLanguagePromise: Promise<MonkeyTypes.LanguageObject> | undefined;
+export async function getLanguage(
+  lang: string
+): Promise<MonkeyTypes.LanguageObject> {
+  try {
+    if (!currentLanguage || currentLanguage.name !== lang) {
+      currentLanguagePromise = getJSON(
+        `languages/${lang}.json`
+      ) as Promise<MonkeyTypes.LanguageObject>;
+    }
+    return (await currentLanguagePromise) as MonkeyTypes.LanguageObject;
+  } catch (e) {
+    console.error(`error getting language`);
+    console.error(e);
+    currentLanguagePromise = getJSON(
+      `languages/english.json`
+    ) as Promise<MonkeyTypes.LanguageObject>;
+    return await currentLanguagePromise;
+  }
+}
+
+export async function getLanguageGroup(
+  language: string
+): Promise<MonkeyTypes.LanguageGroup | undefined> {
+  let retgroup: MonkeyTypes.LanguageGroup | undefined;
+  const groups = await getLanguageGroups();
+  groups.forEach((group) => {
+    if (retgroup === undefined) {
+      if (group.languages.includes(language)) {
+        retgroup = group;
+      }
+    }
+  });
+  return retgroup;
+}

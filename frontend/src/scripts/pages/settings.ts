@@ -1,7 +1,6 @@
 import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
-import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -403,7 +402,7 @@ export async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
-  const groups = await Misc.getLanguageGroups();
+  const groups = await JSONLists.getLanguageGroups();
   groups.forEach((group) => {
     let langComboBox = `<optgroup label="${group.name}">`;
     group.languages.forEach((language: string) => {

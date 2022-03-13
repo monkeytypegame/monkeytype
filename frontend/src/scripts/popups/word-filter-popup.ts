@@ -1,12 +1,16 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
+import {
+  getLanguages,
+  getLanguage,
+} from "../controllers/json-lists-controller";
 
 let initialised = false;
 
 async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
-    const LanguageList = await Misc.getLanguageList();
+    const LanguageList = await getLanguages();
     LanguageList.forEach((language) => {
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
@@ -42,7 +46,7 @@ async function filter(language: string): Promise<string[]> {
   filterout = filterout.replace(/\s+/gi, "|");
   const regexcl = new RegExp(filterout, "i");
   const filteredWords = [];
-  const languageWordList = await Misc.getLanguage(language);
+  const languageWordList = await getLanguage(language);
   const maxLengthInput = $("#wordFilterPopup .wordMaxInput").val() as string;
   const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
   let maxLength;

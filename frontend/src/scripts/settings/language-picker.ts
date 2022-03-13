@@ -1,5 +1,8 @@
-import * as Misc from "../utils/misc";
 import Config, * as UpdateConfig from "../config";
+import {
+  getLanguageGroup,
+  getLanguageGroups,
+} from "../controllers/json-lists-controller";
 
 export async function setActiveGroup(
   groupName: string | undefined,
@@ -8,9 +11,9 @@ export async function setActiveGroup(
   let currentGroup: MonkeyTypes.LanguageGroup | undefined;
 
   if (groupName === undefined) {
-    currentGroup = await Misc.findCurrentGroup(Config.language);
+    currentGroup = await getLanguageGroup(Config.language);
   } else {
-    const groups: MonkeyTypes.LanguageGroup[] = await Misc.getLanguageGroups();
+    const groups: MonkeyTypes.LanguageGroup[] = await getLanguageGroups();
     groups.forEach((g: MonkeyTypes.LanguageGroup) => {
       if (g.name === groupName) {
         currentGroup = g;

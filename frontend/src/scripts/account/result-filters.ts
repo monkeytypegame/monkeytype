@@ -1,4 +1,3 @@
-import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
@@ -509,7 +508,7 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
-Misc.getLanguageList().then((languages) => {
+JSONLists.getLanguages().then((languages) => {
   languages.forEach((language) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"

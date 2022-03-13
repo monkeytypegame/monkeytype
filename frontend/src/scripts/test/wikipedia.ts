@@ -1,5 +1,5 @@
 import * as Loader from "../elements/loader";
-import * as Misc from "../utils/misc";
+import { getLanguageGroup } from "../controllers/json-lists-controller";
 
 export class Section {
   public title: string;
@@ -60,7 +60,7 @@ export async function getSection(language: string): Promise<Section> {
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
-  const currentLanguageGroup = await Misc.findCurrentGroup(language);
+  const currentLanguageGroup = await getLanguageGroup(language);
   if (currentLanguageGroup !== undefined) {
     urlTLD = await getTLD(currentLanguageGroup);
   }

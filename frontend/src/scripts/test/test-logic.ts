@@ -49,6 +49,7 @@ import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import NodeObjectHash from "node-object-hash";
+import { getLanguage } from "../controllers/json-lists-controller";
 
 const objecthash = NodeObjectHash().hash;
 
@@ -718,14 +719,14 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
-  let language = await Misc.getLanguage(Config.language);
+  let language = await getLanguage(Config.language);
   if (language && language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
   }
 
   if (!language) {
     UpdateConfig.setLanguage("english");
-    language = await Misc.getLanguage(Config.language);
+    language = await getLanguage(Config.language);
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
@@ -1069,10 +1070,10 @@ export async function addWord(): Promise<void> {
 
   const language: MonkeyTypes.LanguageObject =
     Config.mode !== "custom"
-      ? await Misc.getCurrentLanguage(Config.language)
+      ? await getLanguage(Config.language)
       : {
           //borrow the direction of the current language
-          ...(await Misc.getCurrentLanguage(Config.language)),
+          ...(await getLanguage(Config.language)),
           words: CustomText.text,
         };
   const wordset = Wordset.withWords(language.words, Config.funbox);

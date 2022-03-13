@@ -126,7 +126,7 @@ const commandsLanguages: MonkeyTypes.CommandsGroup = {
 };
 
 commandsLanguages.list = [];
-Misc.getLanguageList().then((languages) => {
+JSONLists.getLanguages().then((languages) => {
   languages.forEach((language) => {
     commandsLanguages.list.push({
       id: "changeLanguage" + Misc.capitalizeFirstLetterOfEachWord(language),
