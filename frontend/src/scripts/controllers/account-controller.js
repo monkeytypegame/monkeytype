@@ -23,6 +23,7 @@ import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
+import { getLanguages, getFunboxes } from "./json-lists-controller";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -85,7 +86,7 @@ export async function getDataAndInit() {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
+  Promise.all([getLanguages(), getFunboxes()]).then((values) => {
     let languages = values[0];
     let funboxModes = values[1];
     languages.forEach((language) => {
