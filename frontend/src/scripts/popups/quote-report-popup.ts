@@ -3,7 +3,7 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as Misc from "../utils/misc";
+import QuotesController from "../controllers/quotes-controller";
 
 const CAPTCHA_ID = 1;
 
@@ -37,7 +37,7 @@ export async function show(options = defaultOptions): Promise<void> {
 
     state.previousPopupShowCallback = previousPopupShowCallback;
 
-    const { quotes } = await Misc.getQuotes(Config.language);
+    const { quotes } = await QuotesController.getQuotes(Config.language);
     state.quoteToReport = quotes.find((quote) => {
       return quote.id === quoteId;
     });
