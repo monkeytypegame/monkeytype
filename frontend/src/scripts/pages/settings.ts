@@ -393,6 +393,7 @@ export function reset(): void {
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
 
+let groupsInitialized = false;
 export async function fillSettingsPage(): Promise<void> {
   if (Config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
@@ -402,8 +403,8 @@ export async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
-  const groups = await Misc.getLanguageGroups();
-  groups.forEach((group) => {
+  const languageGroups = await Misc.getLanguageGroups();
+  languageGroups.forEach((group) => {
     let langComboBox = `<optgroup label="${group.name}">`;
     group.languages.forEach((language: string) => {
       langComboBox += `<option value="${language}">
@@ -532,7 +533,14 @@ export async function fillSettingsPage(): Promise<void> {
   );
 
   setEventDisabled(true);
-  await initGroups();
+  if (!groupsInitialized) {
+    await initGroups();
+    groupsInitialized = true;
+  } else {
+    Object.keys(groups).forEach((groupKey) => {
+      groups[groupKey].updateInput();
+    });
+  }
   setEventDisabled(false);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;

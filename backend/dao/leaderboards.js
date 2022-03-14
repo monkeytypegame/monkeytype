@@ -1,6 +1,7 @@
 import db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
+import { setLeaderboard } from "../utils/prometheus";
 
 const leaderboardUpdating = {};
 
@@ -123,6 +124,13 @@ class LeaderboardsDAO {
       `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s`,
       uid
     );
+
+    setLeaderboard(language, mode, mode2, [
+      timeToRunAggregate,
+      timeToRunLoop,
+      timeToRunInsert,
+      timeToRunIndex,
+    ]);
 
     if (retval) {
       return {

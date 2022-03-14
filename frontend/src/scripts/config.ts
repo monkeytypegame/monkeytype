@@ -42,18 +42,35 @@ async function saveToLocalStorage(
 
   if (nosave) return;
 
-  const dbToSave = {} as MonkeyTypes.Config;
-  (dbToSave[key] as typeof config[typeof key]) = config[key];
   const localToSave = config;
   delete localToSave.resultFilters;
-  delete dbToSave.resultFilters;
 
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
-    await DB.saveConfig(dbToSave);
+    // await DB.saveConfig(dbToSave);
+    await saveToDatabase(key);
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
+}
+
+let configToSend = {} as MonkeyTypes.Config;
+let saveTimeout: NodeJS.Timeout | null = null;
+async function saveToDatabase(key: keyof MonkeyTypes.Config): Promise<void> {
+  (configToSend[key] as typeof config[typeof key]) = config[key];
+
+  if (saveTimeout === null) {
+    saveTimeout = setTimeout(
+      async () => {
+        delete configToSend.resultFilters;
+        if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
+        configToSend = {} as MonkeyTypes.Config;
+        clearTimeout(saveTimeout as NodeJS.Timeout);
+        saveTimeout = null;
+      },
+      window.location.hostname === "localhost" ? 0 : 500
+    );
+  }
 }
 
 export async function saveFullConfigToLocalStorage(
@@ -1278,7 +1295,6 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    setCustomTheme(true);
     if (firebase.auth().currentUser === null) {
       config.randomTheme = val;
       return false;
@@ -1290,7 +1306,6 @@ export function setRandomTheme(
       return false;
     }
   }
-  if (val !== "off" && val !== "custom") setCustomTheme(false);
 
   config.randomTheme = val;
   saveToLocalStorage("randomTheme", nosave);

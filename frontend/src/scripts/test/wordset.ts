@@ -1,3 +1,5 @@
+import { randomElementFromArray, randomIntFromRange } from "../utils/misc";
+
 let currentWordset: Wordset | null = null;
 let currentWordGenerator: WordGenerator | null = null;
 
@@ -10,7 +12,7 @@ export class Wordset {
   }
 
   public randomWord(): string {
-    return this.words[Math.floor(Math.random() * this.length)];
+    return randomElementFromArray(this.words);
   }
 }
 
@@ -34,7 +36,7 @@ class CharDistribution {
   }
 
   public randomChar(): string {
-    const randomIndex = Math.floor(Math.random() * this.count);
+    const randomIndex = randomIntFromRange(0, this.count - 1);
     let runningCount = 0;
     for (const [char, charCount] of Object.entries(this.chars)) {
       runningCount += charCount;

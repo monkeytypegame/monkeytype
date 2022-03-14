@@ -132,60 +132,6 @@ export async function getFunbox(
   });
 }
 
-type QuoteCollection = {
-  quotes: MonkeyTypes.Quote[];
-  length?: number;
-  language?: string;
-  groups: number[][] | MonkeyTypes.Quote[][];
-};
-
-let quotes: QuoteCollection;
-export async function getQuotes(language: string): Promise<QuoteCollection> {
-  if (
-    quotes === undefined ||
-    quotes.language !== language.replace(/_\d*k$/g, "")
-  ) {
-    Loader.show();
-    try {
-      const data: QuoteCollection = await $.getJSON(`quotes/${language}.json`);
-      Loader.hide();
-      if (data.quotes === undefined || data.quotes.length === 0) {
-        quotes = {
-          quotes: [],
-          length: 0,
-          groups: [],
-        };
-        return quotes;
-      }
-      quotes = data;
-      quotes.length = data.quotes.length;
-      quotes.groups?.forEach((qg, i) => {
-        const lower = qg[0];
-        const upper = qg[1];
-        quotes.groups[i] = quotes.quotes.filter((q) => {
-          if (q.length >= lower && q.length <= upper) {
-            q.group = i;
-            return true;
-          } else {
-            return false;
-          }
-        });
-      });
-      return quotes;
-    } catch {
-      Loader.hide();
-      quotes = {
-        quotes: [],
-        length: 0,
-        groups: [],
-      };
-      return quotes;
-    }
-  } else {
-    return quotes;
-  }
-}
-
 let layoutsList: MonkeyTypes.Layouts = {};
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   if (Object.keys(layoutsList).length === 0) {
@@ -513,10 +459,10 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
 }
 
 export function getGibberish(): string {
-  const randLen = Math.floor(Math.random() * 7) + 1;
+  const randLen = randomIntFromRange(1, 7);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    ret += String.fromCharCode(97 + randomIntFromRange(0, 25));
   }
   return ret;
 }
@@ -546,17 +492,17 @@ export function secondsToString(
 }
 
 export function getNumbers(len: number): string {
-  const randLen = Math.floor(Math.random() * len) + 1;
+  const randLen = randomIntFromRange(1, len);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    const randomNum = Math.floor(Math.random() * 10);
+    const randomNum = randomIntFromRange(0, 9);
     ret += randomNum.toString();
   }
   return ret;
 }
 
 export function getSpecials(): string {
-  const randLen = Math.floor(Math.random() * 7) + 1;
+  const randLen = randomIntFromRange(1, 7);
   let ret = "";
   const specials = [
     "!",
@@ -584,17 +530,17 @@ export function getSpecials(): string {
     "|",
   ];
   for (let i = 0; i < randLen; i++) {
-    ret += specials[Math.floor(Math.random() * specials.length)];
+    ret += randomElementFromArray(specials);
   }
   return ret;
 }
 
 export function getASCII(): string {
-  const randLen = Math.floor(Math.random() * 10) + 1;
+  const randLen = randomIntFromRange(1, 10);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    let ran = 33 + Math.floor(Math.random() * 94);
-    while (ran == 96 || ran == 94) ran = 33 + Math.floor(Math.random() * 94); //todo remove when input rewrite is fixed
+    let ran = 33 + randomIntFromRange(0, 93);
+    while (ran == 96 || ran == 94) ran = 33 + randomIntFromRange(0, 93); //todo remove when input rewrite is fixed
     ret += String.fromCharCode(ran);
   }
   return ret;
@@ -605,9 +551,9 @@ export function getArrows(): string {
   let arrowWord = "";
   let lastchar;
   for (let i = 0; i < 5; i++) {
-    let random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+    let random = randomElementFromArray(arrowArray);
     while (random === lastchar) {
-      random = arrowArray[Math.floor(Math.random() * arrowArray.length)];
+      random = randomElementFromArray(arrowArray);
     }
     lastchar = random;
     arrowWord += random;
@@ -1024,4 +970,40 @@ export async function downloadResultsCSV(
   link.click();
   link.remove();
   Loader.hide();
+}
+
+/**
+ * Gets an integer between min and max, both are inclusive.
+ * @param min
+ * @param max
+ * @returns Random integer betwen min and max.
+ */
+export function randomIntFromRange(min: number, max: number): number {
+  const minNorm = Math.ceil(min);
+  const maxNorm = Math.floor(max);
+  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
+}
+
+/**
+ * Shuffle an array of elements using the Fisher–Yates algorithm.
+ * This function mutates the input array.
+ * @param elements
+ */
+export function shuffle<T>(elements: T[]): void {
+  for (let i = elements.length - 1; i > 0; --i) {
+    const j = randomIntFromRange(0, i);
+    const temp = elements[j];
+    elements[j] = elements[i];
+    elements[i] = temp;
+  }
+}
+
+export function randomElementFromArray<T>(array: T[]): T {
+  return array[randomIntFromRange(0, array.length - 1)];
+}
+
+export function randomElementFromObject<T extends object>(
+  object: T
+): T[keyof T] {
+  return randomElementFromArray(Object.values(object));
 }
