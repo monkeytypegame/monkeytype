@@ -1295,7 +1295,6 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    setCustomTheme(true, nosave);
     if (firebase.auth().currentUser === null) {
       config.randomTheme = val;
       return false;
@@ -1307,7 +1306,6 @@ export function setRandomTheme(
       return false;
     }
   }
-  if (val !== "off" && val !== "custom") setCustomTheme(false);
 
   config.randomTheme = val;
   saveToLocalStorage("randomTheme", nosave);
