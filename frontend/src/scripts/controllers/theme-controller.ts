@@ -223,6 +223,11 @@ export function randomizeTheme(): void {
 
 export function clearRandom(): void {
   randomTheme = null;
+  if (Config.customTheme) {
+    apply("custom", true);
+  } else {
+    apply(Config.theme, false);
+  }
 }
 
 export function applyCustomBackgroundSize(): void {
