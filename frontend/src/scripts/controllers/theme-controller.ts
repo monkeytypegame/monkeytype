@@ -222,6 +222,7 @@ export function randomizeTheme(): void {
 }
 
 export function clearRandom(): void {
+  if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {
     apply("custom", true);
