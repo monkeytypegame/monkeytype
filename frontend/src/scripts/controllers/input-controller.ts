@@ -662,7 +662,7 @@ function handleTab(event: JQuery.KeyDownEvent): void {
   }
 }
 
-$(document).keydown(async (event) => {
+$(document).on("keydown", async (event) => {
   if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
@@ -818,7 +818,7 @@ $(document).keydown(async (event) => {
   }
 });
 
-$("#wordsInput").keyup((event) => {
+$("#wordsInput").on("keyup", (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
     return;
