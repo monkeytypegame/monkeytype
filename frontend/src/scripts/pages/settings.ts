@@ -1033,6 +1033,10 @@ export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
 ConfigEvent.subscribe((eventKey) => {
+  if (eventKey === "fullConfigChange") setEventDisabled(true);
+  if (eventKey === "fullConfigChangeFinished") {
+    setEventDisabled(false);
+  }
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
     update();

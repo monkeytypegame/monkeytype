@@ -1902,10 +1902,8 @@ export function apply(
 }
 
 export function reset(): void {
-  config = {
-    ...DefaultConfig,
-  };
-  apply(config);
+  ConfigEvent.dispatch("fullConfigChange");
+  apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
 
