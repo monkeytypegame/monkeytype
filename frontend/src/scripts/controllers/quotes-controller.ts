@@ -63,6 +63,7 @@ class QuotesController {
             length: quote.length,
             id: quote.id,
             language: language,
+            group: 0,
           };
 
           this.quoteCollection.quotes.push(monkeyTypeQuote);

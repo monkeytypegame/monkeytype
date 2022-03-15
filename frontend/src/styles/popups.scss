@@ -446,6 +446,13 @@
       }
     }
 
+    #quoteSearchControlsWrapper {
+      #searchBox {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+    }
+
     #extraResults {
       text-align: center;
       color: var(--sub-color);
