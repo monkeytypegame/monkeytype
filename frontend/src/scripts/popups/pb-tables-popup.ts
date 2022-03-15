@@ -1,4 +1,5 @@
 import * as DB from "../db";
+import { format } from "date-fns";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
@@ -40,11 +41,12 @@ function update(mode: MonkeyTypes.Mode): void {
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pb.timestamp);
     if (pb.timestamp) {
       dateText =
-        moment(pb.timestamp).format("DD MMM YYYY") +
+        format(date, "DD MMM YYYY") +
         "<br><div class='sub'>" +
-        moment(pb.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     $("#pbTablesPopup table tbody").append(`
