@@ -226,8 +226,11 @@ export function hide(noAnim = false, focusWords = true): void {
         noAnim ? 0 : 100,
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
+
           if (focusWords) {
             TestUI.focusWords();
+            $("#quoteSearchPopup .quoteLengthFilter").val([]);
+            $("#quoteSearchPopup .quoteLengthFilter").trigger("change");
           }
         }
       );
@@ -254,13 +257,11 @@ export function apply(val: number): boolean {
   return ret;
 }
 
-const debouncedSearch = debounce(updateResults);
-
-function searchForQuotes(): void {
+const searchForQuotes = debounce((): void => {
   const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
     .value;
-  debouncedSearch(searchText);
-}
+  updateResults(searchText);
+});
 
 $("#quoteSearchPopup .searchBox").on("keyup", (e) => {
   if (e.code === "Escape") return;
