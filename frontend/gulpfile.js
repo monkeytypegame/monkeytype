@@ -5,8 +5,6 @@ const del = require("del");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint-new");
 const sass = require("gulp-sass")(require("dart-sass"));
-const replace = require("gulp-replace");
-const through2 = require("through2");
 const { webpack } = require("webpack");
 const webpackDevConfig = require("./webpack.config.dev.js");
 const webpackProdConfig = require("./webpack.config.prod.js");
@@ -86,43 +84,7 @@ task("sass", function () {
     .pipe(dest("public/css"));
 });
 
-task("updateSwCacheName", function () {
-  const date = new Date();
-  const dateString =
-    date.getFullYear() +
-    "-" +
-    (date.getMonth() + 1) +
-    "-" +
-    date.getDate() +
-    "-" +
-    date.getHours() +
-    "-" +
-    date.getMinutes() +
-    "-" +
-    date.getSeconds();
-
-  return src(["static/sw.js"])
-    .pipe(
-      replace(
-        /const staticCacheName = .*;/g,
-        `const staticCacheName = "sw-cache-${dateString}";`
-      )
-    )
-    .pipe(
-      through2.obj(function (file, enc, cb) {
-        const date = new Date();
-        file.stat.atime = date;
-        file.stat.mtime = date;
-        cb(null, file);
-      })
-    )
-    .pipe(dest("./public/"));
-});
-
-task(
-  "compile",
-  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
-);
+task("compile", series("lint", "lint-json", "webpack", "static", "sass"));
 
 task(
   "compile-production",
@@ -132,8 +94,7 @@ task(
     "validate-json-schema",
     "webpack-production",
     "static",
-    "sass",
-    "updateSwCacheName"
+    "sass"
   )
 );
 
