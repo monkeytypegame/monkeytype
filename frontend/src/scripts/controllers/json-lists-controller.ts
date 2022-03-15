@@ -20,11 +20,7 @@ const themesPromise = getJSON("themes/_list.json") as Promise<Theme[]>;
 
 export async function getThemes(): Promise<Theme[]> {
   return (await themesPromise).sort(function (a: Theme, b: Theme) {
-    const nameA = a.name.toLowerCase();
-    const nameB = b.name.toLowerCase();
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
+    return a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase());
   });
 }
 
@@ -42,11 +38,7 @@ const funboxPromise = getJSON("funbox/_list.json") as Promise<
 
 export async function getFunboxes(): Promise<MonkeyTypes.FunboxObject[]> {
   return (await funboxPromise).sort(function (a, b) {
-    const nameA = a.name.toLowerCase();
-    const nameB = b.name.toLowerCase();
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
+    return a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase());
   });
 }
 
@@ -63,11 +55,7 @@ const fontsPromise = getJSON("fonts/_list.json") as Promise<Font[]>;
 
 export async function getFonts(): Promise<Font[]> {
   return (await fontsPromise).sort(function (a: Font, b: Font) {
-    const nameA = a.name.toLowerCase();
-    const nameB = b.name.toLowerCase();
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
+    return a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase());
   });
 }
 
