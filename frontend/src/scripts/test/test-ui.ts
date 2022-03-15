@@ -11,6 +11,7 @@ import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
+import { format } from "date-fns";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -220,16 +221,17 @@ export async function screenshot(): Promise<void> {
     revealReplay = true;
     Replay.pauseReplay();
   }
+  const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
   $(".pageTest .ssWatermark").text(
-    moment(Date.now()).format("DD MMM YYYY HH:mm") + " | monkeytype.com "
+    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
   if (firebase.auth().currentUser != null) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot().name +
         " | " +
-        moment(Date.now()).format("DD MMM YYYY HH:mm") +
+        format(dateNow, "dd MMM yyyy HH:mm") +
         " | monkeytype.com  "
     );
   }
