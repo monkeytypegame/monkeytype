@@ -182,3 +182,20 @@ input[type="number"] {
 .select2-container--default .select2-results__group {
   color: var(--text-color);
 }
+
+.select2-container--default .select2-selection--multiple {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  outline: none;
+  border: none;
+}
+
+.select2-selection__choice__display {
+  background-color: var(--sub-color);
+  color: var(--text-color);
+}
+
+.select2-selection__choice__remove {
+  color: var(--main-color) !important;
+}
