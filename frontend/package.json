@@ -40,7 +40,6 @@
     "gulp-typescript": "^6.0.0-alpha.1",
     "html2canvas": "^1.4.1",
     "madge": "5.0.1",
-    "moment": "^2.29.1",
     "stream-browserify": "^3.0.0",
     "ts-loader": "9.2.6",
     "tsify": "^5.0.4",
