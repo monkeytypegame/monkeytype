@@ -1,4 +1,5 @@
 import * as Loader from "../elements/loader";
+import { format } from "date-fns";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -351,8 +352,9 @@ export async function getReleasesFromGitHub(): Promise<
           $("#versionHistory .releases").append(`
           <div class="release">
             <div class="title">${release.name}</div>
-            <div class="date">${moment(release.published_at).format(
-              "DD MMM YYYY"
+            <div class="date">${format(
+              new Date(release.published_at),
+              "dd MMM yyyy"
             )}</div>
             <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
           </div>
