@@ -54,6 +54,70 @@ function highlightMatches(text: string, matchedText: string[]): string {
   return normalizedWords.join("");
 }
 
+function applyQuoteLengthFilter(
+  quotes: MonkeyTypes.Quote[]
+): MonkeyTypes.Quote[] {
+  const quoteLengthFilterValue = $(
+    "#quoteSearchPopup .quoteLengthFilter"
+  ).val() as string[];
+  if (quoteLengthFilterValue.length === 0) {
+    return quotes;
+  }
+
+  const quoteLengthFilter = quoteLengthFilterValue.map((filterValue) =>
+    parseInt(filterValue, 10)
+  );
+  const filteredQuotes = quotes.filter((quote) =>
+    quoteLengthFilter.includes(quote.group)
+  );
+
+  return filteredQuotes;
+}
+
+function buildQuoteSearchResult(
+  quote: MonkeyTypes.Quote,
+  matchedSearchTerms: string[]
+): string {
+  let lengthDesc;
+  if (quote.length < 101) {
+    lengthDesc = "short";
+  } else if (quote.length < 301) {
+    lengthDesc = "medium";
+  } else if (quote.length < 601) {
+    lengthDesc = "long";
+  } else {
+    lengthDesc = "thicc";
+  }
+
+  const isNotAuthed = !firebase.auth().currentUser;
+
+  return `
+  <div class="searchResult" id="${quote.id}">
+    <div class="text">
+      ${highlightMatches(quote.text, matchedSearchTerms)}
+    </div>
+    <div class="id">
+      <div class="sub">id</div>
+      <span class="quote-id">
+        ${highlightMatches(quote.id.toString(), matchedSearchTerms)}
+      </span>
+    </div>
+    <div class="length">
+      <div class="sub">length</div>
+      ${lengthDesc}
+    </div>
+    <div class="source">
+      <div class="sub">source</div>
+      ${highlightMatches(quote.source, matchedSearchTerms)}</div>
+    <div class="icon-button report ${
+      isNotAuthed && "hidden"
+    }" aria-label="Report quote" data-balloon-pos="left">
+      <i class="fas fa-flag report"></i>
+    </div>
+  </div>
+  `;
+}
+
 async function updateResults(searchText: string): Promise<void> {
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
@@ -67,58 +131,25 @@ async function updateResults(searchText: string): Promise<void> {
   const { results: matches, matchedQueryTerms } =
     quoteSearchService.query(searchText);
 
-  $("#quoteSearchResults").remove();
-  $("#quoteSearchPopup").append(
-    '<div class="quoteSearchResults" id="quoteSearchResults"></div>'
+  const quotesToShow = applyQuoteLengthFilter(
+    searchText === "" ? quotes : matches
   );
 
   const resultsList = $("#quoteSearchResults");
-  const isNotAuthed = !firebase.auth().currentUser;
-
-  const quotesToShow = searchText === "" ? quotes : matches;
+  resultsList.empty();
 
   quotesToShow.slice(0, 100).forEach((quote) => {
-    let lengthDesc;
-    if (quote.length < 101) {
-      lengthDesc = "short";
-    } else if (quote.length < 301) {
-      lengthDesc = "medium";
-    } else if (quote.length < 601) {
-      lengthDesc = "long";
-    } else {
-      lengthDesc = "thicc";
-    }
-    resultsList.append(`
-      <div class="searchResult" id="${quote.id}">
-        <div class="text">${highlightMatches(
-          quote.text,
-          matchedQueryTerms
-        )}</div>
-        <div class="id"><div class="sub">id</div><span class="quote-id">${highlightMatches(
-          quote.id.toString(),
-          matchedQueryTerms
-        )}</span></div>
-        <div class="length"><div class="sub">length</div>${lengthDesc}</div>
-        <div class="source"><div class="sub">source</div>${highlightMatches(
-          quote.source,
-          matchedQueryTerms
-        )}</div>
-        <div class="icon-button report ${
-          isNotAuthed && "hidden"
-        }" aria-label="Report quote" data-balloon-pos="left">
-          <i class="fas fa-flag report"></i>
-        </div>
-      </div>
-      `);
+    const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
+    resultsList.append(quoteSearchResult);
   });
-  if (quotesToShow.length > 100) {
-    $("#extraResults").html(
-      quotesToShow.length +
-        " results <span style='opacity: 0.5'>(only showing 100)</span>"
-    );
-  } else {
-    $("#extraResults").html(quotesToShow.length + " results");
-  }
+
+  const resultsExceededText =
+    quotesToShow.length > 100
+      ? "<span style='opacity: 0.5'>(only showing 100)</span>"
+      : "";
+  $("#extraResults").html(
+    `${quotesToShow.length} results ${resultsExceededText}`
+  );
 }
 
 export async function show(clearText = true): Promise<void> {
@@ -140,6 +171,35 @@ export async function show(clearText = true): Promise<void> {
     } else {
       $("#quoteSearchPopup #goToApproveQuotes").addClass("hidden");
     }
+
+    $("#quoteSearchPopup .quoteLengthFilter").select2({
+      placeholder: "Filter by length",
+      maximumSelectionLength: Infinity,
+      multiple: true,
+      width: "100%",
+      data: [
+        {
+          id: 0,
+          text: "short",
+          selected: false,
+        },
+        {
+          id: 1,
+          text: "medium",
+          selected: false,
+        },
+        {
+          id: 2,
+          text: "long",
+          selected: false,
+        },
+        {
+          id: 3,
+          text: "thicc",
+          selected: false,
+        },
+      ],
+    });
 
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
@@ -166,8 +226,11 @@ export function hide(noAnim = false, focusWords = true): void {
         noAnim ? 0 : 100,
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
+
           if (focusWords) {
             TestUI.focusWords();
+            $("#quoteSearchPopup .quoteLengthFilter").val([]);
+            $("#quoteSearchPopup .quoteLengthFilter").trigger("change");
           }
         }
       );
@@ -194,15 +257,18 @@ export function apply(val: number): boolean {
   return ret;
 }
 
-const debouncedSearch = debounce(updateResults);
+const searchForQuotes = debounce((): void => {
+  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+    .value;
+  updateResults(searchText);
+});
 
 $("#quoteSearchPopup .searchBox").on("keyup", (e) => {
   if (e.code === "Escape") return;
-
-  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
-    .value;
-  debouncedSearch(searchText);
+  searchForQuotes();
 });
+
+$("#quoteSearchPopup .quoteLengthFilter").on("change", searchForQuotes);
 
 $("#quoteSearchPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
@@ -237,7 +303,6 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
   if (len == -2) {
-    // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     show();
   }
 });

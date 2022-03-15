@@ -32,13 +32,18 @@
       }
     }
   }
+  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media only screen and (max-width: 1050px) {
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr 1fr;
   }
-
+  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr;
+  }
   #result .morestats {
     gap: 1rem;
     grid-template-rows: 1fr 1fr;
