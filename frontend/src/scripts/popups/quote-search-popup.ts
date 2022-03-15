@@ -173,7 +173,7 @@ export async function show(clearText = true): Promise<void> {
     }
 
     $("#quoteSearchPopup .quoteLengthFilter").select2({
-      placeholder: "Filter by quote length",
+      placeholder: "Filter by length",
       maximumSelectionLength: Infinity,
       multiple: true,
       width: "100%",
