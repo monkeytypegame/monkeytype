@@ -1500,7 +1500,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
   AccountButton.loading(true);
   completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
+
   completedEvent.hash = objecthash(completedEvent);
+
+  if (
+    (completedEvent.mode === "words" && completedEvent.mode2 == 10) ||
+    completedEvent.mode === "custom"
+  ) {
+    //@ts-ignore
+    completedEvent.stringified = JSON.stringify(completedEvent);
+  }
 
   const response = await Ape.results.save(completedEvent);
 
