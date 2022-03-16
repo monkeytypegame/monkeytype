@@ -152,6 +152,7 @@ class ResultController {
           lastTimestamp: lastResultTimestamp,
           earliestPossible,
           now: nowNoMilis,
+          testDuration: testDurationMilis,
           difference: nowNoMilis - earliestPossible,
         },
         uid
