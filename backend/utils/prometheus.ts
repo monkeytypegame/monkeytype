@@ -144,3 +144,13 @@ export function incrementResult(
 
   resultDuration.observe(res.testDuration);
 }
+
+const clientVersionsCounter = new Counter({
+  name: "api_client_versions",
+  help: "Records frequency of client versions",
+  labelNames: ["version"],
+});
+
+export function recordClientVersion(version: string) : void {
+  clientVersionsCounter.inc({ version });
+}
