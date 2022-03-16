@@ -221,7 +221,6 @@ function toggleFavourite(themeName: string): void {
     UpdateConfig.setFavThemes(newList);
   }
   UpdateConfig.saveFullConfigToLocalStorage();
-  refreshButtons();
 }
 
 export function saveCustomThemeColors(): void {
