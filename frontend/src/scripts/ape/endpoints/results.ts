@@ -1,3 +1,5 @@
+import { CLIENT_VERSION } from "../../version";
+
 const BASE_PATH = "/results";
 
 export default function getResultsEndpoints(
@@ -10,7 +12,10 @@ export default function getResultsEndpoints(
   async function save(
     result: MonkeyTypes.Result<MonkeyTypes.Mode>
   ): Ape.EndpointData {
-    return await apeClient.post(BASE_PATH, { payload: { result } });
+    return await apeClient.post(BASE_PATH, {
+      payload: { result },
+      headers: { "Client-Version": CLIENT_VERSION },
+    });
   }
 
   async function updateTags(
