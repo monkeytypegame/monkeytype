@@ -40,6 +40,7 @@
   }
 
   .leftright {
+    user-select: none;
     display: grid;
     grid-template-columns: auto auto;
     gap: 1rem;
