@@ -1208,11 +1208,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     afkDuration: undefined,
   };
 
-  if (Config.mode !== "time") {
-    delete completedEvent.keySpacing;
-    delete completedEvent.keyDuration;
-  }
-
   // stats
   const stats = TestStats.calculateStats();
   if (stats.time % 1 != 0 && Config.mode !== "time") {
