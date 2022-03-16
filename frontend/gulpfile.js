@@ -5,8 +5,8 @@ const eslint = require("gulp-eslint-new");
 const vinylPaths = require("vinyl-paths");
 const sass = require("gulp-sass")(require("dart-sass"));
 const { task, src, dest, series, watch } = require("gulp");
-const webpackDevConfig = require("./webpack.config.dev.js");
-const webpackProdConfig = require("./webpack.config.prod.js");
+const webpackDevConfig = require("./webpack/config.dev.js");
+const webpackProdConfig = require("./webpack/config.prod.js");
 
 const JSONValidation = require("./json-validation");
 const eslintConfig = "../.eslintrc.json";
@@ -31,10 +31,6 @@ task("lint-json", function () {
 
 task("validate-json-schema", function () {
   return JSONValidation.validateAll();
-});
-
-task("copy-src-contents", function () {
-  return src("./src/scripts/**").pipe(dest("./dist/"));
 });
 
 task("webpack", async function () {
