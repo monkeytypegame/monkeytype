@@ -142,10 +142,10 @@ class ResultController {
 
     result.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
-    //check if now is earlier than last result plus duration
+    //check if now is earlier than last result plus duration (-1 second as a buffer)
     const earliestPossible = lastResultTimestamp + testDurationMilis;
     const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
-    if (lastResultTimestamp && nowNoMilis < earliestPossible) {
+    if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
       Logger.log(
         "invalid_result_spacing",
         {
