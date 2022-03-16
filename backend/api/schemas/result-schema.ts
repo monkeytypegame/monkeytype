@@ -39,7 +39,7 @@ const RESULT_SCHEMA = joi
       .alternatives()
       .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
     lang: joi.string(),
-    strigified: joi.string(),
+    stringified: joi.string(),
     language: joi.string().required(),
     lazyMode: joi.boolean().required(),
     mode: joi
