@@ -10,6 +10,7 @@ import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../utils/monkey-response";
+import { recordClientVersion } from "../../utils/prometheus";
 import { Application, NextFunction, Response, Router } from "express";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
@@ -44,6 +45,11 @@ function addApiRoutes(app: Application): void {
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });
         return;
+      }
+
+      const clientVersion = req.headers["client-version"];
+      if (clientVersion) {
+        recordClientVersion(clientVersion.toString());
       }
 
       requestsProcessed++;

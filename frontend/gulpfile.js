@@ -1,19 +1,15 @@
-const { task, src, dest, series, watch } = require("gulp");
-// const axios = require("axios");
-const concat = require("gulp-concat");
 const del = require("del");
-const vinylPaths = require("vinyl-paths");
-const eslint = require("gulp-eslint-new");
-const sass = require("gulp-sass")(require("dart-sass"));
+const concat = require("gulp-concat");
 const { webpack } = require("webpack");
+const eslint = require("gulp-eslint-new");
+const vinylPaths = require("vinyl-paths");
+const sass = require("gulp-sass")(require("dart-sass"));
+const { task, src, dest, series, watch } = require("gulp");
 const webpackDevConfig = require("./webpack.config.dev.js");
 const webpackProdConfig = require("./webpack.config.prod.js");
-const ts = require("gulp-typescript");
 
 const JSONValidation = require("./json-validation");
-
 const eslintConfig = "../.eslintrc.json";
-const tsProject = ts.createProject("tsconfig.json");
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -39,10 +35,6 @@ task("validate-json-schema", function () {
 
 task("copy-src-contents", function () {
   return src("./src/scripts/**").pipe(dest("./dist/"));
-});
-
-task("transpile-ts", function () {
-  return tsProject.src().pipe(tsProject()).js.pipe(dest("dist"));
 });
 
 task("webpack", async function () {
