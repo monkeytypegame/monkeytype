@@ -1,6 +1,12 @@
 const { merge } = require("webpack-merge");
 const BASE_CONFIGURATION = require("./config.base");
 
+function pad(numbers, maxLength, fillString) {
+  return numbers.map((number) =>
+    number.toString().padStart(maxLength, fillString)
+  );
+}
+
 const PRODUCTION_CONFIGURATION = {
   mode: "production",
   module: {
@@ -12,15 +18,20 @@ const PRODUCTION_CONFIGURATION = {
           search: /^export const CLIENT_VERSION =.*/,
           replace(_match, _p1, _offset, _string) {
             const date = new Date();
-            const dateString = [
-              date.getFullYear(),
-              date.getMonth() + 1,
-              date.getDate(),
-              date.getHours(),
-              date.getMinutes(),
-              date.getSeconds(),
-            ].join("-");
-            return `export const CLIENT_VERSION = "${dateString}";`;
+
+            const versionPrefix = pad(
+              [date.getFullYear(), date.getMonth() + 1, date.getDate()],
+              2,
+              "0"
+            ).join(".");
+            const versionSuffix = pad(
+              [date.getHours(), date.getMinutes()],
+              2,
+              "0"
+            ).join(".");
+            const version = [versionPrefix, versionSuffix].join("_");
+
+            return `export const CLIENT_VERSION = "${version}";`;
           },
           flags: "g",
         },
