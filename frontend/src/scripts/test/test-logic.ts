@@ -1071,7 +1071,7 @@ export async function addWord(): Promise<void> {
 interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   keySpacing: number[] | "toolong";
   keyDuration: number[] | "toolong";
-  customText: MonkeyTypes.CustomText;
+  customText?: MonkeyTypes.CustomText;
   smoothConsistency: number;
   wpmConsistency: number;
   lang: string;
@@ -1500,7 +1500,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   AccountButton.loading(true);
   completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
-  completedEvent.hash = objecthash(completedEvent);
+  const toHash = Object.assign({}, completedEvent);
+  delete toHash.customText;
+  completedEvent.hash = objecthash(toHash);
 
   const response = await Ape.results.save(completedEvent);
 

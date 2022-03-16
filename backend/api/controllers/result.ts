@@ -75,6 +75,7 @@ class ResultController {
     const resulthash = result.hash;
     delete result.hash;
     delete result.strigified;
+    delete result.customText;
     if (
       req.ctx.configuration.resultObjectHashCheck.enabled &&
       resulthash.length === 64
