@@ -142,6 +142,10 @@
     "type": "script",
     "affectsWordGeneration": true,
     "info": "Nonsense words that look like the current language."
+  },
+  {
+    "name": "t9",
+    "type": "script",
+    "info": "The OG input method"
   }
 ]
-
