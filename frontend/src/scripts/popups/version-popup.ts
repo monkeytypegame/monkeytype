@@ -5,7 +5,8 @@ export function show(): void {
     .animate({ opacity: 1 }, 125);
 }
 
-$(document.body).on("click", ".version", () => {
+$(document.body).on("click", ".version", (e) => {
+  if (e.shiftKey) return;
   show();
 });
 
