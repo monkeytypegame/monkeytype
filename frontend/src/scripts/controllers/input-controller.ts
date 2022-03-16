@@ -575,14 +575,12 @@ function handleChar(char: string, charIndex: number): void {
   }
 }
 
-function handleTab(event: JQuery.KeyDownEvent): void {
+function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
+  //todo refactor this mess
   if (TestUI.resultCalculating) {
     event.preventDefault();
   }
-  if (
-    !$("#presetWrapper").hasClass("hidden") ||
-    !$("#tagsWrapper").hasClass("hidden")
-  ) {
+  if (ActivePage.get() !== "test" && popupVisible) {
     event.preventDefault();
     return;
   }
@@ -613,6 +611,10 @@ function handleTab(event: JQuery.KeyDownEvent): void {
       if (Config.quickTab) {
         if (!$("#leaderboardsWrapper").hasClass("hidden")) {
           Leaderboards.hide();
+        }
+        if (popupVisible) {
+          event.preventDefault();
+          return;
         }
         if (
           TestUI.resultVisible ||
@@ -701,7 +703,7 @@ $(document).keydown(async (event) => {
     (event.key == "Tab" && !Config.swapEscAndTab) ||
     (event.key == "Escape" && Config.swapEscAndTab)
   ) {
-    handleTab(event);
+    handleTab(event, popupVisible);
   }
 
   if (!allowTyping) return;
