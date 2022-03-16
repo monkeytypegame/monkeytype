@@ -35,7 +35,7 @@ function updateList(): void {
           <div class="language">Language: ${quote.language}</div>
           <div class="timestamp">Submitted on: ${format(
             new Date(quote.timestamp),
-            "DD MMM YYYY HH:mm"
+            "dd MMM yyyy HH:mm"
           )}</div>
         </div>
       </div>

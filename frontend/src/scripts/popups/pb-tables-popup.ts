@@ -44,7 +44,7 @@ function update(mode: MonkeyTypes.Mode): void {
     const date = new Date(pb.timestamp);
     if (pb.timestamp) {
       dateText =
-        format(date, "DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
         format(date, "HH:mm") +
         "</div>";
