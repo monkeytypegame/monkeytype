@@ -109,8 +109,6 @@ class ResultController {
       );
     }
 
-    result.timestamp = Math.round(result.timestamp / 1000) * 1000;
-
     //dont use - result timestamp is unreliable, can be changed by system time and stuff
     // if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
     //   Logger.log(
@@ -137,28 +135,24 @@ class ResultController {
     //get latest result ordered by timestamp
     let lastResultTimestamp;
     try {
-      lastResultTimestamp =
-        (await ResultDAO.getLastResult(uid)).timestamp - 1000;
+      lastResultTimestamp = (await ResultDAO.getLastResult(uid)).timestamp;
     } catch (e) {
       lastResultTimestamp = null;
     }
 
-    result.timestamp = Math.round(Date.now() / 1000) * 1000;
+    result.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
-    //check if its greater than server time - milis or result time - milis
-    if (
-      lastResultTimestamp &&
-      (lastResultTimestamp + testDurationMilis > result.timestamp ||
-        lastResultTimestamp + testDurationMilis >
-          Math.round(Date.now() / 1000) * 1000)
-    ) {
+    //check if now is earlier than last result plus duration
+    const earliestPossible = lastResultTimestamp + testDurationMilis;
+    const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
+    if (lastResultTimestamp && nowNoMilis < earliestPossible) {
       Logger.log(
         "invalid_result_spacing",
         {
           lastTimestamp: lastResultTimestamp,
-          resultTime: result.timestamp,
-          difference:
-            lastResultTimestamp + testDurationMilis - result.timestamp,
+          earliestPossible,
+          now: nowNoMilis,
+          difference: nowNoMilis - earliestPossible,
         },
         uid
       );
