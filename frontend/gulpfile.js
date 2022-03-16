@@ -72,7 +72,7 @@ task("sass", function () {
     .pipe(dest("public/css"));
 });
 
-task("compile", series("lint-json", "webpack", "static", "sass"));
+task("compile", series("lint", "lint-json", "webpack", "static", "sass"));
 
 task(
   "compile-production",
