@@ -34,12 +34,10 @@ const RESULT_SCHEMA = joi
     keyConsistency: joi.number().required(),
     keyDuration: joi
       .alternatives()
-      .try(joi.array().items(joi.number()), joi.string().valid("toolong"))
-      .required(),
+      .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
     keySpacing: joi
       .alternatives()
-      .try(joi.array().items(joi.number()), joi.string().valid("toolong"))
-      .required(),
+      .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
     lang: joi.string(),
     language: joi.string().required(),
     lazyMode: joi.boolean().required(),
