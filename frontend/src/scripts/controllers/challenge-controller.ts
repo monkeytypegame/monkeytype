@@ -197,6 +197,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
+      CustomText.setIsTimeRandom(false);
       CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
       CustomText.setWord(challenge.parameters[2] as number);
       UpdateConfig.setMode("custom", true);
