@@ -32,6 +32,38 @@ import * as TestWords from "../test/test-words";
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 
+// Rizwan TODO: Create a constant for the timeout
+// Rizwan TODO: Create a variable for last input, last input timing
+const t9Map: Record<string, number> = {
+  " ": 0,
+  A: 2,
+  B: 2,
+  C: 2,
+  D: 3,
+  E: 3,
+  F: 3,
+  G: 4,
+  H: 4,
+  I: 4,
+  J: 5,
+  K: 5,
+  L: 5,
+  M: 6,
+  N: 6,
+  O: 6,
+  P: 7,
+  Q: 7,
+  R: 7,
+  S: 7,
+  T: 8,
+  U: 8,
+  V: 8,
+  W: 9,
+  X: 9,
+  Y: 9,
+  Z: 9,
+};
+
 function setWordsInput(value: string): void {
   // Only change #wordsInput if it's not already the wanted value
   // Avoids Safari triggering unneeded events, causing issues with
@@ -800,6 +832,46 @@ $(document).on("keydown", async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
+    }
+  } else if (Config.funbox === "t9") {
+    // Rizwan TODO: Cancel Space event as well and instead use zero for space
+    // Rizwan TODO: Implement up casing their letters with '#' key
+    // Rizwan TODO: Cancel the input with just shift and the letter
+    // Rizwan TODO: Instead of displaying the wrong number input, display the wrong char event
+    // Rizwan TODO: What if the user presses backspace and then inputs the same number withint the timout period? write code to deal with it
+    // Rizwan TODO: Work on this code and refactor it as well
+    const letterLen = TestInput.input.current.length;
+    const letter = document
+      .querySelector<HTMLElement>("#words .word.active")
+      ?.querySelectorAll("letter")[letterLen];
+    if (letter) {
+      if (/^[0-9]+$/.test(event.key)) {
+        const t9Key = t9Map[letter.textContent?.toUpperCase() as string];
+        console.log(
+          "T9 Mapper: " + t9Map[letter.textContent?.toUpperCase() as string]
+        ); // Rizwan TODO: Remove this debug log;
+        if (t9Key === parseInt(event.key)) {
+          handleChar(
+            letter.textContent as string,
+            TestInput.input.current.length
+          );
+          event.preventDefault();
+          updateUI();
+          setWordsInput(" " + TestInput.input.current);
+          TestInput.input.getHistory();
+        }
+      } else {
+        // Rizwan TODO: Make sure this does not interfere with other functionality
+        if (
+          event.key.length === 1 &&
+          !(event.ctrlKey || event.altKey || event.metaKey)
+        ) {
+          console.log("I was cancelled!"); // Rizwan TODO: Remove this debug log;
+          event.preventDefault();
+        }
+      }
+    } else {
+      console.log("No active letter");
     }
   } else if (
     Config.layout !== "default" &&
