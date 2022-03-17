@@ -1516,6 +1516,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   AccountButton.loading(false);
 
   if (response.status !== 200) {
+    console.log("Error saving result", completedEvent);
     $("#retrySavingResultButton").removeClass("hidden");
     if (response.message === "Incorrect result hash") {
       console.log(completedEvent);
