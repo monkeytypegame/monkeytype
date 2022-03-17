@@ -61,7 +61,7 @@ class ResultController {
 
   static async addResult(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    const { result } = req.body;
+    const result = Object.assign({}, req.body.result);
     result.uid = uid;
     if (result.wpm === result.raw && result.acc !== 100) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
@@ -74,6 +74,7 @@ class ResultController {
 
     const resulthash = result.hash;
     delete result.hash;
+    delete result.stringified;
     if (
       req.ctx.configuration.resultObjectHashCheck.enabled &&
       resulthash.length === 64
@@ -109,8 +110,6 @@ class ResultController {
       );
     }
 
-    result.timestamp = Math.round(result.timestamp / 1000) * 1000;
-
     //dont use - result timestamp is unreliable, can be changed by system time and stuff
     // if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
     //   Logger.log(
@@ -137,28 +136,25 @@ class ResultController {
     //get latest result ordered by timestamp
     let lastResultTimestamp;
     try {
-      lastResultTimestamp =
-        (await ResultDAO.getLastResult(uid)).timestamp - 1000;
+      lastResultTimestamp = (await ResultDAO.getLastResult(uid)).timestamp;
     } catch (e) {
       lastResultTimestamp = null;
     }
 
-    result.timestamp = Math.round(Date.now() / 1000) * 1000;
+    result.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
-    //check if its greater than server time - milis or result time - milis
-    if (
-      lastResultTimestamp &&
-      (lastResultTimestamp + testDurationMilis > result.timestamp ||
-        lastResultTimestamp + testDurationMilis >
-          Math.round(Date.now() / 1000) * 1000)
-    ) {
+    //check if now is earlier than last result plus duration (-1 second as a buffer)
+    const earliestPossible = lastResultTimestamp + testDurationMilis;
+    const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
+    if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
       Logger.log(
         "invalid_result_spacing",
         {
           lastTimestamp: lastResultTimestamp,
-          resultTime: result.timestamp,
-          difference:
-            lastResultTimestamp + testDurationMilis - result.timestamp,
+          earliestPossible,
+          now: nowNoMilis,
+          testDuration: testDurationMilis,
+          difference: nowNoMilis - earliestPossible,
         },
         uid
       );

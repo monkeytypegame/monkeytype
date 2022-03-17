@@ -1,6 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import { format } from "date-fns";
 
 type Quote = {
   _id: string;
@@ -32,8 +33,9 @@ function updateList(): void {
             quote.text.length < 60 ? "red" : ""
           }">Quote length: ${quote.text.length}</div>
           <div class="language">Language: ${quote.language}</div>
-          <div class="timestamp">Submitted on: ${moment(quote.timestamp).format(
-            "DD MMM YYYY HH:mm"
+          <div class="timestamp">Submitted on: ${format(
+            new Date(quote.timestamp),
+            "dd MMM yyyy HH:mm"
           )}</div>
         </div>
       </div>

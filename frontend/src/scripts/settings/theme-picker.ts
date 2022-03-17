@@ -221,7 +221,6 @@ function toggleFavourite(themeName: string): void {
     UpdateConfig.setFavThemes(newList);
   }
   UpdateConfig.saveFullConfigToLocalStorage();
-  refreshButtons();
 }
 
 export function saveCustomThemeColors(): void {
@@ -252,12 +251,22 @@ export function updateActiveTab(forced = false): void {
       $customTabButton.addClass("active");
       refreshButtons();
     }
+    Misc.swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
   } else {
     $customTabButton.removeClass("active");
     if (!$presetTabButton.hasClass("active") || forced) {
       $presetTabButton.addClass("active");
       refreshButtons();
     }
+    Misc.swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
   }
 }
 

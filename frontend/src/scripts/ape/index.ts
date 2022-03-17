@@ -20,6 +20,7 @@ async function adaptRequestOptions(
     params: options.searchQuery,
     data: options.payload,
     headers: {
+      ...options.headers,
       Accept: "application/json",
       "Content-Type": "application/json",
       ...(idToken && { Authorization: `Bearer ${idToken}` }),

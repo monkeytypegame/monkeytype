@@ -446,6 +446,15 @@
       }
     }
 
+    #quoteSearchControlsWrapper {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1rem;
+      #searchBox {
+        width: 100%;
+      }
+    }
+
     #extraResults {
       text-align: center;
       color: var(--sub-color);
@@ -455,6 +464,7 @@
       gap: 0.5rem;
       height: auto;
       overflow-y: scroll;
+      align-content: baseline;
 
       .searchResult {
         display: grid;

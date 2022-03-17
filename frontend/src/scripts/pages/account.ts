@@ -14,6 +14,7 @@ import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
+import { format } from "date-fns";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -149,6 +150,7 @@ function loadMoreLines(lineIndex?: number): void {
       charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
     }
 
+    const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
@@ -160,7 +162,9 @@ function loadMoreLines(lineIndex?: number): void {
     <td>${result.mode} ${result.mode2}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>
-    <td>${moment(result.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
+    <td>${format(date, "dd MMM yyyy")}<br>
+    ${format(date, "HH:mm")}
+    </td>
     </tr>`);
   }
   visibleTableLines = newVisibleLines;

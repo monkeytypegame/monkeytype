@@ -7,7 +7,6 @@
   "globals": {
     "firebase": "readonly",
     "$": "readonly",
-    "moment": "readonly",
     "jQuery": "readonly",
     "html2canvas": "readonly",
     "ClipboardItem": "readonly",

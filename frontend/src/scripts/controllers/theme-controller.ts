@@ -102,18 +102,8 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
   let name = "serika_dark";
   if (!isCustom) {
     name = themeName;
-    Misc.swapElements(
-      $('.pageSettings [tabContent="custom"]'),
-      $('.pageSettings [tabContent="preset"]'),
-      250
-    );
   } else {
     name = "custom";
-    Misc.swapElements(
-      $('.pageSettings [tabContent="preset"]'),
-      $('.pageSettings [tabContent="custom"]'),
-      250
-    );
   }
 
   ThemeColors.reset();
@@ -151,15 +141,15 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     }
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
-        $(".current-theme .text").text(
-          isCustom ? "custom" : themeName.replace(/_/g, " ")
-        );
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
         $("#metaThemeColor").attr("content", colors.bg);
       });
     }
+    $(".current-theme .text").text(
+      isCustom ? "custom" : themeName.replace(/_/g, " ")
+    );
   });
 }
 
@@ -210,7 +200,7 @@ export function randomizeTheme(): void {
     }
 
     const previousTheme = randomTheme;
-    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+    randomTheme = Misc.randomElementFromArray(randomList);
 
     // if (Config.randomTheme === "custom") {
     // changeCustomTheme(randomTheme, true);
@@ -232,7 +222,13 @@ export function randomizeTheme(): void {
 }
 
 export function clearRandom(): void {
+  if (randomTheme === null) return;
   randomTheme = null;
+  if (Config.customTheme) {
+    apply("custom", true);
+  } else {
+    apply(Config.theme, false);
+  }
 }
 
 export function applyCustomBackgroundSize(): void {
