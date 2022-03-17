@@ -47,8 +47,10 @@ function addApiRoutes(app: Application): void {
         return;
       }
 
-      const clientVersion = req.headers["client-version"];
-      recordClientVersion(clientVersion?.toString() ?? "unknown");
+      if (req.path === "/psas") {
+        const clientVersion = req.headers["client-version"];
+        recordClientVersion(clientVersion?.toString() ?? "unknown");
+      }
 
       requestsProcessed++;
       next();
