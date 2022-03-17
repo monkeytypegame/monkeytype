@@ -61,7 +61,7 @@ class ResultController {
 
   static async addResult(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
-    const { result } = req.body;
+    const result = Object.assign({}, req.body.result);
     result.uid = uid;
     if (result.wpm === result.raw && result.acc !== 100) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
