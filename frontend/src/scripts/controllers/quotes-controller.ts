@@ -54,7 +54,7 @@ class QuotesController {
           quotes: [],
           length: data.quotes.length,
           groups: [],
-          language: normalizedLanguage,
+          language: data.language,
         };
 
         // Transform JSON Quote schema to MonkeyTypes Quote schema
@@ -64,7 +64,7 @@ class QuotesController {
             source: quote.source,
             length: quote.length,
             id: quote.id,
-            language: normalizedLanguage,
+            language: data.language,
             group: 0,
           };
 
