@@ -1778,13 +1778,6 @@ export function apply(
 
     try {
       setEnableAds(configObj.enableAds, true);
-      // let addemo = false;
-      // if (
-      //   firebase.app().options.projectId === "monkey-type-dev-67af4" ||
-      //   window.location.hostname === "localhost"
-      // ) {
-      //   addemo = true;
-      // }
 
       if (config.enableAds === "max" || config.enableAds === "on") {
         $("head").append(`
