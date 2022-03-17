@@ -7,7 +7,7 @@
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts",
     "build": "npx gulp build",
     "build:live": "npx gulp build-production",
-    "start:dev": "sh ./scripts/build-serve.sh",
+    "start:dev": "concurrently \"npm run build\" \"firebase serve --only hosting\" \"npx gulp watch\"",
     "deploy:live": "npm run build:live && firebase deploy -P live --only hosting",
     "tsc": "tsc"
   },
