@@ -1,24 +1,22 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyB5m_AnO575kvWriahcF1SFIWp8Fj3gQno",
-  authDomain: "monkey-type.firebaseapp.com",
-  databaseURL: "https://monkey-type.firebaseio.com",
-  projectId: "monkey-type",
-  storageBucket: "monkey-type.appspot.com",
-  messagingSenderId: "789788471140",
-  appId: "1:789788471140:web:7e31b15959d68ac0a51471",
-  measurementId: "G-PFV65WPEWF",
-};
+import { FirebaseApp, initializeApp } from "firebase/app";
+import { getAuth, Auth as AuthType } from "firebase/auth";
+import { Analytics as AnalyticsType, getAnalytics } from "firebase/analytics";
+//@ts-ignore
+import { firebaseConfig } from "./constants/firebase-config";
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const Auth = getAuth(app);
-export const Analytics = getAnalytics(app);
+let app: FirebaseApp;
+
+export let Auth: AuthType;
+export let Analytics: AnalyticsType;
+
+try {
+  app = initializeApp(firebaseConfig);
+  Auth = getAuth(app);
+  Analytics = getAnalytics(app);
+} catch (e) {
+  $("body").text(
+    "Failed to initialize Firebase. Are you sure you have the correct config in the firebase-config.ts file?"
+  );
+}
