@@ -1318,7 +1318,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   } catch (e) {}
   completedEvent.tags = activeTagsIds;
 
-  if (completedEvent.mode != "custom") delete completedEvent.customText;
+  delete completedEvent.customText;
 
   return <CompletedEvent>completedEvent;
 }
