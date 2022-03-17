@@ -43,6 +43,11 @@ const taskWithWebpackConfig = (webpackConfig) => {
         if (stats.hasErrors()) {
           return reject(new Error(stats.compilation.errors.join("\n")));
         }
+        console.log(
+          `Finished building in ${
+            (stats.endTime - stats.startTime) / 1000
+          } second(s)`
+        );
         resolve();
       });
     });
