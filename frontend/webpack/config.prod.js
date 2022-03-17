@@ -56,7 +56,7 @@ const PRODUCTION_CONFIGURATION = {
   },
   optimization: {
     minimize: true,
-    minimizer: [new HtmlMinimizerPlugin()],
+    minimizer: [`...`, new HtmlMinimizerPlugin()],
   },
 };
 
