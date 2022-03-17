@@ -47,10 +47,8 @@ function addApiRoutes(app: Application): void {
         return;
       }
 
-      const clientVersion = req.headers["client-version"];
-      if (clientVersion) {
-        recordClientVersion(clientVersion.toString());
-      }
+      const clientVersion = req.headers["client-versio"];
+      recordClientVersion(clientVersion?.toString() ?? "unknown");
 
       requestsProcessed++;
       next();
