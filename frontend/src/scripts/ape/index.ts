@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import endpoints from "./endpoints";
+import { Auth } from "../firebase";
 
 const DEV_SERVER_HOST = "http://localhost:5005";
 const PROD_SERVER_HOST = "https://api.monkeytype.com";
@@ -13,7 +14,7 @@ const API_URL = `${BASE_URL}${API_PATH}`;
 async function adaptRequestOptions(
   options: Ape.RequestOptions
 ): Promise<AxiosRequestConfig> {
-  const currentUser = firebase.auth().currentUser;
+  const currentUser = Auth.currentUser;
   const idToken = currentUser && (await currentUser.getIdToken());
 
   return {

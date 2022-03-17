@@ -33,7 +33,6 @@ import {
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
-// const githubProvider = new firebase.auth.GithubAuthProvider();
 
 export function sendVerificationEmail() {
   Loader.show();
@@ -455,27 +454,6 @@ export async function signInWithGoogle() {
     return;
   }
 }
-
-// export async function signInWithGitHub() {
-//   $(".pageLogin .preloader").removeClass("hidden");
-
-//   try{
-//     if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-//       //remember me
-//       await Auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-//       let signedInUser = await Auth.signInWithPopup(githubProvider);
-//       console.log(signedInUser);
-//     } else {
-//       //dont remember
-//       await Auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-//       let signedInUser = await Auth.signInWithPopup(githubProvider);
-//       console.log(signedInUser);
-//     }
-//   }catch(e){
-//     Notifications.add("Failed to sign in with GitHub: " + e.message, -1);
-//     $(".pageLogin .preloader").addClass("hidden");
-//   }
-// }
 
 export function addGoogleAuth() {
   Loader.show();
