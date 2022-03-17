@@ -8,7 +8,7 @@ const { task, src, dest, series, watch } = require("gulp");
 const webpackDevConfig = require("./webpack/config.dev.js");
 const webpackProdConfig = require("./webpack/config.prod.js");
 
-const JSONValidation = require("./json-validation");
+const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
 
 task("clean", function () {
@@ -33,37 +33,29 @@ task("validate-json-schema", function () {
   return JSONValidation.validateAll();
 });
 
-task("webpack", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackDevConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
+const taskWithWebpackConfig = (webpackConfig) => {
+  return async () => {
+    return new Promise((resolve, reject) => {
+      webpack(webpackConfig, (err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+        if (stats.hasErrors()) {
+          return reject(new Error(stats.compilation.errors.join("\n")));
+        }
+        console.log(
+          `Finished building in ${
+            (stats.endTime - stats.startTime) / 1000
+          } second(s)`
+        );
+        resolve();
+      });
     });
-  });
-});
+  };
+};
 
-task("webpack-production", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackProdConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
-    });
-  });
-});
-
-task("static", function () {
-  return src("./static/**/*", { dot: true }).pipe(dest("./public/"));
-});
+task("webpack", taskWithWebpackConfig(webpackDevConfig));
+task("webpack-production", taskWithWebpackConfig(webpackProdConfig));
 
 task("sass", function () {
   return src("./src/styles/*.scss")
@@ -72,7 +64,7 @@ task("sass", function () {
     .pipe(dest("public/css"));
 });
 
-task("compile", series("lint", "lint-json", "webpack", "static", "sass"));
+task("compile", series("lint", "lint-json", "webpack", "sass"));
 
 task(
   "compile-production",
@@ -81,7 +73,6 @@ task(
     "lint-json",
     "validate-json-schema",
     "webpack-production",
-    "static",
     "sass"
   )
 );
@@ -95,9 +86,9 @@ task("watch", function () {
       "./src/scripts/*.js",
       "./src/scripts/*.ts",
     ],
-    series("lint", "webpack")
+    series("lint")
   );
-  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json"));
 });
 
 task("build", series("clean", "compile"));
