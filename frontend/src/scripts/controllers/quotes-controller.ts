@@ -42,7 +42,9 @@ class QuotesController {
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       try {
-        const data: QuoteData = await $.getJSON(`quotes/${language}.json`);
+        const data: QuoteData = await $.getJSON(
+          `quotes/${normalizedLanguage}.json`
+        );
 
         if (data.quotes === undefined || data.quotes.length === 0) {
           return defaultQuoteCollection;
