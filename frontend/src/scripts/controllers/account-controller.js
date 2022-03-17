@@ -23,14 +23,22 @@ import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
-
-export const gmailProvider = new firebase.auth.GoogleAuthProvider();
+import {
+  EmailAuthCredential,
+  GoogleAuthProvider,
+  browserSessionPersistence,
+  browserLocalPersistence,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { Auth } from "../firebase";
+export const gmailProvider = new GoogleAuthProvider();
 // const githubProvider = new firebase.auth.GithubAuthProvider();
 
 export function sendVerificationEmail() {
   Loader.show();
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
+  let cu = Auth.currentUser;
+  sendEmailVerification()
     .then(() => {
       Loader.hide();
       Notifications.add("Email sent to " + cu.email, 4000);
@@ -98,7 +106,7 @@ export async function getDataAndInit() {
     ResultFilters.load();
   });
 
-  let user = firebase.auth().currentUser;
+  let user = Auth.currentUser;
   if (!snapshot.name) {
     //verify username
     if (Misc.isUsernameValid(user.name)) {
@@ -251,7 +259,7 @@ async function loadUser(user) {
   }
 }
 
-const authListener = firebase.auth().onAuthStateChanged(async function (user) {
+const authListener = Auth.onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
@@ -307,50 +315,45 @@ export function signIn() {
   let password = $(".pageLogin .login input")[1].value;
 
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
-    ? firebase.auth.Auth.Persistence.LOCAL
-    : firebase.auth.Auth.Persistence.SESSION;
+    ? browserLocalPersistence
+    : browserSessionPersistence;
 
-  firebase
-    .auth()
-    .setPersistence(persistence)
-    .then(function () {
-      return firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(async (e) => {
-          await loadUser(e.user);
-          PageController.change("account");
-          if (TestLogic.notSignedInLastResult !== null) {
-            TestLogic.setNotSignedInUid(e.user.uid);
+  Auth.setPersistence(persistence).then(function () {
+    return Auth.signInWithEmailAndPassword(email, password)
+      .then(async (e) => {
+        await loadUser(e.user);
+        PageController.change("account");
+        if (TestLogic.notSignedInLastResult !== null) {
+          TestLogic.setNotSignedInUid(e.user.uid);
 
-            const response = await Ape.results.save(
-              TestLogic.notSignedInLastResult
+          const response = await Ape.results.save(
+            TestLogic.notSignedInLastResult
+          );
+
+          if (response.status !== 200) {
+            return Notifications.add(
+              "Failed to save last result: " + response.message,
+              -1
             );
-
-            if (response.status !== 200) {
-              return Notifications.add(
-                "Failed to save last result: " + response.message,
-                -1
-              );
-            }
-
-            TestLogic.clearNotSignedInResult();
-            Notifications.add("Last test result saved", 1);
           }
-          //TODO: redirect user to relevant page
-        })
-        .catch(function (error) {
-          let message = error.message;
-          if (error.code === "auth/wrong-password") {
-            message = "Incorrect password.";
-          } else if (error.code === "auth/user-not-found") {
-            message = "User not found.";
-          }
-          Notifications.add(message, -1);
-          $(".pageLogin .preloader").addClass("hidden");
-          $(".pageLogin .button").removeClass("disabled");
-        });
-    });
+
+          TestLogic.clearNotSignedInResult();
+          Notifications.add("Last test result saved", 1);
+        }
+        //TODO: redirect user to relevant page
+      })
+      .catch(function (error) {
+        let message = error.message;
+        if (error.code === "auth/wrong-password") {
+          message = "Incorrect password.";
+        } else if (error.code === "auth/user-not-found") {
+          message = "User not found.";
+        }
+        Notifications.add(message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
+        $(".pageLogin .button").removeClass("disabled");
+      });
+  });
 }
 
 export async function signInWithGoogle() {
@@ -361,11 +364,11 @@ export async function signInWithGoogle() {
   let signedInUser;
   try {
     const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
-      ? firebase.auth.Auth.Persistence.LOCAL
-      : firebase.auth.Auth.Persistence.SESSION;
+      ? browserLocalPersistence
+      : browserSessionPersistence;
 
-    await firebase.auth().setPersistence(persistence);
-    signedInUser = await firebase.auth().signInWithPopup(gmailProvider);
+    await Auth.setPersistence(persistence);
+    signedInUser = await Auth.signInWithPopup(gmailProvider);
 
     if (signedInUser.additionalUserInfo.isNewUser) {
       //ask for username
@@ -459,13 +462,13 @@ export async function signInWithGoogle() {
 //   try{
 //     if ($(".pageLogin .login #rememberMe input").prop("checked")) {
 //       //remember me
-//       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-//       let signedInUser = await firebase.auth().signInWithPopup(githubProvider);
+//       await Auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+//       let signedInUser = await Auth.signInWithPopup(githubProvider);
 //       console.log(signedInUser);
 //     } else {
 //       //dont remember
-//       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
-//       let signedInUser = await firebase.auth().signInWithPopup(githubProvider);
+//       await Auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+//       let signedInUser = await Auth.signInWithPopup(githubProvider);
 //       console.log(signedInUser);
 //     }
 //   }catch(e){
@@ -476,9 +479,8 @@ export async function signInWithGoogle() {
 
 export function addGoogleAuth() {
   Loader.show();
-  firebase
-    .auth()
-    .currentUser.linkWithPopup(gmailProvider)
+  Auth.currentUser
+    .linkWithPopup(gmailProvider)
     .then(function () {
       Loader.hide();
       Notifications.add("Google authentication added", 1);
@@ -494,7 +496,7 @@ export function addGoogleAuth() {
 }
 
 export async function removeGoogleAuth() {
-  let user = firebase.auth().currentUser;
+  let user = Auth.currentUser;
   if (
     user.providerData.find((provider) => provider.providerId === "password")
   ) {
@@ -505,9 +507,8 @@ export async function removeGoogleAuth() {
       Loader.hide();
       return Notifications.add(e.message, -1);
     }
-    firebase
-      .auth()
-      .currentUser.unlink("google.com")
+    Auth.currentUser
+      .unlink("google.com")
       .then(() => {
         Notifications.add("Google authentication removed", 1);
         Loader.hide();
@@ -530,21 +531,21 @@ export async function removeGoogleAuth() {
 
 export async function addPasswordAuth(email, password) {
   Loader.show();
-  let user = firebase.auth().currentUser;
+  let user = Auth.currentUser;
   if (
     user.providerData.find((provider) => provider.providerId === "google.com")
   ) {
     try {
-      await firebase.auth().currentUser.reauthenticateWithPopup(gmailProvider);
+      await Auth.currentUser.reauthenticateWithPopup(gmailProvider);
     } catch (e) {
       Loader.hide();
       return Notifications.add("Could not reauthenticate: " + e.message, -1);
     }
   }
-  let credential = firebase.auth.EmailAuthProvider.credential(email, password);
-  firebase
-    .auth()
-    .currentUser.linkWithCredential(credential)
+
+  let credential = new EmailAuthCredential(email, password);
+  Auth.currentUser
+    .linkWithCredential(credential)
     .then(function () {
       Loader.hide();
       Notifications.add("Password authenication added", 1);
@@ -560,9 +561,7 @@ export async function addPasswordAuth(email, password) {
 }
 
 export function signOut() {
-  firebase
-    .auth()
-    .signOut()
+  Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, 2);
       AllTimeStats.clear();
@@ -613,9 +612,7 @@ async function signUp() {
 
   let createdAuthUser;
   try {
-    createdAuthUser = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password);
+    createdAuthUser = await createUserWithEmailAndPassword(email, password);
 
     const signInResponse = await Ape.users.create(
       nname,
@@ -677,9 +674,7 @@ async function signUp() {
 $(".pageLogin #forgotPasswordButton").on("click", (e) => {
   let email = prompt("Email address");
   if (email) {
-    firebase
-      .auth()
-      .sendPasswordResetEmail(email)
+    Auth.sendPasswordResetEmail(email)
       .then(function () {
         // Email sent.
         Notifications.add("Email sent", 1, 2);

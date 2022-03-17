@@ -8,6 +8,8 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
+import { Auth } from "./firebase";
+import * as AnalyticsController from "./controllers/analytics-controller";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -370,7 +372,7 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val == "pb" && firebase.auth().currentUser === null) {
+    if (val == "pb" && Auth.currentUser === null) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -1295,7 +1297,7 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (firebase.auth().currentUser === null) {
+    if (Auth.currentUser === null) {
       config.randomTheme = val;
       return false;
     }
@@ -1363,13 +1365,7 @@ export function setLanguage(language: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, ["string"])) return false;
 
   config.language = language;
-  try {
-    firebase.analytics().logEvent("changedLanguage", {
-      language: language,
-    });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
+  AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
