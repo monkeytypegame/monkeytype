@@ -13,6 +13,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
+import { Auth } from "../firebase";
 
 type SettingsGroups = {
   [key: string]: SettingsGroup;
@@ -556,7 +557,7 @@ export function hideAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (firebase.auth().currentUser == null) {
+  if (Auth.currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (DB.getSnapshot() == null) return;
@@ -583,7 +584,7 @@ export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
 
-  const user = firebase.auth().currentUser;
+  const user = Auth.currentUser;
   if (!user) return;
 
   const passwordProvider = user.providerData.find(
@@ -636,7 +637,7 @@ function setActiveFunboxButton(): void {
 }
 
 function refreshTagsSettingsSection(): void {
-  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
+  if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
@@ -671,7 +672,7 @@ function refreshTagsSettingsSection(): void {
 }
 
 function refreshPresetsSettingsSection(): void {
-  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
+  if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
