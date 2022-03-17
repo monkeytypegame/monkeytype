@@ -27,17 +27,6 @@ export function updateKeytips(): void {
   }
 }
 
-//checking if the project is the development site
-/*
-if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
-  $("#top .logo .bottom").text("monkey-dev");
-  $("head title").text("Monkey Dev");
-  $("body").append(
-    `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
-  );
-}
-*/
-
 if (window.location.hostname === "localhost") {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
