@@ -1,4 +1,5 @@
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 
 let circularImports = 0;
@@ -40,6 +41,9 @@ const BASE_CONFIGURATION = {
         const countWithColor = `\u001b[${colorCode}m${circularImports}\u001b[0m`;
         console.log(`Found ${countWithColor} circular imports`);
       },
+    }),
+    new CopyPlugin({
+      patterns: [{ from: "./static", to: "../" }],
     }),
   ],
 };
