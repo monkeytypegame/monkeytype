@@ -30,6 +30,8 @@ import {
   browserLocalPersistence,
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  signInWithEmailAndPassword,
+  setPersistence,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
@@ -317,8 +319,8 @@ export function signIn() {
     ? browserLocalPersistence
     : browserSessionPersistence;
 
-  Auth.setPersistence(persistence).then(function () {
-    return Auth.signInWithEmailAndPassword(email, password)
+  setPersistence(Auth, persistence).then(function () {
+    return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
         PageController.change("account");
