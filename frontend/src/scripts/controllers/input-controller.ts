@@ -581,7 +581,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     event.preventDefault();
   }
   if (ActivePage.get() !== "test" && popupVisible) {
-    event.preventDefault();
+    // event.preventDefault();
     return;
   }
   if ($("#customTextPopup .textarea").is(":focus")) {

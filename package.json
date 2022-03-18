@@ -17,7 +17,6 @@
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
-    "pr-check-scss": "cd frontend && npx gulp pr-check-scss",
     "pr-check-ts": "cd frontend && npx gulp pr-check-ts",
     "pr-check-build-be": "cd backend && npm run build"
   },
