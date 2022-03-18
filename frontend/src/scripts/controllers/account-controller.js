@@ -39,6 +39,7 @@ import {
   reauthenticateWithPopup,
   unlink as unlinkAuth,
   getAdditionalUserInfo,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
@@ -662,7 +663,7 @@ async function signUp() {
 $(".pageLogin #forgotPasswordButton").on("click", (e) => {
   let email = prompt("Email address");
   if (email) {
-    Auth.sendPasswordResetEmail(email)
+    sendPasswordResetEmail(Auth, email)
       .then(function () {
         // Email sent.
         Notifications.add("Email sent", 1, 2);
