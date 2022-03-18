@@ -4,6 +4,7 @@ import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
+import { defaultSnap } from "./constants/default-snapshot";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
 
@@ -25,32 +26,6 @@ export async function initSnapshot(): Promise<
   MonkeyTypes.Snapshot | number | boolean
 > {
   //send api request with token that returns tags, presets, and data needed for snap
-  const defaultSnap: MonkeyTypes.Snapshot = {
-    results: undefined,
-    personalBests: {
-      time: {},
-      words: {},
-      zen: { zen: [] },
-      quote: { custom: [] },
-      custom: { custom: [] },
-    },
-    name: undefined,
-    customThemes: [],
-    presets: [],
-    tags: [],
-    favouriteThemes: [],
-    banned: undefined,
-    verified: undefined,
-    emailVerified: undefined,
-    lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
-    globalStats: {
-      time: 0,
-      started: 0,
-      completed: 0,
-    },
-    quoteRatings: undefined,
-    quoteMod: false,
-  };
   const snap = defaultSnap;
   try {
     if (Auth.currentUser == null) return false;
@@ -69,16 +44,28 @@ export async function initSnapshot(): Promise<
       ]);
 
     if (userResponse.status !== 200) {
-      throw Error(`${userResponse.message} (user)`);
+      throw {
+        message: `${userResponse.message} (user)`,
+        responseCode: userResponse.status,
+      };
     }
     if (configResponse.status !== 200) {
-      throw Error(`${configResponse.message} (config)`);
+      throw {
+        message: `${configResponse.message} (config)`,
+        responseCode: configResponse.status,
+      };
     }
     if (tagsResponse.status !== 200) {
-      throw Error(`${tagsResponse.message} (tags)`);
+      throw {
+        message: `${tagsResponse.message} (tags)`,
+        responseCode: tagsResponse.status,
+      };
     }
     if (presetsResponse.status !== 200) {
-      throw Error(`${presetsResponse.message} (presets)`);
+      throw {
+        message: `${presetsResponse.message} (presets)`,
+        responseCode: presetsResponse.status,
+      };
     }
 
     const [userData, configData, tagsData, presetsData] = [

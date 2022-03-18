@@ -1,0 +1,26 @@
+export const defaultSnap: MonkeyTypes.Snapshot = {
+  results: undefined,
+  personalBests: {
+    time: {},
+    words: {},
+    zen: { zen: [] },
+    quote: { custom: [] },
+    custom: { custom: [] },
+  },
+  name: "",
+  customThemes: [],
+  presets: [],
+  tags: [],
+  favouriteThemes: [],
+  banned: undefined,
+  verified: undefined,
+  emailVerified: undefined,
+  lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
+  globalStats: {
+    time: 0,
+    started: 0,
+    completed: 0,
+  },
+  quoteRatings: undefined,
+  quoteMod: false,
+};
