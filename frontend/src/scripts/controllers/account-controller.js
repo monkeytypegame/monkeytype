@@ -24,7 +24,7 @@ import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
 import {
-  EmailAuthCredential,
+  EmailAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   browserLocalPersistence,
@@ -35,6 +35,7 @@ import {
   setPersistence,
   updateProfile,
   linkWithPopup,
+  linkWithCredential,
   reauthenticateWithPopup,
   unlink as unlinkAuth,
   getAdditionalUserInfo,
@@ -520,16 +521,15 @@ export async function addPasswordAuth(email, password) {
     user.providerData.find((provider) => provider.providerId === "google.com")
   ) {
     try {
-      await Auth.currentUser.reauthenticateWithPopup(gmailProvider);
+      await reauthenticateWithPopup(user, gmailProvider);
     } catch (e) {
       Loader.hide();
       return Notifications.add("Could not reauthenticate: " + e.message, -1);
     }
   }
 
-  let credential = new EmailAuthCredential(email, password);
-  Auth.currentUser
-    .linkWithCredential(credential)
+  let credential = EmailAuthProvider.credential(email, password);
+  linkWithCredential(user, credential)
     .then(function () {
       Loader.hide();
       Notifications.add("Password authenication added", 1);
