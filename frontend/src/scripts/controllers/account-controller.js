@@ -661,7 +661,8 @@ async function signUp() {
 }
 
 $(".pageLogin #forgotPasswordButton").on("click", (e) => {
-  let email = prompt("Email address");
+  const emailField = $(".pageLogin .login input")[0].value || "";
+  let email = prompt("Email address", emailField);
   if (email) {
     sendPasswordResetEmail(Auth, email)
       .then(function () {
