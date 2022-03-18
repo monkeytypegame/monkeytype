@@ -1,11 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAuth, Auth as AuthType } from "firebase/auth";
+import { firebaseConfig } from "./constants/firebase-config";
 import { Analytics as AnalyticsType, getAnalytics } from "firebase/analytics";
-// loading 'example' here so webpack shuts up during github actions
-// this gets replaced to firebase-config when building development
-// and firebase-config-live when building production
-import { firebaseConfig } from "./constants/firebase-config-example";
 
 // Initialize Firebase
 let app: FirebaseApp;

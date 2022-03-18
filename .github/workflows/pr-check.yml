@@ -43,6 +43,10 @@ jobs:
 
       - run: echo ${{ steps.filter.outputs.changes }}
 
+      - name: Create stub firebase config
+        working-directory: ./frontend/src/scripts/constants
+        run: mv ./firebase-config-example.ts ./firebase-config-live.ts
+
       - name: Check Anti-cheat
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
