@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAuth, Auth as AuthType } from "firebase/auth";
-import { firebaseConfig } from "./constants/firebase-config";
+import { firebaseConfig } from "./constants/firebase-config"; // eslint-disable-line require-path-exists/exists
 import { Analytics as AnalyticsType, getAnalytics } from "firebase/analytics";
 
 // Initialize Firebase
