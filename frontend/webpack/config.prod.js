@@ -1,4 +1,8 @@
 const { merge } = require("webpack-merge");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
+
 const BASE_CONFIGURATION = require("./config.base");
 
 function pad(numbers, maxLength, fillString) {
@@ -50,6 +54,15 @@ const PRODUCTION_CONFIGURATION = {
           },
         },
       },
+    ],
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      `...`,
+      new HtmlMinimizerPlugin(),
+      new JsonMinimizerPlugin(),
+      new CssMinimizerPlugin(),
     ],
   },
 };

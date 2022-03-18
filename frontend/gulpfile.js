@@ -1,19 +1,11 @@
-const del = require("del");
-const concat = require("gulp-concat");
 const { webpack } = require("webpack");
 const eslint = require("gulp-eslint-new");
-const vinylPaths = require("vinyl-paths");
-const sass = require("gulp-sass")(require("dart-sass"));
-const { task, src, dest, series, watch } = require("gulp");
+const { task, src, series, watch } = require("gulp");
 const webpackDevConfig = require("./webpack/config.dev.js");
 const webpackProdConfig = require("./webpack/config.prod.js");
 
-const JSONValidation = require("./json-validation");
+const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
-
-task("clean", function () {
-  return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
-});
 
 task("lint", function () {
   return src(["./src/scripts/**/*.js", "./src/scripts/**/*.ts"])
@@ -33,61 +25,38 @@ task("validate-json-schema", function () {
   return JSONValidation.validateAll();
 });
 
-task("webpack", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackDevConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
+const taskWithWebpackConfig = (webpackConfig) => {
+  return async () => {
+    return new Promise((resolve, reject) => {
+      webpack(webpackConfig, (err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+        if (stats.hasErrors()) {
+          return reject(new Error(stats.compilation.errors.join("\n")));
+        }
+        console.log(
+          `Finished building in ${
+            (stats.endTime - stats.startTime) / 1000
+          } second(s)`
+        );
+        resolve();
+      });
     });
-  });
-});
+  };
+};
 
-task("webpack-production", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackProdConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
-    });
-  });
-});
+task("webpack", taskWithWebpackConfig(webpackDevConfig));
+task("webpack-production", taskWithWebpackConfig(webpackProdConfig));
 
-task("static", function () {
-  return src("./static/**/*", { dot: true }).pipe(dest("./public/"));
-});
-
-task("sass", function () {
-  return src("./src/styles/*.scss")
-    .pipe(concat("style.scss"))
-    .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
-    .pipe(dest("public/css"));
-});
-
-task("compile", series("lint", "lint-json", "webpack", "static", "sass"));
+task("compile", series("lint", "lint-json", "webpack"));
 
 task(
   "compile-production",
-  series(
-    "lint",
-    "lint-json",
-    "validate-json-schema",
-    "webpack-production",
-    "static",
-    "sass"
-  )
+  series("lint", "lint-json", "validate-json-schema", "webpack-production")
 );
 
 task("watch", function () {
-  watch("./src/styles/*.scss", series("sass"));
   watch(
     [
       "./src/scripts/**/*.js",
@@ -95,14 +64,14 @@ task("watch", function () {
       "./src/scripts/*.js",
       "./src/scripts/*.ts",
     ],
-    series("lint", "webpack")
+    series("lint")
   );
-  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json"));
 });
 
-task("build", series("clean", "compile"));
+task("build", series("compile"));
 
-task("build-production", series("clean", "compile-production"));
+task("build-production", series("compile-production"));
 
 //PR CHECK
 
@@ -124,6 +93,5 @@ task("pr-check-language-json", series("validate-language-json-schema"));
 task("pr-check-other-json", series("validate-other-json-schema"));
 
 task("pr-check-lint", series("lint"));
-task("pr-check-scss", series("sass"));
 
 task("pr-check-ts", series("webpack-production"));

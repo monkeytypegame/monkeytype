@@ -17,7 +17,6 @@
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
-    "pr-check-scss": "cd frontend && npx gulp pr-check-scss",
     "pr-check-ts": "cd frontend && npx gulp pr-check-ts",
     "pr-check-build-be": "cd backend && npm run build"
   },
@@ -29,18 +28,13 @@
     "@typescript-eslint/parser": "^5.11.0",
     "concurrently": "5.3.0",
     "eslint": "8.8.0",
-    "eslint-config-standard": "16.0.3",
-    "eslint-formatter-github": "1.0.11",
-    "eslint-plugin-import": "2.23.4",
     "eslint-plugin-json": "2.1.2",
-    "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "5.1.0",
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "4.3.0",
     "jsonschema": "1.4.0",
     "prettier": "2.5.1",
     "pretty-quick": "3.1.0",
-    "typescript": "^4.5.5"
+    "typescript": "4.5.5"
   },
   "husky": {
     "hooks": {
