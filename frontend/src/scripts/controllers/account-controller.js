@@ -592,7 +592,11 @@ async function signUp() {
 
   let createdAuthUser;
   try {
-    createdAuthUser = await createUserWithEmailAndPassword(email, password);
+    createdAuthUser = await createUserWithEmailAndPassword(
+      Auth,
+      email,
+      password
+    );
 
     const signInResponse = await Ape.users.create(
       nname,
