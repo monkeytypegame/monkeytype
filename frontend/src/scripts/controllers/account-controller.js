@@ -31,6 +31,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
   setPersistence,
   updateProfile,
 } from "firebase/auth";
@@ -369,8 +370,8 @@ export async function signInWithGoogle() {
       ? browserLocalPersistence
       : browserSessionPersistence;
 
-    await Auth.setPersistence(persistence);
-    signedInUser = await Auth.signInWithPopup(gmailProvider);
+    await setPersistence(Auth, persistence);
+    signedInUser = await signInWithPopup(Auth, gmailProvider);
 
     if (signedInUser.additionalUserInfo.isNewUser) {
       //ask for username
