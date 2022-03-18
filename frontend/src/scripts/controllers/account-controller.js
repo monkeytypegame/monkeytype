@@ -41,7 +41,7 @@ export const gmailProvider = new GoogleAuthProvider();
 export function sendVerificationEmail() {
   Loader.show();
   let cu = Auth.currentUser;
-  sendEmailVerification()
+  sendEmailVerification(cu)
     .then(() => {
       Loader.hide();
       Notifications.add("Email sent to " + cu.email, 4000);
