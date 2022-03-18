@@ -71,17 +71,17 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    - In the `SDK setup and configuration` section, select `npm`
    - The Firebase config will be visible below
 
-1. Generate a Firebase Admin private key
-
-   - In your Firebase console, go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
-
-1. Enable Firebase Authentication
+1. Enable Firebase Authentication (optional)
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email and save
+
+1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
+
+   - In your Firebase console, go to Project Settings > Service Accounts
+   - Click "Generate New Private Key"
+   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
 #### Mongo Setup
 
