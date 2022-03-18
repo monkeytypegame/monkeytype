@@ -31,9 +31,10 @@ jobs:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
               - 'backend/**/*.{js,ts}'
-            ts-fe:
+            ts-scss-fe:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
+              - 'frontend/**/*.scss'
             ts-be:
               - 'backend/**/*.{js,ts}'
             anti-cheat:
@@ -91,5 +92,5 @@ jobs:
         run: npm run pr-check-build-be
 
       - name: Run webpack
-        if: steps.filter.outputs.ts-fe == 'true'
+        if: steps.filter.outputs.ts-scss-fe == 'true'
         run: npm run pr-check-ts
