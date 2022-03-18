@@ -35,6 +35,8 @@ import {
   setPersistence,
   updateProfile,
   linkWithPopup,
+  reauthenticateWithPopup,
+  unlink as unlinkAuth,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
@@ -460,7 +462,7 @@ export async function signInWithGoogle() {
   }
 }
 
-export function addGoogleAuth() {
+export async function addGoogleAuth() {
   Loader.show();
   linkWithPopup(Auth.currentUser, gmailProvider)
     .then(function () {
@@ -484,13 +486,12 @@ export async function removeGoogleAuth() {
   ) {
     Loader.show();
     try {
-      await user.reauthenticateWithPopup(gmailProvider);
+      await reauthenticateWithPopup(user, gmailProvider);
     } catch (e) {
       Loader.hide();
       return Notifications.add(e.message, -1);
     }
-    Auth.currentUser
-      .unlink("google.com")
+    unlinkAuth(user, "google.com")
       .then(() => {
         Notifications.add("Google authentication removed", 1);
         Loader.hide();
@@ -711,10 +712,7 @@ $(".pageLogin .register .button").on("click", (e) => {
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async (e) => {
-  await addGoogleAuth();
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
+  addGoogleAuth();
 });
 
 $(".pageSettings #removeGoogleAuth").on("click", (e) => {
