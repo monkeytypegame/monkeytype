@@ -684,7 +684,7 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin #forgotPasswordButton").on("click", (e) => {
+$(".pageLogin #forgotPasswordButton").on("click", () => {
   const emailField =
     ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
   const email = prompt("Email address", emailField);
@@ -708,12 +708,12 @@ $(".pageLogin .login input").keyup((e) => {
   }
 });
 
-$(".pageLogin .login .button.signIn").on("click", (e) => {
+$(".pageLogin .login .button.signIn").on("click", () => {
   UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").on("click", (e) => {
+$(".pageLogin .login .button.signInWithGoogle").on("click", () => {
   UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
@@ -723,7 +723,7 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", (e) => {
 // signInWithGitHub();
 // });
 
-$(".signOut").on("click", (e) => {
+$(".signOut").on("click", () => {
   signOut();
 });
 
@@ -734,19 +734,19 @@ $(".pageLogin .register input").keyup((e) => {
   }
 });
 
-$(".pageLogin .register .button").on("click", (e) => {
+$(".pageLogin .register .button").on("click", () => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
   signUp();
 });
 
-$(".pageSettings #addGoogleAuth").on("click", async (e) => {
+$(".pageSettings #addGoogleAuth").on("click", async () => {
   addGoogleAuth();
 });
 
-$(".pageSettings #removeGoogleAuth").on("click", (e) => {
+$(".pageSettings #removeGoogleAuth").on("click", () => {
   removeGoogleAuth();
 });
 
-$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
+$(document).on("click", ".pageAccount .sendVerificationEmail", () => {
   sendVerificationEmail();
 });
