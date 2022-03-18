@@ -50,7 +50,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
    - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
-1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -63,6 +63,13 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    ```
 
    - Run `firebase projects:list` to find your firebase project id.
+
+1. Within the `frontend/scripts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
+
+   - To find it, go to the Firebase console
+   - Navigate to `Project Settings > General > Your apps`
+   - In the `SDK setup and configuration` section, select `npm`
+   - The Firebase config will be visible below
 
 1. Generate a Firebase Admin private key
 
