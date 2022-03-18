@@ -7,7 +7,6 @@ const sass = require("gulp-sass")(require("dart-sass"));
 const { task, src, dest, series, watch } = require("gulp");
 const webpackDevConfig = require("./webpack/config.dev.js");
 const webpackProdConfig = require("./webpack/config.prod.js");
-const webpackActionConfig = require("./webpack/config.action.js");
 
 const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
@@ -57,7 +56,6 @@ const taskWithWebpackConfig = (webpackConfig) => {
 
 task("webpack", taskWithWebpackConfig(webpackDevConfig));
 task("webpack-production", taskWithWebpackConfig(webpackProdConfig));
-task("webpack-action", taskWithWebpackConfig(webpackActionConfig));
 
 task("sass", function () {
   return src("./src/styles/*.scss")
@@ -119,4 +117,4 @@ task("pr-check-other-json", series("validate-other-json-schema"));
 task("pr-check-lint", series("lint"));
 task("pr-check-scss", series("sass"));
 
-task("pr-check-ts", series("webpack-action"));
+task("pr-check-ts", series("webpack-production"));
