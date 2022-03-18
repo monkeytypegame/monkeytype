@@ -32,6 +32,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   setPersistence,
+  updateProfile,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
@@ -607,8 +608,8 @@ async function signUp() {
       throw signInResponse;
     }
 
-    await createdAuthUser.user.updateProfile({ displayName: nname });
-    await createdAuthUser.user.sendEmailVerification();
+    await updateProfile(createdAuthUser.user, { displayName: nname });
+    await sendEmailVerification(createdAuthUser.user);
     AllTimeStats.clear();
     $("#menu .icon-button.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
