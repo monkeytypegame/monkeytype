@@ -106,5 +106,3 @@ dep-graph.png
 # TypeScript
 build/
 backend/worker.*
-frontend/src/scripts/constants/firebase-config-live.ts
-frontend/src/scripts/constants/firebase-config.ts
