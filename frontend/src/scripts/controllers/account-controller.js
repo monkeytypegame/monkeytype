@@ -34,6 +34,7 @@ import {
   signInWithPopup,
   setPersistence,
   updateProfile,
+  linkWithPopup,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
@@ -461,8 +462,7 @@ export async function signInWithGoogle() {
 
 export function addGoogleAuth() {
   Loader.show();
-  Auth.currentUser
-    .linkWithPopup(gmailProvider)
+  linkWithPopup(Auth.currentUser, gmailProvider)
     .then(function () {
       Loader.hide();
       Notifications.add("Google authentication added", 1);
