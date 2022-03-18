@@ -42,7 +42,7 @@ const PRODUCTION_CONFIGURATION = {
         test: /firebase\.ts$/,
         loader: "string-replace-loader",
         options: {
-          search: /\.\/constants\/firebase-config/,
+          search: /\.\/constants\/firebase-config-example/,
           replace(_match, _p1, _offset, _string) {
             return `./constants/firebase-config-live`;
           },

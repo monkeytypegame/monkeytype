@@ -2,8 +2,10 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAuth, Auth as AuthType } from "firebase/auth";
 import { Analytics as AnalyticsType, getAnalytics } from "firebase/analytics";
-//@ts-ignore
-import { firebaseConfig } from "./constants/firebase-config";
+// loading 'example' here so webpack shuts up during github actions
+// this gets replaced to firebase-config when building development
+// and firebase-config-live when building production
+import { firebaseConfig } from "./constants/firebase-config-example";
 
 // Initialize Firebase
 let app: FirebaseApp;
