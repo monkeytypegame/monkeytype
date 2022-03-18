@@ -33,7 +33,7 @@ let dontInsertSpace = false;
 let correctShiftUsed = true;
 
 // T9 variables and constants
-const timeout = 2000;
+const timeout = 750;
 const t9Map: Record<string, Array<string>> = {
   "2": ["A", "B", "C"],
   "3": ["D", "E", "F"],
