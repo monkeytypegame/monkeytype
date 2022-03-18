@@ -2,6 +2,8 @@
 
 - [Forking Monkeytype](#forking-monkeytype)
 - [Creating Quotes](#creating-quotes)
+- [Committing Quotes](#committing-quotes)
+- [Quote Guidelines](#quote-guidelines)
 
 ### Forking Monkeytype
 
@@ -32,7 +34,7 @@ Update branch:
 Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
-## Theme Guidelines
+## Quote Guidelines
 
 Make sure your quote(s) follows the quote guidelines.
 [Quote guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#quote-guidelines)
