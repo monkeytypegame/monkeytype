@@ -588,11 +588,9 @@ export function updateAuthSections(): void {
   if (!user) return;
 
   const passwordProvider = user.providerData.find(
-    //@ts-ignore todo remove then firebase is initialised in code rather than with a script tag
     (provider) => provider.providerId === "password"
   );
   const googleProvider = user.providerData.find(
-    //@ts-ignore
     (provider) => provider.providerId === "google.com"
   );
 
