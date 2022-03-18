@@ -263,16 +263,20 @@ export function applyCustomBackground(): void {
   }
 }
 
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  ?.addEventListener("change", (event) => {
-    if (!Config.autoSwitchTheme || Config.customTheme) return;
-    if (event.matches) {
-      set(Config.themeDark, false);
-    } else {
-      set(Config.themeLight, false);
-    }
-  });
+try {
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    ?.addEventListener("change", (event) => {
+      if (!Config.autoSwitchTheme || Config.customTheme) return;
+      if (event.matches) {
+        set(Config.themeDark, false);
+      } else {
+        set(Config.themeLight, false);
+      }
+    });
+} catch (e) {
+  //
+}
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "customTheme") {
