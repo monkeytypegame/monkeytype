@@ -98,6 +98,7 @@ static/adtest.html
 backend/migrationStats.txt
 
 frontend/src/scripts/constants/firebase-config.ts
+frontend/src/scripts/constants/firebase-config-live.ts
 
 # Madge
 dep-graph.png
