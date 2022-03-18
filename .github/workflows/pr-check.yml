@@ -31,17 +31,14 @@ jobs:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
               - 'backend/**/*.{js,ts}'
-            scss:
-              - 'frontend/**/*.scss'
-            ts-fe:
+            ts-scss-fe:
               - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
+              - 'frontend/**/*.scss'
             ts-be:
               - 'backend/**/*.{js,ts}'
             anti-cheat:
               - 'backend/**/anticheat/**'
-
-      - run: echo ${{ steps.filter.outputs.changes }}
 
       - name: Check Anti-cheat
         if: steps.filter.outputs.anti-cheat == 'true'
@@ -70,9 +67,6 @@ jobs:
         if: steps.filter.outputs.changes != '[]'
         run: npm run install:all
 
-      # - name: Run webpack
-      #   run: npm run build:live
-
       - name: Lint JSON
         if: steps.filter.outputs.any-json == 'true'
         run: npm run pr-check-lint-json
@@ -93,14 +87,10 @@ jobs:
         if: steps.filter.outputs.any-tsscss == 'true'
         run: npm run lint
 
-      - name: Compile SCSS
-        if: steps.filter.outputs.scss == 'true'
-        run: npm run pr-check-scss
-
       - name: Build backend
         if: steps.filter.outputs.ts-be == 'true'
         run: npm run pr-check-build-be
 
       - name: Run webpack
-        if: steps.filter.outputs.ts-fe == 'true'
+        if: steps.filter.outputs.ts-scss-fe == 'true'
         run: npm run pr-check-ts
