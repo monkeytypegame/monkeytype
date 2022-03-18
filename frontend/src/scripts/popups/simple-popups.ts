@@ -518,9 +518,6 @@ list["addPasswordAuth"] = new SimplePopup(
     }
 
     await AccountController.addPasswordAuth(email, pass);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
   },
   () => {
     //
