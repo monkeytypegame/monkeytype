@@ -68,7 +68,7 @@ async function saveToDatabase(key: keyof MonkeyTypes.Config): Promise<void> {
         clearTimeout(saveTimeout as NodeJS.Timeout);
         saveTimeout = null;
       },
-      window.location.hostname === "localhost" ? 0 : 500
+      window.location.hostname === "localhost" ? 0 : 1000
     );
   }
 }
@@ -1238,7 +1238,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  setCustomTheme(false, true);
+  setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
@@ -1902,10 +1902,8 @@ export function apply(
 }
 
 export function reset(): void {
-  config = {
-    ...DefaultConfig,
-  };
-  apply(config);
+  ConfigEvent.dispatch("fullConfigChange");
+  apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
 

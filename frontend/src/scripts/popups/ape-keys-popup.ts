@@ -1,6 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import { format } from "date-fns";
 
 let apeKeys: MonkeyTypes.ApeKeys = {};
 
@@ -43,12 +44,12 @@ function refreshList(): void {
           </div>
         </td>
         <td>${key.name}</td>
-        <td>${moment(key.createdOn).format("DD MMM YYYY HH:mm")}</td>
-        <td>${moment(key.modifiedOn).format("DD MMM YYYY HH:mm")}</td>
+        <td>${format(new Date(key.createdOn), "dd MMM yyyy HH:mm")}</td>
+        <td>${format(new Date(key.modifiedOn), "dd MMM yyyy HH:mm")}</td>
         <td>${
           key.lastUsedOn === -1
             ? "-"
-            : moment(key.lastUsedOn).format("DD MMM YYYY HH:mm")
+            : format(new Date(key.lastUsedOn), "dd MMM yyyy HH:mm")
         }</td>
         <td>
           <div class="keyButtons">

@@ -20,6 +20,7 @@ declare namespace Ape {
   type MethodTypes = keyof Client;
 
   interface RequestOptions {
+    headers?: Record<string, string>;
     searchQuery?: Record<string, any>;
     payload?: any;
   }

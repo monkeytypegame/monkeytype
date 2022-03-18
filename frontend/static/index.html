@@ -75,9 +75,6 @@
               registration.unregister();
             }
           });
-        // navigator.serviceWorker.register("sw.js").then((reg) => {
-        //   reg.update();
-        // });
       }
     </script>
   </head>
@@ -520,13 +517,17 @@
             </div>
           </div>
         </div>
-        <input
-          id="searchBox"
-          class="searchBox"
-          type="text"
-          maxlength="200"
-          autocomplete="off"
-        />
+        <div id="quoteSearchControlsWrapper">
+          <input
+            id="searchBox"
+            class="searchBox"
+            type="text"
+            maxlength="200"
+            autocomplete="off"
+            placeholder="Filter by text"
+          />
+          <select class="quoteLengthFilter"></select>
+        </div>
         <div id="extraResults">No search results</div>
         <div id="quoteSearchResults" class="quoteSearchResults"></div>
       </div>
@@ -4975,7 +4976,6 @@
   <script src="js/jquery-3.5.1.min.js"></script>
   <script src="js/jquery.color.min.js"></script>
   <script src="js/easing.min.js"></script>
-  <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
   <script src="js/select2.min.js"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>

@@ -20,7 +20,6 @@ router.get(
       skip: joi.number().min(0),
       limit: joi.number().min(0).max(50),
     },
-    validationErrorMessage: "Missing parameters",
   }),
   asyncHandler(LeaderboardsController.get)
 );
@@ -36,7 +35,6 @@ router.get(
       mode: joi.string().required(),
       mode2: joi.string().required(),
     },
-    validationErrorMessage: "Missing parameters",
   }),
   asyncHandler(LeaderboardsController.getRank)
 );

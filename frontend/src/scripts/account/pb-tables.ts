@@ -1,6 +1,7 @@
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { format } from "date-fns";
 
 export function update(): void {
   $(".pageAccount .timePbTable tbody").html(`
@@ -85,11 +86,12 @@ export function update(): void {
   try {
     pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -113,11 +115,12 @@ export function update(): void {
   try {
     pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -141,11 +144,12 @@ export function update(): void {
   try {
     pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -169,11 +173,12 @@ export function update(): void {
   try {
     pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -200,11 +205,12 @@ export function update(): void {
   try {
     pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -228,11 +234,12 @@ export function update(): void {
   try {
     pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -256,11 +263,12 @@ export function update(): void {
   try {
     pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>
@@ -284,11 +292,12 @@ export function update(): void {
   try {
     pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
     dateText = `-<br><span class="sub">-</span>`;
+    const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText =
-        moment(pbData.timestamp).format("DD MMM YYYY") +
+        format(date, "dd MMM yyyy") +
         "<br><div class='sub'>" +
-        moment(pbData.timestamp).format("HH:mm") +
+        format(date, "HH:mm") +
         "</div>";
     }
     text += `<tr>

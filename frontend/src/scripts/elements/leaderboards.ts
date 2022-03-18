@@ -3,6 +3,7 @@ import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
+import { format } from "date-fns";
 
 const currentLeaderboard = "time_15";
 
@@ -120,6 +121,7 @@ function updateFooter(lb: LbKey): void {
   }
   if (currentRank[lb]) {
     const entry = currentRank[lb];
+    const date = new Date(entry.timestamp);
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
     <td>${entry.rank}</td>
@@ -137,9 +139,8 @@ function updateFooter(lb: LbKey): void {
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
     <td class="alignRight">time<br><div class="sub">${lb}</div></td>
-    <td class="alignRight">${moment(entry.timestamp).format(
-      "DD MMM YYYY"
-    )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
+    <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
+    <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
   `);
   }
@@ -216,6 +217,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
     if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
     }
+    const date = new Date(entry.timestamp);
     html += `
     <tr ${meClassString}>
     <td>${
@@ -235,9 +237,8 @@ function fillTable(lb: LbKey, prepend?: number): void {
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
     <td class="alignRight">time<br><div class="sub">${lb}</div></td>
-    <td class="alignRight">${moment(entry.timestamp).format(
-      "DD MMM YYYY"
-    )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
+    <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
+    <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
   `;
   }

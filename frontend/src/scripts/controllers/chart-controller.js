@@ -4,6 +4,7 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
+import { format } from "date-fns";
 
 Chart.defaults.global.animation.duration = 250;
 
@@ -244,7 +245,10 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
             "\n" +
             `language: ${resultData.language}` +
             "\n\n" +
-            `date: ${moment(resultData.timestamp).format("DD MMM YYYY HH:mm")}`;
+            `date: ${format(
+              new Date(resultData.timestamp),
+              "dd MMM yyyy HH:mm"
+            )}`;
 
           return label;
         },
@@ -356,7 +360,7 @@ export let accountActivity = new Chart(
               data.datasets[tooltipItem[0].datasetIndex].data[
                 tooltipItem[0].index
               ];
-            return moment(resultData.x).format("DD MMM YYYY");
+            return format(new Date(resultData.x), "dd MMM yyyy");
           },
           beforeLabel: function (tooltipItem, data) {
             let resultData =

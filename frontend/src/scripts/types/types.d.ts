@@ -591,7 +591,7 @@ declare namespace MonkeyTypes {
     source: string;
     length: number;
     id: number;
-    group?: number;
+    group: number;
     language: string;
     textSplit?: string[];
   }

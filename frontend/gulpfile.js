@@ -1,21 +1,15 @@
-const { task, src, dest, series, watch } = require("gulp");
-// const axios = require("axios");
-const concat = require("gulp-concat");
 const del = require("del");
-const vinylPaths = require("vinyl-paths");
-const eslint = require("gulp-eslint-new");
-const sass = require("gulp-sass")(require("dart-sass"));
-const replace = require("gulp-replace");
-const through2 = require("through2");
+const concat = require("gulp-concat");
 const { webpack } = require("webpack");
-const webpackDevConfig = require("./webpack.config.dev.js");
-const webpackProdConfig = require("./webpack.config.prod.js");
-const ts = require("gulp-typescript");
+const eslint = require("gulp-eslint-new");
+const vinylPaths = require("vinyl-paths");
+const sass = require("gulp-sass")(require("dart-sass"));
+const { task, src, dest, series, watch } = require("gulp");
+const webpackDevConfig = require("./webpack/config.dev.js");
+const webpackProdConfig = require("./webpack/config.prod.js");
 
-const JSONValidation = require("./json-validation");
-
+const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
-const tsProject = ts.createProject("tsconfig.json");
 
 task("clean", function () {
   return src(["./public/"], { allowEmpty: true }).pipe(vinylPaths(del));
@@ -39,45 +33,29 @@ task("validate-json-schema", function () {
   return JSONValidation.validateAll();
 });
 
-task("copy-src-contents", function () {
-  return src("./src/scripts/**").pipe(dest("./dist/"));
-});
-
-task("transpile-ts", function () {
-  return tsProject.src().pipe(tsProject()).js.pipe(dest("dist"));
-});
-
-task("webpack", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackDevConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
+const taskWithWebpackConfig = (webpackConfig) => {
+  return async () => {
+    return new Promise((resolve, reject) => {
+      webpack(webpackConfig, (err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+        if (stats.hasErrors()) {
+          return reject(new Error(stats.compilation.errors.join("\n")));
+        }
+        console.log(
+          `Finished building in ${
+            (stats.endTime - stats.startTime) / 1000
+          } second(s)`
+        );
+        resolve();
+      });
     });
-  });
-});
+  };
+};
 
-task("webpack-production", async function () {
-  return new Promise((resolve, reject) => {
-    webpack(webpackProdConfig, (err, stats) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stats.hasErrors()) {
-        return reject(new Error(stats.compilation.errors.join("\n")));
-      }
-      resolve();
-    });
-  });
-});
-
-task("static", function () {
-  return src("./static/**/*", { dot: true }).pipe(dest("./public/"));
-});
+task("webpack", taskWithWebpackConfig(webpackDevConfig));
+task("webpack-production", taskWithWebpackConfig(webpackProdConfig));
 
 task("sass", function () {
   return src("./src/styles/*.scss")
@@ -86,43 +64,7 @@ task("sass", function () {
     .pipe(dest("public/css"));
 });
 
-task("updateSwCacheName", function () {
-  const date = new Date();
-  const dateString =
-    date.getFullYear() +
-    "-" +
-    (date.getMonth() + 1) +
-    "-" +
-    date.getDate() +
-    "-" +
-    date.getHours() +
-    "-" +
-    date.getMinutes() +
-    "-" +
-    date.getSeconds();
-
-  return src(["static/sw.js"])
-    .pipe(
-      replace(
-        /const staticCacheName = .*;/g,
-        `const staticCacheName = "sw-cache-${dateString}";`
-      )
-    )
-    .pipe(
-      through2.obj(function (file, enc, cb) {
-        const date = new Date();
-        file.stat.atime = date;
-        file.stat.mtime = date;
-        cb(null, file);
-      })
-    )
-    .pipe(dest("./public/"));
-});
-
-task(
-  "compile",
-  series("lint", "lint-json", "webpack", "static", "sass", "updateSwCacheName")
-);
+task("compile", series("lint", "lint-json", "webpack", "sass"));
 
 task(
   "compile-production",
@@ -131,9 +73,7 @@ task(
     "lint-json",
     "validate-json-schema",
     "webpack-production",
-    "static",
-    "sass",
-    "updateSwCacheName"
+    "sass"
   )
 );
 
@@ -146,9 +86,9 @@ task("watch", function () {
       "./src/scripts/*.js",
       "./src/scripts/*.ts",
     ],
-    series("lint", "webpack")
+    series("lint")
   );
-  watch(["./static/**/*.*", "./static/*.*"], series("lint-json", "static"));
+  watch(["./static/**/*.*", "./static/*.*"], series("lint-json"));
 });
 
 task("build", series("clean", "compile"));
