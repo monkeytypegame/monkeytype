@@ -37,6 +37,7 @@ import {
   linkWithPopup,
   reauthenticateWithPopup,
   unlink as unlinkAuth,
+  getAdditionalUserInfo,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 export const gmailProvider = new GoogleAuthProvider();
@@ -376,7 +377,7 @@ export async function signInWithGoogle() {
     await setPersistence(Auth, persistence);
     signedInUser = await signInWithPopup(Auth, gmailProvider);
 
-    if (signedInUser.additionalUserInfo.isNewUser) {
+    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
       //ask for username
       let nameGood = false;
       let name = "";
@@ -415,8 +416,8 @@ export async function signInWithGoogle() {
       //   return;
       // }
       if (response.status === 200) {
-        await signedInUser.user.updateProfile({ displayName: name });
-        await signedInUser.user.sendEmailVerification();
+        await updateProfile(signedInUser.user, { displayName: name });
+        await sendEmailVerification(signedInUser.user);
         AllTimeStats.clear();
         Notifications.add("Account created", 1, 3);
         $("#menu .icon-button.account .text").text(name);
@@ -453,7 +454,7 @@ export async function signInWithGoogle() {
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
-    if (signedInUser?.additionalUserInfo?.isNewUser) {
+    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();
     }
