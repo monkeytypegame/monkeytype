@@ -68,6 +68,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - To find it, go to the Firebase console
    - Navigate to `Project Settings > General > Your apps`
+     - If there are no apps in your project, create a new web app
    - In the `SDK setup and configuration` section, select `npm`
    - The Firebase config will be visible below
 
