@@ -6,6 +6,7 @@ import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
+import * as PageTransition from "../states/page-transition";
 import { Auth } from "../firebase";
 
 let commandLineMouseMode = false;
@@ -375,6 +376,7 @@ $("#commandLine input").keyup((e) => {
 
 $(document).ready(() => {
   $(document).on("keydown", (event) => {
+    if (PageTransition.get()) return event.preventDefault();
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
       event.key === "Escape" ||
