@@ -111,12 +111,11 @@ export async function getDataAndInit(): Promise<boolean> {
   ResultFilters.loadTags(snapshot.tags);
 
   Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-    const languages = values[0];
-    const funboxModes = values[1];
+    const [languages, funboxes] = values;
     languages.forEach((language) => {
       ResultFilters.defaultResultFilters.language[language] = true;
     });
-    funboxModes.forEach((funbox) => {
+    funboxes.forEach((funbox) => {
       ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
     });
     // filters = defaultResultFilters;
