@@ -1,4 +1,4 @@
-const path = require("path");
+const { resolve } = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -8,7 +8,7 @@ let circularImports = 0;
 
 const BASE_CONFIGURATION = {
   entry: {
-    monkeytype: path.resolve(__dirname, "../src/scripts/index.ts"),
+    monkeytype: resolve(__dirname, "../src/scripts/index.ts"),
   },
   resolve: {
     fallback: {
@@ -18,12 +18,12 @@ const BASE_CONFIGURATION = {
       "bn.js": require.resolve("bn.js"),
     },
     alias: {
-      "bn.js": path.resolve(__dirname, "node_modules/bn.js/lib/bn.js"),
+      "bn.js": resolve(__dirname, "node_modules/bn.js/lib/bn.js"),
     },
     extensions: [".ts", ".js"],
   },
   output: {
-    path: path.resolve(__dirname, "../public/js/"),
+    path: resolve(__dirname, "../public/js/"),
     filename: "[name].[chunkhash:8].js",
     clean: true,
   },
@@ -91,8 +91,8 @@ const BASE_CONFIGURATION = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "../static"),
-          to: path.resolve(__dirname, "../public/"),
+          from: resolve(__dirname, "../static"),
+          to: resolve(__dirname, "../public/"),
           globOptions: {
             ignore: ["**/index.html"],
           },
@@ -100,8 +100,8 @@ const BASE_CONFIGURATION = {
       ],
     }),
     new HtmlWebpackPlugin({
-      filename: path.resolve(__dirname, "../public/index.html"),
-      template: path.resolve(__dirname, "../static/index.html"),
+      filename: resolve(__dirname, "../public/index.html"),
+      template: resolve(__dirname, "../static/index.html"),
       inject: "body",
     }),
     new MiniCssExtractPlugin({
