@@ -457,11 +457,8 @@ export async function signInWithGoogle(): Promise<void> {
     }
   } catch (e) {
     console.log(e);
-    let message = "Failed to sign in with Google";
-    if (e instanceof Error) {
-      message = "Failed to sign in with Google: " + e.message;
-    }
-    Notifications.add("Failed to sign in with Google: " + message, -1);
+    const message = Misc.createErrorMessage(e, "Failed to sign in with Google");
+    Notifications.add(message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
@@ -502,10 +499,7 @@ export async function removeGoogleAuth(): Promise<void> {
       await reauthenticateWithPopup(user, gmailProvider);
     } catch (e) {
       Loader.hide();
-      let message = "Failed to reauthenticate";
-      if (e instanceof Error) {
-        message = "Failed to reauthenticate: " + e.message;
-      }
+      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
       return Notifications.add(message, -1);
     }
     unlinkAuth(user, "google.com")
@@ -543,10 +537,7 @@ export async function addPasswordAuth(
       await reauthenticateWithPopup(user, gmailProvider);
     } catch (e) {
       Loader.hide();
-      let message = "Failed to reauthenticate";
-      if (e instanceof Error) {
-        message = "Failed to reauthenticate: " + e.message;
-      }
+      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
       return Notifications.add(message, -1);
     }
   }
@@ -671,10 +662,7 @@ async function signUp(): Promise<void> {
       await createdAuthUser.user.delete();
     }
     console.log(e);
-    let message = "Failed to create account";
-    if (e instanceof Error) {
-      message = "Failed to create account: " + e.message;
-    }
+    const message = Misc.createErrorMessage(e, "Failed to create account");
     Notifications.add(message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
