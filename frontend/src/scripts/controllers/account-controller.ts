@@ -80,7 +80,7 @@ export async function getDataAndInit(): Promise<boolean> {
   } catch (error) {
     const e = error as { message: string; responseCode: number };
     AccountButton.loading(false);
-    if (e?.responseCode === 429) {
+    if (e.responseCode === 429) {
       Notifications.add(
         "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
         0,
@@ -92,7 +92,7 @@ export async function getDataAndInit(): Promise<boolean> {
         0
       );
     }
-    const msg = e?.message || e;
+    const msg = e.message || e;
     Notifications.add("Failed to get user data: " + msg, -1);
 
     $("#top #menu .account").css("opacity", 1);
