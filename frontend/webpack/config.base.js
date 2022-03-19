@@ -12,6 +12,10 @@ const BASE_CONFIGURATION = {
       crypto: require.resolve("crypto-browserify"),
       stream: require.resolve("stream-browserify"),
       buffer: require.resolve("buffer"),
+      "bn.js": require.resolve("bn.js"),
+    },
+    alias: {
+      "bn.js": path.resolve(__dirname, "node_modules/bn.js/lib/bn.js"),
     },
     extensions: [".ts", ".js"],
   },
