@@ -97,7 +97,7 @@ async function updateGraph(): Promise<void> {
       id: "funbox-label",
       type: "line",
       scaleID: "wpm",
-      value: 0,
+      value: ChartController.result.options.scales!["wpm"]!.min,
       borderColor: "transparent",
       borderWidth: 1,
       borderDash: [2, 2],
