@@ -1,6 +1,7 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 let circularImports = 0;
 
@@ -17,9 +18,30 @@ const BASE_CONFIGURATION = {
   output: {
     path: path.resolve(__dirname, "../public/js/"),
     filename: "monkeytype.js",
+    clean: true,
   },
   module: {
-    rules: [{ test: /\.tsx?$/, loader: "ts-loader" }],
+    rules: [
+      { test: /\.tsx?$/, loader: "ts-loader" },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: {
+              url: false,
+            },
+          },
+          {
+            loader: "sass-loader",
+            options: {
+              implementation: require("sass"),
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new CircularDependencyPlugin({
@@ -44,6 +66,9 @@ const BASE_CONFIGURATION = {
     }),
     new CopyPlugin({
       patterns: [{ from: "./static", to: "../" }],
+    }),
+    new MiniCssExtractPlugin({
+      filename: "../css/style.css",
     }),
   ],
 };

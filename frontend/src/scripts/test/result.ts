@@ -14,6 +14,7 @@ import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 import { Chart } from "chart.js";
 import { AnnotationOptions } from "chartjs-plugin-annotation";
+import { Auth } from "../firebase";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -613,7 +614,7 @@ export function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").blur();
   $("#result .stats .time .bottom .afk").text("");
-  if (firebase.auth().currentUser != null) {
+  if (Auth.currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -668,7 +669,7 @@ export function update(
     $("#middle #result .stats").removeClass("hidden");
     $("#middle #result .chart").removeClass("hidden");
     // $("#middle #result #resultWordsHistory").removeClass("hidden");
-    if (firebase.auth().currentUser == null) {
+    if (Auth.currentUser == null) {
       $("#middle #result .loginTip").removeClass("hidden");
     }
     $("#middle #result #showWordHistoryButton").removeClass("hidden");

@@ -1,5 +1,8 @@
 // this file should be concatenated at the top of the legacy js files
 
+import "../styles/index.scss";
+import "./firebase";
+
 import * as DB from "./db";
 import Config from "./config";
 import * as TestStats from "./test/test-stats";

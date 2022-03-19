@@ -10,7 +10,6 @@
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "types": [
       "jquery",
-      "firebase",
       "select2"
     ] /* Specify type package names to be included without being referenced in a source file. */,
     "allowUmdGlobalAccess": true /* Allow accessing UMD globals from modules. */,
