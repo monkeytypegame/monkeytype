@@ -78,6 +78,8 @@ node_modules_bak/
 .firebaserc
 .firebaserc_copy
 serviceAccountKey*.json
+frontend/src/scripts/constants/firebase-config.ts
+frontend/src/scripts/constants/firebase-config-live.ts
 
 #generated files
 dist/
@@ -104,5 +106,3 @@ dep-graph.png
 # TypeScript
 build/
 backend/worker.*
-frontend/src/scripts/constants/firebase-config-live.ts
-frontend/src/scripts/constants/firebase-config.ts

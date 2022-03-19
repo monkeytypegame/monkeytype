@@ -2,6 +2,7 @@
 import * as PageController from "./page-controller";
 // import Config from "../config";
 import * as ActivePage from "../states/active-page";
+import { Auth } from "../firebase";
 
 const mappedRoutes = {
   "/": "pageLoading",
@@ -45,7 +46,7 @@ $(window).on("popstate", (e) => {
     // show about
     PageController.change("about");
   } else if (state == "account" || state == "login") {
-    if (firebase.auth().currentUser) {
+    if (Auth.currentUser) {
       PageController.change("account");
     } else {
       PageController.change("login");

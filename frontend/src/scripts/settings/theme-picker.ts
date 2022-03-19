@@ -8,6 +8,7 @@ import * as CustomThemePopup from "../popups/custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
+import { Auth } from "../firebase";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -109,7 +110,7 @@ export async function refreshButtons(): Promise<void> {
     ).empty();
     const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
 
-    if (firebase.auth().currentUser === null) {
+    if (Auth.currentUser === null) {
       $(
         ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
       ).text("save");
@@ -425,7 +426,7 @@ $("#shareCustomThemeButton").on("click", () => {
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   saveCustomThemeColors();
-  if (firebase.auth().currentUser) {
+  if (Auth.currentUser) {
     const newCustomTheme = {
       name: "custom",
       colors: Config.customThemeColors,
