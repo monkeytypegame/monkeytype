@@ -20,7 +20,7 @@ const PRODUCTION_CONFIGURATION = {
         loader: "string-replace-loader",
         options: {
           search: /^export const CLIENT_VERSION =.*/,
-          replace(_match, _p1, _offset, _string) {
+          replace() {
             const date = new Date();
 
             const versionPrefix = pad(
@@ -36,6 +36,17 @@ const PRODUCTION_CONFIGURATION = {
             const version = [versionPrefix, versionSuffix].join("_");
 
             return `export const CLIENT_VERSION = "${version}";`;
+          },
+          flags: "g",
+        },
+      },
+      {
+        test: /firebase\.ts$/,
+        loader: "string-replace-loader",
+        options: {
+          search: /\.\/constants\/firebase-config/,
+          replace() {
+            return "./constants/firebase-config-live";
           },
           flags: "g",
         },
