@@ -6,7 +6,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 let circularImports = 0;
 
 const BASE_CONFIGURATION = {
-  entry: path.resolve(__dirname, "../src/scripts/index.ts"),
+  entry: {
+    monkeytype: path.resolve(__dirname, "../src/scripts/index.ts"),
+  },
   resolve: {
     fallback: {
       crypto: require.resolve("crypto-browserify"),
@@ -21,7 +23,7 @@ const BASE_CONFIGURATION = {
   },
   output: {
     path: path.resolve(__dirname, "../public/js/"),
-    filename: "monkeytype.js",
+    filename: "[name].js",
     clean: true,
   },
   module: {
@@ -46,6 +48,23 @@ const BASE_CONFIGURATION = {
         ],
       },
     ],
+  },
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      minChunks: 1,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      enforceSizeThreshold: 50000,
+      cacheGroups: {
+        defaultVendors: {
+          name: "vendor",
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+      },
+    },
   },
   plugins: [
     new CircularDependencyPlugin({
