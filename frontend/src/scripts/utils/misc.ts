@@ -1011,10 +1011,7 @@ export function randomElementFromObject<T extends object>(
   return randomElementFromArray(Object.values(object));
 }
 
-export function createErrorMessage(
-  error: unknown | Error,
-  message: string
-): string {
+export function createErrorMessage(error: unknown, message: string): string {
   if (error instanceof Error) {
     return `${message}: ${error.message}`;
   } else {
