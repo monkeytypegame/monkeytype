@@ -145,6 +145,8 @@ Before submitting a theme make sure...
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
 
+(If you want to contribute quotes but don't know how, check [QUOTES.md](https://github.com/teddinotteddy/monkeytype/blob/8d5ffde578030a07458cec391e862f8f3cd5b4b4/QUOTES.md))
+
 ## Questions
 
 If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions) and a contributor will be happy to assist you.
