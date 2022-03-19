@@ -14,6 +14,7 @@ import {
 import { debounce } from "../utils/debounce";
 import { splitByAndKeep } from "../utils/strings";
 import QuotesController from "../controllers/quotes-controller";
+import { Auth } from "../firebase";
 
 export let selectedId = 1;
 
@@ -89,7 +90,7 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const isNotAuthed = !firebase.auth().currentUser;
+  const isNotAuthed = !Auth.currentUser;
 
   return `
   <div class="searchResult" id="${quote.id}">
@@ -160,7 +161,7 @@ export async function show(clearText = true): Promise<void> {
 
     const quoteSearchInputValue = $("#quoteSearchPopup input").val() as string;
 
-    if (!firebase.auth().currentUser) {
+    if (!Auth.currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
     } else {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").removeClass("hidden");

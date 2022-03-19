@@ -1,3 +1,4 @@
+import { Auth } from "../firebase";
 import * as Misc from "../utils/misc";
 
 export function loading(truefalse: boolean): void {
@@ -13,7 +14,7 @@ export function loading(truefalse: boolean): void {
 }
 
 export function update(): void {
-  if (firebase.auth().currentUser != null) {
+  if (Auth.currentUser != null) {
     Misc.swapElements(
       $("#menu .icon-button.login"),
       $("#menu .icon-button.account"),

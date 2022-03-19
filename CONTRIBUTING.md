@@ -50,7 +50,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
    - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
-1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -64,17 +64,25 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - Run `firebase projects:list` to find your firebase project id.
 
-1. Generate a Firebase Admin private key
+1. Within the `frontend/src/scripts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
 
-   - In your Firebase console, go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
+   - To find it, go to the Firebase console
+   - Navigate to `Project Settings > General > Your apps`
+     - If there are no apps in your project, create a new web app
+   - In the `SDK setup and configuration` section, select `npm`
+   - The Firebase config will be visible below
 
-1. Enable Firebase Authentication
+1. Enable Firebase Authentication (optional)
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email and save
+
+1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
+
+   - In your Firebase console, go to Project Settings > Service Accounts
+   - Click "Generate New Private Key"
+   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
 #### Mongo Setup
 

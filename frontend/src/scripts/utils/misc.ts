@@ -1,9 +1,10 @@
 import * as Loader from "../elements/loader";
 import { format } from "date-fns";
+import { Auth } from "../firebase";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
-  console.log(firebase.auth().currentUser.uid);
+  console.log(Auth.currentUser?.uid);
   console.error("Only share this uid with Miodec and nobody else!");
 }
 

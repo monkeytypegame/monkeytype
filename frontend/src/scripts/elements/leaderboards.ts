@@ -4,6 +4,7 @@ import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
 import { format } from "date-fns";
+import { Auth } from "../firebase";
 
 const currentLeaderboard = "time_15";
 
@@ -282,7 +283,7 @@ async function update(): Promise<void> {
     Ape.leaderboards.get("english", "time", "60", 0),
   ];
 
-  if (firebase.auth().currentUser) {
+  if (Auth.currentUser) {
     leaderboardRequests.push(
       Ape.leaderboards.getRank("english", "time", "15"),
       Ape.leaderboards.getRank("english", "time", "60")
@@ -382,7 +383,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 
 export function show(): void {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
-    if (firebase.auth().currentUser) {
+    if (Auth.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );
