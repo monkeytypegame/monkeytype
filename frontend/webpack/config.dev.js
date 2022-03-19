@@ -7,7 +7,7 @@ const DEVELOPMENT_CONFIGURATION = {
   mode: "development",
   devtool: false,
   watch: true,
-  plugins: [new BundleAnalyzerPlugin()],
+  plugins: [new BundleAnalyzerPlugin({ openAnalyzer: false })],
 };
 
 module.exports = merge(BASE_CONFIGURATION, DEVELOPMENT_CONFIGURATION);
