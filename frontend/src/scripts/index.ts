@@ -1,15 +1,5 @@
 // this file should be concatenated at the top of the legacy js files
 
-// @ts-ignore
-import Chart from "chart.js";
-// @ts-ignore
-import chartTrendline from "chartjs-plugin-trendline";
-// @ts-ignore
-import chartAnnotation from "chartjs-plugin-annotation";
-
-Chart.plugins.register(chartTrendline);
-Chart.plugins.register(chartAnnotation);
-
 import * as DB from "./db";
 import Config from "./config";
 import * as TestStats from "./test/test-stats";
