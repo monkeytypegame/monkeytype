@@ -3,10 +3,10 @@ const BASE_CONFIGURATION = require("./config.base");
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
-const DEVELOPMENT_CONFIGURATION = {
+const AUDIT_CONFIGURATION = {
   mode: "development",
   devtool: false,
   plugins: [new BundleAnalyzerPlugin({ openAnalyzer: false })],
 };
 
-module.exports = merge(BASE_CONFIGURATION, DEVELOPMENT_CONFIGURATION);
+module.exports = merge(BASE_CONFIGURATION, AUDIT_CONFIGURATION);
