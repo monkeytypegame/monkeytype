@@ -91,8 +91,8 @@ const BASE_CONFIGURATION = {
     new CopyPlugin({
       patterns: [
         {
-          from: "./static",
-          to: "../",
+          from: path.resolve(__dirname, "../static"),
+          to: path.resolve(__dirname, "../public/"),
           globOptions: {
             ignore: ["**/index.html"],
           },
