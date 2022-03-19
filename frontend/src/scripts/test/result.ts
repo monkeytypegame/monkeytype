@@ -382,7 +382,7 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags").removeClass("hidden");
   }
   $("#result .stats .tags .bottom").text("");
-  let annotationSide = "left";
+  let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
     const tpb = await DB.getLocalTagPB(
@@ -455,11 +455,11 @@ function updateTags(dontSave: boolean): void {
             ).toFixed(2)}`,
           },
         });
-        if (annotationSide === "left") {
-          annotationSide = "right";
+        if (annotationSide === "start") {
+          annotationSide = "end";
           labelAdjust = -15;
         } else {
-          annotationSide = "left";
+          annotationSide = "start";
           labelAdjust = 15;
         }
       }
