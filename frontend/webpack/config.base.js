@@ -2,6 +2,7 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 let circularImports = 0;
 
@@ -23,7 +24,7 @@ const BASE_CONFIGURATION = {
   },
   output: {
     path: path.resolve(__dirname, "../public/js/"),
-    filename: "[name].js",
+    filename: "[name].[chunkhash:8].js",
     clean: true,
   },
   module: {
@@ -88,7 +89,20 @@ const BASE_CONFIGURATION = {
       },
     }),
     new CopyPlugin({
-      patterns: [{ from: "./static", to: "../" }],
+      patterns: [
+        {
+          from: "./static",
+          to: "../",
+          globOptions: {
+            ignore: ["**/index.html"],
+          },
+        },
+      ],
+    }),
+    new HtmlWebpackPlugin({
+      filename: path.resolve(__dirname, "../public/index.html"),
+      template: path.resolve(__dirname, "../static/index.html"),
+      inject: "body",
     }),
     new MiniCssExtractPlugin({
       filename: "../css/style.css",
