@@ -64,6 +64,16 @@ function hexToHSL(hex: string): {
   };
 }
 
+export function isColorLight(hex: string): boolean {
+  const hsl = hexToHSL(hex);
+  return hsl.lgt >= 50;
+}
+
+export function isColorDark(hex: string): boolean {
+  const hsl = hexToHSL(hex);
+  return hsl.lgt < 50;
+}
+
 type Theme = { name: string; bgColor: string; mainColor: string };
 
 let themesList: Theme[] = [];

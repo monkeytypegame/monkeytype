@@ -64,7 +64,6 @@
     "howler": "^2.2.1",
     "html2canvas": "1.4.1",
     "node-object-hash": "2.3.10",
-    "stemmer": "2.0.0",
-    "tinycolor2": "^1.4.2"
+    "stemmer": "2.0.0"
   }
 }

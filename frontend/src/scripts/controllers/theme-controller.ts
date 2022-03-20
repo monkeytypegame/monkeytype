@@ -2,7 +2,6 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
 import Config, * as UpdateConfig from "../config";
-import tinycolor from "tinycolor2";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -180,11 +179,11 @@ export function randomizeTheme(): void {
       randomList = Config.favThemes;
     } else if (Config.randomTheme === "light") {
       randomList = themes
-        .filter((t) => tinycolor(t.bgColor).isLight())
+        .filter((t) => Misc.isColorLight(t.bgColor))
         .map((t) => t.name);
     } else if (Config.randomTheme === "dark") {
       randomList = themes
-        .filter((t) => tinycolor(t.bgColor).isDark())
+        .filter((t) => Misc.isColorDark(t.bgColor))
         .map((t) => t.name);
     } else if (Config.randomTheme === "on") {
       randomList = themes.map((t) => {
