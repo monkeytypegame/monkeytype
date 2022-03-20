@@ -54,7 +54,7 @@ class ChartWithUpdateColors extends Chart {
   }
 
   updateColors() {
-    updateColors(this);
+    return updateColors(this);
   }
 }
 
@@ -250,6 +250,9 @@ export let accountHistory = new ChartWithUpdateColors(
       ],
     },
     options: {
+      animation: {
+        duration: 0,
+      },
       responsive: true,
       maintainAspectRatio: false,
       hover: {
@@ -404,6 +407,7 @@ export let accountActivity = new ChartWithUpdateColors(
       ],
     },
     options: {
+      animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
       hover: {
@@ -688,7 +692,9 @@ export let miniResult = new ChartWithUpdateColors(
 function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
   accountHistory.options.scales["acc"].display = Config.chartAccuracy;
+  accountHistory.options.animation.duration = Chart.defaults.animation.duration;
   accountHistory.update();
+  accountHistory.options.animation.duration = 0;
 }
 
 function updateStyle() {

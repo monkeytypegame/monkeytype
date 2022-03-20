@@ -236,7 +236,13 @@ export function smoothHistory(factor: number): void {
     chartData2;
   (ChartController.accountHistory.data.datasets[1].data as AccChartData[]) =
     accChartData2;
-  ChartController.accountHistory.updateColors(); // This is throwing a RangeError when accountHistory has no data but doesn't seem to have any visual impact
+
+  if (chartData2.length || accChartData2.length) {
+    ChartController.accountHistory.options.animation.duration =
+      Chart.defaults.animation.duration;
+    ChartController.accountHistory.update();
+    ChartController.accountHistory.options.animation.duration = 0;
+  }
 }
 
 function applyHistorySmoothing(): void {
@@ -253,7 +259,7 @@ export function update(): void {
     LoadingPage.updateBar(100);
     console.log("updating account page");
     ThemeColors.update();
-    ChartController.accountHistory.updateColors(); // This is throwing a RangeError when accountHistory has no data but doesn't seem to have any visual impact
+    ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
     AllTimeStats.update();
 
@@ -880,7 +886,7 @@ export function update(): void {
     );
 
     applyHistorySmoothing();
-    ChartController.accountActivity.update();
+    ChartController.accountActivity.updateColors();
     LoadingPage.updateBar(100, true);
     setTimeout(() => {
       if (ActivePage.get() == "account") SignOutButton.show();
