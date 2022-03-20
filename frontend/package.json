@@ -35,7 +35,6 @@
     "grecaptcha": "^1.0.3",
     "gulp": "^4.0.2",
     "gulp-eslint-new": "^1.3.0",
-    "gulp-sass": "^5.0.0",
     "html-minimizer-webpack-plugin": "3.5.0",
     "json-minimizer-webpack-plugin": "3.3.0",
     "madge": "5.0.1",
@@ -45,7 +44,6 @@
     "stream-browserify": "^3.0.0",
     "string-replace-loader": "3.1.0",
     "ts-loader": "9.2.6",
-    "vinyl-paths": "^3.0.1",
     "webpack": "^5.68.0",
     "webpack-cli": "4.9.2",
     "webpack-merge": "5.8.0"

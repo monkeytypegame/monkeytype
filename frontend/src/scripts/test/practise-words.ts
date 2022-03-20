@@ -93,6 +93,7 @@ export function init(missed: boolean, slow: boolean): void {
   CustomText.setWord(
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
+  CustomText.setTime(-1);
 
   before.mode = mode;
   before.punctuation = punctuation;
