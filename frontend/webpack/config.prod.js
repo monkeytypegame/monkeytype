@@ -11,6 +11,7 @@ function pad(numbers, maxLength, fillString) {
   );
 }
 
+/** @type { import('webpack').Configuration } */
 const PRODUCTION_CONFIG = {
   mode: "production",
   module: {

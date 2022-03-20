@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 let circularImports = 0;
 
+/** @type { import('webpack').Configuration } */
 const BASE_CONFIG = {
   entry: {
     monkeytype: resolve(__dirname, "../src/scripts/index.ts"),
