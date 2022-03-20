@@ -52,7 +52,7 @@ export default <MonkeyTypes.Config>{
   keymapStyle: "staggered",
   keymapLegendStyle: "lowercase",
   keymapLayout: "overrideSync",
-  fontFamily: "roboto_mono",
+  fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
