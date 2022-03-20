@@ -708,6 +708,10 @@ export async function updateColors(chart) {
   let maincolor = await ThemeColors.get("main");
   let errorcolor = await ThemeColors.get("error");
 
+  if (chart.data.datasets.every((dataset) => dataset.data.length === 0)) {
+    return;
+  }
+
   chart.data.datasets[0].borderColor = maincolor;
   chart.data.datasets[1].borderColor = subcolor;
   if (chart.data.datasets[2]) {
