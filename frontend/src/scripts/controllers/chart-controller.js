@@ -106,6 +106,7 @@ export let result = new ChartWithUpdateColors($("#wpmChart"), {
     ],
   },
   options: {
+    animation: { duration: 0 },
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -558,6 +559,7 @@ export let miniResult = new ChartWithUpdateColors(
       ],
     },
     options: {
+      animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
       scales: {
