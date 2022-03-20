@@ -17,8 +17,6 @@ import * as ActivePage from "../states/active-page";
 import { format } from "date-fns";
 import { Chart } from "chart.js";
 
-import type { AnimationSpec, LineControllerDatasetOptions } from "chart.js";
-
 let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
@@ -240,31 +238,6 @@ export function smoothHistory(factor: number): void {
     accChartData2;
 
   if (chartData2.length || accChartData2.length) {
-    (
-      (
-        ChartController.accountHistory.data
-          .datasets[0] as LineControllerDatasetOptions
-      ).animation as AnimationSpec<"line">
-    ).duration = 250;
-    (
-      (
-        ChartController.accountHistory.data
-          .datasets[1] as LineControllerDatasetOptions
-      ).animation as AnimationSpec<"line">
-    ).duration = 250;
-    ChartController.accountHistory.update();
-    (
-      (
-        ChartController.accountHistory.data
-          .datasets[0] as LineControllerDatasetOptions
-      ).animation as AnimationSpec<"line">
-    ).duration = 0;
-    (
-      (
-        ChartController.accountHistory.data
-          .datasets[1] as LineControllerDatasetOptions
-      ).animation as AnimationSpec<"line">
-    ).duration = 0;
     ChartController.accountHistory.update();
   }
 }

@@ -36,6 +36,10 @@ Chart.register(
   chartAnnotation
 );
 
+Chart.defaults.animation.duration = 0;
+Chart.defaults.elements.line.tension = 0.3;
+Chart.defaults.elements.line.fill = "origin";
+
 import * as TestInput from "../test/test-input";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../utils/misc";
@@ -43,10 +47,6 @@ import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { format } from "date-fns";
 import "chartjs-adapter-date-fns";
-
-Chart.defaults.animation.duration = 0;
-Chart.defaults.elements.line.tension = 0.3;
-Chart.defaults.elements.line.fill = "origin";
 
 class ChartWithUpdateColors extends Chart {
   constructor(item, config) {
@@ -226,7 +226,6 @@ export let accountHistory = new ChartWithUpdateColors(
     data: {
       datasets: [
         {
-          animation: { duration: 0 },
           yAxisID: "wpm",
           label: "wpm",
           fill: false,
@@ -240,7 +239,6 @@ export let accountHistory = new ChartWithUpdateColors(
           },
         },
         {
-          animation: { duration: 0 },
           yAxisID: "acc",
           label: "acc",
           fill: false,
@@ -688,12 +686,6 @@ export let miniResult = new ChartWithUpdateColors(
 function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
   accountHistory.options.scales["acc"].display = Config.chartAccuracy;
-
-  accountHistory.data.datasets[0].animation.duration = 250;
-  accountHistory.data.datasets[1].animation.duration = 250;
-  accountHistory.update();
-  accountHistory.data.datasets[0].animation.duration = 0;
-  accountHistory.data.datasets[1].animation.duration = 0;
   accountHistory.update();
 }
 
