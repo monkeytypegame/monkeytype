@@ -184,8 +184,8 @@ export function reset(): void {
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
-  ChartController.accountActivity.update();
-  ChartController.accountHistory.update();
+  ChartController.accountActivity.updateColors();
+  ChartController.accountHistory.updateColors();
 }
 
 type ChartData = {

@@ -250,9 +250,7 @@ export let accountHistory = new ChartWithUpdateColors(
       ],
     },
     options: {
-      animation: {
-        duration: 0,
-      },
+      animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
       hover: {
@@ -692,6 +690,7 @@ export let miniResult = new ChartWithUpdateColors(
 function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
   accountHistory.options.scales["acc"].display = Config.chartAccuracy;
+
   accountHistory.options.animation.duration = Chart.defaults.animation.duration;
   accountHistory.update();
   accountHistory.options.animation.duration = 0;
@@ -705,7 +704,7 @@ function updateStyle() {
     accountHistory.data.datasets[0].showLine = true;
     accountHistory.data.datasets[1].showLine = true;
   }
-  accountHistory.update();
+  accountHistory.updateColors();
 }
 
 export async function updateColors(chart) {
@@ -764,7 +763,7 @@ export async function updateColors(chart) {
     annotation.label.color = bgcolor;
   });
 
-  chart.update();
+  chart.update("none");
 }
 
 export function setDefaultFontFamily(font) {
