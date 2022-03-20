@@ -24,8 +24,8 @@ const BASE_CONFIG = {
     extensions: [".ts", ".js"],
   },
   output: {
-    path: resolve(__dirname, "../public/js/"),
-    filename: "[name].[chunkhash:8].js",
+    filename: "./js/[name].[chunkhash:8].js",
+    path: resolve(__dirname, "../public/"),
     clean: true,
   },
   module: {
@@ -93,7 +93,7 @@ const BASE_CONFIG = {
       patterns: [
         {
           from: resolve(__dirname, "../static"),
-          to: resolve(__dirname, "../public/"),
+          to: "./",
           globOptions: {
             ignore: ["**/index.html"],
           },
@@ -101,12 +101,12 @@ const BASE_CONFIG = {
       ],
     }),
     new HtmlWebpackPlugin({
-      filename: resolve(__dirname, "../public/index.html"),
+      filename: "./index.html",
       template: resolve(__dirname, "../static/index.html"),
       inject: "body",
     }),
     new MiniCssExtractPlugin({
-      filename: "../css/style.css",
+      filename: "./css/style.css",
     }),
   ],
 };

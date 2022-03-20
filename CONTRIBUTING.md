@@ -104,7 +104,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 1. Run `npm run install:all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install:windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run start:dev` (`npm run start:dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+2. Run `npm run dev` (`npm run dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 **Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
 

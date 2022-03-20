@@ -8,8 +8,7 @@
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
-    "dev": "nodemon --watch build/server.js ./build/server.js",
-    "start:dev": "concurrently \"npm run watch\" \"npm run dev\""
+    "dev": "concurrently \"npm run watch\" \"nodemon --watch build/server.js ./build/server.js\""
   },
   "engines": {
     "node": "16.13.2",
