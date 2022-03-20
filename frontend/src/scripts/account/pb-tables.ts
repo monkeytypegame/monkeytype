@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import { format } from "date-fns";
+import format from "date-fns/format";
 
 export function update(): void {
   $(".pageAccount .timePbTable tbody").html(`

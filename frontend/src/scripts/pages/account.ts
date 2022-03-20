@@ -14,8 +14,8 @@ import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
-import { format } from "date-fns";
-import { Chart } from "chart.js";
+import format from "date-fns/format";
+import type { Chart } from "chart.js";
 
 let filterDebug = false;
 //toggle filterdebug

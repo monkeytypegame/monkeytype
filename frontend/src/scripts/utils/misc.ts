@@ -1,5 +1,5 @@
 import * as Loader from "../elements/loader";
-import { format } from "date-fns";
+import format from "date-fns/format";
 import { Auth } from "../firebase";
 
 export function getuid(): void {
