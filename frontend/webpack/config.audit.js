@@ -5,7 +5,7 @@ const PROD_CONFIG = require("./config.prod");
 
 /** @type { import('webpack').Configuration } */
 const AUDIT_CONFIG = {
-  plugins: [new BundleAnalyzerPlugin({ openAnalyzer: false })],
+  plugins: [new BundleAnalyzerPlugin()],
 };
 
 module.exports = merge(PROD_CONFIG, AUDIT_CONFIG);
