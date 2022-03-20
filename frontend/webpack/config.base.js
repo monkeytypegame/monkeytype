@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 let circularImports = 0;
 
-const BASE_CONFIGURATION = {
+const BASE_CONFIG = {
   entry: {
     monkeytype: resolve(__dirname, "../src/scripts/index.ts"),
   },
@@ -110,4 +110,4 @@ const BASE_CONFIGURATION = {
   ],
 };
 
-module.exports = BASE_CONFIGURATION;
+module.exports = BASE_CONFIG;

@@ -1,10 +1,10 @@
 const { merge } = require("webpack-merge");
-const BASE_CONFIGURATION = require("./config.base");
+const BASE_CONFIG = require("./config.base");
 
-const DEVELOPMENT_CONFIGURATION = {
+const DEVELOPMENT_CONFIG = {
   mode: "development",
   devtool: "eval",
   watch: true,
 };
 
-module.exports = merge(BASE_CONFIGURATION, DEVELOPMENT_CONFIGURATION);
+module.exports = merge(BASE_CONFIG, DEVELOPMENT_CONFIG);
