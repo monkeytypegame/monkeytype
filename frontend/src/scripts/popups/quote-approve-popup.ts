@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import { format } from "date-fns";
+import format from "date-fns/format";
 
 type Quote = {
   _id: string;

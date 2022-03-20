@@ -3,7 +3,7 @@ import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
-import { format } from "date-fns";
+import format from "date-fns/format";
 import { Auth } from "../firebase";
 
 const currentLeaderboard = "time_15";

@@ -14,7 +14,7 @@ import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
-import { format } from "date-fns";
+import format from "date-fns/format";
 
 let filterDebug = false;
 //toggle filterdebug

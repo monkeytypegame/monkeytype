@@ -43,7 +43,7 @@ import {
   User as UserType,
 } from "firebase/auth";
 import { Auth } from "../firebase";
-import { differenceInDays } from "date-fns";
+import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
 
 export const gmailProvider = new GoogleAuthProvider();

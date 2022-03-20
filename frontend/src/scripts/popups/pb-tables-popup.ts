@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import { format } from "date-fns";
+import format from "date-fns/format";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;

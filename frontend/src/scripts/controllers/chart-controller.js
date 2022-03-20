@@ -4,7 +4,7 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import { format } from "date-fns";
+import format from "date-fns/format";
 
 Chart.defaults.global.animation.duration = 250;
 

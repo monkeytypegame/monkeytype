@@ -11,7 +11,7 @@ import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
-import { format } from "date-fns";
+import format from "date-fns/format";
 import { Auth } from "../firebase";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
