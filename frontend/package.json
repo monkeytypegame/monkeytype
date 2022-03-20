@@ -8,7 +8,7 @@
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts",
     "build": "npx gulp build",
     "build:live": "npx gulp build-production",
-    "start:dev": "concurrently \"webpack serve --config=./webpack/config.dev.js\" \"npx gulp watch\"",
+    "dev": "concurrently \"webpack serve --config=./webpack/config.dev.js\" \"npx gulp watch\"",
     "deploy:live": "npm run build:live && firebase deploy -P live --only hosting",
     "tsc": "tsc"
   },
