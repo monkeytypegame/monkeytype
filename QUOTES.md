@@ -14,7 +14,8 @@ First you will have to copy the Monkeytype repository also known as forking. Go 
 ## Creating Quotes
 
 After you forked the Monkeytype repository you can now add your quotes. (If you haven't already forked the repository, refer to this [section](#forking-monkeytype).) (Before continuing to the next step make sure the quote's language exists in Monkeytype) Add this code in at the end of the quotes `./frontend/static/quotes/[language].json`:
-``` 
+
+```
 {
     "text": "[quote]",
     "source": "[source]",
@@ -22,9 +23,10 @@ After you forked the Monkeytype repository you can now add your quotes. (If you 
     "length": [number of characters in quote]
 }
 ```
+
 (If the language does exist in Monkeytype, but there are no quotes for it create a new file for the language)
 
-### Committing Quotes 
+### Committing Quotes
 
 Once you have added your quotes(s), you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your languages on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
 
