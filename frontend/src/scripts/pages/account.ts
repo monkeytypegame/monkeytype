@@ -17,6 +17,8 @@ import * as ActivePage from "../states/active-page";
 import { format } from "date-fns";
 import { Chart } from "chart.js";
 
+import type { AnimationSpec } from "chart.js";
+
 let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
@@ -238,10 +240,13 @@ export function smoothHistory(factor: number): void {
     accChartData2;
 
   if (chartData2.length || accChartData2.length) {
-    ChartController.accountHistory.options.animation.duration =
-      Chart.defaults.animation.duration;
+    (
+      ChartController.accountHistory.options.animation as AnimationSpec<"line">
+    ).duration = 250; // Switch to default animation duration when the defaults key is found
     ChartController.accountHistory.update();
-    ChartController.accountHistory.options.animation.duration = 0;
+    (
+      ChartController.accountHistory.options.animation as AnimationSpec<"line">
+    ).duration = 0;
   }
 }
 
