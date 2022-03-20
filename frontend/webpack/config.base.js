@@ -25,7 +25,7 @@ const BASE_CONFIG = {
   },
   output: {
     filename: "./js/[name].[chunkhash:8].js",
-    path: path.resolve(__dirname, "../public/"),
+    path: resolve(__dirname, "../public/"),
     clean: true,
   },
   module: {
