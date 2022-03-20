@@ -1,5 +1,3 @@
-//@ts-nochec
-
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
