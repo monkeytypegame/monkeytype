@@ -226,6 +226,7 @@ export let accountHistory = new ChartWithUpdateColors(
     data: {
       datasets: [
         {
+          animation: { duration: 0 },
           yAxisID: "wpm",
           label: "wpm",
           fill: false,
@@ -239,6 +240,7 @@ export let accountHistory = new ChartWithUpdateColors(
           },
         },
         {
+          animation: { duration: 0 },
           yAxisID: "acc",
           label: "acc",
           fill: false,
@@ -687,10 +689,12 @@ function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
   accountHistory.options.scales["acc"].display = Config.chartAccuracy;
 
-  accountHistory.options.animation.duration = 250;
+  accountHistory.data.datasets[0].animation.duration = 250;
+  accountHistory.data.datasets[1].animation.duration = 250;
   accountHistory.update();
-  accountHistory.options.animation.duration = 0;
-  accountHistory.update("none");
+  accountHistory.data.datasets[0].animation.duration = 0;
+  accountHistory.data.datasets[1].animation.duration = 0;
+  accountHistory.update();
 }
 
 function updateStyle() {
