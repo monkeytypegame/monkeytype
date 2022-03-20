@@ -415,10 +415,10 @@ declare namespace MonkeyTypes {
     results?: Result<Mode>[];
     verified?: boolean;
     personalBests?: PersonalBests;
-    name?: string;
+    name: string;
     customThemes: CustomTheme[];
     presets?: Preset[];
-    tags?: Tag[];
+    tags: Tag[];
     favouriteThemes?: string[];
     lbMemory?: LeaderboardMemory;
     globalStats?: Stats;
