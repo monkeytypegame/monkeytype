@@ -1,7 +1,7 @@
 const { merge } = require("webpack-merge");
-const PROD_CONFIG = require("./config.prod");
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const PROD_CONFIG = require("./config.prod");
 
 /** @type { import('webpack').Configuration } */
 const AUDIT_CONFIG = {
