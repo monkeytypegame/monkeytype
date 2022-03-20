@@ -50,6 +50,8 @@ import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import NodeObjectHash from "node-object-hash";
+import * as AnalyticsController from "../controllers/analytics-controller";
+import { Auth } from "../firebase";
 
 const objecthash = NodeObjectHash().hash;
 
@@ -241,14 +243,11 @@ export function startTest(): boolean {
   if (!UpdateConfig.dbConfigLoaded) {
     UpdateConfig.setChangedBeforeDb(true);
   }
-  try {
-    if (firebase.auth().currentUser != null) {
-      firebase.analytics().logEvent("testStarted");
-    } else {
-      firebase.analytics().logEvent("testStartedNoLogin");
-    }
-  } catch (e) {
-    console.log("Analytics unavailable");
+
+  if (Auth.currentUser !== null) {
+    AnalyticsController.log("testStarted");
+  } else {
+    AnalyticsController.log("testStartedNoLogin");
   }
   TestActive.set(true);
   Replay.startReplayRecording();
@@ -894,7 +893,7 @@ export async function init(): Promise<void> {
         `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
         0
       );
-      if (firebase.auth().currentUser) {
+      if (Auth.currentUser) {
         QuoteSubmitPopup.show(false);
       }
       UpdateConfig.setMode("words");
@@ -1141,11 +1140,7 @@ export async function retrySavingResult(): Promise<void> {
     started: TestStats.restartCount + 1,
   });
 
-  try {
-    firebase.analytics().logEvent("testCompleted", completedEvent);
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
+  AnalyticsController.log("testCompleted");
 
   if (response.data.isPb) {
     //new pb
@@ -1437,14 +1432,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Result.updateTodayTracker();
   }
 
-  if (firebase.auth().currentUser == null) {
+  if (Auth.currentUser == null) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
-    try {
-      firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
   } else {
@@ -1474,11 +1465,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   if (dontSave) {
-    try {
-      firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    AnalyticsController.log("testCompletedInvalid");
     return;
   }
 
@@ -1492,7 +1479,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.resetIncomplete();
   }
 
-  completedEvent.uid = firebase.auth().currentUser.uid;
+  completedEvent.uid = Auth.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);
 
   Result.updateGraphPBLine();
@@ -1542,11 +1529,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     started: TestStats.restartCount + 1,
   });
 
-  try {
-    firebase.analytics().logEvent("testCompleted", completedEvent);
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
+  AnalyticsController.log("testCompleted");
 
   if (response.data.isPb) {
     //new pb

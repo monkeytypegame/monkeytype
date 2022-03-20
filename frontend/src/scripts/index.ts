@@ -1,5 +1,8 @@
 // this file should be concatenated at the top of the legacy js files
 
+import "../styles/index.scss";
+import "./firebase";
+
 // @ts-ignore
 import Chart from "chart.js";
 // @ts-ignore

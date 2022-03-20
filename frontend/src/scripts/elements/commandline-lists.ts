@@ -19,6 +19,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
+import { Auth } from "../firebase";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -1152,7 +1153,7 @@ const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
       display: "custom",
       configValue: "custom",
       exec: (): void => {
-        if (firebase.auth().currentUser === null) {
+        if (Auth.currentUser === null) {
           Notifications.add(
             "Multiple custom themes are available to logged in users only",
             0
@@ -1257,11 +1258,15 @@ export const customThemeListCommands: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateCustomThemeListCommands(): void {
-  if (firebase.auth().currentUser === null) {
+  if (Auth.currentUser === null) {
     return;
   }
 
   customThemeListCommands.list = [];
+
+  const snapshot = DB.getSnapshot();
+
+  if (!snapshot) return;
 
   if (DB.getSnapshot().customThemes.length < 0) {
     Notifications.add("You need to create a custom theme first", 0);
@@ -2857,7 +2862,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: customThemeListCommands,
       beforeSubgroup: (): void => updateCustomThemeListCommands(),
       available: (): boolean => {
-        return firebase.auth().currentUser !== null;
+        return Auth.currentUser !== null;
       },
     },
     {

@@ -5,6 +5,7 @@ import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
+import { Auth } from "../firebase";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -112,7 +113,7 @@ export async function update(): Promise<void> {
 
   if (Config.showAvg) {
     const val = Last10Average.get();
-    if (firebase.auth().currentUser && val > 0) {
+    if (Auth.currentUser && val > 0) {
       $(".pageTest #testModesNotice").append(
         `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${val}wpm</div>`
       );

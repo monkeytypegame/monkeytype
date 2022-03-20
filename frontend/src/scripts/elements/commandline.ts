@@ -5,6 +5,9 @@ import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
+import * as AnalyticsController from "../controllers/analytics-controller";
+import * as PageTransition from "../states/page-transition";
+import { Auth } from "../firebase";
 
 let commandLineMouseMode = false;
 
@@ -235,13 +238,7 @@ function trigger(command: string): void {
     }
   });
   if (!subgroup && !input && !sticky) {
-    try {
-      firebase.analytics().logEvent("usedCommandLine", {
-        command: command,
-      });
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    AnalyticsController.log("usedCommandLine", { command });
     hide();
   }
 }
@@ -379,6 +376,7 @@ $("#commandLine input").keyup((e) => {
 
 $(document).ready(() => {
   $(document).on("keydown", (event) => {
+    if (PageTransition.get()) return event.preventDefault();
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
       event.key === "Escape" ||
@@ -439,13 +437,7 @@ $("#commandInput input").on("keydown", (e) => {
         }
       }
     });
-    try {
-      firebase.analytics().logEvent("usedCommandLine", {
-        command: command,
-      });
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    AnalyticsController.log("usedCommandLine", { command: command ?? "" });
     hide();
   }
   return;
@@ -697,7 +689,7 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (firebase.auth().currentUser !== null) {
+      if (Auth.currentUser !== null) {
         if (DB.getSnapshot().customThemes.length < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);

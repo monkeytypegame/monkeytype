@@ -151,7 +151,12 @@
           <div class="subText">‎</div>
         </div>
         <div class="resetPassword hidden">
-          <input type="password" placeholder="New password" />
+          <input class="pwd" type="password" placeholder="New password" />
+          <input
+            class="pwd-confirm"
+            type="password"
+            placeholder="Confirm new password"
+          />
           <div class="button">Change</div>
         </div>
       </div>
@@ -226,7 +231,16 @@
 
           // TODO: Show the reset screen with the user's email and ask the user for
           // the new password.
-          var newPassword = $("#middle .resetPassword input").val();
+          var newPassword = $("#middle .resetPassword .pwd").val();
+          var newPasswordConfirm = $(
+            "#middle .resetPassword .pwd-confirm"
+          ).val();
+
+          if (newPassword !== newPasswordConfirm) {
+            alert("Passwords do not match");
+            showResetPassword();
+            return;
+          }
 
           // Save the new password.
           firebase

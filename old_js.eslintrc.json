@@ -5,7 +5,6 @@
     "node": true
   },
   "globals": {
-    "firebase": "readonly",
     "$": "readonly",
     "jQuery": "readonly",
     "html2canvas": "readonly",

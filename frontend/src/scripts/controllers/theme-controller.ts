@@ -7,6 +7,7 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
+import * as AnalyticsController from "../controllers/analytics-controller";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
@@ -132,13 +133,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
       });
     }
 
-    try {
-      firebase.analytics().logEvent("changedTheme", {
-        theme: themeName,
-      });
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
+    AnalyticsController.log("changedTheme", { theme: themeName });
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
         $(".keymap-key").attr("style", "");
@@ -264,7 +259,7 @@ export function applyCustomBackground(): void {
 }
 
 window
-  .matchMedia("(prefers-color-scheme: dark)")
+  .matchMedia?.("(prefers-color-scheme: dark)")
   ?.addEventListener("change", (event) => {
     if (!Config.autoSwitchTheme || Config.customTheme) return;
     if (event.matches) {

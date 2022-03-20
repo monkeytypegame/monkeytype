@@ -12,6 +12,7 @@ import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import { format } from "date-fns";
+import { Auth } from "../firebase";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -212,7 +213,7 @@ export async function screenshot(): Promise<void> {
     $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (firebase.auth().currentUser == null) {
+    if (Auth.currentUser == null) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
   }
@@ -227,7 +228,7 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .ssWatermark").text(
     format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
-  if (firebase.auth().currentUser != null) {
+  if (Auth.currentUser != null) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot().name +
         " | " +
