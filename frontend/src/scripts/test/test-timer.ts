@@ -87,35 +87,28 @@ function layoutfluid(): void {
     const layouts = Config.customLayoutfluid
       ? Config.customLayoutfluid.split("#")
       : ["qwerty", "dvorak", "colemak"];
-    // console.log(Config.customLayoutfluid);
-    // console.log(layouts);
-    const numLayouts = layouts.length;
-    let index = 0;
-    index = Math.floor(Time.get() / (Config.time / numLayouts));
+    const switchTime = Config.time / layouts.length;
+    const time = Time.get();
+    const index = Math.floor(time / switchTime);
+    const layout = layouts[index];
+    const flooredSwitchTimes = [];
 
-    if (
-      Time.get() == Math.floor(Config.time / numLayouts) - 3 ||
-      Time.get() == (Config.time / numLayouts) * 2 - 3
-    ) {
+    for (let i = 1; i < layouts.length; i++) {
+      flooredSwitchTimes.push(Math.floor(switchTime * i));
+    }
+
+    if (flooredSwitchTimes.includes(time + 3)) {
       Notifications.add("3", 0, 1);
-    }
-    if (
-      Time.get() == Math.floor(Config.time / numLayouts) - 2 ||
-      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 2
-    ) {
+    } else if (flooredSwitchTimes.includes(time + 2)) {
       Notifications.add("2", 0, 1);
-    }
-    if (
-      Time.get() == Math.floor(Config.time / numLayouts) - 1 ||
-      Time.get() == Math.floor(Config.time / numLayouts) * 2 - 1
-    ) {
+    } else if (flooredSwitchTimes.includes(time + 1)) {
       Notifications.add("1", 0, 1);
     }
 
-    if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
-      Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
-      UpdateConfig.setLayout(layouts[index], true);
-      UpdateConfig.setKeymapLayout(layouts[index], true);
+    if (Config.layout !== layout && layout !== undefined) {
+      Notifications.add(`--- !!! ${layout} !!! ---`, 0);
+      UpdateConfig.setLayout(layout, true);
+      UpdateConfig.setKeymapLayout(layout, true);
     }
   }
   if (timerDebug) console.timeEnd("layoutfluid");
