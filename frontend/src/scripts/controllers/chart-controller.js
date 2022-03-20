@@ -627,49 +627,8 @@ export let miniResult = new ChartWithUpdateColors(
       },
       plugins: {
         annotation: {
-          annotations: [
-            {
-              display: false,
-              type: "line",
-              scaleID: "wpm",
-              value: "-30",
-              borderColor: "red",
-              borderWidth: 1,
-              borderDash: [2, 2],
-              label: {
-                // Background color of label, default below
-                backgroundColor: "blue",
-
-                font: {
-                  // Font size of text, inherits from global
-                  size: 11,
-
-                  // Font style of text, default below
-                  style: "normal",
-                },
-
-                // Font color of text, default below
-                color: "#fff",
-
-                // Padding of label, default below
-                padding: 6,
-
-                // Radius of label rectangle, default below
-                cornerRadius: 3,
-
-                // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
-                position: "center",
-
-                // Whether the label is enabled and should be displayed
-                enabled: true,
-
-                // Text to display in label - default is null. Provide an array to display values on a new line
-                content: "PB",
-              },
-            },
-          ],
+          annotations: [],
         },
-
         tooltip: {
           mode: "index",
           intersect: false,
