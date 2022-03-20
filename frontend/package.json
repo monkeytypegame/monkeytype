@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "audit": "cd webpack && webpack --config config.audit.js",
+    "audit": "npx webpack --config ./webpack/config.audit.js",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts",
     "build": "npx gulp build",
     "build:live": "npx gulp build-production",
