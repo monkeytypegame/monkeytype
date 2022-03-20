@@ -242,11 +242,12 @@ export function smoothHistory(factor: number): void {
   if (chartData2.length || accChartData2.length) {
     (
       ChartController.accountHistory.options.animation as AnimationSpec<"line">
-    ).duration = 250; // Switch to default animation duration when the defaults key is found
+    ).duration = 250;
     ChartController.accountHistory.update();
     (
       ChartController.accountHistory.options.animation as AnimationSpec<"line">
     ).duration = 0;
+    ChartController.accountHistory.update("none");
   }
 }
 

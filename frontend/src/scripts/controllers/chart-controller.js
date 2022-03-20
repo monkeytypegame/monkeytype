@@ -44,7 +44,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { format } from "date-fns";
 import "chartjs-adapter-date-fns";
 
-Chart.defaults.animation.duration = 250;
+Chart.defaults.animation.duration = 0;
 Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
@@ -106,7 +106,6 @@ export let result = new ChartWithUpdateColors($("#wpmChart"), {
     ],
   },
   options: {
-    animation: { duration: 0 },
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -250,7 +249,6 @@ export let accountHistory = new ChartWithUpdateColors(
       ],
     },
     options: {
-      animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
       hover: {
@@ -405,7 +403,6 @@ export let accountActivity = new ChartWithUpdateColors(
       ],
     },
     options: {
-      animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
       hover: {
@@ -561,7 +558,6 @@ export let miniResult = new ChartWithUpdateColors(
       ],
     },
     options: {
-      animation: { duration: 0 },
       responsive: true,
       maintainAspectRatio: false,
       scales: {
@@ -691,9 +687,10 @@ function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
   accountHistory.options.scales["acc"].display = Config.chartAccuracy;
 
-  accountHistory.options.animation.duration = Chart.defaults.animation.duration;
+  accountHistory.options.animation.duration = 250;
   accountHistory.update();
   accountHistory.options.animation.duration = 0;
+  accountHistory.update("none");
 }
 
 function updateStyle() {
