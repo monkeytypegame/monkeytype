@@ -41,7 +41,6 @@
     "json-minimizer-webpack-plugin": "3.3.0",
     "madge": "5.0.1",
     "mini-css-extract-plugin": "2.6.0",
-    "mrmime": "^1.0.0",
     "sass": "1.49.9",
     "sass-loader": "12.6.0",
     "stream-browserify": "^3.0.0",
