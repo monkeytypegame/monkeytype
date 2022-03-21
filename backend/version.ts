@@ -20,17 +20,18 @@ function getDateVersion(): string {
 }
 
 function getVersion(): string {
-  if (process.env.MODE !== "dev") {
-    if (existsSync(SERVER_VERSION_FILE_PATH)) {
-      return readFileSync(SERVER_VERSION_FILE_PATH, "utf-8");
-    }
-
-    const serverVersion = getDateVersion();
-    writeFileSync(SERVER_VERSION_FILE_PATH, serverVersion);
-    return serverVersion;
+  if (process.env.MODE === "dev") {
+    return "DEVELOPMENT-VERSION";
   }
 
-  return "DEVELOPMENT-VERSION";
+  if (existsSync(SERVER_VERSION_FILE_PATH)) {
+    return readFileSync(SERVER_VERSION_FILE_PATH, "utf-8");
+  }
+
+  const serverVersion = getDateVersion();
+  writeFileSync(SERVER_VERSION_FILE_PATH, serverVersion);
+
+  return serverVersion;
 }
 
 export const version = getVersion();
