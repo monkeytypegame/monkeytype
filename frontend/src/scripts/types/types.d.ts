@@ -578,6 +578,7 @@ declare namespace MonkeyTypes {
     hover?: () => void;
     available?: () => void;
     beforeSubgroup?: () => void;
+    shouldFocusTestUI?: boolean;
   }
 
   interface CommandsGroup {
