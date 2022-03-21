@@ -4,7 +4,6 @@ import {
   BarElement,
   CategoryScale,
   Filler,
-  Legend,
   LinearScale,
   LineController,
   LineElement,
@@ -23,7 +22,6 @@ Chart.register(
   BarElement,
   CategoryScale,
   Filler,
-  Legend,
   LinearScale,
   LineController,
   LineElement,
@@ -262,10 +260,6 @@ export const result: ChartWithUpdateColors<
           },
         },
       },
-      legend: {
-        display: false,
-        labels: {},
-      },
     },
   },
 });
@@ -422,12 +416,6 @@ export const accountHistory: ChartWithUpdateColors<
           },
         },
       },
-      legend: {
-        display: false,
-        labels: {
-          color: "#ffffff",
-        },
-      },
     },
   },
 });
@@ -563,12 +551,6 @@ export const accountActivity: ChartWithUpdateColors<
           },
         },
       },
-      legend: {
-        display: false,
-        labels: {
-          color: "#ffffff",
-        },
-      },
     },
   },
 });
@@ -698,10 +680,6 @@ export const miniResult: ChartWithUpdateColors<
       tooltip: {
         mode: "index",
         intersect: false,
-      },
-      legend: {
-        display: false,
-        labels: {},
       },
     },
   },
