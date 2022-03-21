@@ -1,24 +1,18 @@
-function pad(
-  numbers: number[],
-  maxLength: number,
-  fillString: string
-): string[] {
-  return numbers.map((number) =>
-    number.toString().padStart(maxLength, fillString)
-  );
-}
+import { padNumbers } from "./utils/misc";
 
 function getDateVersion(): string {
   const date = new Date();
 
-  const versionPrefix = pad(
+  const versionPrefix = padNumbers(
     [date.getFullYear(), date.getMonth() + 1, date.getDate()],
     2,
     "0"
   ).join(".");
-  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
-    "."
-  );
+  const versionSuffix = padNumbers(
+    [date.getHours(), date.getMinutes()],
+    2,
+    "0"
+  ).join(".");
 
   return [versionPrefix, versionSuffix].join("_");
 }
