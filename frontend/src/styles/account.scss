@@ -136,6 +136,10 @@
       }
     }
 
+    .chart canvas {
+      width: 100% !important;
+    }
+
     &.history {
       .active {
         animation: flashHighlight 4s linear 0s 1;
