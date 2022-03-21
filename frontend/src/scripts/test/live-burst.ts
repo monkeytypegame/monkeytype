@@ -2,7 +2,8 @@ import Config from "../config";
 import * as TestActive from "../states/test-active";
 import * as ConfigEvent from "../observables/config-event";
 
-export function update(burst: number): void {
+export async function update(burst: number): Promise<void> {
+  if (!Config.showLiveBurst) return;
   let number = burst;
   if (Config.blindMode) {
     number = 0;
