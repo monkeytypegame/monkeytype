@@ -131,8 +131,9 @@ export let result = new ChartWithUpdateColors($("#wpmChart"), {
         beginAtZero: true,
         min: 0,
         ticks: {
+          precision: 0,
           autoSkip: true,
-          autoSkipPadding: 20,
+          autoSkipPadding: 30,
         },
         grid: {
           display: true,
