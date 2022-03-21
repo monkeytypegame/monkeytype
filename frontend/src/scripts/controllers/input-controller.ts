@@ -32,13 +32,15 @@ import * as TestWords from "../test/test-words";
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 
+const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
+
 function setWordsInput(value: string): void {
   // Only change #wordsInput if it's not already the wanted value
   // Avoids Safari triggering unneeded events, causing issues with
   // dead keys.
   // console.log("settings words input to " + value);
-  if (value !== $("#wordsInput").val()) {
-    $("#wordsInput").val(value);
+  if (value !== wordsInput.value) {
+    wordsInput.value = value;
   }
 }
 
