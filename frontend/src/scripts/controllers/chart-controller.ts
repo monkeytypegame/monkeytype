@@ -15,25 +15,9 @@ import {
   Tooltip,
 } from "chart.js";
 
-import type {
-  ChartConfiguration,
-  ChartType,
-  ChartDataset,
-  ScaleChartOptions,
-  ScaleOptionsByType,
-  PluginChartOptions,
-  DefaultDataPoint,
-  ChartOptions,
-} from "chart.js";
-
 // @ts-ignore
 import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
-
-import type {
-  AnnotationOptions,
-  LabelOptions,
-} from "chartjs-plugin-annotation";
 
 Chart.register(
   BarController,
@@ -53,7 +37,9 @@ Chart.register(
   chartAnnotation
 );
 
-Chart.defaults.animation.duration = 0;
+(
+  Chart.defaults.animation as AnimationSpec<"line" | "bar" | "scatter">
+).duration = 0;
 Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
@@ -65,46 +51,30 @@ import * as ConfigEvent from "../observables/config-event";
 import { format } from "date-fns";
 import "chartjs-adapter-date-fns";
 
-interface MonkeyChart<
+import type {
+  AnimationSpec,
+  CartesianScaleOptions,
+  ChartConfiguration,
+  ChartDataset,
+  ChartType,
+  DefaultDataPoint,
+  PluginChartOptions,
+  ScaleChartOptions,
+} from "chart.js";
+
+import type {
+  AnnotationOptions,
+  LabelOptions,
+} from "chartjs-plugin-annotation";
+
+class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown
-> extends Omit<Chart<TType, TData, TLabel>, "options"> {
-  options: MonkeyChartOptions<TType>;
-}
-
-type MonkeyChartOptions<TType extends ChartType = ChartType> =
-  ChartOptions<TType>; // DeepPartial<
-//   CoreChartOptions<TType> &
-//     ElementChartOptions<TType> &
-//     PluginChartOptions<TType> &
-//     DatasetChartOptions<TType> &
-//     ChartTypeRegistry[TType]["chartOptions"]
-// > &
-// ScaleChartOptions<TType>;
-
-// class ChartWithUpdateColors<
-//   TType extends ChartType = ChartType,
-//   TData =
-//     | number[]
-//     | MonkeyTypes.HistoryChartData[]
-//     | MonkeyTypes.AccChartData[]
-//     | MonkeyTypes.ActivityChartDataPoint[],
-//   TLabel = string
-// > extends Chart<TType, TData, TLabel> {
-class ChartWithUpdateColors<
-    TType extends ChartType = ChartType,
-    TData = DefaultDataPoint<TType>,
-    TLabel = unknown
-  >
-  extends Chart<TType, TData, TLabel>
-  implements MonkeyChart<TType, TData, TLabel>
-{
+> extends Chart<TType, TData, TLabel> {
   constructor(item: any, config: ChartConfiguration<TType, TData, TLabel>) {
     super(item, config);
   }
-
-  override options: MonkeyChartOptions<TType>;
 
   updateColors(): void {
     updateColors(this);
@@ -713,7 +683,8 @@ export const miniResult: ChartWithUpdateColors<
 
 function updateAccuracy(): void {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
-  accountHistory.options.scales["acc"].display = Config.chartAccuracy;
+  (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
+    Config.chartAccuracy;
   accountHistory.update();
 }
 
@@ -780,14 +751,11 @@ export async function updateColors<
     )[1].pointBackgroundColor = subcolor;
   }
 
-  const scaleChartOptions = chart.options as ScaleChartOptions<TType>;
-  Object.keys(scaleChartOptions.scales).forEach((scaleID) => {
-    scaleChartOptions.scales[scaleID].ticks.color = subcolor;
-    (
-      scaleChartOptions.scales[scaleID] as ScaleOptionsByType<
-        "linear" | "time" | "timeseries"
-      >
-    ).title.color = subcolor;
+  const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
+  Object.keys(chartScaleOptions.scales).forEach((scaleID) => {
+    const axis = chartScaleOptions.scales[scaleID] as CartesianScaleOptions;
+    axis.ticks.color = subcolor;
+    axis.title.color = subcolor;
   });
 
   try {

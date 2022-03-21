@@ -16,6 +16,8 @@ import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
 import format from "date-fns/format";
 
+import type { ScaleChartOptions } from "chart.js";
+
 let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
@@ -669,12 +671,16 @@ export function update(): void {
       // lastTimestamp = date;
     });
 
+    const accountActivityScaleOptions = (
+      ChartController.accountActivity.options as ScaleChartOptions<
+        "bar" | "line"
+      >
+    ).scales;
+
     if (Config.alwaysShowCPM) {
-      ChartController.accountActivity.options.scales["avgWpm"].title.text =
-        "Average Cpm";
+      accountActivityScaleOptions["avgWpm"].title.text = "Average Cpm";
     } else {
-      ChartController.accountActivity.options.scales["avgWpm"].title.text =
-        "Average Wpm";
+      accountActivityScaleOptions["avgWpm"].title.text = "Average Wpm";
     }
 
     ChartController.accountActivity.data.datasets[0].data =
@@ -682,12 +688,14 @@ export function update(): void {
     ChartController.accountActivity.data.datasets[1].data =
       activityChartData_avgWpm;
 
+    const accountHistoryScaleOptions = (
+      ChartController.accountHistory.options as ScaleChartOptions<"line">
+    ).scales;
+
     if (Config.alwaysShowCPM) {
-      ChartController.accountHistory.options.scales["wpm"].title.text =
-        "Characters per Minute";
+      accountHistoryScaleOptions["wpm"].title.text = "Characters per Minute";
     } else {
-      ChartController.accountHistory.options.scales["wpm"].title.text =
-        "Words per Minute";
+      accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
@@ -698,14 +706,13 @@ export function update(): void {
     const maxWpmChartVal = Math.max(...wpms);
 
     // let accuracies = accChartData.map((r) => r.y);
-    ChartController.accountHistory.options.scales["wpm"].max =
+    accountHistoryScaleOptions["wpm"].max =
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
     if (!Config.startGraphsAtZero) {
-      ChartController.accountHistory.options.scales["wpm"].min =
-        Math.floor(minWpmChartVal);
+      accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
     } else {
-      ChartController.accountHistory.options.scales["wpm"].min = 0;
+      accountHistoryScaleOptions["wpm"].min = 0;
     }
 
     if (chartData == [] || chartData.length == 0) {

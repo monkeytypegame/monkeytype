@@ -15,6 +15,9 @@ import * as Notifications from "../elements/notifications";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 
+import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
+
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
 
@@ -25,8 +28,15 @@ export function toggleUnsmoothedRaw(): void {
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
 }
 
+const resultAnnotation = (
+  ChartController.result.options as PluginChartOptions<"line" | "scatter">
+).plugins.annotation.annotations as AnnotationOptions<"line">[];
+const resultScaleOptions = (
+  ChartController.result.options as ScaleChartOptions<"line" | "scatter">
+).scales;
+
 async function updateGraph(): Promise<void> {
-  ChartController.result.options.plugins.annotation.annotations = [];
+  resultAnnotation.length = 0; // Clear result annotation list to reset funbox label without reassigning to new array.
   const labels = [];
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
@@ -37,7 +47,7 @@ async function updateGraph(): Promise<void> {
   }
   ChartController.result.updateColors();
   ChartController.result.data.labels = labels;
-  ChartController.result.options.scales["wpm"].title.text = Config.alwaysShowCPM
+  resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
     ? "Character per Minute"
     : "Words per Minute";
   const chartData1 = Config.alwaysShowCPM
@@ -71,11 +81,11 @@ async function updateGraph(): Promise<void> {
     const minChartVal = Math.min(
       ...[Math.min(...chartData2), Math.min(...chartData1)]
     );
-    ChartController.result.options.scales["wpm"].min = minChartVal;
-    ChartController.result.options.scales["raw"].min = minChartVal;
+    resultScaleOptions["wpm"].min = minChartVal;
+    resultScaleOptions["raw"].min = minChartVal;
   } else {
-    ChartController.result.options.scales["wpm"].min = 0;
-    ChartController.result.options.scales["raw"].min = 0;
+    resultScaleOptions["wpm"].min = 0;
+    resultScaleOptions["raw"].min = 0;
   }
 
   ChartController.result.data.datasets[2].data = result.chartData.err;
@@ -86,12 +96,12 @@ async function updateGraph(): Promise<void> {
     if (Config.funbox === "layoutfluid") {
       content += " " + Config.customLayoutfluid.replace(/#/g, " ");
     }
-    ChartController.result.options.plugins.annotation.annotations.push({
+    resultAnnotation.push({
       display: true,
       id: "funbox-label",
       type: "line",
       scaleID: "wpm",
-      value: ChartController.result.options.scales["wpm"].min,
+      value: resultScaleOptions["wpm"].min,
       borderColor: "transparent",
       borderWidth: 1,
       borderDash: [2, 2],
@@ -101,8 +111,8 @@ async function updateGraph(): Promise<void> {
           family: Config.fontFamily.replace(/_/g, " "),
           size: 11,
           style: "normal",
-          weight: Chart.defaults.font.weight!,
-          lineHeight: Chart.defaults.font.lineHeight!,
+          weight: Chart.defaults.font.weight as string,
+          lineHeight: Chart.defaults.font.lineHeight as number,
         },
         color: fc,
         padding: 3,
@@ -114,8 +124,8 @@ async function updateGraph(): Promise<void> {
     });
   }
 
-  ChartController.result.options.scales["wpm"].max = maxChartVal;
-  ChartController.result.options.scales["raw"].max = maxChartVal;
+  resultScaleOptions["wpm"].max = maxChartVal;
+  resultScaleOptions["raw"].max = maxChartVal;
 
   ChartController.result.updateColors();
   ChartController.result.resize();
@@ -136,7 +146,7 @@ export async function updateGraphPBLine(): Promise<void> {
   const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
     2
   );
-  ChartController.result.options.plugins.annotation.annotations.push({
+  resultAnnotation.push({
     display: true,
     type: "line",
     id: "lpb",
@@ -168,8 +178,8 @@ export async function updateGraphPBLine(): Promise<void> {
   ) {
     maxChartVal = parseFloat(chartlpb) + 15;
   }
-  ChartController.result.options.scales["wpm"].max = Math.round(maxChartVal);
-  ChartController.result.options.scales["raw"].max = Math.round(maxChartVal);
+  resultScaleOptions["wpm"].max = Math.round(maxChartVal);
+  resultScaleOptions["raw"].max = Math.round(maxChartVal);
   ChartController.result.updateColors();
 }
 
@@ -412,7 +422,7 @@ function updateTags(dontSave: boolean): void {
         // console.log("new pb for tag " + tag.name);
       } else {
         const themecolors = await ThemeColors.getAll();
-        ChartController.result.options.plugins.annotation.annotations.push({
+        resultAnnotation.push({
           display: true,
           type: "line",
           id: "tpb",
@@ -427,8 +437,8 @@ function updateTags(dontSave: boolean): void {
               family: Config.fontFamily.replace(/_/g, " "),
               size: 11,
               style: "normal",
-              weight: Chart.defaults.font.weight,
-              lineHeight: Chart.defaults.font.lineHeight,
+              weight: Chart.defaults.font.weight as string,
+              lineHeight: Chart.defaults.font.lineHeight as number,
             },
             color: themecolors["bg"],
             padding: 3,
