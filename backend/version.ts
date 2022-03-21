@@ -25,10 +25,10 @@ function getDateVersion(): string {
 
 function getVersion(): string {
   if (process.env.MODE !== "dev") {
-    return "DEVELOPMENT-VERSION";
+    return getDateVersion();
   }
 
-  return getDateVersion();
+  return "DEVELOPMENT-VERSION";
 }
 
 export const version = getVersion();
