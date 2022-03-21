@@ -122,6 +122,8 @@ async function updateGraph(): Promise<void> {
 
   ChartController.result.options.scales!["wpm"]!.max = maxChartVal;
   ChartController.result.options.scales!["raw"]!.max = maxChartVal;
+  ChartController.result.options.scales!["error"]!.max =
+    Math.max(...result.chartData.err) + 1;
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -173,10 +175,14 @@ export async function updateGraphPBLine(): Promise<void> {
     maxChartVal >= parseFloat(chartlpb) - 20 &&
     maxChartVal <= parseFloat(chartlpb) + 20
   ) {
-    maxChartVal = parseFloat(chartlpb) + 20;
+    maxChartVal = parseFloat(chartlpb) + 15;
   }
-  ChartController.result.options.scales!["wpm"]!.max = Math.round(maxChartVal);
-  ChartController.result.options.scales!["raw"]!.max = Math.round(maxChartVal);
+  ChartController.result.options.scales!["wpm"]!.max = Math.round(
+    maxChartVal + 5
+  );
+  ChartController.result.options.scales!["raw"]!.max = Math.round(
+    maxChartVal + 5
+  );
 }
 
 function updateWpmAndAcc(): void {
