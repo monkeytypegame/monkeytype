@@ -15,7 +15,6 @@ import {
   Tooltip,
 } from "chart.js";
 
-// @ts-ignore
 import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
 
@@ -60,6 +59,7 @@ import type {
   DefaultDataPoint,
   PluginChartOptions,
   ScaleChartOptions,
+  ChartData,
 } from "chart.js";
 
 import type {
@@ -67,12 +67,38 @@ import type {
   LabelOptions,
 } from "chartjs-plugin-annotation";
 
+type ChartDatasetWithTrendline<
+  TType extends ChartType = ChartType,
+  TData = DefaultDataPoint<TType>
+> = ChartDataset<TType, TData> & {
+  trendlineLinear?: TrendlineLinearPlugin.TrendlineLinearOptions;
+};
+
+interface ChartConfigurationWithTrendLine<
+  TType extends ChartType = ChartType,
+  TData = DefaultDataPoint<TType>,
+  TLabel = unknown
+> extends ChartConfiguration<TType, TData, TLabel> {
+  data: ChartDataWithTrendline<TType, TData, TLabel>;
+}
+
+interface ChartDataWithTrendline<
+  TType extends ChartType = ChartType,
+  TData = DefaultDataPoint<TType>,
+  TLabel = unknown
+> extends ChartData<TType, TData, TLabel> {
+  datasets: ChartDatasetWithTrendline<TType, TData>[];
+}
+
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown
 > extends Chart<TType, TData, TLabel> {
-  constructor(item: any, config: ChartConfiguration<TType, TData, TLabel>) {
+  constructor(
+    item: any,
+    config: ChartConfigurationWithTrendLine<TType, TData, TLabel>
+  ) {
     super(item, config);
   }
 
@@ -701,7 +727,11 @@ function updateStyle(): void {
 
 export async function updateColors<
   TType extends ChartType = "bar" | "line" | "scatter",
-  TData = DefaultDataPoint<TType>,
+  TData =
+    | MonkeyTypes.HistoryChartData[]
+    | MonkeyTypes.AccChartData[]
+    | MonkeyTypes.ActivityChartDataPoint[]
+    | number[],
   TLabel = string
 >(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
   const bgcolor = await ThemeColors.get("bg");
@@ -709,7 +739,19 @@ export async function updateColors<
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
 
-  if (chart.data.datasets.every((dataset) => dataset.data.length === 0)) {
+  if (
+    chart.data.datasets.every(
+      (dataset) =>
+        (
+          dataset.data as unknown as (
+            | MonkeyTypes.HistoryChartData
+            | MonkeyTypes.AccChartData
+            | MonkeyTypes.ActivityChartDataPoint
+            | number
+          )[]
+        ).length === 0
+    )
+  ) {
     return;
   }
 
@@ -759,8 +801,14 @@ export async function updateColors<
   });
 
   try {
-    chart.data.datasets[0].trendlineLinear.style = subcolor;
-    chart.data.datasets[1].trendlineLinear.style = subcolor;
+    (
+      (chart.data.datasets[0] as ChartDatasetWithTrendline<TType, TData>)
+        .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
+    ).style = subcolor;
+    (
+      (chart.data.datasets[1] as ChartDatasetWithTrendline<TType, TData>)
+        .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
+    ).style = subcolor;
   } catch {}
 
   (
