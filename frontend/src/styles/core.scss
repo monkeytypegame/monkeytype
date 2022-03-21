@@ -241,7 +241,7 @@ key {
 .button {
   color: var(--text-color);
   cursor: pointer;
-  transition: 0.25s;
+  transition: 0.125s;
   padding: 0.4rem;
   border-radius: var(--roundness);
   background: rgba(0, 0, 0, 0.1);
@@ -264,6 +264,10 @@ key {
     background: var(--sub-color);
     outline: none;
   }
+  &:active {
+    background: var(--sub-color);
+    color: var(--bg-color);
+  }
 
   &.active {
     background: var(--main-color);
@@ -277,6 +281,10 @@ key {
       color: var(--bg-color);
       background: var(--main-color);
       outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
     }
   }
 

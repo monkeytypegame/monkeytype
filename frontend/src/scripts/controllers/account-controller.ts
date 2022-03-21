@@ -9,7 +9,7 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as PageController from "../controllers/page-controller";
+import * as PageController from "./page-controller";
 import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
@@ -40,17 +40,22 @@ import {
   unlink as unlinkAuth,
   getAdditionalUserInfo,
   sendPasswordResetEmail,
+  User as UserType,
 } from "firebase/auth";
 import { Auth } from "../firebase";
+import differenceInDays from "date-fns/differenceInDays";
+import { defaultSnap } from "../constants/default-snapshot";
+
 export const gmailProvider = new GoogleAuthProvider();
 
-export function sendVerificationEmail() {
+export function sendVerificationEmail(): void {
   Loader.show();
-  let cu = Auth.currentUser;
-  sendEmailVerification(cu)
+  const user = Auth.currentUser;
+  if (user === null) return;
+  sendEmailVerification(user)
     .then(() => {
       Loader.hide();
-      Notifications.add("Email sent to " + cu.email, 4000);
+      Notifications.add("Email sent to " + user.email, 4000);
     })
     .catch((e) => {
       Loader.hide();
@@ -59,7 +64,7 @@ export function sendVerificationEmail() {
     });
 }
 
-export async function getDataAndInit() {
+export async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     if (ActivePage.get() === "loading") {
@@ -70,9 +75,10 @@ export async function getDataAndInit() {
     LoadingPage.updateText("Downloading user data...");
     await LoadingPage.showBar();
     await DB.initSnapshot();
-  } catch (e) {
+  } catch (error) {
+    const e = error as { message: string; responseCode: number };
     AccountButton.loading(false);
-    if (e?.response?.status === 429) {
+    if (e.responseCode === 429) {
       Notifications.add(
         "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
         0,
@@ -84,7 +90,7 @@ export async function getDataAndInit() {
         0
       );
     }
-    let msg = e?.response?.data?.message ?? e?.response?.data ?? e?.message;
+    const msg = e.message || e;
     Notifications.add("Failed to get user data: " + msg, -1);
 
     $("#top #menu .account").css("opacity", 1);
@@ -103,60 +109,50 @@ export async function getDataAndInit() {
   ResultFilters.loadTags(snapshot.tags);
 
   Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-    let languages = values[0];
-    let funboxModes = values[1];
+    const [languages, funboxes] = values;
     languages.forEach((language) => {
       ResultFilters.defaultResultFilters.language[language] = true;
     });
-    funboxModes.forEach((funbox) => {
+    funboxes.forEach((funbox) => {
       ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
     });
     // filters = defaultResultFilters;
     ResultFilters.load();
   });
 
-  let user = Auth.currentUser;
   if (!snapshot.name) {
     //verify username
-    if (Misc.isUsernameValid(user.name)) {
-      //valid, just update
-      snapshot.name = user.name;
-      DB.setSnapshot(snapshot);
-      await Ape.users.updateName(user.name);
-    } else {
-      //invalid, get new
-      let nameGood = false;
-      let name = "";
+    //invalid, get new
+    let nameGood = false;
+    let name = "";
 
-      while (!nameGood) {
-        name = prompt(
+    while (!nameGood) {
+      name =
+        prompt(
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-        );
+        ) ?? "";
 
-        if (!name) {
-          return false;
-        }
-
-        const response = await Ape.users.updateName(name);
-
-        if (response.status !== 200) {
-          return Notifications.add(
-            "Failed to update name: " + response.message,
-            -1
-          );
-        }
-
-        nameGood = true;
-        Notifications.add("Name updated", 1);
-        snapshot.name = name;
-        DB.setSnapshot(snapshot);
-        $("#menu .icon-button.account .text").text(name);
+      if (!name) {
+        return false;
       }
+
+      const response = await Ape.users.updateName(name);
+
+      if (response.status !== 200) {
+        Notifications.add("Failed to update name: " + response.message, -1);
+        return false;
+      }
+
+      nameGood = true;
+      Notifications.add("Name updated", 1);
+      snapshot.name = name;
+      DB.setSnapshot(snapshot);
+      $("#menu .icon-button.account .text").text(name);
     }
   }
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
-    if (Config.localStorageConfig === null) {
+    if (UpdateConfig.localStorageConfig === null && snapshot.config) {
       console.log("no local config, applying db");
       AccountButton.loading(false);
       UpdateConfig.apply(snapshot.config);
@@ -166,33 +162,39 @@ export async function getDataAndInit() {
     } else if (snapshot.config !== undefined) {
       //loading db config, keep for now
       let configsDifferent = false;
-      Object.keys(Config).forEach((key) => {
-        if (!configsDifferent) {
-          try {
-            if (key !== "resultFilters") {
-              if (Array.isArray(Config[key])) {
-                Config[key].forEach((arrval, index) => {
-                  if (arrval != snapshot.config[key][index]) {
-                    configsDifferent = true;
-                    console.log(
-                      `.config is different: ${arrval} != ${snapshot.config[key][index]}`
-                    );
-                  }
-                });
-              } else {
-                if (Config[key] != snapshot.config[key]) {
+      Object.keys(Config).forEach((ke) => {
+        const key = ke as keyof typeof Config;
+        if (configsDifferent) return;
+        try {
+          if (key !== "resultFilters") {
+            if (Array.isArray(Config[key])) {
+              (Config[key] as string[]).forEach((arrval, index) => {
+                const arrayValue = (
+                  snapshot?.config?.[key] as
+                    | string[]
+                    | MonkeyTypes.QuoteLength[]
+                    | MonkeyTypes.CustomBackgroundFilter
+                )[index];
+                if (arrval != arrayValue) {
                   configsDifferent = true;
                   console.log(
-                    `..config is different ${key}: ${Config[key]} != ${snapshot.config[key]}`
+                    `.config is different: ${arrval} != ${arrayValue}`
                   );
                 }
+              });
+            } else {
+              if (Config[key] != snapshot?.config?.[key]) {
+                configsDifferent = true;
+                console.log(
+                  `..config is different ${key}: ${Config[key]} != ${snapshot?.config?.[key]}`
+                );
               }
             }
-          } catch (e) {
-            console.log(e);
-            configsDifferent = true;
-            console.log(`...config is different: ${e.message}`);
           }
+        } catch (e) {
+          console.log(e);
+          configsDifferent = true;
+          console.log(`...config is different`);
         }
       });
       if (configsDifferent) {
@@ -214,7 +216,7 @@ export async function getDataAndInit() {
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
     if (!TestActive.get()) {
-      PaceCaret.init(true);
+      PaceCaret.init();
     }
   }
   AccountButton.loading(false);
@@ -225,9 +227,10 @@ export async function getDataAndInit() {
   Settings.showAccountSection();
   PageTransition.set(false);
   console.log("account loading finished");
+  return true;
 }
 
-async function loadUser(user) {
+async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   $(".pageAccount .content p.accountVerificatinNotice").remove();
   if (user.emailVerified === false) {
@@ -254,10 +257,8 @@ async function loadUser(user) {
 
   let text = "Account created on " + user.metadata.creationTime;
 
-  const date1 = new Date(user.metadata.creationTime);
-  const date2 = new Date();
-  const diffTime = Math.abs(date2 - date1);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const creationDate = new Date(user.metadata.creationTime as string);
+  const diffDays = differenceInDays(new Date(), creationDate);
 
   text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
 
@@ -275,7 +276,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     await loadUser(user);
   } else {
     if (window.location.pathname == "/account") {
-      window.history.replaceState("", null, "/login");
+      window.history.replaceState("", "", "/login");
     }
     PageTransition.set(false);
   }
@@ -315,13 +316,13 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
   PSA.show();
 });
 
-export function signIn() {
+export function signIn(): void {
   UpdateConfig.setChangedBeforeDb(false);
   authListener();
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
-  let email = $(".pageLogin .login input")[0].value;
-  let password = $(".pageLogin .login input")[1].value;
+  const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
+  const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -365,7 +366,7 @@ export function signIn() {
   });
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
@@ -385,9 +386,10 @@ export async function signInWithGoogle() {
       let name = "";
 
       while (!nameGood) {
-        name = prompt(
-          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-        );
+        name =
+          prompt(
+            "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
+          ) || "";
 
         if (!name) {
           signOut();
@@ -453,10 +455,11 @@ export async function signInWithGoogle() {
     }
   } catch (e) {
     console.log(e);
-    Notifications.add("Failed to sign in with Google: " + e.message, -1);
+    const message = Misc.createErrorMessage(e, "Failed to sign in with Google");
+    Notifications.add(message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
-    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+    if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();
     }
@@ -465,8 +468,9 @@ export async function signInWithGoogle() {
   }
 }
 
-export async function addGoogleAuth() {
+export async function addGoogleAuth(): Promise<void> {
   Loader.show();
+  if (Auth.currentUser === null) return;
   linkWithPopup(Auth.currentUser, gmailProvider)
     .then(function () {
       Loader.hide();
@@ -482,8 +486,9 @@ export async function addGoogleAuth() {
     });
 }
 
-export async function removeGoogleAuth() {
-  let user = Auth.currentUser;
+export async function removeGoogleAuth(): Promise<void> {
+  const user = Auth.currentUser;
+  if (user === null) return;
   if (
     user.providerData.find((provider) => provider.providerId === "password")
   ) {
@@ -492,7 +497,8 @@ export async function removeGoogleAuth() {
       await reauthenticateWithPopup(user, gmailProvider);
     } catch (e) {
       Loader.hide();
-      return Notifications.add(e.message, -1);
+      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
+      return Notifications.add(message, -1);
     }
     unlinkAuth(user, "google.com")
       .then(() => {
@@ -515,9 +521,13 @@ export async function removeGoogleAuth() {
   }
 }
 
-export async function addPasswordAuth(email, password) {
+export async function addPasswordAuth(
+  email: string,
+  password: string
+): Promise<void> {
   Loader.show();
-  let user = Auth.currentUser;
+  const user = Auth.currentUser;
+  if (user === null) return;
   if (
     user.providerData.find((provider) => provider.providerId === "google.com")
   ) {
@@ -525,11 +535,12 @@ export async function addPasswordAuth(email, password) {
       await reauthenticateWithPopup(user, gmailProvider);
     } catch (e) {
       Loader.hide();
-      return Notifications.add("Could not reauthenticate: " + e.message, -1);
+      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
+      return Notifications.add(message, -1);
     }
   }
 
-  let credential = EmailAuthProvider.credential(email, password);
+  const credential = EmailAuthProvider.credential(email, password);
   linkWithCredential(user, credential)
     .then(function () {
       Loader.hide();
@@ -545,7 +556,7 @@ export async function addPasswordAuth(email, password) {
     });
 }
 
-export function signOut() {
+export function signOut(): void {
   Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, 2);
@@ -553,7 +564,7 @@ export function signOut() {
       Settings.hideAccountSection();
       AccountButton.update();
       PageController.change("login");
-      DB.setSnapshot(null);
+      DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
     })
     .catch(function (error) {
@@ -561,14 +572,18 @@ export function signOut() {
     });
 }
 
-async function signUp() {
+async function signUp(): Promise<void> {
   $(".pageLogin .button").addClass("disabled");
   $(".pageLogin .preloader").removeClass("hidden");
-  let nname = $(".pageLogin .register input")[0].value;
-  let email = $(".pageLogin .register input")[1].value;
-  let emailVerify = $(".pageLogin .register input")[2].value;
-  let password = $(".pageLogin .register input")[3].value;
-  let passwordVerify = $(".pageLogin .register input")[4].value;
+  const nname = ($(".pageLogin .register input")[0] as HTMLInputElement).value;
+  const email = ($(".pageLogin .register input")[1] as HTMLInputElement).value;
+  const emailVerify = ($(".pageLogin .register input")[2] as HTMLInputElement)
+    .value;
+  const password = ($(".pageLogin .register input")[3] as HTMLInputElement)
+    .value;
+  const passwordVerify = (
+    $(".pageLogin .register input")[4] as HTMLInputElement
+  ).value;
 
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
@@ -606,7 +621,7 @@ async function signUp() {
     const signInResponse = await Ape.users.create(
       nname,
       email,
-      createdAuthUser.user.id
+      createdAuthUser.user.uid
     );
     if (signInResponse.status !== 200) {
       throw signInResponse;
@@ -644,15 +659,9 @@ async function signUp() {
       await Ape.users.delete();
       await createdAuthUser.user.delete();
     }
-    let txt;
-    if (e.response) {
-      txt =
-        e.response.data.message ||
-        e.response.status + " " + e.response.statusText;
-    } else {
-      txt = e.message;
-    }
-    Notifications.add(txt, -1);
+    console.log(e);
+    const message = Misc.createErrorMessage(e, "Failed to create account");
+    Notifications.add(message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
     signOut();
@@ -660,9 +669,10 @@ async function signUp() {
   }
 }
 
-$(".pageLogin #forgotPasswordButton").on("click", (e) => {
-  const emailField = $(".pageLogin .login input")[0].value || "";
-  let email = prompt("Email address", emailField);
+$(".pageLogin #forgotPasswordButton").on("click", () => {
+  const emailField =
+    ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
+  const email = prompt("Email address", emailField);
   if (email) {
     sendPasswordResetEmail(Auth, email)
       .then(function () {
@@ -683,12 +693,12 @@ $(".pageLogin .login input").keyup((e) => {
   }
 });
 
-$(".pageLogin .login .button.signIn").on("click", (e) => {
+$(".pageLogin .login .button.signIn").on("click", () => {
   UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").on("click", (e) => {
+$(".pageLogin .login .button.signInWithGoogle").on("click", () => {
   UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
@@ -698,7 +708,7 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", (e) => {
 // signInWithGitHub();
 // });
 
-$(".signOut").on("click", (e) => {
+$(".signOut").on("click", () => {
   signOut();
 });
 
@@ -709,19 +719,19 @@ $(".pageLogin .register input").keyup((e) => {
   }
 });
 
-$(".pageLogin .register .button").on("click", (e) => {
+$(".pageLogin .register .button").on("click", () => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
   signUp();
 });
 
-$(".pageSettings #addGoogleAuth").on("click", async (e) => {
+$(".pageSettings #addGoogleAuth").on("click", async () => {
   addGoogleAuth();
 });
 
-$(".pageSettings #removeGoogleAuth").on("click", (e) => {
+$(".pageSettings #removeGoogleAuth").on("click", () => {
   removeGoogleAuth();
 });
 
-$(document).on("click", ".pageAccount .sendVerificationEmail", (event) => {
+$(document).on("click", ".pageAccount .sendVerificationEmail", () => {
   sendVerificationEmail();
 });

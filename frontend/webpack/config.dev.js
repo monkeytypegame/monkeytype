@@ -1,10 +1,19 @@
 const { merge } = require("webpack-merge");
-const BASE_CONFIGURATION = require("./config.base");
+const BASE_CONFIG = require("./config.base");
 
-const DEVELOPMENT_CONFIGURATION = {
+/** @type { import('webpack').Configuration } */
+const DEV_CONFIG = {
   mode: "development",
-  devtool: false,
-  watch: true,
+  devtool: "inline-source-map",
+  devServer: {
+    compress: true,
+    port: 5000,
+    open: true,
+    historyApiFallback: true,
+    client: {
+      overlay: false,
+    },
+  },
 };
 
-module.exports = merge(BASE_CONFIGURATION, DEVELOPMENT_CONFIGURATION);
+module.exports = merge(BASE_CONFIG, DEV_CONFIG);

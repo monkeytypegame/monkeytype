@@ -1,5 +1,5 @@
 import * as Loader from "../elements/loader";
-import { format } from "date-fns";
+import format from "date-fns/format";
 import { Auth } from "../firebase";
 
 export function getuid(): void {
@@ -62,6 +62,16 @@ function hexToHSL(hex: string): {
     lgt: l,
     string: "hsl(" + h + "," + s + "%," + l + "%)",
   };
+}
+
+export function isColorLight(hex: string): boolean {
+  const hsl = hexToHSL(hex);
+  return hsl.lgt >= 50;
+}
+
+export function isColorDark(hex: string): boolean {
+  const hsl = hexToHSL(hex);
+  return hsl.lgt < 50;
 }
 
 type Theme = { name: string; bgColor: string; mainColor: string };
@@ -1009,4 +1019,9 @@ export function randomElementFromObject<T extends object>(
   object: T
 ): T[keyof T] {
   return randomElementFromArray(Object.values(object));
+}
+
+export function createErrorMessage(error: unknown, message: string): string {
+  if (error instanceof Error) return `${message}: ${error.message}`;
+  return `${message}`;
 }

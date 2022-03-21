@@ -70,3 +70,13 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
 
   return agentLog;
 }
+
+export function padNumbers(
+  numbers: number[],
+  maxLength: number,
+  fillString: string
+): string[] {
+  return numbers.map((number) =>
+    number.toString().padStart(maxLength, fillString)
+  );
+}

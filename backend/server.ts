@@ -7,6 +7,8 @@ import jobs from "./jobs";
 import ConfigurationClient from "./init/configuration";
 import app from "./app";
 import { Server } from "http";
+import { version } from "./version";
+import { recordServerVersion } from "./utils/prometheus";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -29,6 +31,8 @@ async function bootServer(port: number): Promise<Server> {
     console.log("Starting cron jobs...");
     jobs.forEach((job) => job.start());
     console.log("Cron jobs started");
+
+    recordServerVersion(version);
   } catch (error) {
     console.error("Failed to boot server");
     console.error(error);

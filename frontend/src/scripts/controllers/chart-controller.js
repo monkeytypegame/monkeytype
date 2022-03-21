@@ -1,14 +1,64 @@
-import Chart from "chart.js";
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  ScatterController,
+  TimeScale,
+  TimeSeriesScale,
+  Tooltip,
+} from "chart.js";
+
+import chartTrendline from "chartjs-plugin-trendline";
+import chartAnnotation from "chartjs-plugin-annotation";
+
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  ScatterController,
+  TimeScale,
+  TimeSeriesScale,
+  Tooltip,
+  chartTrendline,
+  chartAnnotation
+);
+
+Chart.defaults.animation.duration = 0;
+Chart.defaults.elements.line.tension = 0.3;
+Chart.defaults.elements.line.fill = "origin";
+
 import * as TestInput from "../test/test-input";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import { format } from "date-fns";
+import format from "date-fns/format";
+import "chartjs-adapter-date-fns";
 
-Chart.defaults.global.animation.duration = 250;
+class ChartWithUpdateColors extends Chart {
+  constructor(item, config) {
+    super(item, config);
+  }
 
-export let result = new Chart($("#wpmChart"), {
+  updateColors() {
+    return updateColors(this);
+  }
+}
+
+export let result = new ChartWithUpdateColors($("#wpmChart"), {
   type: "line",
   data: {
     labels: [],
@@ -56,274 +106,276 @@ export let result = new Chart($("#wpmChart"), {
     ],
   },
   options: {
-    tooltips: {
-      mode: "index",
-      intersect: false,
-      callbacks: {
-        afterLabel: function (ti) {
-          try {
-            $(".wordInputAfter").remove();
-
-            let wordsToHighlight =
-              TestInput.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
-
-            let unique = [...new Set(wordsToHighlight)];
-            unique.forEach((wordIndex) => {
-              let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
-              let input = wordEl.attr("input");
-              if (input != undefined) {
-                wordEl.append(
-                  `<div class="wordInputAfter">${input
-                    .replace(/\t/g, "_")
-                    .replace(/\n/g, "_")
-                    .replace(/</g, "&lt")
-                    .replace(/>/g, "&gt")}</div>`
-                );
-              }
-            });
-          } catch {}
-        },
-      },
-    },
-    legend: {
-      display: false,
-      labels: {},
-    },
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      xAxes: [
-        {
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          display: true,
-          scaleLabel: {
-            display: false,
-            labelString: "Seconds",
-          },
+      x: {
+        axis: "x",
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
         },
-      ],
-      yAxes: [
-        {
-          id: "wpm",
-          display: true,
-          scaleLabel: {
-            display: true,
-            labelString: "Words per Minute",
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: true,
-          },
-        },
-        {
-          id: "raw",
+        display: true,
+        title: {
           display: false,
-          scaleLabel: {
-            display: true,
-            labelString: "Raw Words per Minute",
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: false,
-          },
+          text: "Seconds",
         },
-        {
-          id: "error",
+      },
+      wpm: {
+        axis: "y",
+        display: true,
+        title: {
           display: true,
-          position: "right",
-          scaleLabel: {
-            display: true,
-            labelString: "Errors",
-          },
-          ticks: {
-            precision: 0,
-            beginAtZero: true,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: false,
+          text: "Words per Minute",
+        },
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          precision: 0,
+          autoSkip: true,
+          autoSkipPadding: 30,
+        },
+        grid: {
+          display: true,
+        },
+      },
+      raw: {
+        axis: "y",
+        display: false,
+        title: {
+          display: true,
+          text: "Raw Words per Minute",
+        },
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
+        },
+      },
+      error: {
+        axis: "y",
+        display: true,
+        position: "right",
+        title: {
+          display: true,
+          text: "Errors",
+        },
+        beginAtZero: true,
+        ticks: {
+          precision: 0,
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
+        },
+      },
+    },
+    plugins: {
+      annotation: {
+        annotations: [],
+      },
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        callbacks: {
+          afterLabel: function (ti) {
+            try {
+              $(".wordInputAfter").remove();
+
+              let wordsToHighlight =
+                TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
+
+              let unique = [...new Set(wordsToHighlight)];
+              unique.forEach((wordIndex) => {
+                let wordEl = $(
+                  $("#resultWordsHistory .words .word")[wordIndex]
+                );
+                let input = wordEl.attr("input");
+                if (input != undefined) {
+                  wordEl.append(
+                    `<div class="wordInputAfter">${input
+                      .replace(/\t/g, "_")
+                      .replace(/\n/g, "_")
+                      .replace(/</g, "&lt")
+                      .replace(/>/g, "&gt")}</div>`
+                  );
+                }
+              });
+            } catch {}
           },
         },
-      ],
-    },
-    annotation: {
-      annotations: [],
+      },
+      legend: {
+        display: false,
+        labels: {},
+      },
     },
   },
 });
 
 export let accountHistoryActiveIndex;
 
-export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
-  type: "line",
-  data: {
-    datasets: [
-      {
-        yAxisID: "wpm",
-        label: "wpm",
-        fill: false,
-        data: [],
-        borderColor: "#f44336",
-        borderWidth: 2,
-        trendlineLinear: {
-          style: "rgba(255,105,180, .8)",
-          lineStyle: "dotted",
-          width: 4,
-        },
-      },
-      {
-        yAxisID: "acc",
-        label: "acc",
-        fill: false,
-        data: [],
-        borderColor: "#cccccc",
-        borderWidth: 2,
-      },
-    ],
-  },
-  options: {
-    tooltips: {
-      // Disable the on-canvas tooltip
-      enabled: true,
-      intersect: false,
-      custom: function (tooltip) {
-        if (!tooltip) return;
-        // disable displaying the color box;
-        tooltip.displayColors = false;
-      },
-      callbacks: {
-        // HERE YOU CUSTOMIZE THE LABELS
-        title: function () {
-          return;
-        },
-        beforeLabel: function (tooltipItem, data) {
-          let resultData =
-            data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-          if (tooltipItem.datasetIndex !== 0) {
-            return `error rate: ${Misc.roundTo2(
-              resultData.errorRate
-            )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
-          }
-          let label =
-            `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
-            "\n" +
-            `raw: ${resultData.raw}` +
-            "\n" +
-            `acc: ${resultData.acc}` +
-            "\n\n" +
-            `mode: ${resultData.mode} `;
-
-          if (resultData.mode == "time") {
-            label += resultData.mode2;
-          } else if (resultData.mode == "words") {
-            label += resultData.mode2;
-          }
-
-          let diff = resultData.difficulty;
-          if (diff == undefined) {
-            diff = "normal";
-          }
-          label += "\n" + `difficulty: ${diff}`;
-
-          label +=
-            "\n" +
-            `punctuation: ${resultData.punctuation}` +
-            "\n" +
-            `language: ${resultData.language}` +
-            "\n\n" +
-            `date: ${format(
-              new Date(resultData.timestamp),
-              "dd MMM yyyy HH:mm"
-            )}`;
-
-          return label;
-        },
-        label: function () {
-          return;
-        },
-        afterLabel: function (tooltip) {
-          accountHistoryActiveIndex = tooltip.index;
-          return;
-        },
-      },
-    },
-    legend: {
-      display: false,
-      labels: {
-        fontColor: "#ffffff",
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    hover: {
-      mode: "nearest",
-      intersect: false,
-    },
-    scales: {
-      xAxes: [
+export let accountHistory = new ChartWithUpdateColors(
+  $(".pageAccount #accountHistoryChart"),
+  {
+    type: "line",
+    data: {
+      datasets: [
         {
-          ticks: {},
-          type: "time",
-          bounds: "ticks",
-          distribution: "series",
-          display: false,
-          offset: true,
-          scaleLabel: {
-            display: false,
-            labelString: "Date",
+          yAxisID: "wpm",
+          label: "wpm",
+          fill: false,
+          data: [],
+          borderColor: "#f44336",
+          borderWidth: 2,
+          trendlineLinear: {
+            style: "rgba(255,105,180, .8)",
+            lineStyle: "dotted",
+            width: 4,
           },
         },
-      ],
-      yAxes: [
         {
-          id: "wpm",
+          yAxisID: "acc",
+          label: "acc",
+          fill: false,
+          data: [],
+          borderColor: "#cccccc",
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      hover: {
+        mode: "nearest",
+        intersect: false,
+      },
+      scales: {
+        x: {
+          axis: "x",
+          type: "timeseries",
+          bounds: "ticks",
+          display: false,
+          offset: true,
+          title: {
+            display: false,
+            text: "Date",
+          },
+        },
+        wpm: {
+          axis: "y",
+          beginAtZero: true,
+          min: 0,
           ticks: {
-            beginAtZero: true,
-            min: 0,
             stepSize: 10,
           },
           display: true,
-          scaleLabel: {
+          title: {
             display: true,
-            labelString: "Words per Minute",
+            text: "Words per Minute",
           },
         },
-        {
-          id: "acc",
-          ticks: {
-            beginAtZero: true,
-            max: 100,
-          },
+        acc: {
+          axis: "y",
+          beginAtZero: true,
+          max: 100,
           display: true,
           position: "right",
-          scaleLabel: {
+          title: {
             display: true,
-            labelString: "Error rate (100 - accuracy)",
+            text: "Error rate (100 - accuracy)",
           },
-          gridLines: {
+          grid: {
             display: false,
           },
         },
-      ],
-    },
-  },
-});
+      },
+      plugins: {
+        annotation: {
+          annotations: [],
+        },
+        tooltip: {
+          // Disable the on-canvas tooltip
+          enabled: true,
+          intersect: false,
+          external: function (tooltip) {
+            if (!tooltip) return;
+            // disable displaying the color box;
+            tooltip.displayColors = false;
+          },
+          callbacks: {
+            // HERE YOU CUSTOMIZE THE LABELS
+            title: function () {
+              return;
+            },
+            beforeLabel: function (tooltipItem) {
+              let resultData = tooltipItem.dataset.data[tooltipItem.dataIndex];
+              if (tooltipItem.datasetIndex !== 0) {
+                return `error rate: ${Misc.roundTo2(
+                  resultData.errorRate
+                )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
+              }
+              let label =
+                `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
+                "\n" +
+                `raw: ${resultData.raw}` +
+                "\n" +
+                `acc: ${resultData.acc}` +
+                "\n\n" +
+                `mode: ${resultData.mode} `;
 
-export let accountActivity = new Chart(
+              if (resultData.mode == "time") {
+                label += resultData.mode2;
+              } else if (resultData.mode == "words") {
+                label += resultData.mode2;
+              }
+
+              let diff = resultData.difficulty;
+              if (diff == undefined) {
+                diff = "normal";
+              }
+              label += "\n" + `difficulty: ${diff}`;
+
+              label +=
+                "\n" +
+                `punctuation: ${resultData.punctuation}` +
+                "\n" +
+                `language: ${resultData.language}` +
+                "\n\n" +
+                `date: ${format(
+                  new Date(resultData.timestamp),
+                  "dd MMM yyyy HH:mm"
+                )}`;
+
+              return label;
+            },
+            label: function () {
+              return;
+            },
+            afterLabel: function (tooltip) {
+              accountHistoryActiveIndex = tooltip.dataIndex;
+              return;
+            },
+          },
+        },
+        legend: {
+          display: false,
+          labels: {
+            color: "#ffffff",
+          },
+        },
+      },
+    },
+  }
+);
+
+export let accountActivity = new ChartWithUpdateColors(
   $(".pageAccount #accountActivityChart"),
   {
     type: "bar",
@@ -346,48 +398,12 @@ export let accountActivity = new Chart(
           data: [],
           type: "line",
           order: 2,
-          lineTension: 0,
+          tension: 0,
           fill: false,
         },
       ],
     },
     options: {
-      tooltips: {
-        callbacks: {
-          // HERE YOU CUSTOMIZE THE LABELS
-          title: function (tooltipItem, data) {
-            let resultData =
-              data.datasets[tooltipItem[0].datasetIndex].data[
-                tooltipItem[0].index
-              ];
-            return format(new Date(resultData.x), "dd MMM yyyy");
-          },
-          beforeLabel: function (tooltipItem, data) {
-            let resultData =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (tooltipItem.datasetIndex === 0) {
-              return `Time Typing: ${Misc.secondsToString(
-                Math.round(resultData.y),
-                true,
-                true
-              )}\nTests Completed: ${resultData.amount}`;
-            } else if (tooltipItem.datasetIndex === 1) {
-              return `Average ${
-                Config.alwaysShowCPM ? "Cpm" : "Wpm"
-              }: ${Misc.roundTo2(resultData.y)}`;
-            }
-          },
-          label: function () {
-            return;
-          },
-        },
-      },
-      legend: {
-        display: false,
-        labels: {
-          fontColor: "#ffffff",
-        },
-      },
       responsive: true,
       maintainAspectRatio: false,
       hover: {
@@ -395,248 +411,241 @@ export let accountActivity = new Chart(
         intersect: false,
       },
       scales: {
-        xAxes: [
-          {
-            ticks: {
-              autoSkip: true,
-              autoSkipPadding: 40,
-            },
-            type: "time",
-            time: {
-              unit: "day",
-              displayFormats: {
-                day: "D MMM",
-              },
-            },
-            bounds: "ticks",
-            distribution: "linear",
-            display: true,
-            scaleLabel: {
-              display: false,
-              labelString: "Date",
-            },
-            offset: true,
+        x: {
+          axis: "x",
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
           },
-        ],
-        yAxes: [
-          {
-            id: "count",
-            ticks: {
-              beginAtZero: true,
-              min: 0,
-              autoSkip: true,
-              autoSkipPadding: 40,
-              stepSize: 10,
-            },
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: "Time Typing",
+          type: "time",
+          time: {
+            unit: "day",
+            displayFormats: {
+              day: "d MMM",
             },
           },
-          {
-            id: "avgWpm",
-            ticks: {
-              beginAtZero: true,
-              min: 0,
-              autoSkip: true,
-              autoSkipPadding: 40,
-              stepSize: 10,
-            },
+          bounds: "ticks",
+          display: true,
+          title: {
+            display: false,
+            text: "Date",
+          },
+          offset: true,
+        },
+        count: {
+          axis: "y",
+          beginAtZero: true,
+          min: 0,
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+            stepSize: 10,
+          },
+          display: true,
+          title: {
             display: true,
-            position: "right",
-            scaleLabel: {
-              display: true,
-              labelString: "Average Wpm",
+            text: "Time Typing",
+          },
+        },
+        avgWpm: {
+          axis: "y",
+          beginAtZero: true,
+          min: 0,
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+            stepSize: 10,
+          },
+          display: true,
+          position: "right",
+          title: {
+            display: true,
+            text: "Average Wpm",
+          },
+          grid: {
+            display: false,
+          },
+        },
+      },
+      plugins: {
+        annotation: {
+          annotations: [],
+        },
+        tooltip: {
+          callbacks: {
+            // HERE YOU CUSTOMIZE THE LABELS
+            title: function (tooltipItem) {
+              let resultData =
+                tooltipItem[0].dataset.data[tooltipItem[0].dataIndex];
+              return format(new Date(resultData.x), "dd MMM yyyy");
             },
-            gridLines: {
-              display: false,
+            beforeLabel: function (tooltipItem) {
+              let resultData = tooltipItem.dataset.data[tooltipItem.dataIndex];
+              if (tooltipItem.datasetIndex === 0) {
+                return `Time Typing: ${Misc.secondsToString(
+                  Math.round(resultData.y),
+                  true,
+                  true
+                )}\nTests Completed: ${resultData.amount}`;
+              } else if (tooltipItem.datasetIndex === 1) {
+                return `Average ${
+                  Config.alwaysShowCPM ? "Cpm" : "Wpm"
+                }: ${Misc.roundTo2(resultData.y)}`;
+              }
+            },
+            label: function () {
+              return;
             },
           },
-        ],
+        },
+        legend: {
+          display: false,
+          labels: {
+            color: "#ffffff",
+          },
+        },
       },
     },
   }
 );
 
-export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
-  type: "line",
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: "wpm",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "wpm",
-        order: 2,
-        radius: 2,
-      },
-      {
-        label: "raw",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "raw",
-        order: 3,
-        radius: 2,
-      },
-      {
-        label: "errors",
-        data: [],
-        borderColor: "rgba(255, 125, 125, 1)",
-        pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 2,
-        order: 1,
-        yAxisID: "error",
-        maxBarThickness: 10,
-        type: "scatter",
-        pointStyle: "crossRot",
-        radius: function (context) {
-          let index = context.dataIndex;
-          let value = context.dataset.data[index];
-          return value <= 0 ? 0 : 3;
-        },
-        pointHoverRadius: function (context) {
-          let index = context.dataIndex;
-          let value = context.dataset.data[index];
-          return value <= 0 ? 0 : 5;
-        },
-      },
-    ],
-  },
-  options: {
-    tooltips: {
-      mode: "index",
-      intersect: false,
-    },
-    legend: {
-      display: false,
-      labels: {},
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [
+export let miniResult = new ChartWithUpdateColors(
+  $(".pageAccount #miniResultChart"),
+  {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
         {
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 40,
+          label: "wpm",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 2,
+          yAxisID: "wpm",
+          order: 2,
+          radius: 2,
+        },
+        {
+          label: "raw",
+          data: [],
+          borderColor: "rgba(125, 125, 125, 1)",
+          borderWidth: 2,
+          yAxisID: "raw",
+          order: 3,
+          radius: 2,
+        },
+        {
+          label: "errors",
+          data: [],
+          borderColor: "rgba(255, 125, 125, 1)",
+          pointBackgroundColor: "rgba(255, 125, 125, 1)",
+          borderWidth: 2,
+          order: 1,
+          yAxisID: "error",
+          maxBarThickness: 10,
+          type: "scatter",
+          pointStyle: "crossRot",
+          radius: function (context) {
+            let index = context.dataIndex;
+            let value = context.dataset.data[index];
+            return value <= 0 ? 0 : 3;
           },
-          display: true,
-          scaleLabel: {
-            display: false,
-            labelString: "Seconds",
+          pointHoverRadius: function (context) {
+            let index = context.dataIndex;
+            let value = context.dataset.data[index];
+            return value <= 0 ? 0 : 5;
           },
         },
       ],
-      yAxes: [
-        {
-          id: "wpm",
-          display: true,
-          scaleLabel: {
-            display: true,
-            labelString: "Words per Minute",
-          },
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          axis: "x",
           ticks: {
-            beginAtZero: true,
-            min: 0,
             autoSkip: true,
-            autoSkipPadding: 40,
+            autoSkipPadding: 20,
           },
-          gridLines: {
+          display: true,
+          title: {
+            display: false,
+            text: "Seconds",
+          },
+        },
+        wpm: {
+          axis: "y",
+          display: true,
+          title: {
+            display: true,
+            text: "Words per Minute",
+          },
+          beginAtZero: true,
+          min: 0,
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 20,
+          },
+          grid: {
             display: true,
           },
         },
-        {
-          id: "raw",
+        raw: {
+          axis: "y",
           display: false,
-          scaleLabel: {
+          title: {
             display: true,
-            labelString: "Raw Words per Minute",
+            text: "Raw Words per Minute",
           },
+          beginAtZero: true,
+          min: 0,
           ticks: {
-            beginAtZero: true,
-            min: 0,
             autoSkip: true,
-            autoSkipPadding: 40,
+            autoSkipPadding: 20,
           },
-          gridLines: {
+          grid: {
             display: false,
           },
         },
-        {
-          id: "error",
+        error: {
           display: true,
           position: "right",
-          scaleLabel: {
+          title: {
             display: true,
-            labelString: "Errors",
+            text: "Errors",
           },
+          beginAtZero: true,
           ticks: {
             precision: 0,
-            beginAtZero: true,
             autoSkip: true,
-            autoSkipPadding: 40,
+            autoSkipPadding: 20,
           },
-          gridLines: {
+          grid: {
             display: false,
           },
         },
-      ],
-    },
-    annotation: {
-      annotations: [
-        {
-          enabled: false,
-          type: "line",
-          mode: "horizontal",
-          scaleID: "wpm",
-          value: "-30",
-          borderColor: "red",
-          borderWidth: 1,
-          borderDash: [2, 2],
-          label: {
-            // Background color of label, default below
-            backgroundColor: "blue",
-
-            // Font size of text, inherits from global
-            fontSize: 11,
-
-            // Font style of text, default below
-            fontStyle: "normal",
-
-            // Font color of text, default below
-            fontColor: "#fff",
-
-            // Padding of label to add left/right, default below
-            xPadding: 6,
-
-            // Padding of label to add top/bottom, default below
-            yPadding: 6,
-
-            // Radius of label rectangle, default below
-            cornerRadius: 3,
-
-            // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
-            position: "center",
-
-            // Whether the label is enabled and should be displayed
-            enabled: true,
-
-            // Text to display in label - default is null. Provide an array to display values on a new line
-            content: "PB",
-          },
+      },
+      plugins: {
+        annotation: {
+          annotations: [],
         },
-      ],
+        tooltip: {
+          mode: "index",
+          intersect: false,
+        },
+        legend: {
+          display: false,
+          labels: {},
+        },
+      },
     },
-  },
-});
+  }
+);
 
 function updateAccuracy() {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
-  accountHistory.options.scales.yAxes[1].display = Config.chartAccuracy;
+  accountHistory.options.scales["acc"].display = Config.chartAccuracy;
   accountHistory.update();
 }
 
@@ -648,7 +657,7 @@ function updateStyle() {
     accountHistory.data.datasets[0].showLine = true;
     accountHistory.data.datasets[1].showLine = true;
   }
-  accountHistory.update();
+  accountHistory.updateColors();
 }
 
 export async function updateColors(chart) {
@@ -656,6 +665,10 @@ export async function updateColors(chart) {
   let subcolor = await ThemeColors.get("sub");
   let maincolor = await ThemeColors.get("main");
   let errorcolor = await ThemeColors.get("error");
+
+  if (chart.data.datasets.every((dataset) => dataset.data.length === 0)) {
+    return;
+  }
 
   chart.data.datasets[0].borderColor = maincolor;
   chart.data.datasets[1].borderColor = subcolor;
@@ -687,72 +700,27 @@ export async function updateColors(chart) {
     chart.data.datasets[1].pointBackgroundColor = subcolor;
   }
 
-  try {
-    chart.options.scales.xAxes[0].ticks.minor.fontColor = subcolor;
-    chart.options.scales.xAxes[0].scaleLabel.fontColor = subcolor;
-  } catch {}
-
-  try {
-    chart.options.scales.yAxes[0].ticks.minor.fontColor = subcolor;
-    chart.options.scales.yAxes[0].scaleLabel.fontColor = subcolor;
-  } catch {}
-
-  try {
-    chart.options.scales.yAxes[1].ticks.minor.fontColor = subcolor;
-    chart.options.scales.yAxes[1].scaleLabel.fontColor = subcolor;
-  } catch {}
-
-  try {
-    chart.options.scales.yAxes[2].ticks.minor.fontColor = subcolor;
-    chart.options.scales.yAxes[2].scaleLabel.fontColor = subcolor;
-  } catch {}
+  Object.keys(chart.options.scales).forEach((scaleID) => {
+    chart.options.scales[scaleID].ticks.color = subcolor;
+    chart.options.scales[scaleID].title.color = subcolor;
+  });
 
   try {
     chart.data.datasets[0].trendlineLinear.style = subcolor;
     chart.data.datasets[1].trendlineLinear.style = subcolor;
   } catch {}
 
-  try {
-    chart.options.annotation.annotations.forEach((annotation) => {
-      annotation.borderColor = subcolor;
-      annotation.label.backgroundColor = subcolor;
-      annotation.label.fontColor = bgcolor;
-    });
-  } catch {}
+  chart.options.plugins.annotation.annotations.forEach((annotation) => {
+    annotation.borderColor = subcolor;
+    annotation.label.backgroundColor = subcolor;
+    annotation.label.color = bgcolor;
+  });
 
-  // ChartController.result.options.annotation.annotations.push({
-  //   enabled: false,
-  //   type: "line",
-  //   mode: "horizontal",
-  //   scaleID: "wpm",
-  //   value: lpb,
-  //   borderColor: themecolors['sub'],
-  //   borderWidth: 1,
-  //   borderDash: [2, 2],
-  //   label: {
-  //     backgroundColor: themecolors['sub'],
-  //     fontFamily: Config.fontFamily.replace(/_/g, " "),
-  //     fontSize: 11,
-  //     fontStyle: "normal",
-  //     fontColor: themecolors['bg'],
-  //     xPadding: 6,
-  //     yPadding: 6,
-  //     cornerRadius: 3,
-  //     position: "center",
-  //     enabled: true,
-  //     content: `PB: ${lpb}`,
-  //   },
-  // });
-
-  chart.update();
+  chart.update("none");
 }
 
-Chart.prototype.updateColors = function () {
-  updateColors(this);
-};
-
 export function setDefaultFontFamily(font) {
-  Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
+  Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 
 export function updateAllChartColors() {

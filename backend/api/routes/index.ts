@@ -6,6 +6,7 @@ import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
+import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/api-utils";
@@ -29,8 +30,6 @@ const API_ROUTE_MAP = {
 };
 
 function addApiRoutes(app: Application): void {
-  let requestsProcessed = 0;
-
   app.get("/leaderboard", (_req, res) => {
     res.sendStatus(404);
   });
@@ -52,7 +51,6 @@ function addApiRoutes(app: Application): void {
         recordClientVersion(clientVersion?.toString() ?? "unknown");
       }
 
-      requestsProcessed++;
       next();
     }
   );
@@ -62,7 +60,7 @@ function addApiRoutes(app: Application): void {
     asyncHandler(async (_req, _res) => {
       return new MonkeyResponse("ok", {
         uptime: Date.now() - APP_START_TIME,
-        requestsProcessed,
+        version,
       });
     })
   );

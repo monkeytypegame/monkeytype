@@ -99,7 +99,6 @@ backend/.env
 static/adtest.html
 backend/migrationStats.txt
 
-
 # Madge
 dep-graph.png
 
