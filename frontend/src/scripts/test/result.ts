@@ -36,7 +36,6 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  ChartController.result.updateColors();
   (ChartController.result.data.labels as string[]) = labels;
   (ChartController.result as Chart<"line" | "scatter">).options.scales![
     "wpm"
@@ -123,9 +122,6 @@ async function updateGraph(): Promise<void> {
 
   ChartController.result.options.scales!["wpm"]!.max = maxChartVal;
   ChartController.result.options.scales!["raw"]!.max = maxChartVal;
-
-  ChartController.result.updateColors();
-  ChartController.result.resize();
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -181,7 +177,6 @@ export async function updateGraphPBLine(): Promise<void> {
   }
   ChartController.result.options.scales!["wpm"]!.max = Math.round(maxChartVal);
   ChartController.result.options.scales!["raw"]!.max = Math.round(maxChartVal);
-  ChartController.result.updateColors();
 }
 
 function updateWpmAndAcc(): void {
@@ -627,6 +622,8 @@ export function update(
   updateQuoteSource(randomQuote);
   updateGraph();
   updateGraphPBLine();
+  ChartController.result.updateColors();
+  ChartController.result.resize();
   updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
