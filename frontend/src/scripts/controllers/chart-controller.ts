@@ -229,6 +229,7 @@ export const result: ChartWithUpdateColors<
         annotations: [],
       },
       tooltip: {
+        animation: { duration: 250 },
         mode: "index",
         intersect: false,
         callbacks: {
@@ -350,6 +351,7 @@ export const accountHistory: ChartWithUpdateColors<
         annotations: [],
       },
       tooltip: {
+        animation: { duration: 250 },
         // Disable the on-canvas tooltip
         enabled: true,
         intersect: false,
@@ -520,6 +522,7 @@ export const accountActivity: ChartWithUpdateColors<
         annotations: [],
       },
       tooltip: {
+        animation: { duration: 250 },
         callbacks: {
           title: function (tooltipItem): string {
             const resultData = tooltipItem[0].dataset.data[
@@ -678,6 +681,7 @@ export const miniResult: ChartWithUpdateColors<
         annotations: [],
       },
       tooltip: {
+        animation: { duration: 250 },
         mode: "index",
         intersect: false,
       },
