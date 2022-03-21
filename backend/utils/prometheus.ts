@@ -157,7 +157,7 @@ export function recordClientVersion(version: string): void {
 
 const serverVersionCounter = new Counter({
   name: "server_version",
-  help: "The current server's version",
+  help: "The server's current version",
   labelNames: ["version"],
 });
 
