@@ -114,8 +114,13 @@ export async function update(): Promise<void> {
   if (Config.showAvg) {
     const val = Last10Average.get();
     if (Auth.currentUser && val > 0) {
+
+      const newVal = Config.alwaysShowCPM ? val * 5 : val;
+
+      const text = Config.alwaysShowCPM ? "cpm" : "wpm";
+
       $(".pageTest #testModesNotice").append(
-        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${val}wpm</div>`
+        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${newVal}${text}</div>`
       );
     }
   }
