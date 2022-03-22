@@ -739,4 +739,9 @@
     "bgColor": "#003950",
     "mainColor": "#ffcefb"
   }
-]
+  ,{
+    "name": "Everblush",
+    "bgColor": "#181f21",
+    "mainColor": "#dadada"
+  }
+}
