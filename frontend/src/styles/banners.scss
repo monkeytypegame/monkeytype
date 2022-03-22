@@ -2,6 +2,7 @@
   position: fixed;
   width: 100%;
   z-index: 1000;
+  transition: 0.25s;
   .banner {
     background: var(--sub-color);
     color: var(--bg-color);
@@ -54,5 +55,10 @@
     &.bad {
       background: var(--error-color);
     }
+  }
+
+  &.focus {
+    opacity: 0;
+    pointer-events: none;
   }
 }
