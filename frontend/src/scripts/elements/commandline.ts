@@ -186,7 +186,7 @@ export let show = (): void => {
   $("#commandLine input").trigger("focus");
 };
 
-function hide(): void {
+function hide(shouldFocusTestUI = true): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
   if (!ThemeController.randomTheme) {
@@ -203,19 +203,27 @@ function hide(): void {
       () => {
         $("#commandLineWrapper").addClass("hidden");
         $("#commandLine").removeClass("allCommands");
-        TestUI.focusWords();
+        if (shouldFocusTestUI) {
+          TestUI.focusWords();
+        }
       }
     );
-  TestUI.focusWords();
+  if (shouldFocusTestUI) {
+    TestUI.focusWords();
+  }
 }
 
 function trigger(command: string): void {
   let subgroup = false;
   let input = false;
+  let shouldFocusTestUI = true;
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
   let sticky = false;
   $.each(list.list, (_index, obj) => {
     if (obj.id == command) {
+      if (obj.shouldFocusTestUI !== undefined) {
+        shouldFocusTestUI = obj.shouldFocusTestUI;
+      }
       if (obj.input) {
         input = true;
         const escaped = obj.display.split("</i>")[1] ?? obj.display;
@@ -239,7 +247,7 @@ function trigger(command: string): void {
   });
   if (!subgroup && !input && !sticky) {
     AnalyticsController.log("usedCommandLine", { command });
-    hide();
+    hide(shouldFocusTestUI);
   }
 }
 

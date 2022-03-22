@@ -3077,6 +3077,16 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       },
     },
     {
+      id: "viewQuoteSearchPopup",
+      display: "Search for quotes",
+      icon: "fa-search",
+      exec: (): void => {
+        UpdateConfig.setMode("quote");
+        $("#quote-search-button").trigger("click");
+      },
+      shouldFocusTestUI: false,
+    },
+    {
       id: "viewAccount",
       display: "View Account Page",
       icon: "fa-user",
