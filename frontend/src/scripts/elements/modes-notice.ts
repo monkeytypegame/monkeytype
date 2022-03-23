@@ -118,7 +118,7 @@ export async function update(): Promise<void> {
     if (Auth.currentUser && averageWPM > 0) {
       const averageWPMText = ["speed", "both"].includes(Config.showAverage)
         ? Config.alwaysShowCPM
-          ? `${averageWPM * 5} cpm`
+          ? `${Math.round(averageWPM * 5)} cpm`
           : `${averageWPM} wpm`
         : "";
 
