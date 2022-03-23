@@ -409,10 +409,10 @@ export async function getUserAverageAcc10<M extends MonkeyTypes.Mode>(
     // You have to use every so you can break out of the loop
     dbSnapshot.results?.every((result) => {
       if (
-        result.mode == mode &&
-        result.punctuation == punctuation &&
-        result.language == language &&
-        result.difficulty == difficulty &&
+        result.mode === mode &&
+        result.punctuation === punctuation &&
+        result.language === language &&
+        result.difficulty === difficulty &&
         (result.lazyMode === lazyMode ||
           (result.lazyMode === undefined && lazyMode === false)) &&
         ((activeTagIds.length === 0 && result.tags.length === 0) ||
@@ -420,7 +420,7 @@ export async function getUserAverageAcc10<M extends MonkeyTypes.Mode>(
             result.tags.some((tag) => activeTagIds.includes(tag))))
       ) {
         // Continue if the mode2 doesn't match unless it's a quote.
-        if (result.mode2 != mode2 && mode != "quote") {
+        if (result.mode2 !== mode2 && mode !== "quote") {
           return true;
         }
 
@@ -431,7 +431,7 @@ export async function getUserAverageAcc10<M extends MonkeyTypes.Mode>(
         }
 
         // Check mode2 matches and append, for quotes this is the quote id.
-        if (result.mode2 == mode2) {
+        if (result.mode2 === mode2) {
           accuracySum += result.acc;
           count++;
           if (count >= 10) {
@@ -444,7 +444,7 @@ export async function getUserAverageAcc10<M extends MonkeyTypes.Mode>(
     });
 
     // Return the last 10 average accuracy for quote if the current quote id has never been completed before by the user.
-    if (count == 0 && mode == "quote") {
+    if (count === 0 && mode === "quote") {
       return last10Accuracy / last10Count;
     }
 
