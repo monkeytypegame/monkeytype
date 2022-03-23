@@ -69,7 +69,7 @@ declare namespace MonkeyTypes {
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
-  type ShowAverage = "off" | "speed" | "acc" | "both";
+  type ShowAverage = "off" | "wpm" | "acc" | "both";
 
   type SingleListCommandLine = "manual" | "on";
 

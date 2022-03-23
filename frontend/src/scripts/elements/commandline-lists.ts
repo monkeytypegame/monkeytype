@@ -371,10 +371,10 @@ const commandsShowAverage: MonkeyTypes.CommandsGroup = {
     },
     {
       id: "setShowAverageSpeed",
-      display: "speed",
-      configValue: "speed",
+      display: "wpm",
+      configValue: "wpm",
       exec: (): void => {
-        UpdateConfig.setShowAverage("speed");
+        UpdateConfig.setShowAverage("wpm");
       },
     },
     {
@@ -2950,7 +2950,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
     {
       id: "changeShowAverage",
       display: "Show average...",
-      icon: "fa-tachometer-alt",
+      icon: "fa-chart-bar",
       subgroup: commandsShowAverage,
     },
     {

@@ -797,16 +797,16 @@ export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowAverage(
-  live: MonkeyTypes.ShowAverage,
+  value: MonkeyTypes.ShowAverage,
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("show average", live, [["off", "speed", "acc", "both"]])
+    !isConfigValueValid("show average", value, [["off", "wpm", "acc", "both"]])
   ) {
     return false;
   }
 
-  config.showAverage = live;
+  config.showAverage = value;
   saveToLocalStorage("showAverage", nosave);
   ConfigEvent.dispatch("showAverage", config.showAverage, nosave);
 
