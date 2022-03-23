@@ -113,20 +113,20 @@ export async function update(): Promise<void> {
   }
 
   if (Config.showAverage !== "off") {
-    const averageWPM = Last10Average.getWPM();
-    const averageAcc = Last10Average.getAcc();
-    if (Auth.currentUser && averageWPM > 0) {
-      const averageWPMText = ["speed", "both"].includes(Config.showAverage)
+    const avgWPM = Last10Average.getWPM();
+    const avgAcc = Last10Average.getAcc();
+    if (Auth.currentUser && avgWPM > 0) {
+      const avgWPMText = ["speed", "both"].includes(Config.showAverage)
         ? Config.alwaysShowCPM
-          ? `${Math.round(averageWPM * 5)} cpm`
-          : `${averageWPM} wpm`
+          ? `${Math.round(avgWPM * 5)} cpm`
+          : `${avgWPM} wpm`
         : "";
 
-      const averageAccText = ["acc", "both"].includes(Config.showAverage)
-        ? `${averageAcc}% acc`
+      const avgAccText = ["acc", "both"].includes(Config.showAverage)
+        ? `${avgAcc}% acc`
         : "";
 
-      const text = `${averageWPMText} ${averageAccText}`.trim();
+      const text = `${avgWPMText} ${avgAccText}`.trim();
 
       $(".pageTest #testModesNotice").append(
         `<div class="text-button" commands="commandsShowAverage"><i class="fas fa-tachometer-alt"></i>avg: ${text}</div>`
