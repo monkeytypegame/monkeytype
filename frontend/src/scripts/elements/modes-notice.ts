@@ -19,7 +19,8 @@ ConfigEvent.subscribe((eventKey) => {
       "minBurst",
       "confidenceMode",
       "layout",
-      "showAvg",
+      "showAverage",
+      "alwaysShowCPM",
     ].includes(eventKey)
   ) {
     update();
@@ -111,16 +112,24 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.showAvg) {
-    const val = Last10Average.get();
-    if (Auth.currentUser && val > 0) {
+  if (Config.showAverage !== "off") {
+    const averageWPM = Last10Average.getWPM();
+    const averageAcc = Last10Average.getAcc();
+    if (Auth.currentUser && averageWPM > 0) {
+      const averageWPMText = ["speed", "both"].includes(Config.showAverage)
+        ? Config.alwaysShowCPM
+          ? `${averageWPM * 5} cpm`
+          : `${averageWPM} wpm`
+        : "";
 
-      const newVal = Config.alwaysShowCPM ? val * 5 : val;
+      const averageAccText = ["acc", "both"].includes(Config.showAverage)
+        ? `${averageAcc}% acc`
+        : "";
 
-      const text = Config.alwaysShowCPM ? "cpm" : "wpm";
+      const text = `${averageWPMText} ${averageAccText}`.trim();
 
       $(".pageTest #testModesNotice").append(
-        `<div class="text-button" commands="commandsShowAvg"><i class="fas fa-tachometer-alt"></i>avg: ${newVal}${text}</div>`
+        `<div class="text-button" commands="commandsShowAverage"><i class="fas fa-tachometer-alt"></i>avg: ${text}</div>`
       );
     }
   }

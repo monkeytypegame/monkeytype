@@ -386,6 +386,78 @@ export async function getUserAverageWpm10<M extends MonkeyTypes.Mode>(
   return retval;
 }
 
+export async function getUserAverageAcc10<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  function cont(): number {
+    const activeTagIds: string[] = [];
+    getSnapshot()?.tags?.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagIds.push(tag._id);
+      }
+    });
+
+    let accuracySum = 0;
+    let count = 0;
+    let last10Accuracy = 0;
+    let last10Count = 0;
+    // You have to use every so you can break out of the loop
+    dbSnapshot.results?.every((result) => {
+      if (
+        result.mode == mode &&
+        result.punctuation == punctuation &&
+        result.language == language &&
+        result.difficulty == difficulty &&
+        (result.lazyMode === lazyMode ||
+          (result.lazyMode === undefined && lazyMode === false)) &&
+        ((activeTagIds.length === 0 && result.tags.length === 0) ||
+          (activeTagIds.length > 0 &&
+            result.tags.some((tag) => activeTagIds.includes(tag))))
+      ) {
+        // Continue if the mode2 doesn't match unless it's a quote.
+        if (result.mode2 != mode2 && mode != "quote") {
+          return true;
+        }
+
+        // Grab the most recent 10 accuracies for the current mode.
+        if (last10Count < 10) {
+          last10Accuracy += result.acc;
+          last10Count++;
+        }
+
+        // Check mode2 matches and append, for quotes this is the quote id.
+        if (result.mode2 == mode2) {
+          accuracySum += result.acc;
+          count++;
+          if (count >= 10) {
+            // Break out of every loop since we a maximum of the last 10 accuracy results.
+            return false;
+          }
+        }
+      }
+      return true;
+    });
+
+    // Return the last 10 average accuracy for quote if the current quote id has never been completed before by the user.
+    if (count == 0 && mode == "quote") {
+      return last10Accuracy / last10Count;
+    }
+
+    // Return the average accuracy of the last 10 completions for the targeted test mode.
+    return accuracySum / count;
+  }
+
+  const retval =
+    dbSnapshot === null || (await getUserResults()) === false ? 0 : cont();
+
+  return retval;
+}
+
 export async function getLocalPB<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,

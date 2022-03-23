@@ -3,7 +3,8 @@ import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 
-let value = 0;
+let averageWPM = 0;
+let averageAcc = 0;
 
 export async function update(): Promise<void> {
   const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
@@ -17,9 +18,25 @@ export async function update(): Promise<void> {
   );
   wpm = Misc.roundTo2(wpm);
   if (!Config.alwaysShowDecimalPlaces) wpm = Math.round(wpm);
-  value = wpm;
+  averageWPM = wpm;
+
+  let acc = await DB.getUserAverageAcc10(
+    Config.mode,
+    mode2 as never,
+    Config.punctuation,
+    Config.language,
+    Config.difficulty,
+    Config.lazyMode
+  );
+  acc = Misc.roundTo2(acc);
+  if (!Config.alwaysShowDecimalPlaces) acc = Math.round(acc);
+  averageAcc = acc;
 }
 
-export function get(): number {
-  return value;
+export function getWPM(): number {
+  return averageWPM;
+}
+
+export function getAcc(): number {
+  return averageAcc;
 }
