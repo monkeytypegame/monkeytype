@@ -314,7 +314,6 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   return retval;
 }
 
-// create a function that gets the last 10 wpm and acc and returns a 2 number tuple
 export async function getUserAverage10<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
