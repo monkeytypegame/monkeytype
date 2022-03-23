@@ -45,7 +45,6 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  ChartController.result.updateColors();
   ChartController.result.data.labels = labels;
   resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
     ? "Character per Minute"
@@ -178,7 +177,6 @@ export async function updateGraphPBLine(): Promise<void> {
   }
   resultScaleOptions["wpm"].max = Math.round(maxChartVal + 5);
   resultScaleOptions["raw"].max = Math.round(maxChartVal + 5);
-  ChartController.result.updateColors();
 }
 
 function updateWpmAndAcc(): void {
