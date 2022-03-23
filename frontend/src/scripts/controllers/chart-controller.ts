@@ -57,7 +57,6 @@ import type {
   DefaultDataPoint,
   PluginChartOptions,
   ScaleChartOptions,
-  ChartData,
 } from "chart.js";
 
 import type {
@@ -65,38 +64,12 @@ import type {
   LabelOptions,
 } from "chartjs-plugin-annotation";
 
-type ChartDatasetWithTrendline<
-  TType extends ChartType = ChartType,
-  TData = DefaultDataPoint<TType>
-> = ChartDataset<TType, TData> & {
-  trendlineLinear?: TrendlineLinearPlugin.TrendlineLinearOptions;
-};
-
-interface ChartConfigurationWithTrendLine<
-  TType extends ChartType = ChartType,
-  TData = DefaultDataPoint<TType>,
-  TLabel = unknown
-> extends ChartConfiguration<TType, TData, TLabel> {
-  data: ChartDataWithTrendline<TType, TData, TLabel>;
-}
-
-interface ChartDataWithTrendline<
-  TType extends ChartType = ChartType,
-  TData = DefaultDataPoint<TType>,
-  TLabel = unknown
-> extends ChartData<TType, TData, TLabel> {
-  datasets: ChartDatasetWithTrendline<TType, TData>[];
-}
-
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
   TLabel = unknown
 > extends Chart<TType, TData, TLabel> {
-  constructor(
-    item: any,
-    config: ChartConfigurationWithTrendLine<TType, TData, TLabel>
-  ) {
+  constructor(item: any, config: ChartConfiguration<TType, TData, TLabel>) {
     super(item, config);
   }
 
@@ -784,11 +757,11 @@ export async function updateColors<
 
   try {
     (
-      (chart.data.datasets[0] as ChartDatasetWithTrendline<TType, TData>)
+      chart.data.datasets[0]
         .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
     ).style = subcolor;
     (
-      (chart.data.datasets[1] as ChartDatasetWithTrendline<TType, TData>)
+      chart.data.datasets[1]
         .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
     ).style = subcolor;
   } catch {}
