@@ -176,8 +176,8 @@ export async function updateGraphPBLine(): Promise<void> {
   ) {
     maxChartVal = parseFloat(chartlpb) + 15;
   }
-  resultScaleOptions["wpm"].max = Math.round(maxChartVal);
-  resultScaleOptions["raw"].max = Math.round(maxChartVal);
+  resultScaleOptions["wpm"].max = Math.round(maxChartVal + 5);
+  resultScaleOptions["raw"].max = Math.round(maxChartVal + 5);
   ChartController.result.updateColors();
 }
 
