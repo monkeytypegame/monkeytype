@@ -16,6 +16,7 @@ First you will have to make a personal copy of the Monkeytype repository, also k
 Once you have forked the repository you can now add your language. Create a new json file in `./frontend/static/languages/`, named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
 
 The contents of the file should be as follows:
+
 ```
 {
   "name": "language",
