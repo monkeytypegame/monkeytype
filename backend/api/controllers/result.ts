@@ -16,6 +16,7 @@ import {
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
+import George from "../../tasks/george";
 
 const objecthash = node_object_hash().hash;
 
@@ -61,6 +62,10 @@ class ResultController {
 
   static async addResult(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
+    const useRedisForBotTasks =
+      req.ctx.configuration.useRedisForBotTasks.enabled;
+
     const result = Object.assign({}, req.body.result);
     result.uid = uid;
     if (result.wpm === result.raw && result.acc !== 100) {
@@ -246,12 +251,20 @@ class ResultController {
     if (result.mode === "time" && String(result.mode2) === "60") {
       UserDAO.incrementBananas(uid, result.wpm);
       if (isPb && user.discordId) {
-        BotDAO.updateDiscordRole(user.discordId, result.wpm);
+        if (useRedisForBotTasks) {
+          George.updateDiscordRole(user.discordId, result.wpm);
+        } else {
+          BotDAO.updateDiscordRole(user.discordId, result.wpm);
+        }
       }
     }
 
     if (result.challenge && user.discordId) {
-      BotDAO.awardChallenge(user.discordId, result.challenge);
+      if (useRedisForBotTasks) {
+        George.awardChallenge(user.discordId, result.challenge);
+      } else {
+        BotDAO.awardChallenge(user.discordId, result.challenge);
+      }
     } else {
       delete result.challenge;
     }
