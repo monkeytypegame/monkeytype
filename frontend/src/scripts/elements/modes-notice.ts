@@ -113,8 +113,14 @@ export async function update(): Promise<void> {
   }
 
   if (Config.showAverage !== "off") {
-    const avgWPM = Last10Average.getWPM();
-    const avgAcc = Last10Average.getAcc();
+    let avgWPM = Last10Average.getWPM();
+    let avgAcc = Last10Average.getAcc();
+
+    if (!Config.alwaysShowDecimalPlaces) {
+      avgWPM = Math.round(avgWPM);
+      avgAcc = Math.round(avgAcc);
+    }
+
     if (Auth.currentUser && avgWPM > 0) {
       const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
         ? Config.alwaysShowCPM
