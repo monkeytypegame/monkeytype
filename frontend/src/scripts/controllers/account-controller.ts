@@ -1,28 +1,28 @@
-import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
-import * as AccountButton from "../elements/account-button";
-import * as Account from "../pages/account";
-import * as VerificationController from "./verification-controller";
-import * as Misc from "../utils/misc";
-import * as Settings from "../pages/settings";
-import * as AllTimeStats from "../account/all-time-stats";
-import * as DB from "../db";
-import * as TestLogic from "../test/test-logic";
-import * as PageController from "./page-controller";
-import * as PSA from "../elements/psa";
-import * as Focus from "../test/focus";
-import * as Loader from "../elements/loader";
-import * as PageTransition from "../states/page-transition";
-import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
-import * as LoadingPage from "../pages/loading";
-import * as ResultFilters from "../account/result-filters";
-import * as PaceCaret from "../test/pace-caret";
-import * as CommandlineLists from "../elements/commandline-lists";
-import * as TagController from "./tag-controller";
-import * as ResultTagsPopup from "../popups/result-tags-popup";
-import * as URLHandler from "../utils/url-handler";
+import Ape from "@ape";
+import * as Notifications from "@elements/notifications";
+import Config, * as UpdateConfig from "@root/config";
+import * as AccountButton from "@elements/account-button";
+import * as Account from "@pages/account";
+import * as VerificationController from "@controllers/verification-controller";
+import * as Misc from "@utils/misc";
+import * as Settings from "@pages/settings";
+import * as AllTimeStats from "@account/all-time-stats";
+import * as DB from "@root/db";
+import * as TestLogic from "@test/test-logic";
+import * as PageController from "@controllers/page-controller";
+import * as PSA from "@elements/psa";
+import * as Focus from "@test/focus";
+import * as Loader from "@elements/loader";
+import * as PageTransition from "@states/page-transition";
+import * as ActivePage from "@states/active-page";
+import * as TestActive from "@states/test-active";
+import * as LoadingPage from "@pages/loading";
+import * as ResultFilters from "@account/result-filters";
+import * as PaceCaret from "@test/pace-caret";
+import * as CommandlineLists from "@elements/commandline-lists";
+import * as TagController from "@controllers/tag-controller";
+import * as ResultTagsPopup from "@popups/result-tags-popup";
+import * as URLHandler from "@utils/url-handler";
 import {
   EmailAuthProvider,
   GoogleAuthProvider,
@@ -42,9 +42,9 @@ import {
   sendPasswordResetEmail,
   User as UserType,
 } from "firebase/auth";
-import { Auth } from "../firebase";
+import { Auth } from "@root/firebase";
 import differenceInDays from "date-fns/differenceInDays";
-import { defaultSnap } from "../constants/default-snapshot";
+import { defaultSnap } from "@constants/default-snapshot";
 
 export const gmailProvider = new GoogleAuthProvider();
 

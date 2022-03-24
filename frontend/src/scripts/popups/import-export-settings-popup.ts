@@ -1,5 +1,5 @@
-import * as UpdateConfig from "../config";
-import * as Notifications from "../elements/notifications";
+import * as UpdateConfig from "@root/config";
+import * as Notifications from "@elements/notifications";
 
 export function show(mode: string, config?: string): void {
   if ($("#settingsImportWrapper").hasClass("hidden")) {

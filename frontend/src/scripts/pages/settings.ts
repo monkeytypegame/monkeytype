@@ -1,19 +1,19 @@
-import SettingsGroup from "../settings/settings-group";
-import Config, * as UpdateConfig from "../config";
-import * as Sound from "../controllers/sound-controller";
-import * as Misc from "../utils/misc";
-import * as DB from "../db";
-import * as Funbox from "../test/funbox";
-import * as TagController from "../controllers/tag-controller";
-import * as PresetController from "../controllers/preset-controller";
-import * as ThemePicker from "../settings/theme-picker";
-import * as Notifications from "../elements/notifications";
-import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
-import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
-import Page from "./page";
-import { Auth } from "../firebase";
+import SettingsGroup from "@settings/settings-group";
+import Config, * as UpdateConfig from "@root/config";
+import * as Sound from "@controllers/sound-controller";
+import * as Misc from "@utils/misc";
+import * as DB from "@root/db";
+import * as Funbox from "@test/funbox";
+import * as TagController from "@controllers/tag-controller";
+import * as PresetController from "@controllers/preset-controller";
+import * as ThemePicker from "@settings/theme-picker";
+import * as Notifications from "@elements/notifications";
+import * as ImportExportSettingsPopup from "@popups/import-export-settings-popup";
+import * as ConfigEvent from "@observables/config-event";
+import * as ActivePage from "@states/active-page";
+import * as ApeKeysPopup from "@popups/ape-keys-popup";
+import Page from "@pages/page";
+import { Auth } from "@root/firebase";
 
 type SettingsGroups = {
   [key: string]: SettingsGroup;

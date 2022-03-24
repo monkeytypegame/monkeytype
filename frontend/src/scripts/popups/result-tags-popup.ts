@@ -1,7 +1,7 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
+import Ape from "@ape";
+import * as DB from "@root/db";
+import * as Loader from "@elements/loader";
+import * as Notifications from "@elements/notifications";
 
 function show(): void {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {

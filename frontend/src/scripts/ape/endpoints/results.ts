@@ -1,4 +1,4 @@
-import { CLIENT_VERSION } from "../../version";
+import { CLIENT_VERSION } from "@root/version";
 
 const BASE_PATH = "/results";
 

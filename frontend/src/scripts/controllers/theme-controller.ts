@@ -1,12 +1,12 @@
-import * as ThemeColors from "../elements/theme-colors";
-import * as ChartController from "./chart-controller";
-import * as Misc from "../utils/misc";
-import Config, * as UpdateConfig from "../config";
-import * as BackgroundFilter from "../elements/custom-background-filter";
-import * as ConfigEvent from "../observables/config-event";
-import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
-import * as AnalyticsController from "../controllers/analytics-controller";
+import * as ThemeColors from "@elements/theme-colors";
+import * as ChartController from "@controllers/chart-controller";
+import * as Misc from "@utils/misc";
+import Config, * as UpdateConfig from "@root/config";
+import * as BackgroundFilter from "@elements/custom-background-filter";
+import * as ConfigEvent from "@observables/config-event";
+import * as DB from "@root/db";
+import * as Notifications from "@elements/notifications";
+import * as AnalyticsController from "@controllers/analytics-controller";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;

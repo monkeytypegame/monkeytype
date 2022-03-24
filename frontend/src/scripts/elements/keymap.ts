@@ -1,8 +1,8 @@
-import Config from "../config";
-import * as ThemeColors from "./theme-colors";
-import * as SlowTimer from "../states/slow-timer";
-import * as ConfigEvent from "../observables/config-event";
-import * as Misc from "../utils/misc";
+import Config from "@root/config";
+import * as ThemeColors from "@elements/theme-colors";
+import * as SlowTimer from "@states/slow-timer";
+import * as ConfigEvent from "@observables/config-event";
+import * as Misc from "@utils/misc";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;

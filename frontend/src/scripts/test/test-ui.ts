@@ -1,18 +1,18 @@
-import * as Notifications from "../elements/notifications";
-import * as ThemeColors from "../elements/theme-colors";
-import Config, * as UpdateConfig from "../config";
-import * as DB from "../db";
-import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
-import * as CustomText from "./custom-text";
-import * as Caret from "./caret";
-import * as OutOfFocus from "./out-of-focus";
-import * as Replay from "./replay";
-import * as Misc from "../utils/misc";
-import * as SlowTimer from "../states/slow-timer";
-import * as ConfigEvent from "../observables/config-event";
+import * as Notifications from "@elements/notifications";
+import * as ThemeColors from "@elements/theme-colors";
+import Config, * as UpdateConfig from "@root/config";
+import * as DB from "@root/db";
+import * as TestWords from "@test/test-words";
+import * as TestInput from "@test/test-input";
+import * as CustomText from "@test/custom-text";
+import * as Caret from "@test/caret";
+import * as OutOfFocus from "@test/out-of-focus";
+import * as Replay from "@test/replay";
+import * as Misc from "@utils/misc";
+import * as SlowTimer from "@states/slow-timer";
+import * as ConfigEvent from "@observables/config-event";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { Auth } from "@root/firebase";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;

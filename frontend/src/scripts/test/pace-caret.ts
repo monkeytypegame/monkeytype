@@ -1,13 +1,13 @@
-import * as TestStats from "./test-stats";
-import * as TestWords from "./test-words";
-import * as TestUI from "./test-ui";
-import Config from "../config";
-import * as DB from "../db";
-import * as SlowTimer from "../states/slow-timer";
-import * as Misc from "../utils/misc";
-import * as TestActive from "../states/test-active";
-import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
+import * as TestStats from "@test/test-stats";
+import * as TestWords from "@test/test-words";
+import * as TestUI from "@test/test-ui";
+import Config from "@root/config";
+import * as DB from "@root/db";
+import * as SlowTimer from "@states/slow-timer";
+import * as Misc from "@utils/misc";
+import * as TestActive from "@states/test-active";
+import * as TestState from "@test/test-state";
+import * as ConfigEvent from "@observables/config-event";
 
 interface Settings {
   wpm: number;

@@ -1,14 +1,14 @@
-import Config, * as UpdateConfig from "../config";
-import * as ThemeController from "../controllers/theme-controller";
-import * as Misc from "../utils/misc";
-import * as Notifications from "../elements/notifications";
-import * as ThemeColors from "../elements/theme-colors";
-import * as ChartController from "../controllers/chart-controller";
-import * as CustomThemePopup from "../popups/custom-theme-popup";
-import * as Loader from "../elements/loader";
-import * as DB from "../db";
-import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import Config, * as UpdateConfig from "@root/config";
+import * as ThemeController from "@controllers/theme-controller";
+import * as Misc from "@utils/misc";
+import * as Notifications from "@elements/notifications";
+import * as ThemeColors from "@elements/theme-colors";
+import * as ChartController from "@controllers/chart-controller";
+import * as CustomThemePopup from "@popups/custom-theme-popup";
+import * as Loader from "@elements/loader";
+import * as DB from "@root/db";
+import * as ConfigEvent from "@observables/config-event";
+import { Auth } from "@root/firebase";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;

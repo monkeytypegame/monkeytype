@@ -1,6 +1,6 @@
-import * as DB from "../db";
-import Config from "../config";
-import * as Misc from "../utils/misc";
+import * as DB from "@root/db";
+import Config from "@root/config";
+import * as Misc from "@utils/misc";
 import format from "date-fns/format";
 
 export function update(): void {

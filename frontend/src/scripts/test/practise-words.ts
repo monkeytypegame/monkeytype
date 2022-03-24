@@ -1,9 +1,9 @@
-import * as TestWords from "./test-words";
-import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
-import * as CustomText from "./custom-text";
-import * as TestInput from "./test-input";
-import * as ConfigEvent from "../observables/config-event";
+import * as TestWords from "@test/test-words";
+import * as Notifications from "@elements/notifications";
+import Config, * as UpdateConfig from "@root/config";
+import * as CustomText from "@test/custom-text";
+import * as TestInput from "@test/test-input";
+import * as ConfigEvent from "@observables/config-event";
 
 interface Before {
   mode: MonkeyTypes.Mode | null;

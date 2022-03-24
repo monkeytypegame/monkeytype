@@ -1,11 +1,11 @@
-import * as PaceCaret from "../test/pace-caret";
-import * as TestState from "../test/test-state";
-import * as DB from "../db";
-import * as Last10Average from "../elements/last-10-average";
-import Config from "../config";
-import * as TestWords from "../test/test-words";
-import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import * as PaceCaret from "@test/pace-caret";
+import * as TestState from "@test/test-state";
+import * as DB from "@root/db";
+import * as Last10Average from "@elements/last-10-average";
+import Config from "@root/config";
+import * as TestWords from "@test/test-words";
+import * as ConfigEvent from "@observables/config-event";
+import { Auth } from "@root/firebase";
 
 ConfigEvent.subscribe((eventKey) => {
   if (

@@ -1,6 +1,6 @@
-import * as Misc from "./misc";
-import Config, * as UpdateConfig from "../config";
-import * as Notifications from "../elements/notifications";
+import * as Misc from "@utils/misc";
+import Config, * as UpdateConfig from "@root/config";
+import * as Notifications from "@elements/notifications";
 
 export function loadCustomThemeFromUrl(): void {
   const getValue = Misc.findGetParameter("customTheme");

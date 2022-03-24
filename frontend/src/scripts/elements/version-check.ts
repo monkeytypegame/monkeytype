@@ -1,4 +1,4 @@
-import * as Notifications from "./notifications";
+import * as Notifications from "@elements/notifications";
 // import * as VersionPopup from "./version-popup";
 
 function setMemory(v: string): void {

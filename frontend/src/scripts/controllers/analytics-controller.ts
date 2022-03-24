@@ -1,4 +1,4 @@
-import { Analytics } from "../firebase";
+import { Analytics } from "@root/firebase";
 import { logEvent } from "firebase/analytics";
 
 export async function log(

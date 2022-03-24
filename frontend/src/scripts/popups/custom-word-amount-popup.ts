@@ -1,7 +1,7 @@
-import * as UpdateConfig from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
+import * as UpdateConfig from "@root/config";
+import * as ManualRestart from "@test/manual-restart-tracker";
+import * as TestLogic from "@test/test-logic";
+import * as Notifications from "@elements/notifications";
 
 export function show(): void {
   if ($("#customWordAmountPopupWrapper").hasClass("hidden")) {

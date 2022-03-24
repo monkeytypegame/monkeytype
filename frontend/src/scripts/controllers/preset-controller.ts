@@ -1,8 +1,8 @@
-import * as UpdateConfig from "../config";
-import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
-import * as TestLogic from "../test/test-logic";
-import * as TagController from "./tag-controller";
+import * as UpdateConfig from "@root/config";
+import * as DB from "@root/db";
+import * as Notifications from "@elements/notifications";
+import * as TestLogic from "@test/test-logic";
+import * as TagController from "@controllers/tag-controller";
 
 export function apply(_id: string): void {
   // console.log(DB.getSnapshot().presets);

@@ -1,6 +1,6 @@
-import * as Loader from "../elements/loader";
+import * as Loader from "@elements/loader";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { Auth } from "@root/firebase";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");

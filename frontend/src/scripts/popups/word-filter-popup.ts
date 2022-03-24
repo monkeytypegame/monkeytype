@@ -1,5 +1,5 @@
-import * as Misc from "../utils/misc";
-import * as CustomText from "../test/custom-text";
+import * as Misc from "@utils/misc";
+import * as CustomText from "@test/custom-text";
 
 let initialised = false;
 

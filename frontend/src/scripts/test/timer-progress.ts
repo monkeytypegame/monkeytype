@@ -1,12 +1,12 @@
-import Config from "../config";
-import * as CustomText from "./custom-text";
-import * as Misc from "../utils/misc";
-import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
-import * as Time from "../states/time";
-import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
-import * as ConfigEvent from "../observables/config-event";
+import Config from "@root/config";
+import * as CustomText from "@test/custom-text";
+import * as Misc from "@utils/misc";
+import * as TestWords from "@test/test-words";
+import * as TestInput from "@test/test-input";
+import * as Time from "@states/time";
+import * as SlowTimer from "@states/slow-timer";
+import * as TestActive from "@states/test-active";
+import * as ConfigEvent from "@observables/config-event";
 
 export function show(): void {
   const op = Config.showTimerProgress ? Config.timerOpacity : 0;

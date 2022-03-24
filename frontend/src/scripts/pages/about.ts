@@ -1,5 +1,5 @@
-import * as Misc from "../utils/misc";
-import Page from "./page";
+import * as Misc from "@utils/misc";
+import Page from "@pages/page";
 
 export function reset(): void {
   $(".pageAbout .contributors").empty();

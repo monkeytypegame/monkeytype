@@ -1,9 +1,9 @@
-import Ape from "../ape";
-import Config from "../config";
-import * as TestWords from "../test/test-words";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import QuotesController from "../controllers/quotes-controller";
+import Ape from "@ape";
+import Config from "@root/config";
+import * as TestWords from "@test/test-words";
+import * as Loader from "@elements/loader";
+import * as Notifications from "@elements/notifications";
+import QuotesController from "@controllers/quotes-controller";
 
 const CAPTCHA_ID = 1;
 

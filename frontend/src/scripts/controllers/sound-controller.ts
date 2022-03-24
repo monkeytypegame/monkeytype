@@ -1,7 +1,7 @@
-import Config from "../config";
+import Config from "@root/config";
 import Howler, { Howl } from "howler";
-import * as ConfigEvent from "../observables/config-event";
-import { randomElementFromArray } from "../utils/misc";
+import * as ConfigEvent from "@observables/config-event";
+import { randomElementFromArray } from "@utils/misc";
 
 type ClickSounds = {
   [key: string]: {

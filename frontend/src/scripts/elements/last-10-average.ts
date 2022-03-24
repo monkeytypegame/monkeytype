@@ -1,7 +1,7 @@
-import * as DB from "../db";
-import * as Misc from "../utils/misc";
-import Config from "../config";
-import * as TestWords from "../test/test-words";
+import * as DB from "@root/db";
+import * as Misc from "@utils/misc";
+import Config from "@root/config";
+import * as TestWords from "@test/test-words";
 
 let averageWPM = 0;
 let averageAcc = 0;

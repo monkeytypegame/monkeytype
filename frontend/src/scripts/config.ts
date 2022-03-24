@@ -1,15 +1,15 @@
-import * as DB from "./db";
-import * as OutOfFocus from "./test/out-of-focus";
-import * as Notifications from "./elements/notifications";
+import * as DB from "@root/db";
+import * as OutOfFocus from "@test/out-of-focus";
+import * as Notifications from "@elements/notifications";
 import {
   isConfigKeyValid,
   isConfigValueValid,
   isConfigValueValidAsync,
-} from "./config-validation";
-import * as ConfigEvent from "./observables/config-event";
-import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
-import * as AnalyticsController from "./controllers/analytics-controller";
+} from "@root/config-validation";
+import * as ConfigEvent from "@observables/config-event";
+import DefaultConfig from "@constants/default-config";
+import { Auth } from "@root/firebase";
+import * as AnalyticsController from "@controllers/analytics-controller";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;

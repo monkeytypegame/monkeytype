@@ -40,11 +40,11 @@ Chart.register(
 Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
-import * as TestInput from "../test/test-input";
-import * as ThemeColors from "../elements/theme-colors";
-import * as Misc from "../utils/misc";
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
+import * as TestInput from "@test/test-input";
+import * as ThemeColors from "@elements/theme-colors";
+import * as Misc from "@utils/misc";
+import Config from "@root/config";
+import * as ConfigEvent from "@observables/config-event";
 import { format } from "date-fns";
 import "chartjs-adapter-date-fns";
 

@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import endpoints from "./endpoints";
-import { Auth } from "../firebase";
+import { Auth } from "@root/firebase";
 import { getIdToken } from "firebase/auth";
 
 const DEV_SERVER_HOST = "http://localhost:5005";

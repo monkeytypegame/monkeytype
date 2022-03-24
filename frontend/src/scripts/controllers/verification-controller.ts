@@ -1,8 +1,8 @@
-import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
-import * as Settings from "../pages/settings";
-import * as DB from "../db";
-import * as Loader from "../elements/loader";
+import Ape from "@ape";
+import * as Notifications from "@elements/notifications";
+import * as Settings from "@pages/settings";
+import * as DB from "@root/db";
+import * as Loader from "@elements/loader";
 
 type Data = {
   accessToken: string;

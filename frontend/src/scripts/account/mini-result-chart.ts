@@ -1,5 +1,5 @@
-import * as ChartController from "../controllers/chart-controller";
-import Config from "../config";
+import * as ChartController from "@controllers/chart-controller";
+import Config from "@root/config";
 
 import type { ScaleChartOptions } from "chart.js";
 

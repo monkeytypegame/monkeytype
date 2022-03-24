@@ -1,7 +1,7 @@
-import * as UpdateConfig from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
+import * as UpdateConfig from "@root/config";
+import * as ManualRestart from "@test/manual-restart-tracker";
+import * as TestLogic from "@test/test-logic";
+import * as Notifications from "@elements/notifications";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;

@@ -1,5 +1,5 @@
-import * as Caret from "./caret";
-import * as ActivePage from "../states/active-page";
+import * as Caret from "@test/caret";
+import * as ActivePage from "@states/active-page";
 
 const unfocusPx = 3;
 let state = false;

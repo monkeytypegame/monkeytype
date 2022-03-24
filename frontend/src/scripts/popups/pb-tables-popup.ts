@@ -1,4 +1,4 @@
-import * as DB from "../db";
+import * as DB from "@root/db";
 import format from "date-fns/format";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {

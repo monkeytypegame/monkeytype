@@ -1,4 +1,9 @@
 {
+  "settings": {
+    "import/resolver": {
+      "typescript": "./frontend/tsconfig.json"
+    }
+  },
   "env": {
     "browser": true,
     "es2021": true,
@@ -16,9 +21,10 @@
     "plugin:json/recommended",
     "plugin:require-path-exists/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
-  "plugins": ["json", "require-path-exists", "@typescript-eslint"],
+  "plugins": ["json", "require-path-exists", "@typescript-eslint", "import"],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"

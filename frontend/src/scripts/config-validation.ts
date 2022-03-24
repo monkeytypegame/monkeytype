@@ -1,5 +1,5 @@
-import * as Misc from "./utils/misc";
-import * as Notifications from "./elements/notifications";
+import * as Misc from "@utils/misc";
+import * as Notifications from "@elements/notifications";
 
 type PossibleType =
   | "string"

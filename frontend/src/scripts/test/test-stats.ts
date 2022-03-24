@@ -1,7 +1,7 @@
-import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
+import Config from "@root/config";
+import * as Misc from "@utils/misc";
+import * as TestInput from "@test/test-input";
+import * as TestWords from "@test/test-words";
 
 type CharCount = {
   spaces: number;

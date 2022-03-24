@@ -1,21 +1,21 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, * as UpdateConfig from "../config";
-import * as CustomText from "./custom-text";
-import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-wpm";
-import * as TestStats from "./test-stats";
-import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
-import * as Monkey from "./monkey";
-import * as Misc from "../utils/misc";
-import * as Notifications from "../elements/notifications";
-import * as Caret from "./caret";
-import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
-import * as Time from "../states/time";
-import * as TimerEvent from "../observables/timer-event";
+import Config, * as UpdateConfig from "@root/config";
+import * as CustomText from "@test/custom-text";
+import * as TimerProgress from "@test/timer-progress";
+import * as LiveWpm from "@test/live-wpm";
+import * as TestStats from "@test/test-stats";
+import * as TestInput from "@test/test-input";
+import * as TestWords from "@test/test-words";
+import * as Monkey from "@test/monkey";
+import * as Misc from "@utils/misc";
+import * as Notifications from "@elements/notifications";
+import * as Caret from "@test/caret";
+import * as SlowTimer from "@states/slow-timer";
+import * as TestActive from "@states/test-active";
+import * as Time from "@states/time";
+import * as TimerEvent from "@observables/timer-event";
 
 let slowTimerCount = 0;
 let timer: NodeJS.Timeout | null = null;

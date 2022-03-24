@@ -1,8 +1,8 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import * as TestWords from "../test/test-words";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
+import Ape from "@ape";
+import * as DB from "@root/db";
+import * as TestWords from "@test/test-words";
+import * as Loader from "@elements/loader";
+import * as Notifications from "@elements/notifications";
 
 let rating = 0;
 

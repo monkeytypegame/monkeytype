@@ -1,17 +1,17 @@
-import Ape from "../ape";
-import * as AccountController from "../controllers/account-controller";
-import * as DB from "../db";
-import * as UpdateConfig from "../config";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import * as Settings from "../pages/settings";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
-import * as ThemePicker from "../settings/theme-picker";
-import * as CustomText from "../test/custom-text";
-import * as CustomTextPopup from "../popups/custom-text-popup";
-import * as SavedTextsPopup from "./saved-texts-popup";
+import Ape from "@ape";
+import * as AccountController from "@controllers/account-controller";
+import * as DB from "@root/db";
+import * as UpdateConfig from "@root/config";
+import * as Loader from "@elements/loader";
+import * as Notifications from "@elements/notifications";
+import * as Settings from "@pages/settings";
+import * as ApeKeysPopup from "@popups/ape-keys-popup";
+import * as ThemePicker from "@settings/theme-picker";
+import * as CustomText from "@test/custom-text";
+import * as CustomTextPopup from "@popups/custom-text-popup";
+import * as SavedTextsPopup from "@popups/saved-texts-popup";
 import { FirebaseError } from "firebase/app";
-import { Auth } from "../firebase";
+import { Auth } from "@root/firebase";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,

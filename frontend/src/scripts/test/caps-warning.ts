@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config from "@root/config";
 
 export let capsState = false;
 

@@ -1,5 +1,5 @@
-import { Auth } from "../firebase";
-import * as Misc from "../utils/misc";
+import { Auth } from "@root/firebase";
+import * as Misc from "@utils/misc";
 
 export function loading(truefalse: boolean): void {
   if (truefalse) {

@@ -1,6 +1,6 @@
-import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as ConfigEvent from "../observables/config-event";
+import Config from "@root/config";
+import * as Misc from "@utils/misc";
+import * as ConfigEvent from "@observables/config-event";
 
 let voice: SpeechSynthesisUtterance | undefined;
 

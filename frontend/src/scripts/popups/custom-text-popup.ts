@@ -1,12 +1,12 @@
-import * as CustomText from "../test/custom-text";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
-import * as ChallengeController from "../controllers/challenge-controller";
-import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
-import * as WordFilterPopup from "./word-filter-popup";
-import * as Notifications from "../elements/notifications";
-import * as SavedTextsPopup from "./saved-texts-popup";
+import * as CustomText from "@test/custom-text";
+import * as ManualRestart from "@test/manual-restart-tracker";
+import * as TestLogic from "@test/test-logic";
+import * as ChallengeController from "@controllers/challenge-controller";
+import Config, * as UpdateConfig from "@root/config";
+import * as Misc from "@utils/misc";
+import * as WordFilterPopup from "@popups/word-filter-popup";
+import * as Notifications from "@elements/notifications";
+import * as SavedTextsPopup from "@popups/saved-texts-popup";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";

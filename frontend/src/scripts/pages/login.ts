@@ -1,4 +1,4 @@
-import Page from "./page";
+import Page from "@pages/page";
 
 export const page = new Page(
   "login",

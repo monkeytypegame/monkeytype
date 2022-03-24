@@ -1,12 +1,12 @@
-import * as Misc from "../utils/misc";
-import * as Notifications from "../elements/notifications";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as CustomText from "../test/custom-text";
-import * as Funbox from "../test/funbox";
-import Config, * as UpdateConfig from "../config";
-import * as TestUI from "../test/test-ui";
-import * as ConfigEvent from "../observables/config-event";
-import * as TestState from "../test/test-state";
+import * as Misc from "@utils/misc";
+import * as Notifications from "@elements/notifications";
+import * as ManualRestart from "@test/manual-restart-tracker";
+import * as CustomText from "@test/custom-text";
+import * as Funbox from "@test/funbox";
+import Config, * as UpdateConfig from "@root/config";
+import * as TestUI from "@test/test-ui";
+import * as ConfigEvent from "@observables/config-event";
+import * as TestState from "@test/test-state";
 
 let challengeLoading = false;
 

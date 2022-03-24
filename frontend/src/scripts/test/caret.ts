@@ -1,8 +1,8 @@
-import * as Misc from "../utils/misc";
-import Config from "../config";
-import * as TestInput from "./test-input";
-import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as Misc from "@utils/misc";
+import Config from "@root/config";
+import * as TestInput from "@test/test-input";
+import * as SlowTimer from "@states/slow-timer";
+import * as TestActive from "@states/test-active";
 
 export let caretAnimating = true;
 

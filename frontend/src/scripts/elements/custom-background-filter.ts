@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../config";
-import * as Notifications from "./notifications";
-import * as ConfigEvent from "../observables/config-event";
+import * as UpdateConfig from "@root/config";
+import * as Notifications from "@elements/notifications";
+import * as ConfigEvent from "@observables/config-event";
 
 const filters = {
   blur: {

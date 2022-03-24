@@ -1,6 +1,6 @@
-import Config from "../config";
-import * as TestActive from "../states/test-active";
-import * as ConfigEvent from "../observables/config-event";
+import Config from "@root/config";
+import * as TestActive from "@states/test-active";
+import * as ConfigEvent from "@observables/config-event";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
 const miniLiveWpmElement = document.querySelector(

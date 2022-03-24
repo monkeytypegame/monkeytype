@@ -1,5 +1,5 @@
-import * as Loader from "../elements/loader";
-import * as Misc from "../utils/misc";
+import * as Loader from "@elements/loader";
+import * as Misc from "@utils/misc";
 
 export class Section {
   public title: string;

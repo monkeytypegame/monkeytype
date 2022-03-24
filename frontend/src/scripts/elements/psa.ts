@@ -1,5 +1,5 @@
-import Ape from "../ape";
-import * as Notifications from "./notifications";
+import Ape from "@ape";
+import * as Notifications from "@elements/notifications";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));

@@ -1,20 +1,20 @@
-import * as TestUI from "../test/test-ui";
-import Config, * as UpdateConfig from "../config";
-import * as DB from "../db";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as Notifications from "../elements/notifications";
-import * as QuoteSubmitPopup from "./quote-submit-popup";
-import * as QuoteApprovePopup from "./quote-approve-popup";
-import * as QuoteReportPopup from "./quote-report-popup";
+import * as TestUI from "@test/test-ui";
+import Config, * as UpdateConfig from "@root/config";
+import * as DB from "@root/db";
+import * as ManualRestart from "@test/manual-restart-tracker";
+import * as Notifications from "@elements/notifications";
+import * as QuoteSubmitPopup from "@popups/quote-submit-popup";
+import * as QuoteApprovePopup from "@popups/quote-approve-popup";
+import * as QuoteReportPopup from "@popups/quote-report-popup";
 import {
   buildSearchService,
   SearchService,
   TextExtractor,
 } from "../utils/search-service";
-import { debounce } from "../utils/debounce";
-import { splitByAndKeep } from "../utils/strings";
-import QuotesController from "../controllers/quotes-controller";
-import { Auth } from "../firebase";
+import { debounce } from "@utils/debounce";
+import { splitByAndKeep } from "@utils/strings";
+import QuotesController from "@controllers/quotes-controller";
+import { Auth } from "@root/firebase";
 
 export let selectedId = 1;
 

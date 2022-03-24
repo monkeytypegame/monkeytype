@@ -1,6 +1,6 @@
-import Config from "../config";
-import * as Misc from "../utils/misc";
-import { capsState } from "./caps-warning";
+import Config from "@root/config";
+import * as Misc from "@utils/misc";
+import { capsState } from "@test/caps-warning";
 
 export let leftState = false;
 export let rightState = false;

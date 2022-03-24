@@ -1,8 +1,6 @@
-// import * as Funbox from "../test/funbox";
-import * as PageController from "./page-controller";
-// import Config from "../config";
-import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import * as PageController from "@controllers/page-controller";
+import * as ActivePage from "@states/active-page";
+import { Auth } from "@root/firebase";
 
 const mappedRoutes = {
   "/": "pageLoading",

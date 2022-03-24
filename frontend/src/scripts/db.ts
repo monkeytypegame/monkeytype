@@ -1,10 +1,10 @@
-import Ape from "./ape";
-import * as AccountButton from "./elements/account-button";
-import * as Notifications from "./elements/notifications";
-import * as LoadingPage from "./pages/loading";
-import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
-import { defaultSnap } from "./constants/default-snapshot";
+import Ape from "@ape";
+import * as AccountButton from "@elements/account-button";
+import * as Notifications from "@elements/notifications";
+import * as LoadingPage from "@pages/loading";
+import DefaultConfig from "@constants/default-config";
+import { Auth } from "@root/firebase";
+import { defaultSnap } from "@constants/default-snapshot";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
 

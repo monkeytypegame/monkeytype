@@ -1,10 +1,10 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as Notifications from "./notifications";
+import Ape from "@ape";
+import * as DB from "@root/db";
+import Config from "@root/config";
+import * as Misc from "@utils/misc";
+import * as Notifications from "@elements/notifications";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { Auth } from "@root/firebase";
 
 const currentLeaderboard = "time_15";
 

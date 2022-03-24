@@ -1,10 +1,10 @@
-import * as TestWords from "./test-words";
-import * as Notifications from "../elements/notifications";
-import * as Misc from "../utils/misc";
-import * as ManualRestart from "./manual-restart-tracker";
-import Config, * as UpdateConfig from "../config";
-import * as TTS from "./tts";
-import * as ModesNotice from "../elements/modes-notice";
+import * as TestWords from "@test/test-words";
+import * as Notifications from "@elements/notifications";
+import * as Misc from "@utils/misc";
+import * as ManualRestart from "@test/manual-restart-tracker";
+import Config, * as UpdateConfig from "@root/config";
+import * as TTS from "@test/tts";
+import * as ModesNotice from "@elements/modes-notice";
 
 let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
 let memoryTimer: number | null = null;

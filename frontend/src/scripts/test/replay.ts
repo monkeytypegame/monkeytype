@@ -1,5 +1,5 @@
-import config from "../config";
-import * as Sound from "../controllers/sound-controller";
+import config from "@root/config";
+import * as Sound from "@controllers/sound-controller";
 
 type ReplayAction =
   | "correctLetter"

@@ -1,4 +1,4 @@
-import * as CustomText from "../test/custom-text";
+import * as CustomText from "@test/custom-text";
 
 export async function show(): Promise<void> {
   const names = CustomText.getCustomTextNames();

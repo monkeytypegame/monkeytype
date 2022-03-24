@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config from "@root/config";
 
 type ConfigValues =
   | string

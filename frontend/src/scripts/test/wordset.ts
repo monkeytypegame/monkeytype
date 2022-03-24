@@ -1,4 +1,4 @@
-import { randomElementFromArray, randomIntFromRange } from "../utils/misc";
+import { randomElementFromArray, randomIntFromRange } from "@utils/misc";
 
 let currentWordset: Wordset | null = null;
 let currentWordGenerator: WordGenerator | null = null;

@@ -1,5 +1,5 @@
-import * as TestInput from "./test-input";
-import { Wordset } from "./wordset";
+import * as TestInput from "@test/test-input";
+import { Wordset } from "@test/wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
 // is based on last perCharCount occurrences. Make it smaller to adjust faster.

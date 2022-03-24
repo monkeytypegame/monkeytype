@@ -1,5 +1,5 @@
-import { shuffle } from "../utils/misc";
-import { subscribe } from "../observables/config-event";
+import { shuffle } from "@utils/misc";
+import { subscribe } from "@observables/config-event";
 
 interface Quote {
   text: string;

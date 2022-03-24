@@ -1,10 +1,10 @@
-import Ape from "../ape";
-import * as ResultFilters from "../account/result-filters";
-import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
-import * as Settings from "../pages/settings";
-import * as ResultTagsPopup from "./result-tags-popup";
+import Ape from "@ape";
+import * as ResultFilters from "@account/result-filters";
+import * as DB from "@root/db";
+import * as Notifications from "@elements/notifications";
+import * as Loader from "@elements/loader";
+import * as Settings from "@pages/settings";
+import * as ResultTagsPopup from "@popups/result-tags-popup";
 
 export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {

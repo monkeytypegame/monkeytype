@@ -1,9 +1,9 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import * as Config from "../config";
-import * as Loader from "../elements/loader";
-import * as Settings from "../pages/settings";
-import * as Notifications from "../elements/notifications";
+import Ape from "@ape";
+import * as DB from "@root/db";
+import * as Config from "@root/config";
+import * as Loader from "@elements/loader";
+import * as Settings from "@pages/settings";
+import * as Notifications from "@elements/notifications";
 
 export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
