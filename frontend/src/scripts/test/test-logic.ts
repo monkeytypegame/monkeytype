@@ -385,7 +385,7 @@ export function restart(
   PaceCaret.reset();
   Monkey.hide();
 
-  if (Config.showAvg) Last10Average.update();
+  if (Config.showAverage) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();

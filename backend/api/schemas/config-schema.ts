@@ -109,7 +109,7 @@ const CONFIG_SCHEMA = joi.object({
   burstHeatmap: joi.boolean(),
   britishEnglish: joi.boolean(),
   lazyMode: joi.boolean(),
-  showAvg: joi.boolean(),
+  showAverage: joi.string().valid("off", "wpm", "acc", "both"),
 });
 
 export default CONFIG_SCHEMA;

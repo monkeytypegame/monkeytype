@@ -314,74 +314,78 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   return retval;
 }
 
-export async function getUserAverageWpm10<M extends MonkeyTypes.Mode>(
+export async function getUserAverage10<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
   punctuation: boolean,
   language: string,
   difficulty: MonkeyTypes.Difficulty,
   lazyMode: boolean
-): Promise<number> {
-  function cont(): number {
+): Promise<[number, number]> {
+  const snapshot = getSnapshot();
+
+  function cont(): [number, number] {
     const activeTagIds: string[] = [];
-    getSnapshot()?.tags?.forEach((tag) => {
+    snapshot.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
       }
     });
 
     let wpmSum = 0;
-    let count = 0;
+    let accSum = 0;
     let last10Wpm = 0;
+    let last10Acc = 0;
+    let count = 0;
     let last10Count = 0;
-    // You have to use every so you can break out of the loop
-    dbSnapshot.results?.every((result) => {
-      if (
-        result.mode == mode &&
-        result.punctuation == punctuation &&
-        result.language == language &&
-        result.difficulty == difficulty &&
-        (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && lazyMode === false)) &&
-        ((activeTagIds.length === 0 && result.tags.length === 0) ||
-          (activeTagIds.length > 0 &&
-            result.tags.some((tag) => activeTagIds.includes(tag))))
-      ) {
-        // Continue if the mode2 doesn't match unless it's a quote.
-        if (result.mode2 != mode2 && mode != "quote") {
-          return true;
-        }
 
-        // Grab the most recent 10 wpm's for the current mode.
-        if (last10Count < 10) {
-          last10Wpm += result.wpm;
-          last10Count++;
-        }
+    if (snapshot.results !== undefined) {
+      for (const result of snapshot.results) {
+        if (
+          result.mode === mode &&
+          result.punctuation === punctuation &&
+          result.language === language &&
+          result.difficulty === difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && lazyMode === false)) &&
+          (activeTagIds.length === 0 ||
+            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+        ) {
+          // Continue if the mode2 doesn't match and it's not a quote
+          if (result.mode2 !== mode2 && mode !== "quote") {
+            continue;
+          }
 
-        // Check mode2 matches and append, for quotes this is the quote id.
-        if (result.mode2 == mode2) {
-          wpmSum += result.wpm;
-          count++;
-          if (count >= 10) {
-            // Break out of every loop since we a maximum of the last 10 wpm results.
-            return false;
+          // Grab the most recent results from the current mode
+          if (last10Count < 10) {
+            last10Wpm += result.wpm;
+            last10Acc += result.acc;
+            last10Count++;
+          }
+
+          // Check if the mode2 matches and if it does, add it to the sum, for quotes, this is the quote id
+          if (result.mode2 === mode2) {
+            wpmSum += result.wpm;
+            accSum += result.acc;
+            count++;
+
+            if (count >= 10) break;
           }
         }
       }
-      return true;
-    });
-
-    // Return the last 10 average wpm for quote if the current quote id has never been completed before by the user.
-    if (count == 0 && mode == "quote") {
-      return last10Wpm / last10Count;
     }
 
-    // Return the average wpm of the last 10 completions for the targeted test mode.
-    return wpmSum / count;
+    // Return the last 10 average wpm & acc for quote
+    // if the current quote id has never been completed before by the user
+    if (count === 0 && mode === "quote") {
+      return [last10Wpm / last10Count, last10Acc / last10Count];
+    }
+
+    return [wpmSum / count, accSum / count];
   }
 
-  const retval =
-    dbSnapshot === null || (await getUserResults()) === false ? 0 : cont();
+  const retval: [number, number] =
+    snapshot === null || (await getUserResults()) === null ? [0, 0] : cont();
 
   return retval;
 }

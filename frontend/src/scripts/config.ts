@@ -796,12 +796,19 @@ export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setShowAvg(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show average", live, ["boolean"])) return false;
+export function setShowAverage(
+  value: MonkeyTypes.ShowAverage,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("show average", value, [["off", "wpm", "acc", "both"]])
+  ) {
+    return false;
+  }
 
-  config.showAvg = live;
-  saveToLocalStorage("showAvg", nosave);
-  ConfigEvent.dispatch("showAvg", config.showAvg, nosave);
+  config.showAverage = value;
+  saveToLocalStorage("showAverage", nosave);
+  ConfigEvent.dispatch("showAverage", config.showAverage, nosave);
 
   return true;
 }
@@ -1774,7 +1781,7 @@ export function apply(
     setBurstHeatmap(configObj.burstHeatmap, true);
     setBritishEnglish(configObj.britishEnglish, true);
     setLazyMode(configObj.lazyMode, true);
-    setShowAvg(configObj.showAvg, true);
+    setShowAverage(configObj.showAverage, true);
 
     try {
       setEnableAds(configObj.enableAds, true);

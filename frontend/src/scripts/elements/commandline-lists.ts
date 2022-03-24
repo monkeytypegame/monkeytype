@@ -357,24 +357,40 @@ const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsShowAvg: MonkeyTypes.CommandsGroup = {
+const commandsShowAverage: MonkeyTypes.CommandsGroup = {
   title: "Show average...",
-  configKey: "showAvg",
+  configKey: "showAverage",
   list: [
     {
-      id: "setAvgOff",
+      id: "setShowAverageOff",
       display: "off",
-      configValue: false,
+      configValue: "off",
       exec: (): void => {
-        UpdateConfig.setShowAvg(false);
+        UpdateConfig.setShowAverage("off");
       },
     },
     {
-      id: "setAvgOn",
-      display: "on",
-      configValue: true,
+      id: "setShowAverageSpeed",
+      display: "wpm",
+      configValue: "wpm",
       exec: (): void => {
-        UpdateConfig.setShowAvg(true);
+        UpdateConfig.setShowAverage("wpm");
+      },
+    },
+    {
+      id: "setShowAverageAcc",
+      display: "accuracy",
+      configValue: "acc",
+      exec: (): void => {
+        UpdateConfig.setShowAverage("acc");
+      },
+    },
+    {
+      id: "setShowAverageBoth",
+      display: "both",
+      configValue: "both",
+      exec: (): void => {
+        UpdateConfig.setShowAverage("both");
       },
     },
   ],
@@ -2932,10 +2948,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsHighlightMode,
     },
     {
-      id: "changeShowAvg",
+      id: "changeShowAverage",
       display: "Show average...",
-      icon: "fa-tachometer-alt",
-      subgroup: commandsShowAvg,
+      icon: "fa-chart-bar",
+      subgroup: commandsShowAverage,
     },
     {
       id: "changeCustomBackground",
@@ -3296,7 +3312,7 @@ const listsObject = {
   commandsDifficulty,
   commandsLazyMode,
   commandsPaceCaret,
-  commandsShowAvg,
+  commandsShowAverage,
   commandsMinWpm,
   commandsMinAcc,
   commandsMinBurst,

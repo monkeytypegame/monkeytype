@@ -69,6 +69,8 @@ declare namespace MonkeyTypes {
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
+  type ShowAverage = "off" | "wpm" | "acc" | "both";
+
   type SingleListCommandLine = "manual" | "on";
 
   /*
@@ -348,7 +350,7 @@ declare namespace MonkeyTypes {
     burstHeatmap: boolean;
     britishEnglish: boolean;
     lazyMode: boolean;
-    showAvg: boolean;
+    showAverage: ShowAverage;
   }
 
   type ConfigValues =
