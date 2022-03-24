@@ -94,5 +94,5 @@ export default <MonkeyTypes.Config>{
   burstHeatmap: false,
   britishEnglish: false,
   lazyMode: false,
-  showAvg: false,
+  showAverage: "off",
 };
