@@ -128,7 +128,7 @@ declare namespace MonkeyTypes {
     | CustomLayoutFluid
     | `${string} ${string} ${string}`;
 
-  type HistoryChartData = {
+  interface HistoryChartData {
     x: number;
     y: number;
     wpm: number;
@@ -140,19 +140,19 @@ declare namespace MonkeyTypes {
     timestamp: number;
     difficulty: string;
     raw: number;
-  };
+  }
 
-  type AccChartData = {
+  interface AccChartData {
     x: number;
     y: number;
     errorRate: number;
-  };
+  }
 
-  type ActivityChartDataPoint = {
+  interface ActivityChartDataPoint {
     x: number;
     y: number;
     amount?: number;
-  };
+  }
 
   interface FunboxObject {
     name: string;
