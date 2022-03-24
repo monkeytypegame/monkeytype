@@ -19,6 +19,15 @@ class George {
   initJobQueue(redisConnection: IORedis.Redis | undefined): void {
     this.jobQueue = new Queue("george-tasks", {
       connection: redisConnection,
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: true,
+        attempts: 3,
+        backoff: {
+          type: "exponential",
+          delay: 2000,
+        },
+      },
     });
   }
 
