@@ -31,10 +31,11 @@ async function bootServer(port: number): Promise<Server> {
     console.log("Live configuration fetched");
 
     console.log("Connecting to redis...");
-    const redisConnected = await RedisClient.connect();
-    if (redisConnected) console.log("Connected to redis");
+    await RedisClient.connect();
 
-    if (redisConnected) {
+    if (RedisClient.isConnected()) {
+      console.log("Connected to redis");
+
       console.log("Initializing task queues...");
       George.initJobQueue(RedisClient.getConnection());
       console.log("Task queues initialized");
