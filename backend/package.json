@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bcrypt": "5.0.1",
+    "bullmq": "1.78.1",
     "cors": "2.8.5",
     "cron": "1.8.2",
     "dotenv": "10.0.0",
@@ -23,6 +24,7 @@
     "express-rate-limit": "6.2.1",
     "firebase-admin": "10.0.2",
     "helmet": "4.6.0",
+    "ioredis": "4.28.5",
     "joi": "17.6.0",
     "lodash": "4.17.21",
     "mongodb": "4.4.0",
@@ -42,6 +44,7 @@
     "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
+    "@types/ioredis": "4.28.10",
     "@types/lodash": "4.14.178",
     "@types/node": "17.0.18",
     "@types/node-fetch": "2.6.1",
