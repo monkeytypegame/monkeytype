@@ -1440,7 +1440,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
-  Result.update(
+  await Result.update(
     completedEvent,
     difficultyFailed,
     failReason,

@@ -584,7 +584,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
   }
 }
 
-export function update(
+export async function update(
   res: MonkeyTypes.Result<MonkeyTypes.Mode>,
   difficultyFailed: boolean,
   failReason: string,
@@ -593,7 +593,7 @@ export function update(
   tooShort: boolean,
   randomQuote: MonkeyTypes.Quote,
   dontSave: boolean
-): void {
+): Promise<void> {
   result = res;
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
@@ -617,8 +617,8 @@ export function update(
   updateKey();
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
-  updateGraph();
-  updateGraphPBLine();
+  await updateGraph();
+  await updateGraphPBLine();
   ChartController.result.updateColors();
   ChartController.result.resize();
   updateTags(dontSave);
