@@ -31,12 +31,14 @@ async function bootServer(port: number): Promise<Server> {
     console.log("Live configuration fetched");
 
     console.log("Connecting to redis...");
-    await RedisClient.connect();
-    console.log("Connected to redis");
+    const redisConnected = await RedisClient.connect();
+    if (redisConnected) console.log("Connected to redis");
 
-    console.log("Initializing task queues...");
-    George.initJobQueue(RedisClient.getConnection());
-    console.log("Task queues initialized");
+    if (redisConnected) {
+      console.log("Initializing task queues...");
+      George.initJobQueue(RedisClient.getConnection());
+      console.log("Task queues initialized");
+    }
 
     console.log("Starting cron jobs...");
     jobs.forEach((job) => job.start());
