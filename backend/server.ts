@@ -9,6 +9,8 @@ import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
+import RedisClient from "./init/redis";
+import George from "./tasks/george";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -27,6 +29,14 @@ async function bootServer(port: number): Promise<Server> {
     console.log("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
     console.log("Live configuration fetched");
+
+    console.log("Connecting to redis...");
+    await RedisClient.connect();
+    console.log("Connected to redis");
+
+    console.log("Initializing task queues...");
+    George.initJobQueue(RedisClient.getConnection());
+    console.log("Task queues initialized");
 
     console.log("Starting cron jobs...");
     jobs.forEach((job) => job.start());

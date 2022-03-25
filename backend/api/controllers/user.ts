@@ -5,6 +5,7 @@ import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
+import George from "../../tasks/george";
 
 class UserController {
   static async createNewUser(
@@ -110,6 +111,9 @@ class UserController {
       data: { tokenType, accessToken },
     } = req.body;
 
+    const useRedisForBotTasks =
+      req.ctx.configuration.useRedisForBotTasks.enabled;
+
     const userInfo = await UsersDAO.getUser(uid);
     if (userInfo.banned) {
       throw new MonkeyError(403, "Banned accounts cannot link with Discord");
@@ -134,6 +138,10 @@ class UserController {
     }
 
     await UsersDAO.linkDiscord(uid, discordId);
+
+    if (useRedisForBotTasks) {
+      George.linkDiscord(discordId, uid);
+    }
     await BotDAO.linkDiscord(uid, discordId);
     Logger.log("user_discord_link", `linked to ${discordId}`, uid);
 
@@ -145,12 +153,19 @@ class UserController {
   ): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
 
+    const useRedisForBotTasks =
+      req.ctx.configuration.useRedisForBotTasks.enabled;
+
     const userInfo = await UsersDAO.getUser(uid);
     if (!userInfo.discordId) {
       throw new MonkeyError(404, "User does not have a linked Discord account");
     }
 
+    if (useRedisForBotTasks) {
+      George.unlinkDiscord(userInfo.discordId, uid);
+    }
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
+
     await UsersDAO.unlinkDiscord(uid);
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);
 
