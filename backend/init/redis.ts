@@ -4,15 +4,20 @@ class RedisClient {
   static connection: IORedis.Redis;
   static connected = false;
 
-  static async connect(): Promise<void> {
+  static async connect(): Promise<boolean> {
     if (this.connected) {
-      return;
+      return true;
     }
 
     const { REDIS_URI } = process.env;
 
     if (!REDIS_URI) {
-      throw new Error("No redis configuration provided");
+      if (process.env.MODE === "dev") {
+        console.log("No redis configuration provided. Running without redis.");
+        return false;
+      } else {
+        throw new Error("No redis configuration provided");
+      }
     }
 
     this.connection = new IORedis(REDIS_URI, {
@@ -24,6 +29,7 @@ class RedisClient {
     try {
       await this.connection.connect();
       this.connected = true;
+      return true;
     } catch (error) {
       console.error(error.message);
       console.error(
