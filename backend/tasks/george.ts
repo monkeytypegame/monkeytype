@@ -1,5 +1,7 @@
-import { Queue, QueueScheduler } from "bullmq";
+import { lock } from "../utils/misc";
 import type IORedis from "ioredis";
+import { Queue, QueueScheduler } from "bullmq";
+import RedisClient from "../init/redis";
 
 const QUEUE_NAME = "george-tasks";
 
@@ -16,10 +18,10 @@ function buildGeorgeTask(command: string, taskArguments: any[]): GeorgeTask {
 }
 
 class George {
-  jobQueue: Queue;
-  jobQueueScheduler: QueueScheduler;
+  static jobQueue: Queue;
+  static jobQueueScheduler: QueueScheduler;
 
-  initJobQueue(redisConnection: IORedis.Redis): void {
+  static initJobQueue(redisConnection: IORedis.Redis): void {
     this.jobQueue = new Queue(QUEUE_NAME, {
       connection: redisConnection,
       defaultJobOptions: {
@@ -38,25 +40,28 @@ class George {
     });
   }
 
-  async updateDiscordRole(discordId: string, wpm: number): Promise<void> {
+  static async updateDiscordRole(
+    discordId: string,
+    wpm: number
+  ): Promise<void> {
     const command = "updateRole";
     const updateDiscordRoleTask = buildGeorgeTask(command, [discordId, wpm]);
     await this.jobQueue.add(command, updateDiscordRoleTask);
   }
 
-  async linkDiscord(discordId: string, uid: string): Promise<void> {
+  static async linkDiscord(discordId: string, uid: string): Promise<void> {
     const command = "linkDiscord";
     const linkDiscordTask = buildGeorgeTask(command, [discordId, uid]);
     await this.jobQueue.add(command, linkDiscordTask);
   }
 
-  async unlinkDiscord(discordId: string, uid: string): Promise<void> {
+  static async unlinkDiscord(discordId: string, uid: string): Promise<void> {
     const command = "unlinkDiscord";
     const unlinkDiscordTask = buildGeorgeTask(command, [discordId, uid]);
     await this.jobQueue.add(command, unlinkDiscordTask);
   }
 
-  async awardChallenge(
+  static async awardChallenge(
     discordId: string,
     challengeName: string
   ): Promise<void> {
@@ -68,7 +73,7 @@ class George {
     await this.jobQueue.add(command, awardChallengeTask);
   }
 
-  async announceLbUpdate(
+  static async announceLbUpdate(
     newRecords: any[],
     leaderboardId: string
   ): Promise<void> {
@@ -95,4 +100,6 @@ class George {
   }
 }
 
-export default new George();
+export default lock(George, () => {
+  return !RedisClient.isConnected();
+});
