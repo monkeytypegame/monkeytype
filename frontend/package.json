@@ -60,7 +60,7 @@
     "firebase": "9.6.0",
     "howler": "^2.2.1",
     "html2canvas": "1.4.1",
-    "node-object-hash": "2.3.10",
+    "object-hash": "^3.0.0",
     "stemmer": "2.0.0"
   }
 }
