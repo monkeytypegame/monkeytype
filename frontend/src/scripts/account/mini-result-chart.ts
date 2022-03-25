@@ -1,6 +1,12 @@
 import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";
 
+import type { ScaleChartOptions } from "chart.js";
+
+const miniResultScaleOptions = (
+  ChartController.result.options as ScaleChartOptions<"line" | "scatter">
+).scales;
+
 export function updatePosition(x: number, y: number): void {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
 }
@@ -21,10 +27,10 @@ export function updateData(data: MonkeyTypes.ChartData): void {
   for (let i = 1; i <= data.wpm.length; i++) {
     labels.push(i.toString());
   }
-  (ChartController.miniResult.data.labels as string[]) = labels;
-  (ChartController.miniResult.data.datasets[0].data as number[]) = data.wpm;
-  (ChartController.miniResult.data.datasets[1].data as number[]) = data.raw;
-  (ChartController.miniResult.data.datasets[2].data as number[]) = data.err;
+  ChartController.miniResult.data.labels = labels;
+  ChartController.miniResult.data.datasets[0].data = data.wpm;
+  ChartController.miniResult.data.datasets[1].data = data.raw;
+  ChartController.miniResult.data.datasets[2].data = data.err;
 
   const maxChartVal = Math.max(
     ...[Math.max(...data.wpm), Math.max(...data.raw)]
@@ -32,19 +38,15 @@ export function updateData(data: MonkeyTypes.ChartData): void {
   const minChartVal = Math.min(
     ...[Math.min(...data.wpm), Math.min(...data.raw)]
   );
-  ChartController.miniResult.options.scales!["wpm"]!.max =
-    Math.round(maxChartVal);
-  ChartController.miniResult.options.scales!["raw"]!.max =
-    Math.round(maxChartVal);
+  miniResultScaleOptions["wpm"].max = Math.round(maxChartVal);
+  miniResultScaleOptions["raw"].max = Math.round(maxChartVal);
 
   if (!Config.startGraphsAtZero) {
-    ChartController.miniResult.options.scales!["wpm"]!.min =
-      Math.round(minChartVal);
-    ChartController.miniResult.options.scales!["raw"]!.min =
-      Math.round(minChartVal);
+    miniResultScaleOptions["wpm"].min = Math.round(minChartVal);
+    miniResultScaleOptions["raw"].min = Math.round(minChartVal);
   } else {
-    ChartController.miniResult.options.scales!["wpm"]!.min = 0;
-    ChartController.miniResult.options.scales!["raw"]!.min = 0;
+    miniResultScaleOptions["wpm"].min = 0;
+    miniResultScaleOptions["raw"].min = 0;
   }
 
   ChartController.miniResult.updateColors();

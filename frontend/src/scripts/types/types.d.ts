@@ -69,6 +69,8 @@ declare namespace MonkeyTypes {
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
+  type ShowAverage = "off" | "wpm" | "acc" | "both";
+
   type SingleListCommandLine = "manual" | "on";
 
   /*
@@ -127,6 +129,32 @@ declare namespace MonkeyTypes {
   type CustomLayoutFluidSpaces =
     | CustomLayoutFluid
     | `${string} ${string} ${string}`;
+
+  interface HistoryChartData {
+    x: number;
+    y: number;
+    wpm: number;
+    acc: number;
+    mode: string;
+    mode2: string | number;
+    punctuation: boolean;
+    language: string;
+    timestamp: number;
+    difficulty: string;
+    raw: number;
+  }
+
+  interface AccChartData {
+    x: number;
+    y: number;
+    errorRate: number;
+  }
+
+  interface ActivityChartDataPoint {
+    x: number;
+    y: number;
+    amount?: number;
+  }
 
   interface FunboxObject {
     name: string;
@@ -348,7 +376,7 @@ declare namespace MonkeyTypes {
     burstHeatmap: boolean;
     britishEnglish: boolean;
     lazyMode: boolean;
-    showAvg: boolean;
+    showAverage: ShowAverage;
   }
 
   type ConfigValues =

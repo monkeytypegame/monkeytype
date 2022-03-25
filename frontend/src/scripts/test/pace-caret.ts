@@ -66,7 +66,7 @@ export async function init(): Promise<void> {
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
-    wpm = await DB.getUserAverageWpm10(
+    [wpm] = await DB.getUserAverage10(
       Config.mode,
       mode2,
       Config.punctuation,
