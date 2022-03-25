@@ -3,7 +3,7 @@ import UserDAO from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
-import node_object_hash from "node-object-hash";
+import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
@@ -17,8 +17,6 @@ import {
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
 import George from "../../tasks/george";
-
-const objecthash = node_object_hash().hash;
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -85,7 +83,7 @@ class ResultController {
       resulthash.length === 64
     ) {
       //if its not 64 that means client is still using old hashing package
-      const serverhash = objecthash(result);
+      const serverhash = objectHash(result);
       if (serverhash !== resulthash) {
         Logger.log(
           "incorrect_result_hash",
