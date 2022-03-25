@@ -15,6 +15,7 @@ try {
   Auth = getAuth(app);
   Analytics = getAnalytics(app);
 } catch (e) {
+  console.error(e);
   $("body").text(
     "Failed to initialize Firebase. Are you sure you have the correct config in the firebase-config.ts file?"
   );
