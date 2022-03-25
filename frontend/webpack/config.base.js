@@ -11,18 +11,7 @@ const BASE_CONFIG = {
   entry: {
     monkeytype: resolve(__dirname, "../src/scripts/index.ts"),
   },
-  resolve: {
-    fallback: {
-      crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify"),
-      buffer: require.resolve("buffer"),
-      "bn.js": require.resolve("bn.js"),
-    },
-    alias: {
-      "bn.js": resolve(__dirname, "node_modules/bn.js/lib/bn.js"),
-    },
-    extensions: [".ts", ".js"],
-  },
+  resolve: { extensions: [".ts", ".js"] },
   output: {
     filename: "./js/[name].[chunkhash:8].js",
     path: resolve(__dirname, "../public/"),
