@@ -9,7 +9,7 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageTransition from "../states/page-transition";
 
-export function change(page: MonkeyTypes.Page | ""): void {
+export function change(page?: MonkeyTypes.Page | ""): void {
   if (PageTransition.get()) {
     console.log(`change page ${page} stopped`);
     return;

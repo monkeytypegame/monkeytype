@@ -151,6 +151,16 @@ const clientVersionsCounter = new Counter({
   labelNames: ["version"],
 });
 
-export function recordClientVersion(version: string) : void {
+export function recordClientVersion(version: string): void {
   clientVersionsCounter.inc({ version });
+}
+
+const serverVersionCounter = new Counter({
+  name: "api_server_version",
+  help: "The server's current version",
+  labelNames: ["version"],
+});
+
+export function recordServerVersion(serverVersion: string): void {
+  serverVersionCounter.inc({ version: serverVersion });
 }

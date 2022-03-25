@@ -4,9 +4,10 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "start:dev": "concurrently --kill-others \"cd ./frontend && npm run start:dev\" \"cd ./backend && npm run start:dev\"",
-    "start:dev:be": "cd backend && npm run start:dev",
-    "start:dev:fe": "cd frontend && npm run start:dev",
+    "audit:fe": "cd frontend && npm run audit",
+    "dev": "concurrently --kill-others \"npm run dev:fe\" \"npm run dev:be\"",
+    "dev:be": "cd backend && npm run dev",
+    "dev:fe": "cd frontend && npm run dev",
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
     "install:windows": ".\\bin\\install.cmd",

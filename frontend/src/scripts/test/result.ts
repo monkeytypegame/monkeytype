@@ -12,6 +12,8 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
+import { Chart } from "chart.js";
+import { AnnotationOptions } from "chartjs-plugin-annotation";
 import { Auth } from "../firebase";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
@@ -25,7 +27,7 @@ export function toggleUnsmoothedRaw(): void {
 }
 
 async function updateGraph(): Promise<void> {
-  ChartController.result.options.annotation.annotations = [];
+  ChartController.result.options.plugins!.annotation!.annotations = [];
   const labels = [];
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
@@ -34,10 +36,12 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  ChartController.result.updateColors();
-  ChartController.result.data.labels = labels;
-  ChartController.result.options.scales.yAxes[0].scaleLabel.labelString =
-    Config.alwaysShowCPM ? "Character per Minute" : "Words per Minute";
+  (ChartController.result.data.labels as string[]) = labels;
+  (ChartController.result as Chart<"line" | "scatter">).options.scales![
+    "wpm"
+  ]!.title!.text = Config.alwaysShowCPM
+    ? "Character per Minute"
+    : "Words per Minute";
   const chartData1 = Config.alwaysShowCPM
     ? TestInput.wpmHistory.map((a) => a * 5)
     : TestInput.wpmHistory;
@@ -57,8 +61,8 @@ async function updateGraph(): Promise<void> {
       : result.chartData.raw;
   }
 
-  ChartController.result.data.datasets[0].data = chartData1;
-  ChartController.result.data.datasets[1].data = chartData2;
+  (ChartController.result.data.datasets[0].data as number[]) = chartData1;
+  (ChartController.result.data.datasets[1].data as number[]) = chartData2;
 
   ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
     ? "cpm"
@@ -69,14 +73,15 @@ async function updateGraph(): Promise<void> {
     const minChartVal = Math.min(
       ...[Math.min(...chartData2), Math.min(...chartData1)]
     );
-    ChartController.result.options.scales.yAxes[0].ticks.min = minChartVal;
-    ChartController.result.options.scales.yAxes[1].ticks.min = minChartVal;
+    ChartController.result.options.scales!["wpm"]!.min = minChartVal;
+    ChartController.result.options.scales!["raw"]!.min = minChartVal;
   } else {
-    ChartController.result.options.scales.yAxes[0].ticks.min = 0;
-    ChartController.result.options.scales.yAxes[1].ticks.min = 0;
+    ChartController.result.options.scales!["wpm"]!.min = 0;
+    ChartController.result.options.scales!["raw"]!.min = 0;
   }
 
-  ChartController.result.data.datasets[2].data = result.chartData.err;
+  (ChartController.result.data.datasets[2].data as number[]) =
+    result.chartData.err;
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
@@ -84,37 +89,41 @@ async function updateGraph(): Promise<void> {
     if (Config.funbox === "layoutfluid") {
       content += " " + Config.customLayoutfluid.replace(/#/g, " ");
     }
-    ChartController.result.options.annotation.annotations.push({
-      enabled: false,
+    (
+      ChartController.result.options.plugins!.annotation!
+        .annotations as AnnotationOptions[]
+    ).push({
+      display: true,
+      id: "funbox-label",
       type: "line",
-      mode: "horizontal",
       scaleID: "wpm",
-      value: 0,
+      value: ChartController.result.options.scales!["wpm"]!.min,
       borderColor: "transparent",
       borderWidth: 1,
       borderDash: [2, 2],
       label: {
         backgroundColor: "transparent",
-        fontFamily: Config.fontFamily.replace(/_/g, " "),
-        fontSize: 11,
-        fontStyle: "normal",
-        fontColor: fc,
-        xPadding: 6,
-        yPadding: 6,
-        cornerRadius: 3,
-        position: "left",
+        font: {
+          family: Config.fontFamily.replace(/_/g, " "),
+          size: 11,
+          style: "normal",
+          weight: Chart.defaults.font.weight!,
+          lineHeight: Chart.defaults.font.lineHeight!,
+        },
+        color: fc,
+        padding: 3,
+        borderRadius: 3,
+        position: "start",
         enabled: true,
         content: `${content}`,
-        yAdjust: -11,
       },
     });
   }
 
-  ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
-  ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
-
-  ChartController.result.update();
-  ChartController.result.resize();
+  ChartController.result.options.scales!["wpm"]!.max = maxChartVal;
+  ChartController.result.options.scales!["raw"]!.max = maxChartVal;
+  ChartController.result.options.scales!["error"]!.max =
+    Math.max(...result.chartData.err) + 1;
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -132,10 +141,14 @@ export async function updateGraphPBLine(): Promise<void> {
   const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
     2
   );
-  ChartController.result.options.annotation.annotations.push({
-    enabled: false,
+
+  (
+    ChartController.result.options.plugins!.annotation!
+      .annotations as AnnotationOptions[]
+  ).push({
+    display: true,
     type: "line",
-    mode: "horizontal",
+    id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
     borderColor: themecolors["sub"],
@@ -143,13 +156,16 @@ export async function updateGraphPBLine(): Promise<void> {
     borderDash: [2, 2],
     label: {
       backgroundColor: themecolors["sub"],
-      fontFamily: Config.fontFamily.replace(/_/g, " "),
-      fontSize: 11,
-      fontStyle: "normal",
-      fontColor: themecolors["bg"],
-      xPadding: 6,
-      yPadding: 6,
-      cornerRadius: 3,
+      font: {
+        family: Config.fontFamily.replace(/_/g, " "),
+        size: 11,
+        style: "normal",
+        weight: Chart.defaults.font.weight!,
+        lineHeight: Chart.defaults.font.lineHeight!,
+      },
+      color: themecolors["bg"],
+      padding: 3,
+      borderRadius: 3,
       position: "center",
       enabled: true,
       content: `PB: ${chartlpb}`,
@@ -159,13 +175,14 @@ export async function updateGraphPBLine(): Promise<void> {
     maxChartVal >= parseFloat(chartlpb) - 20 &&
     maxChartVal <= parseFloat(chartlpb) + 20
   ) {
-    maxChartVal = parseFloat(chartlpb) + 20;
+    maxChartVal = parseFloat(chartlpb) + 15;
   }
-  ChartController.result.options.scales.yAxes[0].ticks.max =
-    Math.round(maxChartVal);
-  ChartController.result.options.scales.yAxes[1].ticks.max =
-    Math.round(maxChartVal);
-  ChartController.result.update();
+  ChartController.result.options.scales!["wpm"]!.max = Math.round(
+    maxChartVal + 5
+  );
+  ChartController.result.options.scales!["raw"]!.max = Math.round(
+    maxChartVal + 5
+  );
 }
 
 function updateWpmAndAcc(): void {
@@ -366,7 +383,7 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags").removeClass("hidden");
   }
   $("#result .stats .tags .bottom").text("");
-  let annotationSide = "left";
+  let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
     const tpb = await DB.getLocalTagPB(
@@ -407,10 +424,13 @@ function updateTags(dontSave: boolean): void {
         // console.log("new pb for tag " + tag.name);
       } else {
         const themecolors = await ThemeColors.getAll();
-        ChartController.result.options.annotation.annotations.push({
-          enabled: false,
+        (
+          ChartController.result.options.plugins!.annotation!
+            .annotations as AnnotationOptions[]
+        ).push({
+          display: true,
           type: "line",
-          mode: "horizontal",
+          id: "tpb",
           scaleID: "wpm",
           value: Config.alwaysShowCPM ? tpb * 5 : tpb,
           borderColor: themecolors["sub"],
@@ -418,13 +438,16 @@ function updateTags(dontSave: boolean): void {
           borderDash: [2, 2],
           label: {
             backgroundColor: themecolors["sub"],
-            fontFamily: Config.fontFamily.replace(/_/g, " "),
-            fontSize: 11,
-            fontStyle: "normal",
-            fontColor: themecolors["bg"],
-            xPadding: 6,
-            yPadding: 6,
-            cornerRadius: 3,
+            font: {
+              family: Config.fontFamily.replace(/_/g, " "),
+              size: 11,
+              style: "normal",
+              weight: Chart.defaults.font.weight!,
+              lineHeight: Chart.defaults.font.lineHeight!,
+            },
+            color: themecolors["bg"],
+            padding: 3,
+            borderRadius: 3,
             position: annotationSide,
             xAdjust: labelAdjust,
             enabled: true,
@@ -433,11 +456,11 @@ function updateTags(dontSave: boolean): void {
             ).toFixed(2)}`,
           },
         });
-        if (annotationSide === "left") {
-          annotationSide = "right";
+        if (annotationSide === "start") {
+          annotationSide = "end";
           labelAdjust = -15;
         } else {
-          annotationSide = "left";
+          annotationSide = "start";
           labelAdjust = 15;
         }
       }
@@ -605,6 +628,8 @@ export function update(
   updateQuoteSource(randomQuote);
   updateGraph();
   updateGraphPBLine();
+  ChartController.result.updateColors();
+  ChartController.result.resize();
   updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 

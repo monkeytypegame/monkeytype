@@ -656,7 +656,7 @@ async function getNextWord(
   } else if (
     Config.mode == "custom" &&
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
-    (wordset.length < 3 || PractiseWords.before.mode !== null)
+    (wordset.length < 4 || PractiseWords.before.mode !== null)
   ) {
     randomWord = wordset.randomWord();
   } else {
