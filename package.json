@@ -41,9 +41,5 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged && npm run lint"
     }
-  },
-  "dependencies": {
-    "@types/object-hash": "^2.2.1",
-    "object-hash": "^3.0.0"
   }
 }

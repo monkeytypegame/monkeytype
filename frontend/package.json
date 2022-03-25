@@ -21,6 +21,7 @@
     "@types/grecaptcha": "^3.0.3",
     "@types/howler": "^2.2.5",
     "@types/jquery": "^3.5.13",
+    "@types/object-hash": "2.2.1",
     "@types/select2": "^4.0.55",
     "@types/tinycolor2": "^1.4.3",
     "buffer": "^6.0.3",
@@ -60,7 +61,7 @@
     "firebase": "9.6.0",
     "howler": "^2.2.1",
     "html2canvas": "1.4.1",
-    "object-hash": "^3.0.0",
+    "object-hash": "3.0.0",
     "stemmer": "2.0.0"
   }
 }
