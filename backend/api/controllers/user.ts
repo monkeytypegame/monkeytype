@@ -141,9 +141,8 @@ class UserController {
 
     if (useRedisForBotTasks) {
       George.linkDiscord(discordId, uid);
-    } else {
-      await BotDAO.linkDiscord(uid, discordId);
     }
+    await BotDAO.linkDiscord(uid, discordId);
     Logger.log("user_discord_link", `linked to ${discordId}`, uid);
 
     return new MonkeyResponse("Discord account linked", discordId);
@@ -164,9 +163,8 @@ class UserController {
 
     if (useRedisForBotTasks) {
       George.unlinkDiscord(userInfo.discordId, uid);
-    } else {
-      await BotDAO.unlinkDiscord(uid, userInfo.discordId);
     }
+    await BotDAO.unlinkDiscord(uid, userInfo.discordId);
 
     await UsersDAO.unlinkDiscord(uid);
     Logger.log("user_discord_unlinked", userInfo.discordId, uid);

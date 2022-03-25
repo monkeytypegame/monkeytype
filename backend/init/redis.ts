@@ -15,14 +15,14 @@ class RedisClient {
       throw new Error("No redis configuration provided");
     }
 
-    try {
-      this.connection = new IORedis(REDIS_URI, {
-        maxRetriesPerRequest: null, // These options are required for BullMQ
-        enableReadyCheck: false,
-      });
-      // Wait for connection to establish.
-      console.log(`I said PING, Redis said ${await this.connection.ping()}`);
+    this.connection = new IORedis(REDIS_URI, {
+      maxRetriesPerRequest: null, // These options are required for BullMQ
+      enableReadyCheck: false,
+      lazyConnect: true,
+    });
 
+    try {
+      await this.connection.connect();
       this.connected = true;
     } catch (error) {
       console.error(error.message);
@@ -33,12 +33,8 @@ class RedisClient {
     }
   }
 
-  static getConnection(): IORedis.Redis | undefined {
-    if (this.connected) {
-      return this.connection;
-    }
-
-    return undefined;
+  static getConnection(): IORedis.Redis {
+    return this.connection;
   }
 }
 

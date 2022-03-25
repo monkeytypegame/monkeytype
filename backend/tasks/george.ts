@@ -1,12 +1,14 @@
-import { Queue } from "bullmq";
+import { Queue, QueueScheduler } from "bullmq";
 import type IORedis from "ioredis";
+
+const QUEUE_NAME = "george-tasks";
 
 interface GeorgeTask {
   command: string;
   arguments: any[];
 }
 
-function buildBotTask(command: string, taskArguments: any[]): GeorgeTask {
+function buildGeorgeTask(command: string, taskArguments: any[]): GeorgeTask {
   return {
     command,
     arguments: taskArguments,
@@ -15,9 +17,10 @@ function buildBotTask(command: string, taskArguments: any[]): GeorgeTask {
 
 class George {
   jobQueue: Queue;
+  jobQueueScheduler: QueueScheduler;
 
-  initJobQueue(redisConnection: IORedis.Redis | undefined): void {
-    this.jobQueue = new Queue("george-tasks", {
+  initJobQueue(redisConnection: IORedis.Redis): void {
+    this.jobQueue = new Queue(QUEUE_NAME, {
       connection: redisConnection,
       defaultJobOptions: {
         removeOnComplete: true,
@@ -29,23 +32,27 @@ class George {
         },
       },
     });
+
+    this.jobQueueScheduler = new QueueScheduler(QUEUE_NAME, {
+      connection: redisConnection,
+    });
   }
 
   async updateDiscordRole(discordId: string, wpm: number): Promise<void> {
     const command = "updateRole";
-    const updateDiscordRoleTask = buildBotTask(command, [discordId, wpm]);
+    const updateDiscordRoleTask = buildGeorgeTask(command, [discordId, wpm]);
     await this.jobQueue.add(command, updateDiscordRoleTask);
   }
 
   async linkDiscord(discordId: string, uid: string): Promise<void> {
     const command = "linkDiscord";
-    const linkDiscordTask = buildBotTask(command, [discordId, uid]);
+    const linkDiscordTask = buildGeorgeTask(command, [discordId, uid]);
     await this.jobQueue.add(command, linkDiscordTask);
   }
 
   async unlinkDiscord(discordId: string, uid: string): Promise<void> {
     const command = "unlinkDiscord";
-    const unlinkDiscordTask = buildBotTask(command, [discordId, uid]);
+    const unlinkDiscordTask = buildGeorgeTask(command, [discordId, uid]);
     await this.jobQueue.add(command, unlinkDiscordTask);
   }
 
@@ -54,7 +61,7 @@ class George {
     challengeName: string
   ): Promise<void> {
     const command = "awardChallenge";
-    const awardChallengeTask = buildBotTask(command, [
+    const awardChallengeTask = buildGeorgeTask(command, [
       discordId,
       challengeName,
     ]);
@@ -68,7 +75,7 @@ class George {
     const command = "announceLbUpdate";
 
     const leaderboardUpdateTasks = newRecords.map((record) => {
-      const taskData = buildBotTask(command, [
+      const taskData = buildGeorgeTask(command, [
         record.discordId ?? record.name,
         record.rank,
         leaderboardId,

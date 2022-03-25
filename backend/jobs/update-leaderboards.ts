@@ -56,9 +56,9 @@ async function updateLeaderboardAndNotifyChanges(
 
     if (cachedConfig.useRedisForBotTasks.enabled) {
       await George.announceLbUpdate(newRecords, leaderboardId);
-    } else {
-      await BotDAO.announceLbUpdate(newRecords, leaderboardId);
     }
+
+    await BotDAO.announceLbUpdate(newRecords, leaderboardId);
   }
 }
 

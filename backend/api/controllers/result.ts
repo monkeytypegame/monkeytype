@@ -253,18 +253,16 @@ class ResultController {
       if (isPb && user.discordId) {
         if (useRedisForBotTasks) {
           George.updateDiscordRole(user.discordId, result.wpm);
-        } else {
-          BotDAO.updateDiscordRole(user.discordId, result.wpm);
         }
+        BotDAO.updateDiscordRole(user.discordId, result.wpm);
       }
     }
 
     if (result.challenge && user.discordId) {
       if (useRedisForBotTasks) {
         George.awardChallenge(user.discordId, result.challenge);
-      } else {
-        BotDAO.awardChallenge(user.discordId, result.challenge);
       }
+      BotDAO.awardChallenge(user.discordId, result.challenge);
     } else {
       delete result.challenge;
     }
