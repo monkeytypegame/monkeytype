@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "target": "ES6" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "lib": [
       "ESNext",
       "DOM",
       "DOM.Iterable"
     ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
-    "module": "ES6" /* Specify what module code is generated. */,
+    "module": "CommonJS" /* Specify what module code is generated. */,
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "types": [
       "jquery",
@@ -14,7 +14,6 @@
     ] /* Specify type package names to be included without being referenced in a source file. */,
     "allowUmdGlobalAccess": true /* Allow accessing UMD globals from modules. */,
     "resolveJsonModule": true /* Enable importing .json files */,
-    "allowJs": true /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */,
     "outDir": "./build" /* Specify an output folder for all emitted files. */,
     "newLine": "lf" /* Set the newline character for emitting files. */,
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */,
