@@ -28,10 +28,10 @@ export function toggleUnsmoothedRaw(): void {
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
 }
 
-const resultAnnotation = (
+let resultAnnotation = (
   ChartController.result.options as PluginChartOptions<"line" | "scatter">
 ).plugins.annotation.annotations as AnnotationOptions<"line">[];
-const resultScaleOptions = (
+let resultScaleOptions = (
   ChartController.result.options as ScaleChartOptions<"line" | "scatter">
 ).scales;
 
@@ -594,6 +594,12 @@ export async function update(
   randomQuote: MonkeyTypes.Quote,
   dontSave: boolean
 ): Promise<void> {
+  resultScaleOptions = (
+    ChartController.result.options as ScaleChartOptions<"line" | "scatter">
+  ).scales;
+  resultAnnotation = (
+    ChartController.result.options as PluginChartOptions<"line" | "scatter">
+  ).plugins.annotation.annotations as AnnotationOptions<"line">[];
   result = res;
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");

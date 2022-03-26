@@ -1480,8 +1480,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   completedEvent.uid = Auth.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);
 
-  Result.updateGraphPBLine();
-
   AccountButton.loading(true);
   completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
