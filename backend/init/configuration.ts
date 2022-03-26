@@ -50,7 +50,7 @@ class ConfigurationClient {
       attemptCacheUpdate &&
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
-      console.log("Cached configuration is stale.");
+      console.log("Cached configuration is stale.".gray);
       return await this.getLiveConfiguration();
     }
     return this.configuration;

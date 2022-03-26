@@ -21,7 +21,7 @@ import "colors";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
-  console.log("Anticheat module loaded");
+  console.log("Anticheat module loaded".green);
 } catch (e) {
   if (process.env.MODE === "dev") {
     console.error(

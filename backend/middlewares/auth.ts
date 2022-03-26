@@ -123,9 +123,9 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    console.log("-----------");
-    console.log(error.errorInfo.code);
-    console.log("-----------");
+    console.log("-----------".red);
+    console.log(error.errorInfo.code.toString().red);
+    console.log("-----------".red);
 
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
