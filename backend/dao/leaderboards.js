@@ -1,5 +1,5 @@
 import db from "../init/db";
-import Logger from "../utils/logger";
+import { log } from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 
@@ -119,7 +119,7 @@ class LeaderboardsDAO {
     let timeToRunInsert = (end3 - start3) / 1000;
     let timeToRunIndex = (end4 - start4) / 1000;
 
-    Logger.log(
+    log(
       `system_lb_update_${language}_${mode}_${mode2}`,
       `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s`,
       uid

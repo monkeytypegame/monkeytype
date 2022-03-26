@@ -1,5 +1,5 @@
 import IORedis from "ioredis";
-import "colors";
+import { logError, logWarning } from "../utils/logger";
 
 class RedisClient {
   static connection: IORedis.Redis;
@@ -14,8 +14,9 @@ class RedisClient {
 
     if (!REDIS_URI) {
       if (process.env.MODE === "dev") {
-        console.log(
-          "No redis configuration provided. Running without redis.".gray
+        logWarning(
+          "Redis",
+          "No redis configuration provided. Running without redis."
         );
         return;
       }
@@ -32,9 +33,10 @@ class RedisClient {
       await this.connection.connect();
       this.connected = true;
     } catch (error) {
-      console.error(error.message.red);
+      logError("Redis", error.message.red);
       console.error(
-        "Failed to connect to redis. Exiting with exit status code 1.".red
+        "Redis",
+        "Failed to connect to redis. Exiting with exit status code 1."
       );
       process.exit(1);
     }

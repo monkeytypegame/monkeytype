@@ -11,13 +11,13 @@ import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import RedisClient from "./init/redis";
 import George from "./tasks/george";
-import "colors";
+import { logError, logSuccess } from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {
     console.log(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
-    console.log("Connected to database".green);
+    logSuccess("Database", "Connected to database");
 
     console.log("Initializing Firebase app instance...");
     admin.initializeApp({
@@ -25,32 +25,32 @@ async function bootServer(port: number): Promise<Server> {
         serviceAccount as unknown as ServiceAccount
       ),
     });
-    console.log("Firebase app initialized".green);
+    logSuccess("Firebase", "Firebase app initialized");
 
     console.log("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
-    console.log("Live configuration fetched".green);
+    logSuccess("Live configuration", "Live configuration fetched");
 
     console.log("Connecting to redis...");
     await RedisClient.connect();
 
     if (RedisClient.isConnected()) {
-      console.log("Connected to redis");
+      logSuccess("Redis", "Connected to redis");
 
       console.log("Initializing task queues...");
       George.initJobQueue(RedisClient.getConnection());
-      console.log("Task queues initialized".green);
+      logSuccess("Task Queues", "Task queues initialized");
     }
 
     console.log("Starting cron jobs...");
     jobs.forEach((job) => job.start());
-    console.log("Cron jobs started".green);
+    logSuccess("Cron Jobs", "Cron jobs started");
 
     recordServerVersion(version);
   } catch (error) {
-    console.error("Failed to boot server".red);
+    logError("Server", "Failed to boot server");
     if (typeof error === "string" || error instanceof String) {
-      console.error(error.red);
+      logError("Server", error);
     } else {
       console.error(error);
     }

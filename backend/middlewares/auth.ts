@@ -6,6 +6,7 @@ import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import { incrementAuth } from "../utils/prometheus";
+import { logError } from "../utils/logger";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -123,9 +124,7 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    console.log("-----------".red);
-    console.log(error.errorInfo.code.toString().red);
-    console.log("-----------".red);
+    logError("General", error.errorInfo.code.toString().red);
 
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(

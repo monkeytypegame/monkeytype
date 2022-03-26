@@ -1,10 +1,10 @@
 import db from "../init/db";
 import { v4 as uuidv4 } from "uuid";
-import Logger from "../utils/logger";
+import { log } from "../utils/logger";
 import MonkeyError from "../utils/error";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { NextFunction, Response } from "express";
-import "colors";
+import { logError } from "../utils/logger";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -38,7 +38,7 @@ async function errorHandlingMiddleware(
     const { uid, errorId } = monkeyResponse.data;
 
     try {
-      await Logger.log(
+      await log(
         "system_error",
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid
@@ -53,16 +53,16 @@ async function errorHandlingMiddleware(
         endpoint: req.originalUrl,
       });
     } catch (e) {
-      console.error("Failed to save error.".red);
+      logError("General", "Failed to save error.");
       if (typeof e === "string" || e instanceof String) {
-        console.error(e.red);
+        logError("General", e);
       } else {
         console.error(e);
       }
     }
   } else {
-    console.error(error.message.red);
-    console.error(error.stack?.red);
+    logError("General", error.message);
+    logError("General", error.stack);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);
