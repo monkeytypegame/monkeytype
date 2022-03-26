@@ -11,12 +11,13 @@ import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import RedisClient from "./init/redis";
 import George from "./tasks/george";
+import "colors";
 
 async function bootServer(port: number): Promise<Server> {
   try {
     console.log(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
-    console.log("Connected to database");
+    console.log("Connected to database".green);
 
     console.log("Initializing Firebase app instance...");
     admin.initializeApp({
@@ -24,11 +25,11 @@ async function bootServer(port: number): Promise<Server> {
         serviceAccount as unknown as ServiceAccount
       ),
     });
-    console.log("Firebase app initialized");
+    console.log("Firebase app initialized".green);
 
     console.log("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
-    console.log("Live configuration fetched");
+    console.log("Live configuration fetched".green);
 
     console.log("Connecting to redis...");
     await RedisClient.connect();
@@ -38,17 +39,21 @@ async function bootServer(port: number): Promise<Server> {
 
       console.log("Initializing task queues...");
       George.initJobQueue(RedisClient.getConnection());
-      console.log("Task queues initialized");
+      console.log("Task queues initialized".green);
     }
 
     console.log("Starting cron jobs...");
     jobs.forEach((job) => job.start());
-    console.log("Cron jobs started");
+    console.log("Cron jobs started".green);
 
     recordServerVersion(version);
   } catch (error) {
-    console.error("Failed to boot server");
-    console.error(error);
+    console.error("Failed to boot server".red);
+    if (typeof error === "string" || error instanceof String) {
+      console.error(error.red);
+    } else {
+      console.error(error);
+    }
     return process.exit(1);
   }
 

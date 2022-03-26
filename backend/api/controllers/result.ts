@@ -17,6 +17,7 @@ import {
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
 import George from "../../tasks/george";
+import "colors";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -25,11 +26,13 @@ try {
   if (process.env.MODE === "dev") {
     console.error(
       "No anticheat module found. Continuing in dev mode, results will not be validated."
+        .red
     );
   } else {
-    console.error("No anticheat module found.");
+    console.error("No anticheat module found.".red);
     console.error(
       "To continue in dev mode, add 'MODE=dev' to the .env file in the backend directory."
+        .red
     );
     process.exit(1);
   }
