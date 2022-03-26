@@ -113,6 +113,7 @@ class ResultController {
       }
       console.error(
         "No anticheat module found. Continuing in dev mode, results will not be validated."
+          .red
       );
     }
 
@@ -215,6 +216,7 @@ class ResultController {
         }
         console.error(
           "No anticheat module found. Continuing in dev mode, results will not be validated."
+            .red
         );
       }
     }
