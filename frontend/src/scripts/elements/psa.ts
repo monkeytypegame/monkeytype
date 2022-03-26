@@ -1,5 +1,7 @@
 import Ape from "../ape";
+import { secondsToString } from "../utils/misc";
 import * as Notifications from "./notifications";
+import format from "date-fns/format";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
@@ -40,6 +42,29 @@ export async function show(): Promise<void> {
     if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
       return;
     }
+
+    if (psa.date) {
+      const dateObj = new Date(psa.date);
+      const diff = psa.date - Date.now();
+      const string = secondsToString(
+        diff / 1000,
+        false,
+        false,
+        "text",
+        false,
+        true
+      );
+      psa.message = psa.message.replace("{dateDifference}", string);
+      psa.message = psa.message.replace(
+        "{dateNoTime}",
+        format(dateObj, "dd MMM yyyy")
+      );
+      psa.message = psa.message.replace(
+        "{date}",
+        format(dateObj, "dd MMM yyyy HH:mm")
+      );
+    }
+
     Notifications.addBanner(
       psa.message,
       psa.level,
