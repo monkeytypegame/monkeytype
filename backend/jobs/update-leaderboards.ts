@@ -1,7 +1,9 @@
 import { CronJob } from "cron";
 import BotDAO from "../dao/bot";
+import George from "../tasks/george";
 import { Document, WithId } from "mongodb";
 import LeaderboardsDAO from "../dao/leaderboards";
+import ConfigurationClient from "../init/configuration";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";
 const RECENT_AGE_MINUTES = 10;
@@ -48,10 +50,15 @@ async function updateLeaderboardAndNotifyChanges(
   });
 
   if (newRecords.length > 0) {
-    await BotDAO.announceLbUpdate(
-      newRecords,
-      `time ${leaderboardTime} english`
-    );
+    const cachedConfig = await ConfigurationClient.getCachedConfiguration();
+
+    const leaderboardId = `time ${leaderboardTime} english`;
+
+    if (cachedConfig.useRedisForBotTasks.enabled) {
+      await George.announceLbUpdate(newRecords, leaderboardId);
+    }
+
+    await BotDAO.announceLbUpdate(newRecords, leaderboardId);
   }
 }
 

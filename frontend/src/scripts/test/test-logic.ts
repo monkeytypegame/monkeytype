@@ -49,11 +49,9 @@ import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
 import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
-import NodeObjectHash from "node-object-hash";
+import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
-
-const objecthash = NodeObjectHash().hash;
 
 let failReason = "";
 
@@ -68,7 +66,7 @@ export function setNotSignedInUid(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
-  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
+  notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
 let spanishSentenceTracker = "";
@@ -385,7 +383,7 @@ export function restart(
   PaceCaret.reset();
   Monkey.hide();
 
-  if (Config.showAvg) Last10Average.update();
+  if (Config.showAverage) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
@@ -1442,7 +1440,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
-  Result.update(
+  await Result.update(
     completedEvent,
     difficultyFailed,
     failReason,
@@ -1482,21 +1480,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   completedEvent.uid = Auth.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);
 
-  Result.updateGraphPBLine();
-
   AccountButton.loading(true);
   completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
-  completedEvent.hash = objecthash(completedEvent);
-
-  if (
-    (completedEvent.mode === "words" && completedEvent.mode2 == 10) ||
-    completedEvent.mode === "custom"
-  ) {
-    //@ts-ignore
-    completedEvent.stringified = JSON.stringify(completedEvent);
-  }
+  completedEvent.hash = objectHash(completedEvent);
 
   const response = await Ape.results.save(completedEvent);
 

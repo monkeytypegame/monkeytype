@@ -61,9 +61,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setShowTimerProgress,
     "button"
   );
-  groups["showAvg"] = new SettingsGroup(
-    "showAvg",
-    UpdateConfig.setShowAvg,
+  groups["showAverage"] = new SettingsGroup(
+    "showAverage",
+    UpdateConfig.setShowAverage,
     "button"
   );
   groups["keymapMode"] = new SettingsGroup(
