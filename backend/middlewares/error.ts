@@ -4,6 +4,7 @@ import Logger from "../utils/logger";
 import MonkeyError from "../utils/error";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { NextFunction, Response } from "express";
+import "colors";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -52,12 +53,16 @@ async function errorHandlingMiddleware(
         endpoint: req.originalUrl,
       });
     } catch (e) {
-      console.error("Failed to save error.");
-      console.error(e);
+      console.error("Failed to save error.".red);
+      if (typeof e === "string" || e instanceof String) {
+        console.error(e.red);
+      } else {
+        console.error(e);
+      }
     }
   } else {
-    console.error(error.message);
-    console.error(error.stack);
+    console.error(error.message.red);
+    console.error(error.stack?.red);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);
