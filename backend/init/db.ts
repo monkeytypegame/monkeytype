@@ -54,7 +54,7 @@ class DatabaseClient {
       this.db = this.mongoClient.db(DB_NAME);
       this.connected = true;
     } catch (error) {
-      Logger.error(`${error.message}`);
+      Logger.error(error.message);
       Logger.error(
         "Failed to connect to database. Exiting with exit status code 1."
       );
