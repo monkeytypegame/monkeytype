@@ -3,9 +3,9 @@ import chalk from "chalk";
 import winston, { format } from "winston";
 import { resolve } from "path";
 
-const errorColor = chalk.red;
-const warningColor = chalk.hex("#FFA500"); // Orange color
-const successColor = chalk.green;
+const errorColor = chalk.red.bold;
+const warningColor = chalk.yellow.bold;
+const successColor = chalk.green.bold;
 const infoColor = chalk.white;
 
 const logFolderPath = process.env.LOG_FOLDER_PATH ?? "./logs";
