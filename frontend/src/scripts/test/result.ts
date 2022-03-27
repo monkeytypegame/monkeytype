@@ -28,15 +28,12 @@ export function toggleUnsmoothedRaw(): void {
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);
 }
 
-let resultAnnotation = (
-  ChartController.result.options as PluginChartOptions<"line" | "scatter">
-).plugins.annotation.annotations as AnnotationOptions<"line">[];
+let resultAnnotation: AnnotationOptions<"line">[] = [];
 let resultScaleOptions = (
   ChartController.result.options as ScaleChartOptions<"line" | "scatter">
 ).scales;
 
 async function updateGraph(): Promise<void> {
-  resultAnnotation.length = 0; // Clear result annotation list to reset funbox label without reassigning to new array.
   const labels = [];
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
@@ -597,9 +594,7 @@ export async function update(
   resultScaleOptions = (
     ChartController.result.options as ScaleChartOptions<"line" | "scatter">
   ).scales;
-  resultAnnotation = (
-    ChartController.result.options as PluginChartOptions<"line" | "scatter">
-  ).plugins.annotation.annotations as AnnotationOptions<"line">[];
+  resultAnnotation = [];
   result = res;
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
@@ -625,10 +620,14 @@ export async function update(
   updateQuoteSource(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  ChartController.result.updateColors();
-  ChartController.result.resize();
   updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
+
+  ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
+    .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
+    resultAnnotation;
+  ChartController.result.updateColors();
+  ChartController.result.resize();
 
   if (
     $("#result .stats .tags").hasClass("hidden") &&
