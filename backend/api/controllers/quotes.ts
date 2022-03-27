@@ -36,7 +36,7 @@ class QuotesController {
     const { quoteId, editText, editSource } = req.body;
 
     const data = await NewQuotesDao.approve(quoteId, editText, editSource);
-    Logger.log("system_quote_approved", data, uid);
+    Logger.logToDb("system_quote_approved", data, uid);
 
     return new MonkeyResponse(data.message, data.quote);
   }
