@@ -49,7 +49,7 @@ const coloredOutputFormat = format.printf((log) => {
       break;
   }
 
-  return `[${log.timestamp}]\t${color(log.message)}`;
+  return `${log.timestamp}\t${color(log.message)}`;
 });
 
 const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
