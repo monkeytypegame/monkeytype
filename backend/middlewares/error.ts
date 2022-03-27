@@ -1,10 +1,9 @@
 import db from "../init/db";
 import { v4 as uuidv4 } from "uuid";
-import { logToDb } from "../utils/logger";
+import Logger from "../utils/logger";
 import MonkeyError from "../utils/error";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { NextFunction, Response } from "express";
-import { logger } from "../utils/logger";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -38,7 +37,7 @@ async function errorHandlingMiddleware(
     const { uid, errorId } = monkeyResponse.data;
 
     try {
-      await logToDb(
+      await Logger.logToDb(
         "system_error",
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid
@@ -53,11 +52,11 @@ async function errorHandlingMiddleware(
         endpoint: req.originalUrl,
       });
     } catch (e) {
-      logger.error("Logging to db failed.");
-      logger.error(e);
+      Logger.error("Logging to db failed.");
+      Logger.error(e);
     }
   } else {
-    logger.error(`General - Error: ${error.message} Stack: ${error.stack}`);
+    Logger.error(`General - Error: ${error.message} Stack: ${error.stack}`);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);

@@ -1,7 +1,7 @@
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
-import { logToDb } from "../../utils/logger";
+import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
@@ -15,7 +15,7 @@ class UserController {
     const { email, uid } = req.ctx.decodedToken;
 
     await UsersDAO.addUser(name, email, uid);
-    logToDb("user_created", `${name} ${email}`, uid);
+    Logger.logToDb("user_created", `${name} ${email}`, uid);
 
     return new MonkeyResponse("User created");
   }
@@ -25,7 +25,7 @@ class UserController {
 
     const userInfo = await UsersDAO.getUser(uid);
     await UsersDAO.deleteUser(uid);
-    logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+    Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
     return new MonkeyResponse("User deleted");
   }
@@ -36,7 +36,7 @@ class UserController {
 
     const oldUser = await UsersDAO.getUser(uid);
     await UsersDAO.updateName(uid, name);
-    logToDb(
+    Logger.logToDb(
       "user_name_updated",
       `changed name from ${oldUser.name} to ${name}`,
       uid
@@ -49,7 +49,7 @@ class UserController {
     const { uid } = req.ctx.decodedToken;
 
     await UsersDAO.clearPb(uid);
-    logToDb("user_cleared_pbs", "", uid);
+    Logger.logToDb("user_cleared_pbs", "", uid);
 
     return new MonkeyResponse("User's PB cleared");
   }
@@ -75,7 +75,7 @@ class UserController {
       throw new MonkeyError(404, e.message, "update email", uid);
     }
 
-    logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
+    Logger.logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
 
     return new MonkeyResponse("Email updated");
   }
@@ -100,7 +100,7 @@ class UserController {
     }
 
     const agentLog = buildAgentLog(req);
-    logToDb("user_data_requested", agentLog, uid);
+    Logger.logToDb("user_data_requested", agentLog, uid);
 
     return new MonkeyResponse("User data retrieved", userInfo);
   }
@@ -143,7 +143,7 @@ class UserController {
       George.linkDiscord(discordId, uid);
     }
     await BotDAO.linkDiscord(uid, discordId);
-    logToDb("user_discord_link", `linked to ${discordId}`, uid);
+    Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
     return new MonkeyResponse("Discord account linked", discordId);
   }
@@ -167,7 +167,7 @@ class UserController {
     await BotDAO.unlinkDiscord(uid, userInfo.discordId);
 
     await UsersDAO.unlinkDiscord(uid);
-    logToDb("user_discord_unlinked", userInfo.discordId, uid);
+    Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 
     return new MonkeyResponse("Discord account unlinked");
   }

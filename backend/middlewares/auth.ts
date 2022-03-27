@@ -6,7 +6,7 @@ import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import { incrementAuth } from "../utils/prometheus";
-import { logger } from "../utils/logger";
+import { Logger } from "../utils/logger";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -124,7 +124,7 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    logger.error(`Firebase auth error code ${error.errorInfo.code.toString()}`);
+    Logger.error(`Firebase auth error code ${error.errorInfo.code.toString()}`);
 
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(

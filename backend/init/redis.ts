@@ -1,5 +1,5 @@
 import IORedis from "ioredis";
-import { logger } from "../utils/logger";
+import Logger from "../utils/logger";
 
 class RedisClient {
   static connection: IORedis.Redis;
@@ -14,7 +14,7 @@ class RedisClient {
 
     if (!REDIS_URI) {
       if (process.env.MODE === "dev") {
-        logger.warning(
+        Logger.warning(
           "No redis configuration provided. Running without redis."
         );
         return;
@@ -32,8 +32,8 @@ class RedisClient {
       await this.connection.connect();
       this.connected = true;
     } catch (error) {
-      logger.error(`${error.message}`);
-      logger.error(
+      Logger.error(`${error.message}`);
+      Logger.error(
         "Failed to connect to redis. Exiting with exit status code 1."
       );
       process.exit(1);

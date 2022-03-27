@@ -1,4 +1,3 @@
-import "dotenv/config";
 import db from "../init/db";
 import chalk from "chalk";
 import winston, { format } from "winston";
@@ -11,9 +10,6 @@ const infoColor = chalk.white;
 
 const logFolderPath = process.env.LOG_FOLDER_PATH ?? "./logs";
 const maxLogSize = parseInt(process.env.LOG_FILE_MAX_SIZE ?? "10485760");
-
-// TODO: Create a wrapper class for winston with success function as well. Add the log to db function in the wrapper as well
-// TODO: Firebase app initialized -> Firebase app initialized
 
 interface Log {
   type?: string;
@@ -57,7 +53,7 @@ const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
 
 const consoleFormat = format.combine(timestampFormat, coloredOutputFormat);
 
-export const logger = winston.createLogger({
+const logger = winston.createLogger({
   levels: customLevels,
   transports: [
     new winston.transports.File({
@@ -85,7 +81,7 @@ export const logger = winston.createLogger({
   ],
 });
 
-export const logToDb = async (
+const logToDb = async (
   event: string,
   message: any,
   uid?: string
@@ -100,3 +96,13 @@ export const logToDb = async (
     message,
   });
 };
+
+export const Logger = {
+  error: (message: string): winston.Logger => logger.error(message),
+  warning: (message: string): winston.Logger => logger.warning(message),
+  info: (message: string): winston.Logger => logger.info(message),
+  success: (message: string): winston.Logger => logger.log("success", message),
+  logToDb,
+};
+
+export default Logger;

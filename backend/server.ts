@@ -11,50 +11,50 @@ import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import RedisClient from "./init/redis";
 import George from "./tasks/george";
-import { logger } from "./utils/logger";
+import { Logger } from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {
-    logger.info(`Connecting to database ${process.env.DB_NAME}...`);
+    Logger.info(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
-    logger.log("success", " Connected to database");
+    Logger.success("Connected to database");
 
-    logger.info("Initializing Firebase app instance...");
+    Logger.info("Initializing Firebase app instance...");
     admin.initializeApp({
       credential: admin.credential.cert(
         serviceAccount as unknown as ServiceAccount
       ),
     });
-    logger.log("success", "Firebase app initialized");
+    Logger.success("Firebase app initialized");
 
-    logger.info("Fetching live configuration...");
+    Logger.info("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
-    logger.log("success", "Live configuration fetched");
+    Logger.success("Live configuration fetched");
 
-    logger.info("Connecting to redis...");
+    Logger.info("Connecting to redis...");
     await RedisClient.connect();
 
     if (RedisClient.isConnected()) {
-      logger.log("success", "Connected to redis");
+      Logger.success("Connected to redis");
 
-      logger.info("Initializing task queues...");
+      Logger.info("Initializing task queues...");
       George.initJobQueue(RedisClient.getConnection());
-      logger.log("success", "Task queues initialized");
+      Logger.success("Task queues initialized");
     }
 
-    logger.info("Starting cron jobs...");
+    Logger.info("Starting cron jobs...");
     jobs.forEach((job) => job.start());
-    logger.log("success", "Cron jobs started");
+    Logger.success("Cron jobs started");
 
     recordServerVersion(version);
   } catch (error) {
-    logger.error("Failed to boot server");
-    logger.error(error);
+    Logger.error("Failed to boot server");
+    Logger.error(error);
     return process.exit(1);
   }
 
   return app.listen(PORT, () => {
-    logger.log("success", `API server listening on port ${port}`);
+    Logger.success(`API server listening on port ${port}`);
   });
 }
 

@@ -1,6 +1,6 @@
 import db from "./db";
 import _ from "lodash";
-import { logToDb, logger } from "../utils/logger";
+import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
 
@@ -50,7 +50,7 @@ class ConfigurationClient {
       attemptCacheUpdate &&
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
-      logger.info("General - Cached configuration is stale.");
+      Logger.info("General - Cached configuration is stale.");
       return await this.getLiveConfiguration();
     }
     return this.configuration;
@@ -78,7 +78,7 @@ class ConfigurationClient {
         await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
       }
     } catch (error) {
-      logToDb(
+      Logger.logToDb(
         "fetch_configuration_failure",
         `Could not fetch configuration: ${error.message}`
       );
@@ -99,7 +99,7 @@ class ConfigurationClient {
 
       this.databaseConfigurationUpdated = true;
     } catch (error) {
-      logToDb(
+      Logger.logToDb(
         "push_configuration_failure",
         `Could not push configuration: ${error.message}`
       );
