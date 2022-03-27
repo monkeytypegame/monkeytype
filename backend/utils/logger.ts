@@ -3,9 +3,9 @@ import chalk from "chalk";
 import winston, { format } from "winston";
 import { resolve } from "path";
 
-const errorColor = chalk.red;
-const warningColor = chalk.hex("#FFA500"); // Orange color
-const successColor = chalk.green;
+const errorColor = chalk.red.bold;
+const warningColor = chalk.yellow.bold;
+const successColor = chalk.green.bold;
 const infoColor = chalk.white;
 
 const logFolderPath = process.env.LOG_FOLDER_PATH ?? "./logs";
@@ -27,11 +27,11 @@ const customLevels = {
 };
 
 const timestampFormat = format.timestamp({
-  format: "MMM-DD-YYYY HH:mm:ss.SSS",
+  format: "DD-MMM-YYYY HH:mm:ss.SSS",
 });
 
 const simpleOutputFormat = format.printf((log) => {
-  return `[${log.timestamp}]\t${log.level}: ${log.message}`;
+  return `${log.timestamp}\t${log.level}: ${log.message}`;
 });
 
 const coloredOutputFormat = format.printf((log) => {
@@ -49,7 +49,7 @@ const coloredOutputFormat = format.printf((log) => {
       break;
   }
 
-  return `[${log.timestamp}]\t${color(log.message)}`;
+  return `${log.timestamp}\t${color(log.message)}`;
 });
 
 const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
@@ -91,7 +91,7 @@ const logToDb = async (
 ): Promise<void> => {
   const logsCollection = db.collection<Log>("logs");
 
-  console.log(new Date(), "\t", event, "\t", uid, "\t", message);
+  logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
   logsCollection.insertOne({
     timestamp: Date.now(),
     uid: uid ?? "",
