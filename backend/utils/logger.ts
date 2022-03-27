@@ -17,21 +17,11 @@ interface Log {
 }
 
 const customLevels = {
-  levels: {
-    error: 0,
-    warning: 1,
-    info: 2,
-    success: 3,
-  },
-  colors: {
-    error: "red",
-    warning: "yellow",
-    info: "gray",
-    success: "green",
-  },
+  error: 0,
+  warning: 1,
+  info: 2,
+  success: 3,
 };
-
-winston.addColors(customLevels.colors);
 
 const consoleFormat = format.printf((log) => {
   const baseMsg = `${log.level.toUpperCase()}: ${log.message}`;
@@ -50,7 +40,7 @@ const consoleFormat = format.printf((log) => {
 });
 
 export const logger = winston.createLogger({
-  levels: customLevels.levels,
+  levels: customLevels,
   transports: [
     new winston.transports.File({
       level: "error",
