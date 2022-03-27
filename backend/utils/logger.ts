@@ -31,7 +31,7 @@ const timestampFormat = format.timestamp({
 });
 
 const simpleOutputFormat = format.printf((log) => {
-  return `[${log.timestamp}]\t${log.level}: ${log.message}`;
+  return `${log.timestamp}\t${log.level}: ${log.message}`;
 });
 
 const coloredOutputFormat = format.printf((log) => {
