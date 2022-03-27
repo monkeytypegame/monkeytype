@@ -9,38 +9,52 @@ import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
+import RedisClient from "./init/redis";
+import George from "./tasks/george";
+import Logger from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {
-    console.log(`Connecting to database ${process.env.DB_NAME}...`);
+    Logger.info(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
-    console.log("Connected to database");
+    Logger.success("Connected to database");
 
-    console.log("Initializing Firebase app instance...");
+    Logger.info("Initializing Firebase app instance...");
     admin.initializeApp({
       credential: admin.credential.cert(
         serviceAccount as unknown as ServiceAccount
       ),
     });
-    console.log("Firebase app initialized");
+    Logger.success("Firebase app initialized");
 
-    console.log("Fetching live configuration...");
+    Logger.info("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
-    console.log("Live configuration fetched");
+    Logger.success("Live configuration fetched");
 
-    console.log("Starting cron jobs...");
+    Logger.info("Connecting to redis...");
+    await RedisClient.connect();
+
+    if (RedisClient.isConnected()) {
+      Logger.success("Connected to redis");
+
+      Logger.info("Initializing task queues...");
+      George.initJobQueue(RedisClient.getConnection());
+      Logger.success("Task queues initialized");
+    }
+
+    Logger.info("Starting cron jobs...");
     jobs.forEach((job) => job.start());
-    console.log("Cron jobs started");
+    Logger.success("Cron jobs started");
 
     recordServerVersion(version);
   } catch (error) {
-    console.error("Failed to boot server");
-    console.error(error);
+    Logger.error("Failed to boot server");
+    Logger.error(error);
     return process.exit(1);
   }
 
   return app.listen(PORT, () => {
-    console.log(`API server listening on port ${port}`);
+    Logger.success(`API server listening on port ${port}`);
   });
 }
 

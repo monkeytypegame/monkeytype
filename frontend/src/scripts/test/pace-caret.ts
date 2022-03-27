@@ -106,9 +106,10 @@ export function update(expectedStepEnd: number): void {
   if (settings === null || !TestActive.get() || TestUI.resultVisible) {
     return;
   }
-  if ($("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").removeClass("hidden");
-  }
+  // if ($("#paceCaret").hasClass("hidden")) {
+  //   $("#paceCaret").removeClass("hidden");
+  // }
+
   try {
     settings.currentLetterIndex++;
     if (
@@ -196,33 +197,33 @@ export function update(expectedStepEnd: number): void {
       caret.addClass("hidden");
     }
 
-    if (newTop === undefined) return;
-
-    let smoothlinescroll = $("#words .smoothScroller").height();
-    if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
-    $("#paceCaret").css({
-      top: newTop - smoothlinescroll,
-    });
-
     const duration = expectedStepEnd - performance.now();
 
-    if (Config.smoothCaret) {
-      caret.stop(true, true).animate(
-        {
-          left: newLeft,
-        },
-        SlowTimer.get() ? 0 : duration,
-        "linear"
-      );
-    } else {
-      caret.stop(true, true).animate(
-        {
-          left: newLeft,
-        },
-        0,
-        "linear"
-      );
+    if (newTop !== undefined) {
+      let smoothlinescroll = $("#words .smoothScroller").height();
+      if (smoothlinescroll === undefined) smoothlinescroll = 0;
+
+      $("#paceCaret").css({
+        top: newTop - smoothlinescroll,
+      });
+
+      if (Config.smoothCaret) {
+        caret.stop(true, true).animate(
+          {
+            left: newLeft,
+          },
+          SlowTimer.get() ? 0 : duration,
+          "linear"
+        );
+      } else {
+        caret.stop(true, true).animate(
+          {
+            left: newLeft,
+          },
+          0,
+          "linear"
+        );
+      }
     }
     settings.timeout = setTimeout(() => {
       try {

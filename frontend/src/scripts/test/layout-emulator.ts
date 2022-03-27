@@ -187,7 +187,13 @@ export async function getCharFromEvent(
       mapIndex = i;
     }
   }
-  if (!mapIndex) return null;
+  if (!mapIndex) {
+    if (event.code.includes("Numpad")) {
+      return event.key;
+    } else {
+      return null;
+    }
+  }
   const newKeyPreview = layoutMap[mapIndex][0];
   const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
   const char = layoutMap[mapIndex][shift];

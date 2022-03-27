@@ -15,7 +15,8 @@ import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
 import format from "date-fns/format";
-import type { Chart } from "chart.js";
+
+import type { ScaleChartOptions } from "chart.js";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -186,29 +187,9 @@ export function reset(): void {
   ChartController.accountHistory.updateColors();
 }
 
-type ChartData = {
-  x: number;
-  y: number;
-  wpm: number;
-  acc: number;
-  mode: string;
-  mode2: string | number;
-  punctuation: boolean;
-  language: string;
-  timestamp: number;
-  difficulty: string;
-  raw: number;
-};
-
-type AccChartData = {
-  x: number;
-  y: number;
-  errorRate: number;
-};
-
 let totalSecondsFiltered = 0;
-let chartData: ChartData[] = [];
-let accChartData: AccChartData[] = [];
+let chartData: MonkeyTypes.HistoryChartData[] = [];
+let accChartData: MonkeyTypes.AccChartData[] = [];
 
 export function smoothHistory(factor: number): void {
   const smoothedWpmData = Misc.smooth(
@@ -232,10 +213,8 @@ export function smoothHistory(factor: number): void {
     return ret;
   });
 
-  (ChartController.accountHistory.data.datasets[0].data as ChartData[]) =
-    chartData2;
-  (ChartController.accountHistory.data.datasets[1].data as AccChartData[]) =
-    accChartData2;
+  ChartController.accountHistory.data.datasets[0].data = chartData2;
+  ChartController.accountHistory.data.datasets[1].data = accChartData2;
 
   if (chartData2.length || accChartData2.length) {
     ChartController.accountHistory.update();
@@ -665,15 +644,9 @@ export function update(): void {
     loadMoreLines();
     ////////
 
-    type ActivityChartDataPoint = {
-      x: number;
-      y: number;
-      amount?: number;
-    };
-
-    const activityChartData_amount: ActivityChartDataPoint[] = [];
-    const activityChartData_time: ActivityChartDataPoint[] = [];
-    const activityChartData_avgWpm: ActivityChartDataPoint[] = [];
+    const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
+    const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
+    const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
     // let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
       const dateInt = parseInt(date);
@@ -698,49 +671,48 @@ export function update(): void {
       // lastTimestamp = date;
     });
 
-    if (Config.alwaysShowCPM) {
-      (
-        ChartController.accountActivity as Chart<"bar" | "line">
-      ).options.scales!["avgWpm"]!.title!.text = "Average Cpm";
-    } else {
-      (
-        ChartController.accountActivity as Chart<"bar" | "line">
-      ).options.scales!["avgWpm"]!.title!.text = "Average Wpm";
-    }
-
-    (ChartController.accountActivity.data.datasets[0]
-      .data as ActivityChartDataPoint[]) = activityChartData_time;
-    (ChartController.accountActivity.data.datasets[1]
-      .data as ActivityChartDataPoint[]) = activityChartData_avgWpm;
+    const accountActivityScaleOptions = (
+      ChartController.accountActivity.options as ScaleChartOptions<
+        "bar" | "line"
+      >
+    ).scales;
 
     if (Config.alwaysShowCPM) {
-      (ChartController.accountHistory as Chart<"line">).options.scales![
-        "wpm"
-      ]!.title!.text = "Characters per Minute";
+      accountActivityScaleOptions["avgWpm"].title.text = "Average Cpm";
     } else {
-      (ChartController.accountHistory as Chart<"line">).options.scales![
-        "wpm"
-      ]!.title!.text = "Words per Minute";
+      accountActivityScaleOptions["avgWpm"].title.text = "Average Wpm";
     }
 
-    (ChartController.accountHistory.data.datasets[0].data as ChartData[]) =
-      chartData;
-    (ChartController.accountHistory.data.datasets[1].data as AccChartData[]) =
-      accChartData;
+    ChartController.accountActivity.data.datasets[0].data =
+      activityChartData_time;
+    ChartController.accountActivity.data.datasets[1].data =
+      activityChartData_avgWpm;
+
+    const accountHistoryScaleOptions = (
+      ChartController.accountHistory.options as ScaleChartOptions<"line">
+    ).scales;
+
+    if (Config.alwaysShowCPM) {
+      accountHistoryScaleOptions["wpm"].title.text = "Characters per Minute";
+    } else {
+      accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
+    }
+
+    ChartController.accountHistory.data.datasets[0].data = chartData;
+    ChartController.accountHistory.data.datasets[1].data = accChartData;
 
     const wpms = chartData.map((r) => r.y);
     const minWpmChartVal = Math.min(...wpms);
     const maxWpmChartVal = Math.max(...wpms);
 
     // let accuracies = accChartData.map((r) => r.y);
-    ChartController.accountHistory.options.scales!["wpm"]!.max =
+    accountHistoryScaleOptions["wpm"].max =
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
     if (!Config.startGraphsAtZero) {
-      ChartController.accountHistory.options.scales!["wpm"]!.min =
-        Math.floor(minWpmChartVal);
+      accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
     } else {
-      ChartController.accountHistory.options.scales!["wpm"]!.min = 0;
+      accountHistoryScaleOptions["wpm"].min = 0;
     }
 
     if (chartData == [] || chartData.length == 0) {

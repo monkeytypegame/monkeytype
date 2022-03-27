@@ -50,7 +50,7 @@ class ConfigurationClient {
       attemptCacheUpdate &&
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
-      console.log("Cached configuration is stale.");
+      Logger.info("Cached configuration is stale.");
       return await this.getLiveConfiguration();
     }
     return this.configuration;
@@ -78,7 +78,7 @@ class ConfigurationClient {
         await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
       }
     } catch (error) {
-      Logger.log(
+      Logger.logToDb(
         "fetch_configuration_failure",
         `Could not fetch configuration: ${error.message}`
       );
@@ -99,7 +99,7 @@ class ConfigurationClient {
 
       this.databaseConfigurationUpdated = true;
     } catch (error) {
-      Logger.log(
+      Logger.logToDb(
         "push_configuration_failure",
         `Could not push configuration: ${error.message}`
       );

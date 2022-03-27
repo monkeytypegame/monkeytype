@@ -3,7 +3,7 @@ import UserDAO from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
-import node_object_hash from "node-object-hash";
+import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
@@ -16,21 +16,19 @@ import {
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
-
-const objecthash = node_object_hash().hash;
+import George from "../../tasks/george";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
-  console.log("Anticheat module loaded");
+  Logger.success("Anticheat module loaded");
 } catch (e) {
   if (process.env.MODE === "dev") {
-    console.error(
+    Logger.warning(
       "No anticheat module found. Continuing in dev mode, results will not be validated."
     );
   } else {
-    console.error("No anticheat module found.");
-    console.error(
-      "To continue in dev mode, add 'MODE=dev' to the .env file in the backend directory."
+    Logger.error(
+      "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
     );
     process.exit(1);
   }
@@ -47,7 +45,7 @@ class ResultController {
     const { uid } = req.ctx.decodedToken;
 
     await ResultDAO.deleteAll(uid);
-    Logger.log("user_results_deleted", "", uid);
+    Logger.logToDb("user_results_deleted", "", uid);
     return new MonkeyResponse("All results deleted");
   }
 
@@ -61,6 +59,10 @@ class ResultController {
 
   static async addResult(req: MonkeyTypes.Request): Promise<MonkeyResponse> {
     const { uid } = req.ctx.decodedToken;
+
+    const useRedisForBotTasks =
+      req.ctx.configuration.useRedisForBotTasks.enabled;
+
     const result = Object.assign({}, req.body.result);
     result.uid = uid;
     if (result.wpm === result.raw && result.acc !== 100) {
@@ -77,12 +79,12 @@ class ResultController {
     delete result.stringified;
     if (
       req.ctx.configuration.resultObjectHashCheck.enabled &&
-      resulthash.length === 64
+      resulthash.length === 40
     ) {
       //if its not 64 that means client is still using old hashing package
-      const serverhash = objecthash(result);
+      const serverhash = objectHash(result);
       if (serverhash !== resulthash) {
-        Logger.log(
+        Logger.logToDb(
           "incorrect_result_hash",
           {
             serverhash,
@@ -105,14 +107,14 @@ class ResultController {
       if (process.env.MODE !== "dev") {
         throw new Error("No anticheat module found");
       }
-      console.error(
+      Logger.warning(
         "No anticheat module found. Continuing in dev mode, results will not be validated."
       );
     }
 
     //dont use - result timestamp is unreliable, can be changed by system time and stuff
     // if (result.timestamp > Math.round(Date.now() / 1000) * 1000 + 10) {
-    //   Logger.log(
+    //   log(
     //     "time_traveler",
     //     {
     //       resultTimestamp: result.timestamp,
@@ -147,7 +149,7 @@ class ResultController {
     const earliestPossible = lastResultTimestamp + testDurationMilis;
     const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
     if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
-      Logger.log(
+      Logger.logToDb(
         "invalid_result_spacing",
         {
           lastTimestamp: lastResultTimestamp,
@@ -207,7 +209,7 @@ class ResultController {
         if (process.env.MODE !== "dev") {
           throw new Error("No anticheat module found");
         }
-        console.error(
+        Logger.warning(
           "No anticheat module found. Continuing in dev mode, results will not be validated."
         );
       }
@@ -246,11 +248,17 @@ class ResultController {
     if (result.mode === "time" && String(result.mode2) === "60") {
       UserDAO.incrementBananas(uid, result.wpm);
       if (isPb && user.discordId) {
+        if (useRedisForBotTasks) {
+          George.updateDiscordRole(user.discordId, result.wpm);
+        }
         BotDAO.updateDiscordRole(user.discordId, result.wpm);
       }
     }
 
     if (result.challenge && user.discordId) {
+      if (useRedisForBotTasks) {
+        George.awardChallenge(user.discordId, result.challenge);
+      }
       BotDAO.awardChallenge(user.discordId, result.challenge);
     } else {
       delete result.challenge;
@@ -279,7 +287,7 @@ class ResultController {
     const addedResult = await ResultDAO.addResult(uid, result);
 
     if (isPb) {
-      Logger.log(
+      Logger.logToDb(
         "user_new_pb",
         `${result.mode + " " + result.mode2} ${result.wpm} ${result.acc}% ${
           result.rawWpm

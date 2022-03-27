@@ -26,6 +26,9 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   enableSavingResults: {
     enabled: false,
   },
+  useRedisForBotTasks: {
+    enabled: false,
+  },
 };
 
 export default BASE_CONFIGURATION;
