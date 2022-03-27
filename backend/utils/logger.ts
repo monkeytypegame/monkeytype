@@ -27,7 +27,7 @@ const customLevels = {
 };
 
 const timestampFormat = format.timestamp({
-  format: "MMM-DD-YYYY HH:mm:ss.SSS",
+  format: "DD-MMM-YYYY HH:mm:ss.SSS",
 });
 
 const simpleOutputFormat = format.printf((log) => {
