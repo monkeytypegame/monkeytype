@@ -91,7 +91,7 @@ const logToDb = async (
 ): Promise<void> => {
   const logsCollection = db.collection<Log>("logs");
 
-  console.log(new Date(), "\t", event, "\t", uid, "\t", message);
+  logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
   logsCollection.insertOne({
     timestamp: Date.now(),
     uid: uid ?? "",
