@@ -26,27 +26,30 @@ const customLevels = {
   success: 3,
 };
 
-const timestampFormat = format.timestamp({ format: "MMM-DD-YYYY HH:mm:ss" });
+const timestampFormat = format.timestamp({
+  format: "MMM-DD-YYYY HH:mm:ss.SSS",
+});
 
 const simpleOutputFormat = format.printf((log) => {
   return `[${log.timestamp}]\t${log.level}: ${log.message}`;
 });
 
 const coloredOutputFormat = format.printf((log) => {
-  const baseMsg = `[${log.timestamp}]\t${log.message}`;
+  let color = infoColor;
 
   switch (log.level) {
     case "error":
-      return errorColor(baseMsg);
+      color = errorColor;
+      break;
     case "warning":
-      return warningColor(baseMsg);
-    case "info":
-      return infoColor(baseMsg);
+      color = warningColor;
+      break;
     case "success":
-      return successColor(baseMsg);
+      color = successColor;
+      break;
   }
 
-  return baseMsg;
+  return `[${log.timestamp}]\t${color(log.message)}`;
 });
 
 const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
