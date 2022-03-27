@@ -1,8 +1,8 @@
 {
-    "bcp47": "id-ID",
+    "name": "indonesian_2k",
     "leftToRight": true,
-    "name": "indonesian_1k",
     "noLazyMode": true,
+    "bcp47": "id-ID",
     "words": [
         "abad",
         "abadi",
