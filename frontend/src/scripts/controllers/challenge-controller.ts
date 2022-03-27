@@ -200,6 +200,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setIsTimeRandom(false);
       CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
       CustomText.setWord(challenge.parameters[2] as number);
+      CustomText.setTime(-1);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
