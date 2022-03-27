@@ -89,6 +89,10 @@
     "languages": ["indonesian", "indonesian_1k", "indonesian_10k"]
   },
   {
+    "name": "kurdish",
+    "languages": ["sorani"]
+  },
+  {
     "name": "greek",
     "languages": ["greek"]
   },
