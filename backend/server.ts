@@ -11,7 +11,7 @@ import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import RedisClient from "./init/redis";
 import George from "./tasks/george";
-import { Logger } from "./utils/logger";
+import Logger from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {

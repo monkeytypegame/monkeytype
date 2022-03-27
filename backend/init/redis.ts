@@ -32,7 +32,7 @@ class RedisClient {
       await this.connection.connect();
       this.connected = true;
     } catch (error) {
-      Logger.error(`${error.message}`);
+      Logger.error(error.message);
       Logger.error(
         "Failed to connect to redis. Exiting with exit status code 1."
       );

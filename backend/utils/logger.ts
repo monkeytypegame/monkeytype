@@ -97,7 +97,7 @@ const logToDb = async (
   });
 };
 
-export const Logger = {
+const Logger = {
   error: (message: string): winston.Logger => logger.error(message),
   warning: (message: string): winston.Logger => logger.warning(message),
   info: (message: string): winston.Logger => logger.info(message),

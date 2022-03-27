@@ -50,7 +50,7 @@ class ConfigurationClient {
       attemptCacheUpdate &&
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
-      Logger.info("General - Cached configuration is stale.");
+      Logger.info("Cached configuration is stale.");
       return await this.getLiveConfiguration();
     }
     return this.configuration;
