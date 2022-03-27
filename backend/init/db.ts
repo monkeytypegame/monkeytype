@@ -5,7 +5,7 @@ import {
   MongoClient,
   MongoClientOptions,
 } from "mongodb";
-import { logError } from "../utils/logger";
+import { logger } from "../utils/logger";
 
 class DatabaseClient {
   static mongoClient: MongoClient;
@@ -54,10 +54,10 @@ class DatabaseClient {
       this.db = this.mongoClient.db(DB_NAME);
       this.connected = true;
     } catch (error) {
-      logError("Database", error.message.red);
-      logError(
-        "Database",
-        "Failed to connect to database. Exiting with exit status code 1."
+      logger.error(`Database - ${error.message}`);
+      logger.log(
+        "error",
+        "Database - Failed to connect to database. Exiting with exit status code 1."
       );
       process.exit(1);
     }

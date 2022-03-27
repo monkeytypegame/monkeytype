@@ -4,7 +4,7 @@ import { log } from "../utils/logger";
 import MonkeyError from "../utils/error";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { NextFunction, Response } from "express";
-import { logError } from "../utils/logger";
+import { logger } from "../utils/logger";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -53,16 +53,15 @@ async function errorHandlingMiddleware(
         endpoint: req.originalUrl,
       });
     } catch (e) {
-      logError("General", "Failed to save error.");
+      logger.error("General - Failed to save error.");
       if (typeof e === "string" || e instanceof String) {
-        logError("General", e);
+        logger.error("General - ${e}");
       } else {
-        console.error(e);
+        logger.error(`General - ${e.message}`);
       }
     }
   } else {
-    logError("General", error.message);
-    logError("General", error.stack);
+    logger.error(`General - Error: ${error.message} Stack: ${error.stack}`);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);

@@ -17,22 +17,20 @@ import {
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
 import George from "../../tasks/george";
-import { logSuccess, logError } from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
-  logSuccess("Anticheat", "Anticheat module loaded");
+  logger.log("success", "Anticheat - Anticheat module loaded");
 } catch (e) {
   if (process.env.MODE === "dev") {
-    logError(
-      "Anticheat",
-      "No anticheat module found. Continuing in dev mode, results will not be validated."
+    logger.log(
+      "error",
+      "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
     );
   } else {
-    logError("Anticheat", "No anticheat module found.");
-    logError(
-      "Anticheat",
-      "To continue in dev mode, add 'MODE=dev' to the .env file in the backend directory."
+    logger.error(
+      "Anticheat - No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
     );
     process.exit(1);
   }
@@ -111,9 +109,9 @@ class ResultController {
       if (process.env.MODE !== "dev") {
         throw new Error("No anticheat module found");
       }
-      logError(
-        "Anticheat",
-        "No anticheat module found. Continuing in dev mode, results will not be validated."
+      logger.log(
+        "error",
+        "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
       );
     }
 
@@ -214,9 +212,9 @@ class ResultController {
         if (process.env.MODE !== "dev") {
           throw new Error("No anticheat module found");
         }
-        logError(
-          "Anticheat",
-          "No anticheat module found. Continuing in dev mode, results will not be validated."
+        logger.log(
+          "error",
+          "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
         );
       }
     }

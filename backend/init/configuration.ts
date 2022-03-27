@@ -1,6 +1,6 @@
 import db from "./db";
 import _ from "lodash";
-import { log, logInfo } from "../utils/logger";
+import { log, logger } from "../utils/logger";
 import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
 
@@ -50,7 +50,7 @@ class ConfigurationClient {
       attemptCacheUpdate &&
       this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
     ) {
-      logInfo("General", "Cached configuration is stale.");
+      logger.info("General - Cached configuration is stale.");
       return await this.getLiveConfiguration();
     }
     return this.configuration;

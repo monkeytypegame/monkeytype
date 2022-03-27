@@ -11,13 +11,13 @@ import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import RedisClient from "./init/redis";
 import George from "./tasks/george";
-import { logError, logSuccess } from "./utils/logger";
+import { logger } from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {
     console.log(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
-    logSuccess("Database", "Connected to database");
+    logger.log("success", "Database - Connected to database");
 
     console.log("Initializing Firebase app instance...");
     admin.initializeApp({
@@ -25,32 +25,32 @@ async function bootServer(port: number): Promise<Server> {
         serviceAccount as unknown as ServiceAccount
       ),
     });
-    logSuccess("Firebase", "Firebase app initialized");
+    logger.log("success", "Firebase - Firebase app initialized");
 
     console.log("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
-    logSuccess("Live configuration", "Live configuration fetched");
+    logger.log("success", "Live configuration - Live configuration fetched");
 
     console.log("Connecting to redis...");
     await RedisClient.connect();
 
     if (RedisClient.isConnected()) {
-      logSuccess("Redis", "Connected to redis");
+      logger.log("success", "Redis - Connected to redis");
 
       console.log("Initializing task queues...");
       George.initJobQueue(RedisClient.getConnection());
-      logSuccess("Task Queues", "Task queues initialized");
+      logger.log("success", "Task Queues - Task queues initialized");
     }
 
     console.log("Starting cron jobs...");
     jobs.forEach((job) => job.start());
-    logSuccess("Cron Jobs", "Cron jobs started");
+    logger.log("success", "Cron Jobs - Cron jobs started");
 
     recordServerVersion(version);
   } catch (error) {
-    logError("Server", "Failed to boot server");
+    logger.error("Server - Failed to boot server");
     if (typeof error === "string" || error instanceof String) {
-      logError("Server", error);
+      logger.error(`Server - ${error}`);
     } else {
       console.error(error);
     }
