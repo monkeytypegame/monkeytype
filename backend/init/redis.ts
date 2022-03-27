@@ -15,7 +15,7 @@ class RedisClient {
     if (!REDIS_URI) {
       if (process.env.MODE === "dev") {
         logger.warning(
-          "Redis - No redis configuration provided. Running without redis."
+          "No redis configuration provided. Running without redis."
         );
         return;
       }
@@ -32,9 +32,9 @@ class RedisClient {
       await this.connection.connect();
       this.connected = true;
     } catch (error) {
-      logger.error(`Redis - ${error.message}`);
+      logger.error(`${error.message}`);
       logger.error(
-        "Redis - Failed to connect to redis. Exiting with exit status code 1."
+        "Failed to connect to redis. Exiting with exit status code 1."
       );
       process.exit(1);
     }

@@ -53,12 +53,8 @@ async function errorHandlingMiddleware(
         endpoint: req.originalUrl,
       });
     } catch (e) {
-      logger.error("General - Failed to save error.");
-      if (typeof e === "string" || e instanceof String) {
-        logger.error("General - ${e}");
-      } else {
-        logger.error(`General - ${e.message}`);
-      }
+      logger.error("Logging to db failed.");
+      logger.error(e);
     }
   } else {
     logger.error(`General - Error: ${error.message} Stack: ${error.stack}`);

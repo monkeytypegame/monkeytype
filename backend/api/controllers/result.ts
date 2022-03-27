@@ -4,7 +4,7 @@ import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
 import objectHash from "object-hash";
-import { logToDb } from "../../utils/logger";
+import { logger, logToDb } from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
@@ -17,19 +17,18 @@ import {
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
 import George from "../../tasks/george";
-import { logger } from "../../utils/logger";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
-  logger.log("success", "Anticheat - Anticheat module loaded");
+  logger.log("success", "Anticheat module loaded");
 } catch (e) {
   if (process.env.MODE === "dev") {
     logger.warning(
-      "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
+      "No anticheat module found. Continuing in dev mode, results will not be validated."
     );
   } else {
     logger.error(
-      "Anticheat - No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
+      "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
     );
     process.exit(1);
   }
@@ -109,7 +108,7 @@ class ResultController {
         throw new Error("No anticheat module found");
       }
       logger.warning(
-        "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
+        "No anticheat module found. Continuing in dev mode, results will not be validated."
       );
     }
 
@@ -211,7 +210,7 @@ class ResultController {
           throw new Error("No anticheat module found");
         }
         logger.warning(
-          "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
+          "No anticheat module found. Continuing in dev mode, results will not be validated."
         );
       }
     }

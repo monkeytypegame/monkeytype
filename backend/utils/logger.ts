@@ -12,6 +12,9 @@ const infoColor = chalk.white;
 const logFolderPath = process.env.LOG_FOLDER_PATH ?? "./logs";
 const maxLogSize = parseInt(process.env.LOG_FILE_MAX_SIZE ?? "10485760");
 
+// TODO: Create a wrapper class for winston with success function as well. Add the log to db function in the wrapper as well
+// TODO: Firebase app initialized -> Firebase app initialized
+
 interface Log {
   type?: string;
   timestamp: number;
@@ -27,12 +30,12 @@ const customLevels = {
   success: 3,
 };
 
-const timestampFormat = format.timestamp({
-  format: "MMM-DD-YYYY HH:mm:ss",
-});
+const timestampFormat = format.timestamp({ format: "MMM-DD-YYYY HH:mm:ss" });
+
 const simpleOutputFormat = format.printf((log) => {
   return `[${log.timestamp}]\t${log.level}: ${log.message}`;
 });
+
 const coloredOutputFormat = format.printf((log) => {
   const baseMsg = `[${log.timestamp}]\t${log.message}`;
 
