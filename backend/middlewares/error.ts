@@ -56,7 +56,7 @@ async function errorHandlingMiddleware(
       Logger.error(e);
     }
   } else {
-    Logger.error(`General - Error: ${error.message} Stack: ${error.stack}`);
+    Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);
