@@ -1,12 +1,16 @@
+import "dotenv/config";
 import db from "../init/db";
 import chalk from "chalk";
 import winston, { format } from "winston";
-import { join } from "path";
+import { resolve } from "path";
 
 const errorColor = chalk.red;
 const warningColor = chalk.hex("#FFA500"); // Orange color
 const successColor = chalk.green;
-const infoColor = chalk.gray;
+const infoColor = chalk.white;
+
+const logFolderPath = process.env.LOG_FOLDER_PATH ?? "./logs";
+const maxLogSize = parseInt(process.env.LOG_FILE_MAX_SIZE ?? "10485760");
 
 interface Log {
   type?: string;
@@ -23,8 +27,14 @@ const customLevels = {
   success: 3,
 };
 
-const consoleFormat = format.printf((log) => {
-  const baseMsg = `${log.level.toUpperCase()}: ${log.message}`;
+const timestampFormat = format.timestamp({
+  format: "MMM-DD-YYYY HH:mm:ss",
+});
+const simpleOutputFormat = format.printf((log) => {
+  return `[${log.timestamp}]\t${log.level}: ${log.message}`;
+});
+const coloredOutputFormat = format.printf((log) => {
+  const baseMsg = `[${log.timestamp}]\t${log.message}`;
 
   switch (log.level) {
     case "error":
@@ -36,27 +46,38 @@ const consoleFormat = format.printf((log) => {
     case "success":
       return successColor(baseMsg);
   }
+
   return baseMsg;
 });
+
+const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
+
+const consoleFormat = format.combine(timestampFormat, coloredOutputFormat);
 
 export const logger = winston.createLogger({
   levels: customLevels,
   transports: [
     new winston.transports.File({
       level: "error",
-      filename: join(__dirname, "../logs/error.log"),
-      maxsize: 10485760, // 10MB
+      filename: resolve(logFolderPath, "error.log"),
+      maxsize: maxLogSize,
+      format: fileFormat,
     }),
     new winston.transports.File({
       level: "success",
-      filename: join(__dirname, "../logs/combined.log"),
-      maxsize: 10485760, // 10MB
+      filename: resolve(logFolderPath, "combined.log"),
+      maxsize: maxLogSize,
+      format: fileFormat,
     }),
-    new winston.transports.Console({ level: "success", format: consoleFormat }),
+    new winston.transports.Console({
+      level: "success",
+      format: consoleFormat,
+    }),
   ],
   exceptionHandlers: [
     new winston.transports.File({
-      filename: join(__dirname, "../logs/exceptions.log"),
+      filename: resolve(logFolderPath, "exceptions.log"),
+      format: fileFormat,
     }),
   ],
 });

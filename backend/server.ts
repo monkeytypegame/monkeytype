@@ -15,11 +15,11 @@ import { logger } from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {
-    console.log(`Connecting to database ${process.env.DB_NAME}...`);
+    logger.info(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
     logger.log("success", "Database - Connected to database");
 
-    console.log("Initializing Firebase app instance...");
+    logger.info("Initializing Firebase app instance...");
     admin.initializeApp({
       credential: admin.credential.cert(
         serviceAccount as unknown as ServiceAccount
@@ -27,22 +27,22 @@ async function bootServer(port: number): Promise<Server> {
     });
     logger.log("success", "Firebase - Firebase app initialized");
 
-    console.log("Fetching live configuration...");
+    logger.info("Fetching live configuration...");
     await ConfigurationClient.getLiveConfiguration();
     logger.log("success", "Live configuration - Live configuration fetched");
 
-    console.log("Connecting to redis...");
+    logger.info("Connecting to redis...");
     await RedisClient.connect();
 
     if (RedisClient.isConnected()) {
       logger.log("success", "Redis - Connected to redis");
 
-      console.log("Initializing task queues...");
+      logger.info("Initializing task queues...");
       George.initJobQueue(RedisClient.getConnection());
       logger.log("success", "Task Queues - Task queues initialized");
     }
 
-    console.log("Starting cron jobs...");
+    logger.info("Starting cron jobs...");
     jobs.forEach((job) => job.start());
     logger.log("success", "Cron Jobs - Cron jobs started");
 
@@ -58,7 +58,7 @@ async function bootServer(port: number): Promise<Server> {
   }
 
   return app.listen(PORT, () => {
-    console.log(`API server listening on port ${port}`);
+    logger.log("success", `API server listening on port ${port}`);
   });
 }
 

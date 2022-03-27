@@ -24,8 +24,7 @@ try {
   logger.log("success", "Anticheat - Anticheat module loaded");
 } catch (e) {
   if (process.env.MODE === "dev") {
-    logger.log(
-      "error",
+    logger.warning(
       "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
     );
   } else {
@@ -109,8 +108,7 @@ class ResultController {
       if (process.env.MODE !== "dev") {
         throw new Error("No anticheat module found");
       }
-      logger.log(
-        "error",
+      logger.warning(
         "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
       );
     }
@@ -212,8 +210,7 @@ class ResultController {
         if (process.env.MODE !== "dev") {
           throw new Error("No anticheat module found");
         }
-        logger.log(
-          "error",
+        logger.warning(
           "Anticheat - No anticheat module found. Continuing in dev mode, results will not be validated."
         );
       }
