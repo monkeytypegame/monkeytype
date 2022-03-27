@@ -1,6 +1,6 @@
 import db from "./db";
 import _ from "lodash";
-import { log, logger } from "../utils/logger";
+import { logToDb, logger } from "../utils/logger";
 import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
 
@@ -78,7 +78,7 @@ class ConfigurationClient {
         await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
       }
     } catch (error) {
-      log(
+      logToDb(
         "fetch_configuration_failure",
         `Could not fetch configuration: ${error.message}`
       );
@@ -99,7 +99,7 @@ class ConfigurationClient {
 
       this.databaseConfigurationUpdated = true;
     } catch (error) {
-      log(
+      logToDb(
         "push_configuration_failure",
         `Could not push configuration: ${error.message}`
       );

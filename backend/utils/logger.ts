@@ -61,7 +61,7 @@ export const logger = winston.createLogger({
   ],
 });
 
-export const log = async (
+export const logToDb = async (
   event: string,
   message: any,
   uid?: string
