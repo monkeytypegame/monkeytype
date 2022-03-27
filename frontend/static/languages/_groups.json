@@ -86,7 +86,7 @@
   },
   {
     "name": "indonesian",
-    "languages": ["indonesian", "indonesian_1k"]
+    "languages": ["indonesian", "indonesian_1k", "indonesian_10k"]
   },
   {
     "name": "greek",
