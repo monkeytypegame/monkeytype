@@ -322,6 +322,9 @@ key {
   font-size: 1rem;
   width: max-content;
   width: -moz-max-content;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.25rem;
 
   &.active {
     color: var(--main-color);
@@ -359,7 +362,7 @@ key {
   }
 }
 
-// .icon-button {
+// .text-button {
 //   display: grid;
 //   grid-auto-flow: column;
 //   align-content: center;
