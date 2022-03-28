@@ -32,7 +32,7 @@ function updateColors(
   noThemeUpdate = false
 ): void {
   if (onlyStyle) {
-    const colorID = colorPicker.find("input[type=color]").attr("id");
+    const colorID = colorPicker.find("input.color").attr("id");
     if (colorID === undefined) console.error("Could not find color ID!");
     if (!noThemeUpdate && colorID !== undefined) {
       document.documentElement.style.setProperty(colorID, color);
@@ -43,8 +43,8 @@ function updateColors(
     if (pickerButton.attr("for") !== "--bg-color") {
       pickerButton.css("background-color", color);
     }
-    colorPicker.find("input[type=text]").val(color);
-    colorPicker.find("input[type=color]").attr("value", color);
+    colorPicker.find("input.input").val(color);
+    colorPicker.find("input.color").attr("value", color);
     return;
   }
   const colorREGEX = [
@@ -84,7 +84,7 @@ function updateColors(
 
   color = hexColor;
 
-  const colorID = colorPicker.find("input[type=color]").attr("id");
+  const colorID = colorPicker.find("input.color").attr("id");
 
   if (colorID === undefined) console.error("Could not find color ID!");
   if (!noThemeUpdate && colorID !== undefined) {
@@ -98,8 +98,8 @@ function updateColors(
   if (pickerButton.attr("for") !== "--bg-color") {
     pickerButton.css("background-color", color);
   }
-  colorPicker.find("input[type=text]").val(color);
-  colorPicker.find("input[type=color]").attr("value", color);
+  colorPicker.find("input.input").val(color);
+  colorPicker.find("input.color").attr("value", color);
 }
 
 export async function refreshButtons(): Promise<void> {
@@ -204,7 +204,7 @@ export function setCustomInputs(noThemeUpdate = false): void {
     const currentColor =
       Config.customThemeColors[
         ThemeController.colorVars.indexOf(
-          $(element).find("input[type=color]").attr("id") as string
+          $(element).find("input.color").attr("id") as string
         )
       ];
     updateColors($(element), currentColor, false, noThemeUpdate);
@@ -342,7 +342,7 @@ $(
   updateColors($(".colorPicker #" + $colorVar).parent(), $pickedColor);
 });
 
-$(".pageSettings .section.themes .tabContainer .customTheme input[type=text]")
+$(".pageSettings .section.themes .tabContainer .customTheme input.input")
   .on("blur", (e) => {
     if (e.target.id === "name") return;
     const $colorVar = $(e.currentTarget).attr("id") as string;
