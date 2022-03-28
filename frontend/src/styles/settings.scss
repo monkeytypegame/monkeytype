@@ -235,7 +235,7 @@
         padding: 0.2rem 0.5rem;
         border-radius: var(--roundness);
 
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-darker-color);
         text-align: center;
         -webkit-user-select: none;
         display: grid;
@@ -275,7 +275,7 @@
         padding: 0.2rem 0.5rem;
         border-radius: var(--roundness);
 
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-darker-color);
         text-align: center;
         -webkit-user-select: none;
         display: grid;

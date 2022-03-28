@@ -41,7 +41,7 @@
     }
 
     textarea {
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--sub-darker-color);
       padding: 1rem;
       color: var(--main-color);
       border: none;
@@ -369,7 +369,7 @@
     }
 
     tbody tr:nth-child(odd) td {
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--sub-darker-color);
     }
 
     td.infoIcons span {
@@ -523,7 +523,7 @@
         }
       }
       .searchResult:hover {
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-darker-color);
         border-radius: 5px;
       }
     }
@@ -660,7 +660,7 @@
       color: var(--text-color);
 
       tr:nth-child(odd) td {
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-darker-color);
       }
     }
 
@@ -765,7 +765,7 @@
       }
     }
     .searchResult:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--sub-darker-color);
       border-radius: 5px;
     }
   }
