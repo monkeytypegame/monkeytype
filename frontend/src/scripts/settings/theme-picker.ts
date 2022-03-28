@@ -278,7 +278,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   const $target = $(e.currentTarget);
   $target.addClass("active");
-  setCustomInputs();
+  // setCustomInputs();
   if ($target.attr("tab") == "preset") {
     UpdateConfig.setCustomTheme(false);
   } else {
