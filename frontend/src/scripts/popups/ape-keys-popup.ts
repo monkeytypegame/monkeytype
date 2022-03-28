@@ -38,7 +38,7 @@ function refreshList(): void {
           <div class="text-button">
             ${
               key.enabled
-                ? `<i class="fas fa-check-square"></i>`
+                ? `<i class="fas fa-fw fa-check-square"></i>`
                 : `<i class="far fa-fw fa-square"></i>`
             }
           </div>
