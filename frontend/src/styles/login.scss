@@ -28,18 +28,6 @@
         grid-area: forgotButton;
         font-size: 0.75rem;
         line-height: 0.75rem;
-        height: fit-content;
-        height: -moz-fit-content;
-        align-self: center;
-        justify-self: right;
-        padding: 0.25rem 0;
-        color: var(--sub-color);
-        cursor: pointer;
-        transition: 0.25s;
-
-        &:hover {
-          color: var(--text-color);
-        }
       }
 
       form {
