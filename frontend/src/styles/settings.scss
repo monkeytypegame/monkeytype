@@ -194,12 +194,9 @@
       }
 
       #unlinkDiscordButton {
-        margin-top: 0.5rem;
+        margin: 0.25rem auto 0 auto;
         font-size: 0.75rem;
-        color: var(--sub-color);
-        &:hover {
-          color: var(--text-color);
-        }
+        line-height: 0.7rem;
       }
 
       .howto {
