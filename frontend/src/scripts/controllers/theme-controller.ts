@@ -16,12 +16,12 @@ export const colorVars = [
   "--main-color",
   "--caret-color",
   "--sub-color",
+  "--sub-alt-color",
   "--text-color",
   "--error-color",
   "--error-extra-color",
   "--colorful-error-color",
   "--colorful-error-extra-color",
-  "--sub-alt-color", //its at the end because it was added later
 ];
 
 async function updateFavicon(size: number, curveSize: number): Promise<void> {

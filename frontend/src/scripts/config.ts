@@ -1284,12 +1284,14 @@ function setThemes(
 
   if (customThemeColors.length === 9) {
     //color missing
-    Notifications.add(
-      "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
-      0,
-      7
-    );
-    customThemeColors.push("#000000");
+    if (customState) {
+      Notifications.add(
+        "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
+        0,
+        7
+      );
+    }
+    customThemeColors.splice(4, 0, "#000000");
   }
 
   config.customThemeColors = customThemeColors;
@@ -1374,7 +1376,7 @@ export function setCustomThemeColors(
       0,
       7
     );
-    colors.push("#000000");
+    colors.splice(4, 0, "#000000");
   }
 
   if (colors !== undefined) {
