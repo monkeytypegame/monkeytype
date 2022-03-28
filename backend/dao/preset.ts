@@ -51,14 +51,11 @@ class PresetDAO {
     name: string,
     config: any
   ): Promise<void> {
-    const presetUpdates = config ? { name, config } : { name };
-    const updateResult = await db
+    const presetUpdates =
+      config && Object.keys(config).length > 0 ? { name, config } : { name };
+    await db
       .collection(COLLECTION_NAME)
       .updateOne(getPresetKeyFilter(uid, presetId), { $set: presetUpdates });
-
-    if (updateResult.modifiedCount === 0) {
-      throw new MonkeyError(404, "Preset not found");
-    }
   }
 
   static async removePreset(uid: string, presetId: string): Promise<void> {
