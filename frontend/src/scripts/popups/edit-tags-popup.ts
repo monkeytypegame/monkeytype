@@ -10,27 +10,27 @@ export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
     $("#tagsWrapper #tagsEdit .title").html("Add new tag");
-    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-plus"></i>`);
+    $("#tagsWrapper #tagsEdit .button").html(`add`);
     $("#tagsWrapper #tagsEdit input").val("");
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "edit" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "edit");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
-    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-pen"></i>`);
+    $("#tagsWrapper #tagsEdit .button").html(`edit`);
     $("#tagsWrapper #tagsEdit input").val(name);
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "remove" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "remove");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
-    $("#tagsWrapper #tagsEdit .title").html("Remove tag " + name);
-    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
+    $("#tagsWrapper #tagsEdit .title").html("Delete tag " + name);
+    $("#tagsWrapper #tagsEdit .button").html(`delete`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
   } else if (action === "clearPb" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "clearPb");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Clear PB for tag " + name);
-    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
+    $("#tagsWrapper #tagsEdit .button").html(`clear`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
   }
 
