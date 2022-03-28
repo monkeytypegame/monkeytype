@@ -3065,7 +3065,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "start begin type test",
       icon: "fa-keyboard",
       exec: (): void => {
-        $("#top #menu .icon-button.view-start").trigger("click");
+        $("#top #menu .text-button.view-start").trigger("click");
       },
     },
     {
@@ -3073,7 +3073,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Leaderboards Page",
       icon: "fa-crown",
       exec: (): void => {
-        $("#top #menu .icon-button.view-leaderboards").trigger("click");
+        $("#top #menu .text-button.view-leaderboards").trigger("click");
       },
     },
     {
@@ -3081,7 +3081,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View About Page",
       icon: "fa-info",
       exec: (): void => {
-        $("#top #menu .icon-button.view-about").trigger("click");
+        $("#top #menu .text-button.view-about").trigger("click");
       },
     },
     {
@@ -3089,7 +3089,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Settings Page",
       icon: "fa-cog",
       exec: (): void => {
-        $("#top #menu .icon-button.view-settings").trigger("click");
+        $("#top #menu .text-button.view-settings").trigger("click");
       },
     },
     {
@@ -3108,9 +3108,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-user",
       alias: "stats",
       exec: (): void => {
-        $("#top #menu .icon-button.view-account").hasClass("hidden")
-          ? $("#top #menu .icon-button.view-login").trigger("click")
-          : $("#top #menu .icon-button.view-account").trigger("click");
+        $("#top #menu .text-button.view-account").hasClass("hidden")
+          ? $("#top #menu .text-button.view-login").trigger("click")
+          : $("#top #menu .text-button.view-account").trigger("click");
       },
     },
     {

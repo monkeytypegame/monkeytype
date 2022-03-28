@@ -10,11 +10,11 @@
   --colorful-error-extra-color: #f2ce83;
 }
 
-#menu .icon-button {
+#menu .text-button {
   color: #f2ce83;
 }
 
-#menu .icon-button:hover {
+#menu .text-button:hover {
   color: #c6915e;
 }
 

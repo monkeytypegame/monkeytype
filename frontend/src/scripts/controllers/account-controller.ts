@@ -104,7 +104,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
-  $("#menu .icon-button.account .text").text(snapshot.name);
+  $("#menu .text-button.account .text").text(snapshot.name);
 
   ResultFilters.loadTags(snapshot.tags);
 
@@ -147,7 +147,7 @@ export async function getDataAndInit(): Promise<boolean> {
       Notifications.add("Name updated", 1);
       snapshot.name = name;
       DB.setSnapshot(snapshot);
-      $("#menu .icon-button.account .text").text(name);
+      $("#menu .text-button.account .text").text(name);
     }
   }
   if (!UpdateConfig.changedBeforeDb) {
@@ -424,7 +424,7 @@ export async function signInWithGoogle(): Promise<void> {
         await sendEmailVerification(signedInUser.user);
         AllTimeStats.clear();
         Notifications.add("Account created", 1, 3);
-        $("#menu .icon-button.account .text").text(name);
+        $("#menu .text-button.account .text").text(name);
         $(".pageLogin .button").removeClass("disabled");
         $(".pageLogin .preloader").addClass("hidden");
         await loadUser(signedInUser.user);
@@ -630,7 +630,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendEmailVerification(createdAuthUser.user);
     AllTimeStats.clear();
-    $("#menu .icon-button.account .text").text(nname);
+    $("#menu .text-button.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin .preloader").addClass("hidden");
     await loadUser(createdAuthUser.user);

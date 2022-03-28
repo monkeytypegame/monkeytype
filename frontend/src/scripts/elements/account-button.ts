@@ -16,14 +16,14 @@ export function loading(truefalse: boolean): void {
 export function update(): void {
   if (Auth.currentUser != null) {
     Misc.swapElements(
-      $("#menu .icon-button.login"),
-      $("#menu .icon-button.account"),
+      $("#menu .text-button.login"),
+      $("#menu .text-button.account"),
       250
     );
   } else {
     Misc.swapElements(
-      $("#menu .icon-button.account"),
-      $("#menu .icon-button.login"),
+      $("#menu .text-button.account"),
+      $("#menu .text-button.login"),
       250
     );
   }

@@ -14,11 +14,11 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .icon-button {
+#top.focus #menu .text-button {
   background: var(--bg-color);
   size: 1rem;
 }
-#top.focus #menu .icon-button:nth-child(1) {
+#top.focus #menu .text-button:nth-child(1) {
   background: #e34c6c;
 }
 #top.focus #menu:before,
@@ -26,7 +26,7 @@
   background: var(--sub-color);
 }
 
-#menu .icon-button {
+#menu .text-button {
   border-radius: 10rem !important;
   color: var(--bg-color);
   background: var(--main-color);

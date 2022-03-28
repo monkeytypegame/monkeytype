@@ -550,7 +550,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   }
 );
 
-$(document).on("click", "#top #menu .icon-button", (e) => {
+$(document).on("click", "#top #menu .text-button", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
   }
