@@ -105,7 +105,7 @@ label.checkbox {
       background: rgba(0, 0, 0, 0.1);
       border-radius: calc(var(--roundness) / 2);
       display: inline-grid;
-      // margin: 0 0.5rem 0 0;
+      margin: 0 0.5rem 0 0;
       user-select: none;
       cursor: pointer;
       & .check {
