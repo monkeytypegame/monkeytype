@@ -2,8 +2,8 @@
   --bg-color: #fff2d5; /*Background*/
   --main-color: #d19d01; /*Color after typing, monkeytype logo, WPM Number acc number etc*/
   --caret-color: #3a87fe; /*Cursor Color*/
-  --sub-color: #0061fe;
-  --sub-alt-color: #000000; /*WPM text color of scrollbar and general color, before typed color*/
+  --sub-color: #0061fe; /*WPM text color of scrollbar and general color, before typed color*/
+  --sub-alt-color: #eddebc;
   --text-color: #332800; /*Color of text after hovering over it*/
   --error-color: #76bb40;
   --error-extra-color: #4e7a27;
