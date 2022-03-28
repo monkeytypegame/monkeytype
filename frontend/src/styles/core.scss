@@ -325,6 +325,7 @@ key {
   display: grid;
   grid-auto-flow: column;
   gap: 0.25rem;
+  text-decoration: none;
 
   &.active {
     color: var(--main-color);
