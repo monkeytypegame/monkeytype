@@ -397,13 +397,14 @@ key {
   height: 4rem;
   text-align: center;
   line-height: 4rem;
-  background: var(--bg-color);
+  background: var(--sub-alt-color);
   border-radius: 99rem;
   z-index: 99;
   cursor: pointer;
   color: var(--sub-color);
   transition: 0.25s;
   &:hover {
-    color: var(--text-color);
+    background: var(--text-color);
+    color: var(--bg-color);
   }
 }
