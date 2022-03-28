@@ -21,6 +21,10 @@ if (window.location.hostname === "localhost") {
   });
 }
 
+Notifications.add("This is a test", 1, 0);
+Notifications.add("This is a test", 0, 0);
+Notifications.add("This is a test", -1, 0);
+
 Focus.set(true, true);
 RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {

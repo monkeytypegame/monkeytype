@@ -14,6 +14,7 @@ export default <MonkeyTypes.Config>{
     "#7e2a33",
     "#ca4754",
     "#7e2a33",
+    "#2c2e31",
   ],
   favThemes: [],
   showKeyTips: true,

@@ -383,6 +383,8 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
         color = themeColors.main;
       } else if (colorName === "--sub-color") {
         color = themeColors.sub;
+      } else if (colorName === "--sub-alt-color") {
+        color = themeColors.subAlt;
       } else if (colorName === "--caret-color") {
         color = themeColors.caret;
       } else if (colorName === "--text-color") {

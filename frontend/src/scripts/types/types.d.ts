@@ -638,6 +638,7 @@ declare namespace MonkeyTypes {
     main: string;
     caret: string;
     sub: string;
+    subAlt: string;
     text: string;
     error: string;
     errorExtra: string;
