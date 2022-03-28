@@ -146,7 +146,7 @@
       }
 
       .loadMoreButton {
-        background: var(--sub-darker-color);
+        background: var(--sub-alt-color);
         color: var(--text-color);
         text-align: center;
         padding: 0.5rem;
@@ -268,7 +268,7 @@
     }
 
     tbody tr:nth-child(odd) td {
-      background: var(--sub-darker-color);
+      background: var(--sub-alt-color);
     }
 
     td.infoIcons span {
@@ -334,5 +334,5 @@
 .sortable:hover {
   cursor: pointer;
   user-select: none;
-  background-color: var(--sub-darker-color);
+  background-color: var(--sub-alt-color);
 }

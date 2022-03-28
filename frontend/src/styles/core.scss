@@ -102,7 +102,7 @@ label.checkbox {
     & ~ .customTextCheckbox {
       width: 1.25rem;
       height: 1.25rem;
-      background: var(--sub-darker-color);
+      background: var(--sub-alt-color);
       border-radius: calc(var(--roundness) / 2);
       display: inline-grid;
       margin: 0 0.5rem 0 0;
@@ -182,7 +182,7 @@ key {
       .bar {
         width: 20rem;
         height: 0.5rem;
-        background: var(--sub-darker-color);
+        background: var(--sub-alt-color);
         border-radius: var(--roundness);
         .fill {
           height: 100%;
@@ -250,7 +250,7 @@ key {
   transition: 0.125s;
   padding: 0.4rem;
   border-radius: var(--roundness);
-  background: var(--sub-darker-color);
+  background: var(--sub-alt-color);
   text-align: center;
   user-select: none;
   -webkit-user-select: none;
@@ -300,7 +300,7 @@ key {
     pointer-events: none;
     &:hover {
       color: var(--text-color);
-      background: var(--sub-darker-color);
+      background: var(--sub-alt-color);
       outline: none;
     }
   }
