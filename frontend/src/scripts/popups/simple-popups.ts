@@ -142,7 +142,11 @@ class SimplePopup {
               el.find(".inputs").append(`
                 <label class="checkbox">
                   <input type="checkbox">
-                  <div class="customTextCheckbox"></div>
+                  <div class="customTextCheckbox">
+                    <div class="check">
+                      <i class="fas fa-fw fa-check"></i>
+                    </div>
+                  </div>
                   ${input.label}
                 </label>
               `);
