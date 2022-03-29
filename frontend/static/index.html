@@ -81,6 +81,65 @@
   <div class="customBackground"></div>
 
   <body>
+    <!-- TODO REMOVE -->
+    <div class="popupWrapper hidden">
+      <div
+        id="pop"
+        style="
+          background: var(--bg-color);
+          padding: 2rem;
+          border-radius: var(--roundness);
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+          gap: 2rem;
+        "
+      >
+        <div></div>
+        <div>normal</div>
+        <div>active</div>
+        <div>disabled</div>
+        <div>active disabled</div>
+        <div>button</div>
+        <div class="button" tabindex="0">normal</div>
+        <div class="button active" tabindex="0">active</div>
+        <div class="button disabled" tabindex="0">disabled</div>
+        <div class="button active disabled" tabindex="0">active disabled</div>
+        <div>icon button</div>
+        <div class="button" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div class="button active" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div class="button disabled" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div class="button active disabled" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div>text button</div>
+        <div class="text-button" tabindex="0">normal</div>
+        <div class="text-button active" tabindex="0">active</div>
+        <div class="text-button disabled" tabindex="0">disabled</div>
+        <div class="text-button active disabled" tabindex="0">
+          active disabled
+        </div>
+        <div>icon text button</div>
+        <div class="text-button" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div class="text-button active" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div class="text-button disabled" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+        <div class="text-button active disabled" tabindex="0">
+          <i class="fas fa-fw fa-keyboard"></i>
+        </div>
+      </div>
+    </div>
+
     <noscript>
       <div
         style="
