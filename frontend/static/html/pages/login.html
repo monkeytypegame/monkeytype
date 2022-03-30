@@ -1,0 +1,75 @@
+<div class="page pageLogin hidden">
+  <div class="preloader hidden">
+    <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+  </div>
+  <div class="register side">
+    <div class="title">register</div>
+    <form action="" autocomplete="nope">
+      <input type="text" placeholder="username" autocomplete="new-username" />
+      <input type="email" placeholder="email" autocomplete="new-email" />
+      <input
+        type="email"
+        placeholder="verify email"
+        autocomplete="verify-email"
+      />
+      <input
+        type="password"
+        placeholder="password"
+        autocomplete="new-password"
+        name="new-password"
+      />
+      <input
+        type="password"
+        placeholder="verify password"
+        autocomplete="verify-password"
+        name="verify-password"
+      />
+      <div class="button">
+        <i class="fas fa-user-plus"></i>
+        Sign Up
+      </div>
+    </form>
+  </div>
+  <div class="login side">
+    <div class="title">login</div>
+    <div id="forgotPasswordButton">Forgot password?</div>
+    <form action="">
+      <input
+        name="current-email"
+        type="email"
+        placeholder="email"
+        autocomplete="current-username"
+      />
+      <input
+        name="current-password"
+        type="password"
+        placeholder="password"
+        autocomplete="current-password"
+      />
+      <div>
+        <label id="rememberMe" class="checkbox">
+          <input type="checkbox" checked />
+          <div class="customTextCheckbox">
+            <div class="check">
+              <i class="fas fa-fw fa-check"></i>
+            </div>
+          </div>
+          Remember me
+        </label>
+      </div>
+      <div class="button signIn">
+        <i class="fas fa-sign-in-alt"></i>
+        Sign In
+      </div>
+      <div style="font-size: 0.75rem; text-align: center">or</div>
+      <div class="button signInWithGoogle">
+        <i class="fab fa-google"></i>
+        Google Sign In
+      </div>
+      <!-- <div class="button signInWithGitHub">
+        <i class="fab fa-github"></i>
+        GitHub Sign In
+      </div> -->
+    </form>
+  </div>
+</div>

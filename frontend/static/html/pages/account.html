@@ -1,0 +1,418 @@
+<div class="page pageAccount hidden">
+  <div class="scrollToTopButton">
+    <i class="fas fa-angle-double-up"></i>
+  </div>
+  <div class="preloader">
+    <div class="icon">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div>
+    <div class="barWrapper hidden">
+      <div class="bar">
+        <div class="fill"></div>
+      </div>
+      <div class="text">‎</div>
+    </div>
+  </div>
+  <div class="content hidden">
+    <div class="miniResultChartWrapper">
+      <canvas id="miniResultChart"></canvas>
+    </div>
+    <div class="miniResultChartBg"></div>
+    <div class="triplegroup">
+      <div class="group globalTestsStarted">
+        <div class="title">tests started</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group globalTestsCompleted">
+        <div class="title">tests completed</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group globalTimeTyping">
+        <div class="title">time typing</div>
+        <div class="val">-</div>
+      </div>
+    </div>
+    <div class="group createdDate">Account created on -</div>
+    <div class="group personalBestTables">
+      <div class="title">personal bests</div>
+      <div class="tables">
+        <div class="titleAndTable timePbTable">
+          <table width="100%">
+            <thead>
+              <tr>
+                <td width="1%">time</td>
+                <td width="33%">
+                  wpm
+                  <br />
+                  <span class="sub">accuracy</span>
+                </td>
+                <td width="33%">
+                  raw
+                  <br />
+                  <span class="sub">consistency</span>
+                </td>
+                <td width="33%">date</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>15</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>30</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>60</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>120</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="button showAllTimePbs">show all</div>
+        </div>
+        <div class="titleAndTable wordsPbTable">
+          <table width="100%">
+            <thead>
+              <tr>
+                <td width="1%">words</td>
+                <td width="33%">
+                  wpm
+                  <br />
+                  <span class="sub">accuracy</span>
+                </td>
+                <td width="33%">
+                  raw
+                  <br />
+                  <span class="sub">consistency</span>
+                </td>
+                <td width="33%">date</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>10</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>25</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>50</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>100</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="button showAllWordsPbs">show all</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ad_account" class="hidden"></div>
+
+    <div class="group topFilters">
+      <!-- <div
+        class="button"
+        id="currentConfigFilter"
+        style="grid-column: 1/3;"
+      >
+        set filters to current settings
+      </div> -->
+      <div class="buttonsAndTitle" style="grid-column: 1/3">
+        <div class="title">filters</div>
+        <div class="buttons">
+          <div class="button allFilters">all</div>
+          <div class="button currentConfigFilter">current settings</div>
+          <div class="button toggleAdvancedFilters">advanced</div>
+        </div>
+      </div>
+      <div
+        class="buttonsAndTitle testDate"
+        style="grid-column: 1/3; margin-top: 1rem"
+      >
+        <!-- <div class="title">date</div> -->
+        <div class="buttons filterGroup" group="date">
+          <div class="button" filter="last_day">last day</div>
+          <div class="button" filter="last_week">last week</div>
+          <div class="button" filter="last_month">last month</div>
+          <div class="button" filter="last_3months">last 3 months</div>
+          <div class="button" filter="all">all time</div>
+        </div>
+      </div>
+    </div>
+    <div class="group filterButtons" style="display: none">
+      <div class="buttonsAndTitle" style="grid-column: 1/3">
+        <div class="title">advanced filters</div>
+        <div class="buttons">
+          <div class="button noFilters">clear filters</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle" style="grid-column: 1/3">
+        <div class="title">difficulty</div>
+        <div class="buttons filterGroup" group="difficulty">
+          <div class="button" filter="normal">normal</div>
+          <div class="button" filter="expert">expert</div>
+          <div class="button" filter="master">master</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle">
+        <div class="title">mode</div>
+        <div class="buttons filterGroup" group="mode">
+          <div class="button" filter="words">words</div>
+          <div class="button" filter="time">time</div>
+          <div class="button" filter="quote">quote</div>
+          <div class="button" filter="zen">zen</div>
+          <div class="button" filter="custom">custom</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle">
+        <div class="title">quote length</div>
+        <div class="buttons filterGroup" group="quoteLength">
+          <div class="button" filter="short">short</div>
+          <div class="button" filter="medium">medium</div>
+          <div class="button" filter="long">long</div>
+          <div class="button" filter="thicc">thicc</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle">
+        <div class="title">words</div>
+        <div class="buttons filterGroup" group="words">
+          <div class="button" filter="10">10</div>
+          <div class="button" filter="25">25</div>
+          <div class="button" filter="50">50</div>
+          <div class="button" filter="100">100</div>
+          <div class="button" filter="custom">custom</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle">
+        <div class="title">time</div>
+        <div class="buttons filterGroup" group="time">
+          <div class="button" filter="15">15</div>
+          <div class="button" filter="30">30</div>
+          <div class="button" filter="60">60</div>
+          <div class="button" filter="120">120</div>
+          <div class="button" filter="custom">custom</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle">
+        <div class="title">punctuation</div>
+        <div class="buttons filterGroup" group="punctuation">
+          <div class="button" filter="on">on</div>
+          <div class="button" filter="off">off</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle">
+        <div class="title">numbers</div>
+        <div class="buttons filterGroup" group="numbers">
+          <div class="button" filter="on">on</div>
+          <div class="button" filter="off">off</div>
+        </div>
+      </div>
+      <div class="buttonsAndTitle tags" style="grid-column: 1/3">
+        <div class="title">tags</div>
+        <div class="buttons filterGroup" group="tags"></div>
+      </div>
+      <div class="buttonsAndTitle languages" style="grid-column: 1/3">
+        <div class="title">language</div>
+        <div class="buttons filterGroup" group="language"></div>
+      </div>
+      <div class="buttonsAndTitle funbox" style="grid-column: 1/3">
+        <div class="title">funbox</div>
+        <div class="buttons filterGroup" group="funbox"></div>
+      </div>
+    </div>
+    <div class="group noDataError hidden">
+      No data found. Check your filters.
+    </div>
+    <div class="group chart">
+      <!-- <div class="chartPreloader">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div> -->
+      <div class="above"></div>
+      <div class="chart">
+        <canvas id="accountHistoryChart"></canvas>
+      </div>
+      <div class="below">
+        <div class="text"></div>
+        <div class="buttons">
+          <div class="smoothing">
+            <div class="title">smoothing</div>
+            <div class="value">0</div>
+            <input type="range" min="0" max="20" value="0" step="1" />
+          </div>
+          <div class="toggleAccuracyOnChart button">
+            <i class="fas fa-bullseye"></i>
+            Toggle Accuracy
+          </div>
+          <div class="toggleChartStyle button">
+            <i class="fas fa-chart-line"></i>
+            Toggle Chart Style
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="group dailyActivityChart">
+      <div class="chart" style="height: 200px">
+        <canvas id="accountActivityChart"></canvas>
+      </div>
+    </div>
+    <div class="triplegroup stats">
+      <div class="group testsStarted">
+        <div class="title">tests started</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group testsCompleted">
+        <div class="title">
+          tests completed
+          <span
+            data-balloon-length="xlarge"
+            aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
+            data-balloon-pos="up"
+          >
+            <i class="fas fa-question-circle"></i>
+          </span>
+        </div>
+        <div class="val">-</div>
+        <div class="avgres">-</div>
+      </div>
+      <div class="group timeTotalFiltered">
+        <div class="title">time typing</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group highestWpm">
+        <div class="title">highest wpm</div>
+        <div class="val">-</div>
+        <div class="mode"></div>
+      </div>
+      <div class="group averageWpm">
+        <div class="title">average wpm</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group averageWpm10">
+        <div class="title">
+          average wpm
+          <br />
+          (last 10 tests)
+        </div>
+        <div class="val">-</div>
+      </div>
+
+      <div class="group highestRaw">
+        <div class="title">highest raw wpm</div>
+        <div class="val">-</div>
+        <div class="mode"></div>
+      </div>
+      <div class="group averageRaw">
+        <div class="title">average raw wpm</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group averageRaw10">
+        <div class="title">
+          average raw wpm
+          <br />
+          (last 10 tests)
+        </div>
+        <div class="val">-</div>
+      </div>
+      <div class="group highestAcc">
+        <div class="title">highest accuracy</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group avgAcc">
+        <div class="title">avg accuracy</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group avgAcc10">
+        <div class="title">
+          avg accuracy
+          <br />
+          (last 10 tests)
+        </div>
+        <div class="val">-</div>
+      </div>
+      <div class="group highestCons">
+        <div class="title">highest consistency</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group avgCons">
+        <div class="title">avg consistency</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group avgCons10">
+        <div class="title">
+          avg consistency
+          <br />
+          (last 10 tests)
+        </div>
+        <div class="val">-</div>
+      </div>
+      <!-- <div class="group favouriteTest">
+      <div class="title">favourite test</div>
+      <div class="val">words 10</div>
+    </div> -->
+    </div>
+    <div class="group aboveHistory">
+      <div class="button exportCSV">
+        <i class="fas fa-file-csv"></i>
+        Export CSV
+      </div>
+    </div>
+    <div class="group history">
+      <!-- <div class="title">result history</div> -->
+      <table width="100%">
+        <thead>
+          <tr>
+            <td></td>
+            <td type="button" class="sortable history-wpm-header">wpm</td>
+            <td type="button" class="sortable history-raw-header">raw</td>
+            <td type="button" class="sortable history-acc-header">accuracy</td>
+            <td type="button" class="sortable history-consistency-header">
+              consistency
+            </td>
+            <td
+              aria-label="correct/incorrect/extra/missed"
+              data-balloon-pos="up"
+            >
+              chars
+            </td>
+            <td>mode</td>
+            <!-- <td>punctuation</td> -->
+            <td>info</td>
+            <td>tags</td>
+            <td type="button" class="sortable history-date-header">
+              date
+              <i class="fas fa-sort-down" aria-hidden="true"></i>
+            </td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="loadMoreButton">load more</div>
+    </div>
+  </div>
+</div>
