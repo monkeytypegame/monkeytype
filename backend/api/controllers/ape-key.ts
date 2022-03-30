@@ -16,9 +16,9 @@ export async function getApeKeys(
   const { uid } = req.ctx.decodedToken;
 
   const apeKeys = await ApeKeysDAO.getApeKeys(uid);
-  const hashlessKeys = _(apeKeys).keyBy("_id").mapValues(cleanApeKey).value();
+  const cleanedKeys = _(apeKeys).keyBy("_id").mapValues(cleanApeKey).value();
 
-  return new MonkeyResponse("ApeKeys retrieved", hashlessKeys);
+  return new MonkeyResponse("ApeKeys retrieved", cleanedKeys);
 }
 
 export async function generateApeKey(

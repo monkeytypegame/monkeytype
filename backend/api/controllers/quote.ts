@@ -61,7 +61,7 @@ export async function getRating(
   const { quoteId, language } = req.query;
 
   const data = await QuoteRatingsDAO.get(
-    parseInt(quoteId as string),
+    parseInt(quoteId as string, 10),
     language as string
   );
 
@@ -79,8 +79,8 @@ export async function submitRating(
     throw new MonkeyError(401, "User not found.");
   }
 
-  const normalizedQuoteId = parseInt(quoteId as string);
-  const normalizedRating = Math.round(parseInt(rating as string));
+  const normalizedQuoteId = parseInt(quoteId as string, 10);
+  const normalizedRating = Math.round(parseInt(rating as string, 10));
 
   const userQuoteRatings = user.quoteRatings ?? {};
   const currentRating = userQuoteRatings[language]?.[normalizedQuoteId] ?? 0;
