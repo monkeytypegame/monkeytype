@@ -35,6 +35,7 @@ import * as Wordset from "./wordset";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as BritishEnglish from "./british-english";
+import * as EnglishPunctuation from "./english-punctuation";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
@@ -52,6 +53,7 @@ import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
+import { replace } from "./english-punctuation";
 
 let failReason = "";
 
@@ -229,7 +231,22 @@ export function punctuateWord(
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
       word = Misc.randomElementFromArray(specials);
+    } else if (
+      Math.random() < 0.5 &&
+      currentLanguage == "english" &&
+      EnglishPunctuation.check(word)
+    ) {
+      applyEnglishPunctuationToWord(word).then((value) => {
+        word = value;
+      });
     }
+  }
+  return word;
+}
+
+async function applyEnglishPunctuationToWord(word: string): Promise<string> {
+  if (Config.punctuation && /english/.test(Config.language)) {
+    word = await EnglishPunctuation.replace(word);
   }
   return word;
 }
