@@ -95,7 +95,7 @@ const BASE_CONFIG = {
       inject: "body",
     }),
     new MiniCssExtractPlugin({
-      filename: "./css/style.css",
+      filename: "./css/style.[chunkhash:8].css",
     }),
   ],
 };
