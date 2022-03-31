@@ -1,14 +1,13 @@
-let pairs_list: string[] = [];
+let pairsList: string[] = [];
 
 export async function getList(): Promise<string[]> {
-  if (pairs_list.length === 0) {
+  if (pairsList.length === 0) {
     return $.getJSON("languages/english_punctuation.json", function (data) {
-      pairs_list = data;
-      return pairs_list;
+      pairsList = data;
+      return pairsList;
     });
-  } else {
-    return pairs_list;
   }
+  return pairsList;
 }
 
 // Check if word is in the group of pairs so it can be replaced
@@ -20,7 +19,7 @@ export async function check(word: string): Promise<boolean> {
   ) {
     return false;
   }
-    return true;
+  return true;
 }
 
 export async function replace(word: string): Promise<string> {
