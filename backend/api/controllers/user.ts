@@ -127,6 +127,12 @@ export async function linkDiscord(
   const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
 
   const userInfo = await UsersDAO.getUser(uid);
+  if (userInfo.discordId) {
+    throw new MonkeyError(
+      409,
+      "This account is already linked to a Discord account"
+    );
+  }
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
@@ -145,7 +151,7 @@ export async function linkDiscord(
   if (!discordIdAvailable) {
     throw new MonkeyError(
       409,
-      "This Discord account is already linked to a different account"
+      "This Discord account is linked to a different account"
     );
   }
 
