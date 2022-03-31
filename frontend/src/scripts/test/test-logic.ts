@@ -53,7 +53,6 @@ import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
-import { replace } from "./english-punctuation";
 
 let failReason = "";
 
