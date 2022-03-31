@@ -770,7 +770,9 @@ export async function updateColors<
     (chart.options as PluginChartOptions<TType>).plugins.annotation
       .annotations as AnnotationOptions<"line">[]
   ).forEach((annotation) => {
-    annotation.borderColor = subcolor;
+    if (annotation.id !== "funbox-label") {
+      annotation.borderColor = subcolor;
+    }
     (annotation.label as LabelOptions).backgroundColor = subcolor;
     (annotation.label as LabelOptions).color = bgcolor;
   });

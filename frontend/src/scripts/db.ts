@@ -324,6 +324,8 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
 
+  if (!snapshot) return [0, 0];
+
   function cont(): [number, number] {
     const activeTagIds: string[] = [];
     snapshot.tags?.forEach((tag) => {

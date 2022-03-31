@@ -37,7 +37,7 @@ async function errorHandlingMiddleware(
     const { uid, errorId } = monkeyResponse.data;
 
     try {
-      await Logger.log(
+      await Logger.logToDb(
         "system_error",
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid
@@ -52,12 +52,11 @@ async function errorHandlingMiddleware(
         endpoint: req.originalUrl,
       });
     } catch (e) {
-      console.error("Failed to save error.");
-      console.error(e);
+      Logger.error("Logging to db failed.");
+      Logger.error(e);
     }
   } else {
-    console.error(error.message);
-    console.error(error.stack);
+    Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
   }
 
   return handleMonkeyResponse(monkeyResponse, res);

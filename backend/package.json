@@ -17,6 +17,7 @@
   "dependencies": {
     "bcrypt": "5.0.1",
     "bullmq": "1.78.1",
+    "chalk": "4.1.2",
     "cors": "2.8.5",
     "cron": "1.8.2",
     "dotenv": "10.0.0",
@@ -38,7 +39,8 @@
     "swagger-stats": "0.99.2",
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.28",
-    "uuid": "8.3.2"
+    "uuid": "8.3.2",
+    "winston": "3.6.0"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.0",

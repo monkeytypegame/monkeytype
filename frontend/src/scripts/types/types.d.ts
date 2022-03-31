@@ -630,6 +630,7 @@ declare namespace MonkeyTypes {
     message: string;
     _id: string;
     level?: number;
+    date?: number;
   }
 
   interface ThemeColors {
