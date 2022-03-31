@@ -19,9 +19,8 @@ export async function check(word: string): Promise<boolean> {
     undefined
   ) {
     return false;
-  } else {
-    return true;
   }
+    return true;
 }
 
 export async function replace(word: string): Promise<string> {

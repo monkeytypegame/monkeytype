@@ -232,12 +232,10 @@ export async function punctuateWord(
       word = Misc.randomElementFromArray(specials);
     } else if (
       Math.random() < 0.5 &&
-      currentLanguage == "english" &&
+      currentLanguage === "english" &&
       (await EnglishPunctuation.check(word))
     ) {
-      await applyEnglishPunctuationToWord(word).then((value) => {
-        word = value;
-      });
+      word = await applyEnglishPunctuationToWord(word);
     }
   }
   return word;
@@ -694,14 +692,12 @@ async function getNextWord(
   randomWord = applyFunboxesToWord(randomWord, wordset);
 
   if (Config.punctuation) {
-    await punctuateWord(
+    randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
       TestWords.words.length,
       wordsBound
-    ).then((res) => {
-      randomWord = res;
-    });
+    );
   }
   if (Config.numbers) {
     if (Math.random() < 0.1) {
