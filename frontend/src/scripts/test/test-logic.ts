@@ -72,12 +72,12 @@ export function setNotSignedInUid(uid: string): void {
 }
 
 let spanishSentenceTracker = "";
-export function punctuateWord(
+export async function punctuateWord(
   previousWord: string,
   currentWord: string,
   index: number,
   maxindex: number
-): string {
+): Promise<string> {
   let word = currentWord;
 
   const currentLanguage = Config.language.split("_")[0];
@@ -234,9 +234,9 @@ export function punctuateWord(
     } else if (
       Math.random() < 0.5 &&
       currentLanguage == "english" &&
-      EnglishPunctuation.check(word)
+      (await EnglishPunctuation.check(word))
     ) {
-      applyEnglishPunctuationToWord(word).then((value) => {
+      await applyEnglishPunctuationToWord(word).then((value) => {
         word = value;
       });
     }
@@ -245,10 +245,7 @@ export function punctuateWord(
 }
 
 async function applyEnglishPunctuationToWord(word: string): Promise<string> {
-  if (Config.punctuation && /english/.test(Config.language)) {
-    word = await EnglishPunctuation.replace(word);
-  }
-  return word;
+  return EnglishPunctuation.replace(word);
 }
 
 export function startTest(): boolean {
@@ -698,12 +695,14 @@ async function getNextWord(
   randomWord = applyFunboxesToWord(randomWord, wordset);
 
   if (Config.punctuation) {
-    randomWord = punctuateWord(
+    await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
       TestWords.words.length,
       wordsBound
-    );
+    ).then((res) => {
+      randomWord = res;
+    });
   }
   if (Config.numbers) {
     if (Math.random() < 0.1) {

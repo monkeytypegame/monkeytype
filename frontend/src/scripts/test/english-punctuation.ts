@@ -1,13 +1,13 @@
-let list: string[] = [];
+let pairs_list: string[] = [];
 
 export async function getList(): Promise<string[]> {
-  if (list.length === 0) {
+  if (pairs_list.length === 0) {
     return $.getJSON("languages/english_punctuation.json", function (data) {
-      list = data;
-      return list;
+      pairs_list = data;
+      return pairs_list;
     });
   } else {
-    return list;
+    return pairs_list;
   }
 }
 
@@ -32,14 +32,7 @@ export async function replace(word: string): Promise<string> {
   return replacement
     ? word.replace(
         RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
-        (_, $1, $2, $3) =>
-          $1 +
-          ($2.charAt(0) === $2.charAt(0).toUpperCase()
-            ? $2 === $2.toUpperCase()
-              ? replacement[1].toUpperCase()
-              : capitalizeFirstLetterOfEachWord(replacement[1])
-            : replacement[1]) +
-          $3
+        replacement[1]
       )
     : word;
 }
