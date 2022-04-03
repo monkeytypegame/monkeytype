@@ -85,7 +85,7 @@ const BASE_CONFIG = {
           from: resolve(__dirname, "../static"),
           to: "./",
           globOptions: {
-            ignore: ["**/*.html"],
+            ignore: [resolve(__dirname, "../static/*.html")],
           },
         },
       ],
