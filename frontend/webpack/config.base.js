@@ -84,7 +84,7 @@ const BASE_CONFIG = {
           from: resolve(__dirname, "../static"),
           to: "./",
           globOptions: {
-            ignore: ["**/index.html"],
+            ignore: ["**/*.html"],
           },
         },
       ],
@@ -93,6 +93,26 @@ const BASE_CONFIG = {
       filename: "./index.html",
       template: resolve(__dirname, "../static/index.html"),
       inject: "body",
+    }),
+    new HtmlWebpackPlugin({
+      filename: "terms-of-service.html",
+      template: resolve(__dirname, "../static/terms-of-service.html"),
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "security-policy.html",
+      template: resolve(__dirname, "../static/security-policy.html"),
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "email-handler.html",
+      template: resolve(__dirname, "../static/email-handler.html"),
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "privacy-policy.html",
+      template: resolve(__dirname, "../static/privacy-policy.html"),
+      inject: false,
     }),
     new MiniCssExtractPlugin({
       filename: "./css/style.[chunkhash:8].css",
