@@ -3,6 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const RemovePlugin = require("remove-files-webpack-plugin");
 
 let circularImports = 0;
 
@@ -84,7 +85,7 @@ const BASE_CONFIG = {
           from: resolve(__dirname, "../static"),
           to: "./",
           globOptions: {
-            ignore: ["**/*.html"],
+            ignore: [resolve(__dirname, "../static/*.html")],
           },
         },
       ],
@@ -116,6 +117,11 @@ const BASE_CONFIG = {
     }),
     new MiniCssExtractPlugin({
       filename: "./css/style.[chunkhash:8].css",
+    }),
+    new RemovePlugin({
+      after: {
+        include: [resolve(__dirname, "../public/html")],
+      },
     }),
   ],
 };

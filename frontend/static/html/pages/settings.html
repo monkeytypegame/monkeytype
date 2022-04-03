@@ -1,0 +1,2424 @@
+<div class="page pageSettings hidden">
+  <div class="scrollToTopButton">
+    <i class="fas fa-angle-double-up"></i>
+  </div>
+  <div class="tip">
+    tip: You can also change all these settings quickly using the command line (
+    <key>ctrl/cmd</key>
+    +
+    <key>shift</key>
+    +
+    <key>p</key>
+    or
+    <key>esc</key>
+    )
+  </div>
+  <!-- <div class="sectionGroupTitle">quick navigation</div> -->
+  <div class="settingsGroup quickNav">
+    <div class="links">
+      <a href="#group_account">account</a>
+      <a href="#group_behavior">behavior</a>
+      <a href="#group_input">input</a>
+      <a href="#group_sound">sound</a>
+      <a href="#group_caret">caret</a>
+      <a href="#group_appearance">appearance</a>
+      <a href="#group_theme">theme</a>
+      <a href="#group_hideElements">hide elements</a>
+      <a href="#group_dangerZone">danger zone</a>
+    </div>
+  </div>
+  <div id="ad_settings0" class="hidden"></div>
+  <div id="group_account" class="sectionGroupTitle hidden" group="account">
+    account
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup account hidden">
+    <div class="section discordIntegration">
+      <h1>discord integration</h1>
+      <div class="text">
+        When you connect your monkeytype account to your Discord account, you
+        will be automatically assigned a new role every time you achieve a new
+        personal best in a 60 second test. If you pair your accounts before
+        joining the Discord server, the bot
+        <i>will not</i>
+        give you a role.
+      </div>
+      <div class="buttons">
+        <a
+          class="button"
+          href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+          style="text-decoration: none"
+        >
+          Link with Discord
+        </a>
+      </div>
+      <div class="info hidden">
+        <div>
+          <i class="fas fa-check"></i>
+          Your accounts are paired!
+        </div>
+        <div
+          id="unlinkDiscordButton"
+          class="text-button"
+          aria-label="Unlink"
+          data-balloon-pos="up"
+        >
+          <i class="fas fa-unlink" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>
+    <div class="section tags">
+      <h1>tags</h1>
+      <div class="text">
+        With tags, you can compare how fast you're typing in different
+        situations. You can see your active tags above the test words. They will
+        remain active until you deactivate them, or refresh the page.
+      </div>
+      <div class="tagsListAndButton">
+        <div class="tagsList">
+          <div class="tag" id="0">
+            <div class="active">
+              <i class="fas fa-check-square"></i>
+            </div>
+            <div class="title">staggered</div>
+            <div class="editButton"><i class="fas fa-pen"></i></div>
+            <div class="removeButton">
+              <i class="fas fa-trash"></i>
+            </div>
+          </div>
+        </div>
+        <div class="addTagButton"><i class="fas fa-plus"></i></div>
+      </div>
+    </div>
+    <div class="section presets">
+      <h1>presets</h1>
+      <div class="text">
+        Create settings presets that can be applied with one click. Remember to
+        edit your preset if you make any changes - they don't save on their own.
+      </div>
+      <div class="presetsListAndButton">
+        <div class="presetsList">
+          <div class="buttons preset" id="0">
+            <div class="presetButton button">
+              <div class="title">staggered</div>
+            </div>
+            <div class="editButton button">
+              <i class="fas fa-pen"></i>
+            </div>
+            <div class="removeButton button">
+              <i class="fas fa-trash"></i>
+            </div>
+          </div>
+        </div>
+        <div class="addPresetButton"><i class="fas fa-plus"></i></div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="group_behavior" class="sectionGroupTitle" group="behavior">
+    behavior
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup behavior">
+    <div class="section difficulty">
+      <h1>test difficulty</h1>
+      <div class="text">
+        Normal is the classic type test experience. Expert fails the test if you
+        submit (press space) an incorrect word. Master fails if you press a
+        single incorrect key (meaning you have to achieve 100% accuracy).
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          difficulty="normal"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          normal
+        </div>
+        <div
+          class="button"
+          difficulty="expert"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          expert
+        </div>
+        <div
+          class="button"
+          difficulty="master"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          master
+        </div>
+      </div>
+    </div>
+    <div class="section quickTab" id="quickTab">
+      <h1>quick tab mode</h1>
+      <div class="text">
+        Press
+        <key>tab</key>
+        to quickly restart the test, or to quickly jump to the test page. This
+        function disables tab navigation on the website.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          quickTab="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div class="button" quickTab="true" tabindex="0" onclick="this.blur();">
+          on
+        </div>
+      </div>
+    </div>
+
+    <div class="section repeatQuotes" id="repeatQuotes">
+      <h1>repeat quotes</h1>
+      <div class="text">
+        This setting changes the restarting behavior when typing in quote mode.
+        Changing it to 'typing' will repeat the quote if you restart while
+        typing.
+      </div>
+      <!-- , and 'always' will always repeat the quote (you will need to press <key>shift + tab</key> to move on to the next quote). -->
+      <div class="buttons">
+        <div
+          class="button"
+          repeatQuotes="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          repeatQuotes="typing"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          typing
+        </div>
+        <!-- <div class="button" repeatQuotes="always" tabindex="0" onclick="this.blur();">
+          always
+        </div> -->
+      </div>
+    </div>
+
+    <div class="section blindMode">
+      <h1>blind mode</h1>
+      <div class="text">
+        No errors or incorrect words are highlighted. Helps you to focus on raw
+        speed. If enabled, quick end is recommended.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          blindMode="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          blindMode="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          ⠀
+        </div>
+      </div>
+    </div>
+    <div class="section alwaysShowWordsHistory">
+      <h1>always show words history</h1>
+      <div class="text">
+        This option will automatically show the words history at the end of the
+        test. Can cause slight lag with a lot of words.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          alwaysShowWordsHistory="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          alwaysShowWordsHistory="true"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section singleListCommandLine">
+      <h1>single list command line</h1>
+      <div class="text">
+        When enabled, it will show the command line with all commands in a
+        single list instead of submenu arrangements. Selecting 'manual' will
+        expose all commands only after typing
+        <key>></key>
+        .
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          singleListCommandLine="manual"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          manual
+        </div>
+        <div
+          class="button"
+          singleListCommandLine="on"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section minWpm" section="">
+      <h1>min wpm</h1>
+      <div class="text">
+        Automatically fails a test if your WPM falls below a threshold.
+      </div>
+      <div>
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="min wpm"
+            class="input customMinWpmSpeed"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+          <div class="button save" tabindex="0" onclick="this.blur();">
+            <i class="fas fa-save fa-fw"></i>
+          </div>
+        </div>
+        <div class="buttons">
+          <div class="button" minWpm="off" tabindex="0" onclick="this.blur();">
+            off
+          </div>
+          <div
+            class="button"
+            minWpm="custom"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            custom
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section minAcc" section="">
+      <h1>min accuracy</h1>
+      <div class="text">
+        Automatically fails a test if your accuracy falls below a threshold.
+      </div>
+      <div>
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="min accuracy"
+            class="input customMinAcc"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+          <div class="button save" tabindex="0" onclick="this.blur();">
+            <i class="fas fa-save fa-fw"></i>
+          </div>
+        </div>
+        <div class="buttons">
+          <div class="button" minAcc="off" tabindex="0" onclick="this.blur();">
+            off
+          </div>
+          <div
+            class="button"
+            minAcc="custom"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            custom
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section minBurst" section="">
+      <h1>min burst</h1>
+      <div class="text">
+        Automatically fails a test if your raw for a single word falls below
+        this threshold. Selecting 'flex' allows for this threshold to
+        automatically decrease for longer words.
+      </div>
+      <div>
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="min burst"
+            class="input customMinBurst"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+          <div class="button save" tabindex="0" onclick="this.blur();">
+            <i class="fas fa-save fa-fw"></i>
+          </div>
+        </div>
+        <div class="buttons">
+          <div
+            class="button"
+            minBurst="off"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            off
+          </div>
+          <div
+            class="button"
+            minBurst="fixed"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            fixed
+          </div>
+          <div
+            class="button"
+            minBurst="flex"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            flex
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section britishEnglish" section="">
+      <h1>british english</h1>
+      <div class="text">
+        When enabled, the website will use the British spelling instead of
+        American. Note that this might not replace all words correctly. If you
+        find any issues, please let us know.
+      </div>
+      <div>
+        <div class="buttons">
+          <div
+            class="button"
+            britishEnglish="false"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            off
+          </div>
+          <div
+            class="button"
+            britishEnglish="true"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            on
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section language">
+      <h1>language</h1>
+      <div class="text">Change in which language you want to type.</div>
+      <select></select>
+    </div>
+    <div class="section funbox fullWidth">
+      <h1>funbox</h1>
+      <div class="text">
+        These are special modes that change the website in some special way (by
+        altering the word generation, behavior of the website or the looks).
+        Give each one of them a try!
+      </div>
+      <div class="buttons"></div>
+    </div>
+    <div class="sectionSpacer"></div>
+    <div class="section customLayoutfluid">
+      <h1>custom layoutfluid</h1>
+      <div class="text">
+        Select which layouts you want the layoutfluid funbox to cycle through.
+      </div>
+      <div class="inputAndButton">
+        <input
+          type="text"
+          placeholder="layouts (separated by space)"
+          class="input"
+          tabindex="0"
+        />
+        <div class="button save" tabindex="0" onclick="this.blur();">
+          <i class="fas fa-save fa-fw"></i>
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+  <div id="group_input" class="sectionGroupTitle" group="input">
+    input
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup input">
+    <div class="section freedomMode">
+      <h1>freedom mode</h1>
+      <div class="text">
+        Allows you to delete any word, even if it was typed correctly.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          freedomMode="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          freedomMode="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section strictSpace">
+      <h1>strict space</h1>
+      <div class="text">
+        Pressing space at the beginning of a word will insert a space character
+        when this mode is enabled.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          strictSpace="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          strictSpace="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section oppositeShiftMode">
+      <h1>opposite shift mode</h1>
+      <div class="text">
+        This mode will force you to use opposite
+        <key>shift</key>
+        keys for shifting. Using an incorrect one will count as an error. This
+        feature ignores keys in locations
+        <key>B</key>
+        ,
+        <key>Y</key>
+        , and
+        <key>^</key>
+        because many people use the other hand for those keys. If you're using
+        external software to emulate your layout (including QMK), you should use
+        the "keymap" mode - the standard "on" will not work. This will enforce
+        opposite shift based on the "keymap layout" setting.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          oppositeShiftMode="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          oppositeShiftMode="on"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+        <div
+          class="button"
+          oppositeShiftMode="keymap"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          keymap
+        </div>
+      </div>
+    </div>
+    <div class="section stopOnError">
+      <h1>stop on error</h1>
+      <div class="text">
+        Letter mode will stop input when pressing any incorrect letters. Word
+        mode will not allow you to continue to the next word until you correct
+        all mistakes.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          stopOnError="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          stopOnError="word"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          word
+        </div>
+        <div
+          class="button"
+          stopOnError="letter"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          letter
+        </div>
+      </div>
+    </div>
+    <div class="section confidenceMode">
+      <h1>confidence mode</h1>
+      <div class="text">
+        When enabled, you will not be able to go back to previous words to fix
+        mistakes. When turned up to the max, you won't be able to backspace at
+        all.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          confidenceMode="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+
+        <div
+          class="button"
+          confidenceMode="on"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+        <div
+          class="button"
+          confidenceMode="max"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          max
+        </div>
+      </div>
+    </div>
+    <div class="section quickEnd">
+      <h1>quick end</h1>
+      <div class="text">
+        This only applies to the words mode - when enabled, the test will end as
+        soon as the last word has been typed, even if it's incorrect. When
+        disabled, you need to manually confirm the last incorrect entry with a
+        space.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          quickEnd="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div class="button" quickEnd="true" tabindex="0" onclick="this.blur();">
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section indicateTypos" section="">
+      <h1>indicate typos</h1>
+      <div class="text">
+        Shows typos that you've made. Below shows what you typed below the
+        letters and replace will replace the letters with the ones you typed.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          indicateTypos="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          indicateTypos="below"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          below
+        </div>
+        <div
+          class="button"
+          indicateTypos="replace"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          replace
+        </div>
+      </div>
+    </div>
+    <div class="section hideExtraLetters" section="">
+      <h1>hide extra letters</h1>
+      <div class="text">
+        Hides extra letters. This will completely avoid words jumping lines (due
+        to changing width), but might feel a bit confusing when you press a key
+        and nothing happens.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          hideExtraLetters="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          hideExtraLetters="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section swapEscAndTab" section="">
+      <h1>swap esc and tab</h1>
+      <div class="text">Swap the behavior of tab and escape keys.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          swapEscAndTab="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          swapEscAndTab="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section lazyMode">
+      <h1>lazy mode</h1>
+      <div class="text">
+        Replaces accented letters with their normal equivalents.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          lazyMode="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div class="button" lazyMode="true" tabindex="0" onclick="this.blur();">
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section layout">
+      <h1>layout emulator</h1>
+      <div class="text">
+        With this setting you can emulate other layouts. This setting is best
+        kept off, as it can break things like dead keys and alt layers.
+      </div>
+      <select></select>
+      <!-- <div class="buttons">
+      </div> -->
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="ad_settings1" class="hidden"></div>
+
+  <div id="group_sound" class="sectionGroupTitle" group="sound">
+    sound
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup sound">
+    <div class="section soundVolume">
+      <h1>sound volume</h1>
+      <div class="text">Change the volume of the sound effects.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          soundVolume="0.1"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          quiet
+        </div>
+        <div
+          class="button"
+          soundVolume="0.5"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          medium
+        </div>
+        <div
+          class="button"
+          soundVolume="1.0"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          loud
+        </div>
+      </div>
+    </div>
+    <div class="section playSoundOnClick fullWidth">
+      <h1>play sound on click</h1>
+      <div class="text">Plays a short sound when you press a key.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          playSoundOnClick="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="1"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          click
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="2"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          beep
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="3"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          pop
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="4"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          nk creams
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="5"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          typewriter
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="6"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          osu
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="7"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hitmarker
+        </div>
+      </div>
+    </div>
+    <div class="section playSoundOnError">
+      <h1>play sound on error</h1>
+      <div class="text">
+        Plays a short sound if you press an incorrect key or press space too
+        early.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          playSoundOnError="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          playSoundOnError="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="group_caret" class="sectionGroupTitle" group="caret">
+    caret
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup caret">
+    <div class="section smoothCaret" section="">
+      <h1>smooth caret</h1>
+      <div class="text">
+        The caret will move smoothly between letters and words.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          smoothCaret="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          smoothCaret="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section caretStyle" section="">
+      <h1>caret style</h1>
+      <div class="text">Change the style of the caret during the test.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          caretStyle="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          caretStyle="default"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          |
+        </div>
+        <div
+          class="button"
+          caretStyle="block"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          ▮
+        </div>
+        <div
+          class="button"
+          caretStyle="outline"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          ▯
+        </div>
+        <div
+          class="button"
+          caretStyle="underline"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          _
+        </div>
+      </div>
+    </div>
+    <div class="section paceCaret" section="">
+      <h1>pace caret</h1>
+      <div class="text">
+        Displays a second caret that moves at constant speed. The 'average'
+        option averages the speed of last 10 results.
+      </div>
+      <div>
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="wpm"
+            class="input customPaceCaretSpeed"
+            tabindex="0"
+            min="0"
+            step="1"
+            value=""
+          />
+          <div class="button save" tabindex="0" onclick="this.blur();">
+            <i class="fas fa-save fa-fw"></i>
+          </div>
+        </div>
+        <div class="buttons">
+          <div
+            class="button"
+            paceCaret="off"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            off
+          </div>
+          <div
+            class="button"
+            paceCaret="average"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            average
+          </div>
+          <div
+            class="button"
+            paceCaret="pb"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            pb
+          </div>
+          <div
+            class="button"
+            paceCaret="custom"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            custom
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section repeatedPace" section="">
+      <h1>repeated pace</h1>
+      <div class="text">
+        When repeating a test, a pace caret will automatically be enabled for
+        one test with the speed of your previous test. It does not override the
+        pace caret if it's already enabled.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          repeatedPace="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          repeatedPace="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section paceCaretStyle" section="">
+      <h1>pace caret style</h1>
+      <div class="text">
+        Change the style of the pace caret during the test.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          paceCaretStyle="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          paceCaretStyle="default"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          |
+        </div>
+        <div
+          class="button"
+          paceCaretStyle="block"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          ▮
+        </div>
+        <div
+          class="button"
+          paceCaretStyle="outline"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          ▯
+        </div>
+        <div
+          class="button"
+          paceCaretStyle="underline"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          _
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="group_appearance" class="sectionGroupTitle" group="appearance">
+    appearance
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup appearance">
+    <div class="section timerStyle" section="">
+      <h1>timer/progress style</h1>
+      <div class="text">
+        Change the style of the timer/progress during a timed test.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          timerStyle="bar"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          bar
+        </div>
+        <div
+          class="button"
+          timerStyle="text"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          text
+        </div>
+        <div
+          class="button"
+          timerStyle="mini"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          mini
+        </div>
+      </div>
+    </div>
+    <div class="section timerColor" section="">
+      <h1>timer/progress color</h1>
+      <div class="text">
+        Change the color of the timer/progress number/bar and live wpm number.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          timerColor="black"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          black
+        </div>
+        <div
+          class="button"
+          timerColor="sub"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          sub
+        </div>
+        <div
+          class="button"
+          timerColor="text"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          text
+        </div>
+        <div
+          class="button"
+          timerColor="main"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          main
+        </div>
+      </div>
+    </div>
+    <div class="section timerOpacity" section="">
+      <h1>timer/progress opacity</h1>
+      <div class="text">
+        Change the opacity of the timer/progress number/bar and live wpm number.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          timerOpacity="0.25"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          0.25
+        </div>
+        <div
+          class="button"
+          timerOpacity="0.5"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          0.5
+        </div>
+        <div
+          class="button"
+          timerOpacity="0.75"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          0.75
+        </div>
+        <div
+          class="button"
+          timerOpacity="1"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          1
+        </div>
+      </div>
+    </div>
+    <div class="section highlightMode" section="">
+      <h1>highlight mode</h1>
+      <div class="text">Change what is highlighted during the test.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          highlightMode="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          highlightMode="letter"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          letter
+        </div>
+        <div
+          class="button"
+          highlightMode="word"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          word
+        </div>
+      </div>
+    </div>
+    <div class="section smoothLineScroll">
+      <h1>smooth line scroll</h1>
+      <div class="text">
+        When enabled, the line transition will be animated.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          smoothLineScroll="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          smoothLineScroll="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section showAllLines">
+      <h1>show all lines</h1>
+      <div class="text">
+        When enabled, the website will show all lines for word, custom and quote
+        mode tests - otherwise the lines will be limited to 3, and will
+        automatically scroll. Using this could cause the timer text and live wpm
+        to not be visible.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showAllLines="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          showAllLines="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section alwaysShowDecimalPlaces">
+      <h1>always show decimal places</h1>
+      <div class="text">
+        Always shows decimal places for values on the result page, without the
+        need to hover over the stats.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          alwaysShowDecimalPlaces="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          alwaysShowDecimalPlaces="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section alwaysShowCPM">
+      <h1>always show cpm</h1>
+      <div class="text">
+        Always shows characters per minute calculation instead of the default
+        words per minute calculation.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          alwaysShowCPM="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          alwaysShowCPM="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section startGraphsAtZero">
+      <h1>start graphs at zero</h1>
+      <div class="text">
+        Force graph axis to always start at zero, no matter what the data is.
+        Turning this off may exaggerate the value changes.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          startGraphsAtZero="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          startGraphsAtZero="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section fontSize">
+      <h1>font size</h1>
+      <div class="text">Change the font size of the test words.</div>
+      <div class="buttons">
+        <div class="button" fontsize="1" tabindex="0" onclick="this.blur();">
+          1
+        </div>
+        <div class="button" fontsize="125" tabindex="0" onclick="this.blur();">
+          1.25
+        </div>
+        <div class="button" fontsize="15" tabindex="0" onclick="this.blur();">
+          1.5
+        </div>
+        <div class="button" fontsize="2" tabindex="0" onclick="this.blur();">
+          2
+        </div>
+        <div class="button" fontsize="3" tabindex="0" onclick="this.blur();">
+          3
+        </div>
+        <div class="button" fontsize="4" tabindex="0" onclick="this.blur();">
+          4
+        </div>
+      </div>
+    </div>
+    <div class="section fontFamily fullWidth">
+      <h1>font family</h1>
+      <!-- <div class="text">Change the font family for the site</div> -->
+      <div class="buttons"></div>
+    </div>
+    <div class="section pageWidth">
+      <h1>page width</h1>
+      <div class="text">Control the width of the content.</div>
+      <div class="buttons">
+        <div class="button" pageWidth="100" tabindex="0" onclick="this.blur();">
+          100%
+        </div>
+        <div class="button" pageWidth="125" tabindex="0" onclick="this.blur();">
+          125%
+        </div>
+        <div class="button" pageWidth="150" tabindex="0" onclick="this.blur();">
+          150%
+        </div>
+        <div class="button" pageWidth="200" tabindex="0" onclick="this.blur();">
+          200%
+        </div>
+        <div class="button" pageWidth="max" tabindex="0" onclick="this.blur();">
+          Max
+        </div>
+      </div>
+    </div>
+    <div class="section keymapMode">
+      <h1>keymap</h1>
+      <div class="text">
+        Displays your current layout while taking a test. React shows what you
+        pressed and Next shows what you need to press next.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          keymapMode="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          keymapMode="static"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          static
+        </div>
+        <div
+          class="button"
+          keymapMode="react"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          react
+        </div>
+        <div
+          class="button"
+          keymapMode="next"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next
+        </div>
+      </div>
+    </div>
+    <div class="section keymapLayout">
+      <h1>keymap layout</h1>
+      <div class="text">Controls which layout is displayed on the keymap.</div>
+      <select></select>
+    </div>
+    <div class="section keymapStyle fullWidth">
+      <h1>keymap style</h1>
+      <!-- <div class="text">Displays the keymap in a different style.</div> -->
+      <div class="buttons">
+        <div
+          class="button"
+          keymapStyle="staggered"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          staggered
+        </div>
+        <div
+          class="button"
+          keymapStyle="alice"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          alice
+        </div>
+        <div
+          class="button"
+          keymapStyle="matrix"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          matrix
+        </div>
+        <div
+          class="button"
+          keymapStyle="split"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          split
+        </div>
+        <div
+          class="button"
+          keymapStyle="split_matrix"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          split matrix
+        </div>
+      </div>
+    </div>
+    <div class="section keymapLegendStyle fullWidth">
+      <h1>keymap legend style</h1>
+      <div class="buttons">
+        <div
+          class="button"
+          keymapLegendStyle="lowercase"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          lowercase
+        </div>
+        <div
+          class="button"
+          keymapLegendStyle="uppercase"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          uppercase
+        </div>
+        <div
+          class="button"
+          keymapLegendStyle="blank"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          blank
+        </div>
+        <div
+          class="button"
+          keymapLegendStyle="dynamic"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          dynamic
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="ad_settings2" class="hidden"></div>
+
+  <div id="group_theme" class="sectionGroupTitle" group="theme">
+    theme
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup theme">
+    <div class="section flipTestColors">
+      <h1>flip test colors</h1>
+      <div class="text">
+        By default, typed text is brighter than the future text. When enabled,
+        the colors will be flipped and the future text will be brighter than the
+        already typed text.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          flipTestColors="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          flipTestColors="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section colorfulMode">
+      <h1>colorful mode</h1>
+      <div class="text">
+        When enabled, the test words will use the main color, instead of the
+        text color, making the website more colorful.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          colorfulMode="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          colorfulMode="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section customBackgroundSize">
+      <h1>custom background</h1>
+      <div class="text">
+        Set an image url to be a custom background image. Cover fits the image
+        to cover the screen. Contain fits the image to be fully visible. Max
+        fits the image corner to corner.
+      </div>
+      <div>
+        <div class="inputAndButton">
+          <input
+            type="text"
+            placeholder="image url"
+            class="input"
+            tabindex="0"
+            onClick="this.select();"
+          />
+          <div class="button save" tabindex="0" onclick="this.blur();">
+            <i class="fas fa-save fa-fw"></i>
+          </div>
+        </div>
+        <div class="buttons">
+          <div
+            class="button"
+            customBackgroundSize="cover"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            cover
+          </div>
+          <div
+            class="button"
+            customBackgroundSize="contain"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            contain
+          </div>
+          <div
+            class="button"
+            customBackGroundSize="max"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            max
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section customBackgroundFilter fullWidth">
+      <h1>custom background filter</h1>
+      <div class="text">Apply various effects to the custom background.</div>
+      <div class="groups">
+        <div class="group blur">
+          <div class="title">blur</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="5" value="0" step="0.1" />
+        </div>
+        <div class="group brightness">
+          <div class="title">brightness</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="2" value="1" step="0.1" />
+        </div>
+        <div class="group saturate">
+          <div class="title">saturate</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="2" value="1" step="0.1" />
+        </div>
+        <div class="group opacity">
+          <div class="title">opacity</div>
+          <div class="value"></div>
+          <input type="range" min="0" max="1" value="1" step="0.1" />
+        </div>
+        <div class="saveContainer">
+          <div class="save button" style="grid-column: 3">
+            <!-- <i class="fas fa-save fa-fw"></i> -->
+            save
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section autoSwitchTheme">
+      <h1>auto switch theme</h1>
+      <div class="text">
+        Enabling this will automatically switch the theme between light and dark
+        depending on the system theme (this will not override custom theme).
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          autoSwitchTheme="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          autoSwitchTheme="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="section autoSwitchThemeInputs">
+      <div>light</div>
+      <div><select class="light"></select></div>
+      <div>dark</div>
+      <div><select class="dark"></select></div>
+    </div>
+    <div class="section randomTheme fullWidth">
+      <h1>randomize theme</h1>
+      <div class="text">
+        After completing a test, the theme will be set to a random one. The
+        random themes are not saved to your config. If set to 'favorite' only
+        favorite themes will be randomized. If set to 'light' or 'dark', only
+        presets with light or dark background colors will be randomized,
+        respectively. If set to 'custom', custom themes will be randomized.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          randomTheme="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          randomTheme="on"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+        <div
+          class="button"
+          randomTheme="fav"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          favorite
+        </div>
+        <div
+          class="button"
+          randomTheme="light"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          light
+        </div>
+        <div
+          class="button"
+          randomTheme="dark"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          dark
+        </div>
+        <div
+          class="button"
+          randomTheme="custom"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          custom
+        </div>
+      </div>
+    </div>
+    <div class="section themes fullWidth">
+      <h1>theme</h1>
+      <div class="tabs">
+        <div class="button" tab="preset" tabindex="0" onclick="this.blur();">
+          preset
+        </div>
+        <div class="button" tab="custom" tabindex="0" onclick="this.blur();">
+          custom
+        </div>
+      </div>
+      <!-- <div class='tabs'>
+        <button tab="preset" class="tab">preset</button>
+        <button tab="custom" class="tab">custom</button>
+      </div> -->
+
+      <!-- Used to convert colors to hex  -->
+      <div class="colorConverter"></div>
+
+      <div class="tabContainer">
+        <div tabContent="custom" class="tabContent customTheme hidden">
+          <div class="allCustomThemes buttons"></div>
+          <div class="customThemeEdit">
+            <label class="colorText">background</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--bg-color-txt"
+              />
+              <label
+                for="--bg-color"
+                class="button"
+                style="color: var(--text-color); background: rgba(0, 0, 0, 0.1)"
+              >
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--bg-color"
+              />
+            </div>
+            <label class="colorText">main</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--main-color-txt"
+              />
+              <label for="--main-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--main-color"
+              />
+            </div>
+            <label class="colorText">caret</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--caret-color-txt"
+              />
+              <label for="--caret-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--caret-color"
+              />
+            </div>
+            <label class="colorText">sub</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--sub-color-txt"
+              />
+              <label for="--sub-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--sub-color"
+              />
+            </div>
+            <label class="colorText">text</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--text-color-txt"
+              />
+              <label for="--text-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--text-color"
+              />
+            </div>
+
+            <span class="spacer"></span>
+
+            <label class="colorText">error</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--error-color-txt"
+              />
+              <label for="--error-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--error-color"
+              />
+            </div>
+            <label class="colorText">extra error</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--error-extra-color-txt"
+              />
+              <label for="--error-extra-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--error-extra-color"
+              />
+            </div>
+
+            <p>colorful mode</p>
+
+            <label class="colorText">error</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--colorful-error-color-txt"
+              />
+              <label for="--colorful-error-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--colorful-error-color"
+              />
+            </div>
+
+            <label class="colorText">extra error</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--colorful-error-extra-color-txt"
+              />
+              <label for="--colorful-error-extra-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--colorful-error-extra-color"
+              />
+            </div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-column: 1/5;
+                gap: 0.5rem;
+              "
+            >
+              <div class="button" id="loadCustomColorsFromPreset">
+                load from preset
+              </div>
+              <div class="button" id="shareCustomThemeButton">share</div>
+              <div class="button saveCustomThemeButton">save as new</div>
+            </div>
+          </div>
+        </div>
+        <div tabContent="preset" class="tabContent">
+          <div class="favThemes buttons"></div>
+          <div class="allThemes buttons"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="group_hideElements" class="sectionGroupTitle" group="hideElements">
+    hide elements
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup hideElements">
+    <div class="section showLiveWpm">
+      <h1>live wpm</h1>
+      <div class="text">
+        Displays a live WPM speed during the test. Updates once every second.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showLiveWpm="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          showLiveWpm="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="section showLiveAcc">
+      <h1>live accuracy</h1>
+      <div class="text">Displays live accuracy during the test.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          showLiveAcc="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          showLiveAcc="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="section showLiveBurst">
+      <h1>live burst</h1>
+      <div class="text">
+        Displays live burst during the test of the last word you typed.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showLiveBurst="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          showLiveBurst="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="section showTimerProgress">
+      <h1>timer/progress</h1>
+      <div class="text">
+        Displays a live timer for timed tests and progress for words/custom
+        tests.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showTimerProgress="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          showTimerProgress="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="section showAverage">
+      <h1>average</h1>
+      <div class="text">
+        Displays your average wpm and/or accuracy over the last 10 tests.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showAverage="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          showAverage="wpm"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          wpm
+        </div>
+        <div
+          class="button"
+          showAverage="acc"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          acc
+        </div>
+        <div
+          class="button"
+          showAverage="both"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          both
+        </div>
+      </div>
+    </div>
+    <div class="section showKeyTips">
+      <h1>key tips</h1>
+      <div class="text">Shows the keybind tips at the bottom of the page.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          showKeyTips="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          showKeyTips="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="section showOutOfFocusWarning">
+      <h1>out of focus warning</h1>
+      <div class="text">
+        Shows an out of focus reminder after 1 second of being 'out of focus'
+        (not being able to type).
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showOutOfFocusWarning="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          showOutOfFocusWarning="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="section capsLockWarning">
+      <h1>caps lock warning</h1>
+      <div class="text">Displays a warning when caps lock is on.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          capsLockWarning="false"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          hide
+        </div>
+        <div
+          class="button"
+          capsLockWarning="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          show
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <div id="group_dangerZone" class="sectionGroupTitle" group="dangerZone">
+    danger zone
+    <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="settingsGroup dangerZone">
+    <div class="section importexportSettings">
+      <h1>import/export settings</h1>
+      <div class="text">Import or export the settings as JSON.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          id="importSettingsButton"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          import
+        </div>
+        <div
+          class="button"
+          id="exportSettingsButton"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          export
+        </div>
+      </div>
+    </div>
+    <div class="section enableAds">
+      <h1>enable ads</h1>
+      <div class="text">
+        If you wish to support me without directly donating you can enable ads
+        that will be visible at the bottom of the screen. Sellout mode also
+        shows ads on both sides of the screen.
+        <br />
+        <br />
+        (changes will take effect after a refresh).
+      </div>
+      <div class="buttons">
+        <div class="button" enableAds="off" tabindex="0" onclick="this.blur();">
+          off
+        </div>
+        <div class="button" enableAds="on" tabindex="0" onclick="this.blur();">
+          on
+        </div>
+        <div class="button" enableAds="max" tabindex="0" onclick="this.blur();">
+          sellout
+        </div>
+      </div>
+    </div>
+    <div class="section apeKeys needsAccount hidden">
+      <h1>ape keys</h1>
+      <div class="text">
+        Generate Ape Keys to access certain API endpoints. Documentation is
+        available
+        <a href="https://api.monkeytype.com/documentation" target="_blank">
+          here.
+        </a>
+        More endpoints will be added in the future.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          id="showApeKeysPopup"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          open
+        </div>
+      </div>
+    </div>
+    <div class="section resetSettings">
+      <h1>reset settings</h1>
+      <div class="text">
+        Resets settings to the default (but doesn't touch your tags). Warning:
+        you can't undo this action!
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="resetSettingsButton"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          reset settings
+        </div>
+      </div>
+    </div>
+    <div class="section resetPersonalBests needsAccount hidden">
+      <h1>reset personal bests</h1>
+      <div class="text">
+        Resets all your personal bests (but doesn't delete any tests from your
+        history). Warning: you can't undo this action!
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="resetPersonalBestsButton"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          reset personal bests
+        </div>
+      </div>
+    </div>
+    <div class="section updateAccountName needsAccount hidden">
+      <h1>update account name</h1>
+      <div class="text">
+        Change the name of your account. You can only do this once every 30
+        days.
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="updateAccountName"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          update name
+        </div>
+      </div>
+    </div>
+    <div class="section passwordAuthSettings needsAccount hidden">
+      <h1>password authentication settings</h1>
+      <div class="text">
+        Add password authentication, update your password or email.
+      </div>
+      <div class="buttons vertical">
+        <div
+          class="button danger"
+          id="addPasswordAuth"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          add password authentication
+        </div>
+        <div
+          class="button danger"
+          id="emailPasswordAuth"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          update email
+        </div>
+        <div
+          class="button danger"
+          id="passPasswordAuth"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          update password
+        </div>
+      </div>
+    </div>
+    <div class="section googleAuthSettings needsAccount hidden">
+      <h1>google authentication settings</h1>
+      <div class="text">Add or remove Google authentication.</div>
+      <div class="buttons vertical">
+        <div
+          class="button danger"
+          id="addGoogleAuth"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          add google authentication
+        </div>
+        <div
+          class="button danger"
+          id="removeGoogleAuth"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          remove google authentication
+        </div>
+      </div>
+    </div>
+    <div class="section deleteAccount needsAccount hidden">
+      <h1>delete account</h1>
+      <div class="text">Deletes your account and all data connected to it.</div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="deleteAccount"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          delete account
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+</div>
