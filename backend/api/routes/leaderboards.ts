@@ -3,7 +3,7 @@ import { Router } from "express";
 import * as RateLimit from "../../middlewares/rate-limit";
 import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { authenticateRequest } from "../../middlewares/auth";
-import LeaderboardsController from "../controllers/leaderboards";
+import * as LeaderboardController from "../controllers/leaderboard";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 
 const router = Router();
@@ -21,7 +21,7 @@ router.get(
       limit: joi.number().min(0).max(50),
     },
   }),
-  asyncHandler(LeaderboardsController.get)
+  asyncHandler(LeaderboardController.getLeaderboard)
 );
 
 router.get(
@@ -36,7 +36,7 @@ router.get(
       mode2: joi.string().required(),
     },
   }),
-  asyncHandler(LeaderboardsController.getRank)
+  asyncHandler(LeaderboardController.getRankFromLeaderboard)
 );
 
 export default router;

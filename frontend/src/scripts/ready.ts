@@ -31,14 +31,35 @@ $(document).ready(() => {
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
-  if (!window.localStorage.getItem("merchbannerclosed")) {
+  // if (!window.localStorage.getItem("merchbannerclosed")) {
+  //   Notifications.addBanner(
+  //     `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+  //     1,
+  //     "images/merchdropwebsite2.png",
+  //     false,
+  //     () => {
+  //       window.localStorage.setItem("merchbannerclosed", "true");
+  //     }
+  //   );
+  // }
+  if (!window.localStorage.getItem("monkebannerclosed")) {
+    const end = 1649368800000;
+    const diff = end - Date.now();
+    const string = Misc.secondsToString(
+      diff / 1000,
+      false,
+      false,
+      "text",
+      false,
+      true
+    );
     Notifications.addBanner(
-      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      `Reject humanity, <a target="_blank" href="https://www.monkeytype.store/listing/reject-humanity-black">become</a> <a target="_blank" href="https://www.monkeytype.store/listing/reject-humanity-white">monke</a>. (${string})`,
       1,
-      "images/merchdropwebsite2.png",
+      "images/becomemonke.png",
       false,
       () => {
-        window.localStorage.setItem("merchbannerclosed", "true");
+        window.localStorage.setItem("monkebannerclosed", "true");
       }
     );
   }

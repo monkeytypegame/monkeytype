@@ -1,7 +1,7 @@
 import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
-import UserController from "../controllers/user";
+import * as UserController from "../controllers/user";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import apeRateLimit from "../../middlewares/ape-rate-limit";

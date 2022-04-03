@@ -1,4 +1,4 @@
-import ResultController from "../controllers/result";
+import * as ResultController from "../controllers/result";
 import resultSchema from "../schemas/result-schema";
 import {
   asyncHandler,
