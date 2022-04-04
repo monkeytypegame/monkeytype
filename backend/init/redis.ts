@@ -1,52 +1,46 @@
 import IORedis from "ioredis";
 import Logger from "../utils/logger";
 
-class RedisClient {
-  static connection: IORedis.Redis;
-  static connected = false;
+let connection: IORedis.Redis;
+let connected = false;
 
-  static async connect(): Promise<void> {
-    if (this.connected) {
+export async function connect(): Promise<void> {
+  if (connected) {
+    return;
+  }
+
+  const { REDIS_URI, MODE } = process.env;
+
+  if (!REDIS_URI && MODE !== "dev") {
+    if (MODE === "dev") {
+      Logger.warning("No redis configuration provided. Running without redis.");
       return;
     }
-
-    const { REDIS_URI } = process.env;
-
-    if (!REDIS_URI) {
-      if (process.env.MODE === "dev") {
-        Logger.warning(
-          "No redis configuration provided. Running without redis."
-        );
-        return;
-      }
-      throw new Error("No redis configuration provided");
-    }
-
-    this.connection = new IORedis(REDIS_URI, {
-      maxRetriesPerRequest: null, // These options are required for BullMQ
-      enableReadyCheck: false,
-      lazyConnect: true,
-    });
-
-    try {
-      await this.connection.connect();
-      this.connected = true;
-    } catch (error) {
-      Logger.error(error.message);
-      Logger.error(
-        "Failed to connect to redis. Exiting with exit status code 1."
-      );
-      process.exit(1);
-    }
+    throw new Error("No redis configuration provided");
   }
 
-  static isConnected(): boolean {
-    return this.connected;
-  }
+  connection = new IORedis(REDIS_URI, {
+    maxRetriesPerRequest: null, // These options are required for BullMQ
+    enableReadyCheck: false,
+    lazyConnect: true,
+  });
 
-  static getConnection(): IORedis.Redis {
-    return this.connection;
+  try {
+    await connection.connect();
+    connected = true;
+  } catch (error) {
+    Logger.error(error.message);
+    Logger.error(
+      "Failed to connect to redis. Exiting with exit status code 1."
+    );
+    process.exit(1);
   }
 }
 
-export default RedisClient;
+export function isConnected(): boolean {
+  return connected;
+}
+
+export function getConnection(): IORedis.Redis | undefined {
+  return connection;
+}

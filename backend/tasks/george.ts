@@ -1,7 +1,7 @@
 import { lock } from "../utils/misc";
 import type IORedis from "ioredis";
 import { Queue, QueueScheduler } from "bullmq";
-import RedisClient from "../init/redis";
+import { isConnected } from "../init/redis";
 
 const QUEUE_NAME = "george-tasks";
 
@@ -21,7 +21,7 @@ class George {
   static jobQueue: Queue;
   static jobQueueScheduler: QueueScheduler;
 
-  static initJobQueue(redisConnection: IORedis.Redis): void {
+  static initJobQueue(redisConnection: IORedis.Redis | undefined): void {
     this.jobQueue = new Queue(QUEUE_NAME, {
       connection: redisConnection,
       defaultJobOptions: {
@@ -101,5 +101,5 @@ class George {
 }
 
 export default lock(George, () => {
-  return !RedisClient.isConnected();
+  return !isConnected();
 });

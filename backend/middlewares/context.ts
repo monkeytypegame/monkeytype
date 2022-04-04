@@ -1,4 +1,4 @@
-import ConfigurationClient from "../init/configuration";
+import { getCachedConfiguration } from "../init/configuration";
 import { Response, NextFunction } from "express";
 
 async function contextMiddleware(
@@ -6,7 +6,7 @@ async function contextMiddleware(
   _res: Response,
   next: NextFunction
 ): Promise<void> {
-  const configuration = await ConfigurationClient.getCachedConfiguration(true);
+  const configuration = await getCachedConfiguration(true);
 
   req.ctx = {
     configuration,
