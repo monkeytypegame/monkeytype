@@ -4,12 +4,12 @@ import admin, { ServiceAccount } from "firebase-admin";
 import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
 import db from "./init/db";
 import jobs from "./jobs";
-import ConfigurationClient from "./init/configuration";
+import { getLiveConfiguration } from "./init/configuration";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
-import RedisClient from "./init/redis";
+import * as RedisClient from "./init/redis";
 import George from "./tasks/george";
 import Logger from "./utils/logger";
 
@@ -28,7 +28,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Firebase app initialized");
 
     Logger.info("Fetching live configuration...");
-    await ConfigurationClient.getLiveConfiguration();
+    await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
     Logger.info("Connecting to redis...");

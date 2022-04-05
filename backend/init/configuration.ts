@@ -38,73 +38,69 @@ function mergeConfigurations(
   merge(baseConfiguration, liveConfiguration);
 }
 
-class ConfigurationClient {
-  static configuration: MonkeyTypes.Configuration = BASE_CONFIGURATION;
-  static lastFetchTime = 0;
-  static databaseConfigurationUpdated = false;
+let configuration = BASE_CONFIGURATION;
+let lastFetchTime = 0;
+let serverConfigurationUpdated = false;
 
-  static async getCachedConfiguration(
-    attemptCacheUpdate = false
-  ): Promise<MonkeyTypes.Configuration> {
-    if (
-      attemptCacheUpdate &&
-      this.lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
-    ) {
-      Logger.info("Cached configuration is stale.");
-      return await this.getLiveConfiguration();
-    }
-    return this.configuration;
+export async function getCachedConfiguration(
+  attemptCacheUpdate = false
+): Promise<MonkeyTypes.Configuration> {
+  if (
+    attemptCacheUpdate &&
+    lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
+  ) {
+    Logger.info("Cached configuration is stale.");
+    return await getLiveConfiguration();
   }
 
-  static async getLiveConfiguration(): Promise<MonkeyTypes.Configuration> {
-    this.lastFetchTime = Date.now();
-
-    const configurationCollection = db.collection("configuration");
-
-    try {
-      const liveConfiguration = await configurationCollection.findOne();
-
-      if (liveConfiguration) {
-        const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
-        const liveConfigurationWithoutId = _.omit(
-          liveConfiguration,
-          "_id"
-        ) as MonkeyTypes.Configuration;
-        mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
-
-        this.pushConfiguration(baseConfiguration);
-        this.configuration = baseConfiguration;
-      } else {
-        await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
-      }
-    } catch (error) {
-      Logger.logToDb(
-        "fetch_configuration_failure",
-        `Could not fetch configuration: ${error.message}`
-      );
-    }
-
-    return this.configuration;
-  }
-
-  static async pushConfiguration(
-    configuration: MonkeyTypes.Configuration
-  ): Promise<void> {
-    if (this.databaseConfigurationUpdated) {
-      return;
-    }
-
-    try {
-      await db.collection("configuration").replaceOne({}, configuration);
-
-      this.databaseConfigurationUpdated = true;
-    } catch (error) {
-      Logger.logToDb(
-        "push_configuration_failure",
-        `Could not push configuration: ${error.message}`
-      );
-    }
-  }
+  return configuration;
 }
 
-export default ConfigurationClient;
+export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration> {
+  lastFetchTime = Date.now();
+
+  const configurationCollection = db.collection("configuration");
+
+  try {
+    const liveConfiguration = await configurationCollection.findOne();
+
+    if (liveConfiguration) {
+      const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+      const liveConfigurationWithoutId = _.omit(
+        liveConfiguration,
+        "_id"
+      ) as MonkeyTypes.Configuration;
+      mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
+
+      pushConfiguration(baseConfiguration);
+      configuration = baseConfiguration;
+    } else {
+      await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
+    }
+  } catch (error) {
+    Logger.logToDb(
+      "fetch_configuration_failure",
+      `Could not fetch configuration: ${error.message}`
+    );
+  }
+
+  return configuration;
+}
+
+async function pushConfiguration(
+  configuration: MonkeyTypes.Configuration
+): Promise<void> {
+  if (serverConfigurationUpdated) {
+    return;
+  }
+
+  try {
+    await db.collection("configuration").replaceOne({}, configuration);
+    serverConfigurationUpdated = true;
+  } catch (error) {
+    Logger.logToDb(
+      "push_configuration_failure",
+      `Could not push configuration: ${error.message}`
+    );
+  }
+}
