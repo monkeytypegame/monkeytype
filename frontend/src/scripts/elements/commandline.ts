@@ -398,16 +398,15 @@ $(document).ready(() => {
 
       const popups = document.querySelectorAll(".popupWrapper");
 
-      //todo bring back
-      // let popupVisible = false;
+      let popupVisible = false;
       for (const popup of popups) {
         if (!popup.classList.contains("hidden") === true) {
-          // popupVisible = true;
+          popupVisible = true;
           break;
         }
       }
 
-      // if (popupVisible) return;
+      if (popupVisible) return;
 
       if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (CommandlineLists.current.length > 1) {
