@@ -3,6 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const RemovePlugin = require("remove-files-webpack-plugin");
 
 let circularImports = 0;
 
@@ -84,7 +85,7 @@ const BASE_CONFIG = {
           from: resolve(__dirname, "../static"),
           to: "./",
           globOptions: {
-            ignore: ["**/index.html"],
+            ignore: [resolve(__dirname, "../static/*.html")],
           },
         },
       ],
@@ -94,8 +95,33 @@ const BASE_CONFIG = {
       template: resolve(__dirname, "../static/index.html"),
       inject: "body",
     }),
+    new HtmlWebpackPlugin({
+      filename: "terms-of-service.html",
+      template: resolve(__dirname, "../static/terms-of-service.html"),
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "security-policy.html",
+      template: resolve(__dirname, "../static/security-policy.html"),
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "email-handler.html",
+      template: resolve(__dirname, "../static/email-handler.html"),
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      filename: "privacy-policy.html",
+      template: resolve(__dirname, "../static/privacy-policy.html"),
+      inject: false,
+    }),
     new MiniCssExtractPlugin({
       filename: "./css/style.[chunkhash:8].css",
+    }),
+    new RemovePlugin({
+      after: {
+        include: [resolve(__dirname, "../public/html")],
+      },
     }),
   ],
 };

@@ -35,6 +35,7 @@ import * as Wordset from "./wordset";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as BritishEnglish from "./british-english";
+import * as EnglishPunctuation from "./english-punctuation";
 import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
@@ -70,12 +71,12 @@ export function setNotSignedInUid(uid: string): void {
 }
 
 let spanishSentenceTracker = "";
-export function punctuateWord(
+export async function punctuateWord(
   previousWord: string,
   currentWord: string,
   index: number,
   maxindex: number
-): string {
+): Promise<string> {
   let word = currentWord;
 
   const currentLanguage = Config.language.split("_")[0];
@@ -229,9 +230,19 @@ export function punctuateWord(
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
       word = Misc.randomElementFromArray(specials);
+    } else if (
+      Math.random() < 0.5 &&
+      currentLanguage === "english" &&
+      (await EnglishPunctuation.check(word))
+    ) {
+      word = await applyEnglishPunctuationToWord(word);
     }
   }
   return word;
+}
+
+async function applyEnglishPunctuationToWord(word: string): Promise<string> {
+  return EnglishPunctuation.replace(word);
 }
 
 export function startTest(): boolean {
@@ -681,7 +692,7 @@ async function getNextWord(
   randomWord = applyFunboxesToWord(randomWord, wordset);
 
   if (Config.punctuation) {
-    randomWord = punctuateWord(
+    randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
       TestWords.words.length,
