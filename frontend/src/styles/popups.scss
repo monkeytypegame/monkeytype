@@ -85,6 +85,8 @@
     display: grid;
     gap: 1rem;
     width: 400px;
+    max-height: 80vh;
+    overflow: auto;
 
     .title {
       font-size: 1.5rem;
