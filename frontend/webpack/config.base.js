@@ -115,6 +115,11 @@ const BASE_CONFIG = {
       template: resolve(__dirname, "../static/privacy-policy.html"),
       inject: false,
     }),
+    new HtmlWebpackPlugin({
+      filename: "das.html",
+      template: resolve(__dirname, "../static/das.html"),
+      inject: false,
+    }),
     new MiniCssExtractPlugin({
       filename: "./css/style.[chunkhash:8].css",
     }),
