@@ -8,15 +8,20 @@
         "destination": "/privacy-policy.html"
       },
       {
+        "source": "/das",
+        "destination": "/das.html"
+      },
+      {
+        "source": "/terms-of-service",
+        "destination": "/terms-of-service.html"
+      },
+      {
+        "source": "/security-policy",
+        "destination": "/security-policy.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
-      }
-    ],
-    "redirects": [
-      {
-        "source": "/das",
-        "destination": "https://click.linksynergy.com/fs-bin/click?id=iLtQlicqYL8&offerid=930360.89&type=3&subid=0",
-        "type": "302"
       }
     ],
     "cleanUrls": true,
