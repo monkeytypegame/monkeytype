@@ -48,6 +48,8 @@ let capitalizeLetter = false;
 let lastKey = "-1";
 let lastKeyTime = -1;
 let lastCharIndex = -1;
+let lastFunction: (() => void) | null = null;
+let lastTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 
@@ -839,6 +841,11 @@ $(document).on("keydown", async (event) => {
     } else if (/^[02-9#]+$/.test(event.key)) {
       const keyTime = new Date().getTime();
       // Map to t9 and call handleChar with the correct key
+      if (keyTime - lastKeyTime < timeout && lastTimeout) {
+        clearTimeout(lastTimeout);
+        if (event.key !== lastKey && lastFunction) lastFunction();
+      }
+
       if (event.key === "#") {
         capitalizeLetter = !capitalizeLetter;
       } else if (event.key === "0") {
@@ -847,26 +854,32 @@ $(document).on("keydown", async (event) => {
         event.preventDefault();
       } else {
         if (event.key === lastKey && keyTime - lastKeyTime < timeout) {
-          const currentInput = TestInput.input.current;
-          TestInput.input.setCurrent(
-            currentInput.substring(0, currentInput.length - 1)
-          );
           const [newChar, newIndex] = incrementT9Input(
             event.key,
             lastCharIndex
           );
-          handleChar(
-            capitalizeLetter ? newChar : newChar.toLowerCase(),
-            TestInput.input.current.length
-          );
+          // handleChar(
+          //   capitalizeLetter ? newChar : newChar.toLowerCase(),
+          //   TestInput.input.current.length
+          // );
+          lastFunction = (): void =>
+            handleChar(
+              capitalizeLetter ? newChar : newChar.toLowerCase(),
+              TestInput.input.current.length
+            );
+          lastTimeout = setTimeout(lastFunction, timeout);
+          TestUI.updateWordElement(true, TestInput.input.current + newChar);
           lastCharIndex = newIndex;
         } else {
           if (lastKey !== "#") capitalizeLetter = false;
           const char = t9Map[event.key][0];
-          handleChar(
-            capitalizeLetter ? char : char.toLowerCase(),
-            TestInput.input.current.length
-          );
+          lastFunction = (): void =>
+            handleChar(
+              capitalizeLetter ? char : char.toLowerCase(),
+              TestInput.input.current.length
+            );
+          lastTimeout = setTimeout(lastFunction, timeout);
+          TestUI.updateWordElement(true, TestInput.input.current + char);
           lastCharIndex = 0;
         }
       }
