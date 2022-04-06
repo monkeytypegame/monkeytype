@@ -1,4 +1,15 @@
+import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
+
+function updateMargin(): void {
+  console.log("updating margin");
+  const height = $("#bannerCenter").height() as number;
+  $("#centerContent").css(
+    "padding-top",
+    height + Misc.convertRemToPixels(2) + "px"
+  );
+  $("#notificationCenter").css("margin-top", height + "px");
+}
 
 let id = 0;
 class Notification {
@@ -152,12 +163,7 @@ class Notification {
         </div>
       </div>
       `);
-      const height = $("#bannerCenter").height() as number;
-      $("#centerContent").css(
-        "padding-top",
-        height + Misc.convertRemToPixels(2) + "px"
-      );
-      $("#notificationCenter").css("margin-top", height + "px");
+      updateMargin();
       if (this.duration >= 0) {
         $(`#bannerCenter .banner[id='${this.id}'] .closeButton`).on(
           "click",
@@ -247,3 +253,9 @@ export function addBanner(
   ).show();
   // );
 }
+
+const debouncedMarginUpdate = debounce(100, updateMargin);
+
+$(window).on("resize", () => {
+  debouncedMarginUpdate();
+});
