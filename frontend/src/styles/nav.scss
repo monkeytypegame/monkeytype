@@ -108,19 +108,9 @@
     .mobileConfig {
       display: none;
       .text-button {
-        display: grid;
-        grid-auto-flow: column;
-        align-content: center;
-        transition: 0.25s;
         margin-right: -1rem;
         padding: 0.5rem 1rem;
         font-size: 2rem;
-        border-radius: var(--roundness);
-        cursor: pointer;
-        color: var(--sub-color);
-        &:hover {
-          color: var(--text-color);
-        }
       }
     }
 
@@ -169,33 +159,6 @@
       }
     }
   }
-
-  .result {
-    display: grid;
-    grid-auto-flow: column;
-    grid-gap: 1rem;
-    width: min-content;
-    width: -moz-min-content;
-    transition: 0.25s;
-    grid-column: 3/4;
-    grid-row: 1/2;
-
-    .group {
-      .title {
-        font-size: 0.65rem;
-        line-height: 0.65rem;
-        color: var(--sub-color);
-      }
-
-      .val {
-        font-size: 1.7rem;
-        line-height: 1.7rem;
-        color: var(--main-color);
-        transition: 0.25s;
-      }
-    }
-  }
-
   //top focus
   &.focus {
     color: var(--sub-color) !important;
