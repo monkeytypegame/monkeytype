@@ -298,25 +298,28 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export function updateWordElement(showError = !Config.blindMode): void {
-  const input = TestInput.input.current;
+export function updateWordElement(
+  showError = !Config.blindMode,
+  customInput?: string
+): void {
+  const input = customInput || TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
 
-  let ret = "";
+  let wordHTML = "";
 
-  let newlineafter = false;
+  let newlineAfter = false;
 
   if (Config.mode === "zen") {
     for (let i = 0; i < TestInput.input.current.length; i++) {
       if (TestInput.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        wordHTML += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (TestInput.input.current[i] === "\n") {
-        newlineafter = true;
-        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
+        newlineAfter = true;
+        wordHTML += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
-        ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
+        wordHTML += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
       }
     }
   } else {
@@ -334,13 +337,11 @@ export function updateWordElement(showError = !Config.blindMode): void {
       correctSoFar = true;
     }
 
-    let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
-    if (Config.blindMode) {
-      wordHighlightClassString = "correct";
-    }
+    const wordHighlightClassString =
+      Config.blindMode || correctSoFar ? "correct" : "incorrect";
 
     for (let i = 0; i < input.length; i++) {
-      const charCorrect = currentWord[i] == input[i];
+      const charCorrect = currentWord[i] === input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -379,7 +380,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
 
       if (charCorrect) {
-        ret += `<letter class="${
+        wordHTML += `<letter class="${
           Config.highlightMode == "word"
             ? wordHighlightClassString
             : correctClass
@@ -389,12 +390,12 @@ export function updateWordElement(showError = !Config.blindMode): void {
         Misc.trailingComposeChars.test(input) &&
         i === input.search(Misc.trailingComposeChars)
       ) {
-        ret += `<letter class="${
+        wordHTML += `<letter class="${
           Config.highlightMode == "word" ? wordHighlightClassString : ""
         } dead">${currentLetter}</letter>`;
       } else if (!showError) {
         if (currentLetter !== undefined) {
-          ret += `<letter class="${
+          wordHTML += `<letter class="${
             Config.highlightMode == "word"
               ? wordHighlightClassString
               : correctClass
@@ -406,14 +407,14 @@ export function updateWordElement(showError = !Config.blindMode): void {
           if (letter == " " || letter == "\t" || letter == "\n") {
             letter = "_";
           }
-          ret += `<letter class="${
+          wordHTML += `<letter class="${
             Config.highlightMode == "word"
               ? wordHighlightClassString
               : "incorrect"
           } extra ${tabChar}${nlChar}">${letter}</letter>`;
         }
       } else {
-        ret +=
+        wordHTML +=
           `<letter class="${
             Config.highlightMode == "word"
               ? wordHighlightClassString
@@ -436,23 +437,23 @@ export function updateWordElement(showError = !Config.blindMode): void {
       for (let i = inputWithSingleComposeLength; i < currentWord.length; i++) {
         if (Config.funbox === "arrows") {
           if (currentWord[i] === "↑") {
-            ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
+            wordHTML += `<letter><i class="fas fa-arrow-up"></i></letter>`;
           }
           if (currentWord[i] === "↓") {
-            ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
+            wordHTML += `<letter><i class="fas fa-arrow-down"></i></letter>`;
           }
           if (currentWord[i] === "←") {
-            ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
+            wordHTML += `<letter><i class="fas fa-arrow-left"></i></letter>`;
           }
           if (currentWord[i] === "→") {
-            ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
+            wordHTML += `<letter><i class="fas fa-arrow-right"></i></letter>`;
           }
         } else if (currentWord[i] === "\t") {
-          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+          wordHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
         } else if (currentWord[i] === "\n") {
-          ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+          wordHTML += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
         } else {
-          ret +=
+          wordHTML +=
             `<letter class="${
               Config.highlightMode == "word" ? wordHighlightClassString : ""
             }">` +
@@ -470,8 +471,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
   }
-  wordAtIndex.innerHTML = ret;
-  if (newlineafter) $("#words").append("<div class='newline'></div>");
+
+  wordAtIndex.innerHTML = wordHTML;
+  if (newlineAfter) $("#words").append("<div class='newline'></div>");
 }
 
 export function lineJump(currentTop: number): void {
