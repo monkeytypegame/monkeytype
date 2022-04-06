@@ -11,7 +11,7 @@ export async function connect(): Promise<void> {
 
   const { REDIS_URI, MODE } = process.env;
 
-  if (!REDIS_URI && MODE !== "dev") {
+  if (!REDIS_URI) {
     if (MODE === "dev") {
       Logger.warning("No redis configuration provided. Running without redis.");
       return;
