@@ -4,6 +4,7 @@ import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
 import * as ConfigEvent from "./observables/config-event";
+import { debounce } from "throttle-debounce";
 
 export function updateKeytips(): void {
   if (Config.swapEscAndTab) {
@@ -75,9 +76,12 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-$(window).on("resize", () => {
-  console.log("Updating caret position");
+const debouncedCaretUpdate = debounce(250, () => {
   Caret.updatePosition();
+});
+
+$(window).on("resize", () => {
+  debouncedCaretUpdate();
 });
 
 ConfigEvent.subscribe((eventKey) => {
