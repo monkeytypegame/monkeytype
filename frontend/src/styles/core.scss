@@ -363,31 +363,6 @@ key {
   }
 }
 
-// .text-button {
-//   display: grid;
-//   grid-auto-flow: column;
-//   align-content: center;
-//   transition: 0.25s;
-//   padding: 0.5rem;
-//   border-radius: var(--roundness);
-//   cursor: pointer;
-
-//   &:hover {
-//     color: var(--text-color);
-//   }
-//   &:focus {
-//     // background: var(--sub-color);
-//     color: var(--sub-color);
-//     border: none;
-//     outline: none;
-//   }
-//   &.disabled {
-//     opacity: 0.5;
-//     cursor: default;
-//     pointer-events: none;
-//   }
-// }
-
 .scrollToTopButton {
   bottom: 2rem;
   right: 2rem;
