@@ -10,6 +10,7 @@ import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
+import { debounce } from "throttle-debounce";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -33,6 +34,13 @@ let config = {
   ...DefaultConfig,
 };
 
+let configToSend = {} as MonkeyTypes.Config;
+const saveToDatabase = debounce(1000, () => {
+  delete configToSend.resultFilters;
+  if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
+  configToSend = {} as MonkeyTypes.Config;
+});
+
 async function saveToLocalStorage(
   key: keyof MonkeyTypes.Config,
   nosave = false,
@@ -50,29 +58,10 @@ async function saveToLocalStorage(
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
-    // await DB.saveConfig(dbToSave);
-    await saveToDatabase(key);
+    (configToSend[key] as typeof config[typeof key]) = config[key];
+    await saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
-}
-
-let configToSend = {} as MonkeyTypes.Config;
-let saveTimeout: NodeJS.Timeout | null = null;
-async function saveToDatabase(key: keyof MonkeyTypes.Config): Promise<void> {
-  (configToSend[key] as typeof config[typeof key]) = config[key];
-
-  if (saveTimeout === null) {
-    saveTimeout = setTimeout(
-      async () => {
-        delete configToSend.resultFilters;
-        if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
-        configToSend = {} as MonkeyTypes.Config;
-        clearTimeout(saveTimeout as NodeJS.Timeout);
-        saveTimeout = null;
-      },
-      window.location.hostname === "localhost" ? 0 : 1000
-    );
-  }
 }
 
 export async function saveFullConfigToLocalStorage(
