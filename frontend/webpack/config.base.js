@@ -7,6 +7,20 @@ const RemovePlugin = require("remove-files-webpack-plugin");
 
 let circularImports = 0;
 
+const htmlWebpackPlugins = [
+  "terms-of-service",
+  "security-policy",
+  "privacy-policy",
+  "email-handler",
+  "das",
+].map((name) => {
+  return new HtmlWebpackPlugin({
+    filename: `${name}.html`,
+    template: resolve(__dirname, `../static/${name}.html`),
+    inject: false,
+  });
+});
+
 /** @type { import('webpack').Configuration } */
 const BASE_CONFIG = {
   entry: {
@@ -95,31 +109,7 @@ const BASE_CONFIG = {
       template: resolve(__dirname, "../static/index.html"),
       inject: "body",
     }),
-    new HtmlWebpackPlugin({
-      filename: "terms-of-service.html",
-      template: resolve(__dirname, "../static/terms-of-service.html"),
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      filename: "security-policy.html",
-      template: resolve(__dirname, "../static/security-policy.html"),
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      filename: "email-handler.html",
-      template: resolve(__dirname, "../static/email-handler.html"),
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      filename: "privacy-policy.html",
-      template: resolve(__dirname, "../static/privacy-policy.html"),
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      filename: "das.html",
-      template: resolve(__dirname, "../static/das.html"),
-      inject: false,
-    }),
+    ...htmlWebpackPlugins,
     new MiniCssExtractPlugin({
       filename: "./css/style.[chunkhash:8].css",
     }),
