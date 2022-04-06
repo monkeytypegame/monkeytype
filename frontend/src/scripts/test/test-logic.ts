@@ -466,12 +466,18 @@ export function restart(
         withSameWordset &&
         (Config.funbox === "plus_one" || Config.funbox === "plus_two")
       ) {
-        Notifications.add(
-          "Sorry, this funbox won't work with repeated tests.",
-          0,
-          4
-        );
-        withSameWordset = false;
+        const toPush = [];
+        if (Config.funbox === "plus_one") {
+          toPush.push(TestWords.words.get(0));
+          toPush.push(TestWords.words.get(1));
+        }
+        if (Config.funbox === "plus_two") {
+          toPush.push(TestWords.words.get(0));
+          toPush.push(TestWords.words.get(1));
+          toPush.push(TestWords.words.get(2));
+        }
+        TestWords.words.reset();
+        toPush.forEach((word) => TestWords.words.push(word));
       }
       if (!withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
