@@ -78,7 +78,7 @@ $(document).on("click", "#top .logo", () => {
   change("test");
 });
 
-$(document).on("click", "#top #menu .icon-button", (e) => {
+$(document).on("click", "#top #menu .text-button", (e) => {
   if (!$(e.currentTarget).hasClass("leaderboards")) {
     const href = $(e.currentTarget).attr("href") as string;
     ManualRestart.set();

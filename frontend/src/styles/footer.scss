@@ -47,6 +47,9 @@
     gap: 1rem;
     a {
       text-decoration: none;
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding: 0;
     }
     .left {
       text-align: left;
@@ -74,10 +77,6 @@
       align-items: baseline;
       width: max-content;
       width: -moz-available;
-      &:hover {
-        color: var(--text-color);
-        cursor: pointer;
-      }
     }
   }
 

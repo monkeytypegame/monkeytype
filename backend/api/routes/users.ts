@@ -43,10 +43,10 @@ const customThemeColorsValidation = joi
         "string.length": "The colors must be 7 characters long",
       })
   )
-  .length(9)
+  .length(10)
   .required()
   .messages({
-    "array.length": "The colors array must have 9 colors",
+    "array.length": "The colors array must have 10 colors",
   });
 
 const customThemeIdValidation = joi

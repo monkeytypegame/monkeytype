@@ -38,15 +38,6 @@
       display: grid;
       grid-auto-flow: column;
       text-align: center;
-      a {
-        text-decoration: none;
-        width: 100%;
-        cursor: pointer;
-        // opacity: 0.5;
-        &:hover {
-          opacity: 1;
-        }
-      }
     }
   }
 
@@ -203,12 +194,9 @@
       }
 
       #unlinkDiscordButton {
-        margin-top: 0.5rem;
+        margin: 0.25rem auto 0 auto;
         font-size: 0.75rem;
-        color: var(--sub-color);
-        &:hover {
-          color: var(--text-color);
-        }
+        line-height: 0.7rem;
       }
 
       .howto {
@@ -226,35 +214,6 @@
         grid-template-columns: 6fr 1fr 1fr 1fr;
         margin-bottom: 0.5rem;
       }
-
-      .addTagButton {
-        margin-top: 0.5rem;
-        color: var(--text-color);
-        cursor: pointer;
-        transition: 0.25s;
-        padding: 0.2rem 0.5rem;
-        border-radius: var(--roundness);
-
-        background: rgba(0, 0, 0, 0.1);
-        text-align: center;
-        -webkit-user-select: none;
-        display: grid;
-        align-content: center;
-        height: min-content;
-        height: -moz-min-content;
-
-        &.active {
-          background: var(--main-color);
-          color: var(--bg-color);
-        }
-
-        &:hover,
-        &:focus {
-          color: var(--bg-color);
-          background: var(--text-color);
-          outline: none;
-        }
-      }
     }
 
     &.presets {
@@ -265,35 +224,6 @@
       .preset {
         grid-template-columns: 7fr 1fr 1fr;
         margin-bottom: 0.5rem;
-      }
-
-      .addPresetButton {
-        margin-top: 0.5rem;
-        color: var(--text-color);
-        cursor: pointer;
-        transition: 0.25s;
-        padding: 0.2rem 0.5rem;
-        border-radius: var(--roundness);
-
-        background: rgba(0, 0, 0, 0.1);
-        text-align: center;
-        -webkit-user-select: none;
-        display: grid;
-        align-content: center;
-        height: min-content;
-        height: -moz-min-content;
-
-        &.active {
-          background: var(--main-color);
-          color: var(--bg-color);
-        }
-
-        &:hover,
-        &:focus {
-          color: var(--bg-color);
-          background: var(--text-color);
-          outline: none;
-        }
       }
     }
 

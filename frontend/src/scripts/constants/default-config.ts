@@ -9,6 +9,7 @@ export default <MonkeyTypes.Config>{
     "#e2b714",
     "#e2b714",
     "#646669",
+    "#2c2e31",
     "#d1d0c5",
     "#ca4754",
     "#7e2a33",

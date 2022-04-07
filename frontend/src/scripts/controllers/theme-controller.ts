@@ -16,6 +16,7 @@ export const colorVars = [
   "--main-color",
   "--caret-color",
   "--sub-color",
+  "--sub-alt-color",
   "--text-color",
   "--error-color",
   "--error-extra-color",

@@ -102,7 +102,7 @@ label.checkbox {
     & ~ .customTextCheckbox {
       width: 1.25rem;
       height: 1.25rem;
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--sub-alt-color);
       border-radius: calc(var(--roundness) / 2);
       display: inline-grid;
       margin: 0 0.5rem 0 0;
@@ -183,7 +183,7 @@ key {
       .bar {
         width: 20rem;
         height: 0.5rem;
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-alt-color);
         border-radius: var(--roundness);
         .fill {
           height: 100%;
@@ -248,46 +248,27 @@ key {
 .button {
   color: var(--text-color);
   cursor: pointer;
-  transition: 0.125s;
+  transition: background 0.125s, color 0.125s;
   padding: 0.4rem;
   border-radius: var(--roundness);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   text-align: center;
   user-select: none;
   -webkit-user-select: none;
-  // display: grid;
   align-content: center;
   height: min-content;
   height: -moz-min-content;
   line-height: 1rem;
-
-  &:hover {
-    color: var(--bg-color);
-    background: var(--text-color);
-    outline: none;
-  }
-  &:focus {
-    color: var(--main-color);
-    background: var(--sub-color);
-    outline: none;
-  }
-  &:active {
-    background: var(--sub-color);
-    color: var(--bg-color);
-  }
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
 
   &.active {
     background: var(--main-color);
     color: var(--bg-color);
     &:hover {
-      // color: var(--text-color);
       background: var(--text-color);
-      outline: none;
-    }
-    &:focus {
-      color: var(--bg-color);
-      background: var(--main-color);
-      outline: none;
     }
     &:active {
       background: var(--sub-color);
@@ -296,68 +277,90 @@ key {
   }
 
   &.disabled {
-    opacity: 0.5;
+    opacity: 0.33;
     cursor: default;
     pointer-events: none;
     &:hover {
-      color: var(--text-color);
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--text-color);
       outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
     }
   }
 
-  &.disabled.active {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
-    &:hover {
-      color: var(--bg-color);
-      background: var(--main-color);
-      outline: none;
-    }
+  &:hover {
+    color: var(--bg-color);
+    background: var(--text-color);
+    outline: none;
+  }
+  &:focus {
+    outline: 2px solid var(--text-color);
+  }
+  &:active {
+    background: var(--sub-color);
+    color: var(--bg-color);
   }
 }
 
 .text-button {
-  transition: 0.25s;
   color: var(--sub-color);
   cursor: pointer;
-  margin-right: 0.25rem;
-  cursor: pointer;
-  outline: none;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.4rem;
+  border-radius: var(--roundness);
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  align-content: center;
+  height: min-content;
+  height: -moz-min-content;
+  line-height: 1rem;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  width: max-content;
+  width: -moz-max-content;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.25rem;
+  text-decoration: none;
 
   &.active {
     color: var(--main-color);
+    &:hover {
+      color: var(--text-color);
+    }
+    &:active {
+      color: var(--sub-color);
+    }
   }
 
-  &:hover,
-  &:focus {
-    color: var(--text-color);
+  &.disabled {
+    opacity: 0.33;
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
   }
-}
-
-.icon-button {
-  display: grid;
-  grid-auto-flow: column;
-  align-content: center;
-  transition: 0.25s;
-  padding: 0.5rem;
-  border-radius: var(--roundness);
-  cursor: pointer;
 
   &:hover {
     color: var(--text-color);
   }
   &:focus {
-    // background: var(--sub-color);
-    color: var(--sub-color);
-    border: none;
+    color: var(--text-color);
     outline: none;
   }
-  &.disabled {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
+  &:active {
+    color: var(--sub-color);
   }
 }
 
@@ -370,13 +373,14 @@ key {
   height: 4rem;
   text-align: center;
   line-height: 4rem;
-  background: var(--bg-color);
+  background: var(--sub-alt-color);
   border-radius: 99rem;
   z-index: 99;
   cursor: pointer;
   color: var(--sub-color);
   transition: 0.25s;
   &:hover {
-    color: var(--text-color);
+    background: var(--text-color);
+    color: var(--bg-color);
   }
 }

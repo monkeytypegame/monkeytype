@@ -8,8 +8,8 @@ import * as Notifications from "../elements/notifications";
 export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
     $("#presetWrapper #presetEdit").attr("action", "add");
-    $("#presetWrapper #presetEdit .title").html("Create new preset");
-    $("#presetWrapper #presetEdit .button").html(`<i class="fas fa-plus"></i>`);
+    $("#presetWrapper #presetEdit .title").html("Add new preset");
+    $("#presetWrapper #presetEdit .button").html(`add`);
     $("#presetWrapper #presetEdit input.text").val("");
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
@@ -17,7 +17,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit").attr("action", "edit");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Edit preset");
-    $("#presetWrapper #presetEdit .button").html(`<i class="fas fa-pen"></i>`);
+    $("#presetWrapper #presetEdit .button").html(`edit`);
     $("#presetWrapper #presetEdit input.text").val(name);
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label input").prop("checked", false);
@@ -25,10 +25,8 @@ export function show(action: string, id?: string, name?: string): void {
   } else if (action === "remove" && id) {
     $("#presetWrapper #presetEdit").attr("action", "remove");
     $("#presetWrapper #presetEdit").attr("presetid", id);
-    $("#presetWrapper #presetEdit .title").html("Remove preset " + name);
-    $("#presetWrapper #presetEdit .button").html(
-      `<i class="fas fa-check"></i>`
-    );
+    $("#presetWrapper #presetEdit .title").html("Delete preset " + name);
+    $("#presetWrapper #presetEdit .button").html("Delete");
     $("#presetWrapper #presetEdit input.text").addClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
   }

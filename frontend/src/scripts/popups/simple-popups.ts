@@ -391,7 +391,7 @@ list["updateName"] = new SimplePopup(
 
       Notifications.add("Name updated", 1);
       DB.getSnapshot().name = newName;
-      $("#menu .icon-button.account .text").text(newName);
+      $("#menu .text-button.account .text").text(newName);
     } catch (e) {
       const typedError = e as FirebaseError;
       if (typedError.code === "auth/wrong-password") {

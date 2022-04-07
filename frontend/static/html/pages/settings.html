@@ -16,15 +16,15 @@
   <!-- <div class="sectionGroupTitle">quick navigation</div> -->
   <div class="settingsGroup quickNav">
     <div class="links">
-      <a href="#group_account">account</a>
-      <a href="#group_behavior">behavior</a>
-      <a href="#group_input">input</a>
-      <a href="#group_sound">sound</a>
-      <a href="#group_caret">caret</a>
-      <a href="#group_appearance">appearance</a>
-      <a href="#group_theme">theme</a>
-      <a href="#group_hideElements">hide elements</a>
-      <a href="#group_dangerZone">danger zone</a>
+      <a class="text-button" href="#group_account">account</a>
+      <a class="text-button" href="#group_behavior">behavior</a>
+      <a class="text-button" href="#group_input">input</a>
+      <a class="text-button" href="#group_sound">sound</a>
+      <a class="text-button" href="#group_caret">caret</a>
+      <a class="text-button" href="#group_appearance">appearance</a>
+      <a class="text-button" href="#group_theme">theme</a>
+      <a class="text-button" href="#group_hideElements">hide elements</a>
+      <a class="text-button" href="#group_dangerZone">danger zone</a>
     </div>
   </div>
   <div id="ad_settings0" class="hidden"></div>
@@ -38,7 +38,7 @@
       <div class="text">
         When you connect your monkeytype account to your Discord account, you
         will be automatically assigned a new role every time you achieve a new
-        personal best in a 60 second test. If you pair your accounts before
+        personal best in a 60 second test. If you link your accounts before
         joining the Discord server, the bot
         <i>will not</i>
         give you a role.
@@ -55,15 +55,11 @@
       <div class="info hidden">
         <div>
           <i class="fas fa-check"></i>
-          Your accounts are paired!
+          Your accounts are linked!
         </div>
-        <div
-          id="unlinkDiscordButton"
-          class="text-button"
-          aria-label="Unlink"
-          data-balloon-pos="up"
-        >
+        <div id="unlinkDiscordButton" class="text-button">
           <i class="fas fa-unlink" aria-hidden="true"></i>
+          Unlink
         </div>
       </div>
     </div>
@@ -87,7 +83,7 @@
             </div>
           </div>
         </div>
-        <div class="addTagButton"><i class="fas fa-plus"></i></div>
+        <div class="button addTagButton"><i class="fas fa-plus"></i></div>
       </div>
     </div>
     <div class="section presets">
@@ -110,7 +106,7 @@
             </div>
           </div>
         </div>
-        <div class="addPresetButton"><i class="fas fa-plus"></i></div>
+        <div class="button addPresetButton"><i class="fas fa-plus"></i></div>
       </div>
     </div>
     <div class="sectionSpacer"></div>
@@ -1433,7 +1429,7 @@
           200%
         </div>
         <div class="button" pageWidth="max" tabindex="0" onclick="this.blur();">
-          Max
+          max
         </div>
       </div>
     </div>
@@ -1831,7 +1827,10 @@
               <label
                 for="--bg-color"
                 class="button"
-                style="color: var(--text-color); background: rgba(0, 0, 0, 0.1)"
+                style="
+                  color: var(--text-color);
+                  background: var(--sub-alt-color);
+                "
               >
                 <i class="fas fa-fw fa-palette"></i>
               </label>
@@ -1894,6 +1893,24 @@
                 class="color"
                 value="#000000"
                 id="--sub-color"
+              />
+            </div>
+            <label class="colorText">sub alt</label>
+            <div class="colorPicker inputAndButton">
+              <input
+                type="text"
+                value="#000000"
+                class="input"
+                id="--sub-alt-color-txt"
+              />
+              <label for="--sub-alt-color" class="button">
+                <i class="fas fa-fw fa-palette"></i>
+              </label>
+              <input
+                type="color"
+                class="color"
+                value="#000000"
+                id="--sub-alt-color"
               />
             </div>
             <label class="colorText">text</label>
@@ -2118,46 +2135,6 @@
         </div>
       </div>
     </div>
-    <div class="section showAverage">
-      <h1>average</h1>
-      <div class="text">
-        Displays your average wpm and/or accuracy over the last 10 tests.
-      </div>
-      <div class="buttons">
-        <div
-          class="button"
-          showAverage="off"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          off
-        </div>
-        <div
-          class="button"
-          showAverage="wpm"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          wpm
-        </div>
-        <div
-          class="button"
-          showAverage="acc"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          acc
-        </div>
-        <div
-          class="button"
-          showAverage="both"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          both
-        </div>
-      </div>
-    </div>
     <div class="section showKeyTips">
       <h1>key tips</h1>
       <div class="text">Shows the keybind tips at the bottom of the page.</div>
@@ -2227,6 +2204,46 @@
         </div>
       </div>
     </div>
+    <div class="section showAverage">
+      <h1>average</h1>
+      <div class="text">
+        Displays your average wpm and/or accuracy over the last 10 tests.
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          showAverage="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          showAverage="wpm"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          wpm
+        </div>
+        <div
+          class="button"
+          showAverage="acc"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          acc
+        </div>
+        <div
+          class="button"
+          showAverage="both"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          both
+        </div>
+      </div>
+    </div>
     <div class="sectionSpacer"></div>
   </div>
 
@@ -2284,9 +2301,12 @@
       <div class="text">
         Generate Ape Keys to access certain API endpoints. Documentation is
         available
-        <a href="https://api.monkeytype.com/documentation" target="_blank">
-          here.
-        </a>
+        <span style="display: inline-flex">
+          <a href="https://api.monkeytype.com/documentation" target="_blank">
+            here
+          </a>
+          .
+        </span>
         More endpoints will be added in the future.
       </div>
       <div class="buttons">

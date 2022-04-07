@@ -3,6 +3,7 @@
   --main-color: #f2f2f2;
   --caret-color: #f2f2f2;
   --sub-color: #bd93f9;
+  --sub-alt-color: #20222c;
   --text-color: #f2f2f2;
   --error-color: #f758a0;
   --error-extra-color: #732e51;
@@ -10,26 +11,26 @@
   --colorful-error-extra-color: #732e51;
 }
 
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   color: #ec75c4;
 }
 
-#menu .icon-button:nth-child(2) {
+#menu .text-button:nth-child(2) {
   color: #8be9fd;
 }
 
-#menu .icon-button:nth-child(3) {
+#menu .text-button:nth-child(3) {
   color: #50fa7b;
 }
 
-#menu .icon-button:nth-child(4) {
+#menu .text-button:nth-child(4) {
   color: #f1fa8c;
 }
 
-#menu .icon-button:nth-child(5) {
+#menu .text-button:nth-child(5) {
   color: #ffb86c;
 }
 
-#menu .icon-button:nth-child(6) {
+#menu .text-button:nth-child(6) {
   color: #ffb86c;
 }

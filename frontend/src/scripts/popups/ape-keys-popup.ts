@@ -35,10 +35,10 @@ function refreshList(): void {
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
-          <div class="icon-button">
+          <div class="text-button">
             ${
               key.enabled
-                ? `<i class="fas fa-check-square"></i>`
+                ? `<i class="fas fa-fw fa-check-square"></i>`
                 : `<i class="far fa-fw fa-square"></i>`
             }
           </div>
@@ -118,7 +118,7 @@ $(document).on("click", "#apeKeysPopup table .keyButtons .button", () => {
   hide();
 });
 
-$(document).on("click", "#apeKeysPopup table .icon-button", async (e) => {
+$(document).on("click", "#apeKeysPopup table .text-button", async (e) => {
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   const key = apeKeys?.[keyId];
   if (!key || !apeKeys) return;

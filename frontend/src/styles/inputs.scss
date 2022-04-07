@@ -3,7 +3,7 @@ textarea {
   outline: none;
   border: none;
   border-radius: var(--roundness);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   color: var(--text-color);
   padding: 0.5rem;
   font-size: 1rem;
@@ -85,7 +85,7 @@ input[type="number"] {
 }
 
 .select2-selection {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   height: fit-content;
   height: -moz-fit-content;
   padding: 5px;
@@ -116,7 +116,7 @@ input[type="number"] {
 
 .select2-container--open .select2-dropdown--below,
 .select2-container--open .select2-dropdown--above {
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: var(--sub-alt-color);
   background: var(--bg-color);
   color: var(--sub-color);
   border-radius: var(--roundness);
@@ -124,7 +124,7 @@ input[type="number"] {
 
 .select2-container--default .select2-selection--single {
   color: var(--text-color);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   outline: none;
   border: none;
   height: auto;
@@ -173,7 +173,7 @@ input[type="number"] {
 }
 
 .select2-container--default .select2-search--dropdown .select2-search__field {
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: var(--sub-alt-color);
   background: var(--bg-color);
   color: var(--text-color);
   border-radius: var(--roundness);
@@ -184,7 +184,7 @@ input[type="number"] {
 }
 
 .select2-container--default .select2-selection--multiple {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   border-radius: var(--roundness);
   color: var(--text-color);
   outline: none;

@@ -110,7 +110,7 @@ function buildQuoteSearchResult(
     <div class="source">
       <div class="sub">source</div>
       ${highlightMatches(quote.source, matchedSearchTerms)}</div>
-    <div class="icon-button report ${
+    <div class="text-button report ${
       isNotAuthed && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>

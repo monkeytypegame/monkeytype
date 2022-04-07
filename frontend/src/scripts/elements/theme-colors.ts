@@ -3,6 +3,7 @@ let colors = {
   main: "#e2b714",
   caret: "#e2b714",
   sub: "#646669",
+  subAlt: "#2c2e31",
   text: "#d1d0c5",
   error: "#ca4754",
   errorExtra: "#7e2a33",
@@ -28,6 +29,7 @@ export function reset(): void {
     main: "",
     caret: "",
     sub: "",
+    subAlt: "",
     text: "",
     error: "",
     errorExtra: "",
@@ -42,6 +44,7 @@ export function update(): void {
   colors.main = st.getPropertyValue("--main-color").replace(" ", "");
   colors.caret = st.getPropertyValue("--caret-color").replace(" ", "");
   colors.sub = st.getPropertyValue("--sub-color").replace(" ", "");
+  colors.subAlt = st.getPropertyValue("--sub-alt-color").replace(" ", "");
   colors.text = st.getPropertyValue("--text-color").replace(" ", "");
   colors.error = st.getPropertyValue("--error-color").replace(" ", "");
   colors.errorExtra = st

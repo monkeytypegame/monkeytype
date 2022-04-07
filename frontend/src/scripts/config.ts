@@ -1271,6 +1271,18 @@ function setThemes(
 ): boolean {
   if (!isConfigValueValid("themes", theme, ["string"])) return false;
 
+  if (customThemeColors.length === 9) {
+    //color missing
+    if (customState) {
+      Notifications.add(
+        "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
+        0,
+        7
+      );
+    }
+    customThemeColors.splice(4, 0, "#000000");
+  }
+
   config.customThemeColors = customThemeColors;
   config.theme = theme;
   config.customTheme = customState;
@@ -1344,6 +1356,16 @@ export function setCustomThemeColors(
 ): boolean {
   if (!isConfigValueValid("custom theme colors", colors, ["stringArray"])) {
     return false;
+  }
+
+  if (colors.length === 9) {
+    //color missing
+    Notifications.add(
+      "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
+      0,
+      7
+    );
+    colors.splice(4, 0, "#000000");
   }
 
   if (colors !== undefined) {

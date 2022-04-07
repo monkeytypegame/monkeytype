@@ -486,7 +486,7 @@
     color: var(--sub-color);
     // grid-column: 1/3;
     margin-bottom: 1rem;
-    .icon-button {
+    .text-button {
       padding: 0;
       margin-left: 0.5rem;
     }
@@ -836,17 +836,18 @@
   width: min-content;
   width: -moz-min-content;
   color: var(--sub-color);
-  transition: 0.25s;
+  transition: 0.125s;
   cursor: pointer;
 
   &:hover,
   &:focus {
-    color: var(--main-color);
+    color: var(--text-color);
     outline: none;
   }
 
   &:focus {
-    background: var(--sub-color);
+    background: var(--text-color);
+    color: var(--bg-color);
   }
 }
 
