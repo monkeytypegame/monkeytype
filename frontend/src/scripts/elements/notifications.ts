@@ -202,13 +202,18 @@ class Notification {
           }
         );
     } else if (this.type === "banner") {
-      $(`#bannerCenter .banner[id='${this.id}']`).remove();
-      const height = $("#bannerCenter").height() as number;
-      $("#centerContent").css(
-        "padding-top",
-        height + Misc.convertRemToPixels(2) + "px"
-      );
-      $("#notificationCenter").css("margin-top", height + "px");
+      $(`#bannerCenter .banner[id='${this.id}']`)
+        .css("opacity", 1)
+        .animate(
+          {
+            opacity: 0,
+          },
+          125,
+          () => {
+            $(`#bannerCenter .banner[id='${this.id}']`).remove();
+            updateMargin();
+          }
+        );
     }
   }
 }
