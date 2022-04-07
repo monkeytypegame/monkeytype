@@ -137,6 +137,7 @@ label.checkbox {
   z-index: 999;
   grid-template-rows: auto 1fr auto;
   width: 100%;
+  transition: padding-top 0.125s;
   &.wide125 {
     max-width: 1250px;
   }
