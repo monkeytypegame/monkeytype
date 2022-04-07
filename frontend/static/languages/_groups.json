@@ -53,6 +53,10 @@
     ]
   },
   {
+    "name": "latin",
+    "languages": ["latin"]
+  },
+  {
     "name": "afrikaans",
     "languages": ["afrikaans", "afrikaans_1k", "afrikaans_10k"]
   },
