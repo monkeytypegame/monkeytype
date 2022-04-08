@@ -311,7 +311,8 @@
       "code_bash",
       "code_lua",
       "code_luau",
-      "code_matlab"
+      "code_matlab",
+      "code_sql"
     ]
   },
   {
