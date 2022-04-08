@@ -6,7 +6,7 @@ import * as RouteController from "./controllers/route-controller";
 import * as PageController from "./controllers/page-controller";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
-import * as Notifications from "./elements/notifications";
+// import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 
 ManualRestart.set();
@@ -42,27 +42,27 @@ $(document).ready(() => {
   //     }
   //   );
   // }
-  if (!window.localStorage.getItem("monkebannerclosed")) {
-    const end = 1649368800000;
-    const diff = end - Date.now();
-    const string = Misc.secondsToString(
-      diff / 1000,
-      false,
-      false,
-      "text",
-      false,
-      true
-    );
-    Notifications.addBanner(
-      `Reject humanity, <a target="_blank" href="https://www.monkeytype.store/listing/reject-humanity-black">become</a> <a target="_blank" href="https://www.monkeytype.store/listing/reject-humanity-white">monke</a>. (${string})`,
-      1,
-      "images/becomemonke.png",
-      false,
-      () => {
-        window.localStorage.setItem("monkebannerclosed", "true");
-      }
-    );
-  }
+  // if (!window.localStorage.getItem("monkebannerclosed")) {
+  //   const end = 1649368800000;
+  //   const diff = end - Date.now();
+  //   const string = Misc.secondsToString(
+  //     diff / 1000,
+  //     false,
+  //     false,
+  //     "text",
+  //     false,
+  //     true
+  //   );
+  //   Notifications.addBanner(
+  //     `Reject humanity, <a target="_blank" href="https://www.monkeytype.store/listing/reject-humanity-black">become</a> <a target="_blank" href="https://www.monkeytype.store/listing/reject-humanity-white">monke</a>. (${string})`,
+  //     1,
+  //     "images/becomemonke.png",
+  //     false,
+  //     () => {
+  //       window.localStorage.setItem("monkebannerclosed", "true");
+  //     }
+  //   );
+  // }
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
