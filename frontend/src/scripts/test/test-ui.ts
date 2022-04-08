@@ -278,6 +278,13 @@ export async function screenshot(): Promise<void> {
               .then(() => {
                 Notifications.add("Copied to clipboard", 1, 2);
                 revertScreenshot();
+              })
+              .catch((e: any) => {
+                Notifications.add(
+                  "Error saving image to clipboard: " + e.message,
+                  -1
+                );
+                revertScreenshot();
               });
           }
         } catch (e: any) {
