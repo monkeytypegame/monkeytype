@@ -26,6 +26,7 @@ class UsersDAO {
       uid,
       addedAt: currentDate,
       lastNameChange: currentDate,
+      customThemes: [],
     });
   }
 
@@ -57,10 +58,24 @@ class UsersDAO {
       .updateOne({ uid }, { $set: { name, lastNameChange: Date.now() } });
   }
 
-  static async clearPb(uid): Promise<UpdateResult> {
-    return await db
-      .collection<MonkeyTypes.User>("users")
-      .updateOne({ uid }, { $set: { personalBests: {}, lbPersonalBests: {} } });
+  static async clearPb(uid): Promise<any> {
+    return await db.collection<MonkeyTypes.User>("users").updateOne(
+      { uid },
+      {
+        $set: {
+          personalBests: {
+            custom: {},
+            quote: {},
+            time: {},
+            words: {},
+            zen: {},
+          },
+          lbPersonalBests: {
+            time: {},
+          },
+        },
+      }
+    );
   }
 
   static async isNameAvailable(name): Promise<boolean> {

@@ -95,8 +95,8 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
 }
 
 function updateLeaderboardPersonalBests(
-  userPersonalBests: MonkeyTypes.User["personalBests"],
-  lbPersonalBests: MonkeyTypes.User["lbPersonalBests"],
+  userPersonalBests: MonkeyTypes.PersonalBests,
+  lbPersonalBests: MonkeyTypes.LbPersonalBests,
   result: Result
 ): void {
   if (!shouldUpdateLeaderboardPersonalBests(result)) {

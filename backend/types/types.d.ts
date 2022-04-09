@@ -57,7 +57,7 @@ declare namespace MonkeyTypes {
     email: string;
     lastNameChange: number;
     lbMemory?: object;
-    lbPersonalBests?: object;
+    lbPersonalBests?: LbPersonalBests;
     name: string;
     customThemes: CustomTheme[];
     personalBests?: PersonalBests;
@@ -72,10 +72,18 @@ declare namespace MonkeyTypes {
     canManageApeKeys?: boolean;
   }
 
+  interface LbPersonalBests {
+    time: {
+      [key: number]: {
+        [key: string]: PersonalBest;
+      };
+    };
+  }
+
   interface UserTag {
     _id: ObjectId;
     name: string;
-    personalBests: PersonalBests;
+    personalBests?: PersonalBests;
   }
 
   interface CustomTheme {
