@@ -1,4 +1,4 @@
-import UsersDAO from "../../dao/user";
+import * as UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";

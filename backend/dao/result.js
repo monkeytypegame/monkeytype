@@ -2,13 +2,13 @@ import { ObjectId } from "mongodb";
 import MonkeyError from "../utils/error";
 import db from "../init/db";
 
-import UserDAO from "./user";
+import { getUser, getTags } from "./user";
 
 class ResultDAO {
   static async addResult(uid, result) {
     let user;
     try {
-      user = await UserDAO.getUser(uid);
+      user = await getUser(uid);
     } catch (e) {
       user = null;
     }
@@ -30,7 +30,7 @@ class ResultDAO {
       .collection("results")
       .findOne({ _id: new ObjectId(resultid), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
-    const userTags = await UserDAO.getTags(uid);
+    const userTags = await getTags(uid);
     const userTagIds = userTags.map((tag) => tag._id.toString());
     let validTags = true;
     tags.forEach((tagId) => {

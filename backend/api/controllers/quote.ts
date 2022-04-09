@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
-import UserDAO from "../../dao/user";
+import { getUser, updateQuoteRatings } from "../../dao/user";
 import ReportDAO from "../../dao/report";
 import NewQuotesDao from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
@@ -74,7 +74,7 @@ export async function submitRating(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, rating, language } = req.body;
 
-  const user = await UserDAO.getUser(uid);
+  const user = await getUser(uid);
   if (!user) {
     throw new MonkeyError(401, "User not found.");
   }
@@ -102,7 +102,7 @@ export async function submitRating(
     Object
   );
 
-  await UserDAO.updateQuoteRatings(uid, userQuoteRatings);
+  await updateQuoteRatings(uid, userQuoteRatings);
 
   const responseMessage = `Rating ${
     shouldUpdateRating ? "updated" : "submitted"
