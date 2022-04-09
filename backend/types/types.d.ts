@@ -1,3 +1,5 @@
+type ObjectId = import("mongodb").ObjectId;
+
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
@@ -49,24 +51,37 @@ declare namespace MonkeyTypes {
   interface User {
     // TODO, Complete the typings for the user model
     addedAt: number;
-    bananas: number;
-    completedTests: number;
+    bananas?: number;
+    completedTests?: number;
     discordId?: string;
     email: string;
     lastNameChange: number;
-    lbMemory: object;
-    lbPersonalBests: object;
+    lbMemory?: object;
+    lbPersonalBests?: object;
     name: string;
-    personalBests: object;
+    customThemes: CustomTheme[];
+    personalBests?: PersonalBests;
     quoteRatings?: Record<string, Record<string, number>>;
-    startedTests: number;
-    tags: object[];
-    timeTyping: number;
+    startedTests?: number;
+    tags?: UserTag[];
+    timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
+  }
+
+  interface UserTag {
+    _id: ObjectId;
+    name: string;
+    personalBests: PersonalBests;
+  }
+
+  interface CustomTheme {
+    _id: ObjectId;
+    name: string;
+    colors: string[];
   }
 
   interface ApeKey {
@@ -106,9 +121,9 @@ declare namespace MonkeyTypes {
       [key: number]: PersonalBest[];
     };
     quote: { [quote: string]: PersonalBest[] };
-    custom: { custom: PersonalBest[] };
+    custom: { custom?: PersonalBest[] };
     zen: {
-      zen: PersonalBest[];
+      zen?: PersonalBest[];
     };
   }
 

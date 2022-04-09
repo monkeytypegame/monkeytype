@@ -293,6 +293,11 @@ export async function getPersonalBests(
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
 
-  const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
+  const data =
+    (await UsersDAO.getPersonalBests(
+      uid,
+      mode as string,
+      mode2 as string | undefined
+    )) ?? null;
   return new MonkeyResponse("Personal bests retrieved", data);
 }
