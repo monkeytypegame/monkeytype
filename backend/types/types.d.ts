@@ -51,16 +51,16 @@ declare namespace MonkeyTypes {
   interface User {
     // TODO, Complete the typings for the user model
     addedAt: number;
-    verified: boolean;
+    verified?: boolean;
     bananas?: number;
     completedTests?: number;
     discordId?: string;
     email: string;
-    lastNameChange: number;
+    lastNameChange?: number;
     lbMemory?: object;
     lbPersonalBests?: LbPersonalBests;
     name?: string;
-    customThemes: CustomTheme[];
+    customThemes?: CustomTheme[];
     personalBests?: PersonalBests;
     quoteRatings?: Record<string, Record<string, number>>;
     startedTests?: number;

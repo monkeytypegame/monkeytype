@@ -21,13 +21,10 @@ class UsersDAO {
 
     const currentDate = Date.now();
     return await usersCollection.insertOne({
-      verified: false,
       name,
       email,
       uid,
       addedAt: currentDate,
-      lastNameChange: currentDate,
-      customThemes: [],
     });
   }
 
@@ -48,7 +45,7 @@ class UsersDAO {
       throw new MonkeyError(404, "User not found", "update name");
     }
 
-    if (Date.now() - user.lastNameChange < 2592000000) {
+    if (Date.now() - (user.lastNameChange ?? 0) < 2592000000) {
       throw new MonkeyError(409, "You can change your name once every 30 days");
     }
     if (!isUsernameValid(name)) {
