@@ -367,6 +367,9 @@
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 0.5rem;
         margin-top: 0.5rem;
+        .button {
+          transition: transform 0.125s;
+        }
       }
     }
 
