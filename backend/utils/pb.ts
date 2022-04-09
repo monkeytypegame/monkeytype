@@ -14,7 +14,7 @@ export function checkAndUpdatePb(
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as "time" | "words";
+  const mode2 = result.mode2 as 15 | 60;
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] = userPb[mode] ?? {};

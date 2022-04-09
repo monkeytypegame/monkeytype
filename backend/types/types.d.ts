@@ -51,6 +51,7 @@ declare namespace MonkeyTypes {
   interface User {
     // TODO, Complete the typings for the user model
     addedAt: number;
+    verified: boolean;
     bananas?: number;
     completedTests?: number;
     discordId?: string;
