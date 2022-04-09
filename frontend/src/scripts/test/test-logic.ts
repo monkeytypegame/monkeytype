@@ -1637,6 +1637,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
 });
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
+  if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
     UpdateConfig.setWordCount(parseInt(wrd));
@@ -1646,6 +1647,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
+  if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
     UpdateConfig.setTimeConfig(parseInt(mode));
@@ -1655,6 +1657,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+  if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
   >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
@@ -1669,18 +1672,21 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .punctuationMode .text-button", () => {
+  if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
 $(document).on("click", "#top .config .numbersMode .text-button", () => {
+  if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   restart();
 });
 
 $(document).on("click", "#top .config .mode .text-button", (e) => {
+  if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
   if (mode === undefined) return;
