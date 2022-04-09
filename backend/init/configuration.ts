@@ -1,6 +1,7 @@
 import db from "./db";
 import _ from "lodash";
 import Logger from "../utils/logger";
+import logToDb from "../utils/db-logger";
 import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
 
@@ -78,7 +79,7 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
       await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
     }
   } catch (error) {
-    Logger.logToDb(
+    logToDb(
       "fetch_configuration_failure",
       `Could not fetch configuration: ${error.message}`
     );
@@ -98,7 +99,7 @@ async function pushConfiguration(
     await db.collection("configuration").replaceOne({}, configuration);
     serverConfigurationUpdated = true;
   } catch (error) {
-    Logger.logToDb(
+    logToDb(
       "push_configuration_failure",
       `Could not push configuration: ${error.message}`
     );

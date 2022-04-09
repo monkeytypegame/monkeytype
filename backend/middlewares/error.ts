@@ -1,6 +1,7 @@
 import db from "../init/db";
 import { v4 as uuidv4 } from "uuid";
 import Logger from "../utils/logger";
+import logToDb from "../utils/db-logger";
 import MonkeyError from "../utils/error";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { NextFunction, Response } from "express";
@@ -37,7 +38,7 @@ async function errorHandlingMiddleware(
     const { uid, errorId } = monkeyResponse.data;
 
     try {
-      await Logger.logToDb(
+      await logToDb(
         "system_error",
         `${monkeyResponse.status} ${error.message} ${error.stack}`,
         uid

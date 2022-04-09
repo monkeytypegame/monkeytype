@@ -1,7 +1,7 @@
 import UsersDAO from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
-import Logger from "../../utils/logger";
+import logToDb from "../../utils/db-logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
@@ -14,7 +14,7 @@ export async function createNewUser(
   const { email, uid } = req.ctx.decodedToken;
 
   await UsersDAO.addUser(name, email, uid);
-  Logger.logToDb("user_created", `${name} ${email}`, uid);
+  logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
 }
@@ -26,7 +26,7 @@ export async function deleteUser(
 
   const userInfo = await UsersDAO.getUser(uid);
   await UsersDAO.deleteUser(uid);
-  Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+  logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User deleted");
 }
@@ -39,7 +39,7 @@ export async function updateName(
 
   const oldUser = await UsersDAO.getUser(uid);
   await UsersDAO.updateName(uid, name);
-  Logger.logToDb(
+  logToDb(
     "user_name_updated",
     `changed name from ${oldUser.name} to ${name}`,
     uid
@@ -54,7 +54,7 @@ export async function clearPb(
   const { uid } = req.ctx.decodedToken;
 
   await UsersDAO.clearPb(uid);
-  Logger.logToDb("user_cleared_pbs", "", uid);
+  logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -84,7 +84,7 @@ export async function updateEmail(
     throw new MonkeyError(404, e.message, "update email", uid);
   }
 
-  Logger.logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
+  logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
 
   return new MonkeyResponse("Email updated");
 }
@@ -111,7 +111,7 @@ export async function getUser(
   }
 
   const agentLog = buildAgentLog(req);
-  Logger.logToDb("user_data_requested", agentLog, uid);
+  logToDb("user_data_requested", agentLog, uid);
 
   return new MonkeyResponse("User data retrieved", userInfo);
 }
@@ -161,7 +161,7 @@ export async function linkDiscord(
     George.linkDiscord(discordId, uid);
   }
   await BotDAO.linkDiscord(uid, discordId);
-  Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", discordId);
 }
@@ -184,7 +184,7 @@ export async function unlinkDiscord(
   await BotDAO.unlinkDiscord(uid, userInfo.discordId);
 
   await UsersDAO.unlinkDiscord(uid);
-  Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
+  logToDb("user_discord_unlinked", userInfo.discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
 }

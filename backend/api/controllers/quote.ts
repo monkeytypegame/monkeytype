@@ -6,8 +6,8 @@ import NewQuotesDao from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
 import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
-import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
+import logToDb from "../../utils/db-logger";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -41,7 +41,7 @@ export async function approveQuote(
   const { quoteId, editText, editSource } = req.body;
 
   const data = await NewQuotesDao.approve(quoteId, editText, editSource);
-  Logger.logToDb("system_quote_approved", data, uid);
+  logToDb("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);
 }

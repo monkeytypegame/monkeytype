@@ -5,6 +5,7 @@ import BotDAO from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
+import logToDb from "../../utils/db-logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
@@ -48,7 +49,7 @@ export async function deleteAll(
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAO.deleteAll(uid);
-  Logger.logToDb("user_results_deleted", "", uid);
+  logToDb("user_results_deleted", "", uid);
   return new MonkeyResponse("All results deleted");
 }
 
@@ -90,7 +91,7 @@ export async function addResult(
     //if its not 64 that means client is still using old hashing package
     const serverhash = objectHash(result);
     if (serverhash !== resulthash) {
-      Logger.logToDb(
+      logToDb(
         "incorrect_result_hash",
         {
           serverhash,
@@ -155,7 +156,7 @@ export async function addResult(
   const earliestPossible = lastResultTimestamp + testDurationMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
-    Logger.logToDb(
+    logToDb(
       "invalid_result_spacing",
       {
         lastTimestamp: lastResultTimestamp,
@@ -290,7 +291,7 @@ export async function addResult(
   const addedResult = await ResultDAO.addResult(uid, result);
 
   if (isPb) {
-    Logger.logToDb(
+    logToDb(
       "user_new_pb",
       `${result.mode + " " + result.mode2} ${result.wpm} ${result.acc}% ${
         result.rawWpm
