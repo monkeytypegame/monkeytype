@@ -11,7 +11,7 @@ class UsersDAO {
     name: string | undefined,
     email: string,
     uid: string
-  ): Promise<InsertOneResult<MonkeyTypes.User>> {
+  ): Promise<any> {
     const usersCollection = db.collection<MonkeyTypes.User>("users");
 
     const user = await usersCollection.findOne({ uid });
@@ -21,6 +21,7 @@ class UsersDAO {
 
     const currentDate = Date.now();
     return await usersCollection.insertOne({
+      verified: false,
       name,
       email,
       uid,
