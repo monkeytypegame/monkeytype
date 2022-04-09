@@ -11,7 +11,7 @@ class UsersDAO {
     name: string | undefined,
     email: string,
     uid: string
-  ): Promise<any> {
+  ): Promise<InsertOneResult<MonkeyTypes.User>> {
     const usersCollection = db.collection<MonkeyTypes.User>("users");
 
     const user = await usersCollection.findOne({ uid });
