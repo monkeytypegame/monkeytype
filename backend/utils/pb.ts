@@ -2,18 +2,19 @@ import _ from "lodash";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
-  obj: object;
-  lbObj?: object;
+  personalBests: MonkeyTypes.PersonalBests;
+  LbPersonalBests?: MonkeyTypes.LbPersonalBests;
 }
 
 type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
 export function checkAndUpdatePb(
-  userPersonalBests: MonkeyTypes.User["personalBests"],
-  lbPersonalBests: MonkeyTypes.User["lbPersonalBests"] | undefined,
+  userPersonalBests: MonkeyTypes.PersonalBests,
+  lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
-  const { mode, mode2 } = result;
+  const mode = result.mode;
+  const mode2 = result.mode2 as "time" | "words";
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] = userPb[mode] ?? {};
@@ -40,8 +41,8 @@ export function checkAndUpdatePb(
 
   return {
     isPb,
-    obj: userPb,
-    lbObj: lbPersonalBests,
+    personalBests: userPb,
+    LbPersonalBests: lbPersonalBests,
   };
 }
 
@@ -103,7 +104,8 @@ function updateLeaderboardPersonalBests(
     return;
   }
 
-  const { mode, mode2 } = result;
+  const mode = result.mode;
+  const mode2 = result.mode2 as MonkeyTypes.Mode2<"time">;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
   const lbMode2 = lbPersonalBests[mode][mode2];

@@ -8,7 +8,7 @@ import { DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 
 class UsersDAO {
   static async addUser(
-    name: string,
+    name: string | undefined,
     email: string,
     uid: string
   ): Promise<InsertOneResult<MonkeyTypes.User>> {
@@ -47,18 +47,19 @@ class UsersDAO {
       throw new MonkeyError(404, "User not found", "update name");
     }
 
-    if (
-      Date.now() - user.lastNameChange < 2592000000 &&
-      isUsernameValid(user.name)
-    ) {
+    if (Date.now() - user.lastNameChange < 2592000000) {
       throw new MonkeyError(409, "You can change your name once every 30 days");
     }
+    if (!isUsernameValid(name)) {
+      throw new Error("Invalid username");
+    }
+
     return await db
       .collection<MonkeyTypes.User>("users")
       .updateOne({ uid }, { $set: { name, lastNameChange: Date.now() } });
   }
 
-  static async clearPb(uid): Promise<any> {
+  static async clearPb(uid): Promise<UpdateResult> {
     return await db.collection<MonkeyTypes.User>("users").updateOne(
       { uid },
       {
@@ -257,11 +258,14 @@ class UsersDAO {
     if (pb.isPb) {
       await db
         .collection<MonkeyTypes.User>("users")
-        .updateOne({ uid }, { $set: { personalBests: pb.obj } });
-      if (pb.lbObj) {
+        .updateOne({ uid }, { $set: { personalBests: pb.personalBests } });
+      if (pb.LbPersonalBests) {
         await db
           .collection<MonkeyTypes.User>("users")
-          .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbObj } });
+          .updateOne(
+            { uid },
+            { $set: { lbPersonalBests: pb.LbPersonalBests } }
+          );
       }
       return true;
     } else {
@@ -300,6 +304,10 @@ class UsersDAO {
     const ret: string[] = [];
 
     tagsToCheck.forEach(async (tag) => {
+      if (!tag.personalBests) {
+        return;
+      }
+
       const tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
       if (tagpb.isPb) {
         ret.push(tag._id.toHexString());
@@ -307,7 +315,7 @@ class UsersDAO {
           .collection<MonkeyTypes.User>("users")
           .updateOne(
             { uid, "tags._id": new ObjectId(tag._id) },
-            { $set: { "tags.$.personalBests": tagpb.obj } }
+            { $set: { "tags.$.personalBests": tagpb.personalBests } }
           );
       }
     });
@@ -315,7 +323,7 @@ class UsersDAO {
     return ret;
   }
 
-  static async resetPb(uid): Promise<any> {
+  static async resetPb(uid): Promise<UpdateResult> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });

@@ -58,7 +58,7 @@ declare namespace MonkeyTypes {
     lastNameChange: number;
     lbMemory?: object;
     lbPersonalBests?: LbPersonalBests;
-    name: string;
+    name?: string;
     customThemes: CustomTheme[];
     personalBests?: PersonalBests;
     quoteRatings?: Record<string, Record<string, number>>;
