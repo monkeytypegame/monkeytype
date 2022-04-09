@@ -62,7 +62,7 @@ declare namespace MonkeyTypes {
     name?: string;
     customThemes?: CustomTheme[];
     personalBests?: PersonalBests;
-    quoteRatings?: Record<string, Record<string, number>>;
+    quoteRatings?: UserQuoteRatings;
     startedTests?: number;
     tags?: UserTag[];
     timeTyping?: number;
@@ -72,6 +72,8 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     canManageApeKeys?: boolean;
   }
+
+  type UserQuoteRatings = Record<string, Record<string, number>>;
 
   interface LbPersonalBests {
     time: {

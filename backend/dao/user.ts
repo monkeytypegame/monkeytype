@@ -28,11 +28,11 @@ class UsersDAO {
     });
   }
 
-  static async deleteUser(uid): Promise<DeleteResult> {
+  static async deleteUser(uid: string): Promise<DeleteResult> {
     return await db.collection<MonkeyTypes.User>("users").deleteOne({ uid });
   }
 
-  static async updateName(uid: string, name): Promise<UpdateResult> {
+  static async updateName(uid: string, name: string): Promise<UpdateResult> {
     if (!this.isNameAvailable(name)) {
       throw new MonkeyError(409, "Username already taken", name);
     }
@@ -57,7 +57,7 @@ class UsersDAO {
       .updateOne({ uid }, { $set: { name, lastNameChange: Date.now() } });
   }
 
-  static async clearPb(uid): Promise<UpdateResult> {
+  static async clearPb(uid: string): Promise<UpdateResult> {
     return await db.collection<MonkeyTypes.User>("users").updateOne(
       { uid },
       {
@@ -77,21 +77,21 @@ class UsersDAO {
     );
   }
 
-  static async isNameAvailable(name): Promise<boolean> {
+  static async isNameAvailable(name: string): Promise<boolean> {
     const nameDocs = await db
       .collection<MonkeyTypes.User>("users")
       .find({ name })
       .collation({ locale: "en", strength: 1 })
       .limit(1)
       .toArray();
-    if (nameDocs.length !== 0) {
-      return false;
-    } else {
-      return true;
-    }
+
+    return nameDocs.length !== 0;
   }
 
-  static async updateQuoteRatings(uid: string, quoteRatings): Promise<boolean> {
+  static async updateQuoteRatings(
+    uid: string,
+    quoteRatings: MonkeyTypes.UserQuoteRatings
+  ): Promise<boolean> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
@@ -105,7 +105,7 @@ class UsersDAO {
     return true;
   }
 
-  static async updateEmail(uid: string, email): Promise<boolean> {
+  static async updateEmail(uid: string, email: string): Promise<boolean> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
@@ -117,7 +117,7 @@ class UsersDAO {
     return true;
   }
 
-  static async getUser(uid): Promise<MonkeyTypes.User> {
+  static async getUser(uid: string): Promise<MonkeyTypes.User> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
@@ -125,14 +125,14 @@ class UsersDAO {
     return user;
   }
 
-  static async isDiscordIdAvailable(discordId): Promise<boolean> {
+  static async isDiscordIdAvailable(discordId: string): Promise<boolean> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ discordId });
     return _.isNil(user);
   }
 
-  static async addTag(uid: string, name): Promise<MonkeyTypes.UserTag> {
+  static async addTag(uid: string, name: string): Promise<MonkeyTypes.UserTag> {
     const _id = new ObjectId();
     await db
       .collection<MonkeyTypes.User>("users")
@@ -153,14 +153,18 @@ class UsersDAO {
     return user.tags ?? [];
   }
 
-  static async editTag(uid: string, _id, name): Promise<UpdateResult> {
+  static async editTag(
+    uid: string,
+    _id: string,
+    name: string
+  ): Promise<UpdateResult> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "edit tag");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t._id == _id).length === 0
+      user.tags.filter((t) => t._id.toHexString() === _id).length === 0
     ) {
       throw new MonkeyError(404, "Tag not found");
     }
@@ -214,10 +218,10 @@ class UsersDAO {
 
   static async updateLbMemory(
     uid: string,
-    mode,
-    mode2,
-    language,
-    rank
+    mode: MonkeyTypes.Mode,
+    mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>,
+    language: string,
+    rank: number
   ): Promise<UpdateResult> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
@@ -237,7 +241,11 @@ class UsersDAO {
     );
   }
 
-  static async checkIfPb(uid: string, user, result): Promise<boolean> {
+  static async checkIfPb(
+    uid: string,
+    user: MonkeyTypes.User,
+    result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  ): Promise<boolean> {
     const { mode, funbox } = result;
 
     if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
@@ -248,33 +256,39 @@ class UsersDAO {
       return false;
     }
 
-    let lbpb = user.lbPersonalBests;
-    if (!lbpb) lbpb = {};
+    let LbPb = user.lbPersonalBests;
+    if (!LbPb) LbPb = { time: {} };
 
-    const pb = checkAndUpdatePb(user.personalBests, lbpb, result);
+    const pb = checkAndUpdatePb(
+      user.personalBests ?? {
+        time: {},
+        custom: {},
+        quote: {},
+        words: {},
+        zen: {},
+      },
+      LbPb,
+      result
+    );
 
-    if (pb.isPb) {
+    if (!pb.isPb) return false;
+
+    await db
+      .collection<MonkeyTypes.User>("users")
+      .updateOne({ uid }, { $set: { personalBests: pb.personalBests } });
+
+    if (pb.lbPersonalBests) {
       await db
         .collection<MonkeyTypes.User>("users")
-        .updateOne({ uid }, { $set: { personalBests: pb.personalBests } });
-      if (pb.LbPersonalBests) {
-        await db
-          .collection<MonkeyTypes.User>("users")
-          .updateOne(
-            { uid },
-            { $set: { lbPersonalBests: pb.LbPersonalBests } }
-          );
-      }
-      return true;
-    } else {
-      return false;
+        .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbPersonalBests } });
     }
+    return true;
   }
 
   static async checkIfTagPb(
     uid: string,
     user: MonkeyTypes.User,
-    result
+    result: MonkeyTypes.Result<MonkeyTypes.Mode>
   ): Promise<string[]> {
     if (user.tags === undefined || user.tags.length === 0) {
       return [];
@@ -293,7 +307,7 @@ class UsersDAO {
     const tagsToCheck: MonkeyTypes.UserTag[] = [];
     user.tags.forEach((tag) => {
       tags.forEach((resultTag) => {
-        if (resultTag == tag._id) {
+        if (resultTag == tag._id.toHexString()) {
           tagsToCheck.push(tag);
         }
       });
@@ -321,7 +335,7 @@ class UsersDAO {
     return ret;
   }
 
-  static async resetPb(uid): Promise<UpdateResult> {
+  static async resetPb(uid: string): Promise<UpdateResult> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
@@ -344,8 +358,8 @@ class UsersDAO {
 
   static async updateTypingStats(
     uid: string,
-    restartCount,
-    timeTyping
+    restartCount: number,
+    timeTyping: number
   ): Promise<UpdateResult> {
     return await db.collection<MonkeyTypes.User>("users").updateOne(
       { uid },
@@ -359,7 +373,10 @@ class UsersDAO {
     );
   }
 
-  static async linkDiscord(uid: string, discordId): Promise<UpdateResult> {
+  static async linkDiscord(
+    uid: string,
+    discordId: string
+  ): Promise<UpdateResult> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
@@ -391,13 +408,11 @@ class UsersDAO {
       throw new MonkeyError(404, "User not found", "increment bananas");
     }
 
-    let best60;
+    let best60: number | undefined;
     const personalBests60 = user.personalBests?.time[60];
 
     if (personalBests60) {
       best60 = Math.max(...personalBests60.map((best) => best.wpm));
-    } else {
-      best60 = undefined;
     }
 
     if (best60 === undefined || wpm >= best60 - best60 * 0.25) {
@@ -405,9 +420,9 @@ class UsersDAO {
       return await db
         .collection<MonkeyTypes.User>("users")
         .updateOne({ uid }, { $inc: { bananas: 1 } });
-    } else {
-      return null;
     }
+
+    return null;
   }
 
   static themeDoesNotExist(customThemes, id): boolean {
@@ -496,7 +511,7 @@ class UsersDAO {
     );
   }
 
-  static async getThemes(uid): Promise<MonkeyTypes.CustomTheme[]> {
+  static async getThemes(uid: string): Promise<MonkeyTypes.CustomTheme[]> {
     const user = await db
       .collection<MonkeyTypes.User>("users")
       .findOne({ uid });
@@ -521,9 +536,9 @@ class UsersDAO {
 
     if (mode2) {
       return user?.personalBests?.[mode]?.[mode2];
-    } else {
-      return user?.personalBests?.[mode];
     }
+
+    return user?.personalBests?.[mode];
   }
 }
 

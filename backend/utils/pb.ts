@@ -3,7 +3,7 @@ import _ from "lodash";
 interface CheckAndUpdatePbResult {
   isPb: boolean;
   personalBests: MonkeyTypes.PersonalBests;
-  LbPersonalBests?: MonkeyTypes.LbPersonalBests;
+  lbPersonalBests?: MonkeyTypes.LbPersonalBests;
 }
 
 type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
@@ -42,7 +42,7 @@ export function checkAndUpdatePb(
   return {
     isPb,
     personalBests: userPb,
-    LbPersonalBests: lbPersonalBests,
+    lbPersonalBests: lbPersonalBests,
   };
 }
 
