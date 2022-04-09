@@ -399,6 +399,68 @@ class UsersDAO {
       return user?.personalBests?.[mode];
     }
   }
+
+  static async getFavoriteQuotes(uid) {
+    const user = await db.collection("users").findOne({ uid });
+
+    if (!user) {
+      throw new MonkeyError(409, "User not found", "getFavoriteQuotes");
+    }
+
+    return user.favQuotes ?? {};
+  }
+
+  static async addFavoriteQuote(uid, language, quoteId) {
+    const user = await db.collection("users").findOne({ uid });
+
+    if (!user) {
+      throw new MonkeyError(409, "User does not exist", "addFavoriteQuote");
+    }
+
+    if (
+      user.favQuotes &&
+      user.favQuotes[language] &&
+      user.favQuotes[language].includes(quoteId)
+    ) {
+      throw new MonkeyError(
+        404,
+        "Quote already in favorites",
+        "addFavoriteQuote"
+      );
+    }
+
+    return await db.collection("users").updateOne(
+      { uid },
+      {
+        $push: {
+          [`favQuotes.${language}`]: quoteId,
+        },
+      }
+    );
+  }
+
+  static async removeFavoriteQuote(uid, language, quoteId) {
+    const user = await db.collection("users").findOne({ uid });
+    if (!user) {
+      throw new MonkeyError(409, "User does not exist", "deleteFavoriteQuote");
+    }
+
+    if (
+      !user.favQuotes ||
+      !user.favQuotes[language] ||
+      !user.favQuotes[language].includes(quoteId)
+    ) {
+      throw new MonkeyError(
+        404,
+        "Quote already not in favorites",
+        "deleteFavoriteQuote"
+      );
+    }
+
+    return await db
+      .collection("users")
+      .updateOne({ uid }, { $pull: { [`favQuotes.${language}`]: quoteId } });
+  }
 }
 
 export default UsersDAO;

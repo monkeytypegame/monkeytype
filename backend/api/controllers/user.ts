@@ -296,3 +296,35 @@ export async function getPersonalBests(
   const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
   return new MonkeyResponse("Personal bests retrieved", data);
 }
+
+export async function getFavoriteQuotes(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const quotes = await UsersDAO.getFavoriteQuotes(uid);
+
+  return new MonkeyResponse("Favorite quotes retrieved", quotes);
+}
+
+export async function addFavoriteQuote(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const { language, quoteId } = req.body;
+  await UsersDAO.addFavoriteQuote(uid, language, quoteId);
+
+  return new MonkeyResponse("Quote added to favorites");
+}
+
+export async function removeFavoriteQuote(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const { quoteId, language } = req.body;
+  await UsersDAO.removeFavoriteQuote(uid, language, quoteId);
+
+  return new MonkeyResponse("Quote removed from favorites");
+}
