@@ -11,10 +11,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Noto+Naskh+Arabic&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap");
 
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono";
+  --font: "Roboto Mono", "Vazirmatn";
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
 }

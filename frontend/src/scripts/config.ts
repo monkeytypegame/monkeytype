@@ -1114,7 +1114,7 @@ export function previewFontFamily(font: string): boolean {
 
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono"'
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
 
   return true;
@@ -1145,7 +1145,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    `"${font.replace(/_/g, " ")}", "Roboto Mono"`
+    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn"`
   );
   saveToLocalStorage("fontFamily", nosave);
   ConfigEvent.dispatch("fontFamily", config.fontFamily);
