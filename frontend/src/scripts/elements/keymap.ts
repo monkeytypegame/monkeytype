@@ -136,13 +136,14 @@ export async function refresh(
         }
 
         if (row === "row5") {
-          let layoutDisplay = layoutString.replace(/_/g, " ");
+          const layoutDisplay = layoutString.replace(/_/g, " ");
+          let letterStyle = "";
           if (Config.keymapLegendStyle === "blank") {
-            layoutDisplay = "";
+            letterStyle = `style="display: none;"`;
           }
           rowElement += "<div></div>";
           rowElement += `<div class="keymap-key key-space">
-          <div class="letter">${layoutDisplay}</div>
+          <div class="letter" ${letterStyle}>${layoutDisplay}</div>
         </div>`;
           rowElement += `<div class="keymap-split-spacer"></div>`;
           rowElement += `<div class="keymap-key key-split-space">
@@ -161,8 +162,9 @@ export async function refresh(
             const key = rowKeys[i];
             const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
             let keyDisplay = key[0];
+            let letterStyle = "";
             if (Config.keymapLegendStyle === "blank") {
-              keyDisplay = "";
+              letterStyle = `style="display: none;"`;
             } else if (Config.keymapLegendStyle === "uppercase") {
               keyDisplay = keyDisplay.toUpperCase();
             }
@@ -170,7 +172,7 @@ export async function refresh(
               '"',
               "&quot;"
             )}">
-              <span class="letter">${keyDisplay}</span>
+              <span class="letter" ${letterStyle}>${keyDisplay}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;
 
