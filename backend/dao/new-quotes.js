@@ -56,11 +56,17 @@ class NewQuotesDAO {
     return await db.collection("new-quotes").insertOne(quote);
   }
 
-  static async get() {
+  static async get(language) {
     if (!git) throw new MonkeyError(500, "Git not available.");
+    const where = {
+      approved: false,
+    };
+    if (language !== "all") {
+      where.language = language;
+    }
     return await db
       .collection("new-quotes")
-      .find({ approved: false })
+      .find(where)
       .sort({ timestamp: 1 })
       .limit(10)
       .toArray();
