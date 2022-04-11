@@ -21,7 +21,7 @@ export function highlightKey(currentKey: string): void {
       highlightKey = `#keymap .keymap-key[data-key*="${currentKey}"]`;
     }
 
-    console.log("highlighting", highlightKey);
+    // console.log("highlighting", highlightKey);
 
     $(highlightKey).addClass("active-key");
   } catch (e) {
