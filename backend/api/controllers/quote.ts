@@ -40,7 +40,9 @@ export async function approveQuote(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
 
-  const data = await NewQuotesDao.approve(quoteId, editText, editSource);
+  const { name } = await UserDAO.getUser(uid);
+
+  const data = await NewQuotesDao.approve(quoteId, editText, editSource, name);
   Logger.logToDb("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);

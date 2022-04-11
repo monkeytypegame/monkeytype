@@ -66,7 +66,7 @@ class NewQuotesDAO {
       .toArray();
   }
 
-  static async approve(quoteId, editQuote, editSource) {
+  static async approve(quoteId, editQuote, editSource, name) {
     if (!git) throw new MonkeyError(500, "Git not available.");
     //check mod status
     const targetQuote = await db
@@ -80,6 +80,7 @@ class NewQuotesDAO {
       text: editQuote ? editQuote : targetQuote.text,
       source: editSource ? editSource : targetQuote.source,
       length: targetQuote.text.length,
+      name,
     };
     let message = "";
     const fileDir = path.join(
