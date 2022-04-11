@@ -54,7 +54,6 @@ function updateUI(): void {
         .getCurrent()
         .charAt(TestInput.input.current.length)
         .toString()
-        .toUpperCase()
     );
   }
 }
@@ -128,7 +127,6 @@ function handleSpace(): void {
         .getCurrent()
         .charAt(TestInput.input.current.length)
         .toString()
-        .toUpperCase()
     );
     Settings.groups["layout"]?.updateInput();
   }
