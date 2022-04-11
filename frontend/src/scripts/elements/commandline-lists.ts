@@ -181,10 +181,11 @@ const commandsFonts: MonkeyTypes.CommandsGroup = {
 
 Misc.getFontsList().then((fonts) => {
   fonts.forEach((font) => {
+    const configVal = font.name.replace(/ /g, "_");
     commandsFonts.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
-      configValue: font.name,
+      configValue: configVal,
       hover: (): void => {
         UpdateConfig.previewFontFamily(font.name);
       },
