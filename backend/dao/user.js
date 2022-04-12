@@ -422,11 +422,7 @@ class UsersDAO {
       user.favoriteQuotes[language] &&
       user.favoriteQuotes[language].includes(quoteId)
     ) {
-      throw new MonkeyError(
-        404,
-        "Quote already in favorites",
-        "addFavoriteQuote"
-      );
+      return true;
     }
 
     return await db.collection("users").updateOne(
@@ -450,11 +446,7 @@ class UsersDAO {
       !user.favoriteQuotes[language] ||
       !user.favoriteQuotes[language].includes(quoteId)
     ) {
-      throw new MonkeyError(
-        404,
-        "Quote already not in favorites",
-        "deleteFavoriteQuote"
-      );
+      return true;
     }
 
     return await db
