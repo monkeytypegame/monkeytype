@@ -502,7 +502,6 @@ export function restart(
                 TestInput.input.current.length + 1
               )
               .toString()
-              .toUpperCase()
           );
         }
         Funbox.toggleScript(TestWords.words.getCurrent());
@@ -568,7 +567,6 @@ export function restart(
               TestInput.input.current.length + 1
             )
             .toString()
-            .toUpperCase()
         );
       }
 
@@ -1006,7 +1004,6 @@ export async function init(): Promise<void> {
           TestInput.input.current.length + 1
         )
         .toString()
-        .toUpperCase()
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());

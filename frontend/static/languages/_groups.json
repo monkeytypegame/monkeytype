@@ -93,8 +93,8 @@
     "languages": ["indonesian", "indonesian_1k", "indonesian_10k"]
   },
   {
-    "name": "kurdish",
-    "languages": ["sorani"]
+    "name": "kurdish_central",
+    "languages": ["kurdish_central"]
   },
   {
     "name": "greek",

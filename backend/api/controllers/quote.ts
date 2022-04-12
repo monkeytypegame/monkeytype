@@ -16,9 +16,12 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 }
 
 export async function getQuotes(
-  _req: MonkeyTypes.Request
+  req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const data = await NewQuotesDao.get();
+  const { uid } = req.ctx.decodedToken;
+  let { quoteMod } = await UserDAO.getUser(uid);
+  if (quoteMod === true) quoteMod = "all";
+  const data = await NewQuotesDao.get(quoteMod);
   return new MonkeyResponse("Quote submissions retrieved", data);
 }
 
@@ -40,7 +43,9 @@ export async function approveQuote(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
 
-  const data = await NewQuotesDao.approve(quoteId, editText, editSource);
+  const { name } = await UserDAO.getUser(uid);
+
+  const data = await NewQuotesDao.approve(quoteId, editText, editSource, name);
   Logger.logToDb("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);
