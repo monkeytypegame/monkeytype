@@ -411,7 +411,8 @@ class UsersDAO {
   }
 
   static async addFavoriteQuote(uid, language, quoteId) {
-    const user = await db.collection("users").findOne({ uid });
+    const usersCollection = db.collection("users");
+    const user = await usersCollection.findOne({ uid });
 
     if (!user) {
       throw new MonkeyError(409, "User does not exist", "addFavoriteQuote");
@@ -425,16 +426,21 @@ class UsersDAO {
         return true;
       }
 
-      let quotesLength = 0;
+      const quotesLength = _.sumBy(
+        Object.values(user.favoriteQuotes),
+        (favQuotes) => favQuotes.length
+      );
 
-      Object.keys(user.favoriteQuotes).forEach((lang) => {
-        quotesLength += user.favoriteQuotes[lang].length;
-      });
-
-      if (quotesLength >= 100) return false;
+      if (quotesLength >= 100) {
+        throw new MonkeyError(
+          403,
+          "Too many favorite quotes",
+          "addFavoriteQuote"
+        );
+      }
     }
 
-    return await db.collection("users").updateOne(
+    return await usersCollection.updateOne(
       { uid },
       {
         $push: {

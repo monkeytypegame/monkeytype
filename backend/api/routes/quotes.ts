@@ -13,6 +13,9 @@ import {
 
 const router = Router();
 
+const languageSchema = joi.string().min(1).required();
+const quoteIdSchema = joi.string().min(1).regex(/\d+/).required();
+
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
     return !!user.quoteMod;
@@ -154,12 +157,8 @@ router.post(
   authenticateRequest(),
   validateRequest({
     body: {
-      language: joi.string().required(),
-      quoteId: joi
-        .string()
-        .min(1)
-        .regex(/[0-9]+/)
-        .required(),
+      language: languageSchema,
+      quoteId: quoteIdSchema,
     },
   }),
   asyncHandler(UserController.addFavoriteQuote)
@@ -171,12 +170,8 @@ router.delete(
   authenticateRequest(),
   validateRequest({
     body: {
-      language: joi.string().required(),
-      quoteId: joi
-        .string()
-        .min(1)
-        .regex(/[0-9]+/)
-        .required(),
+      language: languageSchema,
+      quoteId: quoteIdSchema,
     },
   }),
   asyncHandler(UserController.removeFavoriteQuote)

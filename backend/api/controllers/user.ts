@@ -313,11 +313,8 @@ export async function addFavoriteQuote(
   const { uid } = req.ctx.decodedToken;
 
   const { language, quoteId } = req.body;
-  const addResult = await UsersDAO.addFavoriteQuote(uid, language, quoteId);
 
-  if (addResult === false) {
-    return new MonkeyResponse("Too many favorite quotes", null, 400);
-  }
+  await UsersDAO.addFavoriteQuote(uid, language, quoteId);
 
   return new MonkeyResponse("Quote added to favorites");
 }
