@@ -304,37 +304,4 @@ router.get(
   asyncHandler(UserController.getPersonalBests)
 );
 
-router.get(
-  "/favQuotes",
-  RateLimit.quoteFavoriteGet,
-  authenticateRequest(),
-  asyncHandler(UserController.getFavoriteQuotes)
-);
-
-router.post(
-  "/favQuotes",
-  RateLimit.quoteFavoritePost,
-  authenticateRequest(),
-  validateRequest({
-    body: {
-      language: joi.string().required(),
-      quoteId: joi.string().required(),
-    },
-  }),
-  asyncHandler(UserController.addFavoriteQuote)
-);
-
-router.delete(
-  "/favQuotes",
-  RateLimit.quoteFavoriteDelete,
-  authenticateRequest(),
-  validateRequest({
-    body: {
-      language: joi.string().required(),
-      quoteId: joi.string().required(),
-    },
-  }),
-  asyncHandler(UserController.removeFavoriteQuote)
-);
-
 export default router;

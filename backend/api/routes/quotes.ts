@@ -2,6 +2,7 @@ import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as QuoteController from "../controllers/quote";
+import * as UserController from "../controllers/user";
 import * as RateLimit from "../../middlewares/rate-limit";
 import {
   asyncHandler,
@@ -10,7 +11,7 @@ import {
   validateRequest,
 } from "../../middlewares/api-utils";
 
-const quotesRouter = Router();
+const router = Router();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
@@ -18,7 +19,7 @@ const checkIfUserIsQuoteMod = checkUserPermissions({
   },
 });
 
-quotesRouter.get(
+router.get(
   "/",
   RateLimit.newQuotesGet,
   authenticateRequest(),
@@ -26,7 +27,7 @@ quotesRouter.get(
   asyncHandler(QuoteController.getQuotes)
 );
 
-quotesRouter.post(
+router.post(
   "/",
   validateConfiguration({
     criteria: (configuration) => {
@@ -49,7 +50,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.addQuote)
 );
 
-quotesRouter.post(
+router.post(
   "/approve",
   RateLimit.newQuotesAction,
   authenticateRequest(),
@@ -65,7 +66,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.approveQuote)
 );
 
-quotesRouter.post(
+router.post(
   "/reject",
   RateLimit.newQuotesAction,
   authenticateRequest(),
@@ -78,7 +79,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.refuseQuote)
 );
 
-quotesRouter.get(
+router.get(
   "/rating",
   RateLimit.quoteRatingsGet,
   authenticateRequest(),
@@ -91,7 +92,7 @@ quotesRouter.get(
   asyncHandler(QuoteController.getRating)
 );
 
-quotesRouter.post(
+router.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
   authenticateRequest(),
@@ -105,7 +106,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.submitRating)
 );
 
-quotesRouter.post(
+router.post(
   "/report",
   validateConfiguration({
     criteria: (configuration) => {
@@ -140,4 +141,37 @@ quotesRouter.post(
   asyncHandler(QuoteController.reportQuote)
 );
 
-export default quotesRouter;
+router.get(
+  "/favorite",
+  RateLimit.quoteFavoriteGet,
+  authenticateRequest(),
+  asyncHandler(UserController.getFavoriteQuotes)
+);
+
+router.post(
+  "/favorite",
+  RateLimit.quoteFavoritePost,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      language: joi.string().required(),
+      quoteId: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.addFavoriteQuote)
+);
+
+router.delete(
+  "/favorite",
+  RateLimit.quoteFavoriteDelete,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      language: joi.string().required(),
+      quoteId: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.removeFavoriteQuote)
+);
+
+export default router;
