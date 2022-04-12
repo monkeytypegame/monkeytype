@@ -335,7 +335,6 @@ $(document).on(
     const $button = $(
       `#quoteSearchPopup .searchResult[id=${quoteId}] .text-button.favorite i`
     );
-    console.log($button);
     const dbSnapshot = DB.getSnapshot();
 
     if ($button.hasClass("fas")) {
