@@ -32,8 +32,17 @@
       }
     }
   }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr 1fr;
+  #quoteSearchPopupWrapper #quoteSearchPopup {
+    #toggleShowFavorites {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #quoteSearchControlsWrapper {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
   }
 }
 

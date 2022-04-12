@@ -77,6 +77,26 @@ function applyQuoteLengthFilter(
   return filteredQuotes;
 }
 
+function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
+  const showFavOnly = (
+    document.querySelector("#toggleShowFavorites") as HTMLDivElement
+  ).classList.contains("active");
+
+  const filteredQuotes = quotes.filter((quote) => {
+    if (showFavOnly) {
+      return isQuoteFavorite(
+        DB.getSnapshot(),
+        quote.language,
+        quote.id.toString()
+      );
+    } else {
+      return true;
+    }
+  });
+
+  return filteredQuotes;
+}
+
 function buildQuoteSearchResult(
   quote: MonkeyTypes.Quote,
   matchedSearchTerms: string[]
@@ -150,9 +170,10 @@ async function updateResults(searchText: string): Promise<void> {
   const { results: matches, matchedQueryTerms } =
     quoteSearchService.query(searchText);
 
-  const quotesToShow = applyQuoteLengthFilter(
-    searchText === "" ? quotes : matches
-  );
+  let quotesToShow = [];
+  quotesToShow = applyQuoteLengthFilter(searchText === "" ? quotes : matches);
+
+  quotesToShow = applyQuoteFavFilter(quotesToShow);
 
   const resultsList = $("#quoteSearchResults");
   resultsList.empty();
@@ -362,6 +383,16 @@ $(document).on(
     e.preventDefault();
   }
 );
+
+$(document).on("click", "#toggleShowFavorites", (e) => {
+  if (!Auth.currentUser) {
+    Notifications.add("You need to be logged in to use this feature!", 0);
+    return;
+  }
+
+  $(e.target).toggleClass("active");
+  searchForQuotes();
+});
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
