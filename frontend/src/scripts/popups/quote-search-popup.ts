@@ -188,7 +188,7 @@ async function updateResults(searchText: string): Promise<void> {
       ? "<span style='opacity: 0.5'>(only showing 100)</span>"
       : "";
   $("#extraResults").html(
-    `${quotesToShow.length} results ${resultsExceededText}`
+    `${quotesToShow.length} result(s) ${resultsExceededText}`
   );
 }
 
