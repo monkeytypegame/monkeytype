@@ -28,7 +28,7 @@ declare namespace MonkeyTypes {
       enabled: boolean;
     };
     favoriteQuotes: {
-      max: number;
+      maxFavorites: number;
     };
   }
 
