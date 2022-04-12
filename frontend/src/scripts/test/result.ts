@@ -582,9 +582,8 @@ function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
 
   const $icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
-  if (Config.mode === "quote") {
-    const userFav =
-      DB.getSnapshot().favoriteQuotes?.[quoteLang]?.includes(quoteId);
+  if (Config.mode === "quote" && Auth.currentUser) {
+    const userFav = Misc.isQuoteFavorite(DB.getSnapshot(), quoteLang, quoteId);
 
     $icon
       .removeClass(userFav ? "far" : "fas")

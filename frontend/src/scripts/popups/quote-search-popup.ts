@@ -16,6 +16,7 @@ import QuotesController from "../controllers/quotes-controller";
 import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
+import { isQuoteFavorite } from "../utils/misc";
 
 export let selectedId = 1;
 
@@ -91,12 +92,10 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const isNotAuthed = !Auth.currentUser;
-  const isFavorite =
-    !isNotAuthed &&
-    DB.getSnapshot().favoriteQuotes[quote.language].includes(
-      quote.id.toString()
-    );
+  const loggedIn = !Auth.currentUser;
+  const isFav =
+    !loggedIn &&
+    isQuoteFavorite(DB.getSnapshot(), quote.language, quote.id.toString());
 
   return `
   <div class="searchResult" id="${quote.id}">
@@ -123,15 +122,15 @@ function buildQuoteSearchResult(
     </div>
 
     <div class="text-button report ${
-      isNotAuthed && "hidden"
+      loggedIn && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>
     </div>
 
     <div class="text-button favorite ${
-      isNotAuthed && "hidden"
+      loggedIn && "hidden"
     }" aria-label="Favorite quote" data-balloon-pos="left">
-      <i class="${isFavorite ? "fas" : "far"} fa-heart favorite"></i>
+      <i class="${isFav ? "fas" : "far"} fa-heart favorite"></i>
     </div>
 
   </div>

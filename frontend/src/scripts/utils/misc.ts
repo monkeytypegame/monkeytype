@@ -1105,3 +1105,15 @@ export function createErrorMessage(error: unknown, message: string): string {
 
   return message;
 }
+
+export function isQuoteFavorite(
+  snapshot: MonkeyTypes.Snapshot,
+  quoteLang: string,
+  quoteId: string
+): boolean {
+  if (!snapshot) return false;
+
+  if (!Object.keys(snapshot.favoriteQuotes).includes(quoteLang)) return false;
+
+  return snapshot.favoriteQuotes[quoteLang].includes(quoteId);
+}
