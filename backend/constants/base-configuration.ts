@@ -30,7 +30,7 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     enabled: false,
   },
   favoriteQuotes: {
-    max: 100,
+    maxFavorites: 100,
   },
 };
 
