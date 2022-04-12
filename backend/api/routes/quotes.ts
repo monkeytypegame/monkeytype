@@ -155,7 +155,11 @@ router.post(
   validateRequest({
     body: {
       language: joi.string().required(),
-      quoteId: joi.string().required(),
+      quoteId: joi
+        .string()
+        .min(1)
+        .regex(/[0-9]+/)
+        .required(),
     },
   }),
   asyncHandler(UserController.addFavoriteQuote)
@@ -168,7 +172,11 @@ router.delete(
   validateRequest({
     body: {
       language: joi.string().required(),
-      quoteId: joi.string().required(),
+      quoteId: joi
+        .string()
+        .min(1)
+        .regex(/[0-9]+/)
+        .required(),
     },
   }),
   asyncHandler(UserController.removeFavoriteQuote)

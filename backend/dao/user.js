@@ -417,12 +417,21 @@ class UsersDAO {
       throw new MonkeyError(409, "User does not exist", "addFavoriteQuote");
     }
 
-    if (
-      user.favoriteQuotes &&
-      user.favoriteQuotes[language] &&
-      user.favoriteQuotes[language].includes(quoteId)
-    ) {
-      return true;
+    if (user.favoriteQuotes) {
+      if (
+        user.favoriteQuotes[language] &&
+        user.favoriteQuotes[language].includes(quoteId)
+      ) {
+        return true;
+      }
+
+      let quotesLength = 0;
+
+      Object.keys(user.favoriteQuotes).forEach((lang) => {
+        quotesLength += user.favoriteQuotes[lang].length;
+      });
+
+      if (quotesLength >= 100) return false;
     }
 
     return await db.collection("users").updateOne(
