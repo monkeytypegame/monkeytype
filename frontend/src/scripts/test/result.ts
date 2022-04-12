@@ -739,7 +739,7 @@ export async function update(
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if (quoteLang === "" || quoteId === "") {
-    Notifications.add("No quote to toggle favorite!", -1);
+    Notifications.add("Could not get quote stats!", -1);
     return;
   }
 

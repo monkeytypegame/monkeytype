@@ -15,6 +15,7 @@ import { splitByAndKeep } from "../utils/strings";
 import QuotesController from "../controllers/quotes-controller";
 import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
+import Ape from "../ape";
 
 export let selectedId = 1;
 
@@ -91,30 +92,48 @@ function buildQuoteSearchResult(
   }
 
   const isNotAuthed = !Auth.currentUser;
+  const isFavorite =
+    !isNotAuthed &&
+    DB.getSnapshot().favoriteQuotes[quote.language].includes(
+      quote.id.toString()
+    );
 
   return `
   <div class="searchResult" id="${quote.id}">
+
     <div class="text">
       ${highlightMatches(quote.text, matchedSearchTerms)}
     </div>
+
     <div class="id">
       <div class="sub">id</div>
       <span class="quote-id">
         ${highlightMatches(quote.id.toString(), matchedSearchTerms)}
       </span>
     </div>
+
     <div class="length">
       <div class="sub">length</div>
       ${lengthDesc}
     </div>
+
     <div class="source">
       <div class="sub">source</div>
-      ${highlightMatches(quote.source, matchedSearchTerms)}</div>
+      ${highlightMatches(quote.source, matchedSearchTerms)}
+    </div>
+
     <div class="text-button report ${
       isNotAuthed && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>
     </div>
+
+    <div class="text-button favorite ${
+      isNotAuthed && "hidden"
+    }" aria-label="Favorite quote" data-balloon-pos="left">
+      <i class="${isFavorite ? "fas" : "far"} fa-heart favorite"></i>
+    </div>
+
   </div>
   `;
 }
@@ -300,6 +319,48 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
     },
   });
 });
+
+$(document).on(
+  "click",
+  "#quoteSearchPopup .text-button.favorite",
+  async (e) => {
+    const quoteLang = Config.language;
+    const quoteId = e.target.closest(".searchResult").id as string;
+
+    if (quoteLang === "" || quoteId === "") {
+      Notifications.add("Could not get quote stats!", -1);
+      return;
+    }
+
+    const $button = $(e.target);
+    const dbSnapshot = DB.getSnapshot();
+
+    if ($button.hasClass("fas")) {
+      // Remove from favorites
+      const response = await Ape.quotes.removeFromFavorites(quoteLang, quoteId);
+
+      Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+      if (response.status === 200) {
+        $button.removeClass("fas").addClass("far");
+        const quoteIndex =
+          dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(quoteId);
+        dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
+      }
+    } else {
+      // Add to favorites
+      const response = await Ape.quotes.addToFavorites(quoteLang, quoteId);
+
+      Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+      if (response.status === 200) {
+        $button.removeClass("far").addClass("fas");
+        DB.getSnapshot().favoriteQuotes[quoteLang]?.push(quoteId);
+      }
+    }
+    e.preventDefault();
+  }
+);
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);

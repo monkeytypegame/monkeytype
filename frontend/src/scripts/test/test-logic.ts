@@ -1714,7 +1714,10 @@ $(document).on(
   "click",
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
-    if (e.target.classList.contains("report")) {
+    if (
+      e.target.classList.contains("report") ||
+      e.target.classList.contains("favorite")
+    ) {
       return;
     }
     const sid = parseInt($(e.currentTarget).attr("id") ?? "");

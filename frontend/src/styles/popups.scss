@@ -470,10 +470,10 @@
 
       .searchResult {
         display: grid;
-        grid-template-columns: 1fr 1fr 3fr 0fr;
+        grid-template-columns: 1fr 1fr 3fr 0fr 0fr;
         grid-template-areas:
-          "text text text text"
-          "id len source report";
+          "text text text text text"
+          "id len source report favorite";
         grid-auto-rows: auto;
         width: 100%;
         gap: 0.5rem;
@@ -514,6 +514,14 @@
         }
         .report {
           grid-area: report;
+          color: var(--sub-color);
+          transition: 0.25s;
+          &:hover {
+            color: var(--text-color);
+          }
+        }
+        .favorite {
+          grid-area: favorite;
           color: var(--sub-color);
           transition: 0.25s;
           &:hover {
