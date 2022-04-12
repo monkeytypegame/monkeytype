@@ -450,10 +450,18 @@
 
     #quoteSearchControlsWrapper {
       display: grid;
-      grid-template-columns: 1.5fr 1fr;
+      grid-template-columns: 1.5fr 1fr 1fr;
       gap: 1rem;
+
       #searchBox {
         width: 100%;
+      }
+
+      #toggleShowFavorites {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
 
