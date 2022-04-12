@@ -410,7 +410,7 @@ class UsersDAO {
     return user.favoriteQuotes ?? {};
   }
 
-  static async addFavoriteQuote(uid, language, quoteId) {
+  static async addFavoriteQuote(uid, language, quoteId, config) {
     const usersCollection = db.collection("users");
     const user = await usersCollection.findOne({ uid });
 
@@ -431,7 +431,7 @@ class UsersDAO {
         (favQuotes) => favQuotes.length
       );
 
-      if (quotesLength >= 100) {
+      if (quotesLength >= config.maxFavoriteQuotes) {
         throw new MonkeyError(
           403,
           "Too many favorite quotes",

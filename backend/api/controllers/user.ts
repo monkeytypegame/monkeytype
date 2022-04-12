@@ -314,7 +314,12 @@ export async function addFavoriteQuote(
 
   const { language, quoteId } = req.body;
 
-  await UsersDAO.addFavoriteQuote(uid, language, quoteId);
+  await UsersDAO.addFavoriteQuote(
+    uid,
+    language,
+    quoteId,
+    req.ctx.configuration
+  );
 
   return new MonkeyResponse("Quote added to favorites");
 }

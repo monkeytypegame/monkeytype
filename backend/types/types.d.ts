@@ -27,6 +27,7 @@ declare namespace MonkeyTypes {
     useRedisForBotTasks: {
       enabled: boolean;
     };
+    maxFavoriteQuotes: number;
   }
 
   interface DecodedToken {

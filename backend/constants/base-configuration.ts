@@ -29,6 +29,7 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   useRedisForBotTasks: {
     enabled: false,
   },
+  maxFavoriteQuotes: 100,
 };
 
 export default BASE_CONFIGURATION;
