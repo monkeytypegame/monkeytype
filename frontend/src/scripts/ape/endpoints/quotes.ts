@@ -83,6 +83,22 @@ export default function getQuotesEndpoints(
     return await apeClient.post(`${BASE_PATH}/report`, { payload });
   }
 
+  async function addToFavorites(
+    language: string,
+    quoteId: string
+  ): Ape.EndpointData {
+    const payload = { language, quoteId };
+    return await apeClient.post(`${BASE_PATH}/favorites`, { payload });
+  }
+
+  async function removeFromFavorites(
+    language: string,
+    quoteId: string
+  ): Ape.EndpointData {
+    const payload = { language, quoteId };
+    return await apeClient.delete(`${BASE_PATH}/favorites`, { payload });
+  }
+
   return {
     get,
     submit,
@@ -91,5 +107,7 @@ export default function getQuotesEndpoints(
     getRating,
     addRating,
     report,
+    addToFavorites,
+    removeFromFavorites,
   };
 }

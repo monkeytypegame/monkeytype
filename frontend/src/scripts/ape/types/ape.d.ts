@@ -96,6 +96,8 @@ declare namespace Ape {
         comment: string,
         captcha: string
       ) => EndpointData;
+      addToFavorites: (language: string, quoteId: string) => EndpointData;
+      removeFromFavorites: (language: string, quoteId: string) => EndpointData;
     };
 
     users: {

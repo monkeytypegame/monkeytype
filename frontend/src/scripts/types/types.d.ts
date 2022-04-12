@@ -453,7 +453,10 @@ declare namespace MonkeyTypes {
     quoteMod?: boolean;
     discordId?: string;
     config?: Config;
+    favoriteQuotes: FavoriteQuotes;
   }
+
+  type FavoriteQuotes = Record<string, string[]>;
 
   type PartialRecord<K extends keyof any, T> = {
     [P in K]?: T;

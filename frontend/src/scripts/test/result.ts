@@ -17,11 +17,15 @@ import { Auth } from "../firebase";
 
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
+import Ape from "../ape";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
+
+let quoteLang = "";
+let quoteId = "";
 
 export function toggleUnsmoothedRaw(): void {
   useUnsmoothedRaw = !useUnsmoothedRaw;
@@ -572,6 +576,25 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
   }
 }
 
+function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
+  quoteLang = Config.mode === "quote" ? randomQuote.language : "";
+  quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
+
+  const $icon = $(".pageTest #result #favoriteQuoteButton .icon");
+
+  if (Config.mode === "quote") {
+    const userFav =
+      DB.getSnapshot().favoriteQuotes?.[quoteLang]?.includes(quoteId);
+
+    $icon
+      .removeClass(userFav ? "far" : "fas")
+      .addClass(userFav ? "fas" : "far");
+    $icon.parent().removeClass("hidden");
+  } else {
+    $icon.parent().addClass("hidden");
+  }
+}
+
 function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
@@ -618,6 +641,7 @@ export async function update(
   updateKey();
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
+  updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
   updateTags(dontSave);
@@ -712,3 +736,37 @@ export async function update(
     }
   );
 }
+
+$(".pageTest #favoriteQuoteButton").on("click", async () => {
+  if (quoteLang === "" || quoteId === "") {
+    Notifications.add("No quote to toggle favorite!", -1);
+    return;
+  }
+
+  const $button = $(".pageTest #favoriteQuoteButton .icon");
+  const dbSnapshot = DB.getSnapshot();
+
+  if ($button.hasClass("fas")) {
+    // Remove from favorites
+    const response = await Ape.quotes.removeFromFavorites(quoteLang, quoteId);
+
+    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+    if (response.status === 200) {
+      $button.removeClass("fas").addClass("far");
+      const quoteIndex =
+        dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(quoteId);
+      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
+    }
+  } else {
+    // Add to favorites
+    const response = await Ape.quotes.addToFavorites(quoteLang, quoteId);
+
+    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+    if (response.status === 200) {
+      $button.removeClass("far").addClass("fas");
+      DB.getSnapshot().favoriteQuotes[quoteLang]?.push(quoteId);
+    }
+  }
+});
