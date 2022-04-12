@@ -451,7 +451,8 @@ class UsersDAO {
   }
 
   static async removeFavoriteQuote(uid, language, quoteId) {
-    const user = await db.collection("users").findOne({ uid });
+    const usersCollection = await db.collection("users");
+    const user = await usersCollection.findOne({ uid });
     if (!user) {
       throw new MonkeyError(409, "User does not exist", "deleteFavoriteQuote");
     }
@@ -464,12 +465,10 @@ class UsersDAO {
       return true;
     }
 
-    return await db
-      .collection("users")
-      .updateOne(
-        { uid },
-        { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
-      );
+    return await usersCollection.updateOne(
+      { uid },
+      { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
+    );
   }
 }
 
