@@ -90,6 +90,7 @@ export function init(missed: boolean, slow: boolean): void {
 
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
+  CustomText.setIsTimeRandom(false);
   CustomText.setWord(
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );

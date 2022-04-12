@@ -56,17 +56,23 @@ class NewQuotesDAO {
     return await db.collection("new-quotes").insertOne(quote);
   }
 
-  static async get() {
+  static async get(language) {
     if (!git) throw new MonkeyError(500, "Git not available.");
+    const where = {
+      approved: false,
+    };
+    if (language !== "all") {
+      where.language = language;
+    }
     return await db
       .collection("new-quotes")
-      .find({ approved: false })
+      .find(where)
       .sort({ timestamp: 1 })
       .limit(10)
       .toArray();
   }
 
-  static async approve(quoteId, editQuote, editSource) {
+  static async approve(quoteId, editQuote, editSource, name) {
     if (!git) throw new MonkeyError(500, "Git not available.");
     //check mod status
     const targetQuote = await db
@@ -80,6 +86,7 @@ class NewQuotesDAO {
       text: editQuote ? editQuote : targetQuote.text,
       source: editSource ? editSource : targetQuote.source,
       length: targetQuote.text.length,
+      name,
     };
     let message = "";
     const fileDir = path.join(
