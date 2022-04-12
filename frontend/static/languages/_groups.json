@@ -94,7 +94,7 @@
   },
   {
     "name": "kurdish_central",
-    "languages": ["kurdish_central"]
+    "languages": ["kurdish_central", "kurdish_central_5_1k"]
   },
   {
     "name": "greek",
