@@ -407,7 +407,7 @@ class UsersDAO {
       throw new MonkeyError(409, "User not found", "getFavoriteQuotes");
     }
 
-    return user.favQuotes ?? {};
+    return user.favoriteQuotes ?? {};
   }
 
   static async addFavoriteQuote(uid, language, quoteId) {
@@ -418,9 +418,9 @@ class UsersDAO {
     }
 
     if (
-      user.favQuotes &&
-      user.favQuotes[language] &&
-      user.favQuotes[language].includes(quoteId)
+      user.favoriteQuotes &&
+      user.favoriteQuotes[language] &&
+      user.favoriteQuotes[language].includes(quoteId)
     ) {
       throw new MonkeyError(
         404,
@@ -433,7 +433,7 @@ class UsersDAO {
       { uid },
       {
         $push: {
-          [`favQuotes.${language}`]: quoteId,
+          [`favoriteQuotes.${language}`]: quoteId,
         },
       }
     );
@@ -446,9 +446,9 @@ class UsersDAO {
     }
 
     if (
-      !user.favQuotes ||
-      !user.favQuotes[language] ||
-      !user.favQuotes[language].includes(quoteId)
+      !user.favoriteQuotes ||
+      !user.favoriteQuotes[language] ||
+      !user.favoriteQuotes[language].includes(quoteId)
     ) {
       throw new MonkeyError(
         404,
@@ -459,7 +459,10 @@ class UsersDAO {
 
     return await db
       .collection("users")
-      .updateOne({ uid }, { $pull: { [`favQuotes.${language}`]: quoteId } });
+      .updateOne(
+        { uid },
+        { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
+      );
   }
 }
 

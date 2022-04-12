@@ -67,7 +67,7 @@ declare namespace MonkeyTypes {
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
-    favQuotes?: Record<string, string[]>;
+    favoriteQuotes?: Record<string, string[]>;
   }
 
   interface ApeKey {
