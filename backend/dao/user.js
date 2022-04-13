@@ -404,7 +404,7 @@ class UsersDAO {
     const user = await db.collection("users").findOne({ uid });
 
     if (!user) {
-      throw new MonkeyError(409, "User not found", "getFavoriteQuotes");
+      throw new MonkeyError(404, "User not found", "getFavoriteQuotes");
     }
 
     return user.favoriteQuotes ?? {};
@@ -415,7 +415,7 @@ class UsersDAO {
     const user = await usersCollection.findOne({ uid });
 
     if (!user) {
-      throw new MonkeyError(409, "User does not exist", "addFavoriteQuote");
+      throw new MonkeyError(404, "User does not exist", "addFavoriteQuote");
     }
 
     if (user.favoriteQuotes) {
@@ -423,7 +423,7 @@ class UsersDAO {
         user.favoriteQuotes[language] &&
         user.favoriteQuotes[language].includes(quoteId)
       ) {
-        return true;
+        return;
       }
 
       const quotesLength = _.sumBy(
@@ -433,14 +433,14 @@ class UsersDAO {
 
       if (quotesLength >= maxQuotes) {
         throw new MonkeyError(
-          403,
+          409,
           "Too many favorite quotes",
           "addFavoriteQuote"
         );
       }
     }
 
-    return await usersCollection.updateOne(
+    await usersCollection.updateOne(
       { uid },
       {
         $push: {
@@ -454,7 +454,7 @@ class UsersDAO {
     const usersCollection = await db.collection("users");
     const user = await usersCollection.findOne({ uid });
     if (!user) {
-      throw new MonkeyError(409, "User does not exist", "deleteFavoriteQuote");
+      throw new MonkeyError(404, "User does not exist", "deleteFavoriteQuote");
     }
 
     if (
@@ -462,10 +462,10 @@ class UsersDAO {
       !user.favoriteQuotes[language] ||
       !user.favoriteQuotes[language].includes(quoteId)
     ) {
-      return true;
+      return;
     }
 
-    return await usersCollection.updateOne(
+    await usersCollection.updateOne(
       { uid },
       { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
     );
