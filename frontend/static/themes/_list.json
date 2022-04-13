@@ -743,5 +743,15 @@
     "name": "mexican",
     "bgColor": "#cec176",
     "mainColor": "#ffffff"
+  },
+  {
+    "name": "gnome_dark",
+    "bgColor": "#171421",
+    "mainColor": "#D0CFCC"
+  },
+  {
+    "name": "gnome_light",
+    "bgColor": "#FFFFFF",
+    "mainColor": "#D0CFCC"
   }
 ]
