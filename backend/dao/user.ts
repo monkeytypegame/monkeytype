@@ -35,7 +35,7 @@ export async function updateName(
   uid: string,
   name: string
 ): Promise<UpdateResult> {
-  if (!this.isNameAvailable(name)) {
+  if (!isNameAvailable(name)) {
     throw new MonkeyError(409, "Username already taken", name);
   }
 
@@ -49,7 +49,7 @@ export async function updateName(
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
   if (!isUsernameValid(name)) {
-    throw new Error("Invalid username");
+    throw new MonkeyError(400, "Invalid username");
   }
 
   return await db
@@ -85,7 +85,7 @@ export async function isNameAvailable(name: string): Promise<boolean> {
     .limit(1)
     .toArray();
 
-  return nameDocs.length !== 0;
+  return nameDocs.length === 0;
 }
 
 export async function updateQuoteRatings(
@@ -462,7 +462,7 @@ export async function removeTheme(uid: string, _id): Promise<UpdateResult> {
     throw new MonkeyError(404, "User not found", "Remove custom theme");
   }
 
-  if (this.themeDoesNotExist(user.customThemes, _id)) {
+  if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom theme not found");
   }
 
@@ -485,7 +485,7 @@ export async function editTheme(
     throw new MonkeyError(404, "User not found", "Edit custom theme");
   }
 
-  if (this.themeDoesNotExist(user.customThemes, _id)) {
+  if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom Theme not found");
   }
 
