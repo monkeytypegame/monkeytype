@@ -72,6 +72,9 @@ const usernameValidation = joi
       "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
   });
 
+const languageSchema = joi.string().min(1).required();
+const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
+
 router.get(
   "/",
   RateLimit.userGet,
@@ -302,6 +305,39 @@ router.get(
     },
   }),
   asyncHandler(UserController.getPersonalBests)
+);
+
+router.get(
+  "/favoriteQuotes",
+  RateLimit.quoteFavoriteGet,
+  authenticateRequest(),
+  asyncHandler(UserController.getFavoriteQuotes)
+);
+
+router.post(
+  "/favoriteQuotes",
+  RateLimit.quoteFavoritePost,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      language: languageSchema,
+      quoteId: quoteIdSchema,
+    },
+  }),
+  asyncHandler(UserController.addFavoriteQuote)
+);
+
+router.delete(
+  "/favoriteQuotes",
+  RateLimit.quoteFavoriteDelete,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      language: languageSchema,
+      quoteId: quoteIdSchema,
+    },
+  }),
+  asyncHandler(UserController.removeFavoriteQuote)
 );
 
 export default router;

@@ -29,6 +29,9 @@ declare namespace MonkeyTypes {
     useRedisForBotTasks: {
       enabled: boolean;
     };
+    favoriteQuotes: {
+      maxFavorites: number;
+    };
   }
 
   interface DecodedToken {
@@ -71,6 +74,7 @@ declare namespace MonkeyTypes {
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
+    favoriteQuotes?: Record<string, string[]>;
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;
