@@ -316,11 +316,15 @@ export async function checkIfTagPb(
   const ret: string[] = [];
 
   tagsToCheck.forEach(async (tag) => {
-    if (!tag.personalBests) {
-      return;
-    }
+    const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
+      time: {},
+      words: {},
+      zen: {},
+      custom: {},
+      quote: {},
+    };
 
-    const tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
+    const tagpb = checkAndUpdatePb(tagPbs, undefined, result);
     if (tagpb.isPb) {
       ret.push(tag._id.toHexString());
       await db
