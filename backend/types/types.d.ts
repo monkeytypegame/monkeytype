@@ -1,3 +1,5 @@
+type ObjectId = import("mongodb").ObjectId;
+
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
@@ -49,24 +51,48 @@ declare namespace MonkeyTypes {
   interface User {
     // TODO, Complete the typings for the user model
     addedAt: number;
-    bananas: number;
-    completedTests: number;
+    verified?: boolean;
+    bananas?: number;
+    completedTests?: number;
     discordId?: string;
     email: string;
-    lastNameChange: number;
-    lbMemory: object;
-    lbPersonalBests: object;
-    name: string;
-    personalBests: object;
-    quoteRatings?: Record<string, Record<string, number>>;
-    startedTests: number;
-    tags: object[];
-    timeTyping: number;
+    lastNameChange?: number;
+    lbMemory?: object;
+    lbPersonalBests?: LbPersonalBests;
+    name?: string;
+    customThemes?: CustomTheme[];
+    personalBests?: PersonalBests;
+    quoteRatings?: UserQuoteRatings;
+    startedTests?: number;
+    tags?: UserTag[];
+    timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
+  }
+
+  type UserQuoteRatings = Record<string, Record<string, number>>;
+
+  interface LbPersonalBests {
+    time: {
+      [key: number]: {
+        [key: string]: PersonalBest;
+      };
+    };
+  }
+
+  interface UserTag {
+    _id: ObjectId;
+    name: string;
+    personalBests?: PersonalBests;
+  }
+
+  interface CustomTheme {
+    _id: ObjectId;
+    name: string;
+    colors: string[];
   }
 
   interface ApeKey {
@@ -106,9 +132,9 @@ declare namespace MonkeyTypes {
       [key: number]: PersonalBest[];
     };
     quote: { [quote: string]: PersonalBest[] };
-    custom: { custom: PersonalBest[] };
+    custom: { custom?: PersonalBest[] };
     zen: {
-      zen: PersonalBest[];
+      zen?: PersonalBest[];
     };
   }
 

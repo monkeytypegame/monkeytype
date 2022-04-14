@@ -3,7 +3,7 @@ import joi from "joi";
 import MonkeyError from "../utils/error";
 import { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
-import UsersDAO from "../dao/user";
+import { getUser } from "../dao/user";
 
 interface ValidationOptions<T> {
   criteria: (data: T) => boolean;
@@ -52,9 +52,7 @@ function checkUserPermissions(
     try {
       const { uid } = req.ctx.decodedToken;
 
-      const userData = (await UsersDAO.getUser(
-        uid
-      )) as unknown as MonkeyTypes.User;
+      const userData = (await getUser(uid)) as unknown as MonkeyTypes.User;
       const hasPermission = criteria(userData);
 
       if (!hasPermission) {

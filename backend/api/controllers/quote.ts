@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
-import UserDAO from "../../dao/user";
+import { getUser, updateQuoteRatings } from "../../dao/user";
 import ReportDAO from "../../dao/report";
 import NewQuotesDao from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
@@ -19,7 +19,7 @@ export async function getQuotes(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  let { quoteMod } = await UserDAO.getUser(uid);
+  let quoteMod: boolean | undefined | string = (await getUser(uid)).quoteMod;
   if (quoteMod === true) quoteMod = "all";
   const data = await NewQuotesDao.get(quoteMod);
   return new MonkeyResponse("Quote submissions retrieved", data);
@@ -43,7 +43,7 @@ export async function approveQuote(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
 
-  const { name } = await UserDAO.getUser(uid);
+  const { name } = await getUser(uid);
 
   const data = await NewQuotesDao.approve(quoteId, editText, editSource, name);
   Logger.logToDb("system_quote_approved", data, uid);
@@ -79,7 +79,7 @@ export async function submitRating(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, rating, language } = req.body;
 
-  const user = await UserDAO.getUser(uid);
+  const user = await getUser(uid);
   if (!user) {
     throw new MonkeyError(401, "User not found.");
   }
@@ -107,7 +107,7 @@ export async function submitRating(
     Object
   );
 
-  await UserDAO.updateQuoteRatings(uid, userQuoteRatings);
+  await updateQuoteRatings(uid, userQuoteRatings);
 
   const responseMessage = `Rating ${
     shouldUpdateRating ? "updated" : "submitted"
