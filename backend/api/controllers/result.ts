@@ -1,5 +1,11 @@
 import ResultDAO from "../../dao/result";
-import UserDAO from "../../dao/user";
+import {
+  getUser,
+  checkIfPb,
+  checkIfTagPb,
+  incrementBananas,
+  updateTypingStats,
+} from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
 import BotDAO from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
@@ -192,7 +198,7 @@ export async function addResult(
     //
   }
 
-  const user = await UserDAO.getUser(uid);
+  const user = await getUser(uid);
 
   //check keyspacing and duration here for bots
   if (
@@ -239,8 +245,8 @@ export async function addResult(
 
   if (!result.bailedOut) {
     [isPb, tagPbs] = await Promise.all([
-      UserDAO.checkIfPb(uid, user, result),
-      UserDAO.checkIfTagPb(uid, user, result),
+      checkIfPb(uid, user, result),
+      checkIfTagPb(uid, user, result),
     ]);
   }
 
@@ -249,7 +255,7 @@ export async function addResult(
   }
 
   if (result.mode === "time" && String(result.mode2) === "60") {
-    UserDAO.incrementBananas(uid, result.wpm);
+    incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
       if (useRedisForBotTasks) {
         George.updateDiscordRole(user.discordId, result.wpm);
@@ -273,7 +279,7 @@ export async function addResult(
     afk = 0;
   }
   tt = result.testDuration + result.incompleteTestSeconds - afk;
-  UserDAO.updateTypingStats(uid, result.restartCount, tt);
+  updateTypingStats(uid, result.restartCount, tt);
   PublicStatsDAO.updateStats(result.restartCount, tt);
 
   if (result.bailedOut === false) delete result.bailedOut;

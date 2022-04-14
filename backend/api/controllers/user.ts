@@ -1,4 +1,4 @@
-import UsersDAO from "../../dao/user";
+import * as UserDAL from "../../dao/user";
 import BotDAO from "../../dao/bot";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
@@ -13,7 +13,7 @@ export async function createNewUser(
   const { name } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
-  await UsersDAO.addUser(name, email, uid);
+  await UserDAL.addUser(name, email, uid);
   Logger.logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
@@ -24,8 +24,8 @@ export async function deleteUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UsersDAO.getUser(uid);
-  await UsersDAO.deleteUser(uid);
+  const userInfo = await UserDAL.getUser(uid);
+  await UserDAL.deleteUser(uid);
   Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User deleted");
@@ -37,8 +37,8 @@ export async function updateName(
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
 
-  const oldUser = await UsersDAO.getUser(uid);
-  await UsersDAO.updateName(uid, name);
+  const oldUser = await UserDAL.getUser(uid);
+  await UserDAL.updateName(uid, name);
   Logger.logToDb(
     "user_name_updated",
     `changed name from ${oldUser.name} to ${name}`,
@@ -53,7 +53,7 @@ export async function clearPb(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  await UsersDAO.clearPb(uid);
+  await UserDAL.clearPb(uid);
   Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
@@ -64,7 +64,7 @@ export async function checkName(
 ): Promise<MonkeyResponse> {
   const { name } = req.params;
 
-  const available = await UsersDAO.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -79,7 +79,7 @@ export async function updateEmail(
   const { newEmail } = req.body;
 
   try {
-    await UsersDAO.updateEmail(uid, newEmail);
+    await UserDAL.updateEmail(uid, newEmail);
   } catch (e) {
     throw new MonkeyError(404, e.message, "update email", uid);
   }
@@ -96,10 +96,10 @@ export async function getUser(
 
   let userInfo;
   try {
-    userInfo = await UsersDAO.getUser(uid);
+    userInfo = await UserDAL.getUser(uid);
   } catch (e) {
     if (email && uid) {
-      userInfo = await UsersDAO.addUser(undefined, email, uid);
+      userInfo = await UserDAL.addUser(undefined, email, uid);
     } else {
       throw new MonkeyError(
         404,
@@ -126,7 +126,7 @@ export async function linkDiscord(
 
   const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
 
-  const userInfo = await UsersDAO.getUser(uid);
+  const userInfo = await UserDAL.getUser(uid);
   if (userInfo.discordId) {
     throw new MonkeyError(
       409,
@@ -147,7 +147,7 @@ export async function linkDiscord(
     );
   }
 
-  const discordIdAvailable = await UsersDAO.isDiscordIdAvailable(discordId);
+  const discordIdAvailable = await UserDAL.isDiscordIdAvailable(discordId);
   if (!discordIdAvailable) {
     throw new MonkeyError(
       409,
@@ -155,7 +155,7 @@ export async function linkDiscord(
     );
   }
 
-  await UsersDAO.linkDiscord(uid, discordId);
+  await UserDAL.linkDiscord(uid, discordId);
 
   if (useRedisForBotTasks) {
     George.linkDiscord(discordId, uid);
@@ -173,7 +173,7 @@ export async function unlinkDiscord(
 
   const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
 
-  const userInfo = await UsersDAO.getUser(uid);
+  const userInfo = await UserDAL.getUser(uid);
   if (!userInfo.discordId) {
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
@@ -183,7 +183,7 @@ export async function unlinkDiscord(
   }
   await BotDAO.unlinkDiscord(uid, userInfo.discordId);
 
-  await UsersDAO.unlinkDiscord(uid);
+  await UserDAL.unlinkDiscord(uid);
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
@@ -195,7 +195,7 @@ export async function addTag(
   const { uid } = req.ctx.decodedToken;
   const { tagName } = req.body;
 
-  const tag = await UsersDAO.addTag(uid, tagName);
+  const tag = await UserDAL.addTag(uid, tagName);
   return new MonkeyResponse("Tag updated", tag);
 }
 
@@ -205,7 +205,7 @@ export async function clearTagPb(
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
 
-  await UsersDAO.removeTagPb(uid, tagId);
+  await UserDAL.removeTagPb(uid, tagId);
   return new MonkeyResponse("Tag PB cleared");
 }
 
@@ -215,7 +215,7 @@ export async function editTag(
   const { uid } = req.ctx.decodedToken;
   const { tagId, newName } = req.body;
 
-  await UsersDAO.editTag(uid, tagId, newName);
+  await UserDAL.editTag(uid, tagId, newName);
   return new MonkeyResponse("Tag updated");
 }
 
@@ -225,7 +225,7 @@ export async function removeTag(
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
 
-  await UsersDAO.removeTag(uid, tagId);
+  await UserDAL.removeTag(uid, tagId);
   return new MonkeyResponse("Tag deleted");
 }
 
@@ -234,7 +234,7 @@ export async function getTags(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const tags = await UsersDAO.getTags(uid);
+  const tags = await UserDAL.getTags(uid);
   return new MonkeyResponse("Tags retrieved", tags ?? []);
 }
 
@@ -242,9 +242,10 @@ export async function updateLbMemory(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { mode, mode2, language, rank } = req.body;
+  const { mode, language, rank } = req.body;
+  const mode2 = req.body.mode2 as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
 
-  await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
+  await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");
 }
 
@@ -252,7 +253,7 @@ export async function getCustomThemes(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const customThemes = await UsersDAO.getThemes(uid);
+  const customThemes = await UserDAL.getThemes(uid);
   return new MonkeyResponse("Custom themes retrieved", customThemes);
 }
 
@@ -262,7 +263,7 @@ export async function addCustomTheme(
   const { uid } = req.ctx.decodedToken;
   const { name, colors } = req.body;
 
-  const addedTheme = await UsersDAO.addTheme(uid, { name, colors });
+  const addedTheme = await UserDAL.addTheme(uid, { name, colors });
   return new MonkeyResponse("Custom theme added", {
     theme: addedTheme,
   });
@@ -273,7 +274,7 @@ export async function removeCustomTheme(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { themeId } = req.body;
-  await UsersDAO.removeTheme(uid, themeId);
+  await UserDAL.removeTheme(uid, themeId);
   return new MonkeyResponse("Custom theme removed");
 }
 
@@ -283,7 +284,7 @@ export async function editCustomTheme(
   const { uid } = req.ctx.decodedToken;
   const { themeId, theme } = req.body;
 
-  await UsersDAO.editTheme(uid, themeId, theme);
+  await UserDAL.editTheme(uid, themeId, theme);
   return new MonkeyResponse("Custom theme updated");
 }
 
@@ -293,6 +294,11 @@ export async function getPersonalBests(
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
 
-  const data = (await UsersDAO.getPersonalBests(uid, mode, mode2)) ?? null;
+  const data =
+    (await UserDAL.getPersonalBests(
+      uid,
+      mode as string,
+      mode2 as string | undefined
+    )) ?? null;
   return new MonkeyResponse("Personal bests retrieved", data);
 }
