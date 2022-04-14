@@ -203,8 +203,10 @@ export async function show(clearText = true): Promise<void> {
 
     if (!Auth.currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
+      $("#quoteSearchPopup #toggleShowFavorites").addClass("hidden");
     } else {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").removeClass("hidden");
+      $("#quoteSearchPopup #toggleShowFavorites").removeClass("hidden");
     }
 
     if (DB.getSnapshot()?.quoteMod) {
@@ -394,7 +396,7 @@ $(document).on(
 
 $(document).on("click", "#toggleShowFavorites", (e) => {
   if (!Auth.currentUser) {
-    Notifications.add("You need to be logged in to use this feature!", 0);
+    // Notifications.add("You need to be logged in to use this feature!", 0);
     return;
   }
 
