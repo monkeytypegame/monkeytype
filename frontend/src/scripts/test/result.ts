@@ -12,6 +12,7 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
+import * as Loader from "../elements/loader";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 
@@ -747,10 +748,12 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
   if ($button.hasClass("fas")) {
     // Remove from favorites
+    Loader.show();
     const response = await Ape.users.removeQuoteFromFavorites(
       quoteLang,
       quoteId
     );
+    Loader.hide();
 
     Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
@@ -762,7 +765,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     }
   } else {
     // Add to favorites
+    Loader.show();
     const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+    Loader.hide();
 
     Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
