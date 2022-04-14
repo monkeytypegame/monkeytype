@@ -19,14 +19,16 @@ export async function addResult(
   if (!user) throw new MonkeyError(404, "User not found", "add result");
   if (result.uid === undefined) result.uid = uid;
   // result.ir = true;
-  const res = await db.collection("results").insertOne(result);
+  const res = await db
+    .collection<MonkeyTypesResult>("results")
+    .insertOne(result);
   return {
     insertedId: res.insertedId,
   };
 }
 
 export async function deleteAll(uid: string): Promise<DeleteResult> {
-  return await db.collection("results").deleteMany({ uid });
+  return await db.collection<MonkeyTypesResult>("results").deleteMany({ uid });
 }
 
 export async function updateTags(
@@ -35,7 +37,7 @@ export async function updateTags(
   tags: string[]
 ): Promise<UpdateResult> {
   const result = await db
-    .collection("results")
+    .collection<MonkeyTypesResult>("results")
     .findOne({ _id: new ObjectId(resultId), uid });
   if (!result) throw new MonkeyError(404, "Result not found");
   const userTags = await getTags(uid);
@@ -48,7 +50,7 @@ export async function updateTags(
     throw new MonkeyError(422, "One of the tag id's is not valid");
   }
   return await db
-    .collection("results")
+    .collection<MonkeyTypesResult>("results")
     .updateOne({ _id: new ObjectId(resultId), uid }, { $set: { tags } });
 }
 
