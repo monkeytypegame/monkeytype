@@ -52,7 +52,7 @@ function checkUserPermissions(
     try {
       const { uid } = req.ctx.decodedToken;
 
-      const userData = (await getUser(uid)) as unknown as MonkeyTypes.User;
+      const userData = await getUser(uid);
       const hasPermission = criteria(userData);
 
       if (!hasPermission) {
