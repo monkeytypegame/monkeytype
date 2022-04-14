@@ -17,6 +17,7 @@ import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import { isQuoteFavorite } from "../utils/misc";
+import * as Loader from "../elements/loader";
 
 export let selectedId = 1;
 
@@ -359,10 +360,12 @@ $(document).on(
 
     if ($button.hasClass("fas")) {
       // Remove from favorites
+      Loader.show();
       const response = await Ape.users.removeQuoteFromFavorites(
         quoteLang,
         quoteId
       );
+      Loader.hide();
 
       Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
@@ -374,7 +377,9 @@ $(document).on(
       }
     } else {
       // Add to favorites
+      Loader.show();
       const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+      Loader.hide();
 
       Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
