@@ -14,7 +14,7 @@ import {
 const router = Router();
 
 const languageSchema = joi.string().min(1).required();
-const quoteIdSchema = joi.string().min(1).regex(/\d+/).required();
+const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
