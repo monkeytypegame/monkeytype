@@ -700,8 +700,8 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
   //could dbSnapshot just be used here instead of getSnapshot()
 
   if (mode === "time") {
-    const timeMode = mode as "time",
-      timeMode2 = mode2 as 15 | 60;
+    const timeMode = mode as "time";
+    const timeMode2 = mode2 as 15 | 60;
 
     const snapshot = getSnapshot();
     if (snapshot.lbMemory === undefined) {
