@@ -307,7 +307,7 @@ export async function checkIfTagPb(
   const tagsToCheck: MonkeyTypes.UserTag[] = [];
   user.tags.forEach((tag) => {
     tags.forEach((resultTag) => {
-      if (resultTag == tag._id.toHexString()) {
+      if (resultTag === tag._id.toHexString()) {
         tagsToCheck.push(tag);
       }
     });
