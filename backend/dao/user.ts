@@ -256,8 +256,8 @@ export async function checkIfPb(
     return false;
   }
 
-  let LbPb = user.lbPersonalBests;
-  if (!LbPb) LbPb = { time: {} };
+  let lbPb = user.lbPersonalBests;
+  if (!lbPb) lbPb = { time: {} };
 
   const pb = checkAndUpdatePb(
     user.personalBests ?? {
@@ -267,7 +267,7 @@ export async function checkIfPb(
       words: {},
       zen: {},
     },
-    LbPb,
+    lbPb,
     result
   );
 
