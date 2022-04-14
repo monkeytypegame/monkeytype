@@ -294,7 +294,7 @@ export async function checkIfTagPb(
     return [];
   }
 
-  const { mode, tags, funbox } = result;
+  const { mode, tags: resultTags, funbox } = result;
 
   if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
     return [];
@@ -305,10 +305,10 @@ export async function checkIfTagPb(
   }
 
   const tagsToCheck: MonkeyTypes.UserTag[] = [];
-  user.tags.forEach((tag) => {
-    tags.forEach((resultTag) => {
-      if (resultTag === tag._id.toHexString()) {
-        tagsToCheck.push(tag);
+  user.tags.forEach((userTag) => {
+    resultTags.forEach((resultTag) => {
+      if (resultTag === userTag._id.toHexString()) {
+        tagsToCheck.push(userTag);
       }
     });
   });
