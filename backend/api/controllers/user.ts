@@ -302,3 +302,41 @@ export async function getPersonalBests(
     )) ?? null;
   return new MonkeyResponse("Personal bests retrieved", data);
 }
+
+export async function getFavoriteQuotes(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const quotes = await UserDAL.getFavoriteQuotes(uid);
+
+  return new MonkeyResponse("Favorite quotes retrieved", quotes);
+}
+
+export async function addFavoriteQuote(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const { language, quoteId } = req.body;
+
+  await UserDAL.addFavoriteQuote(
+    uid,
+    language,
+    quoteId,
+    req.ctx.configuration.favoriteQuotes.maxFavorites
+  );
+
+  return new MonkeyResponse("Quote added to favorites");
+}
+
+export async function removeFavoriteQuote(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const { quoteId, language } = req.body;
+  await UserDAL.removeFavoriteQuote(uid, language, quoteId);
+
+  return new MonkeyResponse("Quote removed from favorites");
+}

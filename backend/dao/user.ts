@@ -534,3 +534,85 @@ export async function getPersonalBests(
 
   return user?.personalBests?.[mode];
 }
+
+export async function getFavoriteQuotes(
+  uid
+): Promise<MonkeyTypes.User["favoriteQuotes"]> {
+  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
+
+  if (!user) {
+    throw new MonkeyError(404, "User not found", "getFavoriteQuotes");
+  }
+
+  return user.favoriteQuotes ?? {};
+}
+
+export async function addFavoriteQuote(
+  uid: string,
+  language: string,
+  quoteId: string,
+  maxQuotes: number
+): Promise<void> {
+  const usersCollection = db.collection<MonkeyTypes.User>("users");
+  const user = await usersCollection.findOne({ uid });
+
+  if (!user) {
+    throw new MonkeyError(404, "User does not exist", "addFavoriteQuote");
+  }
+
+  if (user.favoriteQuotes) {
+    if (
+      user.favoriteQuotes[language] &&
+      user.favoriteQuotes[language].includes(quoteId)
+    ) {
+      return;
+    }
+
+    const quotesLength = _.sumBy(
+      Object.values(user.favoriteQuotes),
+      (favQuotes) => favQuotes.length
+    );
+
+    if (quotesLength >= maxQuotes) {
+      throw new MonkeyError(
+        409,
+        "Too many favorite quotes",
+        "addFavoriteQuote"
+      );
+    }
+  }
+
+  await usersCollection.updateOne(
+    { uid },
+    {
+      $push: {
+        [`favoriteQuotes.${language}`]: quoteId,
+      },
+    }
+  );
+}
+
+export async function removeFavoriteQuote(
+  uid: string,
+  language: string,
+  quoteId: string
+): Promise<void> {
+  const usersCollection = await db.collection<MonkeyTypes.User>("users");
+  const user = await usersCollection.findOne({ uid });
+  if (!user) {
+    throw new MonkeyError(404, "User does not exist", "deleteFavoriteQuote");
+  }
+
+  if (
+    !user.favoriteQuotes ||
+    !user.favoriteQuotes[language] ||
+    !user.favoriteQuotes[language].includes(quoteId)
+  ) {
+    return;
+  }
+
+  await usersCollection.updateOne(
+    { uid },
+    { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
+  );
+}
