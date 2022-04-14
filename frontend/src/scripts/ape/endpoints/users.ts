@@ -136,20 +136,20 @@ export default function getUsersEndpoints(
     return await apeClient.post(`${BASE_PATH}/discord/unlink`);
   }
 
-  async function addToFavorites(
+  async function addQuoteToFavorites(
     language: string,
     quoteId: string
   ): Ape.EndpointData {
     const payload = { language, quoteId };
-    return await apeClient.post(`${BASE_PATH}/favorites`, { payload });
+    return await apeClient.post(`${BASE_PATH}/favoriteQuotes`, { payload });
   }
 
-  async function removeFromFavorites(
+  async function removeQuoteFromFavorites(
     language: string,
     quoteId: string
   ): Ape.EndpointData {
     const payload = { language, quoteId };
-    return await apeClient.delete(`${BASE_PATH}/favorites`, { payload });
+    return await apeClient.delete(`${BASE_PATH}/favoriteQuotes`, { payload });
   }
 
   return {
@@ -172,7 +172,7 @@ export default function getUsersEndpoints(
     addCustomTheme,
     editCustomTheme,
     deleteCustomTheme,
-    addQuoteToFavorites: addToFavorites,
-    removeQuoteFromFavorites: removeFromFavorites,
+    addQuoteToFavorites,
+    removeQuoteFromFavorites,
   };
 }
