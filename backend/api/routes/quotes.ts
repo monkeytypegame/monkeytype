@@ -2,7 +2,6 @@ import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as QuoteController from "../controllers/quote";
-import * as UserController from "../controllers/user";
 import * as RateLimit from "../../middlewares/rate-limit";
 import {
   asyncHandler,
@@ -12,9 +11,6 @@ import {
 } from "../../middlewares/api-utils";
 
 const router = Router();
-
-const languageSchema = joi.string().min(1).required();
-const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
@@ -142,39 +138,6 @@ router.post(
     },
   }),
   asyncHandler(QuoteController.reportQuote)
-);
-
-router.get(
-  "/favorites",
-  RateLimit.quoteFavoriteGet,
-  authenticateRequest(),
-  asyncHandler(UserController.getFavoriteQuotes)
-);
-
-router.post(
-  "/favorites",
-  RateLimit.quoteFavoritePost,
-  authenticateRequest(),
-  validateRequest({
-    body: {
-      language: languageSchema,
-      quoteId: quoteIdSchema,
-    },
-  }),
-  asyncHandler(UserController.addFavoriteQuote)
-);
-
-router.delete(
-  "/favorites",
-  RateLimit.quoteFavoriteDelete,
-  authenticateRequest(),
-  validateRequest({
-    body: {
-      language: languageSchema,
-      quoteId: quoteIdSchema,
-    },
-  }),
-  asyncHandler(UserController.removeFavoriteQuote)
 );
 
 export default router;
