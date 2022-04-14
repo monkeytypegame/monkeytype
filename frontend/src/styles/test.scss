@@ -679,11 +679,11 @@
 
       &.source {
         #rateQuoteButton,
-        #reportQuoteButton {
+        #reportQuoteButton,
+        #favoriteQuoteButton {
           padding: 0 0.25rem;
         }
-        #rateQuoteButton,
-        #favoriteQuoteButton {
+        #rateQuoteButton {
           display: inline-grid;
           gap: 0.25rem;
         }
