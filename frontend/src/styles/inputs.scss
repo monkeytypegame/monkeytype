@@ -78,6 +78,23 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: none;
+  outline: 2px solid var(--main-color);
+  font-family: inherit;
+  -webkit-text-fill-color: var(--text-color);
+  -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+}
+
 .select2-dropdown {
   background-color: var(--bg-color);
   color: var(--text-color);
