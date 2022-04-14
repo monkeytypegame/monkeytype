@@ -62,6 +62,12 @@ input[type="color"] {
   pointer-events: none;
 }
 
+input:disabled,
+textarea:disabled {
+  // color: var(--sub-color);
+  opacity: 0.33;
+}
+
 ::-moz-color-swatch {
   border: none;
 }
@@ -93,6 +99,7 @@ select:-webkit-autofill:focus {
   font-family: inherit;
   -webkit-text-fill-color: var(--text-color);
   -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;
+  caret-color: var(--text-color);
 }
 
 .select2-dropdown {
