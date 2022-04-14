@@ -1,4 +1,4 @@
-import ResultDAO from "../../dao/result";
+import * as ResultDAL from "../../dao/result";
 import {
   getUser,
   checkIfPb,
@@ -44,7 +44,7 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const results = await ResultDAO.getResults(uid);
+  const results = await ResultDAL.getResults(uid);
   return new MonkeyResponse("Result retrieved", results);
 }
 
@@ -53,7 +53,7 @@ export async function deleteAll(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  await ResultDAO.deleteAll(uid);
+  await ResultDAL.deleteAll(uid);
   Logger.logToDb("user_results_deleted", "", uid);
   return new MonkeyResponse("All results deleted");
 }
@@ -64,7 +64,7 @@ export async function updateTags(
   const { uid } = req.ctx.decodedToken;
   const { tagIds, resultId } = req.body;
 
-  await ResultDAO.updateTags(uid, resultId, tagIds);
+  await ResultDAL.updateTags(uid, resultId, tagIds);
   return new MonkeyResponse("Result tags updated");
 }
 
@@ -150,7 +150,7 @@ export async function addResult(
   //get latest result ordered by timestamp
   let lastResultTimestamp;
   try {
-    lastResultTimestamp = (await ResultDAO.getLastResult(uid)).timestamp;
+    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
   } catch (e) {
     lastResultTimestamp = null;
   }
@@ -293,7 +293,7 @@ export async function addResult(
 
   if (result.mode !== "custom") delete result.customText;
 
-  const addedResult = await ResultDAO.addResult(uid, result);
+  const addedResult = await ResultDAL.addResult(uid, result);
 
   if (isPb) {
     Logger.logToDb(
