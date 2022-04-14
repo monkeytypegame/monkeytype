@@ -308,14 +308,14 @@ router.get(
 );
 
 router.get(
-  "/favorites",
+  "/favoriteQuotes",
   RateLimit.quoteFavoriteGet,
   authenticateRequest(),
   asyncHandler(UserController.getFavoriteQuotes)
 );
 
 router.post(
-  "/favorites",
+  "/favoriteQuotes",
   RateLimit.quoteFavoritePost,
   authenticateRequest(),
   validateRequest({
@@ -328,7 +328,7 @@ router.post(
 );
 
 router.delete(
-  "/favorites",
+  "/favoriteQuotes",
   RateLimit.quoteFavoriteDelete,
   authenticateRequest(),
   validateRequest({
