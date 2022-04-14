@@ -136,6 +136,22 @@ export default function getUsersEndpoints(
     return await apeClient.post(`${BASE_PATH}/discord/unlink`);
   }
 
+  async function addToFavorites(
+    language: string,
+    quoteId: string
+  ): Ape.EndpointData {
+    const payload = { language, quoteId };
+    return await apeClient.post(`${BASE_PATH}/favorites`, { payload });
+  }
+
+  async function removeFromFavorites(
+    language: string,
+    quoteId: string
+  ): Ape.EndpointData {
+    const payload = { language, quoteId };
+    return await apeClient.delete(`${BASE_PATH}/favorites`, { payload });
+  }
+
   return {
     getData,
     create,
@@ -156,5 +172,7 @@ export default function getUsersEndpoints(
     addCustomTheme,
     editCustomTheme,
     deleteCustomTheme,
+    addQuoteToFavorites: addToFavorites,
+    removeQuoteFromFavorites: removeFromFavorites,
   };
 }

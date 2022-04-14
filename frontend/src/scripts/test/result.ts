@@ -747,7 +747,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
   if ($button.hasClass("fas")) {
     // Remove from favorites
-    const response = await Ape.quotes.removeFromFavorites(quoteLang, quoteId);
+    const response = await Ape.users.removeQuoteFromFavorites(
+      quoteLang,
+      quoteId
+    );
 
     Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
@@ -759,7 +762,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
     }
   } else {
     // Add to favorites
-    const response = await Ape.quotes.addToFavorites(quoteLang, quoteId);
+    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
 
     Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
