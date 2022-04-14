@@ -308,7 +308,7 @@ export async function getFavoriteQuotes(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const quotes = await UsersDAO.getFavoriteQuotes(uid);
+  const quotes = await UserDAL.getFavoriteQuotes(uid);
 
   return new MonkeyResponse("Favorite quotes retrieved", quotes);
 }
@@ -320,7 +320,7 @@ export async function addFavoriteQuote(
 
   const { language, quoteId } = req.body;
 
-  await UsersDAO.addFavoriteQuote(
+  await UserDAL.addFavoriteQuote(
     uid,
     language,
     quoteId,
@@ -336,7 +336,7 @@ export async function removeFavoriteQuote(
   const { uid } = req.ctx.decodedToken;
 
   const { quoteId, language } = req.body;
-  await UsersDAO.removeFavoriteQuote(uid, language, quoteId);
+  await UserDAL.removeFavoriteQuote(uid, language, quoteId);
 
   return new MonkeyResponse("Quote removed from favorites");
 }
