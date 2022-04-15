@@ -290,6 +290,10 @@
     "languages": ["malayalam"]
   },
   {
+    "name": "sinhala",
+    "languages": ["sinhala"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
