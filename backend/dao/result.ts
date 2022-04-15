@@ -79,12 +79,10 @@ export async function getLastResult(uid: string): Promise<MonkeyTypesResult> {
 export async function getResultByTimestamp(
   uid: string,
   timestamp
-): Promise<MonkeyTypesResult> {
-  const result = await db
+): Promise<MonkeyTypesResult | null> {
+  return await db
     .collection<MonkeyTypesResult>("results")
     .findOne({ uid, timestamp });
-  if (!result) throw new MonkeyError(404, "Result not found");
-  return result;
 }
 
 export async function getResults(
