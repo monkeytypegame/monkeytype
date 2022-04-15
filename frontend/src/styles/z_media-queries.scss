@@ -33,7 +33,7 @@
     }
   }
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr max-content;
   }
 }
 
