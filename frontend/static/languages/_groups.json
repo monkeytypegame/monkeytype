@@ -12,6 +12,10 @@
     ]
   },
   {
+    "name": "azerbaijani",
+    "languages": ["azerbaijani", "azerbaijani_1k"]
+  },
+  {
     "name": "spanish",
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
