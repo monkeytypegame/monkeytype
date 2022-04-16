@@ -10,7 +10,7 @@ import {
   validateRequest,
 } from "../../middlewares/api-utils";
 
-const quotesRouter = Router();
+const router = Router();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
@@ -18,7 +18,7 @@ const checkIfUserIsQuoteMod = checkUserPermissions({
   },
 });
 
-quotesRouter.get(
+router.get(
   "/",
   RateLimit.newQuotesGet,
   authenticateRequest(),
@@ -26,7 +26,7 @@ quotesRouter.get(
   asyncHandler(QuoteController.getQuotes)
 );
 
-quotesRouter.post(
+router.post(
   "/",
   validateConfiguration({
     criteria: (configuration) => {
@@ -49,7 +49,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.addQuote)
 );
 
-quotesRouter.post(
+router.post(
   "/approve",
   RateLimit.newQuotesAction,
   authenticateRequest(),
@@ -65,7 +65,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.approveQuote)
 );
 
-quotesRouter.post(
+router.post(
   "/reject",
   RateLimit.newQuotesAction,
   authenticateRequest(),
@@ -78,7 +78,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.refuseQuote)
 );
 
-quotesRouter.get(
+router.get(
   "/rating",
   RateLimit.quoteRatingsGet,
   authenticateRequest(),
@@ -91,7 +91,7 @@ quotesRouter.get(
   asyncHandler(QuoteController.getRating)
 );
 
-quotesRouter.post(
+router.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
   authenticateRequest(),
@@ -105,7 +105,7 @@ quotesRouter.post(
   asyncHandler(QuoteController.submitRating)
 );
 
-quotesRouter.post(
+router.post(
   "/report",
   validateConfiguration({
     criteria: (configuration) => {
@@ -140,4 +140,4 @@ quotesRouter.post(
   asyncHandler(QuoteController.reportQuote)
 );
 
-export default quotesRouter;
+export default router;

@@ -250,7 +250,7 @@ key {
   color: var(--text-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.4rem;
+  padding: 0.5rem;
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
@@ -259,7 +259,7 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1rem;
+  line-height: 1.25rem;
   appearance: none;
   border: none;
   font-family: inherit;
@@ -309,7 +309,7 @@ key {
   color: var(--sub-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.4rem;
+  padding: 0.5rem;
   border-radius: var(--roundness);
   text-align: center;
   user-select: none;
@@ -317,7 +317,7 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1rem;
+  line-height: 1.25rem;
   appearance: none;
   border: none;
   font-family: inherit;

@@ -321,6 +321,7 @@ export function signIn(): void {
   authListener();
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
+  $(".pageLogin input").prop("disabled", true);
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -355,13 +356,14 @@ export function signIn(): void {
       .catch(function (error) {
         let message = error.message;
         if (error.code === "auth/wrong-password") {
-          message = "Incorrect password.";
+          message = "Incorrect password";
         } else if (error.code === "auth/user-not-found") {
-          message = "User not found.";
+          message = "User not found";
         }
         Notifications.add(message, -1);
         $(".pageLogin .preloader").addClass("hidden");
         $(".pageLogin .button").removeClass("disabled");
+        $(".pageLogin input").prop("disabled", false);
       });
   });
 }
@@ -370,6 +372,7 @@ export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
   $(".pageLogin .preloader").removeClass("hidden");
   $(".pageLogin .button").addClass("disabled");
+  $(".pageLogin input").prop("disabled", true);
   authListener();
   let signedInUser;
   try {
@@ -426,6 +429,7 @@ export async function signInWithGoogle(): Promise<void> {
         Notifications.add("Account created", 1, 3);
         $("#menu .text-button.account .text").text(name);
         $(".pageLogin .button").removeClass("disabled");
+        $(".pageLogin input").prop("disabled", false);
         $(".pageLogin .preloader").addClass("hidden");
         await loadUser(signedInUser.user);
         PageController.change("account");
@@ -459,6 +463,7 @@ export async function signInWithGoogle(): Promise<void> {
     Notifications.add(message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();
@@ -566,6 +571,7 @@ export function signOut(): void {
       PageController.change("login");
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
+      $(".pageLogin input").prop("disabled", false);
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
@@ -574,6 +580,7 @@ export function signOut(): void {
 
 async function signUp(): Promise<void> {
   $(".pageLogin .button").addClass("disabled");
+  $(".pageLogin input").prop("disabled", true);
   $(".pageLogin .preloader").removeClass("hidden");
   const nname = ($(".pageLogin .register input")[0] as HTMLInputElement).value;
   const email = ($(".pageLogin .register input")[1] as HTMLInputElement).value;
@@ -589,6 +596,7 @@ async function signUp(): Promise<void> {
     Notifications.add("Emails do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
     return;
   }
 
@@ -596,6 +604,7 @@ async function signUp(): Promise<void> {
     Notifications.add("Passwords do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
     return;
   }
 
@@ -605,6 +614,7 @@ async function signUp(): Promise<void> {
     Notifications.add(response.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
     return;
   }
 
@@ -632,6 +642,7 @@ async function signUp(): Promise<void> {
     AllTimeStats.clear();
     $("#menu .text-button.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
     $(".pageLogin .preloader").addClass("hidden");
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -664,6 +675,7 @@ async function signUp(): Promise<void> {
     Notifications.add(message, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
     signOut();
     return;
   }

@@ -15,6 +15,9 @@ import { splitByAndKeep } from "../utils/strings";
 import QuotesController from "../controllers/quotes-controller";
 import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
+import Ape from "../ape";
+import { isQuoteFavorite } from "../utils/misc";
+import * as Loader from "../elements/loader";
 
 export let selectedId = 1;
 
@@ -75,6 +78,26 @@ function applyQuoteLengthFilter(
   return filteredQuotes;
 }
 
+function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
+  const showFavOnly = (
+    document.querySelector("#toggleShowFavorites") as HTMLDivElement
+  ).classList.contains("active");
+
+  const filteredQuotes = quotes.filter((quote) => {
+    if (showFavOnly) {
+      return isQuoteFavorite(
+        DB.getSnapshot(),
+        quote.language,
+        quote.id.toString()
+      );
+    } else {
+      return true;
+    }
+  });
+
+  return filteredQuotes;
+}
+
 function buildQuoteSearchResult(
   quote: MonkeyTypes.Quote,
   matchedSearchTerms: string[]
@@ -90,31 +113,47 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const isNotAuthed = !Auth.currentUser;
+  const loggedIn = !Auth.currentUser;
+  const isFav =
+    !loggedIn &&
+    isQuoteFavorite(DB.getSnapshot(), quote.language, quote.id.toString());
 
   return `
   <div class="searchResult" id="${quote.id}">
+
     <div class="text">
       ${highlightMatches(quote.text, matchedSearchTerms)}
     </div>
+
     <div class="id">
       <div class="sub">id</div>
       <span class="quote-id">
         ${highlightMatches(quote.id.toString(), matchedSearchTerms)}
       </span>
     </div>
+
     <div class="length">
       <div class="sub">length</div>
       ${lengthDesc}
     </div>
+
     <div class="source">
       <div class="sub">source</div>
-      ${highlightMatches(quote.source, matchedSearchTerms)}</div>
+      ${highlightMatches(quote.source, matchedSearchTerms)}
+    </div>
+
     <div class="text-button report ${
-      isNotAuthed && "hidden"
+      loggedIn && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>
     </div>
+
+    <div class="text-button favorite ${
+      loggedIn && "hidden"
+    }" aria-label="Favorite quote" data-balloon-pos="left">
+      <i class="${isFav ? "fas" : "far"} fa-heart favorite"></i>
+    </div>
+
   </div>
   `;
 }
@@ -132,9 +171,10 @@ async function updateResults(searchText: string): Promise<void> {
   const { results: matches, matchedQueryTerms } =
     quoteSearchService.query(searchText);
 
-  const quotesToShow = applyQuoteLengthFilter(
-    searchText === "" ? quotes : matches
-  );
+  let quotesToShow = [];
+  quotesToShow = applyQuoteLengthFilter(searchText === "" ? quotes : matches);
+
+  quotesToShow = applyQuoteFavFilter(quotesToShow);
 
   const resultsList = $("#quoteSearchResults");
   resultsList.empty();
@@ -149,7 +189,7 @@ async function updateResults(searchText: string): Promise<void> {
       ? "<span style='opacity: 0.5'>(only showing 100)</span>"
       : "";
   $("#extraResults").html(
-    `${quotesToShow.length} results ${resultsExceededText}`
+    `${quotesToShow.length} result(s) ${resultsExceededText}`
   );
 }
 
@@ -163,8 +203,10 @@ export async function show(clearText = true): Promise<void> {
 
     if (!Auth.currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
+      $("#quoteSearchPopup #toggleShowFavorites").addClass("hidden");
     } else {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").removeClass("hidden");
+      $("#quoteSearchPopup #toggleShowFavorites").removeClass("hidden");
     }
 
     if (DB.getSnapshot()?.quoteMod) {
@@ -299,6 +341,67 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
       show(false);
     },
   });
+});
+
+$(document).on(
+  "click",
+  "#quoteSearchPopup .text-button.favorite",
+  async (e) => {
+    const quoteLang = Config.language;
+    const quoteId = e.target.closest(".searchResult").id as string;
+
+    if (quoteLang === "" || quoteId === "") {
+      Notifications.add("Could not get quote stats!", -1);
+      return;
+    }
+
+    const $button = $(
+      `#quoteSearchPopup .searchResult[id=${quoteId}] .text-button.favorite i`
+    );
+    const dbSnapshot = DB.getSnapshot();
+
+    if ($button.hasClass("fas")) {
+      // Remove from favorites
+      Loader.show();
+      const response = await Ape.users.removeQuoteFromFavorites(
+        quoteLang,
+        quoteId
+      );
+      Loader.hide();
+
+      Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+      if (response.status === 200) {
+        $button.removeClass("fas").addClass("far");
+        const quoteIndex =
+          dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(quoteId);
+        dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
+      }
+    } else {
+      // Add to favorites
+      Loader.show();
+      const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+      Loader.hide();
+
+      Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+      if (response.status === 200) {
+        $button.removeClass("far").addClass("fas");
+        DB.getSnapshot().favoriteQuotes[quoteLang]?.push(quoteId);
+      }
+    }
+    e.preventDefault();
+  }
+);
+
+$(document).on("click", "#toggleShowFavorites", (e) => {
+  if (!Auth.currentUser) {
+    // Notifications.add("You need to be logged in to use this feature!", 0);
+    return;
+  }
+
+  $(e.target).toggleClass("active");
+  searchForQuotes();
 });
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
