@@ -26,7 +26,7 @@ export async function getLeaderboard(
     );
   }
 
-  const normalizedLeaderboard = _.map(leaderboard as any[], (entry) => {
+  const normalizedLeaderboard = _.map(leaderboard, (entry) => {
     return uid && entry.uid === uid
       ? entry
       : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
