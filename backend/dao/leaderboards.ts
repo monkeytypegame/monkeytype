@@ -36,7 +36,7 @@ export async function getRank(
   mode2: string,
   language: string,
   uid: string
-): Promise<RankReturn | false> {
+): Promise<RankReturn | false | void> {
   if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
   const res: RankReturn | null = await db
     .collection<MonkeyTypes.LeaderboardEntry>(
@@ -48,8 +48,6 @@ export async function getRank(
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .estimatedDocumentCount();
     return res;
-  } else {
-    return false;
   }
 }
 
