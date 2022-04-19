@@ -2,7 +2,7 @@ import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { getUser, updateQuoteRatings } from "../../dao/user";
 import ReportDAO from "../../dao/report";
-import NewQuotesDao from "../../dao/new-quotes";
+import * as NewQuotesDAL from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
 import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
@@ -19,9 +19,16 @@ export async function getQuotes(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  let quoteMod: boolean | undefined | string = (await getUser(uid)).quoteMod;
-  if (quoteMod === true) quoteMod = "all";
-  const data = await NewQuotesDao.get(quoteMod);
+  const quoteMod: boolean | undefined | string = (await getUser(uid)).quoteMod;
+  let quoteModString: string;
+  if (quoteMod === true) {
+    quoteModString = "all";
+  } else if (quoteMod !== false && quoteMod !== undefined) {
+    quoteModString = quoteMod;
+  } else {
+    throw new MonkeyError(403, "You are not allowed to view submitted quotes");
+  }
+  const data = await NewQuotesDAL.get(quoteModString);
   return new MonkeyResponse("Quote submissions retrieved", data);
 }
 
@@ -33,7 +40,7 @@ export async function addQuote(
 
   await verifyCaptcha(captcha);
 
-  await NewQuotesDao.add(text, source, language, uid);
+  await NewQuotesDAL.add(text, source, language, uid);
   return new MonkeyResponse("Quote submission added");
 }
 
@@ -45,7 +52,11 @@ export async function approveQuote(
 
   const { name } = await getUser(uid);
 
-  const data = await NewQuotesDao.approve(quoteId, editText, editSource, name);
+  if (!name) {
+    throw new MonkeyError(500, "Missing name field");
+  }
+
+  const data = await NewQuotesDAL.approve(quoteId, editText, editSource, name);
   Logger.logToDb("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);
@@ -56,7 +67,7 @@ export async function refuseQuote(
 ): Promise<MonkeyResponse> {
   const { quoteId } = req.body;
 
-  await NewQuotesDao.refuse(quoteId);
+  await NewQuotesDAL.refuse(quoteId);
   return new MonkeyResponse("Quote refused");
 }
 
