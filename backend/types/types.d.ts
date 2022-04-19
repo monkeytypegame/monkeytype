@@ -110,6 +110,16 @@ declare namespace MonkeyTypes {
     enabled: boolean;
   }
 
+  interface NewQuote {
+    _id: ObjectId;
+    text: string;
+    source: string;
+    language: string;
+    submittedBy: string;
+    timestamp: number;
+    approved: boolean;
+  }
+
   type Mode = "time" | "words" | "quote" | "zen" | "custom";
 
   type Mode2<M extends Mode> = keyof PersonalBests[M];
