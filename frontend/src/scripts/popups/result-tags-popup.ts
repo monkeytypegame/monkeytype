@@ -96,7 +96,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
     );
   }
 
-  Notifications.add("Tags updated.", 1, 2);
+  Notifications.add("Tags updated", 1, 2);
   DB.getSnapshot().results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       if (result._id === resultId) {
