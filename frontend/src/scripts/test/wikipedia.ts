@@ -97,6 +97,8 @@ export async function getSection(language: string): Promise<Section> {
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
           sectionText = $("<div/>").html(sectionText).text();
 
+          sectionText = sectionText.replace(/\[\d+\]/gi, "");
+
           sectionText = sectionText.replace(/\s+/g, " ");
           sectionText = sectionText.trim();
 
