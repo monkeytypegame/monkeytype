@@ -286,6 +286,10 @@
     "languages": ["belarusian_1k"]
   },
   {
+    "name": "azerbaijani",
+    "languages": ["azerbaijani", "azerbaijani_1k"]
+  },
+  {
     "name": "malayalam",
     "languages": ["malayalam"]
   },
