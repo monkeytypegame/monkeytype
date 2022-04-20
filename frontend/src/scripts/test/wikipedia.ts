@@ -96,9 +96,8 @@ export async function getSection(language: string): Promise<Section> {
           // Remove double whitespaces and finally trailing whitespaces.
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
           sectionText = $("<div/>").html(sectionText).text();
-
           sectionText = sectionText.replace(/\[\d+\]/gi, "");
-
+          sectionText = sectionText.replace(/[\u200B-\u200D\uFEFF]/g, "");
           sectionText = sectionText.replace(/\s+/g, " ");
           sectionText = sectionText.trim();
 
@@ -110,6 +109,9 @@ export async function getSection(language: string): Promise<Section> {
           sectionText.split(" ").forEach((word) => {
             words.push(word);
           });
+
+          console.log(sectionText);
+          console.log(words);
 
           const section = new Section(
             sectionObj.title,
