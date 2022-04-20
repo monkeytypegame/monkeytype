@@ -1,0 +1,23 @@
+{
+  "language": "romanian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Trecutul trebuie s? r?m?n?, ?n vie?ile noastre, la fel de plin de posibilit??i ca viitorul.",
+      "source": "Inocen?ii",
+      "length": 91,
+      "id": 1
+    },
+    {
+      "text": "Admir ?ntotdeauna ocolurile prin spa?iu ?i timp pe care le face destinul.",
+      "source": "Inocen?ii",
+      "length": 73,
+      "id": 2
+    }
+      ]
+}
