@@ -110,9 +110,6 @@ export async function getSection(language: string): Promise<Section> {
             words.push(word);
           });
 
-          console.log(sectionText);
-          console.log(words);
-
           const section = new Section(
             sectionObj.title,
             sectionObj.author,
