@@ -21,8 +21,8 @@ export async function get(
     )
     .find()
     .sort({ rank: 1 })
-    .skip(parseInt(skip as unknown as string))
-    .limit(parseInt(limit.toString()))
+    .skip(skip)
+    .limit(limit)
     .toArray();
   return preset;
 }
