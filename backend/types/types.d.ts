@@ -155,7 +155,7 @@ declare namespace MonkeyTypes {
   }
 
   interface Result<M extends Mode> {
-    _id: string;
+    _id: ObjectId;
     wpm: number;
     rawWpm: number;
     charStats: number[];

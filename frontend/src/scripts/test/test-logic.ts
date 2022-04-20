@@ -865,8 +865,10 @@ export async function init(): Promise<void> {
           TestWords.setHasTab(true);
         }
 
-        if (/ +/.test(randomWord)) {
-          const randomList = randomWord.split(" ");
+        const te = randomWord.replace("\n", "\n ").trim();
+
+        if (/ +/.test(te)) {
+          const randomList = te.split(" ");
           let id = 0;
           while (id < randomList.length) {
             TestWords.words.push(randomList[id]);

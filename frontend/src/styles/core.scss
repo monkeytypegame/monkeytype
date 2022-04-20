@@ -329,6 +329,12 @@ key {
   gap: 0.25rem;
   text-decoration: none;
 
+  .fas,
+  .far {
+    display: grid;
+    place-content: center center;
+  }
+
   &.active {
     color: var(--main-color);
     &:hover {
