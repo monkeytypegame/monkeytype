@@ -394,9 +394,9 @@ export async function signInWithGoogle(): Promise<void> {
 
         if (!name) {
           // signOut();
-          $(".pageLogin .button").removeClass("disabled");
+          LoginPage.enableInputs();
           LoginPage.hidePreloader();
-          return;
+          throw new Error("No name provided");
         }
 
         const response = await Ape.users.getNameAvailability(name);
@@ -460,8 +460,7 @@ export async function signInWithGoogle(): Promise<void> {
     const message = Misc.createErrorMessage(e, "Failed to sign in with Google");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();
