@@ -46,6 +46,7 @@ import {
 import { Auth } from "../firebase";
 import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
+import * as GoogleSignUpPopup from "../popups/google-sign-up-popup";
 
 export const gmailProvider = new GoogleAuthProvider();
 
@@ -372,101 +373,18 @@ export async function signInWithGoogle(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   authListener();
-  let signedInUser;
-  try {
-    const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
-      ? browserLocalPersistence
-      : browserSessionPersistence;
+  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+    ? browserLocalPersistence
+    : browserSessionPersistence;
 
-    await setPersistence(Auth, persistence);
-    signedInUser = await signInWithPopup(Auth, gmailProvider);
+  await setPersistence(Auth, persistence);
+  const signedInUser = await signInWithPopup(Auth, gmailProvider);
 
-    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      //ask for username
-      let nameGood = false;
-      let name = "";
-
-      while (!nameGood) {
-        name =
-          prompt(
-            "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-          ) || "";
-
-        if (!name) {
-          // signOut();
-          LoginPage.enableInputs();
-          LoginPage.hidePreloader();
-          throw new Error("No name provided");
-        }
-
-        const response = await Ape.users.getNameAvailability(name);
-
-        if (response.status !== 200) {
-          return Notifications.add(
-            "Failed to check name: " + response.message,
-            -1
-          );
-        }
-
-        nameGood = true;
-      }
-      //create database object for the new user
-      // try {
-      const response = await Ape.users.create(name);
-      if (response.status !== 200) {
-        throw response;
-      }
-      // } catch (e) {
-      //   let msg = e?.response?.data?.message ?? e.message;
-      //   Notifications.add("Failed to create account: " + msg, -1);
-      //   return;
-      // }
-      if (response.status === 200) {
-        await updateProfile(signedInUser.user, { displayName: name });
-        await sendEmailVerification(signedInUser.user);
-        AllTimeStats.clear();
-        Notifications.add("Account created", 1, 3);
-        $("#menu .text-button.account .text").text(name);
-        LoginPage.enableInputs();
-        LoginPage.hidePreloader();
-        await loadUser(signedInUser.user);
-        PageController.change("account");
-        if (TestLogic.notSignedInLastResult !== null) {
-          TestLogic.setNotSignedInUid(signedInUser.user.uid);
-
-          const resultsSaveResponse = await Ape.results.save(
-            TestLogic.notSignedInLastResult
-          );
-
-          if (resultsSaveResponse.status === 200) {
-            const result = TestLogic.notSignedInLastResult;
-            DB.saveLocalResult(result);
-            DB.updateLocalStats({
-              time:
-                result.testDuration +
-                result.incompleteTestSeconds -
-                result.afkDuration,
-              started: 1,
-            });
-          }
-        }
-      }
-    } else {
-      await loadUser(signedInUser.user);
-      PageController.change("account");
-    }
-  } catch (e) {
-    console.log(e);
-    const message = Misc.createErrorMessage(e, "Failed to sign in with Google");
-    Notifications.add(message, -1);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      await Ape.users.delete();
-      await signedInUser.user.delete();
-    }
-    signOut();
-    return;
+  if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+    GoogleSignUpPopup.show(signedInUser);
+  } else {
+    await loadUser(signedInUser.user);
+    PageController.change("account");
   }
 }
 
