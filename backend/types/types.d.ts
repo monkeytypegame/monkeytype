@@ -93,6 +93,22 @@ declare namespace MonkeyTypes {
     personalBests?: PersonalBests;
   }
 
+  interface LeaderboardEntry {
+    _id: ObjectId;
+    acc: number;
+    consistency: number;
+    difficulty: Difficulty;
+    lazyMode: boolean;
+    language: string;
+    punctuation: boolean;
+    raw: number;
+    wpm: number;
+    timestamp: number;
+    uid: string;
+    name: string;
+    rank: number;
+  }
+
   interface CustomTheme {
     _id: ObjectId;
     name: string;

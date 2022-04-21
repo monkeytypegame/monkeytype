@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import LeaderboardsDAO from "../../dao/leaderboards";
+import * as LeaderboardsDAL from "../../dao/leaderboards";
 
 export async function getLeaderboard(
   req: MonkeyTypes.Request
@@ -10,10 +10,10 @@ export async function getLeaderboard(
 
   const queryLimit = Math.min(parseInt(limit as string, 10), 50);
 
-  const leaderboard = await LeaderboardsDAO.get(
-    mode,
-    mode2,
-    language,
+  const leaderboard = await LeaderboardsDAL.get(
+    mode as string,
+    mode2 as string,
+    language as string,
     parseInt(skip as string, 10),
     queryLimit
   );
@@ -26,7 +26,7 @@ export async function getLeaderboard(
     );
   }
 
-  const normalizedLeaderboard = _.map(leaderboard as any[], (entry) => {
+  const normalizedLeaderboard = _.map(leaderboard, (entry) => {
     return uid && entry.uid === uid
       ? entry
       : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
@@ -41,7 +41,12 @@ export async function getRankFromLeaderboard(
   const { language, mode, mode2 } = req.query;
   const { uid } = req.ctx.decodedToken;
 
-  const data = await LeaderboardsDAO.getRank(mode, mode2, language, uid);
+  const data = await LeaderboardsDAL.getRank(
+    mode as string,
+    mode2 as string,
+    language as string,
+    uid
+  );
   if (data === false) {
     return new MonkeyResponse(
       "Leaderboard is currently updating. Please try again in a few seconds.",
