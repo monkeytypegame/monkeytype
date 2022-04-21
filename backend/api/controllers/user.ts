@@ -13,6 +13,11 @@ export async function createNewUser(
   const { name } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
+  const available = await UserDAL.isNameAvailable(name);
+  if (!available) {
+    throw new MonkeyError(409, "Username unavailable");
+  }
+
   await UserDAL.addUser(name, email, uid);
   Logger.logToDb("user_created", `${name} ${email}`, uid);
 
