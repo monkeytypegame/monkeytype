@@ -559,6 +559,7 @@ export async function addPasswordAuth(
 }
 
 export function signOut(): void {
+  if (!Auth.currentUser) return;
   Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, 2);
