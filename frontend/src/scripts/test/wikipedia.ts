@@ -91,24 +91,26 @@ export async function getSection(language: string): Promise<Section> {
         if (sectionReq.status == 200) {
           let sectionText: string = JSON.parse(sectionReq.responseText).query
             .pages[pageid.toString()].extract;
-          const words: string[] = [];
 
-          // Remove double whitespaces and finally trailing whitespaces.
+          // Converting to one paragraph
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
+          
+          // Convert HTML to text
           sectionText = $("<div/>").html(sectionText).text();
+          
+          // Remove reference links
           sectionText = sectionText.replace(/\[\d+\]/gi, "");
+          
+          // Remove invisible characters
           sectionText = sectionText.replace(/[\u200B-\u200D\uFEFF]/g, "");
+          
+          // Convert all whitespace to space
           sectionText = sectionText.replace(/\s+/g, " ");
+          
+          // Removing whitespace before and after text
           sectionText = sectionText.trim();
-
-          // // Add spaces
-          // sectionText = sectionText.replace(/[a-zA-Z0-9]{3,}\.[a-zA-Z]/g, (x) =>
-          //   x.replace(/\./, ". ")
-          // );
-
-          sectionText.split(" ").forEach((word) => {
-            words.push(word);
-          });
+          
+          const words = sectionText.split(" ");
 
           const section = new Section(
             sectionObj.title,

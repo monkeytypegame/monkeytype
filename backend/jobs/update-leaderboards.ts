@@ -1,22 +1,23 @@
 import { CronJob } from "cron";
 import BotDAO from "../dao/bot";
 import George from "../tasks/george";
-import { Document, WithId } from "mongodb";
-import LeaderboardsDAO from "../dao/leaderboards";
+import * as LeaderboardsDAL from "../dao/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";
 const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
-async function getTop10(leaderboardTime: string): Promise<WithId<Document>[]> {
-  return (await LeaderboardsDAO.get(
+async function getTop10(
+  leaderboardTime: string
+): Promise<MonkeyTypes.LeaderboardEntry[]> {
+  return (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
     "english",
     0,
     10
-  )) as any[];
+  )) as MonkeyTypes.LeaderboardEntry[]; //can do that because gettop10 will not be called during an update
 }
 
 async function updateLeaderboardAndNotifyChanges(
@@ -30,7 +31,7 @@ async function updateLeaderboardAndNotifyChanges(
     })
   );
 
-  await LeaderboardsDAO.update("time", leaderboardTime, "english");
+  await LeaderboardsDAL.update("time", leaderboardTime, "english");
 
   const top10AfterUpdate = await getTop10(leaderboardTime);
 
