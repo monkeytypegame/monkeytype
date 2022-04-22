@@ -54,7 +54,6 @@ export async function updateName(
 }
 
 export async function clearPb(uid: string): Promise<UpdateResult> {
-  await getUser(uid);
   return await usersCollection.updateOne(
     { uid },
     {
