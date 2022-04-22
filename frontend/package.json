@@ -4,6 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "start": "yarn run build:live && cd public && npx serve -p 5000",
     "audit": "npx webpack --config ./webpack/config.audit.js",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts",
     "build": "npx gulp build",
