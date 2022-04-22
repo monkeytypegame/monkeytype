@@ -14,6 +14,7 @@ import * as AccountController from "../controllers/account-controller";
 import * as PageController from "../controllers/page-controller";
 import * as TestLogic from "../test/test-logic";
 import * as DB from "../db";
+import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 
 let signedInUser: UserCredential | undefined = undefined;
@@ -40,8 +41,8 @@ export async function hide(): Promise<void> {
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
       if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
-        await Ape.users.delete();
-        await signedInUser.user.delete();
+        Ape.users.delete();
+        signedInUser.user.delete();
       }
       AccountController.signOut();
       signedInUser = undefined;
@@ -71,6 +72,7 @@ async function apply(): Promise<void> {
       -1
     );
   }
+  Loader.show();
   const name = $("#googleSignUpPopup input").val() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
@@ -109,6 +111,7 @@ async function apply(): Promise<void> {
         }
       }
       signedInUser = undefined;
+      Loader.hide();
       hide();
     }
   } catch (e) {
@@ -124,6 +127,7 @@ async function apply(): Promise<void> {
     AccountController.signOut();
     signedInUser = undefined;
     hide();
+    Loader.hide();
     return;
   }
 }
