@@ -46,7 +46,7 @@ import {
 import { Auth } from "../firebase";
 import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
-import * as GoogleSignUpPopup from "../popups/google-sign-up-popup";
+import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 
 export const gmailProvider = new GoogleAuthProvider();
 
@@ -232,7 +232,7 @@ export async function getDataAndInit(): Promise<boolean> {
   return true;
 }
 
-async function loadUser(user: UserType): Promise<void> {
+export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   $(".pageAccount .content p.accountVerificatinNotice").remove();
   if (user.emailVerified === false) {
@@ -381,7 +381,7 @@ export async function signInWithGoogle(): Promise<void> {
   const signedInUser = await signInWithPopup(Auth, gmailProvider);
 
   if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-    GoogleSignUpPopup.show(signedInUser);
+    dispatchSignUpEvent(signedInUser, true);
   } else {
     await loadUser(signedInUser.user);
     PageController.change("account");

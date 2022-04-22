@@ -1,12 +1,27 @@
 import * as Notifications from "../elements/notifications";
 import { debounce } from "throttle-debounce";
-import { UserCredential } from "firebase/auth";
+import {
+  sendEmailVerification,
+  updateProfile,
+  UserCredential,
+  getAdditionalUserInfo,
+} from "firebase/auth";
 import Ape from "../ape";
+import { createErrorMessage } from "../utils/misc";
+import * as LoginPage from "../pages/login";
+import * as AllTimeStats from "../account/all-time-stats";
+import * as AccountController from "../controllers/account-controller";
+import * as PageController from "../controllers/page-controller";
+import * as TestLogic from "../test/test-logic";
+import * as DB from "../db";
+import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 
 let signedInUser: UserCredential | undefined = undefined;
 
 export function show(credential: UserCredential): void {
   if ($("#googleSignUpPopupWrapper").hasClass("hidden")) {
+    enableInput();
+    disableButton();
     signedInUser = credential;
     $("#googleSignUpPopupWrapper")
       .stop(true, true)
@@ -18,8 +33,19 @@ export function show(credential: UserCredential): void {
   }
 }
 
-export function hide(): void {
+export async function hide(): Promise<void> {
   if (!$("#googleSignUpPopupWrapper").hasClass("hidden")) {
+    if (signedInUser !== undefined) {
+      Notifications.add("Sign up process canceled", 0, 5);
+      LoginPage.hidePreloader();
+      LoginPage.enableInputs();
+      if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
+        await Ape.users.delete();
+        await signedInUser.user.delete();
+      }
+      AccountController.signOut();
+      signedInUser = undefined;
+    }
     $("#googleSignUpPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -37,61 +63,69 @@ export function hide(): void {
 
 async function apply(): Promise<void> {
   if ($("#googleSignUpPopup .button").hasClass("disabled")) return;
+  disableInput();
+  disableButton();
+  if (!signedInUser) {
+    return Notifications.add(
+      "Missing user credential. Please close the popup and try again.",
+      -1
+    );
+  }
+  const name = $("#googleSignUpPopup input").val() as string;
+  try {
+    if (name.length === 0) throw new Error("Name cannot be empty");
+    const response = await Ape.users.create(name);
+    if (response.status !== 200) {
+      throw response;
+    }
 
-  console.log(signedInUser);
-  // try {
+    if (response.status === 200) {
+      await updateProfile(signedInUser.user, { displayName: name });
+      await sendEmailVerification(signedInUser.user);
+      AllTimeStats.clear();
+      Notifications.add("Account created", 1, 3);
+      $("#menu .text-button.account .text").text(name);
+      LoginPage.enableInputs();
+      LoginPage.hidePreloader();
+      await AccountController.loadUser(signedInUser.user);
+      PageController.change("account");
+      if (TestLogic.notSignedInLastResult !== null) {
+        TestLogic.setNotSignedInUid(signedInUser.user.uid);
 
-  //     const response = await Ape.users.create(name);
-  //     if (response.status !== 200) {
-  //       throw response;
-  //     }
+        const resultsSaveResponse = await Ape.results.save(
+          TestLogic.notSignedInLastResult
+        );
 
-  //     if (response.status === 200) {
-  //       await updateProfile(signedInUser.user, { displayName: name });
-  //       await sendEmailVerification(signedInUser.user);
-  //       AllTimeStats.clear();
-  //       Notifications.add("Account created", 1, 3);
-  //       $("#menu .text-button.account .text").text(name);
-  //       LoginPage.enableInputs();
-  //       LoginPage.hidePreloader();
-  //       await loadUser(signedInUser.user);
-  //       PageController.change("account");
-  //       if (TestLogic.notSignedInLastResult !== null) {
-  //         TestLogic.setNotSignedInUid(signedInUser.user.uid);
-
-  //         const resultsSaveResponse = await Ape.results.save(
-  //           TestLogic.notSignedInLastResult
-  //         );
-
-  //         if (resultsSaveResponse.status === 200) {
-  //           const result = TestLogic.notSignedInLastResult;
-  //           DB.saveLocalResult(result);
-  //           DB.updateLocalStats({
-  //             time:
-  //               result.testDuration +
-  //               result.incompleteTestSeconds -
-  //               result.afkDuration,
-  //             started: 1,
-  //           });
-  //         }
-  //       }
-  //     }
-  //     hide();
-  // } catch (e) {
-  //   console.log(e);
-  //   const message = Misc.createErrorMessage(e, "Failed to sign in with Google");
-  //   Notifications.add(message, -1);
-  //   LoginPage.hidePreloader();
-  //   LoginPage.enableInputs();
-  //   if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
-  //     await Ape.users.delete();
-  //     await signedInUser.user.delete();
-  //   }
-  //   signOut();
-  //   hide();
-  //   return;
-  // }
-  signedInUser = undefined;
+        if (resultsSaveResponse.status === 200) {
+          const result = TestLogic.notSignedInLastResult;
+          DB.saveLocalResult(result);
+          DB.updateLocalStats({
+            time:
+              result.testDuration +
+              result.incompleteTestSeconds -
+              result.afkDuration,
+            started: 1,
+          });
+        }
+      }
+      signedInUser = undefined;
+      hide();
+    }
+  } catch (e) {
+    console.log(e);
+    const message = createErrorMessage(e, "Failed to sign in with Google");
+    Notifications.add(message, -1);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
+      await Ape.users.delete();
+      await signedInUser.user.delete();
+    }
+    AccountController.signOut();
+    signedInUser = undefined;
+    hide();
+    return;
+  }
 }
 
 function updateIndicator(
@@ -121,6 +155,14 @@ function enableButton(): void {
 
 function disableButton(): void {
   $("#googleSignUpPopup .button").addClass("disabled");
+}
+
+function enableInput(): void {
+  $("#googleSignUpPopup input").prop("disabled", false);
+}
+
+function disableInput(): void {
+  $("#googleSignUpPopup input").prop("disabled", true);
 }
 
 $("#googleSignUpPopupWrapper").on("mousedown", (e) => {
@@ -189,5 +231,11 @@ $(document).on("keydown", (event) => {
   ) {
     hide();
     event.preventDefault();
+  }
+});
+
+subscribeToSignUpEvent((signedInUser, isNewUser) => {
+  if (signedInUser && isNewUser) {
+    show(signedInUser);
   }
 });
