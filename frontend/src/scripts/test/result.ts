@@ -759,9 +759,8 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex =
-        dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(quoteId);
-      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
+      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+      dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
     // Add to favorites
@@ -773,7 +772,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
-      DB.getSnapshot().favoriteQuotes[quoteLang]?.push(quoteId);
+      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
+        dbSnapshot.favoriteQuotes[quoteLang] = [];
+      }
+      dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
   }
 });
