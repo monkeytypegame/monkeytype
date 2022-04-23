@@ -25,8 +25,8 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.11.0",
-    "@typescript-eslint/parser": "^5.11.0",
+    "@typescript-eslint/eslint-plugin": "5.20.0",
+    "@typescript-eslint/parser": "5.20.0",
     "concurrently": "5.3.0",
     "eslint": "8.8.0",
     "eslint-plugin-json": "2.1.2",
