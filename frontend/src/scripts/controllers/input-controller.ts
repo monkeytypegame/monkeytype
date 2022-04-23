@@ -891,6 +891,9 @@ $("#wordsInput").on("input", (event) => {
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
+  if (Config.tapeMode !== "off") {
+    TestUI.scrollTape();
+  }
 
   // force caret at end of input
   // doing it on next cycle because Chromium on Android won't let me edit
