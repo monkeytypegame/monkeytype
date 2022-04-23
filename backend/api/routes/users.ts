@@ -69,7 +69,7 @@ const usernameValidation = joi
   })
   .messages({
     "string.pattern.base":
-      "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
+      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and -",
   });
 
 const languageSchema = joi.string().min(1).required();

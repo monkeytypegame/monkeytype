@@ -17,6 +17,7 @@ import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
 import * as LoadingPage from "../pages/loading";
+import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
 import * as CommandlineLists from "../elements/commandline-lists";
@@ -45,6 +46,7 @@ import {
 import { Auth } from "../firebase";
 import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
+import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 
 export const gmailProvider = new GoogleAuthProvider();
 
@@ -230,7 +232,7 @@ export async function getDataAndInit(): Promise<boolean> {
   return true;
 }
 
-async function loadUser(user: UserType): Promise<void> {
+export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   $(".pageAccount .content p.accountVerificatinNotice").remove();
   if (user.emailVerified === false) {
@@ -251,7 +253,7 @@ async function loadUser(user: UserType): Promise<void> {
   // var isAnonymous = user.isAnonymous;
   // var uid = user.uid;
   // var providerData = user.providerData;
-  $(".pageLogin .preloader").addClass("hidden");
+  LoginPage.hidePreloader();
 
   // showFavouriteThemesAtTheTop();
 
@@ -319,9 +321,8 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
 export function signIn(): void {
   UpdateConfig.setChangedBeforeDb(false);
   authListener();
-  $(".pageLogin .preloader").removeClass("hidden");
-  $(".pageLogin .button").addClass("disabled");
-  $(".pageLogin input").prop("disabled", true);
+  LoginPage.showPreloader();
+  LoginPage.disableInputs();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -361,115 +362,29 @@ export function signIn(): void {
           message = "User not found";
         }
         Notifications.add(message, -1);
-        $(".pageLogin .preloader").addClass("hidden");
-        $(".pageLogin .button").removeClass("disabled");
-        $(".pageLogin input").prop("disabled", false);
+        LoginPage.hidePreloader();
+        LoginPage.enableInputs();
       });
   });
 }
 
 export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
-  $(".pageLogin .preloader").removeClass("hidden");
-  $(".pageLogin .button").addClass("disabled");
-  $(".pageLogin input").prop("disabled", true);
+  LoginPage.showPreloader();
+  LoginPage.disableInputs();
   authListener();
-  let signedInUser;
-  try {
-    const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
-      ? browserLocalPersistence
-      : browserSessionPersistence;
+  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+    ? browserLocalPersistence
+    : browserSessionPersistence;
 
-    await setPersistence(Auth, persistence);
-    signedInUser = await signInWithPopup(Auth, gmailProvider);
+  await setPersistence(Auth, persistence);
+  const signedInUser = await signInWithPopup(Auth, gmailProvider);
 
-    if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      //ask for username
-      let nameGood = false;
-      let name = "";
-
-      while (!nameGood) {
-        name =
-          prompt(
-            "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-          ) || "";
-
-        if (!name) {
-          signOut();
-          $(".pageLogin .preloader").addClass("hidden");
-          return;
-        }
-
-        const response = await Ape.users.getNameAvailability(name);
-
-        if (response.status !== 200) {
-          return Notifications.add(
-            "Failed to check name: " + response.message,
-            -1
-          );
-        }
-
-        nameGood = true;
-      }
-      //create database object for the new user
-      // try {
-      const response = await Ape.users.create(name);
-      if (response.status !== 200) {
-        throw response;
-      }
-      // } catch (e) {
-      //   let msg = e?.response?.data?.message ?? e.message;
-      //   Notifications.add("Failed to create account: " + msg, -1);
-      //   return;
-      // }
-      if (response.status === 200) {
-        await updateProfile(signedInUser.user, { displayName: name });
-        await sendEmailVerification(signedInUser.user);
-        AllTimeStats.clear();
-        Notifications.add("Account created", 1, 3);
-        $("#menu .text-button.account .text").text(name);
-        $(".pageLogin .button").removeClass("disabled");
-        $(".pageLogin input").prop("disabled", false);
-        $(".pageLogin .preloader").addClass("hidden");
-        await loadUser(signedInUser.user);
-        PageController.change("account");
-        if (TestLogic.notSignedInLastResult !== null) {
-          TestLogic.setNotSignedInUid(signedInUser.user.uid);
-
-          const resultsSaveResponse = await Ape.results.save(
-            TestLogic.notSignedInLastResult
-          );
-
-          if (resultsSaveResponse.status === 200) {
-            const result = TestLogic.notSignedInLastResult;
-            DB.saveLocalResult(result);
-            DB.updateLocalStats({
-              time:
-                result.testDuration +
-                result.incompleteTestSeconds -
-                result.afkDuration,
-              started: 1,
-            });
-          }
-        }
-      }
-    } else {
-      await loadUser(signedInUser.user);
-      PageController.change("account");
-    }
-  } catch (e) {
-    console.log(e);
-    const message = Misc.createErrorMessage(e, "Failed to sign in with Google");
-    Notifications.add(message, -1);
-    $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
-    if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
-      await Ape.users.delete();
-      await signedInUser.user.delete();
-    }
-    signOut();
-    return;
+  if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+    dispatchSignUpEvent(signedInUser, true);
+  } else {
+    await loadUser(signedInUser.user);
+    PageController.change("account");
   }
 }
 
@@ -562,6 +477,7 @@ export async function addPasswordAuth(
 }
 
 export function signOut(): void {
+  if (!Auth.currentUser) return;
   Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, 2);
@@ -579,9 +495,8 @@ export function signOut(): void {
 }
 
 async function signUp(): Promise<void> {
-  $(".pageLogin .button").addClass("disabled");
-  $(".pageLogin input").prop("disabled", true);
-  $(".pageLogin .preloader").removeClass("hidden");
+  LoginPage.disableInputs();
+  LoginPage.showPreloader();
   const nname = ($(".pageLogin .register input")[0] as HTMLInputElement).value;
   const email = ($(".pageLogin .register input")[1] as HTMLInputElement).value;
   const emailVerify = ($(".pageLogin .register input")[2] as HTMLInputElement)
@@ -594,7 +509,7 @@ async function signUp(): Promise<void> {
 
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
-    $(".pageLogin .preloader").addClass("hidden");
+    LoginPage.hidePreloader();
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     return;
@@ -602,7 +517,7 @@ async function signUp(): Promise<void> {
 
   if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
-    $(".pageLogin .preloader").addClass("hidden");
+    LoginPage.hidePreloader();
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     return;
@@ -612,7 +527,7 @@ async function signUp(): Promise<void> {
 
   if (response.status !== 200) {
     Notifications.add(response.message, -1);
-    $(".pageLogin .preloader").addClass("hidden");
+    LoginPage.hidePreloader();
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     return;
@@ -643,7 +558,7 @@ async function signUp(): Promise<void> {
     $("#menu .text-button.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
-    $(".pageLogin .preloader").addClass("hidden");
+    LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
       TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
@@ -673,7 +588,7 @@ async function signUp(): Promise<void> {
     console.log(e);
     const message = Misc.createErrorMessage(e, "Failed to create account");
     Notifications.add(message, -1);
-    $(".pageLogin .preloader").addClass("hidden");
+    LoginPage.hidePreloader();
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     signOut();

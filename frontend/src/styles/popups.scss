@@ -349,6 +349,56 @@
   }
 }
 
+#googleSignUpPopup {
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+  padding: 2rem;
+  display: grid;
+  gap: 1rem;
+  width: 400px;
+  .title {
+    font-size: 1.5rem;
+    color: var(--sub-color);
+  }
+  .inputAndIndicator {
+    input {
+      width: 100%;
+    }
+    position: relative;
+    .checkStatus {
+      width: 2.25rem;
+      height: 2.25rem;
+      position: absolute;
+      right: 0;
+      top: 0;
+      /* background: red; */
+      display: grid;
+      grid-template-columns: 2.25rem;
+      grid-template-rows: 2.25rem;
+      place-items: center center;
+      cursor: pointer;
+
+      .checking,
+      .available,
+      .unavailable,
+      .taken {
+        grid-column: 1/2;
+        grid-row: 1/2;
+      }
+      .checking {
+        color: var(--sub-color);
+      }
+      .available {
+        color: var(--main-color);
+      }
+      .unavailable,
+      .taken {
+        color: var(--error-color);
+      }
+    }
+  }
+}
+
 #pbTablesPopupWrapper #pbTablesPopup {
   .title {
     color: var(--text-color);
