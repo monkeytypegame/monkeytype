@@ -1729,6 +1729,37 @@ const commandsHighlightMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
+const commandsTapeMode: MonkeyTypes.CommandsGroup = {
+  title: "Tape mode...",
+  configKey: "tapeMode",
+  list: [
+    {
+      id: "setTapeModeOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("off");
+      },
+    },
+    {
+      id: "setTapeModeLetter",
+      display: "letter",
+      configValue: "letter",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("letter");
+      },
+    },
+    {
+      id: "setTapeModeWord",
+      display: "word",
+      configValue: "word",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("word");
+      },
+    },
+  ],
+};
+
 const commandsTimerStyle: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress style...",
   configKey: "timerStyle",
@@ -2947,6 +2978,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Highlight mode...",
       icon: "fa-highlighter",
       subgroup: commandsHighlightMode,
+    },
+    {
+      id: "changeTapeMode",
+      display: "Tape mode...",
+      icon: "fa-tape",
+      subgroup: commandsTapeMode,
     },
     {
       id: "changeShowAverage",
