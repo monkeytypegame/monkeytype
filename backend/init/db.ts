@@ -4,6 +4,7 @@ import {
   Db,
   MongoClient,
   MongoClientOptions,
+  WithId,
 } from "mongodb";
 import Logger from "../utils/logger";
 
@@ -68,9 +69,10 @@ class DatabaseClient {
     }
   }
 
-  static collection<T>(collectionName: string): Collection<T> {
+  static collection<T>(collectionName: string): Collection<WithId<T>> {
     if (!(collectionName in this.collections)) {
-      this.collections[collectionName] = this.db.collection<T>(collectionName);
+      this.collections[collectionName] =
+        this.db.collection<WithId<T>>(collectionName);
     }
 
     return this.collections[collectionName];

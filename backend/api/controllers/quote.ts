@@ -8,6 +8,7 @@ import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
+import { ObjectId } from "mongodb";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -139,6 +140,7 @@ export async function reportQuote(
   await verifyCaptcha(captcha);
 
   const newReport: MonkeyTypes.Report = {
+    _id: new ObjectId(),
     id: uuidv4(),
     type: "quote",
     timestamp: new Date().getTime(),
