@@ -334,6 +334,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setHighlightMode,
     "button"
   );
+  groups["tapeMode"] = new SettingsGroup(
+    "tapeMode",
+    UpdateConfig.setTapeMode,
+    "button"
+  );
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,

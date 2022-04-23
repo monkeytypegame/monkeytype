@@ -1257,6 +1257,31 @@
         </div>
       </div>
     </div>
+    <div class="section tapeMode" section="">
+      <h1>tape mode</h1>
+      <div class="text">
+        Only shows one line which scrolls horizontally. Setting this to 'word'
+        will make it scroll after every word and 'letter' will scroll after
+        every keypress. Works best with smooth line scroll enabled and a
+        monospace font.
+      </div>
+      <div class="buttons">
+        <div class="button" tapeMode="off" tabindex="0" onclick="this.blur();">
+          off
+        </div>
+        <div
+          class="button"
+          tapeMode="letter"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          letter
+        </div>
+        <div class="button" tapeMode="word" tabindex="0" onclick="this.blur();">
+          word
+        </div>
+      </div>
+    </div>
     <div class="section smoothLineScroll">
       <h1>smooth line scroll</h1>
       <div class="text">
