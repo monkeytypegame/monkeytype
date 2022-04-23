@@ -167,13 +167,27 @@ export function showWords(): void {
     }
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
-    $("#words")
-      .css("height", wordHeight * 4 + "px")
-      .css("overflow", "hidden");
-    $("#wordsWrapper")
-      .css("height", wordHeight * 3 + "px")
-      .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+    if (Config.tapeMode !== "off"){
+      $("#words")
+        .css("height", wordHeight * 2 + "px")
+        .css("overflow", "hidden")
+        .css("width", "200%")
+        .css("margin-left", "50%");
+      $("#wordsWrapper")
+        .css("height", wordHeight * 1 + "px")
+        .css("overflow", "hidden");
+      $(".outOfFocusWarning").css("line-height", wordHeight * 1 + "px");
+    }else{
+      $("#words")
+        .css("height", wordHeight * 4 + "px")
+        .css("overflow", "hidden")
+        .css("width", "100%")
+        .css("margin-left", "unset");
+      $("#wordsWrapper")
+        .css("height", wordHeight * 3 + "px")
+        .css("overflow", "hidden");
+      $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+    }
   }
 
   if (Config.mode === "zen") {
