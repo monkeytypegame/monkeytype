@@ -63,8 +63,8 @@ export async function update(
   const str = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const start1 = performance.now();
   const lb = await db
-    .collection("users")
-    .aggregate(
+    .collection<MonkeyTypes.LeaderboardEntry>("users")
+    .aggregate<MonkeyTypes.LeaderboardEntry>(
       [
         {
           $match: {
@@ -121,7 +121,9 @@ export async function update(
   } catch (e) {}
   if (lb && lb.length !== 0) {
     await db
-      .collection(`leaderboards.${language}.${mode}.${mode2}`)
+      .collection<MonkeyTypes.LeaderboardEntry>(
+        `leaderboards.${language}.${mode}.${mode2}`
+      )
       .insertMany(lb);
   }
   const end3 = performance.now();

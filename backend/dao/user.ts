@@ -20,6 +20,7 @@ export async function addUser(
 
   const currentDate = Date.now();
   return await usersCollection.insertOne({
+    _id: new ObjectId(),
     name,
     email,
     uid,
