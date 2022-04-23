@@ -71,6 +71,8 @@ declare namespace MonkeyTypes {
 
   type ShowAverage = "off" | "wpm" | "acc" | "both";
 
+  type TapeMode = "off" | "letter" | "word";
+
   type SingleListCommandLine = "manual" | "on";
 
   /*
@@ -377,6 +379,7 @@ declare namespace MonkeyTypes {
     britishEnglish: boolean;
     lazyMode: boolean;
     showAverage: ShowAverage;
+    tapeMode: TapeMode;
   }
 
   type ConfigValues =

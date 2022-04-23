@@ -96,4 +96,5 @@ export default <MonkeyTypes.Config>{
   britishEnglish: false,
   lazyMode: false,
   showAverage: "off",
+  tapeMode: "off",
 };

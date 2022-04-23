@@ -832,6 +832,21 @@ export function setHighlightMode(
   return true;
 }
 
+export function setTapeMode(
+  mode: MonkeyTypes.TapeMode,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("tape mode", mode, [["off", "letter", "word"]])) {
+    return false;
+  }
+
+  config.tapeMode = mode;
+  saveToLocalStorage("tapeMode", nosave);
+  ConfigEvent.dispatch("tapeMode", config.tapeMode);
+
+  return true;
+}
+
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("hide extra letters", val, ["boolean"])) return false;
 
@@ -1793,6 +1808,7 @@ export function apply(
     setBritishEnglish(configObj.britishEnglish, true);
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
+    setTapeMode(configObj.tapeMode, true);
 
     try {
       setEnableAds(configObj.enableAds, true);
