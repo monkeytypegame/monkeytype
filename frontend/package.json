@@ -4,6 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "live": "npm run build:live && cd public && npx serve -p 5000",
     "audit": "npx webpack --config ./webpack/config.audit.js",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/scripts",
     "build": "npx gulp build",
@@ -40,6 +41,7 @@
     "mini-css-extract-plugin": "2.6.0",
     "sass": "1.49.9",
     "sass-loader": "12.6.0",
+    "serve": "13.0.2",
     "stream-browserify": "3.0.0",
     "string-replace-loader": "3.1.0",
     "ts-loader": "9.2.6",
