@@ -23,7 +23,6 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  // "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
     "indent": ["off"],

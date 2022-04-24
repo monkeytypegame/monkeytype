@@ -8,7 +8,7 @@ const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
 
 task("lint", function () {
-  return src(["./src/scripts/**/*.js", "./src/scripts/**/*.ts"])
+  return src(["./src/ts/**/*.ts"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
@@ -57,15 +57,7 @@ task(
 );
 
 task("watch", function () {
-  watch(
-    [
-      "./src/scripts/**/*.js",
-      "./src/scripts/**/*.ts",
-      "./src/scripts/*.js",
-      "./src/scripts/*.ts",
-    ],
-    series("lint")
-  );
+  watch(["./src/ts/**/*.ts", "./src/ts/*.ts"], series("lint"));
   watch(["./static/**/*.*", "./static/*.*"], series("lint-json"));
 });
 

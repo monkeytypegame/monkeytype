@@ -28,20 +28,18 @@ jobs:
               - 'frontend/static/layouts/*.json'
             any-tsscss:
               - 'frontend/**/*.scss'
-              - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
-              - 'backend/**/*.{js,ts}'
+              - 'backend/**/*.ts'
             ts-scss-fe:
-              - 'frontend/**/*.js'
               - 'frontend/**/*.ts'
               - 'frontend/**/*.scss'
             ts-be:
-              - 'backend/**/*.{js,ts}'
+              - 'backend/**/*.ts'
             anti-cheat:
               - 'backend/**/anticheat/**'
 
       - name: Create stub firebase config
-        working-directory: ./frontend/src/scripts/constants
+        working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
 
       - name: Check Anti-cheat

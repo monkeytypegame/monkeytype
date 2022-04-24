@@ -1,4 +1,4 @@
-// this file should be concatenated at the top of the legacy js files
+// this file should be concatenated at the top of the legacy ts files
 
 import "../styles/index.scss";
 import "./firebase";
