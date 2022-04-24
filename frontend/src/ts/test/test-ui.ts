@@ -174,6 +174,7 @@ export function showWords(): void {
         .css("width", "200%")
         .css("margin-left", "50%");
       $("#words").addClass("tape");
+      $("#wordsWrapper").addClass("tape");
       $("#wordsWrapper")
         .css("height", wordHeight * 1 + "px")
         .css("overflow", "hidden");
@@ -185,6 +186,7 @@ export function showWords(): void {
         .css("width", "100%")
         .css("margin-left", "unset");
       $("#words").removeClass("tape");
+      $("#wordsWrapper").removeClass("tape");
       $("#wordsWrapper")
         .css("height", wordHeight * 3 + "px")
         .css("overflow", "hidden");
