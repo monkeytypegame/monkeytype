@@ -256,7 +256,8 @@ function handleSpace(): void {
     }
 
     if (
-      (Config.tapeMode === "off" || nextTop > currentTop) &&
+      Config.tapeMode === "off" &&
+      nextTop > currentTop &&
       !TestUI.lineTransition
     ) {
       TestUI.lineJump(currentTop);
