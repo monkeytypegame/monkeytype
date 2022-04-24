@@ -125,6 +125,10 @@ export function loadTestSettingsFromUrl(): void {
 
   let appliedString = "";
 
+  if (appliedString === "") {
+    return;
+  }
+
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
     appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
