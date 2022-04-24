@@ -553,7 +553,10 @@ export function scrollTape(): void {
 
 export function lineJump(currentTop: number): void {
   //last word of the line
-  if (currentTestLine > 0) {
+  if (
+    (Config.tapeMode === "off" && currentTestLine > 0) ||
+    (Config.tapeMode !== "off" && currentTestLine >= 0)
+  ) {
     const hideBound = currentTop;
 
     const toHide: JQuery<HTMLElement>[] = [];
@@ -561,7 +564,10 @@ export function lineJump(currentTop: number): void {
     for (let i = 0; i < currentWordElementIndex; i++) {
       if ($(wordElements[i]).hasClass("hidden")) continue;
       const forWordTop = Math.floor(wordElements[i].offsetTop);
-      if (forWordTop < hideBound - 10) {
+      if (
+        forWordTop <
+        (Config.tapeMode === "off" ? hideBound - 10 : hideBound + 10)
+      ) {
         toHide.push($($("#words .word")[i]));
       }
     }
@@ -590,22 +596,27 @@ export function lineJump(currentTop: number): void {
         },
         SlowTimer.get() ? 0 : 125
       );
-      $("#words").animate(
-        {
-          marginTop: `-${wordHeight}px`,
-        },
-        SlowTimer.get() ? 0 : 125,
-        () => {
-          activeWordTop = (<HTMLElement>(
-            document.querySelector("#words .active")
-          )).offsetTop;
 
-          currentWordElementIndex -= toHide.length;
-          lineTransition = false;
-          toHide.forEach((el) => el.remove());
-          $("#words").css("marginTop", "0");
-        }
-      );
+      const newCss: { [key: string]: string } = {
+        marginTop: `-${wordHeight}px`,
+      };
+
+      if (Config.tapeMode !== "off") {
+        const wordsWrapperWidth = (<HTMLElement>(
+          document.querySelector("#wordsWrapper")
+        )).offsetWidth;
+        const newMargin = wordsWrapperWidth / 2;
+        newCss["marginLeft"] = `${newMargin}px`;
+      }
+      $("#words").animate(newCss, SlowTimer.get() ? 0 : 125, () => {
+        activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
+          .offsetTop;
+
+        currentWordElementIndex -= toHide.length;
+        lineTransition = false;
+        toHide.forEach((el) => el.remove());
+        $("#words").css("marginTop", "0");
+      });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
