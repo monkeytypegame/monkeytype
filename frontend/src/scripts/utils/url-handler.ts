@@ -126,13 +126,11 @@ export function loadTestSettingsFromUrl(): void {
     appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
   });
 
-  if (appliedString === "") {
-    return;
+  if (appliedString !== "") {
+    Notifications.add(
+      "Settings applied from URL:<br><br>" + appliedString,
+      1,
+      10
+    );
   }
-
-  Notifications.add(
-    "Settings applied from URL:<br><br>" + appliedString,
-    1,
-    10
-  );
 }
