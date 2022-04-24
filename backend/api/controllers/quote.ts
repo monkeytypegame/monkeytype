@@ -19,7 +19,7 @@ export async function getQuotes(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const quoteMod: boolean | undefined | string = (await getUser(uid)).quoteMod;
+  const quoteMod: boolean | undefined | string = (await getUser(uid, "get quotes")).quoteMod;
   let quoteModString: string;
   if (quoteMod === true) {
     quoteModString = "all";
@@ -50,7 +50,7 @@ export async function approveQuote(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
 
-  const { name } = await getUser(uid);
+  const { name } = await getUser(uid, "approve quote");
 
   if (!name) {
     throw new MonkeyError(500, "Missing name field");
@@ -90,7 +90,7 @@ export async function submitRating(
   const { uid } = req.ctx.decodedToken;
   const { quoteId, rating, language } = req.body;
 
-  const user = await getUser(uid);
+  const user = await getUser(uid, "submit rating");
   if (!user) {
     throw new MonkeyError(401, "User not found.");
   }

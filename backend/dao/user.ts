@@ -39,7 +39,7 @@ export async function updateName(
     throw new MonkeyError(409, "Username already taken", name);
   }
 
-  const user = await getUser(uid);
+  const user = await getUser(uid, "update name");
 
   if (Date.now() - (user.lastNameChange ?? 0) < 2592000000) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
@@ -87,7 +87,7 @@ export async function updateQuoteRatings(
   uid: string,
   quoteRatings: MonkeyTypes.UserQuoteRatings
 ): Promise<boolean> {
-  await getUser(uid);
+  await getUser(uid, "update quote ratings");
 
   await usersCollection.updateOne({ uid }, { $set: { quoteRatings } });
   return true;
@@ -97,15 +97,15 @@ export async function updateEmail(
   uid: string,
   email: string
 ): Promise<boolean> {
-  await getUser(uid); // To make sure that the user exists
+  await getUser(uid, "update email"); // To make sure that the user exists
   await updateUserEmail(uid, email);
   await usersCollection.updateOne({ uid }, { $set: { email } });
   return true;
 }
 
-export async function getUser(uid: string): Promise<MonkeyTypes.User> {
+export async function getUser(uid: string, stack: string): Promise<MonkeyTypes.User> {
   const user = await usersCollection.findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "get user");
+  if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
 }
 
@@ -129,7 +129,7 @@ export async function addTag(
 }
 
 export async function getTags(uid: string): Promise<MonkeyTypes.UserTag[]> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "get tags");
 
   return user.tags ?? [];
 }
@@ -139,7 +139,7 @@ export async function editTag(
   _id: string,
   name: string
 ): Promise<UpdateResult> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "edit tag");
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() === _id).length === 0
@@ -159,7 +159,7 @@ export async function removeTag(
   uid: string,
   _id: string
 ): Promise<UpdateResult> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "remove tag");
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() == _id).length === 0
@@ -179,7 +179,7 @@ export async function removeTagPb(
   uid: string,
   _id: string
 ): Promise<UpdateResult> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "remove tag pb");
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() == _id).length === 0
@@ -202,7 +202,7 @@ export async function updateLbMemory(
   language: string,
   rank: number
 ): Promise<UpdateResult> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "update lb memory");
   if (user.lbMemory === undefined) user.lbMemory = {};
   if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
   if (user.lbMemory[mode][mode2] === undefined) {
@@ -316,7 +316,7 @@ export async function checkIfTagPb(
 }
 
 export async function resetPb(uid: string): Promise<UpdateResult> {
-  await getUser(uid);
+  await getUser(uid, "reset pb");
   return await usersCollection.updateOne(
     { uid },
     {
@@ -354,12 +354,12 @@ export async function linkDiscord(
   uid: string,
   discordId: string
 ): Promise<UpdateResult> {
-  await getUser(uid);
+  await getUser(uid, "link discord");
   return await usersCollection.updateOne({ uid }, { $set: { discordId } });
 }
 
 export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
-  await getUser(uid);
+  await getUser(uid, "unlink discord");
 
   return await usersCollection.updateOne(
     { uid },
@@ -371,7 +371,7 @@ export async function incrementBananas(
   uid: string,
   wpm
 ): Promise<UpdateResult | null> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "increment bananas");
 
   let best60: number | undefined;
   const personalBests60 = user.personalBests?.time[60];
@@ -398,7 +398,7 @@ export async function addTheme(
   uid: string,
   theme
 ): Promise<{ _id: ObjectId; name: string }> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "add theme");
 
   if ((user.customThemes ?? []).length >= 10) {
     throw new MonkeyError(409, "Too many custom themes");
@@ -425,7 +425,7 @@ export async function addTheme(
 }
 
 export async function removeTheme(uid: string, _id): Promise<UpdateResult> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "remove theme");
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom theme not found");
@@ -445,7 +445,7 @@ export async function editTheme(
   _id,
   theme
 ): Promise<UpdateResult> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "edit theme");
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom Theme not found");
@@ -468,7 +468,7 @@ export async function editTheme(
 export async function getThemes(
   uid: string
 ): Promise<MonkeyTypes.CustomTheme[]> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "get themes");
   return user.customThemes ?? [];
 }
 
@@ -477,7 +477,7 @@ export async function getPersonalBests(
   mode: string,
   mode2?: string
 ): Promise<MonkeyTypes.PersonalBest> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "get personal bests");
 
   if (mode2) {
     return user.personalBests?.[mode]?.[mode2];
@@ -489,7 +489,7 @@ export async function getPersonalBests(
 export async function getFavoriteQuotes(
   uid
 ): Promise<MonkeyTypes.User["favoriteQuotes"]> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "get favorite quotes");
 
   return user.favoriteQuotes ?? {};
 }
@@ -500,7 +500,7 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "add favorite quote");
 
   if (user.favoriteQuotes) {
     if (
@@ -539,7 +539,7 @@ export async function removeFavoriteQuote(
   language: string,
   quoteId: string
 ): Promise<void> {
-  const user = await getUser(uid);
+  const user = await getUser(uid, "remove favorite quote");
 
   if (
     !user.favoriteQuotes ||
