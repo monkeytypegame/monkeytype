@@ -617,7 +617,6 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  // }
 }
 
 export function arrangeCharactersRightToLeft(): void {
