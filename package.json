@@ -4,6 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
     "audit:fe": "cd frontend && npm run audit",
     "dev": "concurrently --kill-others \"npm run dev:fe\" \"npm run dev:be\"",
     "dev:be": "cd backend && npm run dev",

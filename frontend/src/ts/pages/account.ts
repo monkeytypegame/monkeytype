@@ -1050,13 +1050,15 @@ $(document).on("click", ".buttonsAndTitle .buttons .button", () => {
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
 });
 
-$(
-  ".pageAccount .topFilters .button, .pageAccount .filterButtons .button "
-).click(() => {
-  setTimeout(() => {
-    update();
-  }, 0);
-});
+$(document).on(
+  "click",
+  ".pageAccount .topFilters .button, .pageAccount .filterButtons .button",
+  () => {
+    setTimeout(() => {
+      update();
+    }, 0);
+  }
+);
 
 $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
