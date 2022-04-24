@@ -12,7 +12,7 @@ export function loadCustomThemeFromUrl(): void {
   if (getValue === null) return;
 
   const urlEncoded = getValue.split(",");
-  const base64decoded = JSON.parse(atob(getValue ?? "") ?? "");
+  const base64decoded = JSON.parse(atob(getValue) ?? "");
 
   let colorArray = [];
   if (Array.isArray(urlEncoded) && urlEncoded.length === 9) {
