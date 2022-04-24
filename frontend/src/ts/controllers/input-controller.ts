@@ -255,7 +255,11 @@ function handleSpace(): void {
       nextTop = 0;
     }
 
-    if (nextTop > currentTop && !TestUI.lineTransition) {
+    if (
+      Config.tapeMode === "off" &&
+      nextTop > currentTop &&
+      !TestUI.lineTransition
+    ) {
       TestUI.lineJump(currentTop);
     }
   } //end of line wrap
@@ -816,6 +820,9 @@ $(document).keydown(async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
     }
   }
 });
@@ -888,6 +895,9 @@ $("#wordsInput").on("input", (event) => {
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
+  if (Config.tapeMode !== "off") {
+    TestUI.scrollTape();
+  }
 
   // force caret at end of input
   // doing it on next cycle because Chromium on Android won't let me edit

@@ -528,6 +528,11 @@ export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
 export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show all lines", sal, ["boolean"])) return false;
 
+  if (sal && config.tapeMode !== "off") {
+    Notifications.add("Show all lines doesn't support tape mode", 0);
+    return false;
+  }
+
   config.showAllLines = sal;
   saveToLocalStorage("showAllLines", nosave);
   ConfigEvent.dispatch("showAllLines", config.showAllLines, nosave);
@@ -828,6 +833,25 @@ export function setHighlightMode(
   config.highlightMode = mode;
   saveToLocalStorage("highlightMode", nosave);
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
+
+  return true;
+}
+
+export function setTapeMode(
+  mode: MonkeyTypes.TapeMode,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("tape mode", mode, [["off", "letter", "word"]])) {
+    return false;
+  }
+
+  if (mode !== "off" && config.showAllLines === true) {
+    setShowAllLines(false, true);
+  }
+
+  config.tapeMode = mode;
+  saveToLocalStorage("tapeMode", nosave);
+  ConfigEvent.dispatch("tapeMode", config.tapeMode);
 
   return true;
 }
@@ -1793,6 +1817,7 @@ export function apply(
     setBritishEnglish(configObj.britishEnglish, true);
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
+    setTapeMode(configObj.tapeMode, true);
 
     try {
       setEnableAds(configObj.enableAds, true);

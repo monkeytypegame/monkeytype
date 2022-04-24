@@ -19,6 +19,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
+import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
@@ -1729,6 +1730,37 @@ const commandsHighlightMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
+const commandsTapeMode: MonkeyTypes.CommandsGroup = {
+  title: "Tape mode...",
+  configKey: "tapeMode",
+  list: [
+    {
+      id: "setTapeModeOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("off");
+      },
+    },
+    {
+      id: "setTapeModeLetter",
+      display: "letter",
+      configValue: "letter",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("letter");
+      },
+    },
+    {
+      id: "setTapeModeWord",
+      display: "word",
+      configValue: "word",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("word");
+      },
+    },
+  ],
+};
+
 const commandsTimerStyle: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress style...",
   configKey: "timerStyle",
@@ -2949,6 +2981,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsHighlightMode,
     },
     {
+      id: "changeTapeMode",
+      display: "Tape mode...",
+      icon: "fa-tape",
+      subgroup: commandsTapeMode,
+    },
+    {
       id: "changeShowAverage",
       display: "Show average...",
       icon: "fa-chart-bar",
@@ -3273,6 +3311,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-egg",
       visible: false,
       subgroup: commandsMonkeyPowerLevel,
+    },
+    {
+      id: "shareTestSettings",
+      display: "Share test settings",
+      icon: "fa-share",
+      exec: async (): Promise<void> => {
+        ShareTestSettingsPopup.show();
+      },
     },
     {
       id: "clearSwCache",

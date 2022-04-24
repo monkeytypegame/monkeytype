@@ -167,13 +167,29 @@ export function showWords(): void {
     }
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
-    $("#words")
-      .css("height", wordHeight * 4 + "px")
-      .css("overflow", "hidden");
-    $("#wordsWrapper")
-      .css("height", wordHeight * 3 + "px")
-      .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+    if (Config.tapeMode !== "off") {
+      $("#words")
+        .css("height", wordHeight * 2 + "px")
+        .css("overflow", "hidden")
+        .css("width", "200%")
+        .css("margin-left", "50%");
+      $("#words").addClass("tape");
+      $("#wordsWrapper")
+        .css("height", wordHeight * 1 + "px")
+        .css("overflow", "hidden");
+      $(".outOfFocusWarning").css("line-height", wordHeight * 1 + "px");
+    } else {
+      $("#words")
+        .css("height", wordHeight * 4 + "px")
+        .css("overflow", "hidden")
+        .css("width", "100%")
+        .css("margin-left", "unset");
+      $("#words").removeClass("tape");
+      $("#wordsWrapper")
+        .css("height", wordHeight * 3 + "px")
+        .css("overflow", "hidden");
+      $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+    }
   }
 
   if (Config.mode === "zen") {
@@ -479,6 +495,60 @@ export function updateWordElement(showError = !Config.blindMode): void {
   }
   wordAtIndex.innerHTML = ret;
   if (newlineafter) $("#words").append("<div class='newline'></div>");
+}
+
+export function scrollTape(): void {
+  const wordsWrapperWidth = (<HTMLElement>(
+    document.querySelector("#wordsWrapper")
+  )).offsetWidth;
+  let fullWordsWidth = 0;
+  const toHide: JQuery<HTMLElement>[] = [];
+  let widthToHide = 0;
+  if (currentWordElementIndex > 0) {
+    for (let i = 0; i < currentWordElementIndex; i++) {
+      const word = <HTMLElement>document.querySelectorAll("#words .word")[i];
+      fullWordsWidth += $(word).outerWidth(true) ?? 0;
+      const forWordLeft = Math.floor(word.offsetLeft);
+      const forWordWidth = Math.floor(word.offsetWidth);
+      if (forWordLeft < 0 - forWordWidth) {
+        const toPush = $($("#words .word")[i]);
+        toHide.push(toPush);
+        widthToHide += toPush.outerWidth(true) ?? 0;
+      }
+    }
+    if (toHide.length > 0) {
+      currentWordElementIndex -= toHide.length;
+      toHide.forEach((e) => e.remove());
+      fullWordsWidth -= widthToHide;
+      const currentMargin = parseInt($("#words").css("margin-left"), 10);
+      $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
+    }
+  }
+  let currentWordWidth = 0;
+  if (Config.tapeMode === "letter") {
+    if (TestInput.input.current.length > 0) {
+      for (let i = 0; i < TestInput.input.current.length; i++) {
+        const words = document.querySelectorAll("#words .word");
+        currentWordWidth +=
+          $(
+            words[currentWordElementIndex].querySelectorAll("letter")[i]
+          ).outerWidth(true) ?? 0;
+      }
+    }
+  }
+  const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
+  if (Config.smoothLineScroll) {
+    $("#words")
+      .stop(true, false)
+      .animate(
+        {
+          marginLeft: newMargin,
+        },
+        SlowTimer.get() ? 0 : 125
+      );
+  } else {
+    $("#words").css("margin-left", `${newMargin}px`);
+  }
 }
 
 export function lineJump(currentTop: number): void {

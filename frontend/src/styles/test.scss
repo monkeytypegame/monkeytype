@@ -253,6 +253,33 @@
       }
     }
   }
+
+  &.tape {
+    &.size125 .word {
+      margin: 0.31rem;
+      margin: 0.31rem 0.62rem 0.31rem 0;
+    }
+
+    &.size15 .word {
+      margin: 0.37rem;
+      margin: 0.37rem 0.74rem 0.37rem 0;
+    }
+
+    &.size2 .word {
+      margin: 0.5rem;
+      margin: 0.5rem 1rem 0.5rem 0;
+    }
+
+    &.size3 .word {
+      margin: 0.75rem;
+      margin: 0.75rem 1.5rem 0.75rem 0;
+    }
+
+    &.size4 .word {
+      margin: 1rem;
+      margin: 1rem 2rem 1rem 0;
+    }
+  }
 }
 
 .word {

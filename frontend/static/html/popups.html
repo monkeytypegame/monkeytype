@@ -2,6 +2,102 @@
   <div id="simplePopup" popupId=""></div>
 </div>
 
+<div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
+  <div id="shareTestSettingsPopup">
+    <div class="title">Share test settings</div>
+    <label class="checkbox mode">
+      <input type="checkbox" setting="mode" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Mode
+      <span>Time, Words, Quote, Zen, Custom</span>
+    </label>
+    <label class="checkbox mode2 subgroup hidden">
+      <input type="checkbox" setting="mode2" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Mode2
+      <span>Test seconds, Test words, Quote Id</span>
+    </label>
+    <label class="checkbox customText subgroup hidden">
+      <input type="checkbox" setting="customText" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Custom text
+      <span></span>
+    </label>
+    <label class="checkbox punctuation">
+      <input type="checkbox" setting="punctuation" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Punctuation
+      <span></span>
+    </label>
+    <label class="checkbox numbers">
+      <input type="checkbox" setting="numbers" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Numbers
+      <span></span>
+    </label>
+    <label class="checkbox language">
+      <input type="checkbox" setting="language" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Language
+      <span></span>
+    </label>
+    <label class="checkbox difficulty">
+      <input type="checkbox" setting="difficulty" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Difficulty
+      <span></span>
+    </label>
+    <label class="checkbox funbox">
+      <input type="checkbox" setting="funbox" />
+      <div class="customTextCheckbox">
+        <div class="check">
+          <i class="fas fa-fw fa-check"></i>
+        </div>
+      </div>
+      Funbox
+      <span></span>
+    </label>
+    <textarea
+      class="url"
+      placeholder="url"
+      value="monkeytype.com"
+      readonly
+    ></textarea>
+    <div class="tooLongWarning hidden">
+      <i class="fas fa-fw fa-exclamation-triangle"></i>
+      <span>The URL is over 2000 characters long - it might not work</span>
+    </div>
+  </div>
+</div>
+
 <div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
   <div id="mobileTestConfigPopup">
     <div class="group">

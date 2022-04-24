@@ -1736,8 +1736,9 @@ $(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "difficulty" && !nosave) restart(false, nosave);
-  if (eventKey === "showAllLines" && !nosave) restart();
+  if (eventKey === "showAllLines" && !nosave) restart(false, nosave);
   if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
+  if (eventKey === "tapeMode" && !nosave) restart(false, nosave);
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;
   }
