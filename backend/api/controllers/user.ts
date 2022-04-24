@@ -6,12 +6,18 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
 import George from "../../tasks/george";
+import admin from "firebase-admin";
 
 export async function createNewUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { name } = req.body;
   const { email, uid } = req.ctx.decodedToken;
+
+  const available = await UserDAL.isNameAvailable(name);
+  if (!available) {
+    throw new MonkeyError(409, "Username unavailable");
+  }
 
   await UserDAL.addUser(name, email, uid);
   Logger.logToDb("user_created", `${name} ${email}`, uid);
@@ -92,22 +98,19 @@ export async function updateEmail(
 export async function getUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { email, uid } = req.ctx.decodedToken;
+  const { uid } = req.ctx.decodedToken;
 
   let userInfo;
   try {
     userInfo = await UserDAL.getUser(uid);
   } catch (e) {
-    if (email && uid) {
-      userInfo = await UserDAL.addUser(undefined, email, uid);
-    } else {
-      throw new MonkeyError(
-        404,
-        "User not found. Could not recreate user document.",
-        "Tried to recreate user document but either email or uid is nullish",
-        uid
-      );
-    }
+    await admin.auth().deleteUser(uid);
+    throw new MonkeyError(
+      404,
+      "User not found. Please try to sign up again.",
+      "get user",
+      uid
+    );
   }
 
   const agentLog = buildAgentLog(req);

@@ -29,6 +29,7 @@ export async function add(
 ): Promise<AddQuoteReturn | void> {
   if (!git) throw new MonkeyError(500, "Git not available.");
   const quote = {
+    _id: new ObjectId(),
     text: text,
     source: source,
     language: language.toLowerCase(),

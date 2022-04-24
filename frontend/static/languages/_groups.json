@@ -298,6 +298,10 @@
     "languages": ["sinhala"]
   },
   {
+    "name": "toki_pona",
+    "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -328,7 +332,6 @@
     "languages": [
       "lojban_gismu",
       "lojban_cmavo",
-      "toki_pona",
       "pig_latin",
       "twitch_emotes",
       "git"

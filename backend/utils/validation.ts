@@ -6,7 +6,7 @@ export function inRange(value: number, min: number, max: number): boolean {
 }
 
 export function isUsernameValid(name: string): boolean {
-  if (_.isNil(name) || !inRange(name.length, 1, 14)) {
+  if (_.isNil(name) || !inRange(name.length, 1, 16)) {
     return false;
   }
 
