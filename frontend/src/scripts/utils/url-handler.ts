@@ -12,12 +12,7 @@ export function loadCustomThemeFromUrl(): void {
   if (getValue === null) return;
 
   const urlEncoded = getValue.split(",");
-  let base64decoded = null;
-  try {
-    base64decoded = JSON.parse(atob(getValue) ?? "");
-  } catch (e) {
-    //
-  }
+  const base64decoded = JSON.parse(atob(getValue ?? "") ?? "");
 
   let colorArray = [];
   if (Array.isArray(urlEncoded) && urlEncoded.length === 9) {
@@ -49,12 +44,7 @@ export function loadTestSettingsFromUrl(): void {
   const getValue = Misc.findGetParameter("testSettings");
   if (getValue === null) return;
 
-  let de = decompressFromURI(getValue);
-  try {
-    de = JSON.parse(de ?? "");
-  } catch (e) {
-    //
-  }
+  const de = JSON.parse(decompressFromURI(getValue) ?? "");
 
   const applied: { [key: string]: string } = {};
 
