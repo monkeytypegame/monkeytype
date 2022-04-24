@@ -79,14 +79,28 @@ export async function updatePosition(): Promise<void> {
 
   newTop = currentLetterPosTop - Math.round(letterHeight / 5);
 
-  if (
-    Config.tapeMode === "letter" ||
-    (Config.tapeMode === "word" && inputLen == 0)
-  ) {
+  if (Config.tapeMode === "letter") {
     newLeft =
       ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
         2 -
       (caret.width() as number) / 2;
+  } else if (Config.tapeMode === "word") {
+    if (inputLen == 0) {
+      newLeft =
+        ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
+          2 -
+        (caret.width() as number) / 2;
+    } else {
+      let inputWidth = 0;
+      for (let i = 0; i < inputLen; i++) {
+        inputWidth += $(currentWordNodeList[i]).outerWidth(true) as number;
+      }
+      newLeft =
+        ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
+          2 +
+        inputWidth -
+        (caret.width() as number) / 2;
+    }
   } else {
     if (inputLen == 0) {
       newLeft = isLanguageLeftToRight
