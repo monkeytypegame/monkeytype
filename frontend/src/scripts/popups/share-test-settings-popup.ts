@@ -10,19 +10,32 @@ function getCheckboxValue(checkbox: string): boolean {
   );
 }
 
+type SharedTestSettings = [
+  MonkeyTypes.Mode | null,
+  MonkeyTypes.Mode2<MonkeyTypes.Mode> | null,
+  MonkeyTypes.CustomText | null,
+  boolean | null,
+  boolean | null,
+  string | null,
+  MonkeyTypes.Difficulty | null,
+  string | null
+];
+
 function updateURL(): void {
   const baseUrl = location.origin + "?testSettings=";
-  const settings: (
-    | string
-    | null
-    | { [key: string]: string | number | boolean | string[] }
-    | boolean
-  )[] = [];
+  const settings: SharedTestSettings = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
 
   if (getCheckboxValue("mode")) {
     settings[0] = Config.mode;
-  } else {
-    settings[0] = null;
   }
 
   if (getCheckboxValue("mode2")) {
@@ -30,51 +43,37 @@ function updateURL(): void {
       Config,
       randomQuote
     ) as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
-  } else {
-    settings[1] = null;
   }
 
   if (getCheckboxValue("customText")) {
     settings[2] = {
-      text: CustomText.text.join(" "),
+      text: CustomText.text,
       isWordRandom: CustomText.isWordRandom,
       isTimeRandom: CustomText.isTimeRandom,
       word: CustomText.word,
       time: CustomText.time,
       delimiter: CustomText.delimiter,
     };
-  } else {
-    settings[2] = null;
   }
 
   if (getCheckboxValue("punctuation")) {
     settings[3] = Config.punctuation;
-  } else {
-    settings[3] = null;
   }
 
   if (getCheckboxValue("numbers")) {
     settings[4] = Config.numbers;
-  } else {
-    settings[4] = null;
   }
 
   if (getCheckboxValue("language")) {
     settings[5] = Config.language;
-  } else {
-    settings[5] = null;
   }
 
   if (getCheckboxValue("difficulty")) {
     settings[6] = Config.difficulty;
-  } else {
-    settings[6] = null;
   }
 
   if (getCheckboxValue("funbox")) {
     settings[7] = Config.funbox;
-  } else {
-    settings[7] = null;
   }
 
   const compressed = compressToURI(JSON.stringify(settings));

@@ -40,16 +40,27 @@ export function loadCustomThemeFromUrl(): void {
   }
 }
 
+type SharedTestSettings = [
+  MonkeyTypes.Mode | null,
+  MonkeyTypes.Mode2<MonkeyTypes.Mode> | null,
+  MonkeyTypes.CustomText | null,
+  boolean | null,
+  boolean | null,
+  string | null,
+  MonkeyTypes.Difficulty | null,
+  string | null
+];
+
 export function loadTestSettingsFromUrl(): void {
   const getValue = Misc.findGetParameter("testSettings");
   if (getValue === null) return;
 
-  const de = JSON.parse(decompressFromURI(getValue) ?? "");
+  const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
 
   const applied: { [key: string]: string } = {};
 
   if (de[0]) {
-    UpdateConfig.setMode(de[0] as MonkeyTypes.Mode, true);
+    UpdateConfig.setMode(de[0], true);
     applied["mode"] = de[0];
   }
 
@@ -59,7 +70,7 @@ export function loadTestSettingsFromUrl(): void {
     } else if (Config.mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (Config.mode === "quote") {
-      UpdateConfig.setQuoteLength(-2 as MonkeyTypes.QuoteLength, false);
+      UpdateConfig.setQuoteLength(-2, false);
       QuoteSearchPopup.setSelectedId(parseInt(de[1], 10));
       ManualRestart.set();
     }
@@ -67,47 +78,42 @@ export function loadTestSettingsFromUrl(): void {
   }
 
   if (de[2]) {
-    const customTextSettings = de[2] as unknown as {
-      [key: string]: string | number | boolean | string[];
-    };
-    CustomText.setText((customTextSettings["text"] as string).split(" "));
-    CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"] as boolean);
-    CustomText.setIsWordRandom(customTextSettings["isWordRandom"] as boolean);
+    const customTextSettings = de[2];
+    CustomText.setText(customTextSettings["text"]);
+    CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"]);
+    CustomText.setIsWordRandom(customTextSettings["isWordRandom"]);
     if (customTextSettings["isTimeRandom"]) {
-      CustomText.setWord(customTextSettings["time"] as number);
+      CustomText.setWord(customTextSettings["time"]);
     }
     if (customTextSettings["isWordRandom"]) {
-      CustomText.setTime(customTextSettings["word"] as number);
+      CustomText.setTime(customTextSettings["word"]);
     }
-    CustomText.setDelimiter(customTextSettings["delimiter"] as string);
+    CustomText.setDelimiter(customTextSettings["delimiter"]);
     applied["custom text settings"] = "";
   }
 
   if (de[3]) {
-    UpdateConfig.setPunctuation(de[3] as unknown as boolean, true);
+    UpdateConfig.setPunctuation(de[3], true);
     applied["punctuation"] = de[3] ? "on" : "off";
   }
 
   if (de[4]) {
-    UpdateConfig.setNumbers(de[4] as unknown as boolean, true);
+    UpdateConfig.setNumbers(de[4], true);
     applied["numbers"] = de[4] ? "on" : "off";
   }
 
   if (de[5]) {
-    UpdateConfig.setLanguage(de[5] as unknown as string, true);
+    UpdateConfig.setLanguage(de[5], true);
     applied["language"] = de[5];
   }
 
   if (de[6]) {
-    UpdateConfig.setDifficulty(
-      de[6] as unknown as MonkeyTypes.Difficulty,
-      true
-    );
+    UpdateConfig.setDifficulty(de[6], true);
     applied["difficulty"] = de[6];
   }
 
   if (de[7]) {
-    UpdateConfig.setFunbox(de[7] as unknown as string, true);
+    UpdateConfig.setFunbox(de[7], true);
     applied["funbox"] = de[7];
   }
 
@@ -115,14 +121,14 @@ export function loadTestSettingsFromUrl(): void {
 
   let appliedString = "";
 
-  if (appliedString === "") {
-    return;
-  }
-
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
     appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
   });
+
+  if (appliedString === "") {
+    return;
+  }
 
   Notifications.add(
     "Settings applied from URL:<br><br>" + appliedString,
