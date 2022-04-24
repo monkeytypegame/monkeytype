@@ -44,5 +44,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["./src/**/*.ts"],
-  "files": ["src/scripts/modules.d.ts"]
+  "files": ["src/ts/modules.d.ts"]
 }
