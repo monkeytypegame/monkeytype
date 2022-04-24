@@ -62,7 +62,7 @@ declare namespace MonkeyTypes {
     lastNameChange?: number;
     lbMemory?: object;
     lbPersonalBests?: LbPersonalBests;
-    name?: string;
+    name: string;
     customThemes?: CustomTheme[];
     personalBests?: PersonalBests;
     quoteRatings?: UserQuoteRatings;
@@ -116,6 +116,7 @@ declare namespace MonkeyTypes {
   }
 
   interface ApeKey {
+    _id: ObjectId;
     uid: string;
     name: string;
     hash: string;
@@ -244,6 +245,7 @@ declare namespace MonkeyTypes {
   type ReportTypes = "quote";
 
   interface Report {
+    _id: ObjectId;
     id: string;
     type: ReportTypes;
     timestamp: number;

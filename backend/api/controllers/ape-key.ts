@@ -5,6 +5,7 @@ import ApeKeysDAO from "../../dao/ape-keys";
 import MonkeyError from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";
+import { ObjectId } from "mongodb";
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");
@@ -39,6 +40,7 @@ export async function generateApeKey(
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
   const apeKey: MonkeyTypes.ApeKey = {
+    _id: new ObjectId(),
     name,
     enabled,
     uid,

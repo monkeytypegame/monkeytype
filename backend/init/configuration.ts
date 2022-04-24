@@ -3,6 +3,7 @@ import _ from "lodash";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import BASE_CONFIGURATION from "../constants/base-configuration";
+import { ObjectId } from "mongodb";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
@@ -66,6 +67,7 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
 
     if (liveConfiguration) {
       const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+
       const liveConfigurationWithoutId = _.omit(
         liveConfiguration,
         "_id"
@@ -75,7 +77,10 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
       pushConfiguration(baseConfiguration);
       configuration = baseConfiguration;
     } else {
-      await configurationCollection.insertOne(BASE_CONFIGURATION); // Seed the base configuration.
+      await configurationCollection.insertOne({
+        ...BASE_CONFIGURATION,
+        _id: new ObjectId(),
+      }); // Seed the base configuration.
     }
   } catch (error) {
     Logger.logToDb(

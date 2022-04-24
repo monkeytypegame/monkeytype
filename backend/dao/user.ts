@@ -9,7 +9,7 @@ import { DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 const usersCollection = db.collection<MonkeyTypes.User>("users");
 
 export async function addUser(
-  name: string | undefined,
+  name: string,
   email: string,
   uid: string
 ): Promise<InsertOneResult<MonkeyTypes.User>> {
@@ -20,6 +20,7 @@ export async function addUser(
 
   const currentDate = Date.now();
   return await usersCollection.insertOne({
+    _id: new ObjectId(),
     name,
     email,
     uid,
