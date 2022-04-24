@@ -36,6 +36,9 @@ export async function updatePosition(): Promise<void> {
   // }
 
   const caret = $("#caret");
+  const caretWidth = Math.round(
+    document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
+  );
 
   let inputLen = TestInput.input.current.length;
   inputLen = Misc.trailingComposeChars.test(TestInput.input.current)
@@ -78,18 +81,43 @@ export async function updatePosition(): Promise<void> {
   let newLeft = 0;
 
   newTop = currentLetterPosTop - Math.round(letterHeight / 5);
-  if (inputLen == 0) {
-    newLeft = isLanguageLeftToRight
-      ? currentLetterPosLeft - (caret.width() as number) / 2
-      : currentLetterPosLeft + (caret.width() as number) / 2;
+
+  if (Config.tapeMode === "letter") {
+    newLeft =
+      ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
+        2 -
+      caretWidth / 2;
+  } else if (Config.tapeMode === "word") {
+    if (inputLen == 0) {
+      newLeft =
+        ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
+          2 -
+        caretWidth / 2;
+    } else {
+      let inputWidth = 0;
+      for (let i = 0; i < inputLen; i++) {
+        inputWidth += $(currentWordNodeList[i]).outerWidth(true) as number;
+      }
+      newLeft =
+        ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
+          2 +
+        inputWidth -
+        caretWidth / 2;
+    }
   } else {
-    newLeft = isLanguageLeftToRight
-      ? currentLetterPosLeft +
-        ($(currentLetter).width() as number) -
-        (caret.width() as number) / 2
-      : currentLetterPosLeft -
-        ($(currentLetter).width() as number) +
-        (caret.width() as number) / 2;
+    if (inputLen == 0) {
+      newLeft = isLanguageLeftToRight
+        ? currentLetterPosLeft - caretWidth / 2
+        : currentLetterPosLeft + caretWidth / 2;
+    } else {
+      newLeft = isLanguageLeftToRight
+        ? currentLetterPosLeft +
+          ($(currentLetter).width() as number) -
+          caretWidth / 2
+        : currentLetterPosLeft -
+          ($(currentLetter).width() as number) +
+          caretWidth / 2;
+    }
   }
 
   let smoothlinescroll = $("#words .smoothScroller").height();
