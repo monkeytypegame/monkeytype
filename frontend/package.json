@@ -64,6 +64,7 @@
     "firebase": "9.6.0",
     "howler": "2.2.3",
     "html2canvas": "1.4.1",
+    "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
     "remove-files-webpack-plugin": "1.5.0",
     "stemmer": "2.0.0",

@@ -19,6 +19,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
+import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
@@ -3310,6 +3311,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-egg",
       visible: false,
       subgroup: commandsMonkeyPowerLevel,
+    },
+    {
+      id: "shareTestSettings",
+      display: "Share test settings",
+      icon: "fa-share",
+      exec: async (): Promise<void> => {
+        ShareTestSettingsPopup.show();
+      },
     },
     {
       id: "clearSwCache",
