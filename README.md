@@ -8,14 +8,14 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate the experience of natural typing during a typing test, by unobtrusively presenting the text prompts and displaying typed characters in-place, providing straightforward, real-time feedback on typos, speed, and accuracy.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an accounting system to save your typing speed history, and user-configurable features such as themes, sounds, and a smooth caret. Monkeytype emulates a natural typing experience by unobtrusively presenting the text and displaying typed characters in place, providing simple, real-time feedback on typos, speed, and accuracy.
 
 # Features
 
 - minimalistic design, with optional advertisements and focus mode while typing
 - type what you see, see what you type
 - live errors, wpm, and accuracy displays
-- variety of test lengths and languages
+- a variety of test lengths and languages
 - punctuation and numbers modes
 - quotes
 - themes
@@ -46,8 +46,8 @@ Before contributing to this repository, please read the [code of conduct](https:
 
 Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
 
-All of the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
+All of the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) have helped by implementing various features, adding assets, and fixing bugs.
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).
+If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [purchase merchandise](https://www.monkeytype.store/).
