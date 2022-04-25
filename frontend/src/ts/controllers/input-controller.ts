@@ -852,6 +852,18 @@ $("#wordsInput").on("input", (event) => {
     return;
   }
 
+  const popups = document.querySelectorAll(".popupWrapper");
+
+  let popupVisible = false;
+  for (const popup of popups) {
+    if (!popup.classList.contains("hidden") === true) {
+      popupVisible = true;
+      break;
+    }
+  }
+
+  if (popupVisible) return;
+
   TestInput.setKeypressNotAfk();
 
   const realInputValue = (event.target as HTMLInputElement).value.normalize();
