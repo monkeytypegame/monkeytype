@@ -168,6 +168,15 @@ export function showWords(): void {
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
     if (Config.tapeMode !== "off") {
+      let multiplier = 1;
+      if (Config.fontSize === "125") multiplier = 1.3;
+      if (Config.fontSize === "15") multiplier = 1.45;
+      if (Config.fontSize === "2") multiplier = 2;
+      if (Config.fontSize === "3") multiplier = 3;
+      if (Config.fontSize === "4") multiplier = 4;
+      const wrapperHeight =
+        wordHeight + Misc.convertRemToPixels(0.34) * multiplier;
+
       $("#words")
         .css("height", wordHeight * 2 + "px")
         .css("overflow", "hidden")
@@ -176,9 +185,9 @@ export function showWords(): void {
       $("#words").addClass("tape");
       $("#wordsWrapper").addClass("tape");
       $("#wordsWrapper")
-        .css("height", wordHeight * 1 + "px")
+        .css("height", wrapperHeight + "px")
         .css("overflow", "hidden");
-      $(".outOfFocusWarning").css("line-height", wordHeight * 1 + "px");
+      $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
     } else {
       $("#words")
         .css("height", wordHeight * 4 + "px")
