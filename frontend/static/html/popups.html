@@ -2,6 +2,64 @@
   <div id="simplePopup" popupId=""></div>
 </div>
 
+<div id="cookiePopupWrapper" class="popupWrapper hidden">
+  <div id="cookiePopup">
+    <div class="title">
+      <i class="fas far fa-cookie-bite"></i>
+      We use cookies by the way
+    </div>
+    <div class="main">
+      <div class="text">
+        Cookies enhance your experience and help us improve our website.
+      </div>
+      <div class="buttons">
+        <div class="button active acceptAll">Accept all</div>
+        <div class="button openSettings">
+          <i class="fas far fa-cog"></i>
+        </div>
+      </div>
+    </div>
+    <div class="settings hidden">
+      <div class="cookie security">
+        <label class="checkbox">
+          <div class="title">Security</div>
+          <div class="description">
+            We use Cloudflare cookies to improve security and performance of our
+            site.
+            <br />
+            <br />
+            They
+            <b>do not</b>
+            store any personal information and are required.
+          </div>
+          <input type="checkbox" checked disabled />
+          <div class="customTextCheckbox" style="cursor: default; opacity: 0.5">
+            <div class="check">
+              <i class="fas fa-fw fa-check"></i>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div class="cookie analytics">
+        <label class="checkbox">
+          <div class="title">Analytics</div>
+          <div class="description">
+            We use Google Analytics cookies to check how users interact with our
+            website and use this data to improve our site design.
+          </div>
+          <input type="checkbox" checked />
+          <div class="customTextCheckbox">
+            <div class="check">
+              <i class="fas fa-fw fa-check"></i>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div class="button active acceptSelected">Accept selected</div>
+    </div>
+  </div>
+</div>
+
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
     <div class="title">Share test settings</div>

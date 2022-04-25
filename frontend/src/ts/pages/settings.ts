@@ -12,6 +12,7 @@ import * as ImportExportSettingsPopup from "../popups/import-export-settings-pop
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
+import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
 
@@ -1006,6 +1007,11 @@ $(".quickNav .links a").on("click", (e) => {
     "slideup"
   );
   isOpen && toggleSettingsGroup(settingsGroup);
+});
+
+$(".pageSettings .section.updateCookiePreferences .button").on("click", () => {
+  CookiePopup.show();
+  CookiePopup.showSettings();
 });
 
 $(document).on(

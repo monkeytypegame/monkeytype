@@ -8,6 +8,7 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
+import * as CookiePopup from "./popups/cookie-popup";
 
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
@@ -27,6 +28,7 @@ $(document).ready(() => {
   if (window.location.pathname === "/") {
     // $("#top .config").removeClass("hidden");
   }
+  CookiePopup.check();
   $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
