@@ -8,7 +8,7 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable typing test. It features many test modes, an accounting system to save your typing speed history, and user-configurable features such as themes, sounds, and a smooth caret. Monkeytype emulates a natural typing experience by unobtrusively presenting the text and displaying typed characters in place, providing simple, real-time feedback on typos, speed, and accuracy.
+Monkeytype is a minimalistic and customizable typing test. It features many test modes, an accounting system to save your typing speed history, and user-configurable features such as themes, sounds, and a smooth caret. Monkeytype emulates a natural typing experience by unobtrusively presenting the text and displaying typed characters in place, providing real-time feedback on typos, speed, and accuracy.
 
 # Features
 
