@@ -24,7 +24,7 @@ After you have forked the repository, you can add your new quotes. (If you haven
 }
 ```
 
-(If the language does exist in Monkeytype, but there are no quotes for it create a new file for the language)
+(If the language does exist in Monkeytype, but there are no quotes for that language, create a new file for the language)
 
 ## Committing Quotes
 
