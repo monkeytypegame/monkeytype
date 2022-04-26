@@ -36,9 +36,13 @@ export async function updatePosition(): Promise<void> {
   // }
 
   const caret = $("#caret");
-  const caretWidth = Math.round(
+  let caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
+
+  if (["block", "outline", "underline"].includes(Config.caretStyle)) {
+    caretWidth /= 3;
+  }
 
   let inputLen = TestInput.input.current.length;
   inputLen = Misc.trailingComposeChars.test(TestInput.input.current)
