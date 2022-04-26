@@ -2321,7 +2321,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize1",
       display: "1x",
-      configValue: 1,
+      configValue: "1",
       exec: (): void => {
         UpdateConfig.setFontSize("1");
         TestLogic.restart();
@@ -2330,7 +2330,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize125",
       display: "1.25x",
-      configValue: 125,
+      configValue: "125",
       exec: (): void => {
         UpdateConfig.setFontSize("125");
         TestLogic.restart();
@@ -2339,7 +2339,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize15",
       display: "1.5x",
-      configValue: 15,
+      configValue: "15",
       exec: (): void => {
         UpdateConfig.setFontSize("15");
         TestLogic.restart();
@@ -2348,7 +2348,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize2",
       display: "2x",
-      configValue: 2,
+      configValue: "2",
       exec: (): void => {
         UpdateConfig.setFontSize("2");
         TestLogic.restart();
@@ -2357,7 +2357,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize3",
       display: "3x",
-      configValue: 3,
+      configValue: "3",
       exec: (): void => {
         UpdateConfig.setFontSize("3");
         TestLogic.restart();
@@ -2366,7 +2366,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize4",
       display: "4x",
-      configValue: 4,
+      configValue: "4",
       exec: (): void => {
         UpdateConfig.setFontSize("4");
         TestLogic.restart();
