@@ -58,7 +58,7 @@ export function getArray(config: MonkeyTypes.Config): string[] {
   return ret;
 }
 
-export function apply(config: MonkeyTypes.Config) {
+export function apply(config: MonkeyTypes.Config): void {
   UpdateConfig.setMode(config.mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2, true, true);
