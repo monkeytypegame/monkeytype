@@ -13,6 +13,12 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import * as PractiseWords from "./practise-words";
+import * as TestLogic from "./test-logic";
+import * as ManualRestart from "./manual-restart-tracker";
+import * as TestActive from "../states/test-active";
+// Rizwan TODO: This file should work after tribe's conversion to typescript
+import * as Tribe from "../tribe/tribe";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -232,6 +238,9 @@ export async function screenshot(): Promise<void> {
     if (Auth.currentUser == null) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
+    if (Tribe.state > 5) {
+      $(".pageTest #result .inviteLink").removeClass("hidden");
+    }
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -265,6 +274,7 @@ export async function screenshot(): Promise<void> {
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
+  $(".pageTest #result .inviteLink").addClass("hidden");
   try {
     const paddingX = 50;
     const paddingY = 25;
@@ -943,6 +953,71 @@ $("#wordsInput").on("focusout", () => {
     OutOfFocus.show();
   }
   Caret.hide();
+});
+
+$(document).on("keypress", "#restartTestButton", (event) => {
+  if (event.key == "Enter") {
+    ManualRestart.reset();
+    if (
+      TestActive.get() &&
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote"
+    ) {
+      TestLogic.restart(true);
+    } else {
+      TestLogic.restart();
+    }
+  }
+});
+
+$(document.body).on("click", "#restartTestButton", () => {
+  ManualRestart.set();
+  if (resultCalculating) return;
+  if (
+    TestActive.get() &&
+    Config.repeatQuotes === "typing" &&
+    Config.mode === "quote"
+  ) {
+    TestLogic.restart(true);
+  } else {
+    TestLogic.restart();
+  }
+});
+
+$(document.body).on(
+  "click",
+  "#retrySavingResultButton",
+  TestLogic.retrySavingResult
+);
+
+$(document).on("keypress", "#practiseWordsButton", (event) => {
+  if (event.keyCode == 13) {
+    PractiseWords.showPopup(true);
+  }
+});
+
+$(document.body).on("click", "#practiseWordsButton", () => {
+  // PractiseWords.init();
+  PractiseWords.showPopup();
+});
+
+$(document).on("keypress", "#nextTestButton", (event) => {
+  if (event.keyCode == 13) {
+    if (Tribe.room) {
+      Tribe.initRace();
+    } else {
+      TestLogic.restart();
+    }
+  }
+});
+
+$(document.body).on("click", "#nextTestButton", () => {
+  if (Tribe.room) {
+    Tribe.initRace();
+  } else {
+    ManualRestart.set();
+    TestLogic.restart();
+  }
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {

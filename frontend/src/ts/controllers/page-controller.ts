@@ -7,6 +7,7 @@ import * as PageTest from "../pages/test";
 import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
+import * as PageTribe from "../pages/tribe";
 import * as PageTransition from "../states/page-transition";
 
 export function change(page?: MonkeyTypes.Page | ""): void {
@@ -27,6 +28,7 @@ export function change(page?: MonkeyTypes.Page | ""): void {
       "/settings": "settings",
       "/about": "about",
       "/account": "account",
+      "/tribe": "tribe",
     };
     let path = pages[window.location.pathname as keyof typeof pages];
     if (!path) {
@@ -47,6 +49,7 @@ export function change(page?: MonkeyTypes.Page | ""): void {
     about: PageAbout.page,
     account: Account.page,
     login: PageLogin.page,
+    tribe: PageTribe.page,
   };
 
   const previousPage = pages[ActivePage.get() as MonkeyTypes.Page];

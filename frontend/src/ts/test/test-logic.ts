@@ -53,6 +53,12 @@ import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
+// Rizwan TODO: These files should start working once the tribe files are converted to typescript
+import * as Tribe from "../tribe/tribe";
+import * as TribeResults from "../tribe/tribe-results";
+import * as TribeDelta from "../tribe/tribe-delta";
+
+export let glarsesMode = false;
 
 let failReason = "";
 
@@ -266,6 +272,7 @@ export function startTest(): boolean {
   TimerProgress.show();
   $("#liveWpm").text("0");
   LiveWpm.show();
+  TribeDelta.show();
   LiveAcc.show();
   LiveBurst.show();
   TimerProgress.update();
@@ -386,6 +393,7 @@ export function restart(
   TestActive.set(false);
   Replay.stopReplayRecording();
   LiveWpm.hide();
+  TribeDelta.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
@@ -714,6 +722,7 @@ async function getNextWord(
 
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
+  console.log(`test random: ${Math.random()}`);
   TestActive.set(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
@@ -1350,6 +1359,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
+  TribeDelta.hide();
   PbCrown.hide();
   LiveAcc.hide();
   LiveBurst.hide();
@@ -1381,18 +1391,33 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = kps.every((second) => second.afk);
   if (TestInput.bailout) afkDetected = false;
 
+  let resolveTestSavePromise: (value: unknown) => void;
+  const testSavePromise = new Promise((resolve) => {
+    resolveTestSavePromise = resolve;
+  });
+
   let tooShort = false;
   let dontSave = false;
   //fail checks
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
     dontSave = true;
+    resolveTestSavePromise({
+      failed: true,
+      failedReason: failReason,
+    });
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
     dontSave = true;
+    resolveTestSavePromise({
+      afk: true,
+    });
   } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
+    resolveTestSavePromise({
+      repeated: true,
+    });
   } else if (
     (Config.mode === "time" &&
       completedEvent.mode2 < 15 &&
@@ -1423,14 +1448,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
+    resolveTestSavePromise({
+      tooShort: true,
+    });
   } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
+    resolveTestSavePromise({
+      valid: false,
+    });
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;
+    resolveTestSavePromise({
+      valid: false,
+    });
   }
 
   // test is valid
@@ -1452,6 +1486,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
+    resolveTestSavePromise({
+      login: false,
+    });
   } else {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
@@ -1480,6 +1517,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (dontSave) {
     AnalyticsController.log("testCompletedInvalid");
+    TribeResults.send({
+      wpm: completedEvent.wpm,
+      raw: completedEvent.rawWpm,
+      acc: completedEvent.acc,
+      consistency: completedEvent.consistency,
+      testDuration: completedEvent.testDuration,
+      charStats: completedEvent.charStats,
+      chartData: completedEvent.chartData,
+      resolve: await testSavePromise,
+    });
     return;
   }
 
@@ -1509,11 +1556,22 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (response.status !== 200) {
     console.log("Error saving result", completedEvent);
     $("#retrySavingResultButton").removeClass("hidden");
+    if (Tribe.state < 5) {
+      $("#retrySavingResultButton").removeClass("hidden");
+      retrySaving.completedEvent = completedEvent;
+      retrySaving.canRetry = true;
+    }
+    resolveTestSavePromise({
+      login: true,
+      saved: false,
+      saveFailedMessage: response.message,
+    });
     if (response.message === "Incorrect result hash") {
       console.log(completedEvent);
     }
     retrySaving.completedEvent = completedEvent;
     retrySaving.canRetry = true;
+
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1553,7 +1611,24 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
   }
 
+  resolveTestSavePromise({
+    login: true,
+    saved: true,
+    isPb: response.data.isPb,
+  });
+
   $("#retrySavingResultButton").addClass("hidden");
+
+  TribeResults.send({
+    wpm: completedEvent.wpm,
+    raw: completedEvent.rawWpm,
+    acc: completedEvent.acc,
+    consistency: completedEvent.consistency,
+    testDuration: completedEvent.testDuration,
+    charStats: completedEvent.charStats,
+    chartData: completedEvent.chartData,
+    resolve: await testSavePromise,
+  });
 }
 
 export function fail(reason: string): void {

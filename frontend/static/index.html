@@ -8,6 +8,8 @@
     <div id="ad_rich_media" class="hidden"></div>
     <div class="customBackground"></div>
     <div id="backgroundLoader" style="display: none"></div>
+    <!-- TODO REMOVE -->
+    <div id="tribeStateDisplay" style="position: fixed">tribe state</div>
     <div id="bannerCenter" class="focus"></div>
     <div id="notificationCenter">
       <div class="history"></div>
@@ -40,7 +42,8 @@
           compilation.assets["html/pages/about.html"].source() %> <%=
           compilation.assets["html/pages/settings.html"].source() %> <%=
           compilation.assets["html/pages/login.html"].source() %> <%=
-          compilation.assets["html/pages/account.html"].source() %>
+          compilation.assets["html/pages/account.html"].source() %> <%=
+          compilation.assets["html/pages/tribe.html"].source() %>
         </div>
 
         <%= compilation.assets["html/bottom.html"].source() %>

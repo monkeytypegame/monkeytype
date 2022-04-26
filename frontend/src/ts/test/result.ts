@@ -15,10 +15,16 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
+import Ape from "../ape";
+// Rizwan TODO: These files should start working after the tribe files are converted to typescript
+import * as Tribe from "./tribe";
+import * as TribeResults from "./tribe-results";
+import * as TribeUserList from "./tribe-user-list";
+import * as TribeButtons from "./tribe-buttons";
+import * as TribeChat from "./tribe-chat";
 
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
-import Ape from "../ape";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -720,6 +726,7 @@ export async function update(
       }
       $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
+      TribeChat.scrollChat();
       $("#testModesNotice").addClass("hidden");
     },
     () => {
@@ -733,6 +740,29 @@ export async function update(
         TestUI.toggleResultWords();
       }
       Keymap.hide();
+
+      //tribe
+      $("#result .bottom .buttons div").addClass("hidden");
+      $("#result #tribeResultBottom").addClass("hidden");
+      if (Tribe.state >= 12) {
+        $("#result #tribeResultBottom").removeClass("hidden");
+        if (Tribe.getSelf().isLeader) {
+          $("#result #nextTestButton").removeClass("hidden");
+          $("#result #backToLobbyButton").removeClass("hidden");
+        } else {
+          $("#result #readyButton").removeClass("hidden");
+        }
+        TribeResults.update("result");
+        TribeUserList.update("result");
+        TribeButtons.update("result");
+      } else {
+        $("#result #nextTestButton").removeClass("hidden");
+        $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
+        $("#result #practiseWordsButton").removeClass("hidden");
+        $("#result #watchReplayButton").removeClass("hidden");
+      }
+      $("#result #showWordHistoryButton").removeClass("hidden");
+      $("#result #saveScreenshotButton").removeClass("hidden");
     }
   );
 }

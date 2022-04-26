@@ -652,7 +652,14 @@ declare namespace MonkeyTypes {
     colorfulErrorExtra: string;
   }
 
-  type Page = "loading" | "test" | "about" | "settings" | "account" | "login";
+  type Page =
+    | "loading"
+    | "test"
+    | "about"
+    | "settings"
+    | "account"
+    | "login"
+    | "tribe";
 
   //  type ActivePage = `page${Page}` | undefined;
 
