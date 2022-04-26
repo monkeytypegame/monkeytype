@@ -132,6 +132,22 @@ function getWordHTML(word: string): string {
 export function showWords(): void {
   $("#words").empty();
 
+  if (Config.tapeMode !== "off") {
+    $("#words").addClass("tape");
+    $("#wordsWrapper").addClass("tape");
+  } else {
+    $("#words").removeClass("tape");
+    $("#wordsWrapper").removeClass("tape");
+  }
+
+  if (Config.indicateTypos === "below") {
+    $("#words").addClass("indicateTyposBelow");
+    $("#wordsWrapper").addClass("indicateTyposBelow");
+  } else {
+    $("#words").removeClass("indicateTyposBelow");
+    $("#wordsWrapper").removeClass("indicateTyposBelow");
+  }
+
   let wordsHTML = "";
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
@@ -168,22 +184,13 @@ export function showWords(): void {
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
     if (Config.tapeMode !== "off") {
-      let multiplier = 1;
-      if (Config.fontSize === "125") multiplier = 1.25;
-      if (Config.fontSize === "15") multiplier = 1.45;
-      if (Config.fontSize === "2") multiplier = 2;
-      if (Config.fontSize === "3") multiplier = 3;
-      if (Config.fontSize === "4") multiplier = 4;
-      const wrapperHeight =
-        wordHeight + Misc.convertRemToPixels(0.34) * multiplier;
+      const wrapperHeight = wordHeight;
 
       $("#words")
         .css("height", wordHeight * 2 + "px")
         .css("overflow", "hidden")
         .css("width", "200%")
         .css("margin-left", "50%");
-      $("#words").addClass("tape");
-      $("#wordsWrapper").addClass("tape");
       $("#wordsWrapper")
         .css("height", wrapperHeight + "px")
         .css("overflow", "hidden");
@@ -194,8 +201,6 @@ export function showWords(): void {
         .css("overflow", "hidden")
         .css("width", "100%")
         .css("margin-left", "unset");
-      $("#words").removeClass("tape");
-      $("#wordsWrapper").removeClass("tape");
       $("#wordsWrapper")
         .css("height", wordHeight * 3 + "px")
         .css("overflow", "hidden");
