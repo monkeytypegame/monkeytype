@@ -13,7 +13,7 @@ First, you will have to fork the repository. Go to the [Monkeytype Repository](h
 
 ## Creating Quotes
 
-After you have forked the repository, you can add your new quotes. (If you haven't already forked the repository, refer to this [section](#forking-monkeytype).) (Before continuing, make sure the quote's language exists in Monkeytype) Add this code in at the end of the quotes `./frontend/static/quotes/[language].json`:
+After you have forked the repository, you can add your new quotes. Before continuing, make sure the quote's language exists in Monkeytype. Add this code in at the end of the quotes `./frontend/static/quotes/[language].json`:
 
 ```
 {
