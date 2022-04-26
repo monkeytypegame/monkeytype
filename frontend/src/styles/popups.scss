@@ -418,58 +418,67 @@
     color: var(--error-color);
   }
 }
-
-#cookiePopup {
-  position: fixed;
-  right: 2rem;
-  bottom: 2rem;
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 465px;
-  z-index: 10000;
-  // outline: 0.5rem solid var(--bg-color)
-  user-select: none;
-  .main {
+#cookiePopupWrapper {
+  .extensionMessage {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    padding: 1rem;
+    width: 465px;
+    font-size: 0.75rem;
+  }
+  #cookiePopup {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
     display: grid;
     gap: 1rem;
-  }
-  .title {
-    font-size: 1.5rem;
-    color: var(--sub-color);
-  }
-  .buttons {
-    margin-top: 0.25rem;
-    display: grid;
-    grid-auto-flow: column;
-    gap: 1rem;
-    grid-template-columns: 1fr 2.25rem;
-  }
-  .settings {
-    display: grid;
-    gap: 1rem;
-    .customTextCheckbox {
-      background: var(--sub-color);
-    }
-    .cookie label {
+    width: 465px;
+    z-index: 10000;
+    // outline: 0.5rem solid var(--bg-color)
+    user-select: none;
+    .main {
       display: grid;
-      gap: 0 1rem;
-      grid-template-columns: 1fr min-content;
-      grid-template-areas:
-        "title check"
-        "description check";
-      .title {
-        grid-area: title;
-        font-size: 1.25rem;
-      }
-      .description {
-        grid-area: description;
-      }
+      gap: 1rem;
+    }
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    .buttons {
+      margin-top: 0.25rem;
+      display: grid;
+      grid-auto-flow: column;
+      gap: 1rem;
+      grid-template-columns: 1fr 2.25rem;
+    }
+    .settings {
+      display: grid;
+      gap: 1rem;
       .customTextCheckbox {
-        place-self: center;
-        grid-area: check;
+        background: var(--sub-color);
+      }
+      .cookie label {
+        display: grid;
+        gap: 0 1rem;
+        grid-template-columns: 1fr min-content;
+        grid-template-areas:
+          "title check"
+          "description check";
+        .title {
+          grid-area: title;
+          font-size: 1.25rem;
+        }
+        .description {
+          grid-area: description;
+        }
+        .customTextCheckbox {
+          place-self: center;
+          grid-area: check;
+        }
       }
     }
   }
