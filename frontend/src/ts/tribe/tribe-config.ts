@@ -7,7 +7,7 @@ import * as CustomText from "../test/custom-text";
 import * as TribeButtons from "./tribe-buttons";
 import * as Tribe from "./tribe";
 
-export function getArray(config): string[] {
+export function getArray(config: MonkeyTypes.Config): string[] {
   const ret = [];
 
   if (config["mode"] === "quote") {
@@ -58,7 +58,7 @@ export function getArray(config): string[] {
   return ret;
 }
 
-export function apply(config) {
+export function apply(config: MonkeyTypes.Config) {
   UpdateConfig.setMode(config.mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2, true, true);
@@ -100,8 +100,8 @@ export function apply(config) {
   }
 }
 
-export function setLoadingIndicator(truefalse) {
-  if (truefalse) {
+export function setLoadingIndicator(bool: boolean): void {
+  if (bool) {
     $(
       ".pageTribe .tribePage.lobby .currentConfig .loadingIndicator"
     ).removeClass("hidden");
@@ -112,7 +112,7 @@ export function setLoadingIndicator(truefalse) {
   }
 }
 
-export function canChange(override) {
+export function canChange(override: boolean): boolean {
   if (Tribe.state <= 1) return true;
   if (Tribe.state !== 5) return false;
   if (Tribe.getSelf().isLeader) {
@@ -128,9 +128,9 @@ export function canChange(override) {
   }
 }
 
-let syncConfigTimeout = null;
+let syncConfigTimeout: NodeJS.Timeout | null = null;
 
-export function sync() {
+export function sync(): void {
   if (Tribe.state <= 1) return;
   if (!Tribe.getSelf().isLeader) return;
   setLoadingIndicator(true);
@@ -170,7 +170,7 @@ export function sync() {
           },
         },
       });
-      clearTimeout(syncConfigTimeout);
+      clearTimeout(syncConfigTimeout as NodeJS.Timeout);
       syncConfigTimeout = null;
     }, 500);
   }
