@@ -1,24 +1,23 @@
 import { io } from "socket.io-client";
-import * as Notifications from "./notifications";
-import * as UpdateConfig from "./config";
-import * as DB from "./db";
+import * as Notifications from "../elements/notifications";
+import * as UpdateConfig from "../config";
+import * as DB from "../db";
 import * as TribePages from "./tribe-pages";
 import * as TribePagePreloader from "./tribe-page-preloader";
-import * as AccountController from "./account-controller";
 import * as TribePageMenu from "./tribe-page-menu";
 import * as TribePageLobby from "./tribe-page-lobby";
 import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
 import seedrandom from "seedrandom";
-import * as UI from "./ui";
+import * as PageController from "../controllers/page-controller";
 import * as TribeCountdown from "./tribe-countdown";
-import * as TestLogic from "./test-logic";
+import * as TestLogic from "../test/test-logic";
 import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
 import * as TribeButtons from "./tribe-buttons";
-import * as TribeStartRacePopup from "./tribe-start-race-popup";
+import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 
@@ -298,7 +297,7 @@ socket.on("room_left", (e) => {
   updateState(1);
   TribePageMenu.enableButtons();
   if (!$(".pageTribe").hasClass("active")) {
-    UI.changePage("tribe");
+    PageController.change("tribe");
   }
   TribeSound.play("leave");
   TribePages.change("menu").then(() => {
@@ -419,14 +418,14 @@ socket.on("room_init_race", (e) => {
     TribeBars.init("tribe");
     TribeBars.show("tribe");
     if (!$(".pageTest").hasClass("hidden")) {
-      UI.changePage("tribe", undefined, true);
+      PageController.change("tribe");
     }
     return;
   }
   seedrandom(e.seed, { global: true });
   console.log(`seed: ${e.seed}`);
   console.log(`random: ${Math.random()}`);
-  UI.changePage("test", false, true);
+  PageController.change("test");
   TribeCountdown.show();
   TribeSound.play("start");
 });
@@ -549,7 +548,7 @@ socket.on("room_readyTimer_over", (e) => {
 });
 
 socket.on("room_back_to_lobby", (e) => {
-  UI.changePage("tribe", false, true);
+  PageController.change("tribe");
 });
 
 socket.on("room_final_positions", (e) => {
