@@ -58,7 +58,7 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeResults from "../tribe/tribe-results";
 import * as TribeDelta from "../tribe/tribe-delta";
 
-export let glarsesMode = false;
+export const glarsesMode = false;
 
 let failReason = "";
 

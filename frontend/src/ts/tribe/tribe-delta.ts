@@ -1,6 +1,6 @@
 // Rizwan TODO: This should work as soon as the tribe is converted to typescript
 import * as Tribe from "./tribe";
-import Config from "./config";
+import Config from "../config";
 import * as TestActive from "../states/test-active";
 
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
