@@ -7,7 +7,7 @@
 
 ## Forking Monkeytype
 
-First, you will have to fork. Go to the [Monkeytype repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+First, you will have to fork the repository. Go to the [Monkeytype Repository](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
 
 <img width="1552" alt="Screenshot showing location of the fork button on GitHub." src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
