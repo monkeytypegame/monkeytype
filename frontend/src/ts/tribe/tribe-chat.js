@@ -1,7 +1,7 @@
-import * as Notifications from "./notifications";
+import * as Notifications from "../elements/notifications";
 import * as Tribe from "./tribe";
-import * as Misc from "./misc";
-import * as TestUI from "./test-ui";
+import * as Misc from "../utils/misc";
+import * as TestUI from "../test/test-ui";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;

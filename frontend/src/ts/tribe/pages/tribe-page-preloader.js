@@ -1,4 +1,4 @@
-import * as Tribe from "./tribe";
+import * as Tribe from "../tribe";
 
 export function updateIcon(iconName, spinning = false) {
   $(".pageTribe .tribePage.preloader .icon").html(

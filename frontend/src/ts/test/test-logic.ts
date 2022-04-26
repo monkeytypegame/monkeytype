@@ -1341,6 +1341,11 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   return <CompletedEvent>completedEvent;
 }
 
+let resolveTestSavePromise: (value: unknown) => void;
+const testSavePromise = new Promise((resolve) => {
+  resolveTestSavePromise = resolve;
+});
+
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;
   if (Config.mode == "zen" && TestInput.input.current.length != 0) {
@@ -1390,11 +1395,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const kps = TestInput.keypressPerSecond.slice(-5);
   let afkDetected = kps.every((second) => second.afk);
   if (TestInput.bailout) afkDetected = false;
-
-  let resolveTestSavePromise: (value: unknown) => void;
-  const testSavePromise = new Promise((resolve) => {
-    resolveTestSavePromise = resolve;
-  });
 
   let tooShort = false;
   let dontSave = false;

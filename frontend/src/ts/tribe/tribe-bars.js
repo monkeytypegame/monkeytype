@@ -1,6 +1,6 @@
 import * as Tribe from "./tribe";
-import Config from "./config";
-import * as TestTimer from "./test-timer";
+import Config from "../config";
+import * as SlowTimer from "../states/slow-timer";
 
 export function init(page) {
   let el;
@@ -108,7 +108,7 @@ export function update(page, userId) {
             ? user.progress.wpmProgress + "%"
             : user.progress.progress + "%",
       },
-      TestTimer.slowTimer ? 0 : 1000,
+      SlowTimer.get() ? 0 : 1000,
       "linear"
     );
 }
@@ -131,7 +131,7 @@ export function completeBar(page, userId) {
       {
         width: "100%",
       },
-      TestTimer.slowTimer ? 0 : 1000,
+      SlowTimer.get() ? 0 : 1000,
       "linear"
     );
 }

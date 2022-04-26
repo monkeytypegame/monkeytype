@@ -1,8 +1,8 @@
-import * as Notifications from "./notifications";
-import * as Tribe from "./tribe";
-import * as TribeRoomCodePopup from "./tribe-room-code-popup";
-import * as TribeBrowsePublicRoomsPopup from "./tribe-browse-public-rooms-popup";
-import Config from "./config";
+import * as Notifications from "../../elements/notifications";
+import * as Tribe from "../tribe";
+import * as TribeRoomCodePopup from "../../popups/tribe-room-code-popup";
+import * as TribeBrowsePublicRoomsPopup from "../../popups/tribe-browse-public-rooms-popup";
+import Config from "../../config";
 
 export let queues = [false, false, false, false];
 

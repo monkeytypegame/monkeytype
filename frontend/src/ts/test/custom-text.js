@@ -1,4 +1,4 @@
-import * as TribeConfig from "./tribe-config";
+import * as TribeConfig from "../tribe/tribe-config";
 
 // Rizwan TODO: This is a temporary file. Merge this in with custom-text.ts
 

@@ -1,6 +1,6 @@
-import * as Tribe from "./tribe";
-import * as TribeConfig from "./tribe-config";
-import * as Loader from "./loader";
+import * as Tribe from "../tribe/tribe";
+import * as TribeConfig from "../tribe/tribe-config";
+import * as Loader from "../elements/loader";
 
 function updateList(list) {
   if (list.length === 0) {

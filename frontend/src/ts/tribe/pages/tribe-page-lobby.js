@@ -1,12 +1,12 @@
-import * as Tribe from "./tribe";
-import * as Notifications from "./notifications";
-import * as TribeChat from "./tribe-chat";
-import * as CustomText from "./custom-text";
-import * as TribeConfig from "./tribe-config";
-import * as Commandline from "./commandline";
-import * as CommandlineLists from "./commandline-lists";
-import * as TribeUserList from "./tribe-user-list";
-import * as TribeButtons from "./tribe-buttons";
+import * as Tribe from "../tribe";
+import * as Notifications from "../../elements/notifications";
+import * as TribeChat from "../tribe-chat";
+import * as CustomText from "../../test/custom-text";
+import * as TribeConfig from "../tribe-config";
+import * as Commandline from "../../elements/commandline";
+import * as CommandlineLists from "../../elements/commandline-lists";
+import * as TribeUserList from "../tribe-user-list";
+import * as TribeButtons from "../tribe-buttons";
 
 export function reset() {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();

@@ -1,5 +1,4 @@
 import * as Tribe from "./tribe";
-import * as TribeStartRacePopup from "./tribe-start-race-popup";
 
 function showStartButton(page) {
   let elString = "";

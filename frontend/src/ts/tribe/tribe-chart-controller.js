@@ -1,7 +1,7 @@
 import Chart from "chart.js";
 import * as Tribe from "./tribe";
-import * as ThemeColors from "./theme-colors";
-import * as Notifications from "./notifications";
+import * as ThemeColors from "../elements/theme-colors";
+import * as Notifications from "../elements/notifications";
 
 let charts = {};
 
