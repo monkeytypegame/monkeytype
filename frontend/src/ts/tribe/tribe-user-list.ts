@@ -1,7 +1,7 @@
 import * as Tribe from "./tribe";
-import * as TribeUserSettingsPopup from "./tribe-user-settings-popup";
+import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
 
-export function reset(page) {
+export function reset(page: string): void {
   if (page === undefined) {
     $(".pageTribe .tribePage.lobby .userlist .list").empty();
     $(".pageTest #result #tribeResultBottom .userlist .list").empty();
@@ -12,18 +12,18 @@ export function reset(page) {
   }
 }
 
-export function update(page) {
+export function update(page: string): void {
   if (!page) {
     update("lobby");
     update("result");
     return;
   }
   reset(page);
-  let usersArray = [];
+  const usersArray = [];
   Object.keys(Tribe.room.users).forEach((userId) => {
     usersArray.push(Tribe.room.users[userId]);
   });
-  let sortedUsers = usersArray.sort((a, b) => b.points - a.points);
+  const sortedUsers = usersArray.sort((a, b) => b.points - a.points);
   sortedUsers.forEach((user) => {
     let icons = "";
     if (user.isTyping && !user.isFinished) {
@@ -43,7 +43,7 @@ export function update(page) {
     } else {
       pointsString = user.points + (user.points == 1 ? "pt" : "pts");
     }
-    let appendData = `
+    const appendData = `
     <div class='user ${user.id === Tribe.socket.id ? "me" : ""} ${
       user.isAfk ? "afk" : ""
     }'>
@@ -79,7 +79,7 @@ $(document).on(
   "click",
   ".pageTribe .lobby .userlist .list .user .userSettings, .pageTest #result #tribeResultBottom .userlist .list .user .userSettings",
   (e) => {
-    let userId = $(e.currentTarget).attr("userid");
+    const userId = $(e.currentTarget).attr("userid");
     TribeUserSettingsPopup.show(userId);
   }
 );
