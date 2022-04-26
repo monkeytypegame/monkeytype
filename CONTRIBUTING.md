@@ -26,7 +26,7 @@ While most contributions do not require you to set up the project, you will need
 
 ### Text Editor
 
-If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. To edit on the web, use GitHub's Visual Studio Code web editor. First, fork Monkeytype, then go to the `Code` tab of the repo and press <kbd>.</kbd>(the period/dot key). That will open up the repo in an online Visual Studio Code instance. When you are finished editing, go to the Source Control tab (<kbd>Ctrl/Cmd + Shift + G</kbd>), and click the `+` next to the files you have changed to stage them. Then, type a brief message summarizing the changes made in the commit, and commit your changes to the fork (<kbd>Ctrl/Cmd + Enter</kbd>). Finally, send a pull request to the Monkeytype repository when ready.
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. To edit on the web, use GitHub's Visual Studio Code web editor. First, fork Monkeytype, then go to the `Code` tab of the repo and press <kbd>.</kbd>(the period/dot key). That will open up the repo in an online Visual Studio Code instance. When you are finished editing, go to the Source Control tab (<kbd>Ctrl/Cmd + Shift + G</kbd>) and click the `+` next to the files you have changed to stage them. Then, type a brief message summarizing the changes made in the commit, and commit your changes to the fork (<kbd>Ctrl/Cmd + Enter</kbd>). Finally, send a pull request to the Monkeytype repository when ready.
 
 ### Git
 
