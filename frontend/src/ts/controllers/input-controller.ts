@@ -673,15 +673,7 @@ $(document).keydown(async (event) => {
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
-  const popups = document.querySelectorAll(".popupWrapper");
-
-  let popupVisible = false;
-  for (const popup of popups) {
-    if (!popup.classList.contains("hidden") === true) {
-      popupVisible = true;
-      break;
-    }
-  }
+  const popupVisible = Misc.isAnyPopupVisible();
 
   const allowTyping =
     pageTestActive &&
@@ -852,15 +844,7 @@ $("#wordsInput").on("input", (event) => {
     return;
   }
 
-  const popups = document.querySelectorAll(".popupWrapper");
-
-  let popupVisible = false;
-  for (const popup of popups) {
-    if (!popup.classList.contains("hidden") === true) {
-      popupVisible = true;
-      break;
-    }
-  }
+  const popupVisible = Misc.isAnyPopupVisible();
 
   if (popupVisible) return;
 

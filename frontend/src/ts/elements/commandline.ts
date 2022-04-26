@@ -8,6 +8,7 @@ import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
 import { Auth } from "../firebase";
+import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
 
@@ -396,15 +397,7 @@ $(document).ready(() => {
     ) {
       event.preventDefault();
 
-      const popups = document.querySelectorAll(".popupWrapper");
-
-      let popupVisible = false;
-      for (const popup of popups) {
-        if (!popup.classList.contains("hidden") === true) {
-          popupVisible = true;
-          break;
-        }
-      }
+      const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
 
