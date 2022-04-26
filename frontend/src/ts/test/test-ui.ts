@@ -169,7 +169,7 @@ export function showWords(): void {
   } else {
     if (Config.tapeMode !== "off") {
       let multiplier = 1;
-      if (Config.fontSize === "125") multiplier = 1.3;
+      if (Config.fontSize === "125") multiplier = 1.25;
       if (Config.fontSize === "15") multiplier = 1.45;
       if (Config.fontSize === "2") multiplier = 2;
       if (Config.fontSize === "3") multiplier = 3;
