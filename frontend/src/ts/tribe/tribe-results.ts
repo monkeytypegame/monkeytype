@@ -1,15 +1,15 @@
 import * as Tribe from "./tribe";
-import * as Misc from "./misc";
-import Config from "./config";
-import * as TestTimer from "./test-timer";
+import * as Misc from "../utils/misc";
+import Config from "../config";
+import * as SlowTimer from "../states/slow-timer";
 
-let initialised = {};
+const initialised: Record<string, boolean | object> = {};
 
-export async function send(result) {
+export async function send(result): Promise<void> {
   Tribe.socket.emit("room_result", { result });
 }
 
-export function reset(page) {
+export function reset(page?: string): void {
   if (page === undefined) {
     reset("result");
   } else if (page == "result") {
@@ -19,14 +19,14 @@ export function reset(page) {
   }
 }
 
-export function init(page) {
+export function init(page: string): void {
   if (page === "result") {
     reset(page);
 
-    let el = $(".pageTest #result #tribeResults table tbody");
+    const el = $(".pageTest #result #tribeResults table tbody");
 
     Object.keys(Tribe.room.users).forEach((userId) => {
-      let user = Tribe.room.users[userId];
+      const user = Tribe.room.users[userId];
       if (user.isAfk) return;
       el.append(`
         <tr class="user ${
@@ -87,12 +87,16 @@ export function init(page) {
   }
 }
 
-export function updateBar(page, userId, percentOverride) {
+export function updateBar(
+  page: string,
+  userId: string,
+  percentOverride: string
+): void {
   if (page === "result") {
-    let el = $(
+    const el = $(
       `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`
     );
-    let user = Tribe.room.users[userId];
+    const user = Tribe.room.users[userId];
     let percent =
       Config.mode === "time"
         ? user.progress.wpmProgress + "%"
@@ -104,20 +108,20 @@ export function updateBar(page, userId, percentOverride) {
       {
         width: percent,
       },
-      TestTimer.slowTimer ? 0 : 1000,
+      SlowTimer.get() ? 0 : 1000,
       "linear"
     );
   }
 }
 
-export function updatePositions(page, orderedList) {
-  let points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+export function updatePositions(page: string, orderedList): void {
+  const points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
   if (page === "result") {
     orderedList.forEach((user, index) => {
-      let userEl = $(
+      const userEl = $(
         `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`
       );
-      let string = Misc.getPositionString(index + 1);
+      const string = Misc.getPositionString(index + 1);
       userEl.find(".pos").text(string);
       userEl
         .find(".points")
@@ -130,11 +134,11 @@ export function updatePositions(page, orderedList) {
   }
 }
 
-export function updateMiniCrowns(page, miniCrowns) {
+export function updateMiniCrowns(page: string, miniCrowns): void {
   if (page === "result") {
     Object.keys(miniCrowns).forEach((crown) => {
-      let userId = miniCrowns[crown];
-      let userEl = $(
+      const userId = miniCrowns[crown];
+      const userEl = $(
         `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
       );
       userEl.find(`.${crown}`).append(`
@@ -146,9 +150,13 @@ export function updateMiniCrowns(page, miniCrowns) {
   }
 }
 
-export function showCrown(page, userId, isGlowing) {
+export function showCrown(
+  page: string,
+  userId: string,
+  isGlowing: boolean
+): void {
   if (page === "result") {
-    let userEl = $(
+    const userEl = $(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
     userEl.find(`.crown .icon`).removeClass("invisible");
@@ -160,12 +168,12 @@ export function showCrown(page, userId, isGlowing) {
   }
 }
 
-function updateUser(page, userId) {
+function updateUser(page: string, userId: string): void {
   if (page == "result") {
-    let userEl = $(
+    const userEl = $(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
-    let user = Tribe.room.users[userId];
+    const user = Tribe.room.users[userId];
     if (user.isFinished) {
       userEl.find(`.wpm .text`).text(user.result.wpm.toFixed(2));
       userEl.find(`.raw .text`).text(user.result.raw.toFixed(2));
@@ -179,7 +187,7 @@ function updateUser(page, userId) {
         `
       );
       let otherText = "-";
-      let resolve = user.result.resolve;
+      const resolve = user.result.resolve;
       if (resolve.afk) {
         otherText = "afk";
       } else if (resolve.repeated) {
@@ -198,21 +206,21 @@ function updateUser(page, userId) {
   }
 }
 
-export function update(page, userId) {
+export function update(page: string, userId: string): void {
   if (!initialised[page]) init(page);
   if (userId) {
     updateUser(page, userId);
   } else {
     Object.keys(Tribe.room.users).forEach((userId) => {
-      let u = Tribe.room.users[userId];
+      const u = Tribe.room.users[userId];
       if (u.isFinished) updateUser(page, userId);
     });
   }
 }
 
-export function fadeUser(page, userId) {
+export function fadeUser(page: string, userId: string): void {
   if (page == "result") {
-    let userEl = $(
+    const userEl = $(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
     userEl.addClass("faded");
@@ -222,18 +230,18 @@ export function fadeUser(page, userId) {
 let timerText = "Time left for everyone to finish";
 let timerVisible = false;
 
-export function updateTimerText(text) {
+export function updateTimerText(text: string): void {
   timerText = text;
 }
 
-export function updateTimer(value) {
+export function updateTimer(value: string): void {
   if (!timerVisible) showTimer();
   $(".pageTest #result #tribeResults .top").text(
     timerText + ": " + value + "s"
   );
 }
 
-function showTimer() {
+function showTimer(): void {
   timerVisible = true;
   $(".pageTest #result #tribeResults .top")
     .removeClass("invisible")
@@ -241,7 +249,7 @@ function showTimer() {
     .animate({ opacity: 1 }, 125);
 }
 
-export function hideTimer() {
+export function hideTimer(): void {
   timerVisible = false;
   $(".pageTest #result #tribeResults .top")
     .css({ opacity: 1 })
