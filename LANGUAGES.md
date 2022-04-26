@@ -13,7 +13,7 @@ First, you will have to fork the repository. Go to the [Monkeytype Repository](h
 
 ## Creating Languages
 
-Once you have forked the repository, you can add your new language. Create a new JSON file in `./frontend/static/languages/`, named as the language name and the number of words, for example: `language_1k.json`. If there are less than 1,000 words, name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
+After you have forked the repository, you can add your new language. Create a new JSON file in `./frontend/static/languages/`, named as the language name and the number of words, for example: `language_1k.json`. If there are less than 1,000 words, name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
 
 The contents of the file should be as follows:
 
