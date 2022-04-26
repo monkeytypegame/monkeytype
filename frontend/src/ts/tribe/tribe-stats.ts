@@ -2,61 +2,61 @@ import * as Tribe from "./tribe";
 
 export let inQueueNumbers = [0, 0, 0, 0];
 
-export function showLoading() {
+export function showLoading(): void {
   $(".pageTribe .menu .welcome .onlineStatsLoader").removeClass("hidden");
 }
 
-export function hideLoading() {
+export function hideLoading(): void {
   $(".pageTribe .menu .welcome .onlineStatsLoader").addClass("hidden");
 }
 
-export function updateQueueButtons() {
-  let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
+export function updateQueueButtons(): void {
+  const buttons = $(".pageTribe .menu .matchmaking .buttons .button");
   inQueueNumbers.forEach((num, index) => {
     $(buttons[index]).find(".subtext .waiting").text(`Waiting: ${num}`);
   });
 }
 
-export function incrementQueues(queues) {
+export function incrementQueues(queues): void {
   queues.forEach((queue) => {
     inQueueNumbers[queue]++;
   });
   updateQueueButtons();
 }
 
-export function decrementQueues(queues) {
+export function decrementQueues(queues): void {
   queues.forEach((queue) => {
     inQueueNumbers[queue]--;
   });
   updateQueueButtons();
 }
 
-export function setInQueue(newNum) {
-  inQueueNumbers = newNum;
+export function setInQueue(newQueNumArray: number[]): void {
+  inQueueNumbers = newQueNumArray;
   updateQueueButtons();
 }
 
-export function updateMenuButtons(races) {
+export function updateMenuButtons(races): void {
   let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
-  races.mm.forEach((num, index) => {
+  races.mm.forEach((num: number, index: number) => {
     $(buttons[index]).find(".subtext .races").text(`Races: ${num}`);
   });
 
   buttons = $(".pageTribe .menu .customRooms .buttons .button");
-  races.custom.forEach((num, index) => {
+  races.custom.forEach((num: number, index: number) => {
     $(buttons[index]).find(".subtext .rooms").text(`Rooms: ${num}`);
   });
 }
 
-let to = null;
+let to: NodeJS.Timeout | null = null;
 
-export function refresh() {
+export function refresh(): void {
   showLoading();
   Tribe.socket.emit(
     "system_stats",
     { pingStart: performance.now() },
     (data) => {
-      let ping = Math.round(performance.now() - data.pingStart);
+      const ping = Math.round(performance.now() - data.pingStart);
       hideLoading();
       setInQueue(data.stats[2]);
       updateMenuButtons(data.stats[1]);
