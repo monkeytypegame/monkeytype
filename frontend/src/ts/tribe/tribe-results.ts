@@ -206,7 +206,7 @@ function updateUser(page: string, userId: string): void {
   }
 }
 
-export function update(page: string, userId: string): void {
+export function update(page: string, userId?: string): void {
   if (!initialised[page]) init(page);
   if (userId) {
     updateUser(page, userId);

@@ -17,11 +17,11 @@ import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 import Ape from "../ape";
 // Rizwan TODO: These files should start working after the tribe files are converted to typescript
-import * as Tribe from "./tribe";
-import * as TribeResults from "./tribe-results";
-import * as TribeUserList from "./tribe-user-list";
-import * as TribeButtons from "./tribe-buttons";
-import * as TribeChat from "./tribe-chat";
+import * as Tribe from "../tribe/tribe";
+import * as TribeResults from "../tribe/tribe-results";
+import * as TribeUserList from "../tribe/tribe-user-list";
+import * as TribeButtons from "../tribe/tribe-buttons";
+import * as TribeChat from "../tribe/tribe-chat";
 
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
