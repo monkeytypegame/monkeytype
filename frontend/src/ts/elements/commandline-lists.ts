@@ -3281,6 +3281,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "importSettingsJSON",
       display: "Import settings JSON",
       icon: "fa-cog",
+      alias: "import config",
       input: true,
       exec: (input): void => {
         if (!input) return;
@@ -3301,6 +3302,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "exportSettingsJSON",
       display: "Export settings JSON",
       icon: "fa-cog",
+      alias: "export config",
       input: true,
       defaultValue: "",
     },
