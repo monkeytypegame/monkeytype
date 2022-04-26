@@ -75,8 +75,9 @@ export function updateState(newState) {
     TribeButtons.disableReadyButton("lobby");
     TribePageLobby.disableConfigButtons();
     TribePageLobby.disableNameVisibilityButtons();
-    if (getSelf().isReady || getSelf().isLeader)
+    if (getSelf().isReady || getSelf().isLeader) {
       Notifications.add("Race is starting...", 1, undefined, "Tribe");
+    }
   } else if (state === 11) {
     Object.keys(room.users).forEach((userId) => {
       let u = room.users[userId];
@@ -173,7 +174,7 @@ export function initRace() {
 }
 
 socket.on("connect", async (e) => {
-  let versionCheck = await new Promise((resolve, reject) => {
+  let versionCheck = await new Promise((resolve, _reject) => {
     socket.emit(
       "system_version_check",
       { version: expectedVersion },
@@ -228,8 +229,9 @@ $(".tribechangename").click((e) => {
 
 socket.on("disconnect", (e) => {
   updateState(-1);
-  if (!$(".pageTribe").hasClass("active"))
+  if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Disconnected", -1, undefined, "Tribe");
+  }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Disconnected");
@@ -240,8 +242,9 @@ socket.on("disconnect", (e) => {
 socket.on("connect_failed", (e) => {
   updateState(-1);
   console.error(e);
-  if (!$(".pageTribe").hasClass("active"))
+  if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Connection failed", -1, undefined, "Tribe");
+  }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
@@ -252,8 +255,9 @@ socket.on("connect_failed", (e) => {
 socket.on("connect_error", (e) => {
   updateState(-1);
   console.error(e);
-  if (!$(".pageTribe").hasClass("active"))
+  if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Connection error", -1, undefined, "Tribe");
+  }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection error");
@@ -439,8 +443,9 @@ socket.on("room_countdown", (e) => {
 socket.on("room_users_update", (e) => {
   Object.keys(e).forEach((userId) => {
     let user = e[userId];
-    if (user.isTyping !== undefined)
+    if (user.isTyping !== undefined) {
       room.users[userId].isTyping = user.isTyping;
+    }
     if (user.isAfk !== undefined) room.users[userId].isAfk = user.isAfk;
     if (user.isReady !== undefined) room.users[userId].isReady = user.isReady;
   });
@@ -565,8 +570,9 @@ socket.on("room_final_positions", (e) => {
     isGlowing = true;
   }
 
-  if (e.sorted[0]?.id)
+  if (e.sorted[0]?.id) {
     TribeResults.showCrown("result", e.sorted[0]?.id, isGlowing);
+  }
 
   if (e?.sorted[0]?.id === socket.id) {
     TribeSound.play("finish_win");
