@@ -2,21 +2,25 @@ import * as Tribe from "./tribe";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 
-export function init(page) {
-  let el;
+export function init(page: string): void {
+  let el: JQuery<HTMLElement> | undefined;
+
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
-    el = $(".pageTribe .tribeBars");
+    el = $(".pageTribe .lobby .tribeBars");
   }
-  let room = Tribe.room;
-  el.empty();
+
+  const room = Tribe.room;
+  if (el) {
+    el.empty();
+  }
   Object.keys(room.users).forEach((userId) => {
     if (userId === Tribe.socket.id) return;
-    let user = room.users[userId];
+    const user = room.users[userId];
     let me = false;
     if (userId === Tribe.socket.id) me = true;
-    if (user.isTyping) {
+    if (user.isTyping && el) {
       el.append(`
       <tr class="player ${me ? "me" : ""}" id="${userId}">
         <td class="name">${user.name}</td>
@@ -33,8 +37,8 @@ export function init(page) {
       `);
     }
   });
-  let self = Tribe.getSelf();
-  if (self.isTyping) {
+  const self = Tribe.getSelf();
+  if (self.isTyping && el) {
     el.append(`
       <tr class="player me" id="${self.id}">
         <td class="name">${self.name}</td>
@@ -52,7 +56,7 @@ export function init(page) {
   }
 }
 
-export function show(page) {
+export function show(page: string): void {
   if (page === "test") {
     $(".pageTest #typingTest .tribeBars").removeClass("hidden");
   } else if (page === "tribe") {
@@ -60,7 +64,7 @@ export function show(page) {
   }
 }
 
-export function hide(page) {
+export function hide(page: string): void {
   if (page === undefined) {
     hide("test");
     hide("tribe");
@@ -71,7 +75,7 @@ export function hide(page) {
   }
 }
 
-export function reset(page) {
+export function reset(page: string): void {
   if (page === undefined) {
     reset("test");
     reset("tribe");
@@ -82,19 +86,24 @@ export function reset(page) {
   }
 }
 
-export function update(page, userId) {
+export function update(page: string, userId: string): void {
   if (page === undefined) {
     update("test", userId);
     update("tribe", userId);
     return;
   }
-  let el;
+  let el: JQuery<HTMLElement> | undefined;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
     el = $(".pageTribe .tribeBars");
   }
-  let user = Tribe.room.users[userId];
+  const user = Tribe.room.users[userId];
+
+  if (!el) {
+    return;
+  }
+
   el.find(`.player[id=${userId}] .wpm`).text(Math.round(user.progress.wpm));
   el.find(`.player[id=${userId}] .acc`).text(
     Math.floor(user.progress.acc) + "%"
@@ -113,18 +122,22 @@ export function update(page, userId) {
     );
 }
 
-export function completeBar(page, userId) {
+export function completeBar(page: string, userId: string): void {
   if (page === undefined) {
     completeBar("test", userId);
     completeBar("tribe", userId);
     return;
   }
-  let el;
+  let el: JQuery<HTMLElement> | undefined;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
     el = $(".pageTribe .tribeBars");
   }
+  if (!el) {
+    return;
+  }
+
   el.find(`.player[id=${userId}] .bar`)
     .stop(true, false)
     .animate(
@@ -136,22 +149,31 @@ export function completeBar(page, userId) {
     );
 }
 
-export function fadeUser(page, userId) {
+export function fadeUser(page: string, userId: string): void {
   if (page === undefined) {
     fadeUser("test", userId);
     fadeUser("tribe", userId);
     return;
   }
-  let el;
+  let el: JQuery<HTMLElement> | undefined;
   if (page === "test") {
     el = $(".pageTest #typingTest .tribeBars");
   } else if (page === "tribe") {
     el = $(".pageTribe .tribeBars");
   }
+  if (!el) {
+    return;
+  }
+
   el.find(`.player[id=${userId}]`).addClass("faded");
 }
 
-export function sendUpdate(wpm, raw, acc, progress) {
+export function progresssendUpdate(
+  wpm: number,
+  raw: number,
+  acc: number,
+  progress: number
+): void {
   Tribe.socket.emit("room_progress_update", {
     wpm: wpm,
     raw: raw,
