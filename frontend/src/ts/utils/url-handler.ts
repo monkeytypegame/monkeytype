@@ -6,6 +6,7 @@ import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
+import * as Tribe from "../tribe/tribe";
 
 export function loadCustomThemeFromUrl(): void {
   const getValue = Misc.findGetParameter("customTheme");
@@ -133,4 +134,11 @@ export function loadTestSettingsFromUrl(): void {
       10
     );
   }
+}
+
+export function loadTribeAutoJoinFromUrl(): void {
+  if (window.location.pathname !== "/tribe") return;
+  const getValue = Misc.findGetParameter("code");
+  if (getValue === null) return;
+  Tribe.setAutoJoin(getValue);
 }
