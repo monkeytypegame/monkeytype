@@ -46,7 +46,7 @@ $("#tribeUserSettingsPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#tribeUserSettingsPopup .button.banButton").on("click", (e) => {
+$("#tribeUserSettingsPopup .button.banButton").on("click", () => {
   const userId = $("#tribeUserSettingsPopup").attr("userid");
   Tribe.socket.emit("room_ban_user", {
     userId: userId,
@@ -54,7 +54,7 @@ $("#tribeUserSettingsPopup .button.banButton").on("click", (e) => {
   hide();
 });
 
-$("#tribeUserSettingsPopup .button.giveLeaderButton").on("click", (e) => {
+$("#tribeUserSettingsPopup .button.giveLeaderButton").on("click", () => {
   const userId = $("#tribeUserSettingsPopup").attr("userid");
   Tribe.socket.emit("room_give_leader", {
     userId: userId,
