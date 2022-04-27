@@ -7,8 +7,8 @@ import * as CustomText from "../test/custom-text";
 import * as TribeButtons from "./tribe-buttons";
 import * as Tribe from "./tribe";
 
-export function getArray(config: MonkeyTypes.Config): string[] {
-  const ret = [];
+export function getArray(config: MonkeyTypes.TribeConfig): string[] {
+  const ret: string[] = [];
 
   if (config["mode"] === "quote") {
     let quoteLengthString = "";
@@ -36,7 +36,7 @@ export function getArray(config: MonkeyTypes.Config): string[] {
     ret.push("quote");
   } else {
     ret.push(config["mode"]);
-    ret.push(config["mode2"]);
+    ret.push(config["mode2"] as string); // Rizwan TODO: Ask mio about this
   }
 
   if (config["difficulty"] !== "normal") ret.push(config["difficulty"]);
@@ -58,7 +58,7 @@ export function getArray(config: MonkeyTypes.Config): string[] {
   return ret;
 }
 
-export function apply(config: MonkeyTypes.Config): void {
+export function apply(config: MonkeyTypes.TribeConfig): void {
   UpdateConfig.setMode(config.mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2, true, true);

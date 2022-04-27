@@ -6,27 +6,26 @@ import * as TestUI from "../test/test-ui";
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
 
-export function reset() {
+export function reset(): void {
   $(".pageTribe .lobby .chat .messages").empty();
   $(".pageTest #result #tribeResultBottom .chat .messages").empty();
 }
 
-function sendChattingUpdate(value) {
+function sendChattingUpdate(bool: boolean): void {
   Tribe.socket.emit("room_chatting_update", {
-    isChatting: value,
+    isChatting: bool,
   });
 }
 
-function limitChatMessages() {
-  let messages1 = $(".pageTribe .lobby .chat .messages .message");
-  let messages2 = $(".pageTest #result #tribeResultBottom .chat .messages");
-
-  let limit = 100;
+function limitChatMessages(): void {
+  const messages1 = $(".pageTribe .lobby .chat .messages .message");
+  const messages2 = $(".pageTest #result #tribeResultBottom .chat .messages");
+  const limit = 100;
 
   //they should be in sync so it doesnt matter if i check one length
-  if (messages1 <= limit) return;
+  if (messages1.length <= limit) return;
 
-  let del = messages1.length - limit;
+  const del = messages1.length - limit;
 
   for (let i = 0; i < del; i++) {
     $(messages1[i]).remove();
@@ -34,9 +33,9 @@ function limitChatMessages() {
   }
 }
 
-export function scrollChat() {
-  let chatEl = $(".pageTribe .lobby .chat .messages")[0];
-  let chatEl2 = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
+export function scrollChat(): void {
+  const chatEl = $(".pageTribe .lobby .chat .messages")[0];
+  const chatEl2 = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
 
   if (shouldScrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;
@@ -45,10 +44,10 @@ export function scrollChat() {
   }
 }
 
-export function updateIsTyping() {
+export function updateIsTyping(): void {
   let string = "";
 
-  let names = [];
+  const names: string[] = [];
   Object.keys(Tribe.room.users).forEach((userId) => {
     if (Tribe.room.users[userId].isChatting && userId !== Tribe.socket.id) {
       names.push(Tribe.room.users[userId].name);
@@ -79,7 +78,7 @@ export function updateIsTyping() {
   );
 }
 
-export function appendMessage(data) {
+export function appendMessage(data): void {
   let cls = "message";
   let author = "";
   if (data.isSystem) {
@@ -113,7 +112,7 @@ export function appendMessage(data) {
   scrollChat();
 }
 
-function sendMessage(msg) {
+function sendMessage(msg: string): void {
   if (msg === "") return;
   if (msg.length > 512) {
     Notifications.add("Message cannot be longer than 512 characters.", 0);
@@ -129,21 +128,24 @@ function sendMessage(msg) {
   $(".pageTest #result #tribeResultBottom .chat .input input").val("");
 }
 
-$(".pageTribe .tribePage.lobby .chat .input input").keyup((e) => {
+$(".pageTribe .tribePage.lobby .chat .input input").on("keyup", (e) => {
   if (e.key === "Enter") {
-    let msg = $(".pageTribe .lobby .chat .input input").val();
-    sendMessage(msg);
+    const msg = $(".pageTribe .lobby .chat .input input").val();
+    sendMessage(msg as string);
   }
 });
 
-$(".pageTest #result #tribeResultBottom .chat .input input").keyup((e) => {
-  if (e.key === "Enter") {
-    let msg = $(
-      ".pageTest #result #tribeResultBottom .chat .input input"
-    ).val();
-    sendMessage(msg);
+$(".pageTest #result #tribeResultBottom .chat .input input").on(
+  "keyup",
+  (e) => {
+    if (e.key === "Enter") {
+      const msg = $(
+        ".pageTest #result #tribeResultBottom .chat .input input"
+      ).val();
+      sendMessage(msg as string);
+    }
   }
-});
+);
 
 $(document).keydown((e) => {
   if (Tribe.state === 5) {
@@ -165,10 +167,12 @@ $(document).keydown((e) => {
   }
 });
 
-$(".pageTribe .tribePage.lobby .chat .input input").on("input", (e) => {
-  let val = $(".pageTribe .tribePage.lobby .chat .input input").val();
+$(".pageTribe .tribePage.lobby .chat .input input").on("input", (_e) => {
+  const val = $(
+    ".pageTribe .tribePage.lobby .chat .input input"
+  ).val() as string;
   $(".pageTest #result #tribeResultBottom .chat .input input").val(val);
-  let vallen = val.length;
+  const vallen = val.length;
   if (vallen === 1) {
     sendChattingUpdate(true);
   } else if (vallen === 0) {

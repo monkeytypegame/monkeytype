@@ -40,13 +40,13 @@ let settings = {
         type: "scatter",
         pointStyle: "crossRot",
         radius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
+          const index = context.dataIndex;
+          const value = context.dataset.data[index];
           return value <= 0 ? 0 : 2;
         },
         pointHoverRadius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
+          const index = context.dataIndex;
+          const value = context.dataset.data[index];
           return value <= 0 ? 0 : 3;
         },
       },
@@ -69,7 +69,7 @@ let settings = {
       enabled: false,
       custom: function (tooltipModel) {
         // Tooltip Element
-        var tooltipEl = document.getElementById("tribeMiniChartCustomTooltip");
+        let tooltipEl = document.getElementById("tribeMiniChartCustomTooltip");
 
         // Create element on first render
         if (!tooltipEl) {
@@ -99,17 +99,17 @@ let settings = {
 
         // Set Text
         if (tooltipModel.body) {
-          var titleLines = tooltipModel.title || [];
-          var bodyLines = tooltipModel.body.map(getBody);
+          const titleLines = tooltipModel.title || [];
+          const bodyLines = tooltipModel.body.map(getBody);
 
-          var innerHtml = "";
+          let innerHtml = "";
 
           titleLines.forEach(function (title) {
             innerHtml += "<div>" + title + "</div>";
           });
           // innerHtml += '</thead><tbody>';
 
-          bodyLines.forEach(function (body, i) {
+          bodyLines.forEach(function (body, _i) {
             // var colors = tooltipModel.labelColors[i];
             // var style = 'background:' + colors.backgroundColor;
             // style += '; border-color:' + colors.borderColor;
@@ -120,12 +120,12 @@ let settings = {
           });
           // innerHtml += '</tbody>';
 
-          var tableRoot = tooltipEl.querySelector("div");
+          const tableRoot = tooltipEl.querySelector("div");
           tableRoot.innerHTML = innerHtml;
         }
 
         // `this` will be the overall tooltip
-        var position = this._chart.canvas.getBoundingClientRect();
+        const position = this._chart.canvas.getBoundingClientRect();
 
         // Display, position, and set styles for font
         tooltipEl.style.opacity = 1;

@@ -1,6 +1,6 @@
 import * as Tribe from "./tribe";
 
-function showStartButton(page) {
+function showStartButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
@@ -12,7 +12,7 @@ function showStartButton(page) {
   $(elString).removeClass("hidden");
 }
 
-function hideStartButton(page) {
+function hideStartButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
@@ -24,7 +24,7 @@ function hideStartButton(page) {
   $(elString).addClass("hidden");
 }
 
-export function disableStartButton(page) {
+export function disableStartButton(page: string): void {
   if (!page) {
     disableStartButton("lobby");
     disableStartButton("result");
@@ -42,7 +42,7 @@ export function disableStartButton(page) {
   $(elString).addClass("disabled");
 }
 
-export function enableStartButton(page) {
+export function enableStartButton(page: string): void {
   if (!page) {
     enableStartButton("lobby");
     enableStartButton("result");
@@ -60,7 +60,7 @@ export function enableStartButton(page) {
   $(elString).removeClass("disabled");
 }
 
-function showReadyButton(page) {
+function showReadyButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
@@ -71,7 +71,7 @@ function showReadyButton(page) {
   $(elString).removeClass("hidden");
 }
 
-function hideReadyButton(page) {
+function hideReadyButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
@@ -82,7 +82,7 @@ function hideReadyButton(page) {
   $(elString).addClass("hidden");
 }
 
-export function disableReadyButton(page) {
+export function disableReadyButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
@@ -93,7 +93,7 @@ export function disableReadyButton(page) {
   $(elString).addClass("disabled");
 }
 
-export function enableReadyButton(page) {
+export function enableReadyButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
@@ -104,7 +104,7 @@ export function enableReadyButton(page) {
   $(elString).removeClass("disabled");
 }
 
-function showAfkButton(page) {
+function showAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton";
@@ -114,7 +114,7 @@ function showAfkButton(page) {
   $(elString).removeClass("hidden");
 }
 
-function hideAfkButton(page) {
+function hideAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton";
@@ -124,7 +124,7 @@ function hideAfkButton(page) {
   $(elString).addClass("hidden");
 }
 
-export function disableAfkButton(page) {
+export function disableAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton";
@@ -134,7 +134,7 @@ export function disableAfkButton(page) {
   $(elString).addClass("disabled");
 }
 
-export function enableAfkButton(page) {
+export function enableAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton";
@@ -144,7 +144,7 @@ export function enableAfkButton(page) {
   $(elString).removeClass("disabled");
 }
 
-export function deactivateAfkButton(page) {
+export function deactivateAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton";
@@ -154,7 +154,7 @@ export function deactivateAfkButton(page) {
   $(elString).removeClass("active");
 }
 
-export function activateAfkButton(page) {
+export function activateAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .userAfkButton";
@@ -164,7 +164,7 @@ export function activateAfkButton(page) {
   $(elString).addClass("active");
 }
 
-export function reset() {
+export function reset(): void {
   $("#result .bottom .buttons div").addClass("hidden");
   $("#result #nextTestButton").removeClass("hidden");
   $("#result #restartTestButtonWithSameWordset").removeClass("hidden");
@@ -174,7 +174,7 @@ export function reset() {
   $("#result #saveScreenshotButton").removeClass("hidden");
 }
 
-export function update(page) {
+export function update(page: string): void {
   if (!page) {
     update("lobby");
     update("result");
@@ -224,29 +224,29 @@ export function update(page) {
 }
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
-  .pageTest #tribeResultBottom .buttons .startTestButton`).click((e) => {
+  .pageTest #tribeResultBottom .buttons .startTestButton`).on("click", (_e) => {
   Tribe.initRace();
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
-  .pageTest #tribeResultBottom .buttons .userAfkButton`).click((e) => {
-  let self = Tribe.getSelf();
+  .pageTest #tribeResultBottom .buttons .userAfkButton`).on("click", (_e) => {
+  const self = Tribe.getSelf();
   Tribe.socket.emit("room_afk_update", { isAfk: !self.isAfk });
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton,
-.pageTest #tribeResultBottom .buttons .leaveRoomButton`).click((e) => {
+.pageTest #tribeResultBottom .buttons .leaveRoomButton`).on("click", (_e) => {
   Tribe.socket.emit(`room_leave`);
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
 .pageTest #tribeResultBottom .buttons .userReadyButton,
-.pageTest #result .bottom .buttons #readyButton`).click((e) => {
+.pageTest #result .bottom .buttons #readyButton`).on("click", (_e) => {
   Tribe.socket.emit(`room_ready_update`);
 });
 
 $(
   `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`
-).click((e) => {
+).on("click", (_e) => {
   Tribe.socket.emit("room_back_to_lobby");
 });
