@@ -214,9 +214,6 @@ function handleSpace(): void {
     }
     Replay.addReplayEvent("submitErrorWord");
   }
-  if (Config.tapeMode !== "off") {
-    TestUI.scrollTape();
-  }
 
   let wordLength;
   if (Config.mode === "zen") {
@@ -502,10 +499,6 @@ function handleChar(char: string, charIndex: number): void {
       charIndex < TestWords.words.getCurrent().length + 20)
   ) {
     TestInput.input.current = resultingWord;
-  }
-
-  if (Config.tapeMode !== "off") {
-    TestUI.scrollTape();
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
@@ -815,6 +808,9 @@ $(document).keydown(async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
     }
   }
 });
@@ -891,6 +887,9 @@ $("#wordsInput").on("input", (event) => {
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
+  if (Config.tapeMode !== "off") {
+    TestUI.scrollTape();
+  }
 
   // force caret at end of input
   // doing it on next cycle because Chromium on Android won't let me edit
