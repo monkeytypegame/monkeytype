@@ -1,4 +1,4 @@
-import * as Tribe from "./tribe";
+import * as Tribe from "../tribe/tribe";
 
 export function show(): void {
   if ($("#tribeStartRacePopupWrapper").hasClass("hidden")) {
