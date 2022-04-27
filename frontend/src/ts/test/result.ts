@@ -28,6 +28,10 @@ let useUnsmoothedRaw = false;
 let quoteLang = "";
 let quoteId = "";
 
+export function getResult(): MonkeyTypes.Result<MonkeyTypes.Mode> {
+  return result;
+}
+
 export function toggleUnsmoothedRaw(): void {
   useUnsmoothedRaw = !useUnsmoothedRaw;
   Notifications.add(useUnsmoothedRaw ? "on" : "off", 1);

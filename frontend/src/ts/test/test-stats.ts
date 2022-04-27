@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { getResult } from "./result";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 
@@ -32,6 +33,7 @@ type KeypressTimings = {
 };
 
 type DebugStats = {
+  lastResult?: MonkeyTypes.Result<MonkeyTypes.Mode>;
   start: number;
   end: number;
   wpmHistory: number[];
@@ -92,6 +94,7 @@ export function setLastTestWpm(wpm: number): void {
 
 export function getStats(): DebugStats {
   const ret: DebugStats = {
+    lastResult: getResult(),
     start,
     end,
     wpmHistory: TestInput.wpmHistory,
