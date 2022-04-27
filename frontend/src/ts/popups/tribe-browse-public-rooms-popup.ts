@@ -2,7 +2,8 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeConfig from "../tribe/tribe-config";
 import * as Loader from "../elements/loader";
 
-function updateList(list) {
+function updateList(list: any): void {
+  // TODO: Confirm type from miodec
   if (list.length === 0) {
     $("#tribeBrowsePublicRoomsPopup .error").removeClass("hidden");
     $("#tribeBrowsePublicRoomsPopup .list").addClass("hidden");
@@ -12,8 +13,8 @@ function updateList(list) {
   $("#tribeBrowsePublicRoomsPopup .list").removeClass("hidden");
   $("#tribeBrowsePublicRoomsPopup .list").html("");
   for (let i = 0; i < list.length; i++) {
-    let room = list[i];
-    let html = `
+    const room = list[i];
+    const html = `
     <div class="room" id="${room.id}">
       <div class="name">
         <div class="title">name</div>
@@ -40,7 +41,7 @@ function updateList(list) {
   }
 }
 
-export function show() {
+export function show(): void {
   Loader.show();
   Tribe.socket.emit(
     "get_public_rooms",
@@ -48,7 +49,8 @@ export function show() {
       page: 0,
       search: "",
     },
-    (e) => {
+    (e: any) => {
+      // TODO: Confirm type from miodec
       Loader.hide();
       updateList(e.rooms);
     }
@@ -65,7 +67,7 @@ export function show() {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#tribeBrowsePublicRoomsPopupWrapper").hasClass("hidden")) {
     $("#tribeBrowsePublicRoomsPopupWrapper")
       .stop(true, true)
@@ -75,7 +77,7 @@ function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#tribeBrowsePublicRoomsPopupWrapper").addClass("hidden");
         }
       );
@@ -83,12 +85,12 @@ function hide() {
 }
 
 $(document).on("click", "#tribeBrowsePublicRoomsPopup .room", (e) => {
-  let roomId = $(e.currentTarget).attr("id");
+  const roomId = $(e.currentTarget).attr("id");
   Tribe.joinRoom(roomId, true);
   hide();
 });
 
-$("#tribeBrowsePublicRoomsPopupWrapper").click((e) => {
+$("#tribeBrowsePublicRoomsPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "tribeBrowsePublicRoomsPopupWrapper") {
     hide();
   }

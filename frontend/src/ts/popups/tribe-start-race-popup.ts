@@ -1,17 +1,18 @@
 import * as Tribe from "./tribe";
-import * as Notifications from "./notifications";
 
-export function show() {
+export function show(): void {
   if ($("#tribeStartRacePopupWrapper").hasClass("hidden")) {
     $("#tribeStartRacePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {});
+      .animate({ opacity: 1 }, 125, () => {
+        /* noop */
+      });
   }
 }
 
-export function hide() {
+export function hide(): void {
   if (!$("#tribeStartRacePopupWrapper").hasClass("hidden")) {
     $("#tribeStartRacePopupWrapper")
       .stop(true, true)
@@ -21,20 +22,20 @@ export function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#tribeStartRacePopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-$("#tribeStartRacePopupWrapper").click((e) => {
+$("#tribeStartRacePopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "tribeStartRacePopupWrapper") {
     hide();
   }
 });
 
-$("#tribeStartRacePopup .button").click((e) => {
+$("#tribeStartRacePopup .button").on("click", () => {
   Tribe.socket.emit("room_init_race");
   hide();
 });

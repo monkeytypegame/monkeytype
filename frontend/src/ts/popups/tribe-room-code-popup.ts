@@ -1,7 +1,7 @@
-import * as Tribe from "./tribe";
-import * as Notifications from "./notifications";
+import * as Tribe from "../tribe/tribe";
+import * as Notifications from "../elements/notifications";
 
-export function show() {
+export function show(): void {
   if ($("#tribeRoomCodePopupWrapper").hasClass("hidden")) {
     $("#tribeRoomCodePopupWrapper")
       .stop(true, true)
@@ -14,7 +14,7 @@ export function show() {
   }
 }
 
-function hide() {
+function hide(): void {
   if (!$("#tribeRoomCodePopupWrapper").hasClass("hidden")) {
     $("#tribeRoomCodePopupWrapper")
       .stop(true, true)
@@ -24,14 +24,14 @@ function hide() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#tribeRoomCodePopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-$("#tribeRoomCodePopup input").keydown((e) => {
+$("#tribeRoomCodePopup input").on("keydown", (e) => {
   if (
     (e.key.length == 1 &&
       !e.ctrlKey &&
@@ -43,7 +43,7 @@ $("#tribeRoomCodePopup input").keydown((e) => {
       !e.metaKey &&
       !e.shiftKey &&
       /[0-9a-fA-F]/.test(e.key) &&
-      $("#tribeRoomCodePopup input").val().length >= 6)
+      ($("#tribeRoomCodePopup input").val() as string).length >= 6)
   ) {
     e.preventDefault();
   } else if (e.key === "Enter") {
@@ -52,25 +52,25 @@ $("#tribeRoomCodePopup input").keydown((e) => {
   }
 });
 
-$("#tribeRoomCodePopup .button").click((e) => {
+$("#tribeRoomCodePopup .button").on("click", () => {
   Tribe.joinRoom($("#tribeRoomCodePopup input").val());
   hide();
 });
 
-$("#tribeRoomCodePopup .icon-button").click(async (e) => {
+$("#tribeRoomCodePopup .icon-button").on("click", async () => {
   try {
-    let text = await navigator.clipboard.readText();
+    const text = await navigator.clipboard.readText();
     Tribe.joinRoom(text);
     hide();
   } catch (e) {
     Notifications.add(
-      "Something went wrong when trying to paste: " + e.message,
+      "Something went wrong when trying to paste: " + (e as Error).message,
       -1
     );
   }
 });
 
-$("#tribeRoomCodePopupWrapper").click((e) => {
+$("#tribeRoomCodePopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "tribeRoomCodePopupWrapper") {
     hide();
   }
