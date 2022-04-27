@@ -1,5 +1,5 @@
 declare namespace TribeTypes {
-  interface SystemStatsReturn {
+  interface SystemStats {
     pingStart: number;
     stats: [
       number, // online users
