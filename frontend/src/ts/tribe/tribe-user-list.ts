@@ -79,7 +79,7 @@ $(document).on(
   "click",
   ".pageTribe .lobby .userlist .list .user .userSettings, .pageTest #result #tribeResultBottom .userlist .list .user .userSettings",
   (e) => {
-    const userId = $(e.currentTarget).attr("userid");
+    const userId = $(e.currentTarget).attr("userid") as string;
     TribeUserSettingsPopup.show(userId);
   }
 );
