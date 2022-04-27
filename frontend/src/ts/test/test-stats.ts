@@ -279,11 +279,12 @@ export function setLastSecondNotRound(): void {
 
 export function calculateBurst(): number {
   const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
-  let wordLength;
+  let wordLength: number;
   wordLength = TestInput.input.current.length;
   if (wordLength == 0) {
-    wordLength = TestInput.input.getHistoryLast().length;
+    wordLength = TestInput.input.getHistoryLast()?.length ?? 0;
   }
+  if (wordLength == 0) return 0;
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
