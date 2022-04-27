@@ -6,7 +6,6 @@
     <title>Email Handler | Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
     <link rel="stylesheet" href="css/balloon.css" />
-    <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
@@ -18,6 +17,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>" />
+    <% } %>
     <meta name="name" content="Monkeytype" />
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
     <meta

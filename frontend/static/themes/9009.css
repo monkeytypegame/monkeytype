@@ -3,6 +3,7 @@
   --main-color: #080909;
   --caret-color: #7fa480;
   --sub-color: #99947f;
+  --sub-alt-color: #d3cfc1;
   --text-color: #080909;
   --error-color: #c87e74;
   --colorful-error-color: #a56961;
@@ -27,14 +28,14 @@ key {
   background-color: var(--main-color);
 }
 
-#menu .icon-button {
+#menu .text-button {
   color: var(--main-color);
 }
 
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   color: var(--error-color);
 }
 
-#menu .icon-button:nth-child(4) {
+#menu .text-button:nth-child(4) {
   color: var(--caret-color);
 }

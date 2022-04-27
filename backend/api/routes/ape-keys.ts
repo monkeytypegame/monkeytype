@@ -7,7 +7,7 @@ import {
   validateRequest,
 } from "../../middlewares/api-utils";
 import { authenticateRequest } from "../../middlewares/auth";
-import ApeKeysController from "../controllers/ape-keys";
+import * as ApeKeyController from "../controllers/ape-key";
 import * as RateLimit from "../../middlewares/rate-limit";
 
 const apeKeyNameSchema = joi
@@ -43,7 +43,7 @@ router.get(
   RateLimit.apeKeysGet,
   authenticateRequest(),
   checkIfUserCanManageApeKeys,
-  asyncHandler(ApeKeysController.getApeKeys)
+  asyncHandler(ApeKeyController.getApeKeys)
 );
 
 router.post(
@@ -57,7 +57,7 @@ router.post(
       enabled: joi.boolean().required(),
     },
   }),
-  asyncHandler(ApeKeysController.generateApeKey)
+  asyncHandler(ApeKeyController.generateApeKey)
 );
 
 router.patch(
@@ -74,7 +74,7 @@ router.patch(
       enabled: joi.boolean(),
     },
   }),
-  asyncHandler(ApeKeysController.editApeKey)
+  asyncHandler(ApeKeyController.editApeKey)
 );
 
 router.delete(
@@ -87,7 +87,7 @@ router.delete(
       apeKeyId: joi.string().required(),
     },
   }),
-  asyncHandler(ApeKeysController.deleteApeKey)
+  asyncHandler(ApeKeyController.deleteApeKey)
 );
 
 export default router;

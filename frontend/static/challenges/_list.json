@@ -246,19 +246,34 @@
     "name": "inAGalaxyFarFarAway",
     "display": "In a galaxy far far away",
     "type": "script",
-    "parameters": ["episode4.txt",null,"space_balls"]
+    "parameters": ["episode4.txt",null,"space_balls"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "whosYourDaddy",
     "display": "Who's your daddy?",
     "type": "script",
-    "parameters": ["episode5.txt",null,"space_balls"]
+    "parameters": ["episode5.txt",null,"space_balls"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "itsATrap",
     "display": "It's a trap!",
     "type": "script",
-    "parameters": ["episode6.txt",null,"space_balls"]
+    "parameters": ["episode6.txt",null,"space_balls"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "jolly",
@@ -399,7 +414,12 @@
     "name": "mnemonist",
     "display": "Mnemonist",
     "type": "funbox",
-    "parameters": ["memory","words",25,"master"]
+    "parameters": ["memory","words",25,"master"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "earfquake",
@@ -461,6 +481,9 @@
       },
       "funbox": {
         "exact": "read_ahead"
+      },
+      "config": {
+        "tapeMode": "off"
       }
     }
   }
@@ -479,6 +502,9 @@
       },
       "funbox": {
         "exact": "read_ahead_hard"
+      },
+      "config": {
+        "tapeMode": "off"
       }
     }
   }

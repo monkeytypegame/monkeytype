@@ -5,6 +5,7 @@
   --text-color: #dde5ed;
   --error-color: #fd77d7;
   --sub-color: #676e8a;
+  --sub-alt-color: #1e1d2f;
   --error-color: #ff5869;
   --error-extra-color: #b03c47;
   --colorful-error-color: #ff5869;
@@ -72,7 +73,7 @@
   align-content: right;
 }
 
-#top.focus #menu .icon-button,
+#top.focus #menu .text-button,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: var(--sub-color);
@@ -101,32 +102,32 @@
   gap: 0.5rem;
 }
 
-#menu .icon-button {
+#menu .text-button {
   border-radius: 10rem i !important;
   color: var(--bg-color);
   transition: 0.5s;
 }
 
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   background: #ab92e1;
 }
 
-#menu .icon-button:nth-child(2) {
+#menu .text-button:nth-child(2) {
   background: #f3ea5d;
 }
 
-#menu .icon-button:nth-child(3) {
+#menu .text-button:nth-child(3) {
   background: #7ae1bf;
 }
 
-#menu .icon-button:nth-child(4) {
+#menu .text-button:nth-child(4) {
   background: #ff5869;
 }
 
-#menu .icon-button:nth-child(5) {
+#menu .text-button:nth-child(5) {
   background: #fc76d9;
 }
 
-#menu .icon-button:nth-child(6) {
+#menu .text-button:nth-child(6) {
   background: #fc76d9;
 }

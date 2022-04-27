@@ -3,6 +3,7 @@
   --main-color: #e0513e;
   --caret-color: #475782;
   --sub-color: #5c7eb9;
+  --sub-alt-color: #3d4359;
   --text-color: #cfcfcf;
   --error-color: #e44e4e;
   --error-extra-color: #fd3f3f;
@@ -10,14 +11,14 @@
   --colorful-error-extra-color: #bb2525;
 }
 
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   color: #e0513e;
 }
 
-#menu .icon-button:nth-child(3) {
+#menu .text-button:nth-child(3) {
   color: #cfcfcf;
 }
 
-#menu .icon-button:nth-child(2) {
+#menu .text-button:nth-child(2) {
   color: #ccc500;
 }

@@ -24,6 +24,7 @@ Then add this code to your file:
     --main-color: #ffffff;
     --caret-color: #ffffff;
     --sub-color: #ffffff;
+    --sub-alt-color: #ffffff;
     --text-color: #ffffff;
     --error-color: #ffffff;
     --error-extra-color: #ffffff;

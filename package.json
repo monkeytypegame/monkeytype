@@ -1,9 +1,10 @@
 {
   "name": "monkeytype",
-  "version": "1.5.6",
+  "version": "1.14.3",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
     "audit:fe": "cd frontend && npm run audit",
     "dev": "concurrently --kill-others \"npm run dev:fe\" \"npm run dev:be\"",
     "dev:be": "cd backend && npm run dev",
@@ -11,9 +12,9 @@
     "deploy:live": "cd frontend && npm run deploy:live",
     "install:all": "sh ./bin/install.sh",
     "install:windows": ".\\bin\\install.cmd",
-    "lint": "eslint \"./backend/**/*.{ts,js}\" \"./frontend/src/scripts/**/*.{ts,js}\"",
+    "lint": "eslint \"./backend/**/*.ts\" \"./frontend/src/ts/**/*.ts\"",
     "build:live": "cd ./frontend && npm run build:live",
-    "pretty": "prettier --check './backend/**/*.js' './frontend/src/**/*.{js,scss}' './frontend/static/**/*.{json,html}'",
+    "pretty": "prettier --check './backend/**/*.ts' './frontend/src/**/*.{ts,scss}' './frontend/static/**/*.{json,html}'",
     "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
@@ -25,8 +26,8 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.11.0",
-    "@typescript-eslint/parser": "^5.11.0",
+    "@typescript-eslint/eslint-plugin": "5.20.0",
+    "@typescript-eslint/parser": "5.20.0",
     "concurrently": "5.3.0",
     "eslint": "8.8.0",
     "eslint-plugin-json": "2.1.2",

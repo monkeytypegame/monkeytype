@@ -2,6 +2,7 @@ import db from "../init/db";
 import chalk from "chalk";
 import winston, { format } from "winston";
 import { resolve } from "path";
+import { ObjectId } from "mongodb";
 
 const errorColor = chalk.red.bold;
 const warningColor = chalk.yellow.bold;
@@ -93,6 +94,7 @@ const logToDb = async (
 
   logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
   logsCollection.insertOne({
+    _id: new ObjectId(),
     timestamp: Date.now(),
     uid: uid ?? "",
     event,

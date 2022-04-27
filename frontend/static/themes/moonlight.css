@@ -4,6 +4,7 @@
   --main-color: #c69f68;
   --caret-color: #8f744b;
   --sub-color: #4b5975;
+  --sub-alt-color: #191f27;
   --text-color: #ccccb5;
   --error-color: #b81b2c;
   --error-extra-color: #84131f;
@@ -13,39 +14,39 @@
 #menu {
   gap: 0.5rem;
 }
-#top.focus #menu .icon-button,
+#top.focus #menu .text-button,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: var(--bg-color);
 }
-#menu .icon-button {
+#menu .text-button {
   border-radius: rem !important;
   color: #1f2730 !important;
 }
-#menu .icon-button :hover {
+#menu .text-button :hover {
   border-radius: rem !important;
   color: #4b5975 !important;
   transition: 0.25s;
 }
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   background: #c69f68;
 }
-#menu .icon-button:nth-child(2) {
+#menu .text-button:nth-child(2) {
   background: #c69f68;
 }
-#menu .icon-button:nth-child(3) {
+#menu .text-button:nth-child(3) {
   background: #c69f68;
 }
-#menu .icon-button:nth-child(4) {
+#menu .text-button:nth-child(4) {
   background: #c69f68;
 }
-#menu .icon-button:nth-child(5) {
+#menu .text-button:nth-child(5) {
   background: #c69f68;
 }
-#menu .icon-button:nth-child(6),
-#menu .icon-button:nth-child(7) {
+#menu .text-button:nth-child(6),
+#menu .text-button:nth-child(7) {
   background: #c69f68;
 }
-#top.focus #menu .icon-button.discord::after {
+#top.focus #menu .text-button.discord::after {
   border-color: transparent;
 }

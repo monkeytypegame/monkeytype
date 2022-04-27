@@ -21,7 +21,7 @@ const CONFIG_SCHEMA = joi.object({
   customThemeColors: joi
     .array()
     .items(joi.string().pattern(/^#([\da-f]{3}){1,2}$/i))
-    .length(9),
+    .length(10),
   favThemes: joi.array().items(joi.string()),
   showKeyTips: joi.boolean(),
   showLiveWpm: joi.boolean(),
@@ -88,6 +88,7 @@ const CONFIG_SCHEMA = joi.object({
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
   highlightMode: joi.string().valid("off", "letter", "word"),
+  tapeMode: joi.string().valid("off", "letter", "word"),
   alwaysShowCPM: joi.boolean(),
   enableAds: joi.string().valid("off", "on", "max"),
   hideExtraLetters: joi.boolean(),

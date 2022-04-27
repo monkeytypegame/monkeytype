@@ -739,4 +739,9 @@
     "bgColor": "#003950",
     "mainColor": "#ffcefb"
   }
+  ,{
+    "name": "mexican",
+    "bgColor": "#cec176",
+    "mainColor": "#ffffff"
+  }
 ]

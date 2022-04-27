@@ -90,6 +90,28 @@ export const quoteReportSubmit = rateLimit({
   handler: customHandler,
 });
 
+// Quote favorites
+export const quoteFavoriteGet = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 min
+  max: 50 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const quoteFavoritePost = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 min
+  max: 50 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const quoteFavoriteDelete = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 min
+  max: 50 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
 // Presets Routing
 export const presetsGet = rateLimit({
   windowMs: ONE_HOUR,

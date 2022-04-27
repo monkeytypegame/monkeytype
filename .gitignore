@@ -78,8 +78,8 @@ node_modules_bak/
 .firebaserc
 .firebaserc_copy
 serviceAccountKey*.json
-frontend/src/scripts/constants/firebase-config.ts
-frontend/src/scripts/constants/firebase-config-live.ts
+frontend/src/ts/constants/firebase-config.ts
+frontend/src/ts/constants/firebase-config-live.ts
 
 #generated files
 dist/

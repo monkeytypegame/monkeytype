@@ -78,6 +78,8 @@
     grid-auto-flow: column;
     justify-content: center;
     gap: 5rem;
+    width: 0;
+    margin: 0 auto;
 
     #liveWpm {
       opacity: 0;
@@ -249,6 +251,50 @@
       & letter.incorrect.extra {
         color: var(--colorful-error-extra-color);
       }
+    }
+  }
+
+  &.tape {
+    &.size125 .word {
+      margin: 0.31rem 0.62rem 0.31rem 0;
+    }
+
+    &.size15 .word {
+      margin: 0.37rem 0.74rem 0.37rem 0;
+    }
+
+    &.size2 .word {
+      margin: 0.5rem 1rem 0.5rem 0;
+    }
+
+    &.size3 .word {
+      margin: 0.75rem 1.5rem 0.75rem 0;
+    }
+
+    &.size4 .word {
+      margin: 1rem 2rem 1rem 0;
+    }
+  }
+
+  &.tape.indicateTyposBelow {
+    &.size125 .word {
+      margin: 0.31rem 0.62rem 0.93rem 0;
+    }
+
+    &.size15 .word {
+      margin: 0.37rem 0.74rem 1.11rem 0;
+    }
+
+    &.size2 .word {
+      margin: 0.5rem 1rem 1.5rem 0;
+    }
+
+    &.size3 .word {
+      margin: 0.75rem 1.5rem 2.25rem 0;
+    }
+
+    &.size4 .word {
+      margin: 1rem 2rem 3rem 0;
     }
   }
 }
@@ -486,7 +532,7 @@
     color: var(--sub-color);
     // grid-column: 1/3;
     margin-bottom: 1rem;
-    .icon-button {
+    .text-button {
       padding: 0;
       margin-left: 0.5rem;
     }
@@ -679,7 +725,8 @@
 
       &.source {
         #rateQuoteButton,
-        #reportQuoteButton {
+        #reportQuoteButton,
+        #favoriteQuoteButton {
           padding: 0 0.25rem;
         }
         #rateQuoteButton {
@@ -836,17 +883,18 @@
   width: min-content;
   width: -moz-min-content;
   color: var(--sub-color);
-  transition: 0.25s;
+  transition: 0.125s;
   cursor: pointer;
 
   &:hover,
   &:focus {
-    color: var(--main-color);
+    color: var(--text-color);
     outline: none;
   }
 
   &:focus {
-    background: var(--sub-color);
+    background: var(--text-color);
+    color: var(--bg-color);
   }
 }
 
@@ -900,6 +948,22 @@
 .pageTest {
   #wordsWrapper {
     position: relative;
+    &.tape {
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 1%,
+        rgb(0, 0, 0) 10%,
+        rgb(0, 0, 0) 90%,
+        rgba(0, 0, 0, 0) 99%
+      );
+      mask-image: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 1%,
+        rgb(0, 0, 0) 10%,
+        rgb(0, 0, 0) 90%,
+        rgba(0, 0, 0, 0) 99%
+      );
+    }
   }
   #memoryTimer {
     background: var(--main-color);

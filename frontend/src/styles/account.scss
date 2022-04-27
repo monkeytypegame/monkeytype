@@ -6,7 +6,7 @@
   color: var(--sub-color);
   width: fit-content;
   width: -moz-fit-content;
-  padding: 0.5rem;
+  padding: 0.5rem 0 0.5rem 0.5rem;
   border-radius: var(--roundness);
   cursor: pointer;
   transition: 0.25s;
@@ -79,7 +79,7 @@
     z-index: 998;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(0, 0, 0, 0.75);
     position: fixed;
     left: 0;
     top: 0;
@@ -146,7 +146,7 @@
       }
 
       .loadMoreButton {
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-alt-color);
         color: var(--text-color);
         text-align: center;
         padding: 0.5rem;
@@ -268,7 +268,7 @@
     }
 
     tbody tr:nth-child(odd) td {
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--sub-alt-color);
     }
 
     td.infoIcons span {
@@ -334,5 +334,5 @@
 .sortable:hover {
   cursor: pointer;
   user-select: none;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--sub-alt-color);
 }
