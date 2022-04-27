@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import { announceLbUpdate } from "../dal/bot";
+import { announceLeaderboardUpdate } from "../dal/bot";
 import * as George from "../tasks/george";
 import * as LeaderboardsDAL from "../dal/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
@@ -56,10 +56,10 @@ async function updateLeaderboardAndNotifyChanges(
     const leaderboardId = `time ${leaderboardTime} english`;
 
     if (cachedConfig.useRedisForBotTasks.enabled) {
-      await George.announceLbUpdate(newRecords, leaderboardId);
+      await George.announceLeaderboardUpdate(newRecords, leaderboardId);
     }
 
-    await announceLbUpdate(newRecords, leaderboardId);
+    await announceLeaderboardUpdate(newRecords, leaderboardId);
   }
 }
 
