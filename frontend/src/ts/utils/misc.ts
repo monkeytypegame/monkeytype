@@ -761,6 +761,12 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+export function escapeHTML(str: string): string {
+  return String(str).replace(/[^\w. ]/gi, function (c) {
+    return "&#" + c.charCodeAt(0) + ";";
+  });
+}
+
 export function cleanTypographySymbols(textToClean: string): string {
   const specials = {
     "“": '"', // &ldquo;	&#8220;
