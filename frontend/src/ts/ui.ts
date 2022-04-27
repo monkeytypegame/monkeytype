@@ -5,6 +5,7 @@ import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
+import * as TestUI from "./test/test-ui";
 
 export function updateKeytips(): void {
   if (Config.swapEscAndTab) {
@@ -78,6 +79,9 @@ window.addEventListener("beforeunload", (event) => {
 
 const debouncedCaretUpdate = debounce(250, async () => {
   Caret.updatePosition();
+  if (Config.tapeMode !== "off") {
+    TestUI.scrollTape();
+  }
   setTimeout(() => {
     Caret.show();
   }, 250);
