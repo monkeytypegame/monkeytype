@@ -23,6 +23,7 @@
     "@types/howler": "2.2.7",
     "@types/jquery": "3.5.14",
     "@types/object-hash": "2.2.1",
+    "@types/seedrandom": "3.0.2",
     "@types/select2": "4.0.55",
     "@types/tinycolor2": "1.4.3",
     "buffer": "6.0.3",
