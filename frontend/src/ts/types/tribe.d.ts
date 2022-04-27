@@ -23,5 +23,6 @@ declare namespace TribeTypes {
     id: string;
     isLeader: boolean;
     name: string;
+    isReady: boolean;
   }
 }
