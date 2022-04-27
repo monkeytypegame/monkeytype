@@ -4,22 +4,37 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import db from "../init/db";
 import MonkeyError from "../utils/error";
-import { DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
+import {
+  Collection,
+  DeleteResult,
+  InsertOneResult,
+  ObjectId,
+  UpdateResult,
+  WithId,
+} from "mongodb";
+
+let usersCollection: Collection<WithId<MonkeyTypes.User>>;
+
+function getUsersCollection(): Collection<WithId<MonkeyTypes.User>> {
+  if (!usersCollection) {
+    usersCollection = db.collection<MonkeyTypes.User>("users");
+  }
+
+  return usersCollection;
+}
 
 export async function addUser(
   name: string,
   email: string,
   uid: string
 ): Promise<InsertOneResult<MonkeyTypes.User>> {
-  const usersCollection = db.collection<MonkeyTypes.User>("users");
-
-  const user = await usersCollection.findOne({ uid });
+  const user = await getUsersCollection().findOne({ uid });
   if (user) {
     throw new MonkeyError(409, "User document already exists", "addUser");
   }
 
   const currentDate = Date.now();
-  return await usersCollection.insertOne({
+  return await getUsersCollection().insertOne({
     _id: new ObjectId(),
     name,
     email,
@@ -29,7 +44,7 @@ export async function addUser(
 }
 
 export async function deleteUser(uid: string): Promise<DeleteResult> {
-  return await db.collection<MonkeyTypes.User>("users").deleteOne({ uid });
+  return await getUsersCollection().deleteOne({ uid });
 }
 
 export async function updateName(
@@ -40,11 +55,7 @@ export async function updateName(
     throw new MonkeyError(409, "Username already taken", name);
   }
 
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "update name");
-  }
+  const user = await getUser(uid, "update name");
 
   if (Date.now() - (user.lastNameChange ?? 0) < 2592000000) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
@@ -59,7 +70,7 @@ export async function updateName(
 }
 
 export async function clearPb(uid: string): Promise<UpdateResult> {
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $set: {
@@ -79,8 +90,7 @@ export async function clearPb(uid: string): Promise<UpdateResult> {
 }
 
 export async function isNameAvailable(name: string): Promise<boolean> {
-  const nameDocs = await db
-    .collection<MonkeyTypes.User>("users")
+  const nameDocs = await getUsersCollection()
     .find({ name })
     .collation({ locale: "en", strength: 1 })
     .limit(1)
@@ -93,14 +103,9 @@ export async function updateQuoteRatings(
   uid: string,
   quoteRatings: MonkeyTypes.UserQuoteRatings
 ): Promise<boolean> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "updateQuoteRatings");
-  }
+  await getUser(uid, "update quote ratings");
 
-  await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $set: { quoteRatings } });
+  await getUsersCollection().updateOne({ uid }, { $set: { quoteRatings } });
   return true;
 }
 
@@ -108,27 +113,25 @@ export async function updateEmail(
   uid: string,
   email: string
 ): Promise<boolean> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "update email");
+  await getUser(uid, "update email"); // To make sure that the user exists
   await updateUserEmail(uid, email);
-  await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $set: { email } });
+  await getUsersCollection().updateOne({ uid }, { $set: { email } });
   return true;
 }
 
-export async function getUser(uid: string): Promise<MonkeyTypes.User> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "get user");
+export async function getUser(
+  uid: string,
+  stack: string
+): Promise<MonkeyTypes.User> {
+  const user = await getUsersCollection().findOne({ uid });
+  if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
 }
 
 export async function isDiscordIdAvailable(
   discordId: string
 ): Promise<boolean> {
-  const user = await db
-    .collection<MonkeyTypes.User>("users")
-    .findOne({ discordId });
+  const user = await getUsersCollection().findOne({ discordId });
   return _.isNil(user);
 }
 
@@ -137,9 +140,10 @@ export async function addTag(
   name: string
 ): Promise<MonkeyTypes.UserTag> {
   const _id = new ObjectId();
-  await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $push: { tags: { _id, name } } });
+  await getUsersCollection().updateOne(
+    { uid },
+    { $push: { tags: { _id, name } } }
+  );
   return {
     _id,
     name,
@@ -147,9 +151,7 @@ export async function addTag(
 }
 
 export async function getTags(uid: string): Promise<MonkeyTypes.UserTag[]> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-
-  if (!user) throw new MonkeyError(404, "User not found", "get tags");
+  const user = await getUser(uid, "get tags");
 
   return user.tags ?? [];
 }
@@ -159,15 +161,14 @@ export async function editTag(
   _id: string,
   name: string
 ): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "edit tag");
+  const user = await getUser(uid, "edit tag");
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() === _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -180,15 +181,14 @@ export async function removeTag(
   uid: string,
   _id: string
 ): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "remove tag");
+  const user = await getUser(uid, "remove tag");
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() == _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -201,16 +201,14 @@ export async function removeTagPb(
   uid: string,
   _id: string
 ): Promise<UpdateResult> {
-  const usersCollection = db.collection<MonkeyTypes.User>("users");
-  const user = await usersCollection.findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "remove tag pb");
+  const user = await getUser(uid, "remove tag pb");
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() == _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  return await usersCollection.updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -226,15 +224,14 @@ export async function updateLbMemory(
   language: string,
   rank: number
 ): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "update lb memory");
+  const user = await getUser(uid, "update lb memory");
   if (user.lbMemory === undefined) user.lbMemory = {};
   if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
   if (user.lbMemory[mode][mode2] === undefined) {
     user.lbMemory[mode][mode2] = {};
   }
   user.lbMemory[mode][mode2][language] = rank;
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $set: { lbMemory: user.lbMemory },
@@ -274,14 +271,16 @@ export async function checkIfPb(
 
   if (!pb.isPb) return false;
 
-  await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $set: { personalBests: pb.personalBests } });
+  await getUsersCollection().updateOne(
+    { uid },
+    { $set: { personalBests: pb.personalBests } }
+  );
 
   if (pb.lbPersonalBests) {
-    await db
-      .collection<MonkeyTypes.User>("users")
-      .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbPersonalBests } });
+    await getUsersCollection().updateOne(
+      { uid },
+      { $set: { lbPersonalBests: pb.lbPersonalBests } }
+    );
   }
   return true;
 }
@@ -328,12 +327,10 @@ export async function checkIfTagPb(
     const tagpb = checkAndUpdatePb(tagPbs, undefined, result);
     if (tagpb.isPb) {
       ret.push(tag._id.toHexString());
-      await db
-        .collection<MonkeyTypes.User>("users")
-        .updateOne(
-          { uid, "tags._id": new ObjectId(tag._id) },
-          { $set: { "tags.$.personalBests": tagpb.personalBests } }
-        );
+      await getUsersCollection().updateOne(
+        { uid, "tags._id": new ObjectId(tag._id) },
+        { $set: { "tags.$.personalBests": tagpb.personalBests } }
+      );
     }
   });
 
@@ -341,9 +338,8 @@ export async function checkIfTagPb(
 }
 
 export async function resetPb(uid: string): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "reset pb");
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  await getUser(uid, "reset pb");
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $set: {
@@ -364,7 +360,7 @@ export async function updateTypingStats(
   restartCount: number,
   timeTyping: number
 ): Promise<UpdateResult> {
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $inc: {
@@ -380,19 +376,14 @@ export async function linkDiscord(
   uid: string,
   discordId: string
 ): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "link discord");
-  return await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $set: { discordId } });
+  await getUser(uid, "link discord");
+  return await getUsersCollection().updateOne({ uid }, { $set: { discordId } });
 }
 
 export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
-  const usersCollection = db.collection<MonkeyTypes.User>("users");
-  const user = await usersCollection.findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "unlink discord");
+  await getUser(uid, "unlink discord");
 
-  return await usersCollection.updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     { $set: { discordId: undefined } }
   );
@@ -402,10 +393,7 @@ export async function incrementBananas(
   uid: string,
   wpm
 ): Promise<UpdateResult | null> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "increment bananas");
-  }
+  const user = await getUser(uid, "increment bananas");
 
   let best60: number | undefined;
   const personalBests60 = user.personalBests?.time[60];
@@ -416,9 +404,10 @@ export async function incrementBananas(
 
   if (best60 === undefined || wpm >= best60 - best60 * 0.25) {
     //increment when no record found or wpm is within 25% of the record
-    return await db
-      .collection<MonkeyTypes.User>("users")
-      .updateOne({ uid }, { $inc: { bananas: 1 } });
+    return await getUsersCollection().updateOne(
+      { uid },
+      { $inc: { bananas: 1 } }
+    );
   }
 
   return null;
@@ -434,15 +423,14 @@ export async function addTheme(
   uid: string,
   theme
 ): Promise<{ _id: ObjectId; name: string }> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) throw new MonkeyError(404, "User not found", "Add custom theme");
+  const user = await getUser(uid, "add theme");
 
   if ((user.customThemes ?? []).length >= 10) {
     throw new MonkeyError(409, "Too many custom themes");
   }
 
   const _id = new ObjectId();
-  await db.collection<MonkeyTypes.User>("users").updateOne(
+  await getUsersCollection().updateOne(
     { uid },
     {
       $push: {
@@ -462,16 +450,13 @@ export async function addTheme(
 }
 
 export async function removeTheme(uid: string, _id): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "Remove custom theme");
-  }
+  const user = await getUser(uid, "remove theme");
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom theme not found");
   }
 
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "customThemes._id": new ObjectId(_id),
@@ -485,16 +470,13 @@ export async function editTheme(
   _id,
   theme
 ): Promise<UpdateResult> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "Edit custom theme");
-  }
+  const user = await getUser(uid, "edit theme");
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom Theme not found");
   }
 
-  return await db.collection<MonkeyTypes.User>("users").updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "customThemes._id": new ObjectId(_id),
@@ -511,10 +493,7 @@ export async function editTheme(
 export async function getThemes(
   uid: string
 ): Promise<MonkeyTypes.CustomTheme[]> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "Get custom themes");
-  }
+  const user = await getUser(uid, "get themes");
   return user.customThemes ?? [];
 }
 
@@ -523,27 +502,19 @@ export async function getPersonalBests(
   mode: string,
   mode2?: string
 ): Promise<MonkeyTypes.PersonalBest> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "Get personal bests");
-  }
+  const user = await getUser(uid, "get personal bests");
 
   if (mode2) {
-    return user?.personalBests?.[mode]?.[mode2];
+    return user.personalBests?.[mode]?.[mode2];
   }
 
-  return user?.personalBests?.[mode];
+  return user.personalBests?.[mode];
 }
 
 export async function getFavoriteQuotes(
   uid
 ): Promise<MonkeyTypes.User["favoriteQuotes"]> {
-  const user = await db.collection<MonkeyTypes.User>("users").findOne({ uid });
-
-  if (!user) {
-    throw new MonkeyError(404, "User not found", "getFavoriteQuotes");
-  }
+  const user = await getUser(uid, "get favorite quotes");
 
   return user.favoriteQuotes ?? {};
 }
@@ -554,12 +525,7 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
-  const usersCollection = db.collection<MonkeyTypes.User>("users");
-  const user = await usersCollection.findOne({ uid });
-
-  if (!user) {
-    throw new MonkeyError(404, "User does not exist", "addFavoriteQuote");
-  }
+  const user = await getUser(uid, "add favorite quote");
 
   if (user.favoriteQuotes) {
     if (
@@ -583,7 +549,7 @@ export async function addFavoriteQuote(
     }
   }
 
-  await usersCollection.updateOne(
+  await getUsersCollection().updateOne(
     { uid },
     {
       $push: {
@@ -598,11 +564,7 @@ export async function removeFavoriteQuote(
   language: string,
   quoteId: string
 ): Promise<void> {
-  const usersCollection = await db.collection<MonkeyTypes.User>("users");
-  const user = await usersCollection.findOne({ uid });
-  if (!user) {
-    throw new MonkeyError(404, "User does not exist", "deleteFavoriteQuote");
-  }
+  const user = await getUser(uid, "remove favorite quote");
 
   if (
     !user.favoriteQuotes ||
@@ -612,7 +574,7 @@ export async function removeFavoriteQuote(
     return;
   }
 
-  await usersCollection.updateOne(
+  await getUsersCollection().updateOne(
     { uid },
     { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
   );

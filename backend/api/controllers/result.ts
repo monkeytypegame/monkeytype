@@ -198,7 +198,7 @@ export async function addResult(
     //
   }
 
-  const user = await getUser(uid);
+  const user = await getUser(uid, "add result");
 
   //check keyspacing and duration here for bots
   if (

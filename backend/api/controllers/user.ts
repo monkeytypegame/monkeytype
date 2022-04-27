@@ -30,7 +30,7 @@ export async function deleteUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getUser(uid);
+  const userInfo = await UserDAL.getUser(uid, "delete user");
   await UserDAL.deleteUser(uid);
   Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
@@ -43,7 +43,7 @@ export async function updateName(
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
 
-  const oldUser = await UserDAL.getUser(uid);
+  const oldUser = await UserDAL.getUser(uid, "update name");
   await UserDAL.updateName(uid, name);
   Logger.logToDb(
     "user_name_updated",
@@ -102,7 +102,7 @@ export async function getUser(
 
   let userInfo;
   try {
-    userInfo = await UserDAL.getUser(uid);
+    userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
     await admin.auth().deleteUser(uid);
     throw new MonkeyError(
@@ -129,7 +129,7 @@ export async function linkDiscord(
 
   const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
 
-  const userInfo = await UserDAL.getUser(uid);
+  const userInfo = await UserDAL.getUser(uid, "link discord");
   if (userInfo.discordId) {
     throw new MonkeyError(
       409,
@@ -176,7 +176,7 @@ export async function unlinkDiscord(
 
   const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
 
-  const userInfo = await UserDAL.getUser(uid);
+  const userInfo = await UserDAL.getUser(uid, "unlink discord");
   if (!userInfo.discordId) {
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
