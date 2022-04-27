@@ -11,4 +11,17 @@ declare namespace TribeTypes {
       version: string
     ];
   }
+
+  interface Room {
+    state: number;
+    users?: {
+      [socketId: string]: User;
+    };
+  }
+
+  interface User {
+    id: string;
+    isLeader: boolean;
+    name: string;
+  }
 }

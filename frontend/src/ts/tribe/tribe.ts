@@ -34,22 +34,22 @@ export const socket = io(
   }
 );
 export let state = -1;
-export let expectedVersion = "0.10.4";
+export const expectedVersion = "0.10.4";
 
-let autoJoin = undefined;
-let name = undefined;
+let autoJoin: string | undefined = undefined;
+let name: string | undefined = undefined;
 
-export let room = undefined;
+export let room: TribeTypes.Room | undefined = undefined;
 
-export function setAutoJoin(code) {
+export function setAutoJoin(code: string): void {
   autoJoin = code;
 }
 
-export function getSelf() {
-  return room?.users[socket?.id];
+export function getSelf(): TribeTypes.User | undefined {
+  return room?.users?.[socket?.id];
 }
 
-export function getStateString(state) {
+export function getStateString(state: number): string {
   if (state === -1) return "error";
   if (state === 1) return "connected";
   if (state === 5) return "lobby";
@@ -59,7 +59,7 @@ export function getStateString(state) {
   if (state === 20) return "at least one finished";
   if (state === 21) return "everyone finished";
   if (state === 22) return "everyone ready / timer over";
-  return state;
+  return "Unknown state " + state;
 }
 
 export function updateState(newState) {
