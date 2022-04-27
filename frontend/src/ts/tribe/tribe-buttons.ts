@@ -174,13 +174,14 @@ export function reset(): void {
   $("#result #saveScreenshotButton").removeClass("hidden");
 }
 
-export function update(page: string): void {
+export function update(page?: string): void {
   if (!page) {
     update("lobby");
     update("result");
     return;
   }
-  if (Tribe.getSelf().isLeader) {
+  const self = Tribe.getSelf();
+  if (self?.isLeader) {
     showStartButton(page);
     hideReadyButton(page);
     hideAfkButton(page);
@@ -212,11 +213,11 @@ export function update(page: string): void {
     deactivateAfkButton(page);
     enableReadyButton(page);
     enableAfkButton(page);
-    if (Tribe.getSelf().isAfk) {
+    if (self?.isAfk) {
       activateAfkButton(page);
       disableReadyButton(page);
     }
-    if (Tribe.getSelf().isReady) {
+    if (self?.isReady) {
       disableAfkButton(page);
       disableReadyButton(page);
     }

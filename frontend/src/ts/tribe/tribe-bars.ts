@@ -64,7 +64,7 @@ export function show(page: string): void {
   }
 }
 
-export function hide(page: string): void {
+export function hide(page?: string): void {
   if (page === undefined) {
     hide("test");
     hide("tribe");
@@ -75,7 +75,7 @@ export function hide(page: string): void {
   }
 }
 
-export function reset(page: string): void {
+export function reset(page?: string): void {
   if (page === undefined) {
     reset("test");
     reset("tribe");

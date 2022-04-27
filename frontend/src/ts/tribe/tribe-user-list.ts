@@ -1,7 +1,7 @@
 import * as Tribe from "./tribe";
 import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
 
-export function reset(page: string): void {
+export function reset(page?: string): void {
   if (page === undefined) {
     $(".pageTribe .tribePage.lobby .userlist .list").empty();
     $(".pageTest #result #tribeResultBottom .userlist .list").empty();
@@ -12,7 +12,7 @@ export function reset(page: string): void {
   }
 }
 
-export function update(page: string): void {
+export function update(page?: string): void {
   if (!page) {
     update("lobby");
     update("result");

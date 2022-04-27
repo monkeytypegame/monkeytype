@@ -12,17 +12,27 @@ declare namespace TribeTypes {
     ];
   }
 
+  interface RoomJoin {
+    room: Room;
+  }
+
   interface Room {
     state: number;
     users?: {
       [socketId: string]: User;
     };
+    size: number;
   }
 
   interface User {
     id: string;
-    isLeader: boolean;
+    isLeader?: boolean;
     name: string;
-    isReady: boolean;
+    isReady?: boolean;
+    result?: unknown;
+    progress?: unknown;
+    isFinished?: boolean;
+    isTyping?: boolean;
+    isAfk?: boolean;
   }
 }
