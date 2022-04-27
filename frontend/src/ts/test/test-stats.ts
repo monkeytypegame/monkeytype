@@ -1,6 +1,5 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import { getResult } from "./result";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 
@@ -92,9 +91,17 @@ export function setLastTestWpm(wpm: number): void {
   lastTestWpm = wpm;
 }
 
+export let lastResult: MonkeyTypes.Result<MonkeyTypes.Mode>;
+
+export function setLastResult(
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): void {
+  lastResult = result;
+}
+
 export function getStats(): DebugStats {
   const ret: DebugStats = {
-    lastResult: getResult(),
+    lastResult,
     start,
     end,
     wpmHistory: TestInput.wpmHistory,

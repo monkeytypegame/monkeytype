@@ -1456,6 +1456,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
+  TestStats.setLastResult(completedEvent);
+
   await Result.update(
     completedEvent,
     difficultyFailed,
