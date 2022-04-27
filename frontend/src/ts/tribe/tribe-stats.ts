@@ -55,7 +55,7 @@ export function refresh(): void {
   Tribe.socket.emit(
     "system_stats",
     { pingStart: performance.now() },
-    (data) => {
+    (data: TribeTypes.SystemStatsReturn) => {
       const ping = Math.round(performance.now() - data.pingStart);
       hideLoading();
       setInQueue(data.stats[2]);
