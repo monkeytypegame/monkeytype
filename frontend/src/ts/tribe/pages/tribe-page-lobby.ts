@@ -7,8 +7,9 @@ import * as Commandline from "../../elements/commandline";
 import * as CommandlineLists from "../../elements/commandline-lists";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
+import { ListsObjectKeys } from "../../elements/commandline-lists";
 
-export function reset() {
+export function reset(): void {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text("");
   $(".pageTribe .tribePage.lobby .inviteLink .link").text("");
@@ -17,19 +18,19 @@ export function reset() {
   TribeChat.reset();
 }
 
-export function disableConfigButtons() {
+export function disableConfigButtons(): void {
   $(".pageTribe .tribePage.lobby .currentConfig .groups .group").addClass(
     "disabled"
   );
 }
 
-export function enableConfigButtons() {
+export function enableConfigButtons(): void {
   $(".pageTribe .tribePage.lobby .currentConfig .groups .group").removeClass(
     "disabled"
   );
 }
 
-export function disableNameVisibilityButtons() {
+export function disableNameVisibilityButtons(): void {
   $(
     ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
   ).addClass("disabled");
@@ -38,7 +39,7 @@ export function disableNameVisibilityButtons() {
   ).addClass("disabled");
 }
 
-export function enableNameVisibilityButtons() {
+export function enableNameVisibilityButtons(): void {
   $(
     ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
   ).removeClass("disabled");
@@ -47,7 +48,7 @@ export function enableNameVisibilityButtons() {
   ).removeClass("disabled");
 }
 
-export function updateVisibility() {
+export function updateVisibility(): void {
   if (Tribe.getSelf().isLeader) {
     $(
       ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
@@ -74,7 +75,7 @@ export function updateVisibility() {
   }
 }
 
-export function updateRoomName() {
+export function updateRoomName(): void {
   if (Tribe.getSelf().isLeader) {
     $(
       ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
@@ -89,11 +90,11 @@ export function updateRoomName() {
   );
 }
 
-export function updateRoomConfig() {
+export function updateRoomConfig(): void {
   if (Tribe.room == undefined) return;
   $(".pageTribe .tribePage.lobby .currentConfig .groups").empty();
 
-  let room = Tribe.room;
+  const room = Tribe.room;
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Mode" data-balloon-pos="up" commands="commandsMode">
@@ -115,7 +116,7 @@ export function updateRoomConfig() {
     `);
   } else if (room.config.mode === "quote") {
     let qstring = "all";
-    let num = room.config.mode2;
+    const num = room.config.mode2;
     if (num == 0) {
       qstring = "short";
     } else if (num == 1) {
@@ -140,10 +141,10 @@ export function updateRoomConfig() {
       let n = "";
       if (CustomText.isTimeRandom) {
         r = "time";
-        n = CustomText.time;
+        n = CustomText.time.toString();
       } else if (CustomText.isWordRandom) {
         r = "words";
-        n = CustomText.word;
+        n = CustomText.word.toString();
       }
       t += `\nrandom: ${r} ${n}`;
     }
@@ -259,9 +260,9 @@ export function updateRoomConfig() {
     `);
 }
 
-export function init() {
+export function init(): void {
   reset();
-  let link = location.origin + "/tribe_" + Tribe.room.id;
+  const link = location.origin + "/tribe_" + Tribe.room.id;
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
   $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text(
@@ -304,7 +305,7 @@ $(".pageTest #result #tribeResultBottom .inviteLink .text").hover(
 
 $(
   ".pageTribe .tribePage.lobby .inviteLink .text, .pageTest #result #tribeResultBottom .inviteLink .text"
-).click(async (e) => {
+).on("click", async () => {
   try {
     await navigator.clipboard.writeText(
       $(".pageTribe .tribePage.lobby .inviteLink .text").text()
@@ -317,7 +318,7 @@ $(
 
 $(
   ".pageTribe .tribePage.lobby .inviteLink .link, .pageTest #result #tribeResultBottom .inviteLink .link"
-).click(async (e) => {
+).on("click", async () => {
   try {
     await navigator.clipboard.writeText(
       $(".pageTribe .tribePage.lobby .inviteLink .link").text()
@@ -328,19 +329,21 @@ $(
   }
 });
 
-$(
-  ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
-).click((e) => {
-  Tribe.socket.emit("room_toggle_visibility");
-});
+$(".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button").on(
+  "",
+  () => {
+    Tribe.socket.emit("room_toggle_visibility");
+  }
+);
 
-$(
-  ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
-).click((e) => {
-  //TODO proper popup
-  let name = prompt("Enter new room name");
-  Tribe.socket.emit("room_update_name", { name });
-});
+$(".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button").on(
+  "click",
+  () => {
+    //TODO proper popup
+    const name = prompt("Enter new room name");
+    Tribe.socket.emit("room_update_name", { name });
+  }
+);
 
 $(document).on(
   "click",
@@ -348,8 +351,8 @@ $(document).on(
   (e) => {
     if (Tribe.getSelf().isLeader) {
       // let commands = eval($(e.currentTarget).attr("commands"));
-      let commands = CommandlineLists.getList(
-        $(e.currentTarget).attr("commands")
+      const commands = CommandlineLists.getList(
+        $(e.currentTarget).attr("commands") as ListsObjectKeys
       );
       if (commands != undefined) {
         if ($(e.currentTarget).attr("commands") === "commandsTags") {

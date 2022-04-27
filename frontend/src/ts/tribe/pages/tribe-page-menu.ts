@@ -4,46 +4,46 @@ import * as TribeRoomCodePopup from "../../popups/tribe-room-code-popup";
 import * as TribeBrowsePublicRoomsPopup from "../../popups/tribe-browse-public-rooms-popup";
 import Config from "../../config";
 
-export let queues = [false, false, false, false];
+export const queues = [false, false, false, false];
 
-export function disableButtons() {
+export function disableButtons(): void {
   $(".pageTribe .menu .matchmaking .buttons .button").addClass("disabled");
   $(".pageTribe .menu .customRooms .button").addClass("disabled");
   $(".pageTribe .menu .customRooms .customInput").addClass("disabled");
 }
 
-export function enableButtons() {
+export function enableButtons(): void {
   $(".pageTribe .menu .matchmaking .buttons .button").removeClass("disabled");
   $(".pageTribe .menu .customRooms .button").removeClass("disabled");
   $(".pageTribe .menu .customRooms .customInput").removeClass("disabled");
 }
 
-export function showLeaveQueueButton() {
+export function showLeaveQueueButton(): void {
   $(".pageTribe .menu .matchmaking .leaveMatchmakingButton").removeClass(
     "hidden"
   );
 }
 
-export function hideLeaveQueueButton() {
+export function hideLeaveQueueButton(): void {
   $(".pageTribe .menu .matchmaking .leaveMatchmakingButton").addClass("hidden");
 }
 
-export function showStartQueueButton() {
+export function showStartQueueButton(): void {
   $(".pageTribe .menu .matchmaking .startMatchmakingButton").removeClass(
     "hidden"
   );
 }
 
-export function hideStartQueueButton() {
+export function hideStartQueueButton(): void {
   $(".pageTribe .menu .matchmaking .startMatchmakingButton").addClass("hidden");
 }
 
-function toggleQueue(queue) {
+function toggleQueue(queue: number): void {
   queues[queue] = !queues[queue];
 }
 
-function refreshQueueButtons() {
-  let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
+function refreshQueueButtons(): void {
+  const buttons = $(".pageTribe .menu .matchmaking .buttons .button");
 
   buttons.removeClass("active");
 
@@ -73,8 +73,8 @@ function refreshQueueButtons() {
   }
 }
 
-export function getQ() {
-  let ret = [];
+export function getQ(): number[] {
+  const ret: number[] = [];
   queues.forEach((queue, id) => {
     if (queue) {
       ret.push(id);
@@ -83,7 +83,7 @@ export function getQ() {
   return ret;
 }
 
-export function joinRoomByCode(code) {
+export function joinRoomByCode(_code: string): void {
   Notifications.add("todo", -1);
   return;
   // code = "room_" + code;
@@ -99,7 +99,7 @@ export function joinRoomByCode(code) {
   // `);
 }
 
-$(".pageTribe .menu .customRooms #createCustomRoom").click((e) => {
+$(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   disableButtons();
   let mode2;
@@ -113,19 +113,19 @@ $(".pageTribe .menu .customRooms #createCustomRoom").click((e) => {
   Tribe.socket.emit("room_create", { mode: Config.mode, mode2 });
 });
 
-$(".pageTribe .menu .customRooms #browseCustomRooms").click((e) => {
+$(".pageTribe .menu .customRooms #browseCustomRooms").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   TribeBrowsePublicRoomsPopup.show();
 });
 
-$(".pageTribe .menu .customRooms #enterRoomCode").click((e) => {
+$(".pageTribe .menu .customRooms #enterRoomCode").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   TribeRoomCodePopup.show();
 });
 
-$(".pageTribe .menu .matchmaking .buttons .button").click((e) => {
+$(".pageTribe .menu .matchmaking .buttons .button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
-  let queue = $(e.currentTarget).attr("queue");
-  toggleQueue(queue);
+  const queue = $(e.currentTarget).attr("queue") as string;
+  toggleQueue(parseInt(queue));
   refreshQueueButtons();
 });
