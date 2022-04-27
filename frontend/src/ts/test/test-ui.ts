@@ -138,6 +138,22 @@ function getWordHTML(word: string): string {
 export function showWords(): void {
   $("#words").empty();
 
+  if (Config.tapeMode !== "off") {
+    $("#words").addClass("tape");
+    $("#wordsWrapper").addClass("tape");
+  } else {
+    $("#words").removeClass("tape");
+    $("#wordsWrapper").removeClass("tape");
+  }
+
+  if (Config.indicateTypos === "below") {
+    $("#words").addClass("indicateTyposBelow");
+    $("#wordsWrapper").addClass("indicateTyposBelow");
+  } else {
+    $("#words").removeClass("indicateTyposBelow");
+    $("#wordsWrapper").removeClass("indicateTyposBelow");
+  }
+
   let wordsHTML = "";
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
@@ -174,23 +190,23 @@ export function showWords(): void {
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
     if (Config.tapeMode !== "off") {
+      const wrapperHeight = wordHeight;
+
       $("#words")
         .css("height", wordHeight * 2 + "px")
         .css("overflow", "hidden")
         .css("width", "200%")
         .css("margin-left", "50%");
-      $("#words").addClass("tape");
       $("#wordsWrapper")
-        .css("height", wordHeight * 1 + "px")
+        .css("height", wrapperHeight + "px")
         .css("overflow", "hidden");
-      $(".outOfFocusWarning").css("line-height", wordHeight * 1 + "px");
+      $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
     } else {
       $("#words")
         .css("height", wordHeight * 4 + "px")
         .css("overflow", "hidden")
         .css("width", "100%")
         .css("margin-left", "unset");
-      $("#words").removeClass("tape");
       $("#wordsWrapper")
         .css("height", wordHeight * 3 + "px")
         .css("overflow", "hidden");
@@ -563,7 +579,10 @@ export function scrollTape(): void {
 
 export function lineJump(currentTop: number): void {
   //last word of the line
-  if (currentTestLine > 0) {
+  if (
+    (Config.tapeMode === "off" && currentTestLine > 0) ||
+    (Config.tapeMode !== "off" && currentTestLine >= 0)
+  ) {
     const hideBound = currentTop;
 
     const toHide: JQuery<HTMLElement>[] = [];
@@ -571,7 +590,10 @@ export function lineJump(currentTop: number): void {
     for (let i = 0; i < currentWordElementIndex; i++) {
       if ($(wordElements[i]).hasClass("hidden")) continue;
       const forWordTop = Math.floor(wordElements[i].offsetTop);
-      if (forWordTop < hideBound - 10) {
+      if (
+        forWordTop <
+        (Config.tapeMode === "off" ? hideBound - 10 : hideBound + 10)
+      ) {
         toHide.push($($("#words .word")[i]));
       }
     }
@@ -600,22 +622,27 @@ export function lineJump(currentTop: number): void {
         },
         SlowTimer.get() ? 0 : 125
       );
-      $("#words").animate(
-        {
-          marginTop: `-${wordHeight}px`,
-        },
-        SlowTimer.get() ? 0 : 125,
-        () => {
-          activeWordTop = (<HTMLElement>(
-            document.querySelector("#words .active")
-          )).offsetTop;
 
-          currentWordElementIndex -= toHide.length;
-          lineTransition = false;
-          toHide.forEach((el) => el.remove());
-          $("#words").css("marginTop", "0");
-        }
-      );
+      const newCss: { [key: string]: string } = {
+        marginTop: `-${wordHeight}px`,
+      };
+
+      if (Config.tapeMode !== "off") {
+        const wordsWrapperWidth = (<HTMLElement>(
+          document.querySelector("#wordsWrapper")
+        )).offsetWidth;
+        const newMargin = wordsWrapperWidth / 2;
+        newCss["marginLeft"] = `${newMargin}px`;
+      }
+      $("#words").animate(newCss, SlowTimer.get() ? 0 : 125, () => {
+        activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
+          .offsetTop;
+
+        currentWordElementIndex -= toHide.length;
+        lineTransition = false;
+        toHide.forEach((el) => el.remove());
+        $("#words").css("marginTop", "0");
+      });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;

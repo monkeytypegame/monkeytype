@@ -28,11 +28,6 @@ import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
-
-// Rizwan TODO: Resolve these imports
-// import * as UI from "./ui";
-// import * as Settings from "./settings";
-// import * as TestTimer from "./test-timer";
 import * as Tribe from "../tribe/tribe";
 
 let dontInsertSpace = false;
@@ -261,11 +256,7 @@ function handleSpace(): void {
       nextTop = 0;
     }
 
-    if (
-      Config.tapeMode === "off" &&
-      nextTop > currentTop &&
-      !TestUI.lineTransition
-    ) {
+    if (nextTop > currentTop && !TestUI.lineTransition) {
       TestUI.lineJump(currentTop);
     }
   } //end of line wrap
@@ -726,15 +717,7 @@ $(document).on("keydown", async (event) => {
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
-  const popups = document.querySelectorAll(".popupWrapper");
-
-  let popupVisible = false;
-  for (const popup of popups) {
-    if (!popup.classList.contains("hidden") === true) {
-      popupVisible = true;
-      break;
-    }
-  }
+  const popupVisible = Misc.isAnyPopupVisible();
 
   const allowTyping =
     pageTestActive &&
@@ -918,6 +901,10 @@ $("#wordsInput").on("input", (event) => {
     (event.target as HTMLInputElement).value = " ";
     return;
   }
+
+  const popupVisible = Misc.isAnyPopupVisible();
+
+  if (popupVisible) return;
 
   if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
     event.preventDefault();

@@ -4,7 +4,7 @@ import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
 import * as ConfigEvent from "./observables/config-event";
-import { debounce } from "throttle-debounce";
+import { debounce, throttle } from "throttle-debounce";
 
 export function updateKeytips(): void {
   if (Config.swapEscAndTab) {
@@ -76,11 +76,19 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedCaretUpdate = debounce(250, () => {
+const debouncedCaretUpdate = debounce(250, async () => {
   Caret.updatePosition();
+  setTimeout(() => {
+    Caret.show();
+  }, 250);
+});
+
+const throttledCaretHide = throttle(250, () => {
+  Caret.hide();
 });
 
 $(window).on("resize", () => {
+  throttledCaretHide();
   debouncedCaretUpdate();
 });
 

@@ -16,6 +16,7 @@ import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as QuoteSearchPopupWrapper from "../popups/quote-search-popup";
 import * as TribeStartRacePopup from "../popups/tribe-start-race-popup"; // Rizwan TODO: This will start appearing once the popups
+import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
 
@@ -404,15 +405,7 @@ $(document).ready(() => {
     ) {
       event.preventDefault();
 
-      const popups = document.querySelectorAll(".popupWrapper");
-
-      let popupVisible = false;
-      for (const popup of popups) {
-        if (!popup.classList.contains("hidden") === true) {
-          popupVisible = true;
-          break;
-        }
-      }
+      const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {

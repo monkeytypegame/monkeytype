@@ -1117,3 +1117,16 @@ export function isQuoteFavorite(
 
   return snapshot.favoriteQuotes[quoteLang].includes(quoteId);
 }
+
+export function isAnyPopupVisible(): boolean {
+  const popups = document.querySelectorAll(".popupWrapper");
+  let popupVisible = false;
+  for (const popup of popups) {
+    const style = window.getComputedStyle(popup);
+    if (style.display !== "none") {
+      popupVisible = true;
+      break;
+    }
+  }
+  return popupVisible;
+}

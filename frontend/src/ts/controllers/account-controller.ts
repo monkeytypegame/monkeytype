@@ -361,6 +361,9 @@ export function signIn(): void {
           message = "Incorrect password";
         } else if (error.code === "auth/user-not-found") {
           message = "User not found";
+        } else if (error.code === "auth/invalid-email") {
+          message =
+            "Invalid email format (make sure you are using your email to login - not your username)";
         }
         Notifications.add(message, -1);
         LoginPage.hidePreloader();

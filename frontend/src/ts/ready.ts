@@ -8,6 +8,8 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
+import * as CookiePopup from "./popups/cookie-popup";
+import { CLIENT_VERSION } from "./version";
 
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
@@ -21,12 +23,27 @@ if (window.location.hostname === "localhost") {
   });
 }
 
+$("#nocss .requestedStylesheets").html(
+  "Requested stylesheets:<br>" +
+    (
+      [
+        ...document.querySelectorAll("link[rel=stylesheet"),
+      ] as HTMLAnchorElement[]
+    )
+      .map((l) => l.href)
+      .filter((l) => /\/css\//gi.test(l))
+      .join("<br>") +
+    "<br><br>Client version:<br>" +
+    CLIENT_VERSION
+);
+
 Focus.set(true, true);
 RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
   if (window.location.pathname === "/") {
     // $("#top .config").removeClass("hidden");
   }
+  CookiePopup.check();
   $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
