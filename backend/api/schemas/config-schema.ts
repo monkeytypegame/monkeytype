@@ -88,6 +88,7 @@ const CONFIG_SCHEMA = joi.object({
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
   highlightMode: joi.string().valid("off", "letter", "word"),
+  tapeMode: joi.string().valid("off", "letter", "word"),
   alwaysShowCPM: joi.boolean(),
   enableAds: joi.string().valid("off", "on", "max"),
   hideExtraLetters: joi.boolean(),

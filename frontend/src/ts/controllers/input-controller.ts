@@ -673,15 +673,7 @@ $(document).keydown(async (event) => {
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
-  const popups = document.querySelectorAll(".popupWrapper");
-
-  let popupVisible = false;
-  for (const popup of popups) {
-    if (!popup.classList.contains("hidden") === true) {
-      popupVisible = true;
-      break;
-    }
-  }
+  const popupVisible = Misc.isAnyPopupVisible();
 
   const allowTyping =
     pageTestActive &&
@@ -816,6 +808,9 @@ $(document).keydown(async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
     }
   }
 });
@@ -848,6 +843,10 @@ $("#wordsInput").on("input", (event) => {
     (event.target as HTMLInputElement).value = " ";
     return;
   }
+
+  const popupVisible = Misc.isAnyPopupVisible();
+
+  if (popupVisible) return;
 
   TestInput.setKeypressNotAfk();
 
@@ -888,6 +887,9 @@ $("#wordsInput").on("input", (event) => {
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
+  if (Config.tapeMode !== "off") {
+    TestUI.scrollTape();
+  }
 
   // force caret at end of input
   // doing it on next cycle because Chromium on Android won't let me edit

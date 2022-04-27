@@ -19,6 +19,7 @@ import * as PaceCaret from "../test/pace-caret";
 import * as TestInput from "../test/test-input";
 import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
+import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
@@ -1729,6 +1730,37 @@ const commandsHighlightMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
+const commandsTapeMode: MonkeyTypes.CommandsGroup = {
+  title: "Tape mode...",
+  configKey: "tapeMode",
+  list: [
+    {
+      id: "setTapeModeOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("off");
+      },
+    },
+    {
+      id: "setTapeModeLetter",
+      display: "letter",
+      configValue: "letter",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("letter");
+      },
+    },
+    {
+      id: "setTapeModeWord",
+      display: "word",
+      configValue: "word",
+      exec: (): void => {
+        UpdateConfig.setTapeMode("word");
+      },
+    },
+  ],
+};
+
 const commandsTimerStyle: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress style...",
   configKey: "timerStyle",
@@ -2289,7 +2321,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize1",
       display: "1x",
-      configValue: 1,
+      configValue: "1",
       exec: (): void => {
         UpdateConfig.setFontSize("1");
         TestLogic.restart();
@@ -2298,7 +2330,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize125",
       display: "1.25x",
-      configValue: 125,
+      configValue: "125",
       exec: (): void => {
         UpdateConfig.setFontSize("125");
         TestLogic.restart();
@@ -2307,7 +2339,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize15",
       display: "1.5x",
-      configValue: 15,
+      configValue: "15",
       exec: (): void => {
         UpdateConfig.setFontSize("15");
         TestLogic.restart();
@@ -2316,7 +2348,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize2",
       display: "2x",
-      configValue: 2,
+      configValue: "2",
       exec: (): void => {
         UpdateConfig.setFontSize("2");
         TestLogic.restart();
@@ -2325,7 +2357,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize3",
       display: "3x",
-      configValue: 3,
+      configValue: "3",
       exec: (): void => {
         UpdateConfig.setFontSize("3");
         TestLogic.restart();
@@ -2334,7 +2366,7 @@ const commandsFontSize: MonkeyTypes.CommandsGroup = {
     {
       id: "changeFontSize4",
       display: "4x",
-      configValue: 4,
+      configValue: "4",
       exec: (): void => {
         UpdateConfig.setFontSize("4");
         TestLogic.restart();
@@ -2949,6 +2981,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsHighlightMode,
     },
     {
+      id: "changeTapeMode",
+      display: "Tape mode...",
+      icon: "fa-tape",
+      subgroup: commandsTapeMode,
+    },
+    {
       id: "changeShowAverage",
       display: "Show average...",
       icon: "fa-chart-bar",
@@ -3243,6 +3281,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "importSettingsJSON",
       display: "Import settings JSON",
       icon: "fa-cog",
+      alias: "import config",
       input: true,
       exec: (input): void => {
         if (!input) return;
@@ -3263,6 +3302,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "exportSettingsJSON",
       display: "Export settings JSON",
       icon: "fa-cog",
+      alias: "export config",
       input: true,
       defaultValue: "",
     },
@@ -3273,6 +3313,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-egg",
       visible: false,
       subgroup: commandsMonkeyPowerLevel,
+    },
+    {
+      id: "shareTestSettings",
+      display: "Share test settings",
+      icon: "fa-share",
+      exec: async (): Promise<void> => {
+        ShareTestSettingsPopup.show();
+      },
     },
     {
       id: "clearSwCache",

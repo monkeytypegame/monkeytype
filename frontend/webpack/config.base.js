@@ -24,7 +24,7 @@ const htmlWebpackPlugins = [
 /** @type { import('webpack').Configuration } */
 const BASE_CONFIG = {
   entry: {
-    monkeytype: resolve(__dirname, "../src/scripts/index.ts"),
+    monkeytype: resolve(__dirname, "../src/ts/index.ts"),
   },
   resolve: { extensions: [".ts", ".js"] },
   output: {
