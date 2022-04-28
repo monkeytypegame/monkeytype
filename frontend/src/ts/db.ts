@@ -188,6 +188,7 @@ export async function getUserResults(): Promise<boolean> {
       }
       if (result.numbers === undefined) result.numbers = false;
       if (result.punctuation === undefined) result.punctuation = false;
+      if (result.quoteLength === undefined) result.quoteLength = -1;
     });
     dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
     return true;
