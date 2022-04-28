@@ -21,6 +21,10 @@
     {
       "name": "leaderboards",
       "description": "Leaderboard data and related operations"
+    },
+    {
+      "name": "results",
+      "description": "User results data and related operations"
     }
   ],
   "paths": {
@@ -63,6 +67,20 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/Stats"
+            }
+          }
+        }
+      }
+    },
+    "/results/last": {
+      "get": {
+        "tags": ["results"],
+        "summary": "Gets a user's last saved result",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Result"
             }
           }
         }
@@ -282,6 +300,130 @@
         "timestamp": {
           "type": "integer",
           "example": 1644438189583
+        }
+      }
+    },
+    "Result": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "6226b17aebc27a4a8d1ce04b"
+        },
+        "wpm": {
+          "type": "number",
+          "format": "double",
+          "example": 154.84
+        },
+        "rawWpm": {
+          "type": "number",
+          "format": "double",
+          "example": 154.84
+        },
+        "charStats": {
+          "type": "array",
+          "example": [44, 0, 0, 0]
+        },
+        "acc": {
+          "type": "number",
+          "format": "double",
+          "example": 100
+        },
+        "mode": {
+          "type": "string",
+          "example": "words"
+        },
+        "mode2": {
+          "type": "string",
+          "example": "10"
+        },
+        "quoteLength": {
+          "type": "integer",
+          "example": -1
+        },
+        "timestamp": {
+          "type": "integer",
+          "example": 1651141719000
+        },
+        "restartCount": {
+          "type": "integer",
+          "example": 0
+        },
+        "incompleteTestSeconds": {
+          "type": "number",
+          "format": "double",
+          "example": 14.5
+        },
+        "tags": {
+          "type": "array",
+          "example": ["6210edbfc4fdc8a1700e648b"]
+        },
+        "consistency": {
+          "type": "number",
+          "format": "double",
+          "example": 78.68
+        },
+        "keyConsistency": {
+          "type": "number",
+          "format": "double",
+          "example": 60.22
+        },
+        "chartData": {
+          "type": "object",
+          "properties": {
+            "wpm": {
+              "type": "array",
+              "example": [144, 144, 144, 154]
+            },
+            "raw": {
+              "type": "array",
+              "example": [150, 148, 124, 114]
+            },
+            "err": {
+              "type": "array",
+              "example": [0, 0, 0, 0]
+            }
+          }
+        },
+        "testDuration": {
+          "type": "number",
+          "format": "double",
+          "example": 3.41
+        },
+        "afkDuration": {
+          "type": "number",
+          "format": "double",
+          "example": 0
+        },
+        "keySpacingStats": {
+          "type": "object",
+          "properties": {
+            "average": {
+              "type": "number",
+              "format": "double",
+              "example": 77.61
+            },
+            "sd": {
+              "type": "number",
+              "format": "double",
+              "example": 33.31
+            }
+          }
+        },
+        "keyDurationStats": {
+          "type": "object",
+          "properties": {
+            "average": {
+              "type": "number",
+              "format": "double",
+              "example": 42.01
+            },
+            "sd": {
+              "type": "number",
+              "format": "double",
+              "example": 19.65
+            }
+          }
         }
       }
     }

@@ -45,6 +45,14 @@ export async function getResults(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const results = await ResultDAL.getResults(uid);
+  return new MonkeyResponse("Results retrieved", results);
+}
+
+export async function getLastResult(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const results = await ResultDAL.getLastResult(uid);
   return new MonkeyResponse("Result retrieved", results);
 }
 
