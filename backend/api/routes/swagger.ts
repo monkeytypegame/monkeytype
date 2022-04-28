@@ -39,7 +39,7 @@ function addSwaggerMiddlewares(app: Application): void {
   );
 
   app.use(
-    "/documentation",
+    ["/documentation", "/docs"],
     swaggerUi.serve,
     swaggerUi.setup(publicSwaggerSpec, SWAGGER_UI_OPTIONS)
   );
