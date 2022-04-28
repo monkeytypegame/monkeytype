@@ -49,7 +49,7 @@ const RESULT_SCHEMA = joi
     mode2: joi.alternatives().try(joi.number(), joi.string()).required(),
     numbers: joi.boolean().required(),
     punctuation: joi.boolean().required(),
-    quoteLength: joi.number().required(),
+    quoteLength: joi.number(),
     rawWpm: joi.number().required(),
     restartCount: joi.number().required(),
     smoothConsistency: joi.number().required(),

@@ -1299,7 +1299,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (Config.mode === "quote") {
     completedEvent.quoteLength = TestWords.randomQuote.group;
-    completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
+    completedEvent.language = Config.language.replace(/_\d*k$/g, "");
+  } else {
+    delete completedEvent.quoteLength;
   }
 
   // @ts-ignore TODO fix this
