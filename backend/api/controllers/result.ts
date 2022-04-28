@@ -298,8 +298,11 @@ export async function addResult(
   if (result.language === "english") delete result.language;
   if (result.numbers === false) delete result.numbers;
   if (result.punctuation === false) delete result.punctuation;
-
   if (result.mode !== "custom") delete result.customText;
+  if (result.restartCount === 0) delete result.restartCount;
+  if (result.incompleteTestSeconds === 0) delete result.incompleteTestSeconds;
+  if (result.afkDuration === 0) delete result.afkDuration;
+  if (result.tags.length === 0) delete result.tags;
 
   const addedResult = await ResultDAL.addResult(uid, result);
 

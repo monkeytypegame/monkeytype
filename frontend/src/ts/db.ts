@@ -189,6 +189,12 @@ export async function getUserResults(): Promise<boolean> {
       if (result.numbers === undefined) result.numbers = false;
       if (result.punctuation === undefined) result.punctuation = false;
       if (result.quoteLength === undefined) result.quoteLength = -1;
+      if (result.restartCount === undefined) result.restartCount = 0;
+      if (result.incompleteTestSeconds === undefined) {
+        result.incompleteTestSeconds = 0;
+      }
+      if (result.afkDuration === undefined) result.afkDuration = 0;
+      if (result.tags === undefined) result.tags = [];
     });
     dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
     return true;
