@@ -306,6 +306,15 @@ export async function getPersonalBests(
   return new MonkeyResponse("Personal bests retrieved", data);
 }
 
+export async function getStats(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const data = (await UserDAL.getStats(uid)) ?? null;
+  return new MonkeyResponse("Personal stats retrieved", data);
+}
+
 export async function getFavoriteQuotes(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {

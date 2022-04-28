@@ -511,6 +511,18 @@ export async function getPersonalBests(
   return user.personalBests?.[mode];
 }
 
+export async function getStats(
+  uid: string
+): Promise<{ [key: string]: number | undefined }> {
+  const user = await getUser(uid, "get stats");
+
+  return {
+    startedTests: user.startedTests,
+    completedTests: user.completedTests,
+    timeTyping: user.timeTyping,
+  };
+}
+
 export async function getFavoriteQuotes(
   uid
 ): Promise<MonkeyTypes.User["favoriteQuotes"]> {

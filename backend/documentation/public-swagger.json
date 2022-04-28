@@ -10,7 +10,7 @@
       "email": "jack@monkeytype.com"
     }
   },
-  "basePath": "/",
+  "basePath": "api.monkeytype.com/",
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "tags": [
@@ -49,6 +49,20 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/PersonalBest"
+            }
+          }
+        }
+      }
+    },
+    "/users/stats": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's typing stats data",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Stats"
             }
           }
         }
@@ -201,6 +215,24 @@
         "timestamp": {
           "type": "integer",
           "example": 1644438189583
+        }
+      }
+    },
+    "Stats": {
+      "type": "object",
+      "properties": {
+        "startedTests": {
+          "type": "integer",
+          "example": 578
+        },
+        "completedTests": {
+          "type": "integer",
+          "example": 451
+        },
+        "timeTyping": {
+          "type": "number",
+          "format": "double",
+          "example": 3941.6
         }
       }
     },
