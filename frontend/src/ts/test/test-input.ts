@@ -80,7 +80,7 @@ class Input {
     }
   }
 
-  getHistoryLast(): string {
+  getHistoryLast(): string | undefined {
     return this.history[this.history.length - 1];
   }
 }

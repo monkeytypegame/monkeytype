@@ -32,7 +32,7 @@
       "length": 62
     },
     {
-      "text": "public enum OperatingSystem {\n\tOSX, WIndows, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\",\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
+      "text": "public enum OperatingSystem {\n\tOSX, Windows, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\",\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
       "id": 5,
       "source": "Community contribution",
       "length": 201

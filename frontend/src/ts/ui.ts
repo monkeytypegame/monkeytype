@@ -5,6 +5,8 @@ import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
+import * as TestUI from "./test/test-ui";
+import { get as getActivePage } from "./states/active-page";
 
 export function updateKeytips(): void {
   if (Config.swapEscAndTab) {
@@ -76,20 +78,27 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedCaretUpdate = debounce(250, async () => {
+const debouncedEvent = debounce(250, async () => {
   Caret.updatePosition();
+  if (
+    Config.tapeMode !== "off" &&
+    getActivePage() === "test" &&
+    !TestUI.resultVisible
+  ) {
+    TestUI.scrollTape();
+  }
   setTimeout(() => {
     Caret.show();
   }, 250);
 });
 
-const throttledCaretHide = throttle(250, () => {
+const throttledEvent = throttle(250, () => {
   Caret.hide();
 });
 
 $(window).on("resize", () => {
-  throttledCaretHide();
-  debouncedCaretUpdate();
+  throttledEvent();
+  debouncedEvent();
 });
 
 ConfigEvent.subscribe((eventKey) => {
