@@ -32067,7 +32067,7 @@
     },
     {
       "text": "Now, if you two don't mind I'll be off to bed before either of you come up with another clever idea to get us killed - or worse, expelled!",
-      "source": "Harry Potter and the Philosopher’s Stone",
+      "source": "Harry Potter and the Philosopher's Stone",
       "length": 138,
       "id": 5425
     },
@@ -33477,7 +33477,7 @@
     },
     {
       "text": "He will spend hundreds of years travelling the world, learning all there is to know. He will learn every language. He will read every book. He will know every land. He will spend thousands of years creating stunning works of art. He will learn to meditate to control all pain. As wars will be fought and great loves found. And lost. And found. Lost. And found. And found. And found. And memories built upon memories until life runs on an endless loop. He will father hundreds of thousands of children whose own exponential offspring he'll slowly lose track of through the years. Whose millions of beautiful lives will all eventually be swept again from the Earth. And still, Bill will continue. He will learn more about life than any being in history, but death will forever be a stranger to him. People will come and go until names lose all meaning. Until people lose all meaning and vanish entirely from the world. And still, Bill will live on. He will befriend the next inhabitants of the Earth, beings of light who revere him as a god. And Bill will outlive them all. For millions and millions of years. Exploring, learning, living. Until the Earth is swallowed beneath his feet. Until the sun is long since gone. Until time loses all meaning, and the moment comes that he knows only the position of the stars and sees them whether his eyes are closed or open. Until he forgets his name and the place where he'd once come from. He lives, and he lives until all of the lights go out.",
-      "source": "It’s Such a Beautiful Day",
+      "source": "It's Such a Beautiful Day",
       "length": 1486,
       "id": 5682
     },
@@ -34622,7 +34622,7 @@
       "id": 5873
     },
     {
-      "text": "It’s the ship that made the Kessel run in less than twelve parsecs. I’ve outrun Imperial starships. Not the local bulk cruisers, mind you. I’m talking about the big Corellian ships, now. She’s fast enough for you, old man.",
+      "text": "It's the ship that made the Kessel run in less than twelve parsecs. I've outrun Imperial starships. Not the local bulk cruisers, mind you. I'm talking about the big Corellian ships, now. She's fast enough for you, old man.",
       "source": "Han Solo - Star Wars",
       "length": 222,
       "id": 5874
@@ -34916,7 +34916,7 @@
       "id": 5923
     },
     {
-      "text": "I’m just so tired and really bored of the way that things have been. I'm a lonely little fish inside a bowl where I can't swim. I'm a lion in a cage, I'm a machine with out the rage, I'm a early twenties six piece McNothing. It hurts to wake up in the morning cause my back is all messed up. I can't get a loan approvement cause I'm shit out of my luck. I've got a banjo tattoo and barely any attitude. But I need to suck it up and get a job.",
+      "text": "I'm just so tired and really bored of the way that things have been. I'm a lonely little fish inside a bowl where I can't swim. I'm a lion in a cage, I'm a machine with out the rage, I'm a early twenties six piece McNothing. It hurts to wake up in the morning cause my back is all messed up. I can't get a loan approvement cause I'm shit out of my luck. I've got a banjo tattoo and barely any attitude. But I need to suck it up and get a job.",
       "source": "Local News Legend - Get the Fuck Outta Here",
       "length": 442,
       "id": 5924
@@ -34928,10 +34928,46 @@
       "id": 5925
     },
     {
-      "text":"I started to move and to make some kind of joke but Joey mumbled something and I put my head down to hear. Joey raised his head as I lowered mine and we kissed, as it were, by accident. Then, for the first time in my life, I was really aware of another person's body, of another person's smell.",
-      "source":"James Baldwin - Giovanni's Room",
-      "length": 294,
+      "text": "I'm not interested in stories about the past or any crap of that kind because the woods are burning, boys, you understand? There's a big blaze going on all around. I was fired today.",
+      "source": "Death of a Salesman",
+      "length": 182,
       "id": 5926
+    },
+    {
+      "text": "I realized that selling was the greatest career a man could want. 'Cause what could be more satisfying than to be able to go, at the age of eighty-four, into twenty or thirty different cities, and pick up a phone, and be remembered and loved and helped by so many different people?",
+      "source": "Death of a Salesman",
+      "length": 281,
+      "id": 5927
+    },
+    {
+      "text": "I put thirty-four years into this firm, and now I can't pay my insurance! You can't eat the orange and throw the peel away - a man is not a piece of fruit!",
+      "source": "Death of a Salesman",
+      "length": 155,
+      "id": 5928
+    },
+    {
+      "text": "Willy, when're you gonna realize that them things don't mean anything? You named him Howard, but you can't sell that. The only thing you got in this world is what you can sell. And the funny thing is that you're a salesman, and you don't know that.",
+      "source": "Death of a Salesman",
+      "length": 248,
+      "id": 5929
+    },
+    {
+      "text": "How the hell did I ever get the idea I was a salesman there? I even believed myself that I'd been a salesman for him! And then he gave me one look and I realized what a ridiculous lie my whole life has been. We've been talking in a dream for fifteen years. I was a shipping clerk.",
+      "source": "Death of a Salesman",
+      "length": 280,
+      "id": 5930
+    },
+    {
+      "text": "It's not what you do. It's who you know and the smile on your face! It's contacts, contacts! The whole wealth of Alaska passes over the lunch table at the Commodore Hotel, and that's the wonder, the wonder of this country, that a man can end with diamonds here on the basis of being liked!",
+      "source": "Death of a Salesman",
+      "length": 289,
+      "id": 5931
+    },
+    {
+      "text": "I started to move and to make some kind of joke but Joey mumbled something and I put my head down to hear. Joey raised his head as I lowered mine and we kissed, as it were, by accident. Then, for the first time in my life, I was really aware of another person's body, of another person's smell.",
+      "source": "James Baldwin - Giovanni's Room",
+      "length": 294,
+      "id": 5932
     }
   ]
 }
