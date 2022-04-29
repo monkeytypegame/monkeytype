@@ -4,6 +4,7 @@
   --main-color: #83616e;
   --caret-color: #ebe6ea;
   --sub-color: #48373d;
+  --sub-alt-color: #ab989e;
   --text-color: #ebe6ea;
   --error-color: #921341;
   --error-extra-color: #640b2c;
@@ -15,6 +16,6 @@
   border-bottom: double 4px var(--error-color);
 } */
 
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   color: var(--caret-color);
 }

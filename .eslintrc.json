@@ -5,7 +5,6 @@
     "node": true
   },
   "globals": {
-    "firebase": "readonly",
     "$": "readonly",
     "jQuery": "readonly",
     "html2canvas": "readonly",
@@ -24,7 +23,6 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  // "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
     "indent": ["off"],
@@ -74,7 +72,8 @@
           "error",
           { "argsIgnorePattern": "^(_|e|event)" }
         ],
-        "@typescript-eslint/no-var-requires": "error"
+        "@typescript-eslint/no-var-requires": "error",
+        "@typescript-eslint/no-this-alias": "off"
       }
       // "parserOptions": {
       //   "project": "./tsconfig.json"

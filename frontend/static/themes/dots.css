@@ -3,6 +3,7 @@
   --caret-color: #fff;
   --main-color: #fff;
   --sub-color: #676e8a;
+  --sub-alt-color: #1b1e2c;
   --text-color: #fff;
   --error-color: #da3333;
   --error-extra-color: #791717;
@@ -14,13 +15,13 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .icon-button,
+#top.focus #menu .text-button,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: var(--sub-color);
 }
 
-#menu .icon-button {
+#menu .text-button {
   border-radius: 10rem !important;
   color: #121520;
 }
@@ -34,28 +35,28 @@
     border-radius: 10rem;
 } */
 
-#menu .icon-button:nth-child(1) {
+#menu .text-button:nth-child(1) {
   background: #f94348;
 }
 
-#menu .icon-button:nth-child(2) {
+#menu .text-button:nth-child(2) {
   background: #9261ff;
 }
 
-#menu .icon-button:nth-child(3) {
+#menu .text-button:nth-child(3) {
   background: #3cc5f8;
 }
 
-#menu .icon-button:nth-child(4) {
+#menu .text-button:nth-child(4) {
   background: #4acb8a;
 }
 
-#menu .icon-button:nth-child(5) {
+#menu .text-button:nth-child(5) {
   background: #ffd543;
 }
 
-#menu .icon-button:nth-child(6),
-#menu .icon-button:nth-child(7) {
+#menu .text-button:nth-child(6),
+#menu .text-button:nth-child(7) {
   background: #ff9349;
 }
 
@@ -68,6 +69,6 @@
     border-radius: 10rem;
 } */
 
-#top.focus #menu .icon-button.discord::after {
+#top.focus #menu .text-button.discord::after {
   border-color: transparent;
 }

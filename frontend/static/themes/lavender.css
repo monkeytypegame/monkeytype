@@ -3,6 +3,7 @@
   --main-color: #e4e3e9;
   --caret-color: #e4e3e9;
   --sub-color: #e4e3e9;
+  --sub-alt-color: #a19bb9;
   --text-color: #2f2a41;
   --error-color: #ca4754;
   --error-extra-color: #7e2a33;
@@ -10,12 +11,12 @@
   --colorful-error-extra-color: #7e2a33;
 }
 
-#menu .icon-button {
+#menu .text-button {
   border-radius: 10rem !important;
   background: #2f2a41;
   color: #e4e3e9;
 }
 
-#menu .icon-button:hover {
+#menu .text-button:hover {
   color: #ada6c2;
 }

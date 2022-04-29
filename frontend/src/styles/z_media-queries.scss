@@ -33,7 +33,7 @@
     }
   }
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr max-content;
   }
 }
 
@@ -174,7 +174,7 @@
       line-height: 0.8rem;
       margin-top: -0.5rem;
 
-      .icon-button {
+      .text-button {
         padding: 0.25rem;
       }
     }
@@ -390,6 +390,14 @@
 }
 
 @media only screen and (max-width: 550px) {
+  #cookiePopupWrapper {
+    #cookiePopup,
+    .extensionMessage {
+      right: 1rem;
+      bottom: 1rem;
+      width: calc(100vw - 2rem);
+    }
+  }
   #keymap {
     .row {
       height: 1.25rem;
@@ -489,7 +497,7 @@
       }
     }
     #menu {
-      .icon-button {
+      .text-button {
         padding: 0;
       }
     }

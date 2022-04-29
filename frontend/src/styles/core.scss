@@ -11,10 +11,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Noto+Naskh+Arabic&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap");
 
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono";
+  --font: "Roboto Mono", "Vazirmatn";
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
 }
@@ -97,20 +98,26 @@ label.checkbox {
     width: 0;
     height: 0;
     display: none;
+    user-select: none;
 
     & ~ .customTextCheckbox {
-      width: 12px;
-      height: 12px;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 2px;
-      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-      display: inline-block;
-      margin: 0 0.5rem 0 0.25rem;
-      transition: 0.25s;
+      width: 1.25rem;
+      height: 1.25rem;
+      background: var(--sub-alt-color);
+      border-radius: calc(var(--roundness) / 2);
+      display: inline-grid;
+      margin: 0 0.5rem 0 0;
+      user-select: none;
+      cursor: pointer;
+      & .check {
+        opacity: 0;
+        color: var(--main-color);
+        transition: 0.125s;
+      }
     }
 
-    &:checked ~ .customTextCheckbox {
-      background: var(--main-color);
+    &:checked ~ .customTextCheckbox .check {
+      opacity: 1;
     }
   }
 }
@@ -131,6 +138,7 @@ label.checkbox {
   z-index: 999;
   grid-template-rows: auto 1fr auto;
   width: 100%;
+  transition: padding-top 0.125s;
   &.wide125 {
     max-width: 1250px;
   }
@@ -150,7 +158,7 @@ key {
   background-color: var(--sub-color);
   /* font-weight: bold; */
   padding: 0.1rem 0.3rem;
-  margin: 3px 0;
+  margin: 0rem 0.5rem;
   border-radius: 0.1rem;
   display: inline-block;
   font-size: 0.7rem;
@@ -176,7 +184,7 @@ key {
       .bar {
         width: 20rem;
         height: 0.5rem;
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-alt-color);
         border-radius: var(--roundness);
         .fill {
           height: 100%;
@@ -241,18 +249,47 @@ key {
 .button {
   color: var(--text-color);
   cursor: pointer;
-  transition: 0.25s;
-  padding: 0.4rem;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.5rem;
   border-radius: var(--roundness);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   text-align: center;
   user-select: none;
   -webkit-user-select: none;
-  // display: grid;
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1rem;
+  line-height: 1.25rem;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+
+  &.active {
+    background: var(--main-color);
+    color: var(--bg-color);
+    &:hover {
+      background: var(--text-color);
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.33;
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
 
   &:hover {
     color: var(--bg-color);
@@ -260,89 +297,77 @@ key {
     outline: none;
   }
   &:focus {
-    color: var(--main-color);
+    outline: 2px solid var(--text-color);
+  }
+  &:active {
     background: var(--sub-color);
-    outline: none;
-  }
-
-  &.active {
-    background: var(--main-color);
     color: var(--bg-color);
-    &:hover {
-      // color: var(--text-color);
-      background: var(--text-color);
-      outline: none;
-    }
-    &:focus {
-      color: var(--bg-color);
-      background: var(--main-color);
-      outline: none;
-    }
-  }
-
-  &.disabled {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
-    &:hover {
-      color: var(--text-color);
-      background: rgba(0, 0, 0, 0.1);
-      outline: none;
-    }
-  }
-
-  &.disabled.active {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
-    &:hover {
-      color: var(--bg-color);
-      background: var(--main-color);
-      outline: none;
-    }
   }
 }
 
 .text-button {
-  transition: 0.25s;
   color: var(--sub-color);
   cursor: pointer;
-  margin-right: 0.25rem;
-  cursor: pointer;
-  outline: none;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.5rem;
+  border-radius: var(--roundness);
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  align-content: center;
+  height: min-content;
+  height: -moz-min-content;
+  line-height: 1.25rem;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  width: max-content;
+  width: -moz-max-content;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.25rem;
+  text-decoration: none;
+
+  .fas,
+  .far {
+    display: grid;
+    place-content: center center;
+  }
 
   &.active {
     color: var(--main-color);
+    &:hover {
+      color: var(--text-color);
+    }
+    &:active {
+      color: var(--sub-color);
+    }
   }
 
-  &:hover,
-  &:focus {
-    color: var(--text-color);
+  &.disabled {
+    opacity: 0.33;
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
   }
-}
-
-.icon-button {
-  display: grid;
-  grid-auto-flow: column;
-  align-content: center;
-  transition: 0.25s;
-  padding: 0.5rem;
-  border-radius: var(--roundness);
-  cursor: pointer;
 
   &:hover {
     color: var(--text-color);
   }
   &:focus {
-    // background: var(--sub-color);
-    color: var(--sub-color);
-    border: none;
+    color: var(--text-color);
     outline: none;
   }
-  &.disabled {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
+  &:active {
+    color: var(--sub-color);
   }
 }
 
@@ -355,13 +380,14 @@ key {
   height: 4rem;
   text-align: center;
   line-height: 4rem;
-  background: var(--bg-color);
+  background: var(--sub-alt-color);
   border-radius: 99rem;
   z-index: 99;
   cursor: pointer;
   color: var(--sub-color);
   transition: 0.25s;
   &:hover {
-    color: var(--text-color);
+    background: var(--text-color);
+    color: var(--bg-color);
   }
 }

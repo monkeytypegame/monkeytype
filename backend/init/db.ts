@@ -4,7 +4,9 @@ import {
   Db,
   MongoClient,
   MongoClientOptions,
+  WithId,
 } from "mongodb";
+import Logger from "../utils/logger";
 
 class DatabaseClient {
   static mongoClient: MongoClient;
@@ -53,8 +55,8 @@ class DatabaseClient {
       this.db = this.mongoClient.db(DB_NAME);
       this.connected = true;
     } catch (error) {
-      console.error(error.message);
-      console.error(
+      Logger.error(error.message);
+      Logger.error(
         "Failed to connect to database. Exiting with exit status code 1."
       );
       process.exit(1);
@@ -67,9 +69,10 @@ class DatabaseClient {
     }
   }
 
-  static collection<T>(collectionName: string): Collection<T> {
+  static collection<T>(collectionName: string): Collection<WithId<T>> {
     if (!(collectionName in this.collections)) {
-      this.collections[collectionName] = this.db.collection<T>(collectionName);
+      this.collections[collectionName] =
+        this.db.collection<WithId<T>>(collectionName);
     }
 
     return this.collections[collectionName];

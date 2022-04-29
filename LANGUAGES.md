@@ -16,10 +16,12 @@ First you will have to make a personal copy of the Monkeytype repository, also k
 Once you have forked the repository you can now add your language. Create a new json file in `./frontend/static/languages/`, named as the language name and the number of words, e.g. `language_1k.json`. If there are less than 1,000 words, simply name the file after the language (e.g. `language.json`). Note that a minimum of 200 words are required.
 
 The contents of the file should be as follows:
+
 ```
 {
   "name": "language",
   "leftToRight": true,
+  "ligatures": true,
   "bcp47": "es-ES",
   "words": [
     "words",
@@ -27,7 +29,8 @@ The contents of the file should be as follows:
 }
 ```
 
-It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `leftToRight` indicates how the language is written. If it is written left to right then put `true`, otherwise put `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). Finally, add your list of words to the `words` field.
+It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `leftToRight` indicates how the language is written. If it is written left to right then put `true`, otherwise put `false`.
+`ligatures` A ligature occurs when multiple letters are joined together to form a character [more details](https://en.wikipedia.org/wiki/Ligature_(writing)). If there's joining in the words, which is the case in languages like (Arabic, Malayalam, Persian, Sanskrit, Central_Kurdish... etc.), then set the value to `true`, otherwise set to `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). Finally, add your list of words to the `words` field.
 
 In addition to the language file, you need to add your language to the `_groups.json` and `_list.json` files in the same directory. Add the name of the language to the `_groups.json` file like so:
 

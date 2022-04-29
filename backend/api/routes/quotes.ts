@@ -1,7 +1,7 @@
 import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
-import QuotesController from "../controllers/quotes";
+import * as QuoteController from "../controllers/quote";
 import * as RateLimit from "../../middlewares/rate-limit";
 import {
   asyncHandler,
@@ -10,7 +10,7 @@ import {
   validateRequest,
 } from "../../middlewares/api-utils";
 
-const quotesRouter = Router();
+const router = Router();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
@@ -18,15 +18,15 @@ const checkIfUserIsQuoteMod = checkUserPermissions({
   },
 });
 
-quotesRouter.get(
+router.get(
   "/",
   RateLimit.newQuotesGet,
   authenticateRequest(),
   checkIfUserIsQuoteMod,
-  asyncHandler(QuotesController.getQuotes)
+  asyncHandler(QuoteController.getQuotes)
 );
 
-quotesRouter.post(
+router.post(
   "/",
   validateConfiguration({
     criteria: (configuration) => {
@@ -46,10 +46,10 @@ quotesRouter.post(
     },
     validationErrorMessage: "Please fill all the fields",
   }),
-  asyncHandler(QuotesController.addQuote)
+  asyncHandler(QuoteController.addQuote)
 );
 
-quotesRouter.post(
+router.post(
   "/approve",
   RateLimit.newQuotesAction,
   authenticateRequest(),
@@ -62,10 +62,10 @@ quotesRouter.post(
     validationErrorMessage: "Please fill all the fields",
   }),
   checkIfUserIsQuoteMod,
-  asyncHandler(QuotesController.approveQuote)
+  asyncHandler(QuoteController.approveQuote)
 );
 
-quotesRouter.post(
+router.post(
   "/reject",
   RateLimit.newQuotesAction,
   authenticateRequest(),
@@ -75,10 +75,10 @@ quotesRouter.post(
     },
   }),
   checkIfUserIsQuoteMod,
-  asyncHandler(QuotesController.refuseQuote)
+  asyncHandler(QuoteController.refuseQuote)
 );
 
-quotesRouter.get(
+router.get(
   "/rating",
   RateLimit.quoteRatingsGet,
   authenticateRequest(),
@@ -88,10 +88,10 @@ quotesRouter.get(
       language: joi.string().required(),
     },
   }),
-  asyncHandler(QuotesController.getRating)
+  asyncHandler(QuoteController.getRating)
 );
 
-quotesRouter.post(
+router.post(
   "/rating",
   RateLimit.quoteRatingsSubmit,
   authenticateRequest(),
@@ -102,10 +102,10 @@ quotesRouter.post(
       language: joi.string().required(),
     },
   }),
-  asyncHandler(QuotesController.submitRating)
+  asyncHandler(QuoteController.submitRating)
 );
 
-quotesRouter.post(
+router.post(
   "/report",
   validateConfiguration({
     criteria: (configuration) => {
@@ -137,7 +137,7 @@ quotesRouter.post(
       return !user.cannotReport;
     },
   }),
-  asyncHandler(QuotesController.reportQuote)
+  asyncHandler(QuoteController.reportQuote)
 );
 
-export default quotesRouter;
+export default router;

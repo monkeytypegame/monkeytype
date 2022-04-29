@@ -1,3 +1,5 @@
+type ObjectId = import("mongodb").ObjectId;
+
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
@@ -24,6 +26,12 @@ declare namespace MonkeyTypes {
     enableSavingResults: {
       enabled: boolean;
     };
+    useRedisForBotTasks: {
+      enabled: boolean;
+    };
+    favoriteQuotes: {
+      maxFavorites: number;
+    };
   }
 
   interface DecodedToken {
@@ -46,27 +54,69 @@ declare namespace MonkeyTypes {
   interface User {
     // TODO, Complete the typings for the user model
     addedAt: number;
-    bananas: number;
-    completedTests: number;
+    verified?: boolean;
+    bananas?: number;
+    completedTests?: number;
     discordId?: string;
     email: string;
-    lastNameChange: number;
-    lbMemory: object;
-    lbPersonalBests: object;
+    lastNameChange?: number;
+    lbMemory?: object;
+    lbPersonalBests?: LbPersonalBests;
     name: string;
-    personalBests: object;
-    quoteRatings?: Record<string, Record<string, number>>;
-    startedTests: number;
-    tags: object[];
-    timeTyping: number;
+    customThemes?: CustomTheme[];
+    personalBests?: PersonalBests;
+    quoteRatings?: UserQuoteRatings;
+    startedTests?: number;
+    tags?: UserTag[];
+    timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
+    favoriteQuotes?: Record<string, string[]>;
+  }
+
+  type UserQuoteRatings = Record<string, Record<string, number>>;
+
+  interface LbPersonalBests {
+    time: {
+      [key: number]: {
+        [key: string]: PersonalBest;
+      };
+    };
+  }
+
+  interface UserTag {
+    _id: ObjectId;
+    name: string;
+    personalBests?: PersonalBests;
+  }
+
+  interface LeaderboardEntry {
+    _id: ObjectId;
+    acc: number;
+    consistency: number;
+    difficulty: Difficulty;
+    lazyMode: boolean;
+    language: string;
+    punctuation: boolean;
+    raw: number;
+    wpm: number;
+    timestamp: number;
+    uid: string;
+    name: string;
+    rank: number;
+  }
+
+  interface CustomTheme {
+    _id: ObjectId;
+    name: string;
+    colors: string[];
   }
 
   interface ApeKey {
+    _id: ObjectId;
     uid: string;
     name: string;
     hash: string;
@@ -75,6 +125,16 @@ declare namespace MonkeyTypes {
     lastUsedOn: number;
     useCount: number;
     enabled: boolean;
+  }
+
+  interface NewQuote {
+    _id: ObjectId;
+    text: string;
+    source: string;
+    language: string;
+    submittedBy: string;
+    timestamp: number;
+    approved: boolean;
   }
 
   type Mode = "time" | "words" | "quote" | "zen" | "custom";
@@ -103,9 +163,9 @@ declare namespace MonkeyTypes {
       [key: number]: PersonalBest[];
     };
     quote: { [quote: string]: PersonalBest[] };
-    custom: { custom: PersonalBest[] };
+    custom: { custom?: PersonalBest[] };
     zen: {
-      zen: PersonalBest[];
+      zen?: PersonalBest[];
     };
   }
 
@@ -122,7 +182,7 @@ declare namespace MonkeyTypes {
   }
 
   interface Result<M extends Mode> {
-    _id: string;
+    _id: ObjectId;
     wpm: number;
     rawWpm: number;
     charStats: number[];
@@ -185,6 +245,7 @@ declare namespace MonkeyTypes {
   type ReportTypes = "quote";
 
   interface Report {
+    _id: ObjectId;
     id: string;
     type: ReportTypes;
     timestamp: number;

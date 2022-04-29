@@ -50,7 +50,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
    - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
-1. Within the frontend directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -64,17 +64,25 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - Run `firebase projects:list` to find your firebase project id.
 
-1. Generate a Firebase Admin private key
+1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
 
-   - In your Firebase console, go to Project Settings > Service Accounts
-   - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
+   - To find it, go to the Firebase console
+   - Navigate to `Project Settings > General > Your apps`
+     - If there are no apps in your project, create a new web app
+   - In the `SDK setup and configuration` section, select `npm`
+   - The Firebase config will be visible below
 
-1. Enable Firebase Authentication
+1. Enable Firebase Authentication (optional)
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email and save
+
+1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
+
+   - In your Firebase console, go to Project Settings > Service Accounts
+   - Click "Generate New Private Key"
+   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
 #### Mongo Setup
 
@@ -96,7 +104,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 1. Run `npm run install:all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install:windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run start:dev` (`npm run start:dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+2. Run `npm run dev` (`npm run dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 **Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
 
@@ -136,6 +144,8 @@ Before submitting a theme make sure...
 - Verify the `length` property is correct (length of the text in characters)
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
+
+(If you want to contribute quotes but don't know how, check [QUOTES.md](https://github.com/teddinotteddy/monkeytype/blob/8d5ffde578030a07458cec391e862f8f3cd5b4b4/QUOTES.md))
 
 ## Questions
 
