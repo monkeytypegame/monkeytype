@@ -71,6 +71,8 @@ export async function updateTags(
 export async function addResult(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
+  // todo remove
+  return new MonkeyResponse("Result added");
   const { uid } = req.ctx.decodedToken;
 
   const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;

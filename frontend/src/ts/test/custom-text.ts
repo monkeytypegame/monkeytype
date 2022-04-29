@@ -1,3 +1,5 @@
+import * as TribeConfig from "../tribe/tribe-config";
+
 export let text = [
   "The",
   "quick",
@@ -15,28 +17,40 @@ export let word: number;
 export let time: number;
 export let delimiter = " ";
 
-export function setText(txt: string[]): void {
+export function setText(txt: string[], tribeOverride = false): void {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   text = txt;
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setIsWordRandom(val: boolean): void {
+export function setIsWordRandom(val: boolean, tribeOverride = false): void {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   isWordRandom = val;
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setIsTimeRandom(val: boolean): void {
+export function setIsTimeRandom(val: boolean, tribeOverride = false): void {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   isTimeRandom = val;
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setTime(val: number): void {
+export function setTime(val: number, tribeOverride = false): void {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   time = val;
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setWord(val: number): void {
+export function setWord(val: number, tribeOverride = false): void {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   word = val;
+  if (!tribeOverride) TribeConfig.sync();
 }
 
-export function setDelimiter(val: string): void {
+export function setDelimiter(val: string, tribeOverride = false): void {
+  if (!TribeConfig.canChange(tribeOverride)) return;
   delimiter = val;
+  if (!tribeOverride) TribeConfig.sync();
 }
 
 type CustomTextObject = { [key: string]: string };

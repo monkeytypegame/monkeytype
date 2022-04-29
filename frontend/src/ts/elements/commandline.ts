@@ -2,12 +2,20 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
+import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
 import { Auth } from "../firebase";
+import * as PractiseWords from "../test/practise-words";
+import * as SimplePopups from "../popups/simple-popups";
+import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
+import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
+import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as QuoteSearchPopupWrapper from "../popups/quote-search-popup";
+import * as TribeStartRacePopup from "../popups/tribe-start-race-popup"; // Rizwan TODO: This will start appearing once the popups
 import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
@@ -400,8 +408,32 @@ $(document).ready(() => {
       const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
-
-      if (!$("#commandLineWrapper").hasClass("hidden")) {
+      if (!$("#leaderboardsWrapper").hasClass("hidden")) {
+        //maybe add more condition for closing other dialogs in the future as well
+        event.preventDefault();
+        Leaderboards.hide();
+      } else if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        PractiseWords.hidePopup();
+      } else if (!$("#simplePopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        SimplePopups.hide();
+      } else if (!$("#customWordAmountPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        CustomWordAmountPopup.hide();
+      } else if (!$("#customTestDurationPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        CustomTestDurationPopup.hide();
+      } else if (!$("#customTextPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        CustomTextPopup.hide();
+      } else if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        QuoteSearchPopupWrapper.hide();
+      } else if (!$("#tribeStartRacePopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        TribeStartRacePopup.hide();
+      } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (CommandlineLists.current.length > 1) {
           CommandlineLists.current.pop();
           $("#commandLine").removeClass("allCommands");

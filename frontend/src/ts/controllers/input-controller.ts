@@ -28,6 +28,7 @@ import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
+import * as Tribe from "../tribe/tribe";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -629,14 +630,28 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
             ManualRestart.reset();
           }
           event.preventDefault();
-          if (
-            TestActive.get() &&
-            Config.repeatQuotes === "typing" &&
-            Config.mode === "quote"
-          ) {
-            TestLogic.restart(true, false, event);
+          if (Tribe.state >= 5) {
+            if (Tribe.getSelf().isLeader) {
+              if (Tribe.state === 5 || Tribe.state === 22) {
+                Tribe.initRace();
+              }
+            } else if (
+              Tribe.state === 5 ||
+              Tribe.state === 21 ||
+              Tribe.state === 22
+            ) {
+              Tribe.socket.emit(`room_ready_update`);
+            }
           } else {
-            TestLogic.restart(false, false, event);
+            if (
+              TestActive.get() &&
+              Config.repeatQuotes === "typing" &&
+              Config.mode === "quote"
+            ) {
+              TestLogic.restart(true, false, event);
+            } else {
+              TestLogic.restart(false, false, event);
+            }
           }
         } else {
           event.preventDefault();
@@ -657,14 +672,43 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
           setWordsInput(" " + TestInput.input.current);
         }
       }
+    } else if ($(".pageTribe").hasClass("active")) {
+      if (Tribe.state >= 5) {
+        if (Tribe.getSelf().isLeader) {
+          if (Tribe.state === 5 || Tribe.state === 22) {
+            Tribe.initRace();
+          }
+        } else if (
+          Tribe.state === 5 ||
+          Tribe.state === 21 ||
+          Tribe.state === 22
+        ) {
+          Tribe.socket.emit(`room_ready_update`);
+        }
+      } else {
+        PageController.change("test");
+      }
     } else if (Config.quickTab) {
+      //not on the test page
+
+      // if (Tribe.state === 5 || Tribe.state === 22) {
+      //   if (Tribe.getSelf().isLeader) {
+      //     Tribe.initRace();
+      //   }else {
+      //     Tribe.socket.emit(`room_ready_update`);
+      //   }
+      // }
       event.preventDefault();
-      PageController.change("test");
+      if (Tribe.state >= 5) {
+        PageController.change("tribe");
+      } else {
+        PageController.change("test");
+      }
     }
   }
 }
 
-$(document).keydown(async (event) => {
+$(document).on("keydown", async (event) => {
   if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
@@ -690,11 +734,20 @@ $(document).keydown(async (event) => {
     }
   }
 
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+    event.preventDefault();
+    return;
+  }
+
   //tab
   if (
     (event.key == "Tab" && !Config.swapEscAndTab) ||
     (event.key == "Escape" && Config.swapEscAndTab)
   ) {
+    if ([10, 11, 12].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+      event.preventDefault();
+      return;
+    }
     handleTab(event, popupVisible);
   }
 
@@ -815,8 +868,13 @@ $(document).keydown(async (event) => {
   }
 });
 
-$("#wordsInput").keyup((event) => {
+$("#wordsInput").on("keyup", (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+    event.preventDefault();
+    return;
+  }
+
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
     event.preventDefault();
     return;
   }
@@ -847,6 +905,11 @@ $("#wordsInput").on("input", (event) => {
   const popupVisible = Misc.isAnyPopupVisible();
 
   if (popupVisible) return;
+
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+    event.preventDefault();
+    return;
+  }
 
   TestInput.setKeypressNotAfk();
 

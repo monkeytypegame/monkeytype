@@ -11,6 +11,7 @@ import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
+import * as TribeConfig from "./tribe/tribe-config";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -79,8 +80,13 @@ export async function saveFullConfigToLocalStorage(
 }
 
 //numbers
-export function setNumbers(numb: boolean, nosave?: boolean): boolean {
+export function setNumbers(
+  numb: boolean,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("numbers", numb, ["boolean"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   if (config.mode === "quote") {
     numb = false;
@@ -92,14 +98,20 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
   saveToLocalStorage("numbers", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("numbers", config.numbers);
 
   return true;
 }
 
 //punctuation
-export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
+export function setPunctuation(
+  punc: boolean,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("punctuation", punc, ["boolean"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   if (config.mode === "quote") {
     punc = false;
@@ -111,12 +123,17 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
   saveToLocalStorage("punctuation", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("punctuation", config.punctuation);
 
   return true;
 }
 
-export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
+export function setMode(
+  mode: MonkeyTypes.Mode,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (
     !isConfigValueValid("mode", mode, [
       ["time", "words", "quote", "zen", "custom"],
@@ -124,6 +141,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   ) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
@@ -143,6 +161,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     }
   }
   saveToLocalStorage("mode", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
   return true;
@@ -197,16 +216,19 @@ export function setSoundVolume(
 //difficulty
 export function setDifficulty(
   diff: MonkeyTypes.Difficulty,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (
     !isConfigValueValid("difficulty", diff, [["normal", "expert", "master"]])
   ) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.difficulty = diff;
   saveToLocalStorage("difficulty", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("difficulty", config.difficulty, nosave);
 
   return true;
@@ -224,7 +246,13 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
   return true;
 }
 
-export function setFunbox(funbox: string, nosave?: boolean): boolean {
+export function setFunbox(
+  funbox: string,
+  nosave?: boolean,
+  tribeOverride?: boolean
+): boolean {
+  // Rizwan TODO: Merge from the config.js on the newtribe branch
+  console.log(tribeOverride); // Rizwan TODO: Remove this later
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
 
   const val = funbox ? funbox : "none";
@@ -277,17 +305,20 @@ export function setChartStyle(
 
 export function setStopOnError(
   soe: MonkeyTypes.StopOnError,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("stop on error", soe, [["off", "word", "letter"]])) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.stopOnError = soe;
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
   }
   saveToLocalStorage("stopOnError", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 
   return true;
@@ -405,24 +436,33 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 //min wpm
 export function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.minWpm = minwpm;
   saveToLocalStorage("minWpm", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
 
   return true;
 }
 
-export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
+export function setMinWpmCustomSpeed(
+  val: number,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.minWpmCustomSpeed = val;
   saveToLocalStorage("minWpmCustomSpeed", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
 
   return true;
@@ -431,22 +471,31 @@ export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
 //min acc
 export function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("min acc", min, [["off", "custom"]])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.minAcc = min;
   saveToLocalStorage("minAcc", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
 
   return true;
 }
 
-export function setMinAccCustom(val: number, nosave?: boolean): boolean {
+export function setMinAccCustom(
+  val: number,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.minAccCustom = val;
   saveToLocalStorage("minAccCustom", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
 
   return true;
@@ -455,26 +504,35 @@ export function setMinAccCustom(val: number, nosave?: boolean): boolean {
 //min burst
 export function setMinBurst(
   min: MonkeyTypes.MinimumBurst,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("min burst", min, [["off", "fixed", "flex"]])) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.minBurst = min;
   saveToLocalStorage("minBurst", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
 
   return true;
 }
 
-export function setMinBurstCustomSpeed(val: number, nosave?: boolean): boolean {
+export function setMinBurstCustomSpeed(
+  val: number,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("min burst custom speed", val, ["number"])) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.minBurstCustomSpeed = val;
   saveToLocalStorage("minBurstCustomSpeed", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
 
   return true;
@@ -971,9 +1029,11 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 //mode
 export function setTimeConfig(
   time: MonkeyTypes.TimeModes,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("time", time, ["number"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
@@ -987,6 +1047,7 @@ export function setTimeConfig(
     "#top .config .time .text-button[timeConfig='" + timeCustom + "']"
   ).addClass("active");
   saveToLocalStorage("time", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("time", config.time);
 
   return true;
@@ -996,7 +1057,8 @@ export function setTimeConfig(
 export function setQuoteLength(
   len: MonkeyTypes.QuoteLength[] | MonkeyTypes.QuoteLength,
   nosave?: boolean,
-  multipleMode?: boolean
+  multipleMode?: boolean,
+  tribeOverride = false
 ): boolean {
   if (
     !isConfigValueValid("quote length", len, [
@@ -1006,6 +1068,7 @@ export function setQuoteLength(
   ) {
     return false;
   }
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   if (Array.isArray(len)) {
     //config load
@@ -1037,6 +1100,7 @@ export function setQuoteLength(
     ).addClass("active");
   });
   saveToLocalStorage("quoteLength", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 
   return true;
@@ -1044,9 +1108,11 @@ export function setQuoteLength(
 
 export function setWordCount(
   wordCount: MonkeyTypes.WordsModes,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
@@ -1063,6 +1129,7 @@ export function setWordCount(
     "#top .config .wordCount .text-button[wordCount='" + wordCustom + "']"
   ).addClass("active");
   saveToLocalStorage("words", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("words", config.words);
 
   return true;
@@ -1361,14 +1428,20 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setLazyMode(val: boolean, nosave?: boolean): boolean {
+export function setLazyMode(
+  val: boolean,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("lazy mode", val, ["boolean"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   if (!val) {
     val = false;
   }
   config.lazyMode = val;
   saveToLocalStorage("lazyMode", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 
   return true;
@@ -1403,12 +1476,18 @@ export function setCustomThemeColors(
   return true;
 }
 
-export function setLanguage(language: string, nosave?: boolean): boolean {
+export function setLanguage(
+  language: string,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("language", language, ["string"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   config.language = language;
   AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("language", config.language);
 
   return true;

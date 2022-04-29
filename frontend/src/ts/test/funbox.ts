@@ -5,6 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
+import * as TribeConfig from "../tribe/tribe-config"; // Rizwan TODO: This will work once the file is converted to typescript
 
 let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
 let memoryTimer: number | null = null;
@@ -96,11 +97,14 @@ export function toggleScript(...params: any[]): void {
 
 export function setFunbox(
   funbox: string,
-  mode: MonkeyTypes.FunboxObjectType | null
+  mode: MonkeyTypes.FunboxObjectType | null,
+  tribeOverride: boolean
 ): boolean {
+  if (!TribeConfig.canChange(tribeOverride)) return false;
   modeSaved = mode;
-  UpdateConfig.setFunbox(funbox, false);
+  UpdateConfig.setFunbox(funbox, false, tribeOverride);
   if (funbox === "none") loadMemory();
+  if (!tribeOverride) TribeConfig.sync();
   return true;
 }
 

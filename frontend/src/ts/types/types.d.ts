@@ -382,6 +382,19 @@ declare namespace MonkeyTypes {
     tapeMode: TapeMode;
   }
 
+  interface TribeConfig extends Config {
+    mode2: string | number;
+  }
+
+  interface TribeUser {
+    id: string;
+    name: string;
+    isLeader: boolean;
+    isReady: boolean;
+    isTyping: boolean;
+    isFinished: boolean;
+  }
+
   type ConfigValues =
     | string
     | number
@@ -652,7 +665,14 @@ declare namespace MonkeyTypes {
     colorfulErrorExtra: string;
   }
 
-  type Page = "loading" | "test" | "about" | "settings" | "account" | "login";
+  type Page =
+    | "loading"
+    | "test"
+    | "about"
+    | "settings"
+    | "account"
+    | "login"
+    | "tribe";
 
   //  type ActivePage = `page${Page}` | undefined;
 

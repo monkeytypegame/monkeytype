@@ -14,7 +14,9 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { recordClientVersion } from "../../utils/prometheus";
 import { Application, NextFunction, Response, Router } from "express";
 
-const pathOverride = process.env.API_PATH_OVERRIDE;
+// const pathOverride = process.env.API_PATH_OVERRIDE;
+const pathOverride = "/tribedev";
+
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
