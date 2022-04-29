@@ -378,6 +378,14 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   const response = await Ape.leaderboards.get("english", "time", lb, skip);
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
+  if (response.status === 503) {
+    Notifications.add(
+      "Leaderboards are currently updating - please try again later",
+      -1
+    );
+    return;
+  }
+
   clearBody(lb);
   currentData[lb] = [];
   if (response.status !== 200 || data.length === 0) {
