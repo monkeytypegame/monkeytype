@@ -337,5 +337,9 @@
       "twitch_emotes",
       "git"
     ]
+  },
+  {
+    "name":"amharic",
+    "languages":["amharic"]
   }
 ]
