@@ -8,7 +8,8 @@
       "english_10k",
       "english_25k",
       "english_450k",
-      "english_commonly_misspelled"
+      "english_commonly_misspelled",
+      "english_contractions"
     ]
   },
   {
