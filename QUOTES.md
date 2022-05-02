@@ -39,4 +39,4 @@ Create a pull request:
 ## Quote Guidelines
 
 Make sure your quote(s) follows the quote guidelines.
-[Quote guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#quote-guidelines)
+[Quote guidelines](./CONTRIBUTING.md#quote-guidelines)
