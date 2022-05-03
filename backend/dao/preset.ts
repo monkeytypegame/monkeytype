@@ -31,7 +31,7 @@ export async function addPreset(
   name: string,
   config: any
 ): Promise<PresetCreationResult> {
-  const presets = await this.getPresets(uid);
+  const presets = await getPresets(uid);
   if (presets.length >= MAX_PRESETS) {
     throw new MonkeyError(409, "Too many presets");
   }
