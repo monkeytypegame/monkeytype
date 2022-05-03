@@ -2927,6 +2927,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Next random theme",
       icon: "fa-random",
       exec: (): void => ThemeController.randomizeTheme(),
+      available: (): boolean => {
+        return Config.randomTheme !== "off";
+      },
     },
     {
       id: "changeDifficulty",
