@@ -6,7 +6,7 @@ import {
   incrementBananas,
   updateTypingStats,
 } from "../../dao/user";
-import PublicStatsDAO from "../../dao/public-stats";
+import * as PublicStatsDAL from "../../dao/public-stats";
 import * as BotDAL from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
 import objectHash from "object-hash";
@@ -288,7 +288,7 @@ export async function addResult(
   }
   tt = result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, tt);
-  PublicStatsDAO.updateStats(result.restartCount, tt);
+  PublicStatsDAL.updateStats(result.restartCount, tt);
 
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;

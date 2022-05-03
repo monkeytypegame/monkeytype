@@ -1,4 +1,4 @@
-import PresetDAO from "../../dao/preset";
+import * as PresetDAL from "../../dao/preset";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getPresets(
@@ -6,7 +6,7 @@ export async function getPresets(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const data = await PresetDAO.getPresets(uid);
+  const data = await PresetDAL.getPresets(uid);
   return new MonkeyResponse("Preset retrieved", data);
 }
 
@@ -16,7 +16,7 @@ export async function addPreset(
   const { name, config } = req.body;
   const { uid } = req.ctx.decodedToken;
 
-  const data = await PresetDAO.addPreset(uid, name, config);
+  const data = await PresetDAL.addPreset(uid, name, config);
 
   return new MonkeyResponse("Preset created", data);
 }
@@ -27,7 +27,7 @@ export async function editPreset(
   const { _id, name, config } = req.body;
   const { uid } = req.ctx.decodedToken;
 
-  await PresetDAO.editPreset(uid, _id, name, config);
+  await PresetDAL.editPreset(uid, _id, name, config);
 
   return new MonkeyResponse("Preset updated");
 }
@@ -38,7 +38,7 @@ export async function removePreset(
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  await PresetDAO.removePreset(uid, presetId);
+  await PresetDAL.removePreset(uid, presetId);
 
   return new MonkeyResponse("Preset deleted");
 }
