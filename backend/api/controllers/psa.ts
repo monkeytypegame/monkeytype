@@ -1,4 +1,4 @@
-import PsaDAO from "../../dao/psa";
+import * as PsaDAL from "../../dao/psa";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getPsas(
