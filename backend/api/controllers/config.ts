@@ -1,4 +1,4 @@
-import ConfigDAO from "../../dao/config";
+import * as ConfigDAL from "../../dao/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getConfig(
@@ -6,7 +6,7 @@ export async function getConfig(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const data = await ConfigDAO.getConfig(uid);
+  const data = await ConfigDAL.getConfig(uid);
   return new MonkeyResponse("Configuration retrieved", data);
 }
 
@@ -16,7 +16,7 @@ export async function saveConfig(
   const { config } = req.body;
   const { uid } = req.ctx.decodedToken;
 
-  await ConfigDAO.saveConfig(uid, config);
+  await ConfigDAL.saveConfig(uid, config);
 
   return new MonkeyResponse("Config updated");
 }
