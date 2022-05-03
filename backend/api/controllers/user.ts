@@ -1,5 +1,5 @@
 import * as UserDAL from "../../dao/user";
-import BotDAO from "../../dao/bot";
+import * as BotDAL from "../../dao/bot";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
@@ -163,7 +163,7 @@ export async function linkDiscord(
   if (useRedisForBotTasks) {
     George.linkDiscord(discordId, uid);
   }
-  await BotDAO.linkDiscord(uid, discordId);
+  await BotDAL.linkDiscord(uid, discordId);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", discordId);
@@ -184,7 +184,7 @@ export async function unlinkDiscord(
   if (useRedisForBotTasks) {
     George.unlinkDiscord(userInfo.discordId, uid);
   }
-  await BotDAO.unlinkDiscord(uid, userInfo.discordId);
+  await BotDAL.unlinkDiscord(uid, userInfo.discordId);
 
   await UserDAL.unlinkDiscord(uid);
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);

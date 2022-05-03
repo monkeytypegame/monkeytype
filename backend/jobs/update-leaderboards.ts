@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import BotDAO from "../dao/bot";
+import { announceLbUpdate } from "../dao/bot";
 import George from "../tasks/george";
 import * as LeaderboardsDAL from "../dao/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
@@ -59,7 +59,7 @@ async function updateLeaderboardAndNotifyChanges(
       await George.announceLbUpdate(newRecords, leaderboardId);
     }
 
-    await BotDAO.announceLbUpdate(newRecords, leaderboardId);
+    await announceLbUpdate(newRecords, leaderboardId);
   }
 }
 
