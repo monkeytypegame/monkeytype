@@ -995,17 +995,18 @@
   }
 
   #testModesNotice {
-    display: grid;
-    grid-auto-flow: column;
-    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap;
     color: var(--sub-color);
     text-align: center;
     margin-bottom: 1.25rem;
-    height: 1rem;
-    line-height: 1rem;
     transition: 0.125s;
     justify-content: center;
     user-select: none;
+
+    .text-button {
+      margin: 0 0.5rem;
+    }
 
     .fas {
       margin-right: 0.5rem;
