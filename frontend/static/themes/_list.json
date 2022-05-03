@@ -744,4 +744,9 @@
     "bgColor": "#cec176",
     "mainColor": "#ffffff"
   }
+  ,{
+    "name": "husqy",
+    "bgColor": "#000000",
+    "mainColor": "#c58aff"
+  }
 ]
