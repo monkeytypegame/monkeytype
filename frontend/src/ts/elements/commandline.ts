@@ -431,10 +431,6 @@ $("#commandInput input").on("keydown", (e) => {
     $.each(list.list, (_index, obj) => {
       if (obj.id == command) {
         if (obj.exec) obj.exec(value);
-        if (obj.subgroup !== null && obj.subgroup !== undefined) {
-          //TODO: what is this for?
-          // subgroup = obj.subgroup;
-        }
       }
     });
     AnalyticsController.log("usedCommandLine", { command: command ?? "" });
