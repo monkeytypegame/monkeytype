@@ -7,7 +7,7 @@ import {
   updateTypingStats,
 } from "../../dao/user";
 import PublicStatsDAO from "../../dao/public-stats";
-import BotDAO from "../../dao/bot";
+import * as BotDAL from "../../dao/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
@@ -268,7 +268,7 @@ export async function addResult(
       if (useRedisForBotTasks) {
         George.updateDiscordRole(user.discordId, result.wpm);
       }
-      BotDAO.updateDiscordRole(user.discordId, result.wpm);
+      BotDAL.updateDiscordRole(user.discordId, result.wpm);
     }
   }
 
@@ -276,7 +276,7 @@ export async function addResult(
     if (useRedisForBotTasks) {
       George.awardChallenge(user.discordId, result.challenge);
     }
-    BotDAO.awardChallenge(user.discordId, result.challenge);
+    BotDAL.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
   }
