@@ -1,5 +1,5 @@
 import { compare } from "bcrypt";
-import ApeKeysDAO from "../dao/ape-keys";
+import { getApeKey, updateLastUsedOn } from "../dao/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
@@ -161,7 +161,7 @@ async function authenticateWithApeKey(
     const decodedKey = base64UrlDecode(key);
     const [keyId, apeKey] = decodedKey.split(".");
 
-    const targetApeKey = await ApeKeysDAO.getApeKey(keyId);
+    const targetApeKey = await getApeKey(keyId);
     if (!targetApeKey) {
       throw new MonkeyError(404, "ApeKey not found");
     }
@@ -177,7 +177,7 @@ async function authenticateWithApeKey(
       throw new MonkeyError(code, message);
     }
 
-    await ApeKeysDAO.updateLastUsedOn(targetApeKey.uid, keyId);
+    await updateLastUsedOn(targetApeKey.uid, keyId);
 
     return {
       type: "ApeKey",
