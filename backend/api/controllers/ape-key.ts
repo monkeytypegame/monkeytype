@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
-import ApeKeysDAO from "../../dao/ape-keys";
+import * as ApeKeysDAL from "../../dao/ape-keys";
 import MonkeyError from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";
@@ -16,7 +16,7 @@ export async function getApeKeys(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const apeKeys = await ApeKeysDAO.getApeKeys(uid);
+  const apeKeys = await ApeKeysDAL.getApeKeys(uid);
   const cleanedKeys = _(apeKeys).keyBy("_id").mapValues(cleanApeKey).value();
 
   return new MonkeyResponse("ApeKeys retrieved", cleanedKeys);
@@ -30,7 +30,7 @@ export async function generateApeKey(
   const { maxKeysPerUser, apeKeyBytes, apeKeySaltRounds } =
     req.ctx.configuration.apeKeys;
 
-  const currentNumberOfApeKeys = await ApeKeysDAO.countApeKeysForUser(uid);
+  const currentNumberOfApeKeys = await ApeKeysDAL.countApeKeysForUser(uid);
 
   if (currentNumberOfApeKeys >= maxKeysPerUser) {
     throw new MonkeyError(409, "Maximum number of ApeKeys have been generated");
@@ -51,7 +51,7 @@ export async function generateApeKey(
     useCount: 0,
   };
 
-  const apeKeyId = await ApeKeysDAO.addApeKey(apeKey);
+  const apeKeyId = await ApeKeysDAL.addApeKey(apeKey);
 
   return new MonkeyResponse("ApeKey generated", {
     apeKey: base64UrlEncode(`${apeKeyId}.${apiKey}`),
@@ -67,7 +67,7 @@ export async function editApeKey(
   const { name, enabled } = req.body;
   const { uid } = req.ctx.decodedToken;
 
-  await ApeKeysDAO.editApeKey(uid, apeKeyId, name, enabled);
+  await ApeKeysDAL.editApeKey(uid, apeKeyId, name, enabled);
 
   return new MonkeyResponse("ApeKey updated");
 }
@@ -78,7 +78,7 @@ export async function deleteApeKey(
   const { apeKeyId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  await ApeKeysDAO.deleteApeKey(uid, apeKeyId);
+  await ApeKeysDAL.deleteApeKey(uid, apeKeyId);
 
   return new MonkeyResponse("ApeKey deleted");
 }
