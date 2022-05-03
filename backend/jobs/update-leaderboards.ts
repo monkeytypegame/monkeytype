@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
-import { announceLbUpdate } from "../dao/bot";
+import { announceLbUpdate } from "../dal/bot";
 import George from "../tasks/george";
-import * as LeaderboardsDAL from "../dao/leaderboards";
+import * as LeaderboardsDAL from "../dal/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";

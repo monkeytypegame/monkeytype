@@ -1,5 +1,5 @@
-import * as UserDAL from "../../dao/user";
-import * as BotDAL from "../../dao/bot";
+import * as UserDAL from "../../dal/user";
+import * as BotDAL from "../../dal/bot";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";

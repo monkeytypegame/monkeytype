@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
-import * as ApeKeysDAL from "../../dao/ape-keys";
+import * as ApeKeysDAL from "../../dal/ape-keys";
 import MonkeyError from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";

@@ -3,7 +3,7 @@ import joi from "joi";
 import MonkeyError from "../utils/error";
 import { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
-import { getUser } from "../dao/user";
+import { getUser } from "../dal/user";
 
 interface ValidationOptions<T> {
   criteria: (data: T) => boolean;

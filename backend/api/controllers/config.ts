@@ -1,4 +1,4 @@
-import * as ConfigDAL from "../../dao/config";
+import * as ConfigDAL from "../../dal/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getConfig(

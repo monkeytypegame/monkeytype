@@ -1,13 +1,13 @@
-import * as ResultDAL from "../../dao/result";
+import * as ResultDAL from "../../dal/result";
 import {
   getUser,
   checkIfPb,
   checkIfTagPb,
   incrementBananas,
   updateTypingStats,
-} from "../../dao/user";
-import * as PublicStatsDAL from "../../dao/public-stats";
-import * as BotDAL from "../../dao/bot";
+} from "../../dal/user";
+import * as PublicStatsDAL from "../../dal/public-stats";
+import * as BotDAL from "../../dal/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";

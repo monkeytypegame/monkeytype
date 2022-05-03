@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import * as LeaderboardsDAL from "../../dao/leaderboards";
+import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 
 export async function getLeaderboard(

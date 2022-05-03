@@ -1,5 +1,5 @@
 import { compare } from "bcrypt";
-import { getApeKey, updateLastUsedOn } from "../dao/ape-keys";
+import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";

@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
-import { getUser, updateQuoteRatings } from "../../dao/user";
-import * as ReportDAL from "../../dao/report";
-import * as NewQuotesDAL from "../../dao/new-quotes";
-import * as QuoteRatingsDAL from "../../dao/quote-ratings";
+import { getUser, updateQuoteRatings } from "../../dal/user";
+import * as ReportDAL from "../../dal/report";
+import * as NewQuotesDAL from "../../dal/new-quotes";
+import * as QuoteRatingsDAL from "../../dal/quote-ratings";
 import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
 import Logger from "../../utils/logger";
