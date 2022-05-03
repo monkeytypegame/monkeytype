@@ -85,10 +85,6 @@ export async function addResult(
 
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
-  if (result.wpm === result.raw && result.acc !== 100) {
-    const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
-    throw new MonkeyError(status.code, "Bad input"); // todo move this
-  }
   if (isTestTooShort(result)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
     throw new MonkeyError(status.code, status.message);
