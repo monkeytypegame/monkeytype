@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { getUser, updateQuoteRatings } from "../../dao/user";
-import ReportDAL from "../../dao/report";
+import * as ReportDAL from "../../dao/report";
 import * as NewQuotesDAL from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
 import MonkeyError from "../../utils/error";

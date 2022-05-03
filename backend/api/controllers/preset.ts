@@ -1,4 +1,4 @@
-import PresetDAO from "../../dao/preset";
+import * as PresetDAO from "../../dao/preset";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getPresets(
