@@ -15,9 +15,9 @@ export function loadCustomThemeFromUrl(): void {
   const base64decoded = JSON.parse(atob(getValue) ?? "");
 
   let colorArray = [];
-  if (Array.isArray(urlEncoded) && urlEncoded.length === 9) {
+  if (Array.isArray(urlEncoded) && urlEncoded.length === 10) {
     colorArray = urlEncoded;
-  } else if (Array.isArray(base64decoded) && base64decoded.length === 9) {
+  } else if (Array.isArray(base64decoded) && base64decoded.length === 10) {
     colorArray = base64decoded;
   }
 
