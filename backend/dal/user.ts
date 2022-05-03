@@ -17,7 +17,7 @@ let usersCollection: Collection<WithId<MonkeyTypes.User>>;
 
 function getUsersCollection(): Collection<WithId<MonkeyTypes.User>> {
   if (!usersCollection) {
-    usersCollection = db.collection<MonkeyTypes.User>("users");
+    usersCollection = db.collection<WithId<MonkeyTypes.User>>("users");
   }
 
   return usersCollection;
