@@ -511,6 +511,13 @@ async function signUp(): Promise<void> {
     $(".pageLogin .register input")[4] as HTMLInputElement
   ).value;
 
+  if (nname === "" || email === "" || emailVerify === "" || password === "") {
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    Notifications.add("Please fill in all fields", 0);
+    return;
+  }
+
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
     LoginPage.hidePreloader();
@@ -521,16 +528,6 @@ async function signUp(): Promise<void> {
 
   if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
-    LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
-    return;
-  }
-
-  const response = await Ape.users.getNameAvailability(nname);
-
-  if (response.status !== 200) {
-    Notifications.add(response.message, -1);
     LoginPage.hidePreloader();
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
