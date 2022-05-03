@@ -7,7 +7,7 @@
 
 ### Forking Monkeytype
 
-First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Go to the [Monkeytype repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Go to the [Monkeytype repo](https://github.com/monkeytypegame/monkeytype/) and then click the "fork" button.
 
 <img width="1552" alt="Screenshot showing location of the fork button on GitHub." src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
@@ -30,7 +30,7 @@ The contents of the file should be as follows:
 ```
 
 It is recommended that you familiarize yourselves with JSON before adding a language. For the `name` field, put the name of your language. `leftToRight` indicates how the language is written. If it is written left to right then put `true`, otherwise put `false`.
-`ligatures` A ligature occurs when multiple letters are joined together to form a character [more details](https://en.wikipedia.org/wiki/Ligature_(writing)). If there's joining in the words, which is the case in languages like (Arabic, Malayalam, Persian, Sanskrit, Central_Kurdish... etc.), then set the value to `true`, otherwise set to `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). Finally, add your list of words to the `words` field.
+`ligatures` A ligature occurs when multiple letters are joined together to form a character [more details](<https://en.wikipedia.org/wiki/Ligature_(writing)>). If there's joining in the words, which is the case in languages like (Arabic, Malayalam, Persian, Sanskrit, Central_Kurdish... etc.), then set the value to `true`, otherwise set to `false`. For `bcp47` put your languages [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag). Finally, add your list of words to the `words` field.
 
 In addition to the language file, you need to add your language to the `_groups.json` and `_list.json` files in the same directory. Add the name of the language to the `_groups.json` file like so:
 
@@ -76,4 +76,4 @@ Create a pull request:
 ## Language Guidelines
 
 Make sure your language follows the language guidelines.
-[Language guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#language-guidelines)
+[Language guidelines](./CONTRIBUTING.md#language-guidelines)

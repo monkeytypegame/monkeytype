@@ -15,6 +15,6 @@ Closes #
 <!-- the issue(s) your PR resolves if any (delete if that is not the case) -->
 <!-- please also reference any issues and or PRs related to your pull request -->
 
-<!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number e.g: [#1234](https://github.com/Miodec/monkeytype/pull/1234) -->
+<!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number e.g: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
 
 <!-- pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor Enjoy! :) -->
