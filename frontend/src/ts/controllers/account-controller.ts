@@ -353,7 +353,6 @@ export function signIn(): void {
           TestLogic.clearNotSignedInResult();
           Notifications.add("Last test result saved", 1);
         }
-        //TODO: redirect user to relevant page
       })
       .catch(function (error) {
         let message = error.message;
