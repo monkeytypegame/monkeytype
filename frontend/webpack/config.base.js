@@ -4,6 +4,7 @@ const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const RemovePlugin = require("remove-files-webpack-plugin");
+const ExtraWatchWebpackPlugin = require("extra-watch-webpack-plugin");
 
 let circularImports = 0;
 
@@ -117,6 +118,9 @@ const BASE_CONFIG = {
       after: {
         include: [resolve(__dirname, "../public/html")],
       },
+    }),
+    new ExtraWatchWebpackPlugin({
+      dirs: [resolve(__dirname, "../static/html")],
     }),
   ],
 };

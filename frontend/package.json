@@ -31,6 +31,7 @@
     "css-loader": "6.7.1",
     "css-minimizer-webpack-plugin": "3.4.1",
     "eslint-webpack-plugin": "3.1.1",
+    "extra-watch-webpack-plugin": "1.0.3",
     "grecaptcha": "1.0.3",
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.4.2",
