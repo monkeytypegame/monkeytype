@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dao/leaderboards";
+import MonkeyError from "../../utils/error";
 
 export async function getLeaderboard(
   req: MonkeyTypes.Request
@@ -23,6 +24,15 @@ export async function getLeaderboard(
       "Leaderboard is currently updating. Please try again in a few seconds.",
       null,
       503
+    );
+  }
+
+  if (leaderboard.length === 0) {
+    throw new MonkeyError(
+      404,
+      `No ${mode} ${mode2} leaderboard found`,
+      `getLeaderboard${mode}${mode2}`,
+      uid
     );
   }
 

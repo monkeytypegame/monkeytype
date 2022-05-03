@@ -125,7 +125,7 @@ Before submitting a theme make sure...
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
-(If you want to contribute themes but don't know how, check [THEMES.md](https://github.com/Miodec/monkeytype/blob/master/THEMES.md))
+(If you want to contribute themes but don't know how, check [THEMES.md](./THEMES.md))
 
 #### Language Guidelines
 
@@ -134,7 +134,7 @@ Before submitting a theme make sure...
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
-(If you want to contribute languages but don't know how, check [LANGUAGES.md](https://github.com/Miodec/monkeytype/blob/master/LANGUAGES.md))
+(If you want to contribute languages but don't know how, check [LANGUAGES.md](./LANGUAGES.md))
 
 #### Quote Guidelines
 
@@ -145,8 +145,8 @@ Before submitting a theme make sure...
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
 
-(If you want to contribute quotes but don't know how, check [QUOTES.md](https://github.com/teddinotteddy/monkeytype/blob/8d5ffde578030a07458cec391e862f8f3cd5b4b4/QUOTES.md))
+(If you want to contribute quotes but don't know how, check [QUOTES.md](./QUOTES.md))
 
 ## Questions
 
-If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions) and a contributor will be happy to assist you.
+If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/monkeytypegame/monkeytype/discussions) and a contributor will be happy to assist you.

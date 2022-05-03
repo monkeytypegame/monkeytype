@@ -91,9 +91,23 @@ export async function punctuateWord(
 
   if (Config.funbox === "58008") {
     if (currentWord.length > 3) {
+      if (Math.random() < 0.5) {
+        word = Misc.setCharAt(
+          word,
+          Misc.randomIntFromRange(1, word.length - 2),
+          "."
+        );
+      }
       if (Math.random() < 0.75) {
-        const special = ["/", "*", "-", "+"][Math.floor(Math.random() * 4)];
-        word = Misc.setCharAt(word, Math.floor(word.length / 2), special);
+        const index = Misc.randomIntFromRange(1, word.length - 2);
+        if (
+          word[index - 1] !== "." &&
+          word[index + 1] !== "." &&
+          word[index + 1] !== "0"
+        ) {
+          const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
+          word = Misc.setCharAt(word, index, special);
+        }
       }
     }
   } else {
@@ -1308,7 +1322,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (Config.mode === "quote") {
     completedEvent.quoteLength = TestWords.randomQuote.group;
-    completedEvent.lang = Config.language.replace(/_\d*k$/g, "");
+    completedEvent.language = Config.language.replace(/_\d*k$/g, "");
+  } else {
+    delete completedEvent.quoteLength;
   }
 
   // @ts-ignore TODO fix this
@@ -1492,6 +1508,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   } else {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
+
+  TestStats.setLastResult(completedEvent);
 
   await Result.update(
     completedEvent,

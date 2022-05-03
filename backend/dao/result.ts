@@ -12,7 +12,7 @@ export async function addResult(
 ): Promise<{ insertedId: ObjectId }> {
   let user;
   try {
-    user = await getUser(uid);
+    user = await getUser(uid, "add result");
   } catch (e) {
     user = null;
   }

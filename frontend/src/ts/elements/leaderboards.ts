@@ -33,12 +33,18 @@ const leaderboardSingleLimit = 50;
 
 let updateTimer: number | undefined;
 
-function clearTable(lb: number): void {
+function clearBody(lb: number): void {
   if (lb === 15) {
     $("#leaderboardsWrapper table.left tbody").empty();
-    $("#leaderboardsWrapper table.left tfoot").empty();
   } else if (lb === 60) {
     $("#leaderboardsWrapper table.right tbody").empty();
+  }
+}
+
+function clearFoot(lb: number): void {
+  if (lb === 15) {
+    $("#leaderboardsWrapper table.left tfoot").empty();
+  } else if (lb === 60) {
     $("#leaderboardsWrapper table.right tfoot").empty();
   }
 }
@@ -260,8 +266,10 @@ export function hide(): void {
       },
       100,
       () => {
-        clearTable(15);
-        clearTable(60);
+        clearBody(15);
+        clearBody(60);
+        clearFoot(15);
+        clearFoot(60);
         reset();
         stopTimer();
         $("#leaderboardsWrapper").addClass("hidden");
@@ -313,7 +321,7 @@ async function update(): Promise<void> {
 
   leaderboardKeys.forEach((leaderboardTime: LbKey) => {
     hideLoader(leaderboardTime);
-    clearTable(leaderboardTime);
+    clearBody(leaderboardTime);
     updateFooter(leaderboardTime);
     checkLbMemory(leaderboardTime);
     fillTable(leaderboardTime);
@@ -370,7 +378,15 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   const response = await Ape.leaderboards.get("english", "time", lb, skip);
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
-  clearTable(lb);
+  if (response.status === 503) {
+    Notifications.add(
+      "Leaderboards are currently updating - please try again later",
+      -1
+    );
+    return;
+  }
+
+  clearBody(lb);
   currentData[lb] = [];
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);

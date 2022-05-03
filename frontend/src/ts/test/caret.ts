@@ -157,11 +157,6 @@ export async function updatePosition(): Promise<void> {
       TestActive.get()
     ) {
       const newscrolltop = newTop - middlePos / 2;
-      // console.log('---------');
-      // console.log(newTop);
-      // console.log(middlePos);
-      // console.log(browserHeight);
-      // console.log(contentHeight);
       window.scrollTo({
         left: 0,
         top: newscrolltop,
@@ -176,8 +171,8 @@ export async function updatePosition(): Promise<void> {
 
 export function show(): void {
   if ($("#result").hasClass("hidden")) {
-    updatePosition();
     $("#caret").removeClass("hidden");
+    updatePosition();
     startAnimation();
   }
 }

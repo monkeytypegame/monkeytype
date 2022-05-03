@@ -244,12 +244,19 @@ export function colorful(tc: boolean): void {
 
 export async function screenshot(): Promise<void> {
   let revealReplay = false;
+
+  let revertCookie = false;
+  if (!$("#cookiePopupWrapper").hasClass("hidden")) {
+    revertCookie = true;
+  }
+
   function revertScreenshot(): void {
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
+    if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (Auth.currentUser == null) {
       $(".pageTest .loginTip").removeClass("hidden");
@@ -291,6 +298,7 @@ export async function screenshot(): Promise<void> {
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   $(".pageTest #result .inviteLink").addClass("hidden");
+  if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
     const paddingX = 50;
     const paddingY = 25;

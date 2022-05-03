@@ -443,6 +443,8 @@
   opacity: 0.5;
   text-align: center;
   width: 100%;
+  display: grid;
+  justify-content: center;
 }
 
 .word letter.incorrect.extra {

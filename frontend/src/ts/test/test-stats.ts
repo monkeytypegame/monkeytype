@@ -32,6 +32,7 @@ type KeypressTimings = {
 };
 
 type DebugStats = {
+  lastResult?: MonkeyTypes.Result<MonkeyTypes.Mode>;
   start: number;
   end: number;
   wpmHistory: number[];
@@ -90,8 +91,17 @@ export function setLastTestWpm(wpm: number): void {
   lastTestWpm = wpm;
 }
 
+export let lastResult: MonkeyTypes.Result<MonkeyTypes.Mode>;
+
+export function setLastResult(
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): void {
+  lastResult = result;
+}
+
 export function getStats(): DebugStats {
   const ret: DebugStats = {
+    lastResult,
     start,
     end,
     wpmHistory: TestInput.wpmHistory,
@@ -279,11 +289,12 @@ export function setLastSecondNotRound(): void {
 
 export function calculateBurst(): number {
   const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
-  let wordLength;
+  let wordLength: number;
   wordLength = TestInput.input.current.length;
   if (wordLength == 0) {
-    wordLength = TestInput.input.getHistoryLast().length;
+    wordLength = TestInput.input.getHistoryLast()?.length ?? 0;
   }
+  if (wordLength == 0) return 0;
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }

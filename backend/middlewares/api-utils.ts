@@ -52,7 +52,7 @@ function checkUserPermissions(
     try {
       const { uid } = req.ctx.decodedToken;
 
-      const userData = await getUser(uid);
+      const userData = await getUser(uid, "check user permissions");
       const hasPermission = criteria(userData);
 
       if (!hasPermission) {

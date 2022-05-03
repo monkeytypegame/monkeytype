@@ -83,7 +83,7 @@
     "nodeName",
     "nodeType",
     "onclick",
-    "ondbclick",
+    "ondblclick",
     "onmousedown",
     "onmouseenter",
     "onmouseup",

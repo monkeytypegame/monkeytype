@@ -308,6 +308,16 @@ router.get(
 );
 
 router.get(
+  "/stats",
+  RateLimit.userGet,
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  apeRateLimit,
+  asyncHandler(UserController.getStats)
+);
+
+router.get(
   "/favoriteQuotes",
   RateLimit.quoteFavoriteGet,
   authenticateRequest(),

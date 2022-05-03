@@ -1,4 +1,5 @@
 import { activateAnalytics } from "../controllers/analytics-controller";
+import { focusWords } from "../test/test-ui";
 
 type Accepted = {
   security: boolean;
@@ -38,6 +39,7 @@ export function show(): void {
 
 export async function hide(): Promise<void> {
   if (!$("#cookiePopupWrapper").hasClass("hidden")) {
+    focusWords();
     $("#cookiePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

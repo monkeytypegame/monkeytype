@@ -9,6 +9,7 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
 import joi from "joi";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 
 const router = Router();
 
@@ -55,6 +56,16 @@ router.delete(
   RateLimit.resultsDeleteAll,
   authenticateRequest(),
   asyncHandler(ResultController.deleteAll)
+);
+
+router.get(
+  "/last",
+  RateLimit.resultsGet,
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  apeRateLimit,
+  asyncHandler(ResultController.getLastResult)
 );
 
 export default router;
