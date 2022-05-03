@@ -33,49 +33,48 @@ async function addCommands(
   return await db.collection("bot-commands").insertMany(normalizedCommands);
 }
 
-class BotDAO {
-  static async updateDiscordRole(discordId, wpm): Promise<InsertOneResult> {
-    return await addCommand("updateRole", [discordId, wpm]);
-  }
-
-  static async linkDiscord(uid, discordId): Promise<InsertOneResult> {
-    return await addCommand("linkDiscord", [discordId, uid]);
-  }
-
-  static async unlinkDiscord(uid, discordId): Promise<InsertOneResult> {
-    return await addCommand("unlinkDiscord", [discordId, uid]);
-  }
-
-  static async awardChallenge(
-    discordId,
-    challengeName
-  ): Promise<InsertOneResult> {
-    return await addCommand("awardChallenge", [discordId, challengeName]);
-  }
-
-  static async announceLbUpdate(
-    newRecords,
-    leaderboardId
-  ): Promise<InsertManyResult | void> {
-    if (newRecords.length === 0) {
-      return;
-    }
-
-    const leaderboardCommands = Array(newRecords.length).fill("sayLbUpdate");
-    const leaderboardCommandsArguments = newRecords.map((newRecord) => {
-      return [
-        newRecord.discordId ?? newRecord.name,
-        newRecord.rank,
-        leaderboardId,
-        newRecord.wpm,
-        newRecord.raw,
-        newRecord.acc,
-        newRecord.consistency,
-      ];
-    });
-
-    return await addCommands(leaderboardCommands, leaderboardCommandsArguments);
-  }
+export async function updateDiscordRole(
+  discordId,
+  wpm
+): Promise<InsertOneResult> {
+  return await addCommand("updateRole", [discordId, wpm]);
 }
 
-export default BotDAO;
+export async function linkDiscord(uid, discordId): Promise<InsertOneResult> {
+  return await addCommand("linkDiscord", [discordId, uid]);
+}
+
+export async function unlinkDiscord(uid, discordId): Promise<InsertOneResult> {
+  return await addCommand("unlinkDiscord", [discordId, uid]);
+}
+
+export async function awardChallenge(
+  discordId,
+  challengeName
+): Promise<InsertOneResult> {
+  return await addCommand("awardChallenge", [discordId, challengeName]);
+}
+
+export async function announceLbUpdate(
+  newRecords,
+  leaderboardId
+): Promise<InsertManyResult | void> {
+  if (newRecords.length === 0) {
+    return;
+  }
+
+  const leaderboardCommands = Array(newRecords.length).fill("sayLbUpdate");
+  const leaderboardCommandsArguments = newRecords.map((newRecord) => {
+    return [
+      newRecord.discordId ?? newRecord.name,
+      newRecord.rank,
+      leaderboardId,
+      newRecord.wpm,
+      newRecord.raw,
+      newRecord.acc,
+      newRecord.consistency,
+    ];
+  });
+
+  return await addCommands(leaderboardCommands, leaderboardCommandsArguments);
+}
