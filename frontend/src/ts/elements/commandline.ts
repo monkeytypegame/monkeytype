@@ -51,7 +51,6 @@ function showFound(): void {
         if (
           (obj.configValueMode &&
             obj.configValueMode === "include" &&
-            // todo figure this out without using any
             (
               Config[list.configKey] as (
                 | string
