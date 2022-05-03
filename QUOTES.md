@@ -7,7 +7,7 @@
 
 ### Forking Monkeytype
 
-First you will have to copy the Monkeytype repository also known as forking. Go to the [Monkeytype Repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+First you will have to copy the Monkeytype repository also known as forking. Go to the [Monkeytype Repo](https://github.com/monkeytypegame/monkeytype/) and then click the "fork" button.
 
 <img width="1552" alt="Screen Shot 2022-01-12 at 11 51 49 AM" src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
@@ -39,4 +39,4 @@ Create a pull request:
 ## Quote Guidelines
 
 Make sure your quote(s) follows the quote guidelines.
-[Quote guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#quote-guidelines)
+[Quote guidelines](./CONTRIBUTING.md#quote-guidelines)

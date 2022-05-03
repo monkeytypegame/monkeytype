@@ -7,7 +7,7 @@
 
 ### Forking Monkeytype
 
-First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Go to the [Monkeytype repo](https://github.com/Miodec/monkeytype/) and then click the "fork" button.
+First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Go to the [Monkeytype repo](https://github.com/monkeytypegame/monkeytype/) and then click the "fork" button.
 
 <img width="1552" alt="Screenshot showing location of the fork button on GitHub." src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
@@ -63,4 +63,4 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 ## Theme Guidelines
 
 Make sure your theme follows the theme guidelines.
-[Theme guidelines](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#theme-guidelines)
+[Theme guidelines](./CONTRIBUTING.md#theme-guidelines)
