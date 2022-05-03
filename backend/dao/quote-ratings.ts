@@ -24,7 +24,7 @@ export async function submit(
       );
   }
 
-  const quoteRating = await this.get(quoteId, language);
+  const quoteRating = await get(quoteId, language);
   const average = parseFloat(
     (
       Math.round((quoteRating!.totalRating / quoteRating!.ratings) * 10) / 10
