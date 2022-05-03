@@ -14,6 +14,5 @@ export async function saveConfig(
 
 export async function getConfig(uid: string): Promise<any> {
   const config = await db.collection<any>("configs").findOne({ uid });
-  // if (!config) throw new MonkeyError(404, "Config not found");
   return config;
 }
