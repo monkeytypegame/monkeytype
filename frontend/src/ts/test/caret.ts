@@ -40,10 +40,6 @@ export async function updatePosition(): Promise<void> {
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
 
-  if (caret.is(":visible") === false) {
-    console.log("cartet is invisisble");
-  }
-
   if (["block", "outline", "underline"].includes(Config.caretStyle)) {
     caretWidth /= 3;
   }
@@ -128,13 +124,8 @@ export async function updatePosition(): Promise<void> {
     }
   }
 
-  console.log("currentletterposleft", currentLetterPosLeft);
-  console.log("caretWidth", caretWidth);
-
   let smoothlinescroll = $("#words .smoothScroller").height();
   if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
-  console.log(newTop, newLeft);
 
   if (Config.smoothCaret) {
     caret.stop(true, false).animate(
@@ -166,11 +157,6 @@ export async function updatePosition(): Promise<void> {
       TestActive.get()
     ) {
       const newscrolltop = newTop - middlePos / 2;
-      // console.log('---------');
-      // console.log(newTop);
-      // console.log(middlePos);
-      // console.log(browserHeight);
-      // console.log(contentHeight);
       window.scrollTo({
         left: 0,
         top: newscrolltop,
