@@ -52,7 +52,6 @@ declare namespace MonkeyTypes {
   // Data Model
 
   interface User {
-    // TODO, Complete the typings for the user model
     addedAt: number;
     verified?: boolean;
     bananas?: number;
