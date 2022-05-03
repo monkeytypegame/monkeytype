@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getUser, updateQuoteRatings } from "../../dao/user";
 import * as ReportDAL from "../../dao/report";
 import * as NewQuotesDAL from "../../dao/new-quotes";
-import QuoteRatingsDAO from "../../dao/quote-ratings";
+import * as QuoteRatingsDAL from "../../dao/quote-ratings";
 import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
 import Logger from "../../utils/logger";
@@ -79,7 +79,7 @@ export async function getRating(
 ): Promise<MonkeyResponse> {
   const { quoteId, language } = req.query;
 
-  const data = await QuoteRatingsDAO.get(
+  const data = await QuoteRatingsDAL.get(
     parseInt(quoteId as string, 10),
     language as string
   );
@@ -104,7 +104,7 @@ export async function submitRating(
   const newRating = normalizedRating - currentRating;
   const shouldUpdateRating = currentRating !== 0;
 
-  await QuoteRatingsDAO.submit(
+  await QuoteRatingsDAL.submit(
     quoteId,
     language,
     newRating,
