@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { getUser, updateQuoteRatings } from "../../dao/user";
-import ReportDAO from "../../dao/report";
+import ReportDAL from "../../dao/report";
 import * as NewQuotesDAL from "../../dao/new-quotes";
 import QuoteRatingsDAO from "../../dao/quote-ratings";
 import MonkeyError from "../../utils/error";
@@ -149,7 +149,7 @@ export async function reportQuote(
     comment,
   };
 
-  await ReportDAO.createReport(newReport, maxReports, contentReportLimit);
+  await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
 
   return new MonkeyResponse("Quote reported");
 }
