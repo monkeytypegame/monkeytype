@@ -31,7 +31,7 @@ export async function getApeKey(
 }
 
 export async function countApeKeysForUser(uid: string): Promise<number> {
-  const apeKeys = await this.getApeKeys(uid);
+  const apeKeys = await getApeKeys(uid);
   return _.size(apeKeys);
 }
 
