@@ -28,7 +28,7 @@ try {
   if (anticheatImplemented() === false) throw new Error("undefined");
   Logger.success("Anticheat module loaded");
 } catch (e) {
-  if (process.env.MODE === "dev" || !!process.env.JEST_WORKER_ID) {
+  if (process.env.MODE === "dev") {
     Logger.warning(
       "No anticheat module found. Continuing in dev mode, results will not be validated."
     );

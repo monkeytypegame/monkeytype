@@ -9,7 +9,6 @@ import {
 import MonkeyError from "../utils/error";
 import Logger from "../utils/logger";
 
-let mongoClient: MongoClient;
 let db: Db;
 
 export async function connect(): Promise<void> {
@@ -39,7 +38,10 @@ export async function connect(): Promise<void> {
     authSource: DB_AUTH_SOURCE,
   };
 
-  mongoClient = new MongoClient(DB_URI, connectionOptions);
+  const mongoClient = new MongoClient(
+    (DB_URI as string) ?? global.__MONGO_URI__, // Set in tests only
+    connectionOptions
+  );
 
   try {
     await mongoClient.connect();

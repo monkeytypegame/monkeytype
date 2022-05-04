@@ -1,4 +1,4 @@
-import { addUser } from "../../dal/user";
+import { addUser, getUser } from "../../dal/user";
 
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
@@ -8,9 +8,12 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    const inserted = await addUser(newUser.name, newUser.email, newUser.uid);
+    await addUser(newUser.name, newUser.email, newUser.uid);
+    const insertedUser = await getUser("userId", "test");
 
-    expect(inserted.acknowledged).toBeTruthy();
+    expect(insertedUser.email).toBe(newUser.email);
+    expect(insertedUser.uid).toBe(newUser.uid);
+    expect(insertedUser.name).toBe(newUser.name);
   });
 
   it("should error if the user already exists", async () => {
@@ -20,8 +23,7 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    const inserted = await addUser(newUser.name, newUser.email, newUser.uid);
-    expect(inserted.acknowledged).toBeTruthy();
+    await addUser(newUser.name, newUser.email, newUser.uid);
 
     // should error because user already exists
     await expect(

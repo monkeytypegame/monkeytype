@@ -1,5 +1,7 @@
 import { Collection, Db, MongoClient, WithId } from "mongodb";
 
+process.env.MODE = "dev";
+
 jest.mock("./init/db", () => ({
   __esModule: true,
   getDb: (): Db => db,
@@ -56,11 +58,13 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await Promise.all(
-    collectionsForCleanUp.map((collection) =>
-      db.collection(collection).deleteMany({})
-    )
-  );
+  if (global.__MONGO_URI__) {
+    await Promise.all(
+      collectionsForCleanUp.map((collection) =>
+        db.collection(collection).deleteMany({})
+      )
+    );
+  }
 });
 
 afterAll(async () => {

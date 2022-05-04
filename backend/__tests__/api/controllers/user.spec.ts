@@ -13,7 +13,6 @@ describe("user controller test", () => {
       .send(newUser)
       .set({
         Accept: "application/json",
-        Authorization: "Bearer mockToken",
       })
       .expect(200, done);
   });
