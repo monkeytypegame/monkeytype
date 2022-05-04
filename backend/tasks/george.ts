@@ -17,10 +17,11 @@ function buildGeorgeTask(command: string, taskArguments: any[]): GeorgeTask {
 
 let jobQueue: Queue;
 let jobQueueScheduler: QueueScheduler;
-let jobQueueInitialized = false;
 
-export function initJobQueue(redisConnection: IORedis.Redis | undefined): void {
-  if (jobQueueInitialized || !redisConnection) {
+export async function initJobQueue(
+  redisConnection: IORedis.Redis | undefined
+): Promise<void> {
+  if (jobQueue || !redisConnection) {
     return;
   }
 
@@ -41,14 +42,11 @@ export function initJobQueue(redisConnection: IORedis.Redis | undefined): void {
     autorun: false,
     connection: redisConnection,
   });
-
-  jobQueueScheduler.run();
-
-  jobQueueInitialized = true;
+  await jobQueueScheduler.run();
 }
 
 async function addToQueue(command: string, task: GeorgeTask): Promise<void> {
-  if (!jobQueueInitialized) {
+  if (!jobQueue) {
     return;
   }
 
@@ -58,7 +56,7 @@ async function addToQueue(command: string, task: GeorgeTask): Promise<void> {
 async function addToQueueBulk(
   tasks: { name: string; data: GeorgeTask }[]
 ): Promise<void> {
-  if (!jobQueueInitialized) {
+  if (!jobQueue) {
     return;
   }
 
