@@ -90,14 +90,16 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    const response = await Ape.presets.add(presetName, configChanges);
-
+    const response = await Ape.presets.add(
+      presetName.replaceAll(" ", "_"),
+      configChanges
+    );
     if (response.status !== 200) {
       Notifications.add("Failed to add preset: " + response.message, -1);
     } else {
       Notifications.add("Preset added", 1, 2);
       snapshotPresets.push({
-        name: presetName,
+        name: presetName.replaceAll(" ", "_"),
         config: configChanges,
         _id: response.data.presetId,
       });
@@ -105,7 +107,7 @@ async function apply(): Promise<void> {
   } else if (action === "edit") {
     const response = await Ape.presets.edit(
       presetId,
-      presetName,
+      presetName.replaceAll(" ", "_"),
       configChanges
     );
 
@@ -116,7 +118,7 @@ async function apply(): Promise<void> {
       const preset: MonkeyTypes.Preset = snapshotPresets.filter(
         (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
-      preset.name = presetName;
+      preset.name = presetName.replaceAll(" ", "_");
       if (updateConfig) {
         preset.config = configChanges;
       }

@@ -73,7 +73,7 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    const response = await Ape.users.createTag(tagName);
+    const response = await Ape.users.createTag(tagName.replaceAll(" ", "_"));
 
     if (response.status !== 200) {
       Notifications.add("Failed to add tag: " + response.message, -1);
@@ -88,7 +88,10 @@ async function apply(): Promise<void> {
       ResultFilters.updateTags();
     }
   } else if (action === "edit") {
-    const response = await Ape.users.editTag(tagId, tagName);
+    const response = await Ape.users.editTag(
+      tagId,
+      tagName.replaceAll(" ", "_")
+    );
 
     if (response.status !== 200) {
       Notifications.add("Failed to edit tag: " + response.message, -1);
@@ -96,7 +99,7 @@ async function apply(): Promise<void> {
       Notifications.add("Tag updated", 1);
       DB.getSnapshot().tags?.forEach((tag) => {
         if (tag._id === tagId) {
-          tag.name = tagName;
+          tag.name = tagName.replaceAll(" ", "_");
         }
       });
       ResultTagsPopup.updateButtons();

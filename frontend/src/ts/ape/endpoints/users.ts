@@ -70,6 +70,7 @@ export default function getUsersEndpoints(
   }
 
   async function createTag(tagName: string): Ape.EndpointData {
+    tagName = tagName.replaceAll(" ", "_");
     return await apeClient.post(`${BASE_PATH}/tags`, { payload: { tagName } });
   }
 
