@@ -35,7 +35,7 @@ export default function getUsersEndpoints(
 
   async function updateLeaderboardMemory(
     mode: string,
-    mode2: MonkeyTypes.Mode2<any>,
+    mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>,
     language: string,
     rank: number
   ): Ape.EndpointData {
