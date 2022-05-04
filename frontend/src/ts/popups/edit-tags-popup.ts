@@ -67,7 +67,7 @@ function hide(): void {
 async function apply(): Promise<void> {
   const action = $("#tagsWrapper #tagsEdit").attr("action");
   const propTagName = $("#tagsWrapper #tagsEdit input").val() as string;
-  const tagName = propTagName.replaceAll(' ', '_')
+  const tagName = propTagName.replaceAll(" ", "_");
   const tagId = $("#tagsWrapper #tagsEdit").attr("tagid") as string;
 
   hide();

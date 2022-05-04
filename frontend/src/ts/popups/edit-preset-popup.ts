@@ -64,7 +64,7 @@ function hide(): void {
 async function apply(): Promise<void> {
   const action = $("#presetWrapper #presetEdit").attr("action");
   const propPresetName = $("#presetWrapper #presetEdit input").val() as string;
-  const presetName = propPresetName.replaceAll(' ', '_')
+  const presetName = propPresetName.replaceAll(" ", "_");
   const presetId = $("#presetWrapper #presetEdit").attr("presetId") as string;
 
   const updateConfig: boolean = $(
