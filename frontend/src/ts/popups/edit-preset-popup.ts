@@ -89,6 +89,8 @@ async function apply(): Promise<void> {
 
   Loader.show();
 
+  const normalizedPresetName = presetName.replaceAll(" ", "_");
+
   if (action === "add") {
     const response = await Ape.presets.add(presetName, configChanges);
 
@@ -97,7 +99,7 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset added", 1, 2);
       snapshotPresets.push({
-        name: presetName,
+        name: normalizedPresetName,
         config: configChanges,
         _id: response.data.presetId,
       });
@@ -105,7 +107,7 @@ async function apply(): Promise<void> {
   } else if (action === "edit") {
     const response = await Ape.presets.edit(
       presetId,
-      presetName,
+      normalizedPresetName,
       configChanges
     );
 
@@ -116,7 +118,7 @@ async function apply(): Promise<void> {
       const preset: MonkeyTypes.Preset = snapshotPresets.filter(
         (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
-      preset.name = presetName;
+      preset.name = normalizedPresetName;
       if (updateConfig) {
         preset.config = configChanges;
       }
