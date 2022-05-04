@@ -1,5 +1,5 @@
 import { InsertManyResult, InsertOneResult } from "mongodb";
-import db from "../init/db";
+import * as db from "../init/db";
 
 async function addCommand(
   command,

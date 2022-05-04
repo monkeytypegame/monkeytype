@@ -1,4 +1,4 @@
-import db from "../init/db";
+import * as db from "../init/db";
 
 export async function submit(
   quoteId: number,
