@@ -22,7 +22,7 @@ import {
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
-import George from "../../tasks/george";
+import * as George from "../../tasks/george";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
