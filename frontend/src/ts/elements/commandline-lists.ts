@@ -298,7 +298,7 @@ export function updatePresetCommands(): void {
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   commandsPresets.list = [];
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
-    const dis = preset.name;
+    const dis = preset.display;
 
     commandsPresets.list.push({
       id: "applyPreset" + preset._id,

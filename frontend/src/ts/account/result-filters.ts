@@ -337,7 +337,7 @@ export function updateTags(): void {
     snapshot.tags?.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
+      ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
     });
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(

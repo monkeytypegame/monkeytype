@@ -63,7 +63,8 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const action = $("#presetWrapper #presetEdit").attr("action");
-  const presetName = $("#presetWrapper #presetEdit input").val() as string;
+  const propPresetName = $("#presetWrapper #presetEdit input").val() as string;
+  const presetName = propPresetName.replaceAll(' ', '_')
   const presetId = $("#presetWrapper #presetEdit").attr("presetId") as string;
 
   const updateConfig: boolean = $(
@@ -89,8 +90,6 @@ async function apply(): Promise<void> {
 
   Loader.show();
 
-  const normalizedPresetName = presetName.replaceAll(" ", "_");
-
   if (action === "add") {
     const response = await Ape.presets.add(presetName, configChanges);
 
@@ -99,15 +98,16 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset added", 1, 2);
       snapshotPresets.push({
-        name: normalizedPresetName,
+        name: presetName,
         config: configChanges,
+        display: propPresetName,
         _id: response.data.presetId,
       });
     }
   } else if (action === "edit") {
     const response = await Ape.presets.edit(
       presetId,
-      normalizedPresetName,
+      presetName,
       configChanges
     );
 
@@ -118,7 +118,7 @@ async function apply(): Promise<void> {
       const preset: MonkeyTypes.Preset = snapshotPresets.filter(
         (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
-      preset.name = normalizedPresetName;
+      preset.name = presetName;
       if (updateConfig) {
         preset.config = configChanges;
       }

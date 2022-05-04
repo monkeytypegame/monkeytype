@@ -66,22 +66,22 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const action = $("#tagsWrapper #tagsEdit").attr("action");
-  const tagName = $("#tagsWrapper #tagsEdit input").val() as string;
+  const propTagName = $("#tagsWrapper #tagsEdit input").val() as string;
+  const tagName = propTagName.replaceAll(' ', '_')
   const tagId = $("#tagsWrapper #tagsEdit").attr("tagid") as string;
 
   hide();
   Loader.show();
 
-  const normalizedTagName = tagName.replaceAll(" ", "_");
-
   if (action === "add") {
-    const response = await Ape.users.createTag(normalizedTagName);
+    const response = await Ape.users.createTag(tagName);
 
     if (response.status !== 200) {
       Notifications.add("Failed to add tag: " + response.message, -1);
     } else {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags?.push({
+        display: propTagName,
         name: response.data.name,
         _id: response.data._id,
       });
@@ -90,7 +90,7 @@ async function apply(): Promise<void> {
       ResultFilters.updateTags();
     }
   } else if (action === "edit") {
-    const response = await Ape.users.editTag(tagId, normalizedTagName);
+    const response = await Ape.users.editTag(tagId, tagName);
 
     if (response.status !== 200) {
       Notifications.add("Failed to edit tag: " + response.message, -1);
@@ -98,7 +98,8 @@ async function apply(): Promise<void> {
       Notifications.add("Tag updated", 1);
       DB.getSnapshot().tags?.forEach((tag) => {
         if (tag._id === tagId) {
-          tag.name = normalizedTagName;
+          tag.name = tagName;
+          tag.display = propTagName;
         }
       });
       ResultTagsPopup.updateButtons();
