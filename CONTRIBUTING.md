@@ -84,17 +84,19 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
-#### Mongo Setup
+#### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
-1. Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
-
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
 
-   1. If necessary, uncomment the lines in the `.env` file to use credentials to login to MongoDB.
+2. Setup the database server
 
-1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
+| Local Server                                                                                                                            | Docker (recommended)                                                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory.</li></ol> |
+
+3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
