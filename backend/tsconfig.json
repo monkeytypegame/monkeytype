@@ -13,5 +13,14 @@
     "esModuleInterop": true,
     "strictNullChecks": true
   },
-  "exclude": ["node_modules", "build", "worker.js"]
+  "ts-node": {
+    "files": true
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "worker.js",
+    "setupTests.ts",
+    "**/*.spec.ts"
+  ]
 }
