@@ -20,7 +20,8 @@
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
     "pr-check-ts": "cd frontend && npx gulp pr-check-ts",
-    "pr-check-build-be": "cd backend && npm run build"
+    "pr-check-build-be": "cd backend && npm run build",
+    "docker": "cd backend && docker-compose up"
   },
   "engines": {
     "npm": "8.1.2"
