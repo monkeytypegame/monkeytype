@@ -1,5 +1,5 @@
 import _ from "lodash";
-import db from "../init/db";
+import * as db from "../init/db";
 import { Filter, ObjectId, MatchKeysAndValues } from "mongodb";
 import MonkeyError from "../utils/error";
 

@@ -2,7 +2,7 @@ import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
-import db from "../init/db";
+import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import {
   Collection,
