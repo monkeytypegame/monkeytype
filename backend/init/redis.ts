@@ -29,11 +29,18 @@ export async function connect(): Promise<void> {
     await connection.connect();
     connected = true;
   } catch (error) {
-    Logger.error(error.message);
-    Logger.error(
-      "Failed to connect to redis. Exiting with exit status code 1."
-    );
-    process.exit(1);
+    if (MODE === "dev") {
+      await connection.quit();
+      Logger.warning(
+        `Failed to connect to redis. Continuing in dev mode, running without redis.`
+      );
+    } else {
+      Logger.error(error.message);
+      Logger.error(
+        "Failed to connect to redis. Exiting with exit status code 1."
+      );
+      process.exit(1);
+    }
   }
 }
 
