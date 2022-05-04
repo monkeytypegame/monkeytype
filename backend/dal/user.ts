@@ -2,7 +2,11 @@ import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
+<<<<<<< HEAD
 import * as db from "../init/db";
+=======
+import db from "../init/db";
+>>>>>>> 1ed58631 (Delete old DB client)
 import MonkeyError from "../utils/error";
 import {
   Collection,
@@ -17,7 +21,7 @@ let usersCollection: Collection<WithId<MonkeyTypes.User>>;
 
 function getUsersCollection(): Collection<WithId<MonkeyTypes.User>> {
   if (!usersCollection) {
-    usersCollection = db.collection<WithId<MonkeyTypes.User>>("users");
+    usersCollection = db.collection<MonkeyTypes.User>("users");
   }
 
   return usersCollection;

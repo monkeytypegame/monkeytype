@@ -1,8 +1,10 @@
-import { Db, MongoClient } from "mongodb";
+import { Collection, Db, MongoClient, WithId } from "mongodb";
 
-jest.mock("./init/db2", () => ({
+jest.mock("./init/db", () => ({
   __esModule: true,
-  dbService: (): unknown => ({ getDb: () => db }),
+  getDb: (): Db => db,
+  collection: <T>(name: string): Collection<WithId<T>> =>
+    db.collection<WithId<T>>(name),
 }));
 
 jest.mock("./utils/logger", () => ({

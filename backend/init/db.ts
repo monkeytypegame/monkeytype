@@ -29,22 +29,15 @@ export async function connect(): Promise<void> {
   const connectionOptions: MongoClientOptions = {
     connectTimeoutMS: 2000,
     serverSelectionTimeoutMS: 2000,
+    auth: !(DB_USERNAME && DB_PASSWORD)
+      ? undefined
+      : {
+        username: DB_USERNAME,
+        password: DB_PASSWORD,
+      },
+    authMechanism: DB_AUTH_MECHANISM as AuthMechanism | undefined,
+    authSource: DB_AUTH_SOURCE,
   };
-
-  if (DB_USERNAME && DB_PASSWORD) {
-    connectionOptions.auth = {
-      username: DB_USERNAME,
-      password: DB_PASSWORD,
-    };
-  }
-
-  if (DB_AUTH_MECHANISM) {
-    connectionOptions.authMechanism = DB_AUTH_MECHANISM as AuthMechanism;
-  }
-
-  if (DB_AUTH_SOURCE) {
-    connectionOptions.authSource = DB_AUTH_SOURCE;
-  }
 
   mongoClient = new MongoClient(DB_URI, connectionOptions);
 
@@ -60,9 +53,7 @@ export async function connect(): Promise<void> {
   }
 }
 
-export function getDb(): Db | undefined {
-  return db;
-}
+export const getDb = (): Db | undefined => db;
 
 export function collection<T>(collectionName: string): Collection<WithId<T>> {
   if (!db) {
