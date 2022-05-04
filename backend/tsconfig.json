@@ -21,7 +21,7 @@
     "node_modules",
     "build",
     "worker.js",
-    "setupTests.ts",
+    "setup-tests.ts",
     "**/*.spec.ts"
   ]
 }

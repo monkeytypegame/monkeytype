@@ -1,5 +1,5 @@
 import request from "supertest";
-import server from "../../app";
+import server from "../../../app";
 
 describe("user controller test", () => {
   it("should be able to sign up", (done) => {
