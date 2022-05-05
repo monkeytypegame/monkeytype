@@ -42,7 +42,7 @@ export async function initJobQueue(
     autorun: false,
     connection: redisConnection,
   });
-  await jobQueueScheduler.run();
+  jobQueueScheduler.run();
 }
 
 async function addToQueue(command: string, task: GeorgeTask): Promise<void> {
