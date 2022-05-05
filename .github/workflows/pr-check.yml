@@ -6,10 +6,12 @@ on:
 
 jobs:
   build:
+    permissions:
+      checks: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -42,9 +44,9 @@ jobs:
         working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
 
-      # - name: Check Anti-cheat
-      #   if: steps.filter.outputs.anti-cheat == 'true'
-      #   run: exit 1
+      - name: Check Anti-cheat
+        if: steps.filter.outputs.anti-cheat == 'true'
+        run: exit 1
 
       - name: Cache node modules
         if: steps.filter.outputs.changes != '[]'
@@ -92,6 +94,10 @@ jobs:
       - name: Build backend
         if: steps.filter.outputs.ts-be == 'true'
         run: npm run pr-check-build-be
+
+      - name: Test backend
+        if: steps.filter.outputs.ts-be == 'true'
+        run: npm run test-backend
 
       - name: Run webpack
         if: steps.filter.outputs.ts-scss-fe == 'true'
