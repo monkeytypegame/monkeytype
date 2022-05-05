@@ -7,7 +7,6 @@ import {
   updateTypingStats,
 } from "../../dal/user";
 import * as PublicStatsDAL from "../../dal/public-stats";
-import * as BotDAL from "../../dal/bot";
 import { roundTo2, stdDev } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
@@ -80,8 +79,6 @@ export async function addResult(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-
-  const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
 
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
@@ -261,18 +258,12 @@ export async function addResult(
   if (result.mode === "time" && String(result.mode2) === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
-      if (useRedisForBotTasks) {
-        George.updateDiscordRole(user.discordId, result.wpm);
-      }
-      BotDAL.updateDiscordRole(user.discordId, result.wpm);
+      George.updateDiscordRole(user.discordId, result.wpm);
     }
   }
 
   if (result.challenge && user.discordId) {
-    if (useRedisForBotTasks) {
-      George.awardChallenge(user.discordId, result.challenge);
-    }
-    BotDAL.awardChallenge(user.discordId, result.challenge);
+    George.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
   }

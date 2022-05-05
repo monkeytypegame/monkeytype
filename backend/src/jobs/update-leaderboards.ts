@@ -1,8 +1,6 @@
 import { CronJob } from "cron";
-import { announceLeaderboardUpdate } from "../dal/bot";
 import * as George from "../tasks/george";
 import * as LeaderboardsDAL from "../dal/leaderboards";
-import { getCachedConfiguration } from "../init/configuration";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";
 const RECENT_AGE_MINUTES = 10;
@@ -51,15 +49,9 @@ async function updateLeaderboardAndNotifyChanges(
   });
 
   if (newRecords.length > 0) {
-    const cachedConfig = await getCachedConfiguration();
-
     const leaderboardId = `time ${leaderboardTime} english`;
 
-    if (cachedConfig.useRedisForBotTasks.enabled) {
-      await George.announceLeaderboardUpdate(newRecords, leaderboardId);
-    }
-
-    await announceLeaderboardUpdate(newRecords, leaderboardId);
+    await George.announceLeaderboardUpdate(newRecords, leaderboardId);
   }
 }
 
