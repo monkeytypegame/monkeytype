@@ -69,7 +69,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.filter.outputs.changes != '[]'
-        run: npm run install:all
+        run: npm run install-all
 
       - name: Lint JSON
         if: steps.filter.outputs.any-json == 'true'
