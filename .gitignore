@@ -84,6 +84,8 @@ frontend/src/ts/constants/firebase-config-live.ts
 #generated files
 dist/
 frontend/public/
+backend/globalConfig.json
+backend/server.version
 
 #cloudflare y
 .cloudflareKey.txt
