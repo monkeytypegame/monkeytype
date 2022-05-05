@@ -8,6 +8,8 @@ import errorHandlingMiddleware from "./middlewares/error";
 function buildApp(): express.Application {
   const app = express();
 
+  console.log("TEST!");
+
   app.use(urlencoded({ extended: true }));
   app.use(json());
   app.use(cors());

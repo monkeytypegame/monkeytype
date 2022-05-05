@@ -6,9 +6,13 @@ on:
 
 jobs:
   build:
+    permissions:
+      checks: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: ArtiomTr/jest-coverage-report-action@v2
 
       - uses: dorny/paths-filter@v2
         id: filter
@@ -89,11 +93,13 @@ jobs:
         if: steps.filter.outputs.any-tsscss == 'true'
         run: npm run lint
 
-      - name: Build/Test backend
+      - name: Build backend
         if: steps.filter.outputs.ts-be == 'true'
-        run: |
-          npm run pr-check-build-be
-          npm run test-backend
+        run: npm run pr-check-build-be
+
+      - name: Test backend
+        if: steps.filter.outputs.ts-be == 'true'
+        run: npm run test-backend
 
       - name: Run webpack
         if: steps.filter.outputs.ts-scss-fe == 'true'

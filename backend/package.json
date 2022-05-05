@@ -8,8 +8,8 @@
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
-    "test": "jest",
-    "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
+    "test": "jest --verbose --collect-coverage",
+    "dev": "ts-node-dev server.ts -- --inspect --transpileOnly"
   },
   "engines": {
     "node": "16.13.2",
