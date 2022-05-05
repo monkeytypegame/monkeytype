@@ -28,6 +28,12 @@ jest.mock("swagger-stats", () => ({
     },
 }));
 
+if (!process.env.REDIS_URI) {
+  // use mock if not set
+  process.env.REDIS_URI = "redis://mock";
+  jest.mock("ioredis", () => require("ioredis-mock"));
+}
+
 // TODO: better approach for this when needed
 // https://firebase.google.com/docs/rules/unit-tests#run_local_unit_tests_with_the_version_9_javascript_sdk
 jest.mock("firebase-admin", () => ({
