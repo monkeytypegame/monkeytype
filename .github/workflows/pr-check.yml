@@ -42,9 +42,9 @@ jobs:
         working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
 
-      - name: Check Anti-cheat
-        if: steps.filter.outputs.anti-cheat == 'true'
-        run: exit 1
+      # - name: Check Anti-cheat
+      #   if: steps.filter.outputs.anti-cheat == 'true'
+      #   run: exit 1
 
       - name: Cache node modules
         if: steps.filter.outputs.changes != '[]'
