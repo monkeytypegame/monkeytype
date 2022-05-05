@@ -12,7 +12,7 @@ export default function getPresetsEndpoints(
     configChanges: MonkeyTypes.ConfigChanges
   ): Ape.EndpointData {
     const payload = {
-      name: presetName.replaceAll(" ", "_"),
+      name: presetName,
       config: configChanges,
     };
 
@@ -26,7 +26,7 @@ export default function getPresetsEndpoints(
   ): Ape.EndpointData {
     const payload = {
       _id: presetId,
-      name: presetName.replaceAll(" ", "_"),
+      name: presetName,
       config: configChanges,
     };
 
