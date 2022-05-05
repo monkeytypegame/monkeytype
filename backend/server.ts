@@ -38,7 +38,7 @@ async function bootServer(port: number): Promise<Server> {
       Logger.success("Connected to redis");
 
       Logger.info("Initializing task queues...");
-      await initJobQueue(RedisClient.getConnection());
+      initJobQueue(RedisClient.getConnection());
       Logger.success("Task queues initialized");
     }
 

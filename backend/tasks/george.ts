@@ -18,9 +18,7 @@ function buildGeorgeTask(command: string, taskArguments: any[]): GeorgeTask {
 let jobQueue: Queue;
 let jobQueueScheduler: QueueScheduler;
 
-export async function initJobQueue(
-  redisConnection: IORedis.Redis | undefined
-): Promise<void> {
+export function initJobQueue(redisConnection: IORedis.Redis | undefined): void {
   if (jobQueue || !redisConnection) {
     return;
   }
@@ -42,7 +40,7 @@ export async function initJobQueue(
     autorun: false,
     connection: redisConnection,
   });
-  await jobQueueScheduler.run();
+  jobQueueScheduler.run();
 }
 
 async function addToQueue(command: string, task: GeorgeTask): Promise<void> {
