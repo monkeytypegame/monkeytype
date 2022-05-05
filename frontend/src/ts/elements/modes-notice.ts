@@ -200,7 +200,7 @@ export async function update(): Promise<void> {
   try {
     DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {
-        tagsString += tag.name + ", ";
+        tagsString += tag.display + ", ";
       }
     });
 

@@ -392,7 +392,7 @@ function updateTags(dontSave: boolean): void {
       Config.lazyMode
     );
     $("#result .stats .tags .bottom").append(`
-      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+      <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
     if (Config.mode != "quote" && !dontSave) {
       if (tpb < result.wpm) {

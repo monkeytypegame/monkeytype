@@ -240,7 +240,7 @@ export function updateTagCommands(): void {
     });
 
     DB.getSnapshot().tags?.forEach((tag) => {
-      let dis = tag.name;
+      let dis = tag.display;
 
       if (tag.active === true) {
         dis = '<i class="fas fa-fw fa-check"></i>' + dis;
@@ -262,7 +262,7 @@ export function updateTagCommands(): void {
             ModesNotice.update();
           }
 
-          let txt = tag.name;
+          let txt = tag.display;
 
           if (tag.active === true) {
             txt = '<i class="fas fa-fw fa-check"></i>' + txt;
