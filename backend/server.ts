@@ -2,7 +2,7 @@ import "dotenv/config";
 import admin, { ServiceAccount } from "firebase-admin";
 // @ts-ignore
 import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
-import db from "./init/db";
+import * as db from "./init/db";
 import jobs from "./jobs";
 import { getLiveConfiguration } from "./init/configuration";
 import app from "./app";
@@ -10,7 +10,7 @@ import { Server } from "http";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import * as RedisClient from "./init/redis";
-import George from "./tasks/george";
+import { initJobQueue } from "./tasks/george";
 import Logger from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
@@ -38,7 +38,7 @@ async function bootServer(port: number): Promise<Server> {
       Logger.success("Connected to redis");
 
       Logger.info("Initializing task queues...");
-      George.initJobQueue(RedisClient.getConnection());
+      await initJobQueue(RedisClient.getConnection());
       Logger.success("Task queues initialized");
     }
 

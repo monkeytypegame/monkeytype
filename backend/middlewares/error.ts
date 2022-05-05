@@ -1,4 +1,4 @@
-import db from "../init/db";
+import * as db from "../init/db";
 import { v4 as uuidv4 } from "uuid";
 import Logger from "../utils/logger";
 import MonkeyError from "../utils/error";

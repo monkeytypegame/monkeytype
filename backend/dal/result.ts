@@ -1,6 +1,6 @@
 import { DeleteResult, ObjectId, UpdateResult } from "mongodb";
 import MonkeyError from "../utils/error";
-import db from "../init/db";
+import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 

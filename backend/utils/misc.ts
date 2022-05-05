@@ -80,34 +80,3 @@ export function padNumbers(
     number.toString().padStart(maxLength, fillString)
   );
 }
-
-/**
- * Locks all static methods of a class.
- * @param target The class to lock.
- * @param isLocked Callback to determine if a static method is locked.
- * @returns The locked class.
- */
-export function lock<T extends object>(target: T, isLocked: () => boolean): T {
-  const propertyNames = Object.getOwnPropertyNames(target);
-
-  propertyNames.forEach((propertyName) => {
-    const descriptor = Object.getOwnPropertyDescriptor(target, propertyName);
-
-    const isMethod = descriptor?.value instanceof Function;
-    if (!isMethod) {
-      return;
-    }
-
-    const originalMethod = descriptor.value;
-    descriptor.value = function (...args: any[]): any {
-      if (isLocked()) {
-        return;
-      }
-      return originalMethod.apply(this, args);
-    };
-
-    Object.defineProperty(target, propertyName, descriptor);
-  });
-
-  return target;
-}

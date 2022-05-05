@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import stringSimilarity from "string-similarity";
 import path from "path";
 import fs from "fs";
-import db from "../init/db";
+import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
