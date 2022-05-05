@@ -5,7 +5,7 @@ import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { linkAccount } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
-import George from "../../tasks/george";
+import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 
 export async function createNewUser(
