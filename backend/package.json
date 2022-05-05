@@ -9,7 +9,7 @@
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
     "test": "jest --verbose --collect-coverage",
-    "dev": "ts-node-dev server.ts -- --inspect --transpileOnly"
+    "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
   },
   "engines": {
     "node": "16.13.2",
