@@ -17,6 +17,7 @@
   "ts-node": {
     "files": true
   },
+  "include": ["./src/**/*"],
   "exclude": [
     "node_modules",
     "build",

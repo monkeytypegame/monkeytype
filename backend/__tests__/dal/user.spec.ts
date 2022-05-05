@@ -1,4 +1,4 @@
-import { addUser, getUser } from "../../dal/user";
+import { addUser, getUser } from "../../src/dal/user";
 
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
