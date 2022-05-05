@@ -1,5 +1,5 @@
 import MonkeyError from "../utils/error";
-import db from "../init/db";
+import * as db from "../init/db";
 import { ObjectId, Filter } from "mongodb";
 
 const MAX_PRESETS = 10;

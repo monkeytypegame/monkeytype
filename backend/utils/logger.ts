@@ -1,4 +1,4 @@
-import db from "../init/db";
+import * as db from "../init/db";
 import chalk from "chalk";
 import winston, { format } from "winston";
 import { resolve } from "path";

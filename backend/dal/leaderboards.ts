@@ -1,4 +1,4 @@
-import db from "../init/db";
+import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";

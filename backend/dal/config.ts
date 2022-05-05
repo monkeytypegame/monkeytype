@@ -1,5 +1,5 @@
 import { UpdateResult } from "mongodb";
-import db from "../init/db";
+import * as db from "../init/db";
 import _ from "lodash";
 
 export async function saveConfig(

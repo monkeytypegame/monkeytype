@@ -1,4 +1,4 @@
-import db from "../init/db";
+import * as db from "../init/db";
 import { roundTo2 } from "../utils/misc";
 
 export async function updateStats(
