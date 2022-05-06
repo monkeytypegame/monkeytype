@@ -219,6 +219,7 @@ export function updateActive(): void {
     } else if (group == "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
+    //test
     if (aboveChartDisplay[group]?.all) {
       ret += "all";
     } else {
