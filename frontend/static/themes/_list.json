@@ -749,4 +749,9 @@
     "bgColor": "#000000",
     "mainColor": "#c58aff"
   }
+  ,{
+    "name": "Sky_Blue",
+    "bgColor":  "#91bee3",
+    "mainColor": "#3190de"
+  }
 ]
