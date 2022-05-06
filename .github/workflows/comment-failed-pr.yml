@@ -15,17 +15,21 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: peek_icons.yml
           run_id: ${{ github.event.workflow_run.id }}
+
       - name: Read the pr_num file
         id: pr_num_reader
         uses: juliangruber/read-file-action@v1.0.0
         with:
           path: ./pr_num/pr_num.txt
+
       - name: Create comment
-        uses: jungwinter/comment@v1
-        id: create
+        uses: actions/github-script@v5
         with:
-          type: create
-          body: |
-            "The PR check action failed. Please review the logs and make the necessary changes." + context.payload.workflow_run.html_url
-          issue_number: ${{ steps.pr_num_reader.outputs.content }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ steps.pr_num_reader.outputs.content }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The PR check action failed. Please review the logs and make the necessary changes.' + context.payload.workflow_run.html_url
+            })
