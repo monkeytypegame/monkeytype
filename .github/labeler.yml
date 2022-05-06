@@ -1,0 +1,18 @@
+api:
+  - any: ["frontend/src/ts/ape/**/*", "backend/src/api/**/*"]
+
+assets:
+  - any: ["frontend/static/**/*"]
+    all: ["!frontend/static/**/*.html"]
+
+backend:
+  - any: ["backend/**/*"]
+
+docs:
+  - any: ["**/*.md"]
+
+frontend:
+  - any: ["frontend/**/*"]
+
+local dev:
+  - any: ["**/gulpfile.js", "**/tsconfig.json"]
