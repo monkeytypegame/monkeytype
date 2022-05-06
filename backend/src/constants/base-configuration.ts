@@ -26,9 +26,6 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   enableSavingResults: {
     enabled: false,
   },
-  useRedisForBotTasks: {
-    enabled: false,
-  },
   favoriteQuotes: {
     maxFavorites: 100,
   },
