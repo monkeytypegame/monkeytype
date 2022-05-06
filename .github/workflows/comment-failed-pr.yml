@@ -1,4 +1,6 @@
 name: Comment on failed PR
+permissions:
+  pull-requests: write
 
 on:
   workflow_run:
@@ -31,5 +33,5 @@ jobs:
               issue_number: ${{ steps.pr_num_reader.outputs.content }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'The PR check action failed. Please review the logs and make the necessary changes.' + context.payload.workflow_run.html_url
+              body: 'The PR check action failed. Please review the logs and make the necessary changes. ' + context.payload.workflow_run.html_url
             })
