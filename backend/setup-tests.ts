@@ -2,14 +2,14 @@ import { Collection, Db, MongoClient, WithId } from "mongodb";
 
 process.env.MODE = "dev";
 
-jest.mock("./init/db", () => ({
+jest.mock("./src/init/db", () => ({
   __esModule: true,
   getDb: (): Db => db,
   collection: <T>(name: string): Collection<WithId<T>> =>
     db.collection<WithId<T>>(name),
 }));
 
-jest.mock("./utils/logger", () => ({
+jest.mock("./src/utils/logger", () => ({
   __esModule: true,
   default: {
     error: console.error,
@@ -27,6 +27,12 @@ jest.mock("swagger-stats", () => ({
       next();
     },
 }));
+
+if (!process.env.REDIS_URI) {
+  // use mock if not set
+  process.env.REDIS_URI = "redis://mock";
+  jest.mock("ioredis", () => require("ioredis-mock"));
+}
 
 // TODO: better approach for this when needed
 // https://firebase.google.com/docs/rules/unit-tests#run_local_unit_tests_with_the_version_9_javascript_sdk

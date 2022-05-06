@@ -31,9 +31,9 @@ export async function connect(): Promise<void> {
     auth: !(DB_USERNAME && DB_PASSWORD)
       ? undefined
       : {
-        username: DB_USERNAME,
-        password: DB_PASSWORD,
-      },
+          username: DB_USERNAME,
+          password: DB_PASSWORD,
+        },
     authMechanism: DB_AUTH_MECHANISM as AuthMechanism | undefined,
     authSource: DB_AUTH_SOURCE,
   };

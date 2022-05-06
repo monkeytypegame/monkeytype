@@ -8,8 +8,8 @@
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
-    "test": "jest",
-    "dev": "ts-node-dev server.ts -- --inspect --transpileOnly"
+    "test": "jest --verbose --collect-coverage",
+    "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
   },
   "engines": {
     "node": "16.13.2",
@@ -59,6 +59,7 @@
     "@types/swagger-ui-express": "4.1.3",
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "8.3.4",
+    "ioredis-mock": "7.4.0",
     "jest": "27.5.1",
     "jest-environment-node": "27.5.1",
     "supertest": "6.2.3",
