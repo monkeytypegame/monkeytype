@@ -947,8 +947,9 @@ export async function init(): Promise<void> {
       );
 
       if (randomQuote === null) {
-        Notifications.add("No favorite quotes found for selected language", 0);
-        TestUI.setTestRestarting(false);
+        Notifications.add("No favorite quotes found", 0);
+        UpdateConfig.setQuoteLength(-1);
+        restart();
         return;
       }
 
