@@ -14,7 +14,7 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: github.event.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: 'The PR check action failed. Please review the logs and make the necessary changes.' + context.payload.workflow_run.html_url
