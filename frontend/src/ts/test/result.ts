@@ -26,8 +26,8 @@ let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
 
-const quoteLang = "";
-const quoteId = "";
+let quoteLang = "";
+let quoteId = "";
 
 export function toggleUnsmoothedRaw(): void {
   useUnsmoothedRaw = !useUnsmoothedRaw;
@@ -579,7 +579,10 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
 }
 
 function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
-  const icon = $(".pageTest #result #favoriteQuoteButton icon");
+  quoteLang = Config.mode === "quote" ? randomQuote.language : "";
+  quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
+
+  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
   if (Config.mode === "quote" && Auth.currentUser) {
     const userFav = QuotesController.isQuoteFavorite(randomQuote);
