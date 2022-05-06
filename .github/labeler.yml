@@ -2,7 +2,8 @@ api:
   - any: ["frontend/src/ts/ape/**/*", "backend/src/api/**/*"]
 
 assets:
-  - all: ["frontend/static/**/*", "!frontend/static/**/*.html"]
+  - any: ["frontend/static/**/*"]
+    all: ["!frontend/static/**/*.html"]
 
 backend:
   - any: ["backend/**/*"]
