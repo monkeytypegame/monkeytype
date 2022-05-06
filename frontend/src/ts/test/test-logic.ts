@@ -931,7 +931,7 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (Config.quoteLength.includes(-2) && Config.quoteLength.length == 1) {
+    if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
       const targetQuote = QuotesController.getQuoteById(
         QuoteSearchPopup.selectedId
       );
@@ -941,6 +941,18 @@ export async function init(): Promise<void> {
       } else {
         rq = targetQuote;
       }
+    } else if (Config.quoteLength.includes(-3)) {
+      const randomQuote = QuotesController.getRandomFavoriteQuote(
+        Config.language
+      );
+
+      if (randomQuote === null) {
+        Notifications.add("No favorite quotes found for selected language", 0);
+        TestUI.setTestRestarting(false);
+        return;
+      }
+
+      rq = randomQuote;
     } else {
       const randomQuote = QuotesController.getRandomQuote();
       if (randomQuote === null) {

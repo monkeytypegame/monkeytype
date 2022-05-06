@@ -1000,7 +1000,7 @@ export function setQuoteLength(
 ): boolean {
   if (
     !isConfigValueValid("quote length", len, [
-      [-2, -1, 0, 1, 2, 3],
+      [-3, -2, -1, 0, 1, 2, 3],
       "numberArray",
     ])
   ) {
@@ -1013,7 +1013,7 @@ export function setQuoteLength(
     config.quoteLength = len;
   } else {
     if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
-    if (len === null || isNaN(len) || len < -2 || len > 3) {
+    if (len === null || isNaN(len) || len < -3 || len > 3) {
       len = 1;
     }
     len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
