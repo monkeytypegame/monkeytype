@@ -26,9 +26,6 @@ declare namespace MonkeyTypes {
     enableSavingResults: {
       enabled: boolean;
     };
-    useRedisForBotTasks: {
-      enabled: boolean;
-    };
     favoriteQuotes: {
       maxFavorites: number;
     };
