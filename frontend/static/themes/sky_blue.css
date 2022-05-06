@@ -1,17 +1,17 @@
 :root {
-  --bg-color: #000000;
-  --main-color: #c58aff;
-  --caret-color: #c58aff;
-  --sub-color: #972fff;
-  --sub-alt-color: #1e001e;
-  --text-color: #ebd7ff;
-  --error-color: #da3333;
-  --error-extra-color: #791717;
-  --colorful-error-color: #da3333;
-  --colorful-error-extra-color: #791717;
+  --bg-color: ##5b81b3;
+  --main-color: #87ceeb;
+  --caret-color: #ffffff;
+  --sub-color: #00b7ff;
+  --sub-alt-color: #2e78bd;
+  --text-color: #ffffff;
+  --error-color: #d4d4d4;
+  --error-extra-color: #d4d4d4;
+  --colorful-error-color: #adadad;
+  --colorful-error-extra-color: #adadad;
 }
 
 #liveWpm,
 #timerNumber {
-  color: #c58aff;
+  color: #ffffff;
 }
