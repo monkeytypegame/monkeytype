@@ -188,8 +188,10 @@ class QuotesController {
 
     const { favoriteQuotes } = snapshot;
 
+    const normalizedQuoteLanguage = normalizeLanguage(quoteLanguage);
+
     const matchedLanguage = Object.keys(favoriteQuotes).find((language) => {
-      if (normalizeLanguage(quoteLanguage) !== normalizeLanguage(language)) {
+      if (normalizedQuoteLanguage !== normalizeLanguage(language)) {
         return false;
       }
       return favoriteQuotes[language].includes(id.toString());
