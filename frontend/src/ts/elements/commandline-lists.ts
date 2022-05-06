@@ -240,7 +240,7 @@ export function updateTagCommands(): void {
     });
 
     DB.getSnapshot().tags?.forEach((tag) => {
-      let dis = tag.name;
+      let dis = tag.display;
 
       if (tag.active === true) {
         dis = '<i class="fas fa-fw fa-check"></i>' + dis;
@@ -262,7 +262,7 @@ export function updateTagCommands(): void {
             ModesNotice.update();
           }
 
-          let txt = tag.name;
+          let txt = tag.display;
 
           if (tag.active === true) {
             txt = '<i class="fas fa-fw fa-check"></i>' + txt;
@@ -298,7 +298,7 @@ export function updatePresetCommands(): void {
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   commandsPresets.list = [];
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
-    const dis = preset.name;
+    const dis = preset.display;
 
     commandsPresets.list.push({
       id: "applyPreset" + preset._id,

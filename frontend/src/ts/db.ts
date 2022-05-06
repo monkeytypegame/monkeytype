@@ -125,6 +125,11 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading tags...");
     snap.customThemes = userData.customThemes ?? [];
     snap.tags = tagsData;
+
+    snap.tags.forEach((tag) => {
+      tag.display = tag.name.replaceAll("_", " ");
+    });
+
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
@@ -141,6 +146,11 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading presets...");
     snap.presets = presetsData;
+
+    snap.presets?.forEach((preset) => {
+      preset.display = preset.name.replaceAll("_", " ");
+    });
+
     snap.presets = snap.presets?.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
