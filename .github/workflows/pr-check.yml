@@ -48,6 +48,18 @@ jobs:
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
 
+      - name: Save the PR number in an artifact
+        shell: bash
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: echo $PR_NUM > pr_num.txt
+
+      - name: Upload the PR number
+        uses: actions/upload-artifact@v2
+        with:
+          name: pr_num
+          path: ./pr_num.txt
+
       - name: Cache node modules
         if: steps.filter.outputs.changes != '[]'
         uses: actions/cache@v2
