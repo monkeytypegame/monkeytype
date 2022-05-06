@@ -40,6 +40,18 @@ jobs:
             anti-cheat:
               - 'backend/**/anticheat/**'
 
+      - name: Save the PR number in an artifact
+        shell: bash
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: echo $PR_NUM > pr_num.txt
+
+      - name: Upload the PR number
+        uses: actions/upload-artifact@v2
+        with:
+          name: pr_num
+          path: ./pr_num.txt
+
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
