@@ -749,4 +749,9 @@
     "bgColor": "#000000",
     "mainColor": "#c58aff"
   }
+  ,{
+    "name": "10_fast_fingers",
+    "bgColor": "#c0dcfc",
+    "mainColor": "#195b9a"
+  }
 ]
