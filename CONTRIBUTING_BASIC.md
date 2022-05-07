@@ -60,15 +60,15 @@ At this point, I would also like to point you to [CONTRIBUTING.md](./CONTRIBUTIN
 
 Once you've completed your change, you're ready to commit them. At the bottom of the edit file screen, you will find the commit UI. In the first box, you want to put in a title that describes the change you made. Then in the description field, you can put in any additional detail to supplement your title further.
 
-You will find two radio buttons, one prompts you to commit directly to your current branch, and the other prompts you to create a new branch for your commit and start a pull request. For most cases, select the first option for now.
+You will find two radio buttons, one prompts you to commit directly to your current branch, and the other prompts you to create a new branch for your commit and start a pull request. Select the first option to commit the change directly to your current branch.
 
 Click `Propose changes` once you are ready to proceed.
 
-<img width="1552" alt="Screenshot showing how to commit changes on the Github Web UI." src="https://user-images.githubusercontent.com/16960551/167074740-f1f54034-f0aa-4220-b3af-8d30f934982d.png">
+<img width="1552" alt="Screenshot showing how to commit changes on the Github Web UI." src="https://user-images.githubusercontent.com/16960551/167233463-fb06e4f8-0699-40ea-9ade-f801898cfc93.png">
 
 ### Creating a Pull Request
 
-Once your are done making all your code changes and you have commited them to your branch, you are ready to make a pull request (PR). Go back to the main page of your forked repository. Ensure that your current branch (which is likely still master at this point) is up to date. You can do so by clicking the following button:
+You can repeat the steps above for as many changes as needed. Once your are done making all your code changes and you have commited them to your branch, you are ready to make a pull request (PR). Go back to the main page of your forked repository. Ensure that your current branch (which is likely still master at this point) is up to date. You can do so by clicking the following button:
 
 Update branch:
 <img width="1552" alt="Screenshot showing how to update the fork to match the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
