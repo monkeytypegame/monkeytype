@@ -22,6 +22,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
 import * as PageController from "../controllers/page-controller";
+import * as EditPresetPopup from "../popups/edit-preset-popup";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -294,9 +295,19 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 };
 
 export function updatePresetCommands(): void {
+  console.log(123);
   const snapshot = DB.getSnapshot();
-  if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   commandsPresets.list = [];
+  commandsPresets.list.push({
+    id: "createPreset",
+    display: "Create preset",
+    exec: (): void => {
+      console.log("Preset created!");
+      EditPresetPopup.show("add");
+    },
+  });
+  if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
+  console.log(commandsPresets.list);
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
     const dis = preset.display;
 
