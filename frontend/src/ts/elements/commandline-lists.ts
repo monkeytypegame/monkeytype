@@ -23,6 +23,7 @@ import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
 import * as PageController from "../controllers/page-controller";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
+import * as EditTagPopup from "../popups/edit-tags-popup";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -218,12 +219,19 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateTagCommands(): void {
+  commandsTags.list = [];
+  commandsTags.list.push({
+    id: "createTag",
+    display: "Create tag",
+    icon: "fa-plus",
+    exec: (): void => {
+      EditTagPopup.show("add");
+    },
+  });
   if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
-    commandsTags.list = [];
-
     commandsTags.list.push({
       id: "clearTags",
-      display: `Clear tags`,
+      display: `  Clear tags`,
       icon: "fa-times",
       exec: (): void => {
         const snapshot = DB.getSnapshot();
@@ -300,8 +308,8 @@ export function updatePresetCommands(): void {
   commandsPresets.list.push({
     id: "createPreset",
     display: "Create preset",
+    icon: "fa-plus",
     exec: (): void => {
-      console.log("Preset created!");
       EditPresetPopup.show("add");
     },
   });
