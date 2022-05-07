@@ -306,7 +306,6 @@ export function updatePresetCommands(): void {
     },
   });
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
-  console.log(commandsPresets.list);
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
     const dis = preset.display;
 
