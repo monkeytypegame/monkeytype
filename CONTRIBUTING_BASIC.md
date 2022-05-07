@@ -62,7 +62,7 @@ Once you've completed your change, you're ready to commit them. At the bottom of
 
 You will find two radio buttons, one prompts you to commit directly to your current branch, and the other prompts you to create a new branch for your commit and start a pull request. Select the first option to commit the change directly to your current branch.
 
-Click `Propose changes` once you are ready to proceed.
+Click `Commit changes` once you are ready to proceed.
 
 <img width="1552" alt="Screenshot showing how to commit changes on the Github Web UI." src="https://user-images.githubusercontent.com/16960551/167233463-fb06e4f8-0699-40ea-9ade-f801898cfc93.png">
 
