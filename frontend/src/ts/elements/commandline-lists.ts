@@ -231,7 +231,7 @@ export function updateTagCommands(): void {
   if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     commandsTags.list.push({
       id: "clearTags",
-      display: `  Clear tags`,
+      display: `Clear tags`,
       icon: "fa-times",
       exec: (): void => {
         const snapshot = DB.getSnapshot();
