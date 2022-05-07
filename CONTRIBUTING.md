@@ -14,6 +14,10 @@ We have two separate contribution guides based on what you're looking to contrib
 
 If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md).
 
+## Getting Started
+
+When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in ~~JavaScript~~ TypeScript, CSS, and HTML (in order of language usage within the project); thus, we assume you are comfortable in these languages or have basic knowledge of them. Our backend is in NodeJS and we use MongoDB to store our user data. Firebase is used for authentication. Furthermore, we use Prettier to format our code.
+
 ## Standards and Guidelines
 
 Below are a set of general guidelines for different types of changes.

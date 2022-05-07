@@ -13,13 +13,9 @@
 - [Standards and Guidelines](#standards-and-guidelines)
 - [Questions](#questions)
 
-## Getting Started
-
-When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in ~~JavaScript~~ TypeScript, CSS, and HTML (in order of language usage within the project); thus, we assume you are comfortable in these languages or have basic knowledge of them. Our backend is in NodeJS and we use MongoDB to store our user data. Firebase is used for authentication. Furthermore, we use Prettier to format our code.
-
 ## Prerequisites
 
-While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Mongo and Docker for the backend. Read the below sections to understand how to setup each of these tools.
 
 #### Git
 
