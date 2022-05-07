@@ -295,7 +295,6 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 };
 
 export function updatePresetCommands(): void {
-  console.log(123);
   const snapshot = DB.getSnapshot();
   commandsPresets.list = [];
   commandsPresets.list.push({
