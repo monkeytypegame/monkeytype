@@ -4,10 +4,9 @@
 
 - [Basic Contributions](#basic-contributions)
 - [Prerequisites](#prerequisites)
-- [Contributing](#steps-to-contribute)
+- [Contributing](#contributing)
   - [Forking Monkeytype](#forking-monkeytype)
   - [Making a Change](#making-a-change)
-  - [Committing a Change](#committing-a-change)
   - [Creating a Pull Request](#creating-a-pull-request)
   - [Merging a Pull Request](#merging-a-pull-request)
 - [Questions](#questions)
