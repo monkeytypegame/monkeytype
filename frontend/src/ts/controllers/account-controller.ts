@@ -127,34 +127,12 @@ export async function getDataAndInit(): Promise<boolean> {
   });
 
   if (snapshot.needsToChangeName) {
-    //verify username
-    //invalid, get new
-    let nameGood = false;
-    let name = "";
-
-    while (!nameGood) {
-      name =
-        prompt(
-          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-        ) ?? "";
-
-      if (!name) {
-        return false;
-      }
-
-      const response = await Ape.users.updateName(name);
-
-      if (response.status !== 200) {
-        Notifications.add("Failed to update name: " + response.message, -1);
-        return false;
-      }
-
-      nameGood = true;
-      Notifications.add("Name updated", 1);
-      snapshot.name = name;
-      DB.setSnapshot(snapshot);
-      $("#menu .text-button.account .text").text(name);
-    }
+    Notifications.addBanner(
+      "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+      -1,
+      undefined,
+      true
+    );
   }
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
