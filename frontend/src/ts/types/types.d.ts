@@ -182,6 +182,7 @@ declare namespace MonkeyTypes {
   interface Preset {
     _id: string;
     name: string;
+    display: string;
     config: ConfigChanges;
   }
 
@@ -214,6 +215,7 @@ declare namespace MonkeyTypes {
   interface Tag {
     _id: string;
     name: string;
+    display: string;
     personalBests?: PersonalBests;
     active?: boolean;
   }

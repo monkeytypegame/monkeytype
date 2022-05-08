@@ -654,7 +654,7 @@ function refreshTagsSettingsSection(): void {
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
-          <div class="title">${tag.name}</div>
+          <div class="title">${tag.display}</div>
         </div>
         <div class="clearPbButton button">
           <i class="fas fa-crown fa-fw"></i>
@@ -682,7 +682,7 @@ function refreshPresetsSettingsSection(): void {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
-          <div class="title">${preset.name}</div>
+          <div class="title">${preset.display}</div>
         </div>
         <div class="editButton button">
           <i class="fas fa-pen fa-fw"></i>

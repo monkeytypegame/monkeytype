@@ -64,9 +64,13 @@ export async function updateName(
     throw new MonkeyError(400, "Invalid username");
   }
 
-  return await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $set: { name, lastNameChange: Date.now() } });
+  return await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: { name, lastNameChange: Date.now() },
+      $unset: { needsToUpdateName: "" },
+    }
+  );
 }
 
 export async function clearPb(uid: string): Promise<UpdateResult> {

@@ -1,5 +1,4 @@
 import * as UserDAL from "../../dal/user";
-import * as BotDAL from "../../dal/bot";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
@@ -127,8 +126,6 @@ export async function linkDiscord(
     data: { tokenType, accessToken },
   } = req.body;
 
-  const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
-
   const userInfo = await UserDAL.getUser(uid, "link discord");
   if (userInfo.discordId) {
     throw new MonkeyError(
@@ -160,10 +157,7 @@ export async function linkDiscord(
 
   await UserDAL.linkDiscord(uid, discordId);
 
-  if (useRedisForBotTasks) {
-    George.linkDiscord(discordId, uid);
-  }
-  await BotDAL.linkDiscord(uid, discordId);
+  George.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", discordId);
@@ -174,18 +168,12 @@ export async function unlinkDiscord(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const useRedisForBotTasks = req.ctx.configuration.useRedisForBotTasks.enabled;
-
   const userInfo = await UserDAL.getUser(uid, "unlink discord");
   if (!userInfo.discordId) {
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
 
-  if (useRedisForBotTasks) {
-    George.unlinkDiscord(userInfo.discordId, uid);
-  }
-  await BotDAL.unlinkDiscord(uid, userInfo.discordId);
-
+  George.unlinkDiscord(userInfo.discordId, uid);
   await UserDAL.unlinkDiscord(uid);
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 

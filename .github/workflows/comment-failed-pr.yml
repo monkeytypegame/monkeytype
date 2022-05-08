@@ -1,0 +1,38 @@
+name: Comment on failed PR
+permissions:
+  pull-requests: write
+
+on:
+  workflow_run:
+    workflows: [PR Check]
+    types: [completed]
+
+jobs:
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Download workflow artifact
+        uses: dawidd6/action-download-artifact@v2.11.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: peek_icons.yml
+          run_id: ${{ github.event.workflow_run.id }}
+
+      - name: Read the pr_num file
+        id: pr_num_reader
+        uses: juliangruber/read-file-action@v1.0.0
+        with:
+          path: ./pr_num/pr_num.txt
+
+      - name: Create comment
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ steps.pr_num_reader.outputs.content }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The PR check action failed. Please review the logs and make the necessary changes. ' + context.payload.workflow_run.html_url
+            })

@@ -229,7 +229,7 @@ export function updateActive(): void {
             const snapshot = DB.getSnapshot();
             const name = snapshot.tags?.filter((t) => t._id == id)[0];
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id == id)[0].name;
+              return snapshot.tags?.filter((t) => t._id == id)[0].display;
             }
             return name;
           })
@@ -337,7 +337,7 @@ export function updateTags(): void {
     snapshot.tags?.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
+      ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
     });
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
