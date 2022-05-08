@@ -379,13 +379,30 @@ export async function signInWithGoogle(): Promise<void> {
     : browserSessionPersistence;
 
   await setPersistence(Auth, persistence);
-  const signedInUser = await signInWithPopup(Auth, gmailProvider);
-
-  if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-    dispatchSignUpEvent(signedInUser, true);
-  } else {
-    await loadUser(signedInUser.user);
-  }
+  signInWithPopup(Auth, gmailProvider)
+    .then(async (signedInUser) => {
+      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+        dispatchSignUpEvent(signedInUser, true);
+      } else {
+        await loadUser(signedInUser.user);
+      }
+    })
+    .catch((error) => {
+      let message = error.message;
+      if (error.code === "auth/wrong-password") {
+        message = "Incorrect password";
+      } else if (error.code === "auth/user-not-found") {
+        message = "User not found";
+      } else if (error.code === "auth/invalid-email") {
+        message =
+          "Invalid email format (make sure you are using your email to login - not your username)";
+      } else if (error.code === "auth/popup-closed-by-user") {
+        message = "Popup closed by user";
+      }
+      Notifications.add(message, -1);
+      LoginPage.hidePreloader();
+      LoginPage.enableInputs();
+    });
 }
 
 export async function addGoogleAuth(): Promise<void> {
