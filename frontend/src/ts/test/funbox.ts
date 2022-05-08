@@ -89,7 +89,7 @@ export function reset(): void {
   resetMemoryTimer();
 }
 
-export function toggleScript(...params: any[]): void {
+export function toggleScript(...params: string[]): void {
   if (Config.funbox === "tts") {
     TTS.speak(params[0]);
   }

@@ -66,7 +66,8 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const action = $("#tagsWrapper #tagsEdit").attr("action");
-  const tagName = $("#tagsWrapper #tagsEdit input").val() as string;
+  const propTagName = $("#tagsWrapper #tagsEdit input").val() as string;
+  const tagName = propTagName.replaceAll(" ", "_");
   const tagId = $("#tagsWrapper #tagsEdit").attr("tagid") as string;
 
   hide();
@@ -80,6 +81,7 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags?.push({
+        display: propTagName,
         name: response.data.name,
         _id: response.data._id,
       });
@@ -97,6 +99,7 @@ async function apply(): Promise<void> {
       DB.getSnapshot().tags?.forEach((tag) => {
         if (tag._id === tagId) {
           tag.name = tagName;
+          tag.display = propTagName;
         }
       });
       ResultTagsPopup.updateButtons();

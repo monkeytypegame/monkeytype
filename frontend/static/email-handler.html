@@ -163,13 +163,10 @@
         </div>
       </div>
     </div>
-    <!-- TODO: Add image to go back to top of page -->
   </body>
   <script src="js/jquery-3.5.1.min.js"></script>
   <script src="/__/firebase/8.4.2/firebase-app.js"></script>
 
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
   <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
   <script src="/__/firebase/8.4.2/firebase-auth.js"></script>
   <script src="/__/firebase/8.4.2/firebase-firestore.js"></script>
@@ -192,13 +189,6 @@
             `Your email address has been verified.`
           );
           $("#middle .preloader .subText").text(`You can now close this tab.`);
-
-          // TODO: Display a confirmation message to the user.
-          // You could also provide the user with a link back to the app.
-
-          // TODO: If a continue URL is available, display a button which on
-          // click redirects the user back to the app via continueUrl with
-          // additional state determined from that URL's parameters.
         })
         .catch((error) => {
           $("#middle .preloader .icon").html(
@@ -231,8 +221,6 @@
         .then((email) => {
           var accountEmail = email;
 
-          // TODO: Show the reset screen with the user's email and ask the user for
-          // the new password.
           var newPassword = $("#middle .resetPassword .pwd").val();
           var newPasswordConfirm = $(
             "#middle .resetPassword .pwd-confirm"
@@ -259,15 +247,10 @@
               $("#middle .preloader .subText").text(
                 `You can now close this tab.`
               );
-              // TODO: Display a link back to the app, or sign-in the user directly
-              // if the page belongs to the same domain as the app:
+
               firebase
                 .auth()
                 .signInWithEmailAndPassword(accountEmail, newPassword);
-
-              // TODO: If a continue URL is available, display a button which on
-              // click redirects the user back to the app via continueUrl with
-              // additional state determined from that URL's parameters.
             })
             .catch((error) => {
               $("#middle .preloader .icon").html(

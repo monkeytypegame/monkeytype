@@ -416,7 +416,6 @@ export function restart(
   PaceCaret.reset();
   Monkey.hide();
 
-  if (Config.showAverage) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
@@ -557,6 +556,8 @@ export function restart(
           UpdateConfig.setKeymapMode("react");
         }
       }
+
+      if (Config.showAverage !== "off") Last10Average.update();
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";

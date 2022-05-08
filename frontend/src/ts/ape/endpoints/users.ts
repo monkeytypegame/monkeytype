@@ -33,9 +33,9 @@ export default function getUsersEndpoints(
     return await apeClient.patch(`${BASE_PATH}/name`, { payload: { name } });
   }
 
-  async function updateLeaderboardMemory(
+  async function updateLeaderboardMemory<M extends MonkeyTypes.Mode>(
     mode: string,
-    mode2: MonkeyTypes.Mode2<any>,
+    mode2: MonkeyTypes.Mode2<M>,
     language: string,
     rank: number
   ): Ape.EndpointData {

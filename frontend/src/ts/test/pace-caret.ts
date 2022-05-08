@@ -16,7 +16,7 @@ interface Settings {
   correction: number;
   currentWordIndex: number;
   currentLetterIndex: number;
-  wordsStatus: { [key: number]: any };
+  wordsStatus: { [key: number]: true | undefined };
   timeout: NodeJS.Timeout | null;
 }
 

@@ -236,6 +236,5 @@ $("#quoteRatePopup .submitButton").on("click", () => {
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {
-  // TODO remove this when done with TestWords
-  show(TestWords.randomQuote as unknown as MonkeyTypes.Quote);
+  show(TestWords.randomQuote);
 });
