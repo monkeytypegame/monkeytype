@@ -83,7 +83,7 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 | Local Server                                                                                                                            | Docker (recommended)                                                                                                                                                    |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory.</li></ol> |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown after the server is started.
