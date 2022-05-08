@@ -220,14 +220,6 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 
 export function updateTagCommands(): void {
   commandsTags.list = [];
-  commandsTags.list.push({
-    id: "createTag",
-    display: "Create tag",
-    icon: "fa-plus",
-    exec: (): void => {
-      EditTagPopup.show("add");
-    },
-  });
   if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     commandsTags.list.push({
       id: "clearTags",
@@ -295,6 +287,16 @@ export function updateTagCommands(): void {
     });
     // defaultCommands.list[4].visible = true;
   }
+  if (Auth.currentUser) {
+    commandsTags.list.push({
+      id: "createTag",
+      display: "Create tag",
+      icon: "fa-plus",
+      exec: (): void => {
+        EditTagPopup.show("add");
+      },
+    });
+  }
 }
 
 const commandsPresets: MonkeyTypes.CommandsGroup = {
@@ -305,14 +307,6 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 export function updatePresetCommands(): void {
   const snapshot = DB.getSnapshot();
   commandsPresets.list = [];
-  commandsPresets.list.push({
-    id: "createPreset",
-    display: "Create preset",
-    icon: "fa-plus",
-    exec: (): void => {
-      EditPresetPopup.show("add");
-    },
-  });
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
     const dis = preset.display;
@@ -328,6 +322,14 @@ export function updatePresetCommands(): void {
         ModesNotice.update();
       },
     });
+  });
+  commandsPresets.list.push({
+    id: "createPreset",
+    display: "Create preset",
+    icon: "fa-plus",
+    exec: (): void => {
+      EditPresetPopup.show("add");
+    },
   });
 }
 
