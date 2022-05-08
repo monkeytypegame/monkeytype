@@ -22,6 +22,8 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
 import * as PageController from "../controllers/page-controller";
+import * as EditPresetPopup from "../popups/edit-preset-popup";
+import * as EditTagPopup from "../popups/edit-tags-popup";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -217,75 +219,81 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 };
 
 export function updateTagCommands(): void {
-  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
-    commandsTags.list = [];
+  const snapshot = DB.getSnapshot();
+  commandsTags.list = [];
+  if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) return;
+  commandsTags.list.push({
+    id: "clearTags",
+    display: `Clear tags`,
+    icon: "fa-times",
+    exec: (): void => {
+      const snapshot = DB.getSnapshot();
+
+      snapshot.tags = snapshot.tags?.map((tag) => {
+        tag.active = false;
+
+        return tag;
+      });
+
+      DB.setSnapshot(snapshot);
+      ModesNotice.update();
+      TagController.saveActiveToLocalStorage();
+    },
+  });
+
+  DB.getSnapshot().tags?.forEach((tag) => {
+    let dis = tag.display;
+
+    if (tag.active === true) {
+      dis = '<i class="fas fa-fw fa-check"></i>' + dis;
+    } else {
+      dis = '<i class="fas fa-fw"></i>' + dis;
+    }
 
     commandsTags.list.push({
-      id: "clearTags",
-      display: `Clear tags`,
-      icon: "fa-times",
+      id: "toggleTag" + tag._id,
+      noIcon: true,
+      display: dis,
+      sticky: true,
       exec: (): void => {
-        const snapshot = DB.getSnapshot();
-
-        snapshot.tags = snapshot.tags?.map((tag) => {
-          tag.active = false;
-
-          return tag;
-        });
-
-        DB.setSnapshot(snapshot);
+        TagController.toggle(tag._id);
         ModesNotice.update();
-        TagController.saveActiveToLocalStorage();
+
+        if (Config.paceCaret === "average") {
+          PaceCaret.init();
+          ModesNotice.update();
+        }
+
+        let txt = tag.display;
+
+        if (tag.active === true) {
+          txt = '<i class="fas fa-fw fa-check"></i>' + txt;
+        } else {
+          txt = '<i class="fas fa-fw"></i>' + txt;
+        }
+        if ($("#commandLine").hasClass("allCommands")) {
+          $(
+            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
+          ).html(
+            `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
+              txt
+          );
+        } else {
+          $(
+            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
+          ).html(txt);
+        }
       },
     });
-
-    DB.getSnapshot().tags?.forEach((tag) => {
-      let dis = tag.display;
-
-      if (tag.active === true) {
-        dis = '<i class="fas fa-fw fa-check"></i>' + dis;
-      } else {
-        dis = '<i class="fas fa-fw"></i>' + dis;
-      }
-
-      commandsTags.list.push({
-        id: "toggleTag" + tag._id,
-        noIcon: true,
-        display: dis,
-        sticky: true,
-        exec: (): void => {
-          TagController.toggle(tag._id);
-          ModesNotice.update();
-
-          if (Config.paceCaret === "average") {
-            PaceCaret.init();
-            ModesNotice.update();
-          }
-
-          let txt = tag.display;
-
-          if (tag.active === true) {
-            txt = '<i class="fas fa-fw fa-check"></i>' + txt;
-          } else {
-            txt = '<i class="fas fa-fw"></i>' + txt;
-          }
-          if ($("#commandLine").hasClass("allCommands")) {
-            $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-            ).html(
-              `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
-                txt
-            );
-          } else {
-            $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-            ).html(txt);
-          }
-        },
-      });
-    });
-    // defaultCommands.list[4].visible = true;
-  }
+  });
+  commandsTags.list.push({
+    id: "createTag",
+    display: "Create tag",
+    icon: "fa-plus",
+    exec: (): void => {
+      EditTagPopup.show("add");
+    },
+  });
 }
 
 const commandsPresets: MonkeyTypes.CommandsGroup = {
@@ -295,8 +303,8 @@ const commandsPresets: MonkeyTypes.CommandsGroup = {
 
 export function updatePresetCommands(): void {
   const snapshot = DB.getSnapshot();
-  if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   commandsPresets.list = [];
+  if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
     const dis = preset.display;
 
@@ -311,6 +319,14 @@ export function updatePresetCommands(): void {
         ModesNotice.update();
       },
     });
+  });
+  commandsPresets.list.push({
+    id: "createPreset",
+    display: "Create preset",
+    icon: "fa-plus",
+    exec: (): void => {
+      EditPresetPopup.show("add");
+    },
   });
 }
 
@@ -2643,6 +2659,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       beforeSubgroup: (): void => {
         updateTagCommands();
       },
+      available: (): boolean => {
+        return !!Auth.currentUser;
+      },
       // exec: (): void => {
       //   updateTagCommands();
       //   current.push();
@@ -2657,6 +2676,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsPresets,
       beforeSubgroup: (): void => {
         updatePresetCommands();
+      },
+      available: (): boolean => {
+        return !!Auth.currentUser;
       },
       // exec: (): void => {
       //   updatePresetCommands();
