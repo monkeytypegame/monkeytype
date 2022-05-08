@@ -71,7 +71,7 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;
-    needsToUpdateName?: boolean;
+    needsToChangeName?: boolean;
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;

@@ -61,7 +61,7 @@ export async function updateName(
   const user = await getUser(uid, "update name");
 
   if (
-    !user?.needsToUpdateName &&
+    !user?.needsToChangeName &&
     Date.now() - (user.lastNameChange ?? 0) < 2592000000
   ) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
@@ -71,7 +71,7 @@ export async function updateName(
     { uid },
     {
       $set: { name, lastNameChange: Date.now() },
-      $unset: { needsToUpdateName: "" },
+      $unset: { needsToChangeName: "" },
     }
   );
 }
