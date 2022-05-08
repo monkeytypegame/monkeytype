@@ -2,13 +2,11 @@
 
 ### **Table of Contents**
 
-- [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
-  - [Text Editor](#text-editor)
   - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
-  - [Mongo Setup](#mongo-setup)
+  - [Backend (optional)](#backend-optional)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
 - [Questions](#questions)
