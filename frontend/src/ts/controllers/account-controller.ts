@@ -127,7 +127,7 @@ export async function getDataAndInit(): Promise<boolean> {
     ResultFilters.load();
   });
 
-  if (!snapshot.name) {
+  if (snapshot.needsToUpdateName) {
     //verify username
     //invalid, get new
     let nameGood = false;

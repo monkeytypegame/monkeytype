@@ -80,6 +80,7 @@ export async function initSnapshot(): Promise<
     snap.banned = userData.banned;
     snap.verified = userData.verified;
     snap.discordId = userData.discordId;
+    snap.needsToUpdateName = userData.needsToUpdateName;
     snap.globalStats = {
       time: userData.timeTyping,
       started: userData.startedTests,

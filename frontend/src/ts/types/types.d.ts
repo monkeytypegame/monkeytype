@@ -459,6 +459,7 @@ declare namespace MonkeyTypes {
     discordId?: string;
     config?: Config;
     favoriteQuotes: FavoriteQuotes;
+    needsToUpdateName?: boolean;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
