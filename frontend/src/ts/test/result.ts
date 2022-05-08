@@ -13,6 +13,7 @@ import * as GlarsesMode from "../states/glarses-mode";
 import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
+import QuotesController from "../controllers/quotes-controller";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 
@@ -581,17 +582,15 @@ function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
   quoteLang = Config.mode === "quote" ? randomQuote.language : "";
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
-  const $icon = $(".pageTest #result #favoriteQuoteButton .icon");
+  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
   if (Config.mode === "quote" && Auth.currentUser) {
-    const userFav = Misc.isQuoteFavorite(DB.getSnapshot(), quoteLang, quoteId);
+    const userFav = QuotesController.isQuoteFavorite(randomQuote);
 
-    $icon
-      .removeClass(userFav ? "far" : "fas")
-      .addClass(userFav ? "fas" : "far");
-    $icon.parent().removeClass("hidden");
+    icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
+    icon.parent().removeClass("hidden");
   } else {
-    $icon.parent().addClass("hidden");
+    icon.parent().addClass("hidden");
   }
 }
 

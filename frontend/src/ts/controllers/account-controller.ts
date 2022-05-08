@@ -47,6 +47,10 @@ import { Auth } from "../firebase";
 import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
+import {
+  hideFavoriteQuoteLength,
+  showFavoriteQuoteLength,
+} from "../test/test-config";
 
 export const gmailProvider = new GoogleAuthProvider();
 
@@ -107,6 +111,7 @@ export async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
   $("#menu .text-button.account .text").text(snapshot.name);
+  showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
 
@@ -491,6 +496,7 @@ export function signOut(): void {
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
+      hideFavoriteQuoteLength();
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);

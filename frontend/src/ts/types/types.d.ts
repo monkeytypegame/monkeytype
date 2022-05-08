@@ -33,7 +33,7 @@ declare namespace MonkeyTypes {
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  type QuoteLength = -2 | -1 | 0 | 1 | 2 | 3;
+  type QuoteLength = -3 | -2 | -1 | 0 | 1 | 2 | 3;
 
   type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
