@@ -746,6 +746,10 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
+  if (Config.quoteLength.includes(-3) && !Auth.currentUser) {
+    UpdateConfig.setQuoteLength(-1);
+  }
+
   let language = await Misc.getLanguage(Config.language);
   if (language && language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
