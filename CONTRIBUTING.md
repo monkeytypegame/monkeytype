@@ -2,6 +2,8 @@
 
 ### **Table of Contents**
 
+- [Getting Started](#getting-started)
+- [How to Contribute](#how-to-contribute)
 - [Standards and Guidelines](#standards-and-guidelines)
   - [Theme Guidelines](#theme-guidelines)
   - [Language Guidelines](#language-guidelines)
