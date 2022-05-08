@@ -2059,6 +2059,20 @@ const commandsQuoteLengthConfig: MonkeyTypes.CommandsGroup = {
         TestLogic.restart();
       },
     },
+    {
+      id: "changeQuoteLengthFavorite",
+      display: "favorite",
+      configValue: -3,
+      configValueMode: "include",
+      available: (): boolean => {
+        return !!Auth.currentUser;
+      },
+      exec: (): void => {
+        UpdateConfig.setMode("quote");
+        UpdateConfig.setQuoteLength(-3);
+        TestLogic.restart();
+      },
+    },
   ],
 };
 
