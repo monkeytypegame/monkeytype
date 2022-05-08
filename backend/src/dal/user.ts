@@ -51,7 +51,7 @@ export async function updateName(
   uid: string,
   name: string
 ): Promise<UpdateResult> {
-  if (!isNameAvailable(name)) {
+  if (!(await isNameAvailable(name))) {
     throw new MonkeyError(409, "Username already taken", name);
   }
 
