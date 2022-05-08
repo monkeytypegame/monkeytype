@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
-import * as Account from "../pages/account";
 import * as VerificationController from "./verification-controller";
 import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
@@ -24,6 +23,7 @@ import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
+import * as Account from "../pages/account";
 import {
   EmailAuthProvider,
   GoogleAuthProvider,
@@ -100,7 +100,6 @@ export async function getDataAndInit(): Promise<boolean> {
     Notifications.add("Failed to get user data: " + msg, -1);
 
     $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() === "loading") PageController.change("");
     return false;
   }
   if (ActivePage.get() == "loading") {
@@ -232,6 +231,12 @@ export async function getDataAndInit(): Promise<boolean> {
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
+  if (ActivePage.get() === "account") {
+    Account.update();
+  } else {
+    Focus.set(false);
+  }
+  await PageController.change(undefined, true);
   PageTransition.set(false);
   console.log("account loading finished");
   return true;
@@ -288,27 +293,15 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     }
     PageTransition.set(false);
   }
-  if (user) {
-    if (window.location.pathname == "/login") {
-      PageController.change("account");
-    } else if (window.location.pathname != "/account") {
-      PageController.change();
-      setTimeout(() => {
-        Focus.set(false);
-      }, 125 / 2);
-    } else {
-      Account.update();
-      // SignOutButton.show();
-    }
-  } else {
+  if (!user) {
     PageController.change();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
   }
 
-  URLHandler.loadCustomThemeFromUrl();
-  URLHandler.loadTestSettingsFromUrl();
+  URLHandler.loadCustomThemeFromUrl(search);
+  URLHandler.loadTestSettingsFromUrl(search);
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
@@ -341,7 +334,6 @@ export function signIn(): void {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
-        PageController.change("account");
         if (TestLogic.notSignedInLastResult !== null) {
           TestLogic.setNotSignedInUid(e.user.uid);
 
@@ -393,7 +385,6 @@ export async function signInWithGoogle(): Promise<void> {
     dispatchSignUpEvent(signedInUser, true);
   } else {
     await loadUser(signedInUser.user);
-    PageController.change("account");
   }
 }
 
@@ -584,7 +575,6 @@ async function signUp(): Promise<void> {
         });
       }
     }
-    PageController.change("account");
     Notifications.add("Account created", 1, 3);
   } catch (e) {
     //make sure to do clean up here
