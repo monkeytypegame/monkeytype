@@ -278,6 +278,7 @@ export async function loadUser(user: UserType): Promise<void> {
 
 const authListener = Auth.onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
+  const search = window.location.search;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);
