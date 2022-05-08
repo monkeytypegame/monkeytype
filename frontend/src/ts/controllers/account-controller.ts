@@ -497,7 +497,6 @@ export function signOut(): void {
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       hideFavoriteQuoteLength();
-      // $("#top .desktopConfig .group.quoteLength .favorite").addClass("hidden");
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
