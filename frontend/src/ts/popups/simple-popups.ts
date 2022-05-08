@@ -417,7 +417,7 @@ list["updateName"] = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
-        "We're recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer and more. Sorry for the inconvenience.";
+        "We've recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer, and more. Sorry for the inconvenience.";
     }
   },
   (_thisPopup) => {
