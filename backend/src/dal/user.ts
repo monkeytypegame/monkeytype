@@ -51,6 +51,9 @@ export async function updateName(
   uid: string,
   name: string
 ): Promise<UpdateResult> {
+  if (!isUsernameValid(name)) {
+    throw new MonkeyError(400, "Invalid username");
+  }
   if (!(await isNameAvailable(name))) {
     throw new MonkeyError(409, "Username already taken", name);
   }
@@ -62,9 +65,6 @@ export async function updateName(
     Date.now() - (user.lastNameChange ?? 0) < 2592000000
   ) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
-  }
-  if (!isUsernameValid(name)) {
-    throw new MonkeyError(400, "Invalid username");
   }
 
   return await getUsersCollection().updateOne(
