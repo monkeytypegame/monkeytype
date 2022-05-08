@@ -2659,6 +2659,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       beforeSubgroup: (): void => {
         updateTagCommands();
       },
+      available: (): boolean => {
+        return !!Auth.currentUser;
+      },
       // exec: (): void => {
       //   updateTagCommands();
       //   current.push();
@@ -2673,6 +2676,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsPresets,
       beforeSubgroup: (): void => {
         updatePresetCommands();
+      },
+      available: (): boolean => {
+        return !!Auth.currentUser;
       },
       // exec: (): void => {
       //   updatePresetCommands();
