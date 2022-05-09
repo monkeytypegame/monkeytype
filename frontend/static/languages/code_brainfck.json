@@ -1,0 +1,15 @@
+{
+  "name": "code_brainfck",
+  "leftToRight": true,
+  "noLazyMode": true,
+  "words": [
+    ">",
+    "<",
+    "+",
+    "-",
+    ".",
+    ",",
+    "[",
+    "]"
+  ]
+}
