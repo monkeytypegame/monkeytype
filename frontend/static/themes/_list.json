@@ -754,4 +754,19 @@
     "bgColor": "#292929",
     "mainColor": "#e84a5f"
   }
+  ,{
+    "name": "sliver",
+    "bgColor": "#232323",
+    "mainColor": "#a8a8a8"
+  }
+  ,{
+    "name": "",
+    "bgColor": "",
+    "mainColor": ""
+  }
+  ,{
+    "name": "",
+    "bgColor": "",
+    "mainColor": ""
+  }
 ]
