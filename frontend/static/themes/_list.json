@@ -765,8 +765,8 @@
     "mainColor": "#ffe5ad"
   }
   ,{
-    "name": "",
-    "bgColor": "",
-    "mainColor": ""
+    "name": "greyscale",
+    "bgColor": "#333333",
+    "mainColor": "#a6a6a6"
   }
 ]
