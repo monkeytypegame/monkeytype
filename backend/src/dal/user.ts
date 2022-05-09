@@ -13,15 +13,9 @@ import {
   WithId,
 } from "mongodb";
 
-let usersCollection: Collection<WithId<MonkeyTypes.User>>;
-
-function getUsersCollection(): Collection<WithId<MonkeyTypes.User>> {
-  if (!usersCollection) {
-    usersCollection = db.collection<MonkeyTypes.User>("users");
-  }
-
-  return usersCollection;
-}
+// Export for use in tests
+export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
+  db.collection<MonkeyTypes.User>("users");
 
 export async function addUser(
   name: string,
