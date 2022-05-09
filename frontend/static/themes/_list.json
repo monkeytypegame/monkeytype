@@ -760,9 +760,9 @@
     "mainColor": "#a8a8a8"
   }
   ,{
-    "name": "",
-    "bgColor": "",
-    "mainColor": ""
+    "name": "bark",
+    "bgColor": "#8e3200",
+    "mainColor": "#ffe5ad"
   }
   ,{
     "name": "",
