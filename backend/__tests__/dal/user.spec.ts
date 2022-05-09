@@ -1,3 +1,4 @@
+import _ from "lodash";
 import {
   addUser,
   clearPb,
@@ -17,18 +18,6 @@ const mockPersonalBest = {
   wpm: 215,
   timestamp: 13123123,
 };
-
-const filterNot =
-  <T>(predicate: (item: T) => boolean) =>
-  (item: T): boolean =>
-    !predicate(item);
-
-const isEmpty = (obj: Record<string, unknown>): boolean =>
-  [Object, Array].includes(
-    (obj || {}).constructor as unknown as ObjectConstructor
-  ) && !Object.entries(obj || {}).length;
-
-const isNotEmpty = filterNot(isEmpty);
 
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
@@ -180,20 +169,21 @@ describe("UserDal", () => {
       }
     );
 
-    const userWithPersonalBests = await getUser(testUser.uid, "test");
-    expect(
-      Object.values(userWithPersonalBests.personalBests ?? {}).filter(
-        isNotEmpty
-      )
-    ).toHaveLength(1);
+    const { personalBests } = (await getUser(testUser.uid, "test")) ?? {};
+    expect(personalBests).toStrictEqual({
+      time: { 20: [mockPersonalBest] },
+      words: {},
+      quote: {},
+      custom: {},
+      zen: {},
+    });
     // when
     await clearPb(testUser.uid);
 
     // then
-    const updatedUser = await getUser(testUser.uid, "test");
-
-    expect(
-      Object.values(updatedUser.personalBests ?? {}).filter(isNotEmpty)
-    ).toHaveLength(0);
+    const updatedUser = (await getUser(testUser.uid, "test")) ?? {};
+    expect(_.values(updatedUser.personalBests).filter(_.isEmpty)).toHaveLength(
+      5
+    );
   });
 });

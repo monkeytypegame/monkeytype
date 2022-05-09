@@ -41,6 +41,9 @@ export async function deleteUser(uid: string): Promise<DeleteResult> {
   return await getUsersCollection().deleteOne({ uid });
 }
 
+const DAY_IN_SECONDS = 24 * 60 * 60;
+const MONTH_IN_SECONDS = DAY_IN_SECONDS * 30;
+
 export async function updateName(
   uid: string,
   name: string
@@ -53,9 +56,6 @@ export async function updateName(
   }
 
   const user = await getUser(uid, "update name");
-
-  const DAY_IN_SECONDS = 24 * 60 * 60;
-  const MONTH_IN_SECONDS = DAY_IN_SECONDS * 30;
 
   if (
     !user?.needsToChangeName &&
