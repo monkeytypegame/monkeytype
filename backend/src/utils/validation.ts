@@ -5,6 +5,8 @@ export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
 
+const REGEX_ONLY_CONTAINS_ALLOWED_CHARACTERS = /^[\da-zA-Z_.-]+$/;
+
 export function isUsernameValid(name: string): boolean {
   if (_.isNil(name) || !inRange(name.length, 1, 16)) {
     return false;
@@ -24,7 +26,7 @@ export function isUsernameValid(name: string): boolean {
     return false;
   }
 
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
+  return REGEX_ONLY_CONTAINS_ALLOWED_CHARACTERS.test(name);
 }
 
 export function isTagPresetNameValid(name: string): boolean {
@@ -32,7 +34,7 @@ export function isTagPresetNameValid(name: string): boolean {
     return false;
   }
 
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
+  return REGEX_ONLY_CONTAINS_ALLOWED_CHARACTERS.test(name);
 }
 
 export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {

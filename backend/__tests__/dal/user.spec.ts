@@ -49,4 +49,67 @@ describe("UserDal", () => {
       updateName(userToUpdateNameFor.uid, userWithNameTaken.name)
     ).rejects.toThrow("Username already taken");
   });
+
+  it("updatename should not allow invalid usernames", async () => {
+    const testUser = {
+      name: "Test",
+      email: "mockemail@email.com",
+      uid: "userId",
+    };
+
+    await addUser(testUser.name, testUser.email, testUser.uid);
+
+    const invalidNames = [
+      null, // falsy
+      undefined, // falsy
+      "", // empty
+      " ".repeat(16), // too long
+      ".testName", // cant begin with period
+      "miodec", // profanity
+      "asdasdAS$", // invalid characters
+    ];
+
+    invalidNames.forEach(
+      async (invalidName) =>
+        await expect(
+          updateName(testUser.uid, invalidName as unknown as string)
+        ).rejects.toThrow("Invalid username")
+    );
+  });
+
+  it("updateName should fail if user has changed name recently", async () => {
+    const testUser = {
+      name: "Test",
+      email: "mockemail@email.com",
+      uid: "userId",
+    };
+
+    await addUser(testUser.name, testUser.email, testUser.uid);
+
+    await updateName(testUser.uid, "renamedTestUser");
+
+    const updatedUser = await getUser(testUser.uid, "test");
+
+    expect(updatedUser.name).toBe("renamedTestUser");
+
+    await expect(updateName(updatedUser.uid, "NewValidName")).rejects.toThrow(
+      "You can change your name once every 30 days"
+    );
+  });
+
+  it("updateName should change the name of a user", async () => {
+    const testUser = {
+      name: "Test",
+      email: "mockemail@email.com",
+      uid: "userId",
+    };
+
+    await addUser(testUser.name, testUser.email, testUser.uid);
+
+    await updateName(testUser.uid, "renamedTestUser");
+
+    const updatedUser = await getUser(testUser.uid, "test");
+
+    expect(updatedUser.name).toBe("renamedTestUser");
+  });
 });
