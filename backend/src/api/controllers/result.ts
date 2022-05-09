@@ -80,6 +80,15 @@ export async function addResult(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
+  const user = await getUser(uid, "add result");
+
+  if (user.needsToChangeName) {
+    throw new MonkeyError(
+      403,
+      "Please change your name before submitting a result"
+    );
+  }
+
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
   if (isTestTooShort(result)) {
@@ -198,8 +207,6 @@ export async function addResult(
   } catch (e) {
     //
   }
-
-  const user = await getUser(uid, "add result");
 
   //check keyspacing and duration here for bots
   if (
