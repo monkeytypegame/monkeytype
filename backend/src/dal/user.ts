@@ -42,7 +42,7 @@ export async function deleteUser(uid: string): Promise<DeleteResult> {
 }
 
 const DAY_IN_SECONDS = 24 * 60 * 60;
-const MONTH_IN_SECONDS = DAY_IN_SECONDS * 30;
+const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
 
 export async function updateName(
   uid: string,
@@ -59,7 +59,7 @@ export async function updateName(
 
   if (
     !user?.needsToChangeName &&
-    Date.now() - (user.lastNameChange ?? 0) < MONTH_IN_SECONDS
+    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
   ) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
