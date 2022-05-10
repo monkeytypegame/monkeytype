@@ -48,28 +48,28 @@ $(document).ready(() => {
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
-  // if (!window.localStorage.getItem("merchbannerclosed")) {
-  //   Notifications.addBanner(
-  //     `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
-  //     1,
-  //     "images/merchdropwebsite2.png",
-  //     false,
-  //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
-  //     }
-  //   );
-  // }
-  if (!window.localStorage.getItem("dasbannerclosed")) {
+  if (!window.localStorage.getItem("merchbannerclosed")) {
     Notifications.addBanner(
-      `Looking to buy a new keyboard? Check out <a target="_blank" href="https://www.monkeytype.com/das">DasKeyboard</a>. `,
+      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
-      "images/dasbanner.png",
+      "images/merchdropwebsite2.png",
       false,
       () => {
-        window.localStorage.setItem("dasbannerclosed", "true");
+        window.localStorage.setItem("merchbannerclosed", "true");
       }
     );
   }
+  // if (!window.localStorage.getItem("dasbannerclosed")) {
+  //   Notifications.addBanner(
+  //     `Looking to buy a new keyboard? Check out <a target="_blank" href="https://www.monkeytype.com/das">DasKeyboard</a>. `,
+  //     1,
+  //     "images/dasbanner.png",
+  //     false,
+  //     () => {
+  //       window.localStorage.setItem("dasbannerclosed", "true");
+  //     }
+  //   );
+  // }
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
