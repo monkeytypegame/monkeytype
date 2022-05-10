@@ -1,7 +1,7 @@
 import * as Commandline from "../elements/commandline";
 import * as CommandlineLists from "../elements/commandline-lists";
 
-$(document.body).on("click", "#supportMeButton", () => {
+$(document.body).on("click", "#supportMeButton, #supportMeAboutButton", () => {
   $("#supportMeWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
