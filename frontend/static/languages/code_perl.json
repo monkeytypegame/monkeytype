@@ -1,6 +1,6 @@
 {
   "name": "code_perl",
-  "lefToRight": true,
+  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "length",
