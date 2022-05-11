@@ -558,16 +558,23 @@ export function setEnableAds(
     return false;
   }
 
-  config.enableAds = val;
+  config.enableAds = "off";
   if (!nosave) {
     saveToLocalStorage("enableAds", nosave);
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
-    Notifications.add("Ad settings changed. Refreshing...", 0);
+    Notifications.add("Ads have been temporarily disabled", 0);
   }
-
   return true;
+
+  // config.enableAds = val;
+  // if (!nosave) {
+  //   saveToLocalStorage("enableAds", nosave);
+  //   setTimeout(() => {
+  //     location.reload();
+  //   }, 3000);
+  //   Notifications.add("Ad settings changed. Refreshing...", 0);
+  // }
+
+  // return true;
 }
 
 export function setRepeatQuotes(
@@ -1822,71 +1829,80 @@ export function apply(
       setEnableAds(configObj.enableAds, true);
 
       if (config.enableAds === "max" || config.enableAds === "on") {
-        $("head").append(`
-          <script
-          src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
-          type="text/javascript"
-          data-site-id="60b78af12119122b8958910f"
-          data-mode="scan"
-          id="adScript"
-          async
-          ></script>
-        `);
+        // $("head").append(`
+        //   <script
+        //   src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
+        //   type="text/javascript"
+        //   data-site-id="60b78af12119122b8958910f"
+        //   data-mode="scan"
+        //   id="adScript"
+        //   async
+        //   ></script>
+        // `);
 
         if (config.enableAds === "max") {
           //
 
           $("#ad_rich_media").removeClass("hidden");
-          $("#ad_rich_media").html(
-            `<div class="vm-placement" data-id="60bf737ee04cb761c88aafb1" style="display:none"></div>`
-          );
+          $("#ad_rich_media")
+            .html
+            // `<div class="vm-placement" data-id="60bf737ee04cb761c88aafb1" style="display:none"></div>`
+            ();
         } else {
           $("#ad_rich_media").remove();
         }
 
         //<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>
 
-        $("#ad_footer").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_footer")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_footer").removeClass("hidden");
 
         // $("#ad_footer2").html(`<div class="vm-placement" data-id="60bf73e9e04cb761c88aafb7"></div>`);
         // $("#ad_footer2").removeClass("hidden");
 
-        $("#ad_about1").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_about1")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_about1").removeClass("hidden");
 
-        $("#ad_about2").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_about2")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_about2").removeClass("hidden");
 
-        $("#ad_settings0").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_settings0")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_settings0").removeClass("hidden");
 
-        $("#ad_settings1").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_settings1")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_settings1").removeClass("hidden");
 
-        $("#ad_settings2").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_settings2")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_settings2").removeClass("hidden");
 
-        $("#ad_settings3").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_settings3")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_settings3").removeClass("hidden");
 
-        $("#ad_account").html(
-          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
-        );
+        $("#ad_account")
+          .html
+          // `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+          ();
         $("#ad_account").removeClass("hidden");
         $(".footerads").removeClass("hidden");
       } else {
