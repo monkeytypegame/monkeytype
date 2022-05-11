@@ -559,8 +559,10 @@ export function setEnableAds(
   }
 
   config.enableAds = "off";
-  saveToLocalStorage("enableAds", nosave);
-  Notifications.add("Ads have been temporarily disabled", 0);
+  if (!nosave) {
+    saveToLocalStorage("enableAds", nosave);
+    Notifications.add("Ads have been temporarily disabled", 0);
+  }
   return true;
 
   // config.enableAds = val;
