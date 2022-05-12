@@ -756,7 +756,7 @@
   }
   ,{
     "name": "tree_green",
-    "bgcolor": "#749a7c",
+    "bgColor": "#749a7c",
     "mainColor": "#ffffff"
   }
 ]
