@@ -13,9 +13,9 @@
 
 ### Basic Contributions
 
-This file details how to create basic contributions to Monkeytype purely through the use of the Github web UI. This means you will set up a local development environment of any kind. All you'll need is a browser that can access Github and an account.
+This file details how to create basic contributions to Monkeytype purely through the use of the Github web UI. This means you will not need to set up a local development environment of any kind; all you'll need is a browser that can access Github and an account.
 
-Given the above, you should only be using this guide if you plan on doing changes that do no impact the functionality of the application. Examples of such cases would be translation fixes, language additions, or quote additions.
+Given the above, you should only be using this guide if you plan on making changes that do not impact the functionality of the application. Examples of such cases would be translation fixes, language additions, or quote additions.
 
 For all other changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md) to learn how to setup the necessary tools to develop on your local environment.
 
