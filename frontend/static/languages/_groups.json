@@ -147,7 +147,7 @@
   },
   {
     "name": "hebrew",
-    "languages": ["hebrew"]
+    "languages": ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"]
   },
   {
     "name": "icelandic",
@@ -326,7 +326,8 @@
       "code_lua",
       "code_luau",
       "code_matlab",
-      "code_sql"
+      "code_sql",
+      "code_perl"
     ]
   },
   {

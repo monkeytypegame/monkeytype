@@ -16,7 +16,6 @@ import QuotesController from "../controllers/quotes-controller";
 import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
-import { isQuoteFavorite } from "../utils/misc";
 import * as Loader from "../elements/loader";
 
 export let selectedId = 1;
@@ -85,14 +84,10 @@ function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
 
   const filteredQuotes = quotes.filter((quote) => {
     if (showFavOnly) {
-      return isQuoteFavorite(
-        DB.getSnapshot(),
-        quote.language,
-        quote.id.toString()
-      );
-    } else {
-      return true;
+      return QuotesController.isQuoteFavorite(quote);
     }
+
+    return true;
   });
 
   return filteredQuotes;
@@ -113,10 +108,8 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const loggedIn = !Auth.currentUser;
-  const isFav =
-    !loggedIn &&
-    isQuoteFavorite(DB.getSnapshot(), quote.language, quote.id.toString());
+  const loggedOut = !Auth.currentUser;
+  const isFav = !loggedOut && QuotesController.isQuoteFavorite(quote);
 
   return `
   <div class="searchResult" id="${quote.id}">
@@ -143,13 +136,13 @@ function buildQuoteSearchResult(
     </div>
 
     <div class="text-button report ${
-      loggedIn && "hidden"
+      loggedOut && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>
     </div>
 
     <div class="text-button favorite ${
-      loggedIn && "hidden"
+      loggedOut && "hidden"
     }" aria-label="Favorite quote" data-balloon-pos="left">
       <i class="${isFav ? "fas" : "far"} fa-heart favorite"></i>
     </div>
@@ -171,10 +164,9 @@ async function updateResults(searchText: string): Promise<void> {
   const { results: matches, matchedQueryTerms } =
     quoteSearchService.query(searchText);
 
-  let quotesToShow = [];
-  quotesToShow = applyQuoteLengthFilter(searchText === "" ? quotes : matches);
-
-  quotesToShow = applyQuoteFavFilter(quotesToShow);
+  const quotesToShow = applyQuoteLengthFilter(
+    applyQuoteFavFilter(searchText === "" ? quotes : matches)
+  );
 
   const resultsList = $("#quoteSearchResults");
   resultsList.empty();

@@ -749,4 +749,9 @@
     "bgColor": "#000000",
     "mainColor": "#c58aff"
   }
+  ,{
+    "name": "peach_blossom",
+    "bgColor": "#292929",
+    "mainColor": "#e84a5f"
+  }
 ]

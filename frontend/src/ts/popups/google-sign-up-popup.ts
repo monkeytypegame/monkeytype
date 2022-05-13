@@ -11,7 +11,6 @@ import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
-import * as PageController from "../controllers/page-controller";
 import * as TestLogic from "../test/test-logic";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
@@ -90,7 +89,6 @@ async function apply(): Promise<void> {
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
-      PageController.change("account");
       if (TestLogic.notSignedInLastResult !== null) {
         TestLogic.setNotSignedInUid(signedInUser.user.uid);
 

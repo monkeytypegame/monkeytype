@@ -1,5 +1,6 @@
-import { shuffle } from "../utils/misc";
+import { randomElementFromArray, shuffle } from "../utils/misc";
 import { subscribe } from "../observables/config-event";
+import * as DB from "../db";
 
 interface Quote {
   text: string;
@@ -28,6 +29,10 @@ const defaultQuoteCollection: QuoteCollection = {
   groups: [],
 };
 
+function normalizeLanguage(language: string): string {
+  return language.replace(/_\d*k$/g, "");
+}
+
 class QuotesController {
   private quoteCollection: QuoteCollection = defaultQuoteCollection;
 
@@ -38,7 +43,7 @@ class QuotesController {
     language: string,
     quoteLengths?: number[]
   ): Promise<QuoteCollection> {
-    const normalizedLanguage = language.replace(/_\d*k$/g, "");
+    const normalizedLanguage = normalizeLanguage(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       try {
@@ -145,6 +150,54 @@ class QuotesController {
     }
 
     return this.quoteQueue[this.queueIndex];
+  }
+
+  getRandomFavoriteQuote(language: string): MonkeyTypes.Quote | null {
+    const snapshot = DB.getSnapshot();
+    if (!snapshot) {
+      return null;
+    }
+
+    const normalizedLanguage = normalizeLanguage(language);
+    const quoteIds: string[] = [];
+    const { favoriteQuotes } = snapshot;
+
+    Object.keys(favoriteQuotes).forEach((language) => {
+      if (normalizeLanguage(language) !== normalizedLanguage) {
+        return;
+      }
+
+      quoteIds.push(...favoriteQuotes[language]);
+    });
+
+    if (quoteIds.length === 0) {
+      return null;
+    }
+
+    const randomQuoteId = randomElementFromArray(quoteIds);
+    const randomQuote = this.getQuoteById(parseInt(randomQuoteId, 10));
+
+    return randomQuote ?? null;
+  }
+
+  isQuoteFavorite({ language: quoteLanguage, id }: MonkeyTypes.Quote): boolean {
+    const snapshot = DB.getSnapshot();
+    if (!snapshot) {
+      return false;
+    }
+
+    const { favoriteQuotes } = snapshot;
+
+    const normalizedQuoteLanguage = normalizeLanguage(quoteLanguage);
+
+    const matchedLanguage = Object.keys(favoriteQuotes).find((language) => {
+      if (normalizedQuoteLanguage !== normalizeLanguage(language)) {
+        return false;
+      }
+      return favoriteQuotes[language].includes(id.toString());
+    });
+
+    return matchedLanguage !== undefined;
   }
 }
 

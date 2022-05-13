@@ -107,3 +107,6 @@ dep-graph.png
 # TypeScript
 build/
 backend/worker.*
+
+#scripts
+updateContributors.js

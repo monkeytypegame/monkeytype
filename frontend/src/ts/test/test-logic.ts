@@ -408,7 +408,6 @@ export function restart(
   PaceCaret.reset();
   Monkey.hide();
 
-  if (Config.showAverage) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
@@ -549,6 +548,8 @@ export function restart(
           UpdateConfig.setKeymapMode("react");
         }
       }
+
+      if (Config.showAverage !== "off") Last10Average.update();
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
@@ -745,6 +746,10 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
+  if (Config.quoteLength.includes(-3) && !Auth.currentUser) {
+    UpdateConfig.setQuoteLength(-1);
+  }
+
   let language = await Misc.getLanguage(Config.language);
   if (language && language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
@@ -931,7 +936,7 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (Config.quoteLength.includes(-2) && Config.quoteLength.length == 1) {
+    if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
       const targetQuote = QuotesController.getQuoteById(
         QuoteSearchPopup.selectedId
       );
@@ -941,6 +946,19 @@ export async function init(): Promise<void> {
       } else {
         rq = targetQuote;
       }
+    } else if (Config.quoteLength.includes(-3)) {
+      const randomQuote = QuotesController.getRandomFavoriteQuote(
+        Config.language
+      );
+
+      if (randomQuote === null) {
+        Notifications.add("No favorite quotes found", 0);
+        UpdateConfig.setQuoteLength(-1);
+        restart();
+        return;
+      }
+
+      rq = randomQuote;
     } else {
       const randomQuote = QuotesController.getRandomQuote();
       if (randomQuote === null) {
