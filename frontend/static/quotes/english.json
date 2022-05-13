@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -35054,6 +35066,13 @@
       "source": "The Master and Margarita",
       "length": 420,
       "id": 5945
+    },
+    {
+      "text": "You were born broken. That’s your birthright. And now you can fill your life with projects - your books, and your movies, and your little girlfriends but that won’t make you whole. You’re BoJack Horseman. There’s no cure for that.",
+      "source": "Bojack Horseman",
+      "length": 230,
+      "approvedBy": "ze_or",
+      "id": 5946
     }
   ]
 }
