@@ -1,6 +1,6 @@
 /*inspired by GMK MOONLIGHT*/
 :root {
-  --bg-color: #1f2730;
+  --bg-color: #191f28;
   --main-color: #c69f68;
   --caret-color: #8f744b;
   --sub-color: #4b5975;
@@ -21,7 +21,7 @@
 }
 #menu .text-button {
   border-radius: rem !important;
-  color: #1f2730 !important;
+  color: #191f28 !important;
 }
 #menu .text-button :hover {
   border-radius: rem !important;

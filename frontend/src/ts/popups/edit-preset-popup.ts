@@ -63,7 +63,8 @@ function hide(): void {
 
 async function apply(): Promise<void> {
   const action = $("#presetWrapper #presetEdit").attr("action");
-  const presetName = $("#presetWrapper #presetEdit input").val() as string;
+  const propPresetName = $("#presetWrapper #presetEdit input").val() as string;
+  const presetName = propPresetName.replaceAll(" ", "_");
   const presetId = $("#presetWrapper #presetEdit").attr("presetId") as string;
 
   const updateConfig: boolean = $(
@@ -99,6 +100,7 @@ async function apply(): Promise<void> {
       snapshotPresets.push({
         name: presetName,
         config: configChanges,
+        display: propPresetName,
         _id: response.data.presetId,
       });
     }

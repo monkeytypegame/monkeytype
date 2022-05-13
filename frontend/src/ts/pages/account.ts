@@ -108,7 +108,7 @@ function loadMoreLines(lineIndex?: number): void {
       result.tags.forEach((tag) => {
         DB.getSnapshot().tags?.forEach((snaptag) => {
           if (tag === snaptag._id) {
-            tagNames += snaptag.name + ", ";
+            tagNames += snaptag.display + ", ";
           }
         });
       });

@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  monkeytype-redis:
+    container_name: monkeytype-redis
+    image: redis:6.2.6
+    ports:
+      - "${DOCKER_REDIS_PORT:-6379}:${DOCKER_REDIS_PORT:-6379}"
+    restart: on-failure
+    volumes:
+      - redis-data:/data
+    networks:
+      - test-network
+
+  monkeytype-mongodb:
+    container_name: monkeytype-mongodb
+    image: mongo:5.0.8
+    restart: on-failure
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "${DOCKER_DB_PORT:-27017}:${DOCKER_DB_PORT:-27017}"
+    networks:
+      - test-network
+
+volumes:
+  mongo-data:
+  redis-data:
+networks:
+  test-network:

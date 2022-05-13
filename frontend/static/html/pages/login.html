@@ -5,7 +5,36 @@
   <div class="register side">
     <div class="title">register</div>
     <form action="" autocomplete="nope">
-      <input type="text" placeholder="username" autocomplete="new-username" />
+      <div class="inputAndIndicator">
+        <input
+          type="text"
+          class="usernameInput"
+          placeholder="username"
+          autocomplete="new-username"
+        />
+        <div class="checkStatus">
+          <div
+            class="checking hidden"
+            data-balloon-length="large"
+            data-balloon-pos="up"
+          >
+            <i class="fas fa-fw fa-circle-notch fa-spin"></i>
+          </div>
+          <div class="available hidden" data-balloon-pos="up">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+          <div
+            class="unavailable hidden"
+            data-balloon-length="large"
+            data-balloon-pos="up"
+          >
+            <i class="fas fa-fw fa-times"></i>
+          </div>
+          <div class="taken hidden" data-balloon-pos="up">
+            <i class="fas fa-fw fa-user-friends"></i>
+          </div>
+        </div>
+      </div>
       <input type="email" placeholder="email" autocomplete="new-email" />
       <input
         type="email"

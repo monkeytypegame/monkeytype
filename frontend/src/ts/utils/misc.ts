@@ -579,7 +579,12 @@ export function getNumbers(len: number): string {
   const randLen = randomIntFromRange(1, len);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    const randomNum = randomIntFromRange(0, 9);
+    let randomNum;
+    if (i === 0) {
+      randomNum = randomIntFromRange(1, 9);
+    } else {
+      randomNum = randomIntFromRange(0, 9);
+    }
     ret += randomNum.toString();
   }
   return ret;

@@ -4,13 +4,13 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "live": "npm run build:live && cd public && npx serve -p 5000",
+    "live": "npm run build-live && cd public && npx serve -p 5000",
     "audit": "npx webpack --config ./webpack/config.audit.js",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "build": "npx gulp build",
-    "build:live": "npx gulp build-production",
+    "build-live": "npx gulp build-production",
     "dev": "concurrently \"webpack serve --config=./webpack/config.dev.js\" \"npx gulp watch\"",
-    "deploy:live": "npm run build:live && firebase deploy -P live --only hosting",
+    "deploy-live": "npm run build-live && firebase deploy -P live --only hosting",
     "tsc": "tsc"
   },
   "engines": {
@@ -31,6 +31,7 @@
     "css-loader": "6.7.1",
     "css-minimizer-webpack-plugin": "3.4.1",
     "eslint-webpack-plugin": "3.1.1",
+    "extra-watch-webpack-plugin": "1.0.3",
     "grecaptcha": "1.0.3",
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.4.2",

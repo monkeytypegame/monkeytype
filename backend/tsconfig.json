@@ -11,7 +11,18 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "build", "worker.js"]
+  "ts-node": {
+    "files": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "worker.js",
+    "setup-tests.ts",
+    "**/*.spec.ts"
+  ]
 }

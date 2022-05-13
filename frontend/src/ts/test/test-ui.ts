@@ -319,25 +319,25 @@ export async function screenshot(): Promise<void> {
                 Notifications.add("Copied to clipboard", 1, 2);
                 revertScreenshot();
               })
-              .catch((e: any) => {
+              .catch((e) => {
                 Notifications.add(
-                  "Error saving image to clipboard: " + e.message,
+                  Misc.createErrorMessage(e, "Error saving image to clipboard"),
                   -1
                 );
                 revertScreenshot();
               });
           }
-        } catch (e: any) {
+        } catch (e) {
           Notifications.add(
-            "Error saving image to clipboard: " + e.message,
+            Misc.createErrorMessage(e, "Error saving image to clipboard"),
             -1
           );
           revertScreenshot();
         }
       });
     });
-  } catch (e: any) {
-    Notifications.add("Error creating image: " + e.message, -1);
+  } catch (e) {
+    Notifications.add(Misc.createErrorMessage(e, "Error creating image"), -1);
     revertScreenshot();
   }
   setTimeout(() => {

@@ -84,27 +84,29 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
-#### Mongo Setup
+#### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
-1. Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
-
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
 
-   1. If necessary, uncomment the lines in the `.env` file to use credentials to login to MongoDB.
+2. Setup the database server
 
-1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
+| Local Server                                                                                                                            | Docker (recommended)                                                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory.</li></ol> |
+
+3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
 
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
-1. Run `npm run install:all` in the project root to install all dependencies.
-   - If you are on Windows, use `npm run install:windows`.
+1. Run `npm run install-all` in the project root to install all dependencies.
+   - If you are on Windows, use `npm run install-windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run dev` (`npm run dev:fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 **Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
 
@@ -125,7 +127,7 @@ Before submitting a theme make sure...
 - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
 - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
-(If you want to contribute themes but don't know how, check [THEMES.md](https://github.com/Miodec/monkeytype/blob/master/THEMES.md))
+(If you want to contribute themes but don't know how, check [THEMES.md](./THEMES.md))
 
 #### Language Guidelines
 
@@ -134,7 +136,7 @@ Before submitting a theme make sure...
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
 
-(If you want to contribute languages but don't know how, check [LANGUAGES.md](https://github.com/Miodec/monkeytype/blob/master/LANGUAGES.md))
+(If you want to contribute languages but don't know how, check [LANGUAGES.md](./LANGUAGES.md))
 
 #### Quote Guidelines
 
@@ -145,8 +147,8 @@ Before submitting a theme make sure...
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
 
-(If you want to contribute quotes but don't know how, check [QUOTES.md](https://github.com/teddinotteddy/monkeytype/blob/8d5ffde578030a07458cec391e862f8f3cd5b4b4/QUOTES.md))
+(If you want to contribute quotes but don't know how, check [QUOTES.md](./QUOTES.md))
 
 ## Questions
 
-If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions) and a contributor will be happy to assist you.
+If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/monkeytypegame/monkeytype/discussions) and a contributor will be happy to assist you.

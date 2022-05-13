@@ -21,6 +21,7 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
+import * as PageController from "../controllers/page-controller";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -239,7 +240,7 @@ export function updateTagCommands(): void {
     });
 
     DB.getSnapshot().tags?.forEach((tag) => {
-      let dis = tag.name;
+      let dis = tag.display;
 
       if (tag.active === true) {
         dis = '<i class="fas fa-fw fa-check"></i>' + dis;
@@ -261,7 +262,7 @@ export function updateTagCommands(): void {
             ModesNotice.update();
           }
 
-          let txt = tag.name;
+          let txt = tag.display;
 
           if (tag.active === true) {
             txt = '<i class="fas fa-fw fa-check"></i>' + txt;
@@ -297,7 +298,7 @@ export function updatePresetCommands(): void {
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   commandsPresets.list = [];
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
-    const dis = preset.name;
+    const dis = preset.display;
 
     commandsPresets.list.push({
       id: "applyPreset" + preset._id,
@@ -2491,6 +2492,7 @@ Misc.getChallengeList().then((challenges) => {
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
+        PageController.change("test");
         ChallengeController.setup(challenge.name);
         TestLogic.restart(false, true);
       },
@@ -2925,6 +2927,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Next random theme",
       icon: "fa-random",
       exec: (): void => ThemeController.randomizeTheme(),
+      available: (): boolean => {
+        return Config.randomTheme !== "off";
+      },
     },
     {
       id: "changeDifficulty",
