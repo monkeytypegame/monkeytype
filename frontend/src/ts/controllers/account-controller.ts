@@ -409,16 +409,11 @@ export function noGoogleNoMo(): void {
   ) {
     unlinkAuth(user, "google.com")
       .then(() => {
-        Notifications.add("Google authentication removed", 1);
-        Loader.hide();
+        console.log("unlinked");
         Settings.updateAuthSections();
       })
       .catch((error) => {
-        Loader.hide();
-        Notifications.add(
-          "Failed to remove Google authentication: " + error.message,
-          -1
-        );
+        console.log(error);
       });
   }
 }
