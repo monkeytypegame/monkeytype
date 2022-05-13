@@ -401,6 +401,24 @@ export async function addGoogleAuth(): Promise<void> {
     });
 }
 
+export function noGoogleNoMo(): void {
+  const user = Auth.currentUser;
+  if (user === null) return;
+  unlinkAuth(user, "google.com")
+    .then(() => {
+      Notifications.add("Google authentication removed", 1);
+      Loader.hide();
+      Settings.updateAuthSections();
+    })
+    .catch((error) => {
+      Loader.hide();
+      Notifications.add(
+        "Failed to remove Google authentication: " + error.message,
+        -1
+      );
+    });
+}
+
 export async function removeGoogleAuth(): Promise<void> {
   const user = Auth.currentUser;
   if (user === null) return;
