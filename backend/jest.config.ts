@@ -6,10 +6,11 @@ export default {
   setupFilesAfterEnv: ["<rootDir>/setup-tests.ts"],
   coverageThreshold: {
     global: {
-      branches: 36,
-      functions: 18,
-      lines: 39,
-      statements: 35,
+      // These percentages should never decrease
+      statements: 37,
+      branches: 38,
+      functions: 19,
+      lines: 40,
     },
   },
 };

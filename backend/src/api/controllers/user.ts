@@ -99,7 +99,7 @@ export async function getUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  let userInfo;
+  let userInfo: MonkeyTypes.User;
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
