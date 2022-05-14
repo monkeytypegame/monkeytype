@@ -575,7 +575,6 @@ function handleChar(char: string, charIndex: number): void {
 }
 
 function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
-  //todo refactor this mess
   if (TestUI.resultCalculating) {
     event.preventDefault();
     return;
