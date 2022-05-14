@@ -343,6 +343,10 @@ export function restart(
     }
   }
   if (TestActive.get()) {
+    if (Config.repeatQuotes === "typing" && Config.mode === "quote") {
+      withSameWordset = true;
+    }
+
     TestInput.pushKeypressesToHistory();
     const testSeconds = TestStats.calculateTestSeconds(performance.now());
     const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -1632,16 +1636,7 @@ $(document).on("click", "#testModesNotice .text-button.restart", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key === "Enter") {
-    ManualRestart.reset();
-    if (
-      TestActive.get() &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      restart(true);
-    } else {
-      restart();
-    }
+    restart();
   }
 });
 
