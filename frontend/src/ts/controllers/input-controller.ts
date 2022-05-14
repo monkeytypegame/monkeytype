@@ -629,8 +629,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       ManualRestart.reset();
     }
 
-    // insert tab character if needed
-    if (shouldInsertTabCharacter) {
+    // insert tab character if needed (only during the test)
+    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
       event.preventDefault();
       handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
