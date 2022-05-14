@@ -29,6 +29,7 @@ import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
 import { noGoogleNoMo } from "./controllers/account-controller";
+import "./elements/leaderboards";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
