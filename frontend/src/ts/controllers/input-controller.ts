@@ -23,7 +23,6 @@ import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
-import * as Leaderboards from "../elements/leaderboards";
 import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
 import * as TestInput from "../test/test-input";
@@ -579,11 +578,10 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   //todo refactor this mess
   if (TestUI.resultCalculating) {
     event.preventDefault();
-  }
-  if (ActivePage.get() !== "test" && popupVisible) {
-    // event.preventDefault();
     return;
   }
+
+  //special case for inserting tab characters into the textarea
   if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
@@ -600,67 +598,65 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     area.selectionStart = area.selectionEnd = start + 1;
 
     return;
-  } else if (
-    !TestUI.resultCalculating &&
-    $("#commandLineWrapper").hasClass("hidden") &&
-    $("#simplePopupWrapper").hasClass("hidden") &&
-    $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
-    ActivePage.get() != "login"
+  }
+
+  let shouldInsertTabCharacter = false;
+
+  if (
+    (Config.mode == "zen" && !event.shiftKey) ||
+    (TestWords.hasTab && !event.shiftKey)
   ) {
-    if (ActivePage.get() == "test") {
-      if (Config.quickTab) {
-        if (!$("#leaderboardsWrapper").hasClass("hidden")) {
-          Leaderboards.hide();
-        }
-        if (popupVisible) {
-          event.preventDefault();
-          return;
-        }
-        if (
-          TestUI.resultVisible ||
-          !(
-            (Config.mode == "zen" && !event.shiftKey) ||
-            (TestWords.hasTab && !event.shiftKey)
-          )
-        ) {
-          if (event.shiftKey) {
-            ManualRestart.set();
-          } else {
-            ManualRestart.reset();
-          }
-          event.preventDefault();
-          if (
-            TestActive.get() &&
-            Config.repeatQuotes === "typing" &&
-            Config.mode === "quote"
-          ) {
-            TestLogic.restart(true, false, event);
-          } else {
-            TestLogic.restart(false, false, event);
-          }
-        } else {
-          event.preventDefault();
-          handleChar("\t", TestInput.input.current.length);
-          setWordsInput(" " + TestInput.input.current);
-        }
-      } else if (!TestUI.resultVisible) {
-        if (
-          (TestWords.hasTab && event.shiftKey) ||
-          (!TestWords.hasTab && Config.mode !== "zen") ||
-          (Config.mode === "zen" && event.shiftKey)
-        ) {
-          event.preventDefault();
-          $("#restartTestButton").trigger("focus");
-        } else {
-          event.preventDefault();
-          handleChar("\t", TestInput.input.current.length);
-          setWordsInput(" " + TestInput.input.current);
-        }
-      }
-    } else if (Config.quickTab) {
-      event.preventDefault();
+    shouldInsertTabCharacter = true;
+  }
+
+  const modalVisible =
+    !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+
+  if (Config.quickTab) {
+    // dont do anything special
+    if (modalVisible) return;
+
+    // change page if not on test page
+    if (ActivePage.get() !== "test") {
       PageController.change("test");
+      return;
     }
+
+    // in case we are in a long test, setting manual restart
+    if (event.shiftKey) {
+      ManualRestart.set();
+    } else {
+      ManualRestart.reset();
+    }
+
+    // insert tab character if needed
+    if (shouldInsertTabCharacter) {
+      event.preventDefault();
+      handleChar("\t", TestInput.input.current.length);
+      setWordsInput(" " + TestInput.input.current);
+      return;
+    }
+
+    //otherwise restart
+    TestLogic.restart(false, false, event);
+  } else {
+    //quick tab off
+
+    //only special handlig on the test page
+    if (ActivePage.get() !== "test") return;
+    if (TestUI.resultVisible) return;
+
+    // insert tab character if needed
+    if (shouldInsertTabCharacter) {
+      event.preventDefault();
+      handleChar("\t", TestInput.input.current.length);
+      setWordsInput(" " + TestInput.input.current);
+      return;
+    }
+
+    //
+    event.preventDefault();
+    $("#restartTestButton").trigger("focus");
   }
 }
 
