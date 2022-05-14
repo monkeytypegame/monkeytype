@@ -68,7 +68,6 @@
 
   &.block {
     width: 0.7em;
-    margin-left: 0.25em;
     border-radius: 0;
     z-index: -1;
   }
@@ -80,11 +79,31 @@
     border: 1px solid var(--caret-color);
   }
 
+  &.block,
+  &.outline,
+  &.underline {
+    margin-left: 0.1rem;
+
+    &.size15 {
+      margin-left: 0.15rem;
+    }
+
+    &.size2 {
+      margin-left: 0.2rem;
+    }
+
+    &.size3 {
+      margin-left: 0.25em;
+    }
+    &.size4 {
+      margin-left: 0.3rem;
+    }
+  }
+
   &.underline {
     height: 2px;
     width: 0.8em;
     margin-top: 1.3em;
-    margin-left: 0.3em;
 
     &.size125 {
       margin-top: 1.8em;
@@ -102,7 +121,7 @@
       margin-top: 3.9em;
     }
     &.size4 {
-      margin-top: 4.7em;
+      margin-top: 5em;
     }
   }
 
