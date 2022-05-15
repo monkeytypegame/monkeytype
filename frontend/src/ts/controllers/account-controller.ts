@@ -401,6 +401,23 @@ export async function addGoogleAuth(): Promise<void> {
     });
 }
 
+export function noGoogleNoMo(): void {
+  const user = Auth.currentUser;
+  if (user === null) return;
+  if (
+    user.providerData.find((provider) => provider.providerId === "password")
+  ) {
+    unlinkAuth(user, "google.com")
+      .then(() => {
+        console.log("unlinked");
+        Settings.updateAuthSections();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+}
+
 export async function removeGoogleAuth(): Promise<void> {
   const user = Auth.currentUser;
   if (user === null) return;

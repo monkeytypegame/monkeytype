@@ -550,6 +550,7 @@ declare namespace MonkeyTypes {
     getTimerStats(): TimerStats[];
     toggleUnsmoothedRaw(): void;
     enableSpacingDebug(): void;
+    noGoogleNoMo(): void;
   }
 
   interface GithubRelease {
