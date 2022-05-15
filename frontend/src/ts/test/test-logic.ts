@@ -56,6 +56,19 @@ import { Auth } from "../firebase";
 
 let failReason = "";
 
+export function failByMinAcc() : boolean {
+  if (Config.minAcc == "strict") {
+    return TestStats.calculateAccuracy() < Config.minAccCustom;
+  }
+  else if (Config.minAcc == "standard") {
+    const graceBuffer = 5; //
+    const keysPressed: number = Math.max(TestInput.accuracy.correct + TestInput.accuracy.incorrect, 1 / (1 - Config.minAccCustom/100)) + graceBuffer;
+    const acc = (keysPressed - TestInput.accuracy.incorrect) / keysPressed * 100;
+    return isNaN(acc) ? false : acc < Config.minAccCustom;
+  }
+  return false;
+}
+
 export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
   null;
 

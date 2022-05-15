@@ -101,7 +101,7 @@ declare namespace MonkeyTypes {
 
   type EnableAds = "off" | "on" | "max";
 
-  type MinimumAccuracy = "off" | "custom";
+  type MinimumAccuracy = "off" | "standard" | "strict";
 
   type RepeatQuotes = "off" | "typing";
 

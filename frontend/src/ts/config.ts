@@ -433,7 +433,7 @@ export function setMinAcc(
   min: MonkeyTypes.MinimumAccuracy,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("min acc", min, [["off", "custom"]])) return false;
+  if (!isConfigValueValid("min acc", min, [["off", "standard", "strict"]])) return false;
 
   config.minAcc = min;
   saveToLocalStorage("minAcc", nosave);

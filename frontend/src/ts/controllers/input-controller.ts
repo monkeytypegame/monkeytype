@@ -182,6 +182,9 @@ function handleSpace(): void {
         TestLogic.fail("difficulty");
         return;
       }
+      if (Config.minAcc != "off" && TestLogic.failByMinAcc()) {
+        TestLogic.fail("difficulty");
+      }
       if (Config.stopOnError == "word") {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
@@ -502,6 +505,13 @@ function handleChar(char: string, charIndex: number): void {
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    TestLogic.fail("difficulty");
+    return;
+  }
+
+  if (!thisCharCorrect && Config.minAcc != "off" && TestLogic.failByMinAcc()) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     TestLogic.fail("difficulty");

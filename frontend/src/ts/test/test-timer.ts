@@ -9,7 +9,6 @@ import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
@@ -74,13 +73,6 @@ function monkey(wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw): void {
   if (timerDebug) console.timeEnd("update monkey");
 }
 
-function calculateAcc(): number {
-  if (timerDebug) console.time("calculate acc");
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  if (timerDebug) console.timeEnd("calculate acc");
-  return acc;
-}
-
 function layoutfluid(): void {
   if (timerDebug) console.time("layoutfluid");
   if (Config.funbox === "layoutfluid" && Config.mode === "time") {
@@ -115,9 +107,8 @@ function layoutfluid(): void {
 }
 
 function checkIfFailed(
-  wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw,
-  acc: number
-): void {
+  wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw
+  ): void {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
   if (
@@ -129,17 +120,6 @@ function checkIfFailed(
     SlowTimer.clear();
     slowTimerCount = 0;
     TimerEvent.dispatch("fail", "min wpm");
-    return;
-  }
-  if (
-    Config.minAcc === "custom" &&
-    acc < Config.minAccCustom &&
-    TestWords.words.currentIndex > 3
-  ) {
-    if (timer !== null) clearTimeout(timer);
-    SlowTimer.clear();
-    slowTimerCount = 0;
-    TimerEvent.dispatch("fail", "min accuracy");
     return;
   }
   if (timerDebug) console.timeEnd("fail conditions");
@@ -187,10 +167,9 @@ async function timerStep(): Promise<void> {
   premid();
   updateTimer();
   const wpmAndRaw = calculateWpmRaw();
-  const acc = calculateAcc();
   monkey(wpmAndRaw);
   layoutfluid();
-  checkIfFailed(wpmAndRaw, acc);
+  checkIfFailed(wpmAndRaw);
   checkIfTimeIsUp();
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }

@@ -285,7 +285,7 @@
     <div class="section minWpm" section="">
       <h1>min wpm</h1>
       <div class="text">
-        Automatically fails a test if your WPM falls below a threshold.
+        Automatically fails a test if your WPM falls below this threshold.
       </div>
       <div>
         <div class="inputAndButton">
@@ -320,7 +320,8 @@
     <div class="section minAcc" section="">
       <h1>min accuracy</h1>
       <div class="text">
-        Automatically fails a test if your accuracy falls below a threshold.
+        Automatically fails a test if your accuracy falls below 
+        this threshold. Selecting 'standard' allows for leeway at the start of tests.
       </div>
       <div>
         <div class="inputAndButton">
@@ -343,12 +344,20 @@
           </div>
           <div
             class="button"
-            minAcc="custom"
+            minAcc="standard"
             tabindex="0"
             onclick="this.blur();"
           >
-            custom
+            standard
           </div>
+          <div
+          class="button"
+          minAcc="strict"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          strict
+        </div>
         </div>
       </div>
     </div>

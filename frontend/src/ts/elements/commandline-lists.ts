@@ -1555,14 +1555,25 @@ const commandsMinAcc: MonkeyTypes.CommandsGroup = {
       },
     },
     {
-      id: "setMinAccCustom",
-      display: "custom...",
-      configValue: "custom",
+      id: "setMinBurstFixed",
+      display: "standard...",
+      configValue: "standard",
       input: true,
       exec: (input): void => {
         if (!input) return;
         UpdateConfig.setMinAccCustom(parseInt(input));
-        UpdateConfig.setMinAcc("custom");
+        UpdateConfig.setMinAcc("standard");
+      },
+    },
+    {
+      id: "setMinBurstFlex",
+      display: "strict...",
+      configValue: "strict",
+      input: true,
+      exec: (input): void => {
+        if (!input) return;
+        UpdateConfig.setMinAccCustom(parseInt(input));
+        UpdateConfig.setMinAcc("strict");
       },
     },
   ],
