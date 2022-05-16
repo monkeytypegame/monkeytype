@@ -607,23 +607,23 @@ export async function recordAutoBanEvent(
 
   if (user.banned) return;
 
-  let autoBan = user.autoBan ?? [];
+  const autoBanTimestamps = user.autoBan ?? [];
 
   const now = Date.now();
 
   //remove any old events
-  autoBan = autoBan.filter(
+  const recentAutoBanTimestamps = autoBanTimestamps.filter(
     (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
   );
 
   //push new event
-  autoBan.push(now);
+  recentAutoBanTimestamps.push(now);
 
   //update user, ban if needed
   const updateObj: Partial<MonkeyTypes.User> = {
-    autoBan,
+    autoBan: recentAutoBanTimestamps,
   };
-  if (autoBan.length > maxCount) {
+  if (recentAutoBanTimestamps.length > maxCount) {
     updateObj.banned = true;
   }
 
