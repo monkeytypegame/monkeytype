@@ -595,3 +595,28 @@ export async function removeFavoriteQuote(
     { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
   );
 }
+
+export async function recordAutoBanEvent(
+  uid: string,
+  maxCount: number,
+  maxHours: number
+): Promise<void> {
+  const user = await getUser(uid, "record auto ban event");
+
+  const SECONDS_PER_HOUR = 3600;
+
+  let autoBan = user.autoBan ?? [];
+
+  //remove any old events
+  autoBan = autoBan.filter(
+    (timestamp) => timestamp < Date.now() - maxHours * SECONDS_PER_HOUR
+  );
+
+  //push new event
+  autoBan.push(Date.now());
+
+  //count events and ban if needed
+  if (autoBan.length >= maxCount) {
+    await getUsersCollection().updateOne({ uid }, { $set: { banned: true } });
+  }
+}
