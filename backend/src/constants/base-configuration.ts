@@ -31,7 +31,7 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
   autoBan: {
     enabled: false,
-    maxCount: 10,
+    maxCount: 5,
     maxHours: 1,
   },
 };
