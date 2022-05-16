@@ -609,7 +609,7 @@ export async function recordAutoBanEvent(
 
   //remove any old events
   autoBan = autoBan.filter(
-    (timestamp) => timestamp < Date.now() - maxHours * SECONDS_PER_HOUR
+    (timestamp) => timestamp < Date.now() - maxHours * SECONDS_PER_HOUR * 1000
   );
 
   //push new event
