@@ -329,7 +329,8 @@
       "code_luau",
       "code_matlab",
       "code_sql",
-      "code_perl"
+      "code_perl",
+      "code_php"
     ]
   },
   {
