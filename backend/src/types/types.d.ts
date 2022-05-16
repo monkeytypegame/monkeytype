@@ -54,7 +54,7 @@ declare namespace MonkeyTypes {
   // Data Model
 
   interface User {
-    autoBan: number[];
+    autoBan?: number[];
     addedAt: number;
     verified?: boolean;
     bananas?: number;
