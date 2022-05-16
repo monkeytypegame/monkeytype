@@ -199,6 +199,7 @@ describe("UserDal", () => {
     await addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
+    Date.now = jest.fn(() => 0);
     await recordAutoBanEvent(testUser.uid, 2, 1);
     await recordAutoBanEvent(testUser.uid, 2, 1);
     await recordAutoBanEvent(testUser.uid, 2, 1);
@@ -206,6 +207,7 @@ describe("UserDal", () => {
     // then
     const updatedUser = await getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(true);
+    expect(updatedUser.autoBanTimestamps).toEqual([0, 0, 0]);
   });
 
   it("autoBan should not ban ban if triggered once", async () => {
@@ -219,11 +221,13 @@ describe("UserDal", () => {
     await addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
+    Date.now = jest.fn(() => 0);
     await recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
     const updatedUser = await getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(undefined);
+    expect(updatedUser.autoBanTimestamps).toEqual([0]);
   });
 
   it("autoBan should correctly remove old anticheat triggers", async () => {
