@@ -48,6 +48,18 @@ jobs:
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
 
+      - name: Save the PR number in an artifact
+        shell: bash
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: echo $PR_NUM > pr_num.txt
+
+      - name: Upload the PR number
+        uses: actions/upload-artifact@v2
+        with:
+          name: pr_num
+          path: ./pr_num.txt
+
       - name: Cache node modules
         if: steps.filter.outputs.changes != '[]'
         uses: actions/cache@v2
@@ -102,3 +114,11 @@ jobs:
       - name: Run webpack
         if: steps.filter.outputs.ts-scss-fe == 'true'
         run: npm run pr-check-ts
+
+      - name: Testing new GitHub Job Summaries
+        run: |
+          echo "This is the lead in sentence for the list" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+          echo "- Lets add a bullet point" >> $GITHUB_STEP_SUMMARY
+          echo "- Lets add a second bullet point" >> $GITHUB_STEP_SUMMARY
+          echo "- How about a third one?" >> $GITHUB_STEP_SUMMARY

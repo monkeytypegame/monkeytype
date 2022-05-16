@@ -11,8 +11,8 @@ export let text = [
 ];
 export let isWordRandom = false;
 export let isTimeRandom = false;
-export let word: number;
-export let time: number;
+export let word = -1;
+export let time = -1;
 export let delimiter = " ";
 
 export function setText(txt: string[]): void {
