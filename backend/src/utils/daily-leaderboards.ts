@@ -47,7 +47,7 @@ class DailyLeaderboard {
     dailyLeaderboardConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
   ): Promise<void> {
     const connection = RedisClient.getConnection();
-    if (!connection) {
+    if (!connection || !dailyLeaderboardConfig.enabled) {
       return;
     }
 
@@ -113,7 +113,12 @@ export function getDailyLeaderboard(
   const modeValid = matchesAPattern(mode, validModePatterns);
   const mode2Valid = matchesAPattern(mode2, validMode2Patterns);
 
-  if (!languageValid || !modeValid || !mode2Valid) {
+  if (
+    !languageValid ||
+    !modeValid ||
+    !mode2Valid ||
+    !dailyLeaderboardConfig.enabled
+  ) {
     return null;
   }
 
