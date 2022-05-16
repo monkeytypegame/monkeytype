@@ -754,4 +754,9 @@
     "bgColor": "#292929",
     "mainColor": "#e84a5f"
   }
+  ,{
+    "name": "dino",
+    "bgColor": "#ffffff",
+    "mainColor": "#40d672"
+  }
 ]
