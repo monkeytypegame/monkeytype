@@ -236,9 +236,8 @@ describe("UserDal", () => {
 
     await addUser(testUser.name, testUser.email, testUser.uid);
 
-    Date.now = jest.fn(() => 0);
-
     // when
+    Date.now = jest.fn(() => 0);
     await recordAutoBanEvent(testUser.uid, 2, 1);
     await recordAutoBanEvent(testUser.uid, 2, 1);
 
@@ -249,5 +248,6 @@ describe("UserDal", () => {
     // then
     const updatedUser = await getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(undefined);
+    expect(updatedUser.autoBanTimestamps).toEqual([36000000]);
   });
 });
