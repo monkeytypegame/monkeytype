@@ -85,6 +85,7 @@ export async function getDailyLeaderboard(
     return new MonkeyResponse("There is no daily leaderboard for this mode");
   }
 
-  const topResults = (await dailyLeaderboard.getTopResults()) ?? [];
+  const topResults =
+    (await dailyLeaderboard.getTopResults(dailyLeaderboardsConfig)) ?? [];
   return new MonkeyResponse("Daily leaderboard retrieved", topResults);
 }

@@ -44,10 +44,10 @@ class DailyLeaderboard {
   public async addResult(
     uid: string,
     entry: DailyLeaderboardEntry,
-    dailyLeaderboardConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
   ): Promise<void> {
     const connection = RedisClient.getConnection();
-    if (!connection || !dailyLeaderboardConfig.enabled) {
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
       return;
     }
 
@@ -56,7 +56,7 @@ class DailyLeaderboard {
     const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDay}`;
 
     const { maxResults, leaderboardExpirationTimeInDays } =
-      dailyLeaderboardConfig;
+      dailyLeaderboardsConfig;
     const leaderboardExpirationDurationInMilliseconds =
       leaderboardExpirationTimeInDays * 24 * 60 * 60 * 1000;
 
@@ -77,9 +77,11 @@ class DailyLeaderboard {
     );
   }
 
-  public async getTopResults(): Promise<DailyLeaderboardEntry[] | null> {
+  public async getTopResults(
+    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+  ): Promise<DailyLeaderboardEntry[] | null> {
     const connection = RedisClient.getConnection();
-    if (!connection) {
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
       return null;
     }
 
@@ -104,10 +106,10 @@ export function getDailyLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  dailyLeaderboardConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+  dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
 ): DailyLeaderboard | null {
   const { validLanguagePatterns, validModePatterns, validMode2Patterns } =
-    dailyLeaderboardConfig;
+    dailyLeaderboardsConfig;
 
   const languageValid = matchesAPattern(language, validLanguagePatterns);
   const modeValid = matchesAPattern(mode, validModePatterns);
@@ -117,7 +119,7 @@ export function getDailyLeaderboard(
     !languageValid ||
     !modeValid ||
     !mode2Valid ||
-    !dailyLeaderboardConfig.enabled
+    !dailyLeaderboardsConfig.enabled
   ) {
     return null;
   }

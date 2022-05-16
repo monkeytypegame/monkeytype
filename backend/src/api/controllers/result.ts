@@ -295,12 +295,12 @@ export async function addResult(
   updateTypingStats(uid, result.restartCount, tt);
   PublicStatsDAL.updateStats(result.restartCount, tt);
 
-  const dailyLeaderboardConfig = req.ctx.configuration.dailyLeaderboards;
+  const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
     result.language,
     result.mode,
     result.mode2,
-    dailyLeaderboardConfig
+    dailyLeaderboardsConfig
   );
 
   if (dailyLeaderboard) {
@@ -314,7 +314,7 @@ export async function addResult(
         consistency: result.consistency,
         timestamp: result.timestamp,
       },
-      dailyLeaderboardConfig
+      dailyLeaderboardsConfig
     );
   }
 
