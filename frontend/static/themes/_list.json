@@ -754,4 +754,9 @@
     "bgColor": "#292929",
     "mainColor": "#e84a5f"
   }
+  ,{
+    "name": "uchu",
+    "bgColor": "#f2cc8f",
+    "mainColor": "#81b29a"
+}
 ]
