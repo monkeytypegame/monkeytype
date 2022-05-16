@@ -33,7 +33,9 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 100, () => {
+        $("#wordsInput").blur();
+      });
   }
 }
 
@@ -86,4 +88,10 @@ $("#cookiePopup .acceptSelected").on("click", () => {
 
 $("#cookiePopup .openSettings").on("click", () => {
   showSettings();
+});
+
+$(document).on("keypress", (e) => {
+  if (!$("#cookiePopupWrapper").hasClass("hidden")) {
+    e.preventDefault();
+  }
 });
