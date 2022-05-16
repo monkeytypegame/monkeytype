@@ -94,7 +94,11 @@ async function apply(): Promise<void> {
     const response = await Ape.presets.add(presetName, configChanges);
 
     if (response.status !== 200) {
-      Notifications.add("Failed to add preset: " + response.message, -1);
+      Notifications.add(
+        "Failed to add preset: " +
+          response.message.replace(presetName, propPresetName),
+        -1
+      );
     } else {
       Notifications.add("Preset added", 1, 2);
       snapshotPresets.push({
