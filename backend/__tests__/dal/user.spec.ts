@@ -4,6 +4,7 @@ import {
   clearPb,
   getUser,
   getUsersCollection,
+  recordAutoBanEvent,
   updateName,
 } from "../../src/dal/user";
 
@@ -185,5 +186,68 @@ describe("UserDal", () => {
     expect(_.values(updatedUser.personalBests).filter(_.isEmpty)).toHaveLength(
       5
     );
+  });
+
+  it("autoBan should automatically ban after configured anticheat triggers", async () => {
+    // given
+    const testUser = {
+      name: "Test",
+      email: "mockemail@email.com",
+      uid: "userId",
+    };
+
+    await addUser(testUser.name, testUser.email, testUser.uid);
+
+    // when
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+
+    // then
+    const updatedUser = await getUser(testUser.uid, "test");
+    expect(updatedUser.banned).toBe(true);
+  });
+
+  it("autoBan should not ban ban if triggered once", async () => {
+    // given
+    const testUser = {
+      name: "Test",
+      email: "mockemail@email.com",
+      uid: "userId",
+    };
+
+    await addUser(testUser.name, testUser.email, testUser.uid);
+
+    // when
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+
+    // then
+    const updatedUser = await getUser(testUser.uid, "test");
+    expect(updatedUser.banned).toBe(undefined);
+  });
+
+  it("autoBan should correctly remove old anticheat triggers", async () => {
+    // given
+    const testUser = {
+      name: "Test",
+      email: "mockemail@email.com",
+      uid: "userId",
+    };
+
+    await addUser(testUser.name, testUser.email, testUser.uid);
+
+    Date.now = jest.fn(() => 0);
+
+    // when
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+
+    Date.now = jest.fn(() => 36000000);
+
+    await recordAutoBanEvent(testUser.uid, 2, 1);
+
+    // then
+    const updatedUser = await getUser(testUser.uid, "test");
+    expect(updatedUser.banned).toBe(undefined);
   });
 });
