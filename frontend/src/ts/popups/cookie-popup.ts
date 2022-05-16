@@ -1,6 +1,8 @@
 import { activateAnalytics } from "../controllers/analytics-controller";
 import { focusWords } from "../test/test-ui";
 
+let visible = false;
+
 type Accepted = {
   security: boolean;
   analytics: boolean;
@@ -28,13 +30,12 @@ export function check(): void {
 
 export function show(): void {
   if ($("#cookiePopupWrapper").hasClass("hidden")) {
-    $("#wordsInput").blur();
     $("#cookiePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#wordsInput").blur();
+        visible = true;
       });
   }
 }
@@ -52,6 +53,7 @@ export async function hide(): Promise<void> {
         100,
         () => {
           $("#cookiePopupWrapper").addClass("hidden");
+          visible = false;
         }
       );
   }
@@ -91,7 +93,7 @@ $("#cookiePopup .openSettings").on("click", () => {
 });
 
 $(document).on("keypress", (e) => {
-  if (!$("#cookiePopupWrapper").hasClass("hidden")) {
+  if (visible) {
     e.preventDefault();
   }
 });
