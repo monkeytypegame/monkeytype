@@ -34,6 +34,14 @@ declare namespace MonkeyTypes {
       maxCount: number;
       maxHours: number;
     };
+    dailyLeaderboards: {
+      enabled: boolean;
+      leaderboardExpirationTimeInDays: number;
+      maxResults: number;
+      validLanguagePatterns: string[];
+      validModePatterns: string[];
+      validMode2Patterns: string[];
+    };
   }
 
   interface DecodedToken {

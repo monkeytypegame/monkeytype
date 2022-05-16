@@ -23,6 +23,7 @@ import {
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
 import * as George from "../../tasks/george";
+import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -293,6 +294,29 @@ export async function addResult(
   tt = result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, tt);
   PublicStatsDAL.updateStats(result.restartCount, tt);
+
+  const dailyLeaderboardConfig = req.ctx.configuration.dailyLeaderboards;
+  const dailyLeaderboard = getDailyLeaderboard(
+    result.language,
+    result.mode,
+    result.mode2,
+    dailyLeaderboardConfig
+  );
+
+  if (dailyLeaderboard) {
+    await dailyLeaderboard.addResult(
+      uid,
+      {
+        name: user.name,
+        wpm: result.wpm,
+        rawWpm: result.rawWpm,
+        accuracy: result.acc,
+        consistency: result.consistency,
+        timestamp: result.timestamp,
+      },
+      dailyLeaderboardConfig
+    );
+  }
 
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
