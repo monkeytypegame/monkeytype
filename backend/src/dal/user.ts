@@ -13,6 +13,8 @@ import {
   WithId,
 } from "mongodb";
 
+const SECONDS_PER_HOUR = 3600;
+
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
   db.collection<MonkeyTypes.User>("users");
@@ -604,8 +606,6 @@ export async function recordAutoBanEvent(
   const user = await getUser(uid, "record auto ban event");
 
   if (user.banned) return;
-
-  const SECONDS_PER_HOUR = 3600;
 
   let autoBan = user.autoBan ?? [];
 
