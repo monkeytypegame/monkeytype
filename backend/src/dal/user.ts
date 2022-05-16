@@ -620,10 +620,7 @@ export async function recordAutoBanEvent(
   autoBan.push(now);
 
   //update user, ban if needed
-  const updateObj: {
-    autoBan: number[];
-    banned?: boolean;
-  } = {
+  const updateObj: Partial<MonkeyTypes.User> = {
     autoBan,
   };
   if (autoBan.length > maxCount) {
