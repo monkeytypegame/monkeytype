@@ -13,6 +13,8 @@ import {
   WithId,
 } from "mongodb";
 
+const SECONDS_PER_HOUR = 3600;
+
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
   db.collection<MonkeyTypes.User>("users");
@@ -594,4 +596,36 @@ export async function removeFavoriteQuote(
     { uid },
     { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
   );
+}
+
+export async function recordAutoBanEvent(
+  uid: string,
+  maxCount: number,
+  maxHours: number
+): Promise<void> {
+  const user = await getUser(uid, "record auto ban event");
+
+  if (user.banned) return;
+
+  const autoBanTimestamps = user.autoBanTimestamps ?? [];
+
+  const now = Date.now();
+
+  //remove any old events
+  const recentAutoBanTimestamps = autoBanTimestamps.filter(
+    (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
+  );
+
+  //push new event
+  recentAutoBanTimestamps.push(now);
+
+  //update user, ban if needed
+  const updateObj: Partial<MonkeyTypes.User> = {
+    autoBanTimestamps: recentAutoBanTimestamps,
+  };
+  if (recentAutoBanTimestamps.length > maxCount) {
+    updateObj.banned = true;
+  }
+
+  await getUsersCollection().updateOne({ uid }, { $set: updateObj });
 }

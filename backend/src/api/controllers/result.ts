@@ -5,6 +5,7 @@ import {
   checkIfTagPb,
   incrementBananas,
   updateTypingStats,
+  recordAutoBanEvent,
 } from "../../dal/user";
 import * as PublicStatsDAL from "../../dal/public-stats";
 import { roundTo2, stdDev } from "../../utils/misc";
@@ -221,6 +222,15 @@ export async function addResult(
     }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
+        //autoban
+        const autoBanConfig = req.ctx.configuration.autoBan;
+        if (autoBanConfig.enabled) {
+          await recordAutoBanEvent(
+            uid,
+            autoBanConfig.maxCount,
+            autoBanConfig.maxHours
+          );
+        }
         const status = MonkeyStatusCodes.BOT_DETECTED;
         throw new MonkeyError(status.code, "Possible bot detected");
       }
