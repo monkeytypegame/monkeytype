@@ -615,8 +615,16 @@ export async function recordAutoBanEvent(
   //push new event
   autoBan.push(Date.now());
 
-  //count events and ban if needed
+  //update user, ban if needed
+  const updateObj: {
+    autoBan: number[];
+    banned?: boolean;
+  } = {
+    autoBan,
+  };
   if (autoBan.length >= maxCount) {
-    await getUsersCollection().updateOne({ uid }, { $set: { banned: true } });
+    updateObj.banned = true;
   }
+
+  await getUsersCollection().updateOne({ uid }, { $set: updateObj });
 }
