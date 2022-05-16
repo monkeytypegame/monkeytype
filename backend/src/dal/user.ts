@@ -609,13 +609,15 @@ export async function recordAutoBanEvent(
 
   let autoBan = user.autoBan ?? [];
 
+  const now = Date.now();
+
   //remove any old events
   autoBan = autoBan.filter(
-    (timestamp) => timestamp < Date.now() - maxHours * SECONDS_PER_HOUR * 1000
+    (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
   );
 
   //push new event
-  autoBan.push(Date.now());
+  autoBan.push(now);
 
   //update user, ban if needed
   const updateObj: {
@@ -624,7 +626,7 @@ export async function recordAutoBanEvent(
   } = {
     autoBan,
   };
-  if (autoBan.length >= maxCount) {
+  if (autoBan.length > maxCount) {
     updateObj.banned = true;
   }
 
