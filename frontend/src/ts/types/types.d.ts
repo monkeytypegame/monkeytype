@@ -33,7 +33,7 @@ declare namespace MonkeyTypes {
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  type QuoteLength = -2 | -1 | 0 | 1 | 2 | 3;
+  type QuoteLength = -3 | -2 | -1 | 0 | 1 | 2 | 3;
 
   type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
 
@@ -459,6 +459,7 @@ declare namespace MonkeyTypes {
     discordId?: string;
     config?: Config;
     favoriteQuotes: FavoriteQuotes;
+    needsToChangeName?: boolean;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
@@ -549,6 +550,7 @@ declare namespace MonkeyTypes {
     getTimerStats(): TimerStats[];
     toggleUnsmoothedRaw(): void;
     enableSpacingDebug(): void;
+    noGoogleNoMo(): void;
   }
 
   interface GithubRelease {

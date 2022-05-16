@@ -38,6 +38,10 @@
       }
     }
 
+    .supportButtons {
+      grid-template-columns: 1fr;
+    }
+
     .supporters,
     .contributors {
       display: grid;

@@ -13,15 +13,9 @@ import {
   WithId,
 } from "mongodb";
 
-let usersCollection: Collection<WithId<MonkeyTypes.User>>;
-
-function getUsersCollection(): Collection<WithId<MonkeyTypes.User>> {
-  if (!usersCollection) {
-    usersCollection = db.collection<MonkeyTypes.User>("users");
-  }
-
-  return usersCollection;
-}
+// Export for use in tests
+export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
+  db.collection<MonkeyTypes.User>("users");
 
 export async function addUser(
   name: string,
@@ -47,26 +41,36 @@ export async function deleteUser(uid: string): Promise<DeleteResult> {
   return await getUsersCollection().deleteOne({ uid });
 }
 
+const DAY_IN_SECONDS = 24 * 60 * 60;
+const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
+
 export async function updateName(
   uid: string,
   name: string
 ): Promise<UpdateResult> {
-  if (!isNameAvailable(name)) {
+  if (!isUsernameValid(name)) {
+    throw new MonkeyError(400, "Invalid username");
+  }
+  if (!(await isNameAvailable(name))) {
     throw new MonkeyError(409, "Username already taken", name);
   }
 
   const user = await getUser(uid, "update name");
 
-  if (Date.now() - (user.lastNameChange ?? 0) < 2592000000) {
+  if (
+    !user?.needsToChangeName &&
+    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
+  ) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
-  if (!isUsernameValid(name)) {
-    throw new MonkeyError(400, "Invalid username");
-  }
 
-  return await db
-    .collection<MonkeyTypes.User>("users")
-    .updateOne({ uid }, { $set: { name, lastNameChange: Date.now() } });
+  return await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: { name, lastNameChange: Date.now() },
+      $unset: { needsToChangeName: "" },
+    }
+  );
 }
 
 export async function clearPb(uid: string): Promise<UpdateResult> {

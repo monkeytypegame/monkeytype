@@ -343,6 +343,10 @@ export function restart(
     }
   }
   if (TestActive.get()) {
+    if (Config.repeatQuotes === "typing" && Config.mode === "quote") {
+      withSameWordset = true;
+    }
+
     TestInput.pushKeypressesToHistory();
     const testSeconds = TestStats.calculateTestSeconds(performance.now());
     const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -408,7 +412,6 @@ export function restart(
   PaceCaret.reset();
   Monkey.hide();
 
-  if (Config.showAverage) Last10Average.update();
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   Funbox.resetMemoryTimer();
@@ -549,6 +552,8 @@ export function restart(
           UpdateConfig.setKeymapMode("react");
         }
       }
+
+      if (Config.showAverage !== "off") Last10Average.update();
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
@@ -745,6 +750,10 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
+  if (Config.quoteLength.includes(-3) && !Auth.currentUser) {
+    UpdateConfig.setQuoteLength(-1);
+  }
+
   let language = await Misc.getLanguage(Config.language);
   if (language && language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
@@ -931,7 +940,7 @@ export async function init(): Promise<void> {
     }
 
     let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (Config.quoteLength.includes(-2) && Config.quoteLength.length == 1) {
+    if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
       const targetQuote = QuotesController.getQuoteById(
         QuoteSearchPopup.selectedId
       );
@@ -941,6 +950,19 @@ export async function init(): Promise<void> {
       } else {
         rq = targetQuote;
       }
+    } else if (Config.quoteLength.includes(-3)) {
+      const randomQuote = QuotesController.getRandomFavoriteQuote(
+        Config.language
+      );
+
+      if (randomQuote === null) {
+        Notifications.add("No favorite quotes found", 0);
+        UpdateConfig.setQuoteLength(-1);
+        restart();
+        return;
+      }
+
+      rq = randomQuote;
     } else {
       const randomQuote = QuotesController.getRandomQuote();
       if (randomQuote === null) {
@@ -1388,7 +1410,27 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = buildCompletedEvent(difficultyFailed);
 
-  //todo check if any fields are undefined
+  function countUndefined(input: unknown): number {
+    if (typeof input === "undefined") {
+      return 1;
+    } else if (typeof input === "object" && input !== null) {
+      return Object.values(input).reduce(
+        (a, b) => a + countUndefined(b),
+        0
+      ) as number;
+    } else {
+      return 0;
+    }
+  }
+
+  if (countUndefined(completedEvent) > 0) {
+    console.log(completedEvent);
+    Notifications.add(
+      "Failed to save result: One of the result fields is undefined. Please report this",
+      -1
+    );
+    return;
+  }
 
   ///////// completed event ready
 
@@ -1594,16 +1636,7 @@ $(document).on("click", "#testModesNotice .text-button.restart", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key === "Enter") {
-    ManualRestart.reset();
-    if (
-      TestActive.get() &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      restart(true);
-    } else {
-      restart();
-    }
+    restart();
   }
 });
 

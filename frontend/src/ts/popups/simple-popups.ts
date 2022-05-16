@@ -392,6 +392,11 @@ list["updateName"] = new SimplePopup(
       Notifications.add("Name updated", 1);
       DB.getSnapshot().name = newName;
       $("#menu .text-button.account .text").text(newName);
+      if (DB.getSnapshot().needsToChangeName) {
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+      }
     } catch (e) {
       const typedError = e as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
@@ -408,6 +413,11 @@ list["updateName"] = new SimplePopup(
     if (user.providerData[0].providerId === "google.com") {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
+    }
+    const snapshot = DB.getSnapshot();
+    if (snapshot.needsToChangeName === true) {
+      thisPopup.text =
+        "We've recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer, and more. Sorry for the inconvenience.";
     }
   },
   (_thisPopup) => {
@@ -1070,6 +1080,10 @@ $(".pageSettings #resetPersonalBestsButton").on("click", () => {
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
+  list["updateName"].show();
+});
+
+$(document).on("click", "#bannerCenter .banner .text .openNameChange", () => {
   list["updateName"].show();
 });
 

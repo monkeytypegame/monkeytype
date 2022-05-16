@@ -55,6 +55,14 @@
     &.bad {
       background: var(--error-color);
     }
+    a {
+      color: var(--bg-color);
+      text-decoration: underline;
+      &:hover {
+        color: var(--text-color);
+        cursor: pointer;
+      }
+    }
   }
 
   &.focus {
