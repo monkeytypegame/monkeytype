@@ -603,6 +603,8 @@ export async function recordAutoBanEvent(
 ): Promise<void> {
   const user = await getUser(uid, "record auto ban event");
 
+  if (user.banned) return;
+
   const SECONDS_PER_HOUR = 3600;
 
   let autoBan = user.autoBan ?? [];
