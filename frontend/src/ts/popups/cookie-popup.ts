@@ -29,6 +29,14 @@ export function check(): void {
 }
 
 export function show(): void {
+  if (
+    $("#cookiePopupWrapper")[0] === undefined ||
+    $("#cookiePopupWrapper").outerHeight(true) === 0
+  ) {
+    //removed by cookie popup blocking extension
+    visible = false;
+    return;
+  }
   if ($("#cookiePopupWrapper").hasClass("hidden")) {
     $("#cookiePopupWrapper")
       .stop(true, true)
