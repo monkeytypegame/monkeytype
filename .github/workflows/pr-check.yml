@@ -48,6 +48,9 @@ jobs:
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
 
+      - name: Run Pretty Check
+        run: npm run pretty
+
       - name: Save the PR number in an artifact
         shell: bash
         env:
