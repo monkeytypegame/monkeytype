@@ -789,6 +789,9 @@ $(document).keydown(async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
     }
   } else if (
     Config.layout !== "default" &&
