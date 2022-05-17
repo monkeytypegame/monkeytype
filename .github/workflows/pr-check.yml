@@ -84,6 +84,7 @@ jobs:
         run: npm run install-all
 
       - name: Pretty Check
+        if: steps.filter.outputs.changes != '[]'
         run: npm run pretty
 
       - name: Lint JSON
