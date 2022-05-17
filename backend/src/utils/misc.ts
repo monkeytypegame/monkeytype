@@ -86,9 +86,7 @@ export function getCurrentDayTimestamp(): number {
   return currentTime - (currentTime % 86400000);
 }
 
-export function matchesAPattern(text: string, patterns: string[]): boolean {
-  return _.some(patterns, (pattern) => {
-    const regex = new RegExp(`^${pattern}$`);
-    return text.match(regex);
-  });
+export function matchesAPattern(text: string, pattern: string): boolean {
+  const regex = new RegExp(`^${pattern}$`);
+  return regex.test(text);
 }

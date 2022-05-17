@@ -3,6 +3,12 @@ type ObjectId = import("mongodb").ObjectId;
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
+  interface ValidModeRule {
+    language: string;
+    mode: string;
+    mode2: string;
+  }
+
   interface Configuration {
     maintenance: boolean;
     quoteReport: {
@@ -38,9 +44,7 @@ declare namespace MonkeyTypes {
       enabled: boolean;
       leaderboardExpirationTimeInDays: number;
       maxResults: number;
-      validLanguagePatterns: string[];
-      validModePatterns: string[];
-      validMode2Patterns: string[];
+      validModeRules: ValidModeRule[];
     };
   }
 

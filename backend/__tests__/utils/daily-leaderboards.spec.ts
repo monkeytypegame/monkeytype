@@ -4,9 +4,13 @@ const dailyLeaderboardsConfig = {
   enabled: true,
   maxResults: 3,
   leaderboardExpirationTimeInDays: 1,
-  validLanguagePatterns: ["english"],
-  validModePatterns: ["time"],
-  validMode2Patterns: ["60"],
+  validModeRules: [
+    {
+      language: "english",
+      mode: "time",
+      mode2: "15|60",
+    },
+  ],
 };
 
 describe("Daily Leaderboards", () => {

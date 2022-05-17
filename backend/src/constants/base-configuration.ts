@@ -38,9 +38,13 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     enabled: false,
     maxResults: 100,
     leaderboardExpirationTimeInDays: 1,
-    validLanguagePatterns: ["english"],
-    validModePatterns: ["time"],
-    validMode2Patterns: ["15", "60"],
+    validModeRules: [
+      {
+        language: "english",
+        mode: "time",
+        mode2: "15|60",
+      },
+    ],
   },
 };
 
