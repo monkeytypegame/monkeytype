@@ -3,7 +3,6 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
-import * as Funbox from "../test/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
@@ -305,6 +304,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setLanguage,
     "select"
   );
+  groups["funbox"] = new SettingsGroup(
+    "funbox",
+    UpdateConfig.setFunbox,
+    "select"
+  );
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
@@ -396,7 +400,6 @@ export function reset(): void {
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
   $(".pageSettings select").empty().select2("destroy");
-  $(".pageSettings .section.funbox .buttons").empty();
   $(".pageSettings .section.fontFamily .buttons").empty();
 }
 
@@ -477,31 +480,15 @@ export async function fillSettingsPage(): Promise<void> {
     .val(Config.themeDark)
     .trigger("change.select2");
 
-  const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
-  funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
+  const funboxEl = $(".pageSettings .section.funbox select").empty();
+  funboxEl.append("<option value='none'>none</option>");
   Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
-      if (funbox.name === "mirror") {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }" style="transform:scaleX(-1);">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      } else {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }">${funbox.name.replace(/_/g, " ")}</div>`
-        );
-      }
+      funboxEl.append(`<option value='${funbox.name}'>${funbox.name}</option>`);
     });
+  });
+  funboxEl.select2({
+    width: "100%",
   });
 
   let isCustomFont = true;
@@ -633,13 +620,6 @@ export function updateAuthSections(): void {
   }
 }
 
-function setActiveFunboxButton(): void {
-  $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(
-    `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
-  ).addClass("active");
-}
-
 function refreshTagsSettingsSection(): void {
   if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
@@ -717,7 +697,6 @@ export function update(): void {
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
-  setActiveFunboxButton();
   ThemePicker.updateActiveTab(true);
   ThemePicker.setCustomInputs(true);
   updateDiscordSection();
@@ -888,14 +867,6 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
 //     LanguagePicker.setActiveGroup(group, true);
 //   }
 // );
-
-//funbox
-$(document).on("click", ".pageSettings .section.funbox .button", (e) => {
-  const funbox = <string>$(e.currentTarget).attr("funbox");
-  const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
-  Funbox.setFunbox(funbox, type);
-  setActiveFunboxButton();
-});
 
 //tags
 $(document).on(

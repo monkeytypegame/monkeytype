@@ -310,9 +310,6 @@
       font-size: 1rem;
 
       &.testDate .buttons,
-      &.languages .buttons,
-      &.layouts .buttons,
-      &.funbox .buttons,
       &.tags .buttons {
         grid-template-columns: repeat(4, 1fr);
         grid-auto-flow: unset;
