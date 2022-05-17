@@ -15,7 +15,7 @@ class Words {
     } else {
       if (raw) {
         return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
-      } else {  
+      } else {
         return this.list[i];
       }
     }
