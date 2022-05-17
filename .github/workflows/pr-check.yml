@@ -85,7 +85,7 @@ jobs:
 
       - name: Pretty Check
         if: steps.filter.outputs.changes != '[]'
-        run: npm run pretty
+        run: npm run pretty-code
 
       - name: Lint JSON
         if: steps.filter.outputs.any-json == 'true'
