@@ -108,7 +108,7 @@ export function getDailyLeaderboard(
   mode2: string,
   dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
 ): DailyLeaderboard | null {
-  const { validModeRules } = dailyLeaderboardsConfig;
+  const { validModeRules, enabled } = dailyLeaderboardsConfig;
 
   const isValidMode = validModeRules.some((rule) => {
     const matchesLanguage = matchesAPattern(language, rule.language);
@@ -117,7 +117,7 @@ export function getDailyLeaderboard(
     return matchesLanguage && matchesMode && matchesMode2;
   });
 
-  if (!isValidMode || !dailyLeaderboardsConfig.enabled) {
+  if (!enabled || !isValidMode) {
     return null;
   }
 

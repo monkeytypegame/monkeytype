@@ -42,7 +42,7 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       {
         language: "english",
         mode: "time",
-        mode2: "15|60",
+        mode2: "(15|60)",
       },
     ],
   },
