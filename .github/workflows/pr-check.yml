@@ -74,7 +74,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set up Node.js
-        if: steps.filter.outputs.changes != '[]'
+        # if: steps.filter.outputs.changes != '[]'
         uses: actions/setup-node@v1
         with:
           node-version: "16.13.2"
