@@ -48,9 +48,6 @@ jobs:
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
 
-      - name: Run Pretty Check
-        run: npm run pretty
-
       - name: Save the PR number in an artifact
         shell: bash
         env:
@@ -83,8 +80,11 @@ jobs:
           node-version: "16.13.2"
 
       - name: Install dependencies
-        if: steps.filter.outputs.changes != '[]'
+        # if: steps.filter.outputs.changes != '[]'
         run: npm run install-all
+
+      - name: Run Pretty Check
+        run: npm run pretty
 
       - name: Lint JSON
         if: steps.filter.outputs.any-json == 'true'
