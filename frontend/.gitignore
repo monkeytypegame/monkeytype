@@ -6,10 +6,3 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-
-lastId.txt
-log_success.txt
-log_failed.txt
-build
-worker.*
