@@ -36,15 +36,9 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
   dailyLeaderboards: {
     enabled: false,
-    maxResults: 100,
-    leaderboardExpirationTimeInDays: 1,
-    validModeRules: [
-      {
-        language: "english",
-        mode: "time",
-        mode2: "(15|60)",
-      },
-    ],
+    maxResults: 0,
+    leaderboardExpirationTimeInDays: 0,
+    validModeRules: [],
   },
 };
 

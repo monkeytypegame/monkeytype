@@ -14,12 +14,14 @@ end
 
 local number_of_results = redis.call('ZCARD', leaderboard_scores_key)
 
-if (number_of_results > max_results) then
-    local min_member = redis.call('ZPOPMIN', leaderboard_scores_key)
-    local member_id = min_member[1]
+local removed_user_id = nil
 
-    if (member_id ~= nil) then
-        redis.call('HDEL', leaderboard_results_key, member_id)
+if (number_of_results > max_results) then
+    local user_with_lowest_score = redis.call('ZPOPMIN', leaderboard_scores_key)
+    removed_user_id = user_with_lowest_score[1]
+
+    if (removed_user_id ~= nil) then
+        redis.call('HDEL', leaderboard_results_key, removed_user_id)
     end
 end
 
@@ -27,3 +29,9 @@ if (number_of_results == 1) then -- Indicates that this is the first score of th
     redis.call('EXPIREAT', leaderboard_scores_key, leaderboard_expiration_time)
     redis.call('EXPIREAT', leaderboard_results_key, leaderboard_expiration_time)
 end
+
+if (number_of_results_changed == 1 and removed_user_id ~= user_id) then
+    return redis.call('ZREVRANK', leaderboard_scores_key, user_id)
+end
+
+return -1

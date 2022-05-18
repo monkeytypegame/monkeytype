@@ -303,8 +303,10 @@ export async function addResult(
     dailyLeaderboardsConfig
   );
 
+  let dailyLeaderboardRank = -1;
+
   if (dailyLeaderboard) {
-    await dailyLeaderboard.addResult(
+    dailyLeaderboardRank = await dailyLeaderboard.addResult(
       uid,
       {
         name: user.name,
@@ -349,6 +351,7 @@ export async function addResult(
     name: result.name,
     tagPbs,
     insertedId: addedResult.insertedId,
+    dailyLeaderboardRank,
   };
 
   incrementResult(result);

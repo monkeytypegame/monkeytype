@@ -1,4 +1,5 @@
 import _ from "lodash";
+import LRU from "lru-cache";
 import * as RedisClient from "../init/redis";
 import { getCurrentDayTimestamp, matchesAPattern } from "./misc";
 
@@ -45,10 +46,10 @@ class DailyLeaderboard {
     uid: string,
     entry: DailyLeaderboardEntry,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<void> {
+  ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return;
+      return -1;
     }
 
     const currentDay = getCurrentDayTimestamp();
@@ -65,7 +66,7 @@ class DailyLeaderboard {
     );
 
     // @ts-ignore
-    await connection.addResult(
+    const rank = await connection.addResult(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
@@ -75,6 +76,8 @@ class DailyLeaderboard {
       entry.wpm,
       JSON.stringify(entry)
     );
+
+    return rank + (rank >= 0 ? 1 : 0);
   }
 
   public async getTopResults(
@@ -100,7 +103,9 @@ class DailyLeaderboard {
   }
 }
 
-const DAILY_LEADERBOARDS = {};
+const DAILY_LEADERBOARDS = new LRU({
+  max: 100,
+});
 
 export function getDailyLeaderboard(
   language: string,
@@ -122,9 +127,11 @@ export function getDailyLeaderboard(
   }
 
   const key = `${language}:${mode}:${mode2}`;
-  if (!DAILY_LEADERBOARDS[key]) {
-    DAILY_LEADERBOARDS[key] = new DailyLeaderboard(language, mode, mode2);
+
+  if (!DAILY_LEADERBOARDS.has(key)) {
+    const dailyLeaderboard = new DailyLeaderboard(language, mode, mode2);
+    DAILY_LEADERBOARDS.set(key, dailyLeaderboard);
   }
 
-  return DAILY_LEADERBOARDS[key];
+  return DAILY_LEADERBOARDS.get(key) ?? null;
 }
