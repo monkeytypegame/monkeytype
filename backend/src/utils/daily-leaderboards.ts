@@ -92,12 +92,10 @@ class DailyLeaderboard {
     const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
 
     const results = await connection.hgetall(leaderboardResultsKey);
-    const normalizedResults: DailyLeaderboardEntry[] = _.map(
-      results,
-      (result) => {
-        return JSON.parse(result);
-      }
-    ).sort(compareDailyLeaderboardEntries);
+
+    const normalizedResults: DailyLeaderboardEntry[] = Object.values(results)
+      .map((result) => JSON.parse(result))
+      .sort(compareDailyLeaderboardEntries);
 
     return normalizedResults;
   }
