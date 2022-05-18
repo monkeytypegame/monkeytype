@@ -77,6 +77,13 @@ export async function updateTags(
   return new MonkeyResponse("Result tags updated");
 }
 
+interface AddResultData {
+  isPb: boolean;
+  tagPbs: any[];
+  insertedId: ObjectId;
+  dailyLeaderboardRank?: number;
+}
+
 export async function addResult(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -346,13 +353,15 @@ export async function addResult(
     );
   }
 
-  const data = {
+  const data: AddResultData = {
     isPb,
-    name: result.name,
     tagPbs,
     insertedId: addedResult.insertedId,
-    dailyLeaderboardRank,
   };
+
+  if (dailyLeaderboardRank !== -1) {
+    data.dailyLeaderboardRank = dailyLeaderboardRank;
+  }
 
   incrementResult(result);
 
