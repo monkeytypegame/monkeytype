@@ -29,6 +29,11 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   favoriteQuotes: {
     maxFavorites: 100,
   },
+  autoBan: {
+    enabled: false,
+    maxCount: 5,
+    maxHours: 1,
+  },
 };
 
 export default BASE_CONFIGURATION;

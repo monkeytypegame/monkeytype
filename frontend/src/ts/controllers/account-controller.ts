@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
-import * as Account from "../pages/account";
 import * as VerificationController from "./verification-controller";
 import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
@@ -24,6 +23,7 @@ import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
+import * as Account from "../pages/account";
 import {
   EmailAuthProvider,
   GoogleAuthProvider,
@@ -47,6 +47,10 @@ import { Auth } from "../firebase";
 import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
+import {
+  hideFavoriteQuoteLength,
+  showFavoriteQuoteLength,
+} from "../test/test-config";
 
 export const gmailProvider = new GoogleAuthProvider();
 
@@ -96,7 +100,6 @@ export async function getDataAndInit(): Promise<boolean> {
     Notifications.add("Failed to get user data: " + msg, -1);
 
     $("#top #menu .account").css("opacity", 1);
-    if (ActivePage.get() === "loading") PageController.change("");
     return false;
   }
   if (ActivePage.get() == "loading") {
@@ -107,6 +110,7 @@ export async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
   $("#menu .text-button.account .text").text(snapshot.name);
+  showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
 
@@ -122,35 +126,13 @@ export async function getDataAndInit(): Promise<boolean> {
     ResultFilters.load();
   });
 
-  if (!snapshot.name) {
-    //verify username
-    //invalid, get new
-    let nameGood = false;
-    let name = "";
-
-    while (!nameGood) {
-      name =
-        prompt(
-          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
-        ) ?? "";
-
-      if (!name) {
-        return false;
-      }
-
-      const response = await Ape.users.updateName(name);
-
-      if (response.status !== 200) {
-        Notifications.add("Failed to update name: " + response.message, -1);
-        return false;
-      }
-
-      nameGood = true;
-      Notifications.add("Name updated", 1);
-      snapshot.name = name;
-      DB.setSnapshot(snapshot);
-      $("#menu .text-button.account .text").text(name);
-    }
+  if (snapshot.needsToChangeName) {
+    Notifications.addBanner(
+      "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+      -1,
+      undefined,
+      true
+    );
   }
   if (!UpdateConfig.changedBeforeDb) {
     //config didnt change before db loaded
@@ -227,6 +209,12 @@ export async function getDataAndInit(): Promise<boolean> {
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
+  if (ActivePage.get() === "account") {
+    Account.update();
+  } else {
+    Focus.set(false);
+  }
+  await PageController.change(undefined, true);
   PageTransition.set(false);
   console.log("account loading finished");
   return true;
@@ -273,6 +261,7 @@ export async function loadUser(user: UserType): Promise<void> {
 
 const authListener = Auth.onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
+  const search = window.location.search;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);
@@ -282,28 +271,16 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     }
     PageTransition.set(false);
   }
-  if (user) {
-    if (window.location.pathname == "/login") {
-      PageController.change("account");
-    } else if (window.location.pathname != "/account") {
-      PageController.change();
-      setTimeout(() => {
-        Focus.set(false);
-      }, 125 / 2);
-    } else {
-      Account.update();
-      // SignOutButton.show();
-    }
-  } else {
+  if (!user) {
     PageController.change();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
   }
 
-  URLHandler.loadCustomThemeFromUrl();
-  URLHandler.loadTestSettingsFromUrl();
-  URLHandler.loadTribeAutoJoinFromUrl();
+  URLHandler.loadCustomThemeFromUrl(search);
+  URLHandler.loadTestSettingsFromUrl(search);
+  URLHandler.loadTribeAutoJoinFromUrl(search);
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
@@ -336,7 +313,6 @@ export function signIn(): void {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
-        PageController.change("account");
         if (TestLogic.notSignedInLastResult !== null) {
           TestLogic.setNotSignedInUid(e.user.uid);
 
@@ -382,14 +358,30 @@ export async function signInWithGoogle(): Promise<void> {
     : browserSessionPersistence;
 
   await setPersistence(Auth, persistence);
-  const signedInUser = await signInWithPopup(Auth, gmailProvider);
-
-  if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-    dispatchSignUpEvent(signedInUser, true);
-  } else {
-    await loadUser(signedInUser.user);
-    PageController.change("account");
-  }
+  signInWithPopup(Auth, gmailProvider)
+    .then(async (signedInUser) => {
+      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+        dispatchSignUpEvent(signedInUser, true);
+      } else {
+        await loadUser(signedInUser.user);
+      }
+    })
+    .catch((error) => {
+      let message = error.message;
+      if (error.code === "auth/wrong-password") {
+        message = "Incorrect password";
+      } else if (error.code === "auth/user-not-found") {
+        message = "User not found";
+      } else if (error.code === "auth/invalid-email") {
+        message =
+          "Invalid email format (make sure you are using your email to login - not your username)";
+      } else if (error.code === "auth/popup-closed-by-user") {
+        message = "Popup closed by user";
+      }
+      Notifications.add(message, -1);
+      LoginPage.hidePreloader();
+      LoginPage.enableInputs();
+    });
 }
 
 export async function addGoogleAuth(): Promise<void> {
@@ -408,6 +400,23 @@ export async function addGoogleAuth(): Promise<void> {
         -1
       );
     });
+}
+
+export function noGoogleNoMo(): void {
+  const user = Auth.currentUser;
+  if (user === null) return;
+  if (
+    user.providerData.find((provider) => provider.providerId === "password")
+  ) {
+    unlinkAuth(user, "google.com")
+      .then(() => {
+        console.log("unlinked");
+        Settings.updateAuthSections();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 }
 
 export async function removeGoogleAuth(): Promise<void> {
@@ -492,6 +501,7 @@ export function signOut(): void {
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
+      hideFavoriteQuoteLength();
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
@@ -578,7 +588,6 @@ async function signUp(): Promise<void> {
         });
       }
     }
-    PageController.change("account");
     Notifications.add("Account created", 1, 3);
   } catch (e) {
     //make sure to do clean up here

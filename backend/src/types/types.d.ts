@@ -29,6 +29,11 @@ declare namespace MonkeyTypes {
     favoriteQuotes: {
       maxFavorites: number;
     };
+    autoBan: {
+      enabled: boolean;
+      maxCount: number;
+      maxHours: number;
+    };
   }
 
   interface DecodedToken {
@@ -49,6 +54,7 @@ declare namespace MonkeyTypes {
   // Data Model
 
   interface User {
+    autoBanTimestamps?: number[];
     addedAt: number;
     verified?: boolean;
     bananas?: number;
@@ -71,7 +77,7 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;
-    needsToUpdateName?: boolean;
+    needsToChangeName?: boolean;
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;

@@ -5,6 +5,7 @@ import {
   checkIfTagPb,
   incrementBananas,
   updateTypingStats,
+  recordAutoBanEvent,
 } from "../../dal/user";
 import * as PublicStatsDAL from "../../dal/public-stats";
 import { roundTo2, stdDev } from "../../utils/misc";
@@ -81,6 +82,15 @@ export async function addResult(
   // todo remove
   return new MonkeyResponse("Result added");
   const { uid } = req.ctx.decodedToken;
+
+  const user = await getUser(uid, "add result");
+
+  if (user.needsToChangeName) {
+    throw new MonkeyError(
+      403,
+      "Please change your name before submitting a result"
+    );
+  }
 
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
@@ -201,8 +211,6 @@ export async function addResult(
     //
   }
 
-  const user = await getUser(uid, "add result");
-
   //check keyspacing and duration here for bots
   if (
     result.mode === "time" &&
@@ -216,6 +224,15 @@ export async function addResult(
     }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
+        //autoban
+        const autoBanConfig = req.ctx.configuration.autoBan;
+        if (autoBanConfig.enabled) {
+          await recordAutoBanEvent(
+            uid,
+            autoBanConfig.maxCount,
+            autoBanConfig.maxHours
+          );
+        }
         const status = MonkeyStatusCodes.BOT_DETECTED;
         throw new MonkeyError(status.code, "Possible bot detected");
       }

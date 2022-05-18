@@ -8,8 +8,8 @@ import * as CustomText from "../test/custom-text";
 import { restart as restartTest } from "../test/test-logic";
 import * as Tribe from "../tribe/tribe";
 
-export function loadCustomThemeFromUrl(): void {
-  const getValue = Misc.findGetParameter("customTheme");
+export function loadCustomThemeFromUrl(getOverride?: string): void {
+  const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
   const urlEncoded = getValue.split(",");
@@ -52,8 +52,8 @@ type SharedTestSettings = [
   string | null
 ];
 
-export function loadTestSettingsFromUrl(): void {
-  const getValue = Misc.findGetParameter("testSettings");
+export function loadTestSettingsFromUrl(getOverride?: string): void {
+  const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
   const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
