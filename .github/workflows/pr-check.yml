@@ -39,6 +39,10 @@ jobs:
               - 'backend/**/*.ts'
             anti-cheat:
               - 'backend/**/anticheat/**'
+            any-src:
+              - 'backend/**/*.{ts,js,json,lua}'
+              - 'frontend/**/*.{ts,js}'
+              - 'frontend/src/**/*.scss'
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
@@ -84,7 +88,7 @@ jobs:
         run: npm run install-all
 
       - name: Pretty Check
-        if: steps.filter.outputs.changes != '[]'
+        if: steps.filter.outputs.any-src == 'true'
         run: npm run pretty-code
 
       - name: Lint JSON
