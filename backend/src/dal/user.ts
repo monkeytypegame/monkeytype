@@ -13,15 +13,11 @@ import {
   WithId,
 } from "mongodb";
 
-let usersCollection: Collection<WithId<MonkeyTypes.User>>;
+const SECONDS_PER_HOUR = 3600;
 
-function getUsersCollection(): Collection<WithId<MonkeyTypes.User>> {
-  if (!usersCollection) {
-    usersCollection = db.collection<MonkeyTypes.User>("users");
-  }
-
-  return usersCollection;
-}
+// Export for use in tests
+export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
+  db.collection<MonkeyTypes.User>("users");
 
 export async function addUser(
   name: string,
@@ -47,6 +43,9 @@ export async function deleteUser(uid: string): Promise<DeleteResult> {
   return await getUsersCollection().deleteOne({ uid });
 }
 
+const DAY_IN_SECONDS = 24 * 60 * 60;
+const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
+
 export async function updateName(
   uid: string,
   name: string
@@ -62,7 +61,7 @@ export async function updateName(
 
   if (
     !user?.needsToChangeName &&
-    Date.now() - (user.lastNameChange ?? 0) < 2592000000
+    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
   ) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
@@ -597,4 +596,36 @@ export async function removeFavoriteQuote(
     { uid },
     { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
   );
+}
+
+export async function recordAutoBanEvent(
+  uid: string,
+  maxCount: number,
+  maxHours: number
+): Promise<void> {
+  const user = await getUser(uid, "record auto ban event");
+
+  if (user.banned) return;
+
+  const autoBanTimestamps = user.autoBanTimestamps ?? [];
+
+  const now = Date.now();
+
+  //remove any old events
+  const recentAutoBanTimestamps = autoBanTimestamps.filter(
+    (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
+  );
+
+  //push new event
+  recentAutoBanTimestamps.push(now);
+
+  //update user, ban if needed
+  const updateObj: Partial<MonkeyTypes.User> = {
+    autoBanTimestamps: recentAutoBanTimestamps,
+  };
+  if (recentAutoBanTimestamps.length > maxCount) {
+    updateObj.banned = true;
+  }
+
+  await getUsersCollection().updateOne({ uid }, { $set: updateObj });
 }

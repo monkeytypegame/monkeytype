@@ -72,7 +72,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 function authenticateWithBody(
   body: MonkeyTypes.Request["body"]
 ): MonkeyTypes.DecodedToken {
-  const { uid } = body;
+  const { uid, email } = body;
 
   if (!uid) {
     throw new MonkeyError(
@@ -84,7 +84,7 @@ function authenticateWithBody(
   return {
     type: "Bearer",
     uid,
-    email: "",
+    email: email ?? "",
   };
 }
 

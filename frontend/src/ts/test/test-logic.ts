@@ -343,6 +343,10 @@ export function restart(
     }
   }
   if (TestActive.get()) {
+    if (Config.repeatQuotes === "typing" && Config.mode === "quote") {
+      withSameWordset = true;
+    }
+
     TestInput.pushKeypressesToHistory();
     const testSeconds = TestStats.calculateTestSeconds(performance.now());
     const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -1406,7 +1410,27 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = buildCompletedEvent(difficultyFailed);
 
-  //todo check if any fields are undefined
+  function countUndefined(input: unknown): number {
+    if (typeof input === "undefined") {
+      return 1;
+    } else if (typeof input === "object" && input !== null) {
+      return Object.values(input).reduce(
+        (a, b) => a + countUndefined(b),
+        0
+      ) as number;
+    } else {
+      return 0;
+    }
+  }
+
+  if (countUndefined(completedEvent) > 0) {
+    console.log(completedEvent);
+    Notifications.add(
+      "Failed to save result: One of the result fields is undefined. Please report this",
+      -1
+    );
+    return;
+  }
 
   ///////// completed event ready
 
@@ -1612,16 +1636,7 @@ $(document).on("click", "#testModesNotice .text-button.restart", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key === "Enter") {
-    ManualRestart.reset();
-    if (
-      TestActive.get() &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      restart(true);
-    } else {
-      restart();
-    }
+    restart();
   }
 });
 

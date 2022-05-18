@@ -91,7 +91,7 @@ type Quote = {
   text: string;
   source: string;
   length: number;
-  name: string;
+  approvedBy: string;
 };
 
 type ApproveReturn = {
@@ -118,7 +118,7 @@ export async function approve(
     text: editQuote ? editQuote : targetQuote.text,
     source: editSource ? editSource : targetQuote.source,
     length: targetQuote.text.length,
-    name,
+    approvedBy: name,
   };
   let message = "";
   const fileDir = path.join(
