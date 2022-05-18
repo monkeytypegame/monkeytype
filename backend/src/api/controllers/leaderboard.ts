@@ -82,7 +82,11 @@ export async function getDailyLeaderboard(
     dailyLeaderboardsConfig
   );
   if (!dailyLeaderboard) {
-    return new MonkeyResponse("There is no daily leaderboard for this mode");
+    return new MonkeyResponse(
+      "There is no daily leaderboard for this mode",
+      null,
+      404
+    );
   }
 
   const topResults =
