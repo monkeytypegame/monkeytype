@@ -521,6 +521,7 @@ function validateLanguages() {
       required: ["name", "leftToRight", "words"],
     };
     let languageFilesAllGood = true;
+    let languageWordListsAllGood = true;
     let languageFilesErrors;
     const duplicatePercentageThreshold = 5;
     languagesData.forEach((language) => {
@@ -547,7 +548,7 @@ function validateLanguages() {
         (duplicates.length / languageFileData.words.length) * 100
       );
       if (duplicatePercentage >= duplicatePercentageThreshold) {
-        languageFilesAllGood = false;
+        languageWordListsAllGood = false;
         languageFilesErrors = `Language '${languageFileData.name}' contains ${duplicates.length} (${duplicatePercentage}%) duplicates:`;
         console.log(languageFilesErrors);
         console.log(duplicates);
@@ -563,6 +564,17 @@ function validateLanguages() {
       );
       return reject(new Error(languageFilesErrors));
     }
+
+    if(languageWordListsAllGood){
+      console.log(
+        `Language word lists duplicate check is  \u001b[32mvalid\u001b[0m`
+      );
+    } else {
+      console.log(
+        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m`
+      );
+    }
+
     resolve();
   });
 }
