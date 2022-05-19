@@ -543,7 +543,7 @@ function validateLanguages() {
       }
 
       const duplicates = findDuplicates(languageFileData.words);
-      const duplicatePercentage = Math.floor(
+      const duplicatePercentage = Math.round(
         (duplicates.length / languageFileData.words.length) * 100
       );
       if (duplicatePercentage >= duplicatePercentageThreshold) {
