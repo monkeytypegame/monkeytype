@@ -526,15 +526,18 @@ function validateLanguages() {
         return;
       }
 
-      // skip validation of large language lists
-      if (languageFileData.words.length > 10000) return;
+      const findDuplicates = (arr) => {
+        const duplicates = new Set();
+        return arr.filter((item) => {
+          if (duplicates.has(item)) {
+            return true;
+          }
+          duplicates.add(item);
+          return false;
+        });
+      };
 
-      const languageWordsDuplicates = languageFileData.words.filter(
-        (word, index) => {
-          const indexOf = languageFileData.words.indexOf(word);
-          return indexOf !== index && indexOf !== -1;
-        }
-      );
+      const languageWordsDuplicates = findDuplicates(languageFileData.words);
 
       if (languageWordsDuplicates.length > 0) {
         languageFilesAllGood = false;
