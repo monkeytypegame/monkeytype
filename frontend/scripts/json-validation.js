@@ -6,6 +6,21 @@ function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function findDuplicates(words) {
+  const wordFrequencies = {};
+  const duplicates = [];
+
+  words.forEach((word) => {
+    wordFrequencies[word] =
+      word in wordFrequencies ? wordFrequencies[word] + 1 : 1;
+
+    if (wordFrequencies[word] === 2) {
+      duplicates.push(word);
+    }
+  });
+  return duplicates;
+}
+
 function validateOthers() {
   return new Promise((resolve, reject) => {
     //fonts
@@ -507,6 +522,7 @@ function validateLanguages() {
     };
     let languageFilesAllGood = true;
     let languageFilesErrors;
+    const duplicatePercentageThreshold = 5;
     languagesData.forEach((language) => {
       const languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
@@ -526,28 +542,15 @@ function validateLanguages() {
         return;
       }
 
-      const findDuplicates = (words) => {
-        const wordFrequencies = {};
-        const duplicates = [];
-
-        words.forEach((word) => {
-          wordFrequencies[word] =
-            word in wordFrequencies ? wordFrequencies[word] + 1 : 1;
-
-          if (wordFrequencies[word] === 2) {
-            duplicates.push(word);
-          }
-        });
-        return duplicates;
-      };
-
-      const languageWordsDuplicates = findDuplicates(languageFileData.words);
-
-      if (languageWordsDuplicates.length > 0) {
+      const duplicates = findDuplicates(languageFileData.words);
+      const duplicatePercentage = Math.floor(
+        (duplicates.length / languageFileData.words.length) * 100
+      );
+      if (duplicatePercentage >= duplicatePercentageThreshold) {
         languageFilesAllGood = false;
-        languageFilesErrors = `Language '${languageFileData.name}' contains ${languageWordsDuplicates.length} duplicates:`;
+        languageFilesErrors = `Language '${languageFileData.name}' contains ${duplicates.length} (${duplicatePercentage}%) duplicates:`;
         console.log(languageFilesErrors);
-        console.log(languageWordsDuplicates);
+        console.log(duplicates);
       }
     });
     if (languageFilesAllGood) {
