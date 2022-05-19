@@ -312,7 +312,12 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
-  if (dailyLeaderboard) {
+  const { funbox, bailedOut } = result;
+  const validResultCriteria =
+    (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
+    !bailedOut;
+
+  if (dailyLeaderboard && validResultCriteria) {
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
       uid,
       {
