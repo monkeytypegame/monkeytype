@@ -565,7 +565,7 @@ function validateLanguages() {
       return reject(new Error(languageFilesErrors));
     }
 
-    if(languageWordListsAllGood){
+    if (languageWordListsAllGood) {
       console.log(
         `Language word lists duplicate check is  \u001b[32mvalid\u001b[0m`
       );
