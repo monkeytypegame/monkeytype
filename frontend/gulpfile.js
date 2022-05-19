@@ -30,7 +30,6 @@ task("validate-language-contents", function () {
   return LanguageValidation.validateLanguageContents();
 });
 
-
 const taskWithWebpackConfig = (webpackConfig) => {
   return async () => {
     return new Promise((resolve, reject) => {
