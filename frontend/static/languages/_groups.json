@@ -67,7 +67,7 @@
   },
   {
     "name": "russian",
-    "languages": ["russian", "russian_1k", "russian_10k"]
+    "languages": ["russian", "russian_1k"]
   },
   {
     "name": "polish",
