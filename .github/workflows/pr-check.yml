@@ -40,7 +40,7 @@ jobs:
             anti-cheat:
               - 'backend/**/anticheat/**'
             any-src:
-              - 'backend/**/*.{ts,js,json,lua}'
+              - 'backend/**/*.{ts,js,json}'
               - 'frontend/**/*.{ts,js}'
               - 'frontend/src/**/*.scss'
 
