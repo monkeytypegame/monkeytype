@@ -5,6 +5,7 @@ const webpackDevConfig = require("./webpack/config.dev.js");
 const webpackProdConfig = require("./webpack/config.prod.js");
 
 const JSONValidation = require("./scripts/json-validation");
+const LanguageValidation = require("./scripts/language-validation");
 const eslintConfig = "../.eslintrc.json";
 
 task("lint", function () {
@@ -24,6 +25,11 @@ task("lint-json", function () {
 task("validate-json-schema", function () {
   return JSONValidation.validateAll();
 });
+
+task("validate-language-contents", function () {
+  return LanguageValidation.validateLanguageContents();
+});
+
 
 const taskWithWebpackConfig = (webpackConfig) => {
   return async () => {
