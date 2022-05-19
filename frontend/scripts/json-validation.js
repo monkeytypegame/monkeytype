@@ -523,6 +523,24 @@ function validateLanguages() {
       if (!languageFileValidator.valid) {
         languageFilesAllGood = false;
         languageFilesErrors = languageFileValidator.errors;
+        return;
+      }
+
+      // skip validation of large language lists
+      if (languageFileData.words.length > 10000) return;
+
+      const languageWordsDuplicates = languageFileData.words.filter(
+        (word, index) => {
+          const indexOf = languageFileData.words.indexOf(word);
+          return indexOf !== index && indexOf !== -1;
+        }
+      );
+
+      if (languageWordsDuplicates.length > 0) {
+        languageFilesAllGood = false;
+        languageFilesErrors = `Language '${languageFileData.name}' contains ${languageWordsDuplicates.length} duplicates:`;
+        console.log(languageFilesErrors);
+        console.log(languageWordsDuplicates);
       }
     });
     if (languageFilesAllGood) {
