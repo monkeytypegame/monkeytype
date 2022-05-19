@@ -10,7 +10,10 @@ interface GeorgeTask {
   args: GeorgeTaskArgument[];
 }
 
-function buildGeorgeTask(task: string, taskArgs: GeorgeTaskArgument[]): GeorgeTask {
+function buildGeorgeTask(
+  task: string,
+  taskArgs: GeorgeTaskArgument[]
+): GeorgeTask {
   return {
     name: task,
     args: taskArgs,
@@ -93,10 +96,7 @@ export async function awardChallenge(
   challengeName: string
 ): Promise<void> {
   const task = "awardChallenge";
-  const awardChallengeTask = buildGeorgeTask(task, [
-    discordId,
-    challengeName,
-  ]);
+  const awardChallengeTask = buildGeorgeTask(task, [discordId, challengeName]);
   await addToQueue(task, awardChallengeTask);
 }
 
