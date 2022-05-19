@@ -21,6 +21,20 @@ export default function getLeaderboardsEndpoints(
     return await apeClient.get(BASE_PATH, { searchQuery });
   }
 
+  async function getDaily(
+    language: string,
+    mode: MonkeyTypes.Mode,
+    mode2: string | number
+  ): Ape.EndpointData {
+    const searchQuery = {
+      language,
+      mode,
+      mode2,
+    };
+
+    return await apeClient.get(`${BASE_PATH}/daily`, { searchQuery });
+  }
+
   async function getRank(
     language: string,
     mode: MonkeyTypes.Mode,
@@ -35,5 +49,5 @@ export default function getLeaderboardsEndpoints(
     return await apeClient.get(`${BASE_PATH}/rank`, { searchQuery });
   }
 
-  return { get, getRank };
+  return { get, getDaily, getRank };
 }
