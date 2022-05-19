@@ -526,15 +526,19 @@ function validateLanguages() {
         return;
       }
 
-      const findDuplicates = (arr) => {
-        const duplicates = new Set();
-        return arr.filter((item) => {
-          if (duplicates.has(item)) {
-            return true;
+      const findDuplicates = (words) => {
+        const wordFrequencies = {};
+        const duplicates = [];
+
+        words.forEach((word) => {
+          wordFrequencies[word] =
+            word in wordFrequencies ? wordFrequencies[word] + 1 : 1;
+
+          if (wordFrequencies[word] === 2) {
+            duplicates.push(word);
           }
-          duplicates.add(item);
-          return false;
         });
+        return duplicates;
       };
 
       const languageWordsDuplicates = findDuplicates(languageFileData.words);
