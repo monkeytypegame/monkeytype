@@ -107,11 +107,28 @@ function updateFooter(lb: LbKey): void {
   } else {
     side = "right";
   }
+
+  if (!Auth.currentUser) {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;"></>
+    </tr>
+    `);
+    return;
+  }
+
+  if (DB.getSnapshot().globalStats?.time ?? 0 < 3600) {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Your account must have 2 hours typed to be placed on the leaderboard.</>
+    </tr>
+    `);
+    return;
+  }
+
   $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
-      <td><br><br></td>
-      <td colspan="4" style="text-align:center;">Not qualified</>
-      <td><br><br></td>
+      <td colspan="6" style="text-align:center;">Not qualified</>
     </tr>
     `);
 
