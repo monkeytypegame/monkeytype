@@ -92,7 +92,6 @@ export async function addResult(
 
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
-  result.name = user.name;
   if (isTestTooShort(result)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
     throw new MonkeyError(status.code, status.message);
@@ -121,6 +120,8 @@ export async function addResult(
       throw new MonkeyError(status.code, "Incorrect result hash");
     }
   }
+
+  result.name = user.name;
 
   if (anticheatImplemented()) {
     if (!validateResult(result)) {
