@@ -78,6 +78,7 @@ export async function update(
               $exists: true,
             },
             banned: { $exists: false },
+            timeTyping: { $gt: 3600 },
           },
         },
         {
