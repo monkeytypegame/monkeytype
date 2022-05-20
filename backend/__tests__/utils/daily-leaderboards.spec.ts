@@ -1,4 +1,7 @@
-import { getDailyLeaderboard } from "../../src/utils/daily-leaderboards";
+import {
+  initializeDailyLeaderboardsCache,
+  getDailyLeaderboard,
+} from "../../src/utils/daily-leaderboards";
 
 const dailyLeaderboardsConfig = {
   enabled: true,
@@ -16,10 +19,13 @@ const dailyLeaderboardsConfig = {
       mode2: "\\d+",
     },
   ],
+  dailyLeaderboardCacheSize: 3,
 };
 
 describe("Daily Leaderboards", () => {
   it("should properly handle valid and invalid modes", () => {
+    initializeDailyLeaderboardsCache(dailyLeaderboardsConfig);
+
     const modeCases = [
       {
         case: {

@@ -39,6 +39,8 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     maxResults: 0,
     leaderboardExpirationTimeInDays: 0,
     validModeRules: [],
+    // GOTCHA MUST ALWAYS ATLEAST BE 1, LRUCache module will exit process without error
+    dailyLeaderboardCacheSize: 1,
   },
 };
 

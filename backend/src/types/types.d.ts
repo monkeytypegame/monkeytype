@@ -45,6 +45,7 @@ declare namespace MonkeyTypes {
       leaderboardExpirationTimeInDays: number;
       maxResults: number;
       validModeRules: ValidModeRule[];
+      dailyLeaderboardCacheSize: number;
     };
   }
 

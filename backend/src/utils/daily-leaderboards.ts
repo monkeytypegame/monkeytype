@@ -1,5 +1,5 @@
 import _ from "lodash";
-import LRU from "lru-cache";
+import LRUCache from "lru-cache";
 import * as RedisClient from "../init/redis";
 import { getCurrentDayTimestamp, matchesAPattern } from "./misc";
 
@@ -101,9 +101,17 @@ class DailyLeaderboard {
   }
 }
 
-const DAILY_LEADERBOARDS = new LRU({
-  max: 100,
-});
+let DAILY_LEADERBOARDS: LRUCache<string, DailyLeaderboard>;
+
+export function initializeDailyLeaderboardsCache(
+  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
+): void {
+  const { dailyLeaderboardCacheSize } = configuration;
+
+  DAILY_LEADERBOARDS = new LRUCache({
+    max: dailyLeaderboardCacheSize,
+  });
+}
 
 export function getDailyLeaderboard(
   language: string,
@@ -120,7 +128,7 @@ export function getDailyLeaderboard(
     return matchesLanguage && matchesMode && matchesMode2;
   });
 
-  if (!enabled || !isValidMode) {
+  if (!enabled || !isValidMode || !DAILY_LEADERBOARDS) {
     return null;
   }
 
