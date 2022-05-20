@@ -117,7 +117,7 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  if (DB.getSnapshot().globalStats?.time ?? 0 < 3600) {
+  if ((DB.getSnapshot().globalStats?.time ?? 0) < 7200) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;">Your account must have 2 hours typed to be placed on the leaderboard.</>
