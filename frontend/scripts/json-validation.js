@@ -523,7 +523,7 @@ function validateLanguages() {
     let languageFilesAllGood = true;
     let languageWordListsAllGood = true;
     let languageFilesErrors;
-    const duplicatePercentageThreshold = 5;
+    const duplicatePercentageThreshold = 0.5;
     languagesData.forEach((language) => {
       const languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
@@ -571,7 +571,7 @@ function validateLanguages() {
       );
     } else {
       console.log(
-        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m`
+        `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${languageFilesErrors.length} languages contain duplicates)`
       );
     }
 
