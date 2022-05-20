@@ -575,6 +575,7 @@ function validateLanguages() {
       console.log(
         `Language word lists duplicate check is \u001b[31minvalid\u001b[0m (${langsWithDuplicates} languages contain duplicates)`
       );
+      return reject(new Error(languageFilesErrors));
     }
 
     resolve();
