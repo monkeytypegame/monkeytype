@@ -264,7 +264,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
     }
     const date = new Date(entry.timestamp);
 
-    if (!entry.rank) {
+    if (currentTimeRange === "daily" && !entry.rank) {
       entry.rank = i + 1;
     }
 
