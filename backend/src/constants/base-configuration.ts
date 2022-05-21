@@ -34,6 +34,14 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     maxCount: 5,
     maxHours: 1,
   },
+  dailyLeaderboards: {
+    enabled: false,
+    maxResults: 0,
+    leaderboardExpirationTimeInDays: 0,
+    validModeRules: [],
+    // GOTCHA MUST ALWAYS ATLEAST BE 1, LRUCache module will exit process without error
+    dailyLeaderboardCacheSize: 1,
+  },
 };
 
 export default BASE_CONFIGURATION;

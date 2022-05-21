@@ -23,6 +23,7 @@ import {
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import { incrementResult } from "../../utils/prometheus";
 import * as George from "../../tasks/george";
+import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -74,6 +75,13 @@ export async function updateTags(
 
   await ResultDAL.updateTags(uid, resultId, tagIds);
   return new MonkeyResponse("Result tags updated");
+}
+
+interface AddResultData {
+  isPb: boolean;
+  tagPbs: any[];
+  insertedId: ObjectId;
+  dailyLeaderboardRank?: number;
 }
 
 export async function addResult(
@@ -294,6 +302,36 @@ export async function addResult(
   updateTypingStats(uid, result.restartCount, tt);
   PublicStatsDAL.updateStats(result.restartCount, tt);
 
+  const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
+  const dailyLeaderboard = getDailyLeaderboard(
+    result.language,
+    result.mode,
+    result.mode2,
+    dailyLeaderboardsConfig
+  );
+
+  let dailyLeaderboardRank = -1;
+
+  const { funbox, bailedOut } = result;
+  const validResultCriteria =
+    (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
+    !bailedOut;
+
+  if (dailyLeaderboard && validResultCriteria) {
+    dailyLeaderboardRank = await dailyLeaderboard.addResult(
+      uid,
+      {
+        name: user.name,
+        wpm: result.wpm,
+        rawWpm: result.rawWpm,
+        accuracy: result.acc,
+        consistency: result.consistency,
+        timestamp: result.timestamp,
+      },
+      dailyLeaderboardsConfig
+    );
+  }
+
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
   if (result.lazyMode === false) delete result.lazyMode;
@@ -320,12 +358,15 @@ export async function addResult(
     );
   }
 
-  const data = {
+  const data: AddResultData = {
     isPb,
-    name: result.name,
     tagPbs,
     insertedId: addedResult.insertedId,
   };
+
+  if (dailyLeaderboardRank !== -1) {
+    data.dailyLeaderboardRank = dailyLeaderboardRank;
+  }
 
   incrementResult(result);
 
