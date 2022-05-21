@@ -80,3 +80,13 @@ export function padNumbers(
     number.toString().padStart(maxLength, fillString)
   );
 }
+
+export function getCurrentDayTimestamp(): number {
+  const currentTime = Date.now();
+  return currentTime - (currentTime % 86400000);
+}
+
+export function matchesAPattern(text: string, pattern: string): boolean {
+  const regex = new RegExp(`^${pattern}$`);
+  return regex.test(text);
+}
