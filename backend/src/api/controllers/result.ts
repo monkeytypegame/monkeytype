@@ -326,14 +326,16 @@ export async function addResult(
       {
         name: user.name,
         wpm: result.wpm,
-        rawWpm: result.rawWpm,
-        accuracy: result.acc,
+        raw: result.rawWpm,
+        acc: result.acc,
         consistency: result.consistency,
         timestamp: result.timestamp,
       },
       dailyLeaderboardsConfig
     );
   }
+
+  console.log(dailyLeaderboardRank);
 
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
