@@ -317,7 +317,8 @@ export async function addResult(
   const { funbox, bailedOut } = result;
   const validResultCriteria =
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
-    !bailedOut;
+    !bailedOut &&
+    (user.timeTyping ?? 0) > 7200;
 
   if (dailyLeaderboard && validResultCriteria) {
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
