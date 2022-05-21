@@ -48,6 +48,11 @@ declare namespace Ape {
         skip: number,
         limit?: number
       ) => EndpointData;
+      getDaily: (
+        language: string,
+        mode: MonkeyTypes.Mode,
+        mode2: string | number
+      ) => EndpointData;
       getRank: (
         language: string,
         mode: MonkeyTypes.Mode,
