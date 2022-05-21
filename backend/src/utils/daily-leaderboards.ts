@@ -6,8 +6,8 @@ import { getCurrentDayTimestamp, matchesAPattern } from "./misc";
 interface DailyLeaderboardEntry {
   name: string;
   wpm: number;
-  rawWpm: number;
-  accuracy: number;
+  raw: number;
+  acc: number;
   consistency: number;
   timestamp: number;
 }
@@ -24,8 +24,8 @@ function compareDailyLeaderboardEntries(
     return b.wpm - a.wpm;
   }
 
-  if (a.accuracy !== b.accuracy) {
-    return b.accuracy - a.accuracy;
+  if (a.acc !== b.acc) {
+    return b.acc - a.acc;
   }
 
   return a.timestamp - b.timestamp;
