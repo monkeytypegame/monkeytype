@@ -523,7 +523,7 @@ function validateLanguages() {
     let languageFilesAllGood = true;
     let languageWordListsAllGood = true;
     let languageFilesErrors;
-    const duplicatePercentageThreshold = 0.1;
+    const duplicatePercentageThreshold = 0.0001;
     let langsWithDuplicates = 0;
     languagesData.forEach((language) => {
       const languageFileData = JSON.parse(
