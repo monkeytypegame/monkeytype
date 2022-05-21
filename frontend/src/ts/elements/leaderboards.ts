@@ -5,8 +5,9 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import differenceInSeconds from "date-fns/differenceInSeconds";
 
-const currentLeaderboard = "time_15";
+let currentTimeRange: "allTime" | "daily" = "allTime";
 
 type LbKey = 15 | 60;
 
@@ -64,17 +65,30 @@ function reset(): void {
 function stopTimer(): void {
   clearInterval(updateTimer);
   updateTimer = undefined;
-  $("#leaderboards .subTitle").text("Next update in: --:--");
+  $("#leaderboards .subTitle").text("-");
 }
 
 function updateTimerElement(): void {
-  const date = new Date();
-  const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
-  const secondsToNextUpdate = 60 - date.getSeconds();
-  const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
-  $("#leaderboards .subTitle").text(
-    "Next update in: " + Misc.secondsToString(totalSeconds, true)
-  );
+  if (currentTimeRange === "daily") {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 1);
+    const dateNow = new Date();
+    dateNow.setUTCMilliseconds(0);
+    const diff = differenceInSeconds(date, dateNow);
+
+    $("#leaderboards .subTitle").text(
+      "Next reset in: " + Misc.secondsToString(diff, true)
+    );
+  } else {
+    const date = new Date();
+    const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
+    const secondsToNextUpdate = 60 - date.getSeconds();
+    const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
+    $("#leaderboards .subTitle").text(
+      "Next update in: " + Misc.secondsToString(totalSeconds, true)
+    );
+  }
 }
 
 function startTimer(): void {
@@ -221,6 +235,13 @@ function fillTable(lb: LbKey, prepend?: number): void {
   } else {
     side = "right";
   }
+
+  if (currentData[lb].length === 0) {
+    $(`#leaderboardsWrapper table.${side} tbody`).html(
+      "<tr><td colspan='7'>No results found</td></tr>"
+    );
+  }
+
   const loggedInUserName = DB.getSnapshot()?.name;
 
   let a = currentData[lb].length - leaderboardSingleLimit;
@@ -294,21 +315,33 @@ export function hide(): void {
     );
 }
 
-async function update(): Promise<void> {
-  $("#leaderboardsWrapper .buttons .button").removeClass("active");
-  $(
-    `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
-  ).addClass("active");
+function updateTitle(): void {
+  const el = $("#leaderboardsWrapper .mainTitle");
 
+  const timeRangeString = currentTimeRange === "daily" ? "Daily" : "All-Time";
+
+  el.text(`${timeRangeString} English Leaderboards`);
+}
+
+async function update(): Promise<void> {
   showLoader(15);
   showLoader(60);
 
-  const leaderboardRequests = [
-    Ape.leaderboards.get("english", "time", "15", 0),
-    Ape.leaderboards.get("english", "time", "60", 0),
-  ];
+  let leaderboardRequests;
 
-  if (Auth.currentUser) {
+  if (currentTimeRange === "allTime") {
+    leaderboardRequests = [
+      Ape.leaderboards.get("english", "time", "15", 0),
+      Ape.leaderboards.get("english", "time", "60", 0),
+    ];
+  } else {
+    leaderboardRequests = [
+      Ape.leaderboards.getDaily("english", "time", "15"),
+      Ape.leaderboards.getDaily("english", "time", "60"),
+    ];
+  }
+
+  if (Auth.currentUser && currentTimeRange === "allTime") {
     leaderboardRequests.push(
       Ape.leaderboards.getRank("english", "time", "15"),
       Ape.leaderboards.getRank("english", "time", "60")
@@ -319,6 +352,8 @@ async function update(): Promise<void> {
 
   const failedResponse = responses.find((response) => response.status !== 200);
   if (failedResponse) {
+    hideLoader(15);
+    hideLoader(60);
     return Notifications.add(
       "Failed to load leaderboards: " + failedResponse.message,
       -1
@@ -346,6 +381,12 @@ async function update(): Promise<void> {
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
   $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
+
+  updateTitle();
+  $("#leaderboardsWrapper .buttons .button").removeClass("active");
+  $(
+    `#leaderboardsWrapper .buttonGroup.timeRange .button.` + currentTimeRange
+  ).addClass("active");
 }
 
 async function requestMore(lb: LbKey, prepend = false): Promise<void> {
@@ -582,6 +623,20 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
     );
   }
 );
+
+$(
+  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .allTime"
+).on("click", () => {
+  currentTimeRange = "allTime";
+  update();
+});
+
+$(
+  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
+).on("click", () => {
+  currentTimeRange = "daily";
+  update();
+});
 
 $(document).on("click", "#top #menu .text-button", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {

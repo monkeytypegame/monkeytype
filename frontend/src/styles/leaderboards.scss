@@ -9,7 +9,7 @@
     padding: 1rem;
     display: grid;
     gap: 1rem 0;
-    grid-template-rows: 2rem auto;
+    grid-template-rows: auto auto;
     grid-template-areas:
       "title buttons"
       "tables tables";
@@ -18,23 +18,29 @@
     .leaderboardsTop {
       width: 200%;
       min-width: 100%;
-      display: flex;
+      display: grid;
       align-items: center;
       justify-content: space-between;
+      grid-template-areas:
+        "title buttons"
+        "subtitle buttons";
 
-      .buttonGroup .button {
-        padding: 0.4rem 2.18rem;
+      .buttons {
+        grid-area: buttons;
+        .buttonGroup .button {
+          padding: 0.4rem 2.18rem;
+        }
       }
     }
 
     .mainTitle {
       font-size: 2.5rem;
-      line-height: 2.5rem;
       grid-area: title;
     }
 
     .subTitle {
       color: var(--sub-color);
+      grid-area: subtitle;
     }
 
     .title {
@@ -177,8 +183,9 @@
       .buttonGroup {
         display: grid;
         grid-auto-flow: column;
+        grid-auto-columns: 1fr;
         gap: 1rem;
-        grid-area: 1/2;
+        grid-area: buttons;
       }
     }
   }
