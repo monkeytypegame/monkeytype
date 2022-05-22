@@ -34,12 +34,22 @@ declare namespace TribeTypes {
     isLeader?: boolean;
     name: string;
     isReady?: boolean;
-    result?: unknown;
-    progress?: unknown;
+    result?: MonkeyTypes.Result;
+    progress?: {
+      wpmProgress: number;
+      progress: number;
+    };
     isFinished?: boolean;
     isTyping?: boolean;
     isAfk?: boolean;
     isChatting?: boolean;
     points?: number;
+  }
+
+  interface MiniCrowns {
+    raw: string;
+    wpm: string;
+    acc: string;
+    consistency: string;
   }
 }

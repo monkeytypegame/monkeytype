@@ -5,7 +5,9 @@ import * as SlowTimer from "../states/slow-timer";
 
 const initialised: Record<string, boolean | object> = {};
 
-export async function send(result): Promise<void> {
+export async function send(
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): Promise<void> {
   Tribe.socket.emit("room_result", { result });
 }
 
@@ -25,8 +27,9 @@ export function init(page: string): void {
 
     const el = $(".pageTest #result #tribeResults table tbody");
 
-    Object.keys(Tribe.room.users).forEach((userId) => {
-      const user = Tribe.room.users[userId];
+    if (!Tribe.room) return;
+
+    for (const [userId, user] of Object.entries(Tribe.room.users)) {
       if (user.isAfk) return;
       el.append(`
         <tr class="user ${
@@ -80,7 +83,7 @@ export function init(page: string): void {
           </td>
         </tr>
       `);
-    });
+    }
 
     $(".pageTest #result #tribeResults").removeClass("hidden");
     initialised[page] = true;
@@ -92,15 +95,17 @@ export function updateBar(
   userId: string,
   percentOverride?: number
 ): void {
+  if (!Tribe.room) return;
   if (page === "result") {
     const el = $(
       `.pageTest #result #tribeResults table tbody tr#${userId} .progress .bar`
     );
     const user = Tribe.room.users[userId];
+    if (!user) return;
     let percent =
       Config.mode === "time"
-        ? user.progress.wpmProgress + "%"
-        : user.progress.progress + "%";
+        ? user.progress?.wpmProgress + "%"
+        : user.progress?.progress + "%";
     if (percentOverride) {
       percent = percentOverride + "%";
     }
@@ -114,7 +119,10 @@ export function updateBar(
   }
 }
 
-export function updatePositions(page: string, orderedList): void {
+export function updatePositions(
+  page: string,
+  orderedList: TribeTypes.User[]
+): void {
   const points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
   if (page === "result") {
     orderedList.forEach((user, index) => {
@@ -134,10 +142,13 @@ export function updatePositions(page: string, orderedList): void {
   }
 }
 
-export function updateMiniCrowns(page: string, miniCrowns): void {
+export function updateMiniCrowns(
+  page: string,
+  miniCrowns: TribeTypes.MiniCrowns
+): void {
   if (page === "result") {
-    Object.keys(miniCrowns).forEach((crown) => {
-      const userId = miniCrowns[crown];
+    for (const crown of Object.keys(miniCrowns)) {
+      const userId = miniCrowns[crown as keyof typeof miniCrowns];
       const userEl = $(
         `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
       );
@@ -146,7 +157,7 @@ export function updateMiniCrowns(page: string, miniCrowns): void {
         <i class="fas fa-fw fa-crown"></i>
         </div>
       `);
-    });
+    }
   }
 }
 
@@ -169,11 +180,13 @@ export function showCrown(
 }
 
 function updateUser(page: string, userId: string): void {
+  if (!Tribe.room) return;
   if (page == "result") {
     const userEl = $(
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
     const user = Tribe.room.users[userId];
+    if (!user) return;
     if (user.isFinished) {
       userEl.find(`.wpm .text`).text(user.result.wpm.toFixed(2));
       userEl.find(`.raw .text`).text(user.result.raw.toFixed(2));
@@ -207,14 +220,14 @@ function updateUser(page: string, userId: string): void {
 }
 
 export function update(page: string, userId?: string): void {
+  if (!Tribe.room) return;
   if (!initialised[page]) init(page);
   if (userId) {
     updateUser(page, userId);
   } else {
-    Object.keys(Tribe.room.users).forEach((userId) => {
-      const u = Tribe.room.users[userId];
-      if (u.isFinished) updateUser(page, userId);
-    });
+    for (const [userId, user] of Object.entries(Tribe.room.users)) {
+      if (user.isFinished) updateUser(page, userId);
+    }
   }
 }
 

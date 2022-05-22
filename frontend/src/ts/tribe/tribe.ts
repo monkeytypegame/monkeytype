@@ -585,7 +585,7 @@ type RoomFinalPositions = {
     newPoints: number;
     id: string;
   }[];
-  miniCrowns: { raw: number; wpm: number; acc: number; consistency: number };
+  miniCrowns: TribeTypes.MiniCrowns;
 };
 
 socket.on("room_final_positions", (e: RoomFinalPositions) => {
