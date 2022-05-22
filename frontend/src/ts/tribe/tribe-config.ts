@@ -58,7 +58,7 @@ export function getArray(config: MonkeyTypes.TribeConfig): string[] {
   return ret;
 }
 
-export function apply(config: MonkeyTypes.TribeConfig): void {
+export function apply(config: TribeTypes.RoomConfig): void {
   UpdateConfig.setMode(config.mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2, true, true);

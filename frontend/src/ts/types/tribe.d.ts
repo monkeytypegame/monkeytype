@@ -17,6 +17,7 @@ declare namespace TribeTypes {
   }
 
   interface Room {
+    id: string;
     state: number;
     users: {
       [socketId: string]: User;
@@ -24,9 +25,24 @@ declare namespace TribeTypes {
     size: number;
     isPrivate: boolean;
     name: string;
-    config: unknown;
+    config: RoomConfig;
     maxRaw: number;
     maxWpm: number;
+  }
+
+  interface RoomConfig {
+    mode: string;
+    mode2: number;
+    difficulty: string;
+    language: string;
+    punctuation: boolean;
+    numbers: boolean;
+    funbox: string;
+    lazyMode: boolean;
+    stopOnError: string;
+    minWpm: string;
+    minAcc: string;
+    minBurst: string;
   }
 
   interface User {
