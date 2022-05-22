@@ -330,6 +330,7 @@ export async function addResult(
         acc: result.acc,
         consistency: result.consistency,
         timestamp: result.timestamp,
+        uid: user.uid,
       },
       dailyLeaderboardsConfig
     );
