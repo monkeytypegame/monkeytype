@@ -13,6 +13,7 @@ export function reset(page?: string): void {
 }
 
 export function update(page?: string): void {
+  if (!Tribe.room) return;
   if (!page) {
     update("lobby");
     update("result");
@@ -20,10 +21,13 @@ export function update(page?: string): void {
   }
   reset(page);
   const usersArray = [];
-  Object.keys(Tribe.room.users).forEach((userId) => {
+
+  for (const userId of Object.keys(Tribe.room.users)) {
     usersArray.push(Tribe.room.users[userId]);
-  });
-  const sortedUsers = usersArray.sort((a, b) => b.points - a.points);
+  }
+  const sortedUsers = usersArray.sort(
+    (a, b) => (b.points ?? 0) - (a.points ?? 0)
+  );
   sortedUsers.forEach((user) => {
     let icons = "";
     if (user.isTyping && !user.isFinished) {
@@ -55,7 +59,7 @@ export function update(page?: string): void {
       ${user.name}
       </div>
       ${
-        Tribe.getSelf().isLeader && user.id !== Tribe.socket.id
+        Tribe.getSelf()?.isLeader && user.id !== Tribe.socket.id
           ? `<div class='userSettings' userid='` +
             user.id +
             `' ><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`

@@ -24,7 +24,7 @@ function hideStartButton(page: string): void {
   $(elString).addClass("hidden");
 }
 
-export function disableStartButton(page: string): void {
+export function disableStartButton(page?: string): void {
   if (!page) {
     disableStartButton("lobby");
     disableStartButton("result");

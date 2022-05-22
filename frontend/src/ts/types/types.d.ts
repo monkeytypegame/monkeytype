@@ -384,19 +384,6 @@ declare namespace MonkeyTypes {
     tapeMode: TapeMode;
   }
 
-  interface TribeConfig extends Config {
-    mode2: string | number;
-  }
-
-  interface TribeUser {
-    id: string;
-    name: string;
-    isLeader: boolean;
-    isReady: boolean;
-    isTyping: boolean;
-    isFinished: boolean;
-  }
-
   type ConfigValues =
     | string
     | number

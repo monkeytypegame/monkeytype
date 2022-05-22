@@ -7,16 +7,16 @@ import * as CustomText from "../test/custom-text";
 import * as TribeButtons from "./tribe-buttons";
 import * as Tribe from "./tribe";
 
-export function getArray(config: MonkeyTypes.TribeConfig): string[] {
+export function getArray(config: TribeTypes.RoomConfig): string[] {
   const ret: string[] = [];
 
   if (config["mode"] === "quote") {
+    const mode2 = config["mode2"] as number[];
     let quoteLengthString = "";
-    if (config["mode2"].length == 4) {
+    if (mode2.length == 4) {
       quoteLengthString = "";
     } else {
-      config["mode2"].forEach((ql: number) => {
-        // Rizwan TODO: Confirm that number is the correct type
+      mode2.forEach((ql: number) => {
         if (ql == 0) {
           quoteLengthString += "short,";
         } else if (ql == 1) {
@@ -36,7 +36,7 @@ export function getArray(config: MonkeyTypes.TribeConfig): string[] {
     ret.push("quote");
   } else {
     ret.push(config["mode"]);
-    ret.push(config["mode2"] as string); // Rizwan TODO: Ask mio about this
+    ret.push(config["mode2"] as unknown as string);
   }
 
   if (config["difficulty"] !== "normal") ret.push(config["difficulty"]);
@@ -115,7 +115,7 @@ export function setLoadingIndicator(bool: boolean): void {
 export function canChange(override: boolean): boolean {
   if (Tribe.state <= 1) return true;
   if (Tribe.state !== 5) return false;
-  if (Tribe.getSelf().isLeader) {
+  if (Tribe.getSelf()?.isLeader) {
     //is leader, allow
     return true;
   } else {
@@ -132,7 +132,7 @@ let syncConfigTimeout: NodeJS.Timeout | null = null;
 
 export function sync(): void {
   if (Tribe.state <= 1) return;
-  if (!Tribe.getSelf().isLeader) return;
+  if (!Tribe.getSelf()?.isLeader) return;
   setLoadingIndicator(true);
   TribeButtons.disableStartButton();
   if (syncConfigTimeout === null) {
