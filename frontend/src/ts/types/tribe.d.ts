@@ -53,6 +53,7 @@ declare namespace TribeTypes {
     result?: MonkeyTypes.Result;
     progress?: {
       wpmProgress: number;
+      wpm: number;
       progress: number;
     };
     isFinished?: boolean;

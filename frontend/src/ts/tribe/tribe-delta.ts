@@ -6,15 +6,17 @@ import * as TestActive from "../states/test-active";
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
 
 export function update(): void {
+  if (!Tribe.room) return;
+
   let maxWpm = 0;
-  Object.keys(Tribe.room.users).forEach((userId) => {
+
+  for (const [userId, user] of Object.entries(Tribe.room.users)) {
     if (userId === Tribe.socket.id) return;
-    const user = Tribe.room.users[userId];
-    if (user?.progress?.wpm > maxWpm) maxWpm = user.progress.wpm;
-  });
+    if ((user?.progress?.wpm ?? 0) > maxWpm) maxWpm = user?.progress?.wpm ?? 0;
+  }
 
   el.removeClass("bad");
-  const delta = Math.round(maxWpm - Tribe.getSelf().progress.wpm);
+  const delta = Math.round(maxWpm - (Tribe.getSelf()?.progress?.wpm ?? 0));
   if (delta === 0) {
     el.text("-");
   } else if (delta > 0) {
