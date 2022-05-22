@@ -617,9 +617,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     if (modalVisible) return;
 
     // tribe handling
-    if (ActivePage.get === "tribe") {
+    if (ActivePage.get() === "tribe") {
       if (Tribe.state >= 5) {
-        if (Tribe.getSelf().isLeader) {
+        if (Tribe.getSelf()?.isLeader) {
           if (Tribe.state === 5 || Tribe.state === 22) {
             Tribe.initRace();
           }
@@ -654,7 +654,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     //tribe
     if (Tribe.state >= 5) {
-      if (Tribe.getSelf().isLeader) {
+      if (Tribe.getSelf()?.isLeader) {
         if (Tribe.state === 5 || Tribe.state === 22) {
           Tribe.initRace();
         }
@@ -734,7 +734,7 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
     event.preventDefault();
     return;
   }
@@ -744,7 +744,7 @@ $(document).on("keydown", async (event) => {
     (event.key == "Tab" && !Config.swapEscAndTab) ||
     (event.key == "Escape" && Config.swapEscAndTab)
   ) {
-    if ([10, 11, 12].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+    if ([10, 11, 12].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
       event.preventDefault();
       return;
     }
@@ -877,7 +877,7 @@ $("#wordsInput").on("keyup", (event) => {
     return;
   }
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
     event.preventDefault();
     return;
   }
@@ -909,7 +909,7 @@ $("#wordsInput").on("input", (event) => {
 
   if (popupVisible) return;
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf().isTyping) {
+  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
     event.preventDefault();
     return;
   }
