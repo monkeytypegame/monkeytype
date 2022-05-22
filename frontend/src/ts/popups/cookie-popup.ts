@@ -3,10 +3,10 @@ import { focusWords } from "../test/test-ui";
 
 let visible = false;
 
-type Accepted = {
+interface Accepted {
   security: boolean;
   analytics: boolean;
-};
+}
 
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies");
