@@ -90,7 +90,7 @@ export function init(page: string): void {
 export function updateBar(
   page: string,
   userId: string,
-  percentOverride: string
+  percentOverride?: number
 ): void {
   if (page === "result") {
     const el = $(

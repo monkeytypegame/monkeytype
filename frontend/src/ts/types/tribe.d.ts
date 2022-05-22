@@ -18,10 +18,15 @@ declare namespace TribeTypes {
 
   interface Room {
     state: number;
-    users?: {
+    users: {
       [socketId: string]: User;
     };
     size: number;
+    isPrivate: boolean;
+    name: string;
+    config: unknown;
+    maxRaw: number;
+    maxWpm: number;
   }
 
   interface User {
@@ -34,5 +39,7 @@ declare namespace TribeTypes {
     isFinished?: boolean;
     isTyping?: boolean;
     isAfk?: boolean;
+    isChatting?: boolean;
+    points?: number;
   }
 }
