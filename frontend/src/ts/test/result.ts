@@ -745,7 +745,7 @@ export async function update(
       $("#result #tribeResultBottom").addClass("hidden");
       if (Tribe.state >= 12) {
         $("#result #tribeResultBottom").removeClass("hidden");
-        if (Tribe.getSelf().isLeader) {
+        if (Tribe.getSelf()?.isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
           $("#result #backToLobbyButton").removeClass("hidden");
         } else {
