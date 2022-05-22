@@ -232,6 +232,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
   .pageTest #tribeResultBottom .buttons .userAfkButton`).on("click", (_e) => {
   const self = Tribe.getSelf();
+  if (!self) return;
   Tribe.socket.emit("room_afk_update", { isAfk: !self.isAfk });
 });
 
