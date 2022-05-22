@@ -15,9 +15,11 @@ export function init(page: string): void {
   if (el) {
     el.empty();
   }
-  Object.keys(room.users).forEach((userId) => {
+
+  if (!room) return;
+
+  for (const [userId, user] of Object.entries(room.users)) {
     if (userId === Tribe.socket.id) return;
-    const user = room.users[userId];
     let me = false;
     if (userId === Tribe.socket.id) me = true;
     if (user.isTyping && el) {
@@ -36,23 +38,6 @@ export function init(page: string): void {
       </tr>
       `);
     }
-  });
-  const self = Tribe.getSelf();
-  if (self.isTyping && el) {
-    el.append(`
-      <tr class="player me" id="${self.id}">
-        <td class="name">${self.name}</td>
-        <td class="progress">
-          <div class="barBg">
-            <div class="bar" style="width: 0%;"></div>
-          </div>
-        </td>
-        <td class="stats">
-          <div class="wpm">-</div>
-          <div class="acc">-</div>
-        </td>
-      </tr>
-      `);
   }
 }
 
@@ -87,6 +72,7 @@ export function reset(page?: string): void {
 }
 
 export function update(page: string, userId: string): void {
+  if (!Tribe.room) return;
   if (page === undefined) {
     update("test", userId);
     update("tribe", userId);
@@ -104,9 +90,11 @@ export function update(page: string, userId: string): void {
     return;
   }
 
-  el.find(`.player[id=${userId}] .wpm`).text(Math.round(user.progress.wpm));
+  el.find(`.player[id=${userId}] .wpm`).text(
+    Math.round(user?.progress?.wpm ?? 0)
+  );
   el.find(`.player[id=${userId}] .acc`).text(
-    Math.floor(user.progress.acc) + "%"
+    Math.floor(user.progress?.acc ?? 0) + "%"
   );
   el.find(`.player[id=${userId}] .bar`)
     .stop(true, true)
@@ -114,8 +102,8 @@ export function update(page: string, userId: string): void {
       {
         width:
           Config.mode === "time"
-            ? user.progress.wpmProgress + "%"
-            : user.progress.progress + "%",
+            ? user.progress?.wpmProgress + "%"
+            : user.progress?.progress + "%",
       },
       SlowTimer.get() ? 0 : 1000,
       "linear"
@@ -168,7 +156,7 @@ export function fadeUser(page: string, userId: string): void {
   el.find(`.player[id=${userId}]`).addClass("faded");
 }
 
-export function progresssendUpdate(
+export function sendUpdate(
   wpm: number,
   raw: number,
   acc: number,

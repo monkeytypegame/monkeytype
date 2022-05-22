@@ -54,6 +54,7 @@ declare namespace TribeTypes {
     progress?: {
       wpmProgress: number;
       wpm: number;
+      acc: number;
       progress: number;
     };
     isFinished?: boolean;
