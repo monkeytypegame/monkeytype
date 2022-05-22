@@ -123,6 +123,8 @@ export async function addResult(
     }
   }
 
+  result.name = user.name;
+
   if (anticheatImplemented()) {
     if (!validateResult(result)) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
