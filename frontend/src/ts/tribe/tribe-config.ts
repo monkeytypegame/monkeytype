@@ -59,13 +59,18 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
 }
 
 export function apply(config: TribeTypes.RoomConfig): void {
-  UpdateConfig.setMode(config.mode, true, true);
+  UpdateConfig.setMode(config.mode as MonkeyTypes.Mode, true, true);
   if (config.mode === "time") {
-    UpdateConfig.setTimeConfig(config.mode2, true, true);
+    UpdateConfig.setTimeConfig(config.mode2 as number, true, true);
   } else if (config.mode === "words") {
-    UpdateConfig.setWordCount(config.mode2, true, true);
+    UpdateConfig.setWordCount(config.mode2 as number, true, true);
   } else if (config.mode === "quote") {
-    UpdateConfig.setQuoteLength(config.mode2, true, true, true);
+    UpdateConfig.setQuoteLength(
+      config.mode2 as MonkeyTypes.QuoteLength,
+      true,
+      true,
+      true
+    );
   } else if (config.mode === "custom") {
     CustomText.setText(config.customText.text, true);
     CustomText.setIsWordRandom(config.customText.isWordRandom, true);
@@ -73,15 +78,23 @@ export function apply(config: TribeTypes.RoomConfig): void {
     CustomText.setTime(config.customText.time, true);
     CustomText.setWord(config.customText.word, true);
   }
-  UpdateConfig.setDifficulty(config.difficulty, true, true);
+  UpdateConfig.setDifficulty(
+    config.difficulty as MonkeyTypes.Difficulty,
+    true,
+    true
+  );
   UpdateConfig.setLanguage(config.language, true, true);
   UpdateConfig.setPunctuation(config.punctuation, true, true);
   UpdateConfig.setNumbers(config.numbers, true, true);
   Funbox.setFunbox(config.funbox, null, true);
   UpdateConfig.setLazyMode(config.lazyMode, true, true);
-  UpdateConfig.setStopOnError(config.stopOnError, true, true);
+  UpdateConfig.setStopOnError(
+    config.stopOnError as MonkeyTypes.StopOnError,
+    true,
+    true
+  );
   if (config.minWpm !== "off") {
-    UpdateConfig.setMinWpmCustomSpeed(config.minAcc, true, true);
+    UpdateConfig.setMinWpmCustomSpeed(config.minAcc as number, true, true);
     UpdateConfig.setMinWpm("custom", true, true);
   } else {
     UpdateConfig.setMinWpm("off", true, true);
@@ -94,7 +107,7 @@ export function apply(config: TribeTypes.RoomConfig): void {
   }
   if (config.minBurst !== "off") {
     UpdateConfig.setMinBurstCustomSpeed(config.minBurst, true, true);
-    UpdateConfig.setMinBurst("custom", true, true);
+    UpdateConfig.setMinBurst("fixed", true, true);
   } else {
     UpdateConfig.setMinBurst("off", true, true);
   }

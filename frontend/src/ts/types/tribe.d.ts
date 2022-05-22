@@ -40,9 +40,16 @@ declare namespace TribeTypes {
     funbox: string;
     lazyMode: boolean;
     stopOnError: string;
-    minWpm: string;
-    minAcc: string;
-    minBurst: string;
+    minWpm: number | "off";
+    minAcc: number | "off";
+    minBurst: number | "off";
+    customText: {
+      text: string[];
+      isWordRandom: boolean;
+      isTimeRandom: boolean;
+      time: number;
+      word: number;
+    };
   }
 
   interface User {
