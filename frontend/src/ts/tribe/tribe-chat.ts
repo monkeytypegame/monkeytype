@@ -45,14 +45,16 @@ export function scrollChat(): void {
 }
 
 export function updateIsTyping(): void {
+  if (!Tribe.room) return;
   let string = "";
 
   const names: string[] = [];
-  Object.keys(Tribe.room.users).forEach((userId) => {
+
+  for (const userId of Object.keys(Tribe.room.users)) {
     if (Tribe.room.users[userId].isChatting && userId !== Tribe.socket.id) {
       names.push(Tribe.room.users[userId].name);
     }
-  });
+  }
   if (names.length > 0) {
     for (let i = 0; i < names.length; i++) {
       if (i === 0) {
@@ -78,7 +80,11 @@ export function updateIsTyping(): void {
   );
 }
 
-export function appendMessage(data): void {
+export function appendMessage(data: {
+  isSystem: boolean;
+  from: TribeTypes.User;
+  message: string;
+}): void {
   let cls = "message";
   let author = "";
   if (data.isSystem) {
