@@ -74,6 +74,7 @@ export async function getDailyLeaderboard(
 ): Promise<MonkeyResponse> {
   const { language, mode, mode2 } = req.query;
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
+  const { uid } = req.ctx.decodedToken;
 
   const dailyLeaderboard = DailyLeaderboards.getDailyLeaderboard(
     language as string,
@@ -91,5 +92,15 @@ export async function getDailyLeaderboard(
 
   const topResults =
     (await dailyLeaderboard.getTopResults(dailyLeaderboardsConfig)) ?? [];
-  return new MonkeyResponse("Daily leaderboard retrieved", topResults);
+
+  const normalizedLeaderboard = _.map(topResults, (entry) => {
+    return uid && entry.uid === uid
+      ? entry
+      : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
+  });
+
+  return new MonkeyResponse(
+    "Daily leaderboard retrieved",
+    normalizedLeaderboard
+  );
 }

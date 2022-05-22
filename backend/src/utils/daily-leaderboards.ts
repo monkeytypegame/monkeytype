@@ -10,6 +10,7 @@ interface DailyLeaderboardEntry {
   acc: number;
   consistency: number;
   timestamp: number;
+  uid: string;
 }
 
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
