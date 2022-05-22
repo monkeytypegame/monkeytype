@@ -10,7 +10,7 @@ export function show(userId: string): void {
   }
   if ($("#tribeUserSettingsPopupWrapper").hasClass("hidden")) {
     $("#tribeUserSettingsPopup .title").text(
-      `User settings (${Tribe.room.users[userId].name})`
+      `User settings (${Tribe?.room?.users[userId].name})`
     );
     $("#tribeUserSettingsPopup").attr("userid", userId);
     $("#tribeUserSettingsPopupWrapper")
