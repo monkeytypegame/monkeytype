@@ -98,7 +98,7 @@ export function toggleScript(...params: string[]): void {
 export function setFunbox(
   funbox: string,
   mode: MonkeyTypes.FunboxObjectType | null,
-  tribeOverride: boolean
+  tribeOverride = false
 ): boolean {
   if (!TribeConfig.canChange(tribeOverride)) return false;
   modeSaved = mode;
