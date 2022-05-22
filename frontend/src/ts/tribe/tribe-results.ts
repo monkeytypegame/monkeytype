@@ -121,7 +121,10 @@ export function updateBar(
 
 export function updatePositions(
   page: string,
-  orderedList: TribeTypes.User[]
+  orderedList: {
+    newPoints: number;
+    id: string;
+  }[]
 ): void {
   const points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
   if (page === "result") {
