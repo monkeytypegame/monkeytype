@@ -1379,10 +1379,12 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   return <CompletedEvent>completedEvent;
 }
 
-let resolveTestSavePromise: (value: unknown) => void;
-const testSavePromise = new Promise((resolve) => {
-  resolveTestSavePromise = resolve;
-});
+let resolveTestSavePromise: (value: TribeTypes.ResultResolve) => void;
+const testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
+  (resolve) => {
+    resolveTestSavePromise = resolve;
+  }
+);
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;

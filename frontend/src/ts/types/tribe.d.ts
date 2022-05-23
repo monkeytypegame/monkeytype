@@ -12,6 +12,30 @@ declare namespace TribeTypes {
     ];
   }
 
+  interface Result {
+    wpm: number;
+    raw: number;
+    acc: number;
+    consistency: number;
+    testDuration: number;
+    charStats: number[];
+    chartData: MonkeyTypes.ChartData | "toolong";
+    resolve: ResultResolve;
+  }
+
+  interface ResultResolve {
+    login?: boolean;
+    saved?: boolean;
+    failed?: boolean;
+    afk?: boolean;
+    repeated?: boolean;
+    failedReason?: string;
+    valid?: boolean;
+    tooShort?: boolean;
+    saveFailedMessage?: string;
+    isPb?: boolean;
+  }
+
   interface RoomJoin {
     room: Room;
   }

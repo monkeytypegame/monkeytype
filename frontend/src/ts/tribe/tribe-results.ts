@@ -5,9 +5,7 @@ import * as SlowTimer from "../states/slow-timer";
 
 const initialised: Record<string, boolean | object> = {};
 
-export async function send(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
-): Promise<void> {
+export async function send(result: TribeTypes.Result): Promise<void> {
   Tribe.socket.emit("room_result", { result });
 }
 
