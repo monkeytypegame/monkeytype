@@ -45,6 +45,67 @@ const nameIndicator = new InputIndicator(
   }
 );
 
+$(".page.pageLogin .register.side .passwordInput").on("input", () => {
+  checkPassword();
+});
+
+const passwordIndicator = new InputIndicator(
+  $(".page.pageLogin .register.side .password.inputAndIndicator"),
+  {
+    good: {
+      icon: "fa-check",
+      level: 1,
+    },
+    short: {
+      icon: "fa-times",
+      level: -1,
+    },
+    weak: {
+      icon: "fa-times",
+      level: -1,
+    },
+    different: {
+      icon: "fa-times",
+      level: -1,
+    },
+  }
+);
+
+const checkPassword = (): void => {
+  console.log("asdf");
+  passwordIndicator.show("good");
+  const password = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const passwordVerify = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  // Force user to use a capital letter, number, special character when setting up an account and changing password
+  if (password.length < 8) {
+    passwordIndicator.show("short", "Password must be at least 8 characters");
+    return;
+  }
+
+  const hasCapital = password.match(/[A-Z]/);
+  const hasNumber = password.match(/[\d]/);
+  const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  if (!hasCapital || !hasNumber || !hasSpecial) {
+    passwordIndicator.show(
+      "weak",
+      "Password must contain at least one capital letter, number, and special character"
+    );
+    return;
+  }
+
+  if (password !== passwordVerify) {
+    passwordIndicator.show("unavailable", "Passwords do not match");
+    return;
+  }
+
+  passwordIndicator.show("good");
+};
+
 const checkNameDebounced = debounce(1000, async () => {
   const val = $(
     ".page.pageLogin .register.side .usernameInput"
