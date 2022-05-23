@@ -2,6 +2,7 @@ import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import Page from "./page";
 import * as Notifications from "../elements/notifications";
+import { InputIndicator } from "../elements/input-indicator";
 
 export function enableInputs(): void {
   $(".pageLogin .button").removeClass("disabled");
@@ -21,34 +22,28 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
-function updateIndicator(
-  state: "checking" | "available" | "unavailable" | "taken" | "none",
-  balloon?: string
-): void {
-  $(".page.pageLogin .register.side .checkStatus .checking").addClass("hidden");
-  $(".page.pageLogin .register.side .checkStatus .available").addClass(
-    "hidden"
-  );
-  $(".page.pageLogin .register.side .checkStatus .unavailable").addClass(
-    "hidden"
-  );
-  $(".page.pageLogin .register.side .checkStatus .taken").addClass("hidden");
-  if (state !== "none") {
-    $(".page.pageLogin .register.side .checkStatus ." + state).removeClass(
-      "hidden"
-    );
-    if (balloon) {
-      $(".page.pageLogin .register.side .checkStatus ." + state).attr(
-        "aria-label",
-        balloon
-      );
-    } else {
-      $(".page.pageLogin .register.side .checkStatus ." + state).removeAttr(
-        "aria-label"
-      );
-    }
+const nameIndicator = new InputIndicator(
+  $(".page.pageLogin .register.side .username.inputAndIndicator"),
+  {
+    available: {
+      icon: "fa-check",
+      level: 1,
+    },
+    unavailable: {
+      icon: "fa-times",
+      level: -1,
+    },
+    taken: {
+      icon: "fa-times",
+      level: -1,
+    },
+    checking: {
+      icon: "fa-circle-notch",
+      spinIcon: true,
+      level: 0,
+    },
   }
-}
+);
 
 const checkNameDebounced = debounce(1000, async () => {
   const val = $(
@@ -58,22 +53,22 @@ const checkNameDebounced = debounce(1000, async () => {
   const response = await Ape.users.getNameAvailability(val);
 
   if (response.status === 200) {
-    updateIndicator("available", response.message);
+    nameIndicator.show("available", response.message);
     return;
   }
 
   if (response.status == 422) {
-    updateIndicator("unavailable", response.message);
+    nameIndicator.show("unavailable", response.message);
     return;
   }
 
   if (response.status == 409) {
-    updateIndicator("taken", response.message);
+    nameIndicator.show("taken", response.message);
     return;
   }
 
   if (response.status !== 200) {
-    updateIndicator("unavailable");
+    nameIndicator.show("unavailable", response.message);
     return Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
@@ -87,9 +82,9 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       ".page.pageLogin .register.side .usernameInput"
     ).val() as string;
     if (val === "") {
-      return updateIndicator("none");
+      return nameIndicator.hide();
     } else {
-      updateIndicator("checking");
+      nameIndicator.show("checking");
       checkNameDebounced();
     }
   }, 1);
