@@ -151,8 +151,12 @@ export class DailyLeaderboard {
       .hget(leaderboardResultsKey, uid)
       .exec();
 
+    if (rank === null) {
+      return null;
+    }
+
     return {
-      rank,
+      rank: rank + 1,
       count: count ?? 0,
       ...JSON.parse(result ?? "null"),
     };

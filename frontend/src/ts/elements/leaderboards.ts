@@ -157,6 +157,7 @@ function updateFooter(lb: LbKey): void {
 
     toppercent = `Top ${num}%`;
   }
+
   if (currentRank[lb]) {
     const entry = currentRank[lb];
     const date = new Date(entry.timestamp);
@@ -332,24 +333,27 @@ async function update(): Promise<void> {
   showLoader(15);
   showLoader(60);
 
-  let leaderboardRequests;
+  const timeModes = ["15", "60"];
 
-  if (currentTimeRange === "allTime") {
-    leaderboardRequests = [
-      Ape.leaderboards.get("english", "time", "15", 0),
-      Ape.leaderboards.get("english", "time", "60", 0),
-    ];
-  } else {
-    leaderboardRequests = [
-      Ape.leaderboards.getDaily("english", "time", "15"),
-      Ape.leaderboards.getDaily("english", "time", "60"),
-    ];
-  }
+  const leaderboardRequests = timeModes.map((mode2) => {
+    return Ape.leaderboards.get({
+      language: "english",
+      mode: "time",
+      mode2,
+      isDaily: currentTimeRange === "daily",
+    });
+  });
 
-  if (Auth.currentUser && currentTimeRange === "allTime") {
+  if (Auth.currentUser) {
     leaderboardRequests.push(
-      Ape.leaderboards.getRank("english", "time", "15"),
-      Ape.leaderboards.getRank("english", "time", "60")
+      ...timeModes.map((mode2) => {
+        return Ape.leaderboards.getRank({
+          language: "english",
+          mode: "time",
+          mode2,
+          isDaily: currentTimeRange === "daily",
+        });
+      })
     );
   }
 
@@ -409,13 +413,14 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     skipVal = 0;
   }
 
-  const response = await Ape.leaderboards.get(
-    "english",
-    "time",
-    lb,
-    skipVal,
-    limitVal
-  );
+  const response = await Ape.leaderboards.get({
+    language: "english",
+    mode: "time",
+    mode2: lb.toString(),
+    isDaily: currentTimeRange === "daily",
+    skip: skipVal,
+    limit: limitVal,
+  });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
   if (response.status !== 200 || data.length === 0) {
@@ -438,7 +443,13 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 async function requestNew(lb: LbKey, skip: number): Promise<void> {
   showLoader(lb);
 
-  const response = await Ape.leaderboards.get("english", "time", lb, skip);
+  const response = await Ape.leaderboards.get({
+    language: "english",
+    mode: "time",
+    mode2: lb.toString(),
+    isDaily: currentTimeRange === "daily",
+    skip,
+  });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
   if (response.status === 503) {
@@ -568,7 +579,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
   "click",
   async () => {
-    if (currentRank[15].rank === undefined) return;
+    if (!currentRank[15].rank) return;
     leftScrollEnabled = false;
     await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
@@ -605,7 +616,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   "click",
   async () => {
-    if (currentRank[60].rank === undefined) return;
+    if (!currentRank[60].rank) return;
     leftScrollEnabled = false;
     await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
