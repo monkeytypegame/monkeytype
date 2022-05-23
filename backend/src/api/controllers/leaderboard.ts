@@ -72,9 +72,8 @@ export async function getRankFromLeaderboard(
 export async function getDailyLeaderboard(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { language, mode, mode2 } = req.query;
+  const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
-  const { uid } = req.ctx.decodedToken;
 
   const dailyLeaderboard = DailyLeaderboards.getDailyLeaderboard(
     language as string,
@@ -90,17 +89,14 @@ export async function getDailyLeaderboard(
     );
   }
 
-  const topResults =
-    (await dailyLeaderboard.getTopResults(dailyLeaderboardsConfig)) ?? [];
+  const minRank = parseInt(skip as string, 10);
+  const maxRank = minRank + parseInt(limit as string, 10);
 
-  const normalizedLeaderboard = _.map(topResults, (entry) => {
-    return uid && entry.uid === uid
-      ? entry
-      : _.omit(entry, ["discordId", "uid", "difficulty", "language"]);
-  });
-
-  return new MonkeyResponse(
-    "Daily leaderboard retrieved",
-    normalizedLeaderboard
+  const topResults = await dailyLeaderboard.getResults(
+    minRank,
+    maxRank,
+    dailyLeaderboardsConfig
   );
+
+  return new MonkeyResponse("Daily leaderboard retrieved", topResults);
 }

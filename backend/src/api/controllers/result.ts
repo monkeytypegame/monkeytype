@@ -322,7 +322,6 @@ export async function addResult(
 
   if (dailyLeaderboard && validResultCriteria) {
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
-      uid,
       {
         name: user.name,
         wpm: result.wpm,
@@ -330,7 +329,7 @@ export async function addResult(
         acc: result.acc,
         consistency: result.consistency,
         timestamp: result.timestamp,
-        uid: user.uid,
+        uid,
       },
       dailyLeaderboardsConfig
     );
