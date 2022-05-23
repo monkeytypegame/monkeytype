@@ -22,6 +22,60 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
+const verifyEmailIndicator = new InputIndicator(
+  $(".page.pageLogin .register.side .verifyEmail.inputAndIndicator"),
+  {
+    match: {
+      icon: "fa-check",
+      level: 1,
+    },
+    mismatch: {
+      icon: "fa-times",
+      level: -1,
+    },
+  }
+);
+
+const emailIndicator = new InputIndicator(
+  $(".page.pageLogin .register.side .email.inputAndIndicator"),
+  {
+    valid: {
+      icon: "fa-check",
+      level: 1,
+    },
+    invalid: {
+      icon: "fa-times",
+      level: -1,
+    },
+  }
+);
+
+$(".page.pageLogin .register.side .emailInput").on("input", () => {
+  checkEmail();
+  checkEmailsMatch();
+});
+
+$(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
+  checkEmailsMatch();
+});
+
+const checkEmailsMatch = (): void => {
+  const email = $(".page.pageLogin .register.side .emailInput").val();
+  const verifyEmail = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val();
+  verifyEmailIndicator.show(email === verifyEmail ? "match" : "mismatch");
+};
+
+const checkEmail = (): void => {
+  const emailRegex =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
+
+  emailIndicator.show(emailRegex.test(email) ? "valid" : "invalid");
+};
+
 $(".page.pageLogin .register.side .passwordInput").on("input", () => {
   checkPassword();
   checkPasswordsMatch();
