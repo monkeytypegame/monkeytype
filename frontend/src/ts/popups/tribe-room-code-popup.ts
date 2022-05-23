@@ -47,13 +47,13 @@ $("#tribeRoomCodePopup input").on("keydown", (e) => {
   ) {
     e.preventDefault();
   } else if (e.key === "Enter") {
-    Tribe.joinRoom($("#tribeRoomCodePopup input").val());
+    Tribe.joinRoom($("#tribeRoomCodePopup input").val() as string);
     hide();
   }
 });
 
 $("#tribeRoomCodePopup .button").on("click", () => {
-  Tribe.joinRoom($("#tribeRoomCodePopup input").val());
+  Tribe.joinRoom($("#tribeRoomCodePopup input").val() as string);
   hide();
 });
 
