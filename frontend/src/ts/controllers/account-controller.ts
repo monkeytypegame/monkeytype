@@ -545,7 +545,7 @@ async function signUp(): Promise<void> {
   }
 
   const hasCapital = password.match(/[A-Z]/);
-  const hasNumber = password.match(/[0-9]/);
+  const hasNumber = password.match(/[\d]/);
   const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
   if (!hasCapital || !hasNumber || !hasSpecial) {
     Notifications.add(
