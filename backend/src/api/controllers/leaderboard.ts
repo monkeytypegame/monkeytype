@@ -27,7 +27,7 @@ export async function getLeaderboard(
     );
   }
 
-  if (leaderboard.length === 0) {
+  if (!leaderboard) {
     throw new MonkeyError(
       404,
       `No ${mode} ${mode2} leaderboard found`,
