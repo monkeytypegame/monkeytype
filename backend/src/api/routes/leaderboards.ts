@@ -24,6 +24,13 @@ const LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT = {
 
 const router = Router();
 
+const requireDailyLeaderboardsEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.dailyLeaderboards.enabled;
+  },
+  invalidMessage: "Daily leaderboards are not available at this time.",
+});
+
 router.get(
   "/",
   RateLimit.leaderboardsGet,
@@ -47,18 +54,24 @@ router.get(
 
 router.get(
   "/daily",
-  validateConfiguration({
-    criteria: (configuration) => {
-      return configuration.dailyLeaderboards.enabled;
-    },
-    invalidMessage: "Daily leaderboards are not available at this time.",
-  }),
+  requireDailyLeaderboardsEnabled,
   RateLimit.leaderboardsGet,
   authenticateRequest({ isPublic: true }),
   validateRequest({
     query: LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT,
   }),
   asyncHandler(LeaderboardController.getDailyLeaderboard)
+);
+
+router.get(
+  "/daily/rank",
+  requireDailyLeaderboardsEnabled,
+  RateLimit.leaderboardsGet,
+  authenticateRequest(),
+  validateRequest({
+    query: BASE_LEADERBOARD_VALIDATION_SCHEMA,
+  }),
+  asyncHandler(LeaderboardController.getDailyLeaderboardRank)
 );
 
 export default router;

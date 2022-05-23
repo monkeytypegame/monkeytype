@@ -69,25 +69,30 @@ export async function getRankFromLeaderboard(
   return new MonkeyResponse("Rank retrieved", data);
 }
 
-export async function getDailyLeaderboard(
+function getDailyLeaderboardWithError(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
-  const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
+): DailyLeaderboards.DailyLeaderboard {
+  const { language, mode, mode2 } = req.query;
 
   const dailyLeaderboard = DailyLeaderboards.getDailyLeaderboard(
     language as string,
     mode as string,
     mode2 as string,
-    dailyLeaderboardsConfig
+    req.ctx.configuration.dailyLeaderboards
   );
   if (!dailyLeaderboard) {
-    return new MonkeyResponse(
-      "There is no daily leaderboard for this mode",
-      null,
-      404
-    );
+    throw new MonkeyError(404, "There is no daily leaderboard for this mode");
   }
+
+  return dailyLeaderboard;
+}
+
+export async function getDailyLeaderboard(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { skip = 0, limit = 50 } = req.query;
+
+  const dailyLeaderboard = getDailyLeaderboardWithError(req);
 
   const minRank = parseInt(skip as string, 10);
   const maxRank = minRank + parseInt(limit as string, 10);
@@ -95,8 +100,23 @@ export async function getDailyLeaderboard(
   const topResults = await dailyLeaderboard.getResults(
     minRank,
     maxRank,
-    dailyLeaderboardsConfig
+    req.ctx.configuration.dailyLeaderboards
   );
 
   return new MonkeyResponse("Daily leaderboard retrieved", topResults);
+}
+
+export async function getDailyLeaderboardRank(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const dailyLeaderboard = getDailyLeaderboardWithError(req);
+
+  const rank = await dailyLeaderboard.getRank(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
+
+  return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
 }
