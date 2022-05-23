@@ -22,30 +22,11 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
-const nameIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side .username.inputAndIndicator"),
-  {
-    available: {
-      icon: "fa-check",
-      level: 1,
-    },
-    unavailable: {
-      icon: "fa-times",
-      level: -1,
-    },
-    taken: {
-      icon: "fa-times",
-      level: -1,
-    },
-    checking: {
-      icon: "fa-circle-notch",
-      spinIcon: true,
-      level: 0,
-    },
-  }
-);
-
 $(".page.pageLogin .register.side .passwordInput").on("input", () => {
+  checkPassword();
+});
+
+$(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
   checkPassword();
 });
 
@@ -64,7 +45,7 @@ const passwordIndicator = new InputIndicator(
       icon: "fa-times",
       level: -1,
     },
-    different: {
+    mismatch: {
       icon: "fa-times",
       level: -1,
     },
@@ -72,7 +53,6 @@ const passwordIndicator = new InputIndicator(
 );
 
 const checkPassword = (): void => {
-  console.log("asdf");
   passwordIndicator.show("good");
   const password = $(
     ".page.pageLogin .register.side .passwordInput"
@@ -99,12 +79,35 @@ const checkPassword = (): void => {
   }
 
   if (password !== passwordVerify) {
-    passwordIndicator.show("unavailable", "Passwords do not match");
+    passwordIndicator.show("mismatch", "Passwords do not match");
     return;
   }
 
-  passwordIndicator.show("good");
+  passwordIndicator.show("good", "Password is good");
 };
+
+const nameIndicator = new InputIndicator(
+  $(".page.pageLogin .register.side .username.inputAndIndicator"),
+  {
+    available: {
+      icon: "fa-check",
+      level: 1,
+    },
+    unavailable: {
+      icon: "fa-times",
+      level: -1,
+    },
+    taken: {
+      icon: "fa-times",
+      level: -1,
+    },
+    checking: {
+      icon: "fa-circle-notch",
+      spinIcon: true,
+      level: 0,
+    },
+  }
+);
 
 const checkNameDebounced = debounce(1000, async () => {
   const val = $(
