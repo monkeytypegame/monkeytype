@@ -13,24 +13,40 @@
           autocomplete="new-username"
         />
       </div>
-      <input type="email" placeholder="email" autocomplete="new-email" />
-      <input
-        type="email"
-        placeholder="verify email"
-        autocomplete="verify-email"
-      />
-      <input
-        type="password"
-        placeholder="password"
-        autocomplete="new-password"
-        name="new-password"
-      />
-      <input
-        type="password"
-        placeholder="verify password"
-        autocomplete="verify-password"
-        name="verify-password"
-      />
+      <div class="inputAndIndicator email">
+        <input
+          type="email"
+          class="emailInput"
+          placeholder="email"
+          autocomplete="new-email"
+        />
+      </div>
+      <div class="inputAndIndicator verifyEmail">
+        <input
+          type="email"
+          class="verifyEmailInput"
+          placeholder="verify email"
+          autocomplete="verify-email"
+        />
+      </div>
+      <div class="inputAndIndicator password">
+        <input
+          type="password"
+          class="passwordInput"
+          placeholder="password"
+          autocomplete="new-password"
+          name="new-password"
+        />
+      </div>
+      <div class="inputAndIndicator verifyPassword">
+        <input
+          type="password"
+          class="verifyPasswordInput"
+          placeholder="verify password"
+          autocomplete="verify-password"
+          name="verify-password"
+        />
+      </div>
       <div class="button">
         <i class="fas fa-user-plus"></i>
         Sign Up

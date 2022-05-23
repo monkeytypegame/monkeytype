@@ -527,8 +527,44 @@ async function signUp(): Promise<void> {
     return;
   }
 
+  if (
+    !email.match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )
+  ) {
+    Notifications.add("Invalid email", 0, 3);
+    LoginPage.hidePreloader();
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
+    return;
+  }
+
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
+    LoginPage.hidePreloader();
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
+    return;
+  }
+
+  // Force user to use a capital letter, number, special character when setting up an account and changing password
+  if (password.length < 8) {
+    Notifications.add("Password must be at least 8 characters", 0, 3);
+    LoginPage.hidePreloader();
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
+    return;
+  }
+
+  const hasCapital = password.match(/[A-Z]/);
+  const hasNumber = password.match(/[\d]/);
+  const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  if (!hasCapital || !hasNumber || !hasSpecial) {
+    Notifications.add(
+      "Password must contain at least one capital letter, number, and special character",
+      0,
+      3
+    );
     LoginPage.hidePreloader();
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
