@@ -24,11 +24,37 @@ export function hidePreloader(): void {
 
 $(".page.pageLogin .register.side .passwordInput").on("input", () => {
   checkPassword();
+  checkPasswordsMatch();
 });
 
 $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
   checkPassword();
+  checkPasswordsMatch();
 });
+
+const verifyPasswordIndicator = new InputIndicator(
+  $(".page.pageLogin .register.side .verifyPassword.inputAndIndicator"),
+  {
+    match: {
+      icon: "fa-check",
+      level: 1,
+    },
+    mismatch: {
+      icon: "fa-times",
+      level: -1,
+    },
+  }
+);
+
+const checkPasswordsMatch = (): void => {
+  const password = $(".page.pageLogin .register.side .passwordInput").val();
+  const verifyPassword = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val();
+  verifyPasswordIndicator.show(
+    password === verifyPassword ? "match" : "mismatch"
+  );
+};
 
 const passwordIndicator = new InputIndicator(
   $(".page.pageLogin .register.side .password.inputAndIndicator"),
@@ -45,10 +71,6 @@ const passwordIndicator = new InputIndicator(
       icon: "fa-times",
       level: -1,
     },
-    mismatch: {
-      icon: "fa-times",
-      level: -1,
-    },
   }
 );
 
@@ -56,9 +78,6 @@ const checkPassword = (): void => {
   passwordIndicator.show("good");
   const password = $(
     ".page.pageLogin .register.side .passwordInput"
-  ).val() as string;
-  const passwordVerify = $(
-    ".page.pageLogin .register.side .verifyPasswordInput"
   ).val() as string;
 
   // Force user to use a capital letter, number, special character when setting up an account and changing password
@@ -75,11 +94,6 @@ const checkPassword = (): void => {
       "weak",
       "Password must contain at least one capital letter, number, and special character"
     );
-    return;
-  }
-
-  if (password !== passwordVerify) {
-    passwordIndicator.show("mismatch", "Passwords do not match");
     return;
   }
 
