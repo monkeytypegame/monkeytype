@@ -1,3 +1,4 @@
+import { init } from "../tribe/tribe";
 import Page from "./page";
 
 export const page = new Page(
@@ -15,5 +16,6 @@ export const page = new Page(
   },
   async () => {
     // TODO: Fill it up later
+    init();
   }
 );
