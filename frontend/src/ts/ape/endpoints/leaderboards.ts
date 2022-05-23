@@ -12,7 +12,7 @@ export default function getLeaderboardsEndpoints(
       language,
       mode,
       mode2,
-      skip,
+      skip: Math.max(skip, 0),
       limit: Math.max(Math.min(limit, 50), 0),
     };
 

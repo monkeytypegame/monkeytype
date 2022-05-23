@@ -579,7 +579,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[15].rank) return;
+    if (!currentRank[15]?.rank) return;
     leftScrollEnabled = false;
     await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
@@ -616,7 +616,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[60].rank) return;
+    if (!currentRank[60]?.rank) return;
     leftScrollEnabled = false;
     await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
