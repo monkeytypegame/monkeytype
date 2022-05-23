@@ -4,13 +4,13 @@ import * as RedisClient from "../init/redis";
 import { getCurrentDayTimestamp, matchesAPattern } from "./misc";
 
 interface DailyLeaderboardEntry {
+  uid: string;
   name: string;
   wpm: number;
   raw: number;
   acc: number;
   consistency: number;
   timestamp: number;
-  uid: string;
 }
 
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
@@ -44,7 +44,6 @@ class DailyLeaderboard {
   }
 
   public async addResult(
-    uid: string,
     entry: DailyLeaderboardEntry,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
   ): Promise<number> {
@@ -54,8 +53,8 @@ class DailyLeaderboard {
     }
 
     const currentDay = getCurrentDayTimestamp();
-    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
     const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDay}`;
+    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
 
     const { maxResults, leaderboardExpirationTimeInDays } =
       dailyLeaderboardsConfig;
@@ -73,28 +72,42 @@ class DailyLeaderboard {
       leaderboardResultsKey,
       maxResults,
       leaderboardExpirationTimeInSeconds,
-      uid,
+      entry.uid,
       entry.wpm,
       JSON.stringify(entry)
     );
 
-    return rank + (rank >= 0 ? 1 : 0);
+    if (rank === null) {
+      return -1;
+    }
+
+    return rank + 1;
   }
 
-  public async getTopResults(
+  public async getResults(
+    minRank: number,
+    maxRank: number,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry[] | null> {
+  ): Promise<DailyLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return null;
+      return [];
     }
 
     const currentDay = getCurrentDayTimestamp();
+    const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDay}`;
     const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
 
-    const results = await connection.hgetall(leaderboardResultsKey);
+    // @ts-ignore
+    const results: string[] = await connection.getResults(
+      2,
+      leaderboardScoresKey,
+      leaderboardResultsKey,
+      minRank,
+      maxRank
+    );
 
-    const normalizedResults: DailyLeaderboardEntry[] = Object.values(results)
+    const normalizedResults: DailyLeaderboardEntry[] = results
       .map((result) => JSON.parse(result))
       .sort(compareDailyLeaderboardEntries);
 
