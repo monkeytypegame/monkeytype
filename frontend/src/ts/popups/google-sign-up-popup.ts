@@ -15,6 +15,7 @@ import * as TestLogic from "../test/test-logic";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
+import { InputIndicator } from "../elements/input-indicator";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -130,27 +131,6 @@ async function apply(): Promise<void> {
   }
 }
 
-function updateIndicator(
-  state: "checking" | "available" | "unavailable" | "taken" | "none",
-  balloon?: string
-): void {
-  $("#googleSignUpPopup .checkStatus .checking").addClass("hidden");
-  $("#googleSignUpPopup .checkStatus .available").addClass("hidden");
-  $("#googleSignUpPopup .checkStatus .unavailable").addClass("hidden");
-  $("#googleSignUpPopup .checkStatus .taken").addClass("hidden");
-  if (state !== "none") {
-    $("#googleSignUpPopup .checkStatus ." + state).removeClass("hidden");
-    if (balloon) {
-      $("#googleSignUpPopup .checkStatus ." + state).attr(
-        "aria-label",
-        balloon
-      );
-    } else {
-      $("#googleSignUpPopup .checkStatus ." + state).removeAttr("aria-label");
-    }
-  }
-}
-
 function enableButton(): void {
   $("#googleSignUpPopup .button").removeClass("disabled");
 }
@@ -173,29 +153,52 @@ $("#googleSignUpPopupWrapper").on("mousedown", (e) => {
   }
 });
 
+const nameIndicator = new InputIndicator(
+  $("#googleSignUpPopup .inputAndIndicator"),
+  {
+    available: {
+      icon: "fa-check",
+      level: 1,
+    },
+    unavailable: {
+      icon: "fa-times",
+      level: -1,
+    },
+    taken: {
+      icon: "fa-times",
+      level: -1,
+    },
+    checking: {
+      icon: "fa-circle-notch",
+      spinIcon: true,
+      level: 0,
+    },
+  }
+);
+
 const checkNameDebounced = debounce(1000, async () => {
   const val = $("#googleSignUpPopup input").val() as string;
   if (!val) return;
   const response = await Ape.users.getNameAvailability(val);
 
   if (response.status === 200) {
-    updateIndicator("available", response.message);
+    nameIndicator.show("available", response.message);
     enableButton();
     return;
   }
 
   if (response.status == 422) {
-    updateIndicator("unavailable", response.message);
+    nameIndicator.show("unavailable", response.message);
     return;
   }
 
   if (response.status == 409) {
-    updateIndicator("taken", response.message);
+    nameIndicator.show("taken", response.message);
     return;
   }
 
   if (response.status !== 200) {
-    updateIndicator("unavailable");
+    nameIndicator.show("unavailable");
     return Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
@@ -208,9 +211,9 @@ $("#googleSignUpPopup input").on("input", () => {
     disableButton();
     const val = $("#googleSignUpPopup input").val() as string;
     if (val === "") {
-      return updateIndicator("none");
+      return nameIndicator.hide();
     } else {
-      updateIndicator("checking");
+      nameIndicator.show("checking");
       checkNameDebounced();
     }
   }, 1);
