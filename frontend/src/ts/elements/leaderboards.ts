@@ -263,6 +263,11 @@ function fillTable(lb: LbKey, prepend?: number): void {
       meClassString = ' class="me"';
     }
     const date = new Date(entry.timestamp);
+
+    if (currentTimeRange === "daily" && !entry.rank) {
+      entry.rank = i + 1;
+    }
+
     html += `
     <tr ${meClassString}>
     <td>${

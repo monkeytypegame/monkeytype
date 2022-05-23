@@ -92,11 +92,11 @@ export async function getDailyLeaderboard(
   const minRank = parseInt(skip as string, 10);
   const maxRank = minRank + parseInt(limit as string, 10);
 
-  const topResults =
-    (await dailyLeaderboard.getResults(
-      minRank,
-      maxRank,
-      dailyLeaderboardsConfig
-    )) ?? [];
+  const topResults = await dailyLeaderboard.getResults(
+    minRank,
+    maxRank,
+    dailyLeaderboardsConfig
+  );
+
   return new MonkeyResponse("Daily leaderboard retrieved", topResults);
 }

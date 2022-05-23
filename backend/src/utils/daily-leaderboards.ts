@@ -88,10 +88,10 @@ class DailyLeaderboard {
     minRank: number,
     maxRank: number,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry[] | null> {
+  ): Promise<DailyLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return null;
+      return [];
     }
 
     const currentDay = getCurrentDayTimestamp();
