@@ -229,7 +229,7 @@ socket.on("connect", () => {
   connect();
 });
 
-$(".tribechangename").click(() => {
+$(".tribechangename").on("click", () => {
   const name = prompt("Name");
   if (name) {
     socket.emit("user_set_name", { name, confirm: true });
@@ -240,7 +240,7 @@ $(".tribechangename").click(() => {
 //   name = e.name;
 // })
 
-socket.on("disconnect", (e) => {
+socket.on("disconnect", (_e) => {
   updateState(-1);
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Disconnected", -1, undefined, "Tribe");
@@ -480,7 +480,7 @@ socket.on("room_users_update", (e: { users: TribeTypes.User[] }) => {
   TribeButtons.update("lobby");
 });
 
-socket.on("room_race_started", (e) => {
+socket.on("room_race_started", (_e) => {
   updateState(12);
   if (!getSelf()?.isTyping) return;
   TribeSound.play("cd_go");
@@ -552,7 +552,7 @@ socket.on("room_finishTimer_countdown", (e) => {
   }
 });
 
-socket.on("room_finishTimer_over", (e) => {
+socket.on("room_finishTimer_over", (_e) => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestActive.get()) {
@@ -568,7 +568,7 @@ socket.on("room_readyTimer_countdown", (e) => {
   }
 });
 
-socket.on("room_readyTimer_over", (e) => {
+socket.on("room_readyTimer_over", (_e) => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestActive.get()) {
@@ -576,7 +576,7 @@ socket.on("room_readyTimer_over", (e) => {
   }
 });
 
-socket.on("room_back_to_lobby", (e) => {
+socket.on("room_back_to_lobby", (_e) => {
   PageController.change("tribe");
 });
 
