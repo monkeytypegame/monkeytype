@@ -1,11 +1,11 @@
-import Chart from "chart.js";
+import ChartJS from "chart.js";
 import * as Tribe from "./tribe";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Notifications from "../elements/notifications";
 
-let charts = {};
+const charts: Record<string, unknown> = {};
 
-let settings = {
+const settings = {
   type: "line",
   data: {
     labels: [1, 2, 3],
@@ -39,12 +39,12 @@ let settings = {
         maxBarThickness: 10,
         type: "scatter",
         pointStyle: "crossRot",
-        radius: function (context) {
+        radius: function (context): 0 | 2 {
           const index = context.dataIndex;
           const value = context.dataset.data[index];
           return value <= 0 ? 0 : 2;
         },
-        pointHoverRadius: function (context) {
+        pointHoverRadius: function (context): 0 | 3 {
           const index = context.dataIndex;
           const value = context.dataset.data[index];
           return value <= 0 ? 0 : 3;
@@ -81,7 +81,7 @@ let settings = {
 
         // Hide if no tooltip
         if (tooltipModel.opacity === 0) {
-          tooltipEl.style.opacity = 0;
+          tooltipEl.style.opacity = "0";
           return;
         }
 
@@ -104,7 +104,7 @@ let settings = {
 
           let innerHtml = "";
 
-          titleLines.forEach(function (title) {
+          titleLines.forEach(function (title: string) {
             innerHtml += "<div>" + title + "</div>";
           });
           // innerHtml += '</thead><tbody>';
@@ -128,7 +128,7 @@ let settings = {
         const position = this._chart.canvas.getBoundingClientRect();
 
         // Display, position, and set styles for font
-        tooltipEl.style.opacity = 1;
+        tooltipEl.style.opacity = "1";
         tooltipEl.style.position = "absolute";
         tooltipEl.style.left =
           position.left +
@@ -251,14 +251,15 @@ let settings = {
   },
 };
 
-async function fillData(chart, userId) {
-  let labels = [];
-  let result = Tribe.room.users[userId].result;
+async function fillData(chart, userId: string): Promise<void> {
+  const labels: number[] = [];
+  if (!Tribe.room) return;
+  const result = Tribe.room.users[userId].result;
   for (let i = 1; i <= result.chartData.wpm.length; i++) {
     labels.push(i);
   }
 
-  let chartmaxval = Math.max(
+  const chartmaxval = Math.max(
     Math.max(...result.chartData.wpm),
     Math.max(...result.chartData.raw)
   );
@@ -284,15 +285,15 @@ async function fillData(chart, userId) {
   chart.update({ duration: 0 });
 }
 
-export async function drawChart(userId) {
+export async function drawChart(userId: string): Promise<void> {
   try {
-    let element = $(
+    const element = $(
       `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`
     )[0];
 
-    if (!Tribe.room.users[userId].result) return;
+    if (!Tribe.room || !Tribe.room.users[userId].result) return;
 
-    let chart = new Chart(element, $.extend(true, {}, settings));
+    const chart = new ChartJS(element, $.extend(true, {}, settings));
 
     await fillData(chart, userId);
 
@@ -310,36 +311,39 @@ export async function drawChart(userId) {
   }
 }
 
-export async function drawAllCharts() {
-  let list = Object.keys(Tribe.room.users);
+export async function drawAllCharts(): Promise<void> {
+  if (!Tribe.room) return;
+  const list = Object.keys(Tribe.room.users);
   for (let i = 0; i < list.length; i++) {
-    let userId = list[i];
+    const userId = list[i];
     if (!charts[userId]) {
       await drawChart(userId);
     }
   }
 }
 
-export async function updateChartMaxValues() {
+export async function updateChartMaxValues(): Promise<void> {
+  if (!Tribe.room) return;
   let maxWpm = 0;
   let maxRaw = 0;
-  Object.keys(Tribe.room.users).forEach((userId) => {
-    let result = Tribe.room.users[userId].result;
+
+  for (const userId of Object.keys(Tribe.room.users)) {
+    const result = Tribe.room.users[userId].result;
     if (!result) return;
-    let maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
-    let maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
+    const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
+    const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
     if (maxUserWpm > maxWpm) {
       maxWpm = maxUserWpm;
     }
     if (maxUserRaw > maxRaw) {
       maxRaw = maxUserRaw;
     }
-  });
-  let chartmaxval = Math.max(maxWpm, maxRaw);
+  }
+  const chartmaxval = Math.max(maxWpm, maxRaw);
 
-  let list = Object.keys(Tribe.room.users);
+  const list = Object.keys(Tribe.room.users);
   for (let i = 0; i < list.length; i++) {
-    let userId = list[i];
+    const userId = list[i];
     if (charts[userId]) {
       charts[userId].options.scales.yAxes[0].ticks.max =
         Math.round(chartmaxval);
@@ -350,7 +354,7 @@ export async function updateChartMaxValues() {
   }
 }
 
-export function destroyAllCharts() {
+export function destroyAllCharts(): void {
   Object.keys(charts).forEach((userId) => {
     charts[userId].clear();
     charts[userId].destroy();
