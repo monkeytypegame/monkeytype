@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -35068,25 +35056,85 @@
       "id": 5945
     },
     {
+      "text": "What is my perfect crime? I break into Tiffany’s at midnight. Do I go for the vault? No, I go for the chandelier. It’s priceless. As I’m taking it down, a woman catches me. She tells me to stop. It’s her father’s business. She’s Tiffany. I say no. We make love all night. In the morning, the cops come and I escape in one of their uniforms. I tell her to meet me in Mexico, but I go to Canada. I don’t trust her. Besides, I like the cold. Thirty years later, I get a postcard. I have a son and he’s the chief of police. This is where the story gets interesting. I tell Tiffany to meet me in Paris by the Trocadero. She’s been waiting for me all these years. She’s never taken another lover. I don’t care. I don’t show up. I go to Berlin. That’s where I stashed the chandelier.",
+      "source": "Dwight K. Schrute - The Office (US)",
+      "length": 776,
+      "id": 5946
+    },
+    {
+      "text": "In Japan, heart surgeon. Number one. Steady hand. One day, Yakuza boss need new heart. I do operation. But, mistake! Yakuza boss die. Yakuza very mad. I hide in fishing boat, come to America. No English, no food, no money. Darryl give me job. Now I have house, American car, and new woman. Darryl save life. My big secret: I kill yakuza boss on purpose. I good surgeon. The best!",
+      "source": "The Office",
+      "length": 379,
+      "id": 5947
+    },
+    {
+      "text": "Hey! I wanna say something. I've been trying to be more honest lately, and I just wanna say a few things. I did the coal walk! Just, I did it. Michael, you couldn't even do that. Maybe I should be your boss. Wow I feel really good right now. [pause] Why didn't any of you come to my art show? I invited all of you. That really sucked. It's like sometimes some of you act like I don't even exist. Jim, I called off my wedding because of you. And now we're not even friends. And things are just like weird between us. And that sucks. And I miss you. You were my best friend before you went to Stamford. And I really miss you. I shouldn't have been with Roy, and there were a lot of reasons to call off my wedding. But the truth is, I didn't care about any of those reasons until I met you. And now you're with someone else. And that's fine. It's, whatever, it's not what I'm- I'm not- Okay my feet really hurt. The thing that I'm just trying to say to you, Jim, and to everyone else in the circle, I guess, is that I miss having fun with you. Just you, not everyone in the circle. Okay. I am gonna go walk in the water now. Yep. It's a good day.",
+      "source": "Pam Beesly - The Office (US)",
+      "length": 1143,
+      "id": 5948
+    },
+    {
+      "text": "I was going to quit, but Jan offered me a three-month, paid vacation and a company car. All I had to do was sign something saying I won't sue. Gil and I are going to Europe. Kids, sometimes it pays to be gay.",
+      "source": "Oscar Martinez - The Office (US)",
+      "length": 208,
+      "id": 5949
+    },
+    {
+      "text": "Well, this is what happened. Ryan's big project was the web site, which wasn't doing so well. So Ryan, to give the impression of sales, recorded them twice. Once as office sales, and once as web site sales. Which is what we refer to in the business as misleading the shareholders. Another good term is fraud. The real crime, I think, was the beard.",
+      "source": "Oscar Martinez - The Office (US)",
+      "length": 348,
+      "id": 5950
+    },
+    {
+      "text": "Our gathering was not as strange a thing as it might have appeared. A xenophobe would see a company of foreigners in camouflage uniforms, carrying out military drills and calisthenics, and might imagine us to be the lead element of some nefarious Asian invasion of the American homeland, a Yellow Peril in the Golden State, a diabolical dream of Ming the Merciless sprung to life. Far from it. The General's men, by preparing themselves to invade our now communist homeland, were in fact turning themselves into new Americans. After all, nothing was more American than wielding a gun and committing oneself to die for freedom and independence, unless it was wielding that gun to take away someone else’s freedom and independence.",
+      "source": "The Sympathizer (Viet Thanh Nguyen)",
+      "length": 729,
+      "id": 5951
+    },
+    {
+      "text": "What do those who struggle against power do when they seize power? What does the revolutionary do when the revolution triumphs? Why do those who call for independence and freedom take away the independence and freedom of others? And is it sane or insane to believe, as so many around us apparently do, in nothing? We can only answer these questions for ourselves. Our life and our death have taught us always to sympathize with the undesirables among the undesirables. Thus magnetized by experience, our compass continually points toward those who suffer.",
+      "source": "The Sympathizer (Viet Thanh Nguyen)",
+      "length": 555,
+      "id": 5952
+    },
+    {
+      "text": "What had I intuited at last? Namely this: while nothing is more precious than independence and freedom, nothing is also more precious than independence and freedom! These two slogans are almost the same, but not quite. The first inspiring slogan was Ho Chi Min’s empty suit, which he no longer wore. How could he? He was dead. The second slogan was the tricky one, the joke. It was Uncle Ho’s empty suit turned inside out, a sartorial sensation that only a man of two minds, or a man with no face, dared to wear. This odd suit suited me, for it was of a cutting-edge cut. Wearing this inside-out suit, my seams exposed in an unseemly way, I understood, at last, how our revolution had gone from being the vanguard of political change to the rearguard hoarding power. In this transformation, we were not unusual. Hadn’t the French and the Americans done exactly the same? Once revolutionaries themselves, they had become imperialists, colonizing and occupying our defiant little land, taking away our freedom in the name of saving us. Our revolution took considerably longer than theirs, and was considerably bloodier, but we made up for lost time. When it came to learning the worst habits of our French masters and their American replacements, we quickly proved ourselves the best. We, too, could abuse grand ideals! Having liberated ourselves in the name of independence and freedom—I was so tired of saying these words!—we then deprived our defeated brethren of the same.",
+      "source": "The Sympathizer (Viet Thanh Nguyen)",
+      "length": 1474,
+      "id": 5953
+    },
+    {
+      "text": "No, I want someone to tell me what to wear every morning. I want someone to tell me what to eat. What to like. What to hate. What to rage about. What to listen to. What band to like. What to buy tickets for. What to joke about. What not to joke about. I want someone to tell me what to believe in. Who to vote for and who to love and how to...tell them. I just think I want someone to tell me how to live my life, Father, because so far, I think I’ve been getting it wrong. And I know that’s why people want someone like you in their lives, because you just tell them how to do it. You just tell them what to do and what they’ll get out of the end of it, even though I don’t believe your bullshit and I know that scientifically nothing that I do makes any difference in the end, anyway, I’m still scared. Why am I still scared? So just tell me what to do. Just fucking tell me what to do, Father.",
+      "source": "Fleabag",
+      "length": 896,
+      "id": 5954
+    },
+    {
+      "text": "I wish to confess. I saved you. I saved this city. All your worthless lives. I should have let Stannis kill you all. Yes, Father, I’m guilty. Guilty. Is that what you want to hear? I didn’t poison the king. Of that I’m innocent. I’m guilty of a far more monstrous crime. I’m guilty of being a dwarf. I’ve been on trial for that my entire life. I did not do it. I did not kill Joffrey, but I wish that I had. Watching your vicious bastard die gave me more relief than a thousand lying whores. I wish I was the monster you think I am! I wish I had enough poison for the whole pack of you. I would gladly give my life to watch you all swallow it. I will not give my life for Joffrey’s murder, and I know I’ll get no justice here, so I will let the Gods decide my fate. I demand a trial by combat.",
+      "source": "Tyrion Lannister - Game of Thrones",
+      "length": 793,
+      "id": 5955
+    },
+    {
       "text": "You were born broken. That’s your birthright. And now you can fill your life with projects - your books, and your movies, and your little girlfriends but that won’t make you whole. You’re BoJack Horseman. There’s no cure for that.",
       "source": "Bojack Horseman",
       "length": 230,
       "approvedBy": "ze_or",
-      "id": 5946
+      "id": 5956
     },
     {
       "text": "The only reason I must rely on this sword is because I am imperfect. A true warrior... needs no sword.",
       "source": "Vinland Saga",
       "length": 102,
       "approvedBy": "ze_or",
-      "id": 5947
+      "id": 5957
     },
     {
       "text": "In my restless dreams, I see that town. Silent Hill. You promised me you'd take me\nthere again someday. But you never did. Well, I'm alone there now... In our 'special place'... Waiting for you... Waiting for you to come to see me. But you never do. And so I wait, wrapped in my cocoon of pain and loneliness. I know I've done a terrible thing to you. Something you'll never forgive me for. I wish I could change that, but I can't. I feel so pathetic and ugly laying here, waiting for you... Every day I stare up at the cracks in the ceiling and all I can think about is how unfair it all is... The doctor came today. He told me I could go home for a short stay. It’s not that I'm getting better. It’s just that this may be my last chance... I think you know what I mean... Even so, I'm glad to be coming home. I've missed you terribly. But I'm afraid, James. I'm afraid you don't really want me to come home. Whenever you come see me, I can tell how hard it is on you... I don't know if you hate me or pity me... Or maybe I just disgust you... I'm sorry about that. When I first learned that I was going to die, I just didn't want to accept it. I was so angry all the time and I struck out at everyone I loved most. Especially you, James. That's why I understand if you do hate me. But I want you to know this, James. I'll always love you. Even though our life together had to end like this, I still wouldn't trade it for the world. We had some wonderful years together. Well, this letter has gone on too long, so I'll say goodbye. I told the nurse to give this to you after I'm gone. That means that as you read this, I'm already dead. I can't tell you to remember me, but I can't bear for you to forget me. These last few years since I became ill... I'm so sorry for what I did to you, did to us... You've given me so much and I haven't been able to return a single thing. That's why I want you to live for yourself now. Do what's best for you, James. James... You made me happy.\n",
       "source": "Silent Hill 2",
       "length": 1983,
       "approvedBy": "ze_or",
-      "id": 5948
+      "id": 5958
     }
   ]
 }
