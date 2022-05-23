@@ -189,25 +189,6 @@ const verifyPasswordIndicator = new InputIndicator(
   }
 );
 
-$(".page.pageLogin .register.side .emailInput").on("input", () => {
-  checkEmail();
-  checkEmailsMatch();
-});
-
-$(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
-  checkEmailsMatch();
-});
-
-$(".page.pageLogin .register.side .passwordInput").on("input", () => {
-  checkPassword();
-  checkPasswordsMatch();
-});
-
-$(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
-  checkPassword();
-  checkPasswordsMatch();
-});
-
 $(".page.pageLogin .register.side .usernameInput").on("input", () => {
   setTimeout(() => {
     const val = $(
@@ -220,6 +201,57 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       checkNameDebounced();
     }
   }, 1);
+});
+
+$(".page.pageLogin .register.side .emailInput").on("input", () => {
+  if (
+    !$(".page.pageLogin .register.side .emailInput").val() &&
+    !$(".page.pageLogin .register.side .verifyEmailInput").val()
+  ) {
+    emailIndicator.hide();
+    verifyEmailIndicator.hide();
+    return;
+  }
+  checkEmail();
+  checkEmailsMatch();
+});
+
+$(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
+  if (
+    !$(".page.pageLogin .register.side .emailInput").val() &&
+    !$(".page.pageLogin .register.side .verifyEmailInput").val()
+  ) {
+    emailIndicator.hide();
+    verifyEmailIndicator.hide();
+    return;
+  }
+  checkEmailsMatch();
+});
+
+$(".page.pageLogin .register.side .passwordInput").on("input", () => {
+  if (
+    !$(".page.pageLogin .register.side .passwordInput").val() &&
+    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
+  ) {
+    passwordIndicator.hide();
+    verifyPasswordIndicator.hide();
+    return;
+  }
+  checkPassword();
+  checkPasswordsMatch();
+});
+
+$(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
+  if (
+    !$(".page.pageLogin .register.side .passwordInput").val() &&
+    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
+  ) {
+    passwordIndicator.hide();
+    verifyPasswordIndicator.hide();
+    return;
+  }
+  checkPassword();
+  checkPasswordsMatch();
 });
 
 export const page = new Page(
