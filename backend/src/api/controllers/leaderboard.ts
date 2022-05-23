@@ -72,7 +72,7 @@ export async function getRankFromLeaderboard(
 export async function getDailyLeaderboard(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { language, mode, mode2 } = req.query;
+  const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
 
   const dailyLeaderboard = DailyLeaderboards.getDailyLeaderboard(
@@ -89,7 +89,14 @@ export async function getDailyLeaderboard(
     );
   }
 
+  const minRank = parseInt(skip as string, 10);
+  const maxRank = minRank + parseInt(limit as string, 10);
+
   const topResults =
-    (await dailyLeaderboard.getTopResults(dailyLeaderboardsConfig)) ?? [];
+    (await dailyLeaderboard.getResults(
+      minRank,
+      maxRank,
+      dailyLeaderboardsConfig
+    )) ?? [];
   return new MonkeyResponse("Daily leaderboard retrieved", topResults);
 }
