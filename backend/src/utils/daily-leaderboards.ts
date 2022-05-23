@@ -47,12 +47,20 @@ export class DailyLeaderboard {
     this.leaderboardScoresKeyName = `${scoresNamespace}:${this.leaderboardModeKey}`;
   }
 
-  private getTodaysLeaderboardKeys(): [number, string, string] {
-    const currentDay = getCurrentDayTimestamp();
-    const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDay}`;
-    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
+  private getTodaysLeaderboardKeys(): {
+    currentDayTimestamp: number;
+    leaderboardScoresKey: string;
+    leaderboardResultsKey: string;
+  } {
+    const currentDayTimestamp = getCurrentDayTimestamp();
+    const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDayTimestamp}`;
+    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDayTimestamp}`;
 
-    return [currentDay, leaderboardScoresKey, leaderboardResultsKey];
+    return {
+      currentDayTimestamp,
+      leaderboardScoresKey,
+      leaderboardResultsKey,
+    };
   }
 
   public async addResult(
@@ -64,7 +72,7 @@ export class DailyLeaderboard {
       return -1;
     }
 
-    const [currentDayTimestamp, leaderboardScoresKey, leaderboardResultsKey] =
+    const { currentDayTimestamp, leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
     const { maxResults, leaderboardExpirationTimeInDays } =
@@ -105,7 +113,7 @@ export class DailyLeaderboard {
       return [];
     }
 
-    const [, leaderboardScoresKey, leaderboardResultsKey] =
+    const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
     // @ts-ignore
@@ -133,7 +141,7 @@ export class DailyLeaderboard {
       return null;
     }
 
-    const [, leaderboardScoresKey, leaderboardResultsKey] =
+    const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
     const [[, rank], [, count], [, result]] = await connection
