@@ -134,14 +134,14 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent;
   if (currentRank[lb]) {
-    let num = Misc.roundTo2(
+    const num = Misc.roundTo2(
       (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
     );
-    if (num == 0) {
-      num = 0.01;
+    if (currentRank[lb]["rank"] == 1) {
+      toppercent = "GOAT";
+    } else {
+      toppercent = `Top ${num}%`;
     }
-
-    toppercent = `Top ${num}%`;
   }
   if (currentRank[lb]) {
     const entry = currentRank[lb];
