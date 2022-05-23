@@ -535,6 +535,30 @@ async function signUp(): Promise<void> {
     return;
   }
 
+  // Force user to use a capital letter, number, special character when setting up an account and changing password
+  if (password.length < 8) {
+    Notifications.add("Password must be at least 8 characters", 0, 3);
+    LoginPage.hidePreloader();
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
+    return;
+  }
+
+  const hasCapital = password.match(/[A-Z]/);
+  const hasNumber = password.match(/[0-9]/);
+  const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  if (!hasCapital || !hasNumber || !hasSpecial) {
+    Notifications.add(
+      "Password must contain at least one capital letter, number, and special character",
+      0,
+      3
+    );
+    LoginPage.hidePreloader();
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
+    return;
+  }
+
   if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     LoginPage.hidePreloader();
