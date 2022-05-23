@@ -527,6 +527,18 @@ async function signUp(): Promise<void> {
     return;
   }
 
+  if (
+    !email.match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )
+  ) {
+    Notifications.add("Invalid email", 0, 3);
+    LoginPage.hidePreloader();
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
+    return;
+  }
+
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
     LoginPage.hidePreloader();
