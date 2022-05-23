@@ -136,9 +136,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   }
 }
 
-export function loadTribeAutoJoinFromUrl(): void {
+export function loadTribeAutoJoinFromUrl(override?: string): void {
   if (window.location.pathname !== "/tribe") return;
-  const getValue = Misc.findGetParameter("code");
+  const getValue = Misc.findGetParameter("code", override);
   if (getValue === null) return;
   Tribe.setAutoJoin(getValue);
 }
