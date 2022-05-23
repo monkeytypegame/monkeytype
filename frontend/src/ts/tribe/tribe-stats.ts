@@ -17,26 +17,28 @@ export function updateQueueButtons(): void {
   });
 }
 
-export function incrementQueues(queues): void {
-  queues.forEach((queue) => {
-    inQueueNumbers[queue]++;
-  });
-  updateQueueButtons();
-}
+// export function incrementQueues(queues): void {
+//   queues.forEach((queue) => {
+//     inQueueNumbers[queue]++;
+//   });
+//   updateQueueButtons();
+// }
 
-export function decrementQueues(queues): void {
-  queues.forEach((queue) => {
-    inQueueNumbers[queue]--;
-  });
-  updateQueueButtons();
-}
+// export function decrementQueues(queues): void {
+//   queues.forEach((queue) => {
+//     inQueueNumbers[queue]--;
+//   });
+//   updateQueueButtons();
+// }
 
 export function setInQueue(newQueNumArray: number[]): void {
   inQueueNumbers = newQueNumArray;
   updateQueueButtons();
 }
 
-export function updateMenuButtons(races): void {
+export function updateMenuButtons(
+  races: TribeTypes.SystemStats["stats"]["1"]
+): void {
   let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
   races.mm.forEach((num: number, index: number) => {
     $(buttons[index]).find(".subtext .races").text(`Races: ${num}`);
