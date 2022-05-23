@@ -335,8 +335,6 @@ export async function addResult(
     );
   }
 
-  console.log(dailyLeaderboardRank);
-
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
   if (result.lazyMode === false) delete result.lazyMode;

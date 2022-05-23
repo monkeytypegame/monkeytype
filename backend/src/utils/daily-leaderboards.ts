@@ -12,6 +12,10 @@ interface DailyLeaderboardEntry {
   consistency: number;
   timestamp: number;
 }
+interface DailyLeaderboardEntryWithRank extends Partial<DailyLeaderboardEntry> {
+  rank: number | null;
+  count: number;
+}
 
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -32,7 +36,7 @@ function compareDailyLeaderboardEntries(
   return a.timestamp - b.timestamp;
 }
 
-class DailyLeaderboard {
+export class DailyLeaderboard {
   private leaderboardResultsKeyName: string;
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
@@ -41,6 +45,22 @@ class DailyLeaderboard {
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
     this.leaderboardResultsKeyName = `${resultsNamespace}:${this.leaderboardModeKey}`;
     this.leaderboardScoresKeyName = `${scoresNamespace}:${this.leaderboardModeKey}`;
+  }
+
+  private getTodaysLeaderboardKeys(): {
+    currentDayTimestamp: number;
+    leaderboardScoresKey: string;
+    leaderboardResultsKey: string;
+  } {
+    const currentDayTimestamp = getCurrentDayTimestamp();
+    const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDayTimestamp}`;
+    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDayTimestamp}`;
+
+    return {
+      currentDayTimestamp,
+      leaderboardScoresKey,
+      leaderboardResultsKey,
+    };
   }
 
   public async addResult(
@@ -52,9 +72,8 @@ class DailyLeaderboard {
       return -1;
     }
 
-    const currentDay = getCurrentDayTimestamp();
-    const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDay}`;
-    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
+    const { currentDayTimestamp, leaderboardScoresKey, leaderboardResultsKey } =
+      this.getTodaysLeaderboardKeys();
 
     const { maxResults, leaderboardExpirationTimeInDays } =
       dailyLeaderboardsConfig;
@@ -62,7 +81,7 @@ class DailyLeaderboard {
       leaderboardExpirationTimeInDays * 24 * 60 * 60 * 1000;
 
     const leaderboardExpirationTimeInSeconds = Math.floor(
-      (currentDay + leaderboardExpirationDurationInMilliseconds) / 1000
+      (currentDayTimestamp + leaderboardExpirationDurationInMilliseconds) / 1000
     );
 
     // @ts-ignore
@@ -94,9 +113,8 @@ class DailyLeaderboard {
       return [];
     }
 
-    const currentDay = getCurrentDayTimestamp();
-    const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDay}`;
-    const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDay}`;
+    const { leaderboardScoresKey, leaderboardResultsKey } =
+      this.getTodaysLeaderboardKeys();
 
     // @ts-ignore
     const results: string[] = await connection.getResults(
@@ -112,6 +130,36 @@ class DailyLeaderboard {
       .sort(compareDailyLeaderboardEntries);
 
     return normalizedResults;
+  }
+
+  public async getRank(
+    uid: string,
+    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+  ): Promise<DailyLeaderboardEntryWithRank | null> {
+    const connection = RedisClient.getConnection();
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
+      return null;
+    }
+
+    const { leaderboardScoresKey, leaderboardResultsKey } =
+      this.getTodaysLeaderboardKeys();
+
+    const [[, rank], [, count], [, result]] = await connection
+      .multi()
+      .zrevrank(leaderboardScoresKey, uid)
+      .zcard(leaderboardScoresKey)
+      .hget(leaderboardResultsKey, uid)
+      .exec();
+
+    if (rank === null) {
+      return null;
+    }
+
+    return {
+      rank: rank + 1,
+      count: count ?? 0,
+      ...JSON.parse(result ?? "null"),
+    };
   }
 }
 
