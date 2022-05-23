@@ -40,11 +40,13 @@ export class DailyLeaderboard {
   private leaderboardResultsKeyName: string;
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
+  private customTime: number;
 
-  constructor(language: string, mode: string, mode2: string) {
+  constructor(language: string, mode: string, mode2: string, customTime = -1) {
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
     this.leaderboardResultsKeyName = `${resultsNamespace}:${this.leaderboardModeKey}`;
     this.leaderboardScoresKeyName = `${scoresNamespace}:${this.leaderboardModeKey}`;
+    this.customTime = customTime;
   }
 
   private getTodaysLeaderboardKeys(): {
@@ -52,7 +54,8 @@ export class DailyLeaderboard {
     leaderboardScoresKey: string;
     leaderboardResultsKey: string;
   } {
-    const currentDayTimestamp = getCurrentDayTimestamp();
+    const currentDayTimestamp =
+      this.customTime === -1 ? getCurrentDayTimestamp() : this.customTime;
     const leaderboardScoresKey = `${this.leaderboardScoresKeyName}:${currentDayTimestamp}`;
     const leaderboardResultsKey = `${this.leaderboardResultsKeyName}:${currentDayTimestamp}`;
 
