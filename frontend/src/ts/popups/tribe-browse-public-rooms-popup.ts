@@ -85,7 +85,7 @@ function hide(): void {
 }
 
 $(document).on("click", "#tribeBrowsePublicRoomsPopup .room", (e) => {
-  const roomId = $(e.currentTarget).attr("id");
+  const roomId = $(e.currentTarget).attr("id") as string;
   Tribe.joinRoom(roomId, true);
   hide();
 });
