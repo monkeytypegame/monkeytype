@@ -36,14 +36,6 @@ const updateSignupButton = (): void => {
   } else {
     $button.removeClass("disabled");
   }
-
-  console.log(
-    nameIndicator.get(),
-    emailIndicator.get(),
-    verifyEmailIndicator.get(),
-    passwordIndicator.get(),
-    verifyPasswordIndicator.get()
-  );
 };
 
 const checkNameDebounced = debounce(1000, async () => {
