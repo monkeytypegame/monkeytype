@@ -39,9 +39,7 @@ export function setDelimiter(val: string): void {
   delimiter = val;
 }
 
-interface CustomTextObject {
-  [key: string]: string;
-}
+type CustomTextObject = Record<string, string>;
 
 export function getCustomText(name: string): string[] {
   const customText = getCustomTextObject();
