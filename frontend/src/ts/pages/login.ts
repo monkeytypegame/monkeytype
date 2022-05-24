@@ -4,13 +4,27 @@ import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
 
+export function enableSignUpButton(): void {
+  $(".page.pageLogin .register.side .button").removeClass("disabled");
+}
+
+export function disableSignUpButton(): void {
+  $(".page.pageLogin .register.side .button").addClass("disabled");
+}
+
+export function enableSignInButton(): void {
+  $(".page.pageLogin .login.side .button").removeClass("disabled");
+}
+
+export function disableSignInButton(): void {
+  $(".page.pageLogin .login.side .button").addClass("disabled");
+}
+
 export function enableInputs(): void {
-  $(".pageLogin .button").removeClass("disabled");
   $(".pageLogin input").prop("disabled", false);
 }
 
 export function disableInputs(): void {
-  $(".pageLogin .button").addClass("disabled");
   $(".pageLogin input").prop("disabled", true);
 }
 
@@ -22,9 +36,7 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
-const updateSignupButton = (): void => {
-  const $button = $(".page.pageLogin .register.side .button");
-
+export const updateSignupButton = (): void => {
   if (
     nameIndicator.get() !== "available" ||
     emailIndicator.get() !== "valid" ||
@@ -32,9 +44,9 @@ const updateSignupButton = (): void => {
     passwordIndicator.get() !== "good" ||
     verifyPasswordIndicator.get() !== "match"
   ) {
-    $button.addClass("disabled");
+    disableSignUpButton();
   } else {
-    $button.removeClass("disabled");
+    enableSignUpButton();
   }
 };
 
@@ -134,7 +146,7 @@ const checkPasswordsMatch = (): void => {
 };
 
 const nameIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side .username.inputAndIndicator"),
+  $(".page.pageLogin .register.side input.usernameInput"),
   {
     available: {
       icon: "fa-check",
@@ -157,7 +169,7 @@ const nameIndicator = new InputIndicator(
 );
 
 const emailIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side .email.inputAndIndicator"),
+  $(".page.pageLogin .register.side input.emailInput"),
   {
     valid: {
       icon: "fa-check",
@@ -171,7 +183,7 @@ const emailIndicator = new InputIndicator(
 );
 
 const verifyEmailIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side .verifyEmail.inputAndIndicator"),
+  $(".page.pageLogin .register.side input.verifyEmailInput"),
   {
     match: {
       icon: "fa-check",
@@ -185,7 +197,7 @@ const verifyEmailIndicator = new InputIndicator(
 );
 
 const passwordIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side .password.inputAndIndicator"),
+  $(".page.pageLogin .register.side input.passwordInput"),
   {
     good: {
       icon: "fa-check",
@@ -203,7 +215,7 @@ const passwordIndicator = new InputIndicator(
 );
 
 const verifyPasswordIndicator = new InputIndicator(
-  $(".page.pageLogin .register.side .verifyPassword.inputAndIndicator"),
+  $(".page.pageLogin .register.side input.verifyPasswordInput"),
   {
     match: {
       icon: "fa-check",
