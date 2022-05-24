@@ -4,6 +4,12 @@ import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
 
+let nameValid = false,
+  emailValid = false,
+  emailMatches = false,
+  passwordValid = false,
+  passwordMatches = false;
+
 export function enableInputs(): void {
   $(".pageLogin .button").removeClass("disabled");
   $(".pageLogin input").prop("disabled", false);
@@ -22,78 +28,113 @@ export function hidePreloader(): void {
   $(".pageLogin .preloader").addClass("hidden");
 }
 
+const updateSignupButton = (): void => {
+  const $button = $(".page.pageLogin .register.side .button");
+
+  if (
+    !nameValid ||
+    !emailValid ||
+    !emailMatches ||
+    !passwordValid ||
+    !passwordMatches
+  ) {
+    $button.addClass("disabled");
+    return;
+  }
+  $button.removeClass("disabled");
+};
+
 const checkNameDebounced = debounce(1000, async () => {
   const val = $(
     ".page.pageLogin .register.side .usernameInput"
   ).val() as string;
-  if (!val) return;
+
+  if (!val) {
+    nameValid = false;
+    updateSignupButton();
+    return;
+  }
   const response = await Ape.users.getNameAvailability(val);
 
   if (response.status === 200) {
     nameIndicator.show("available", response.message);
-    return;
-  }
-
-  if (response.status == 422) {
+    nameValid = true;
+  } else if (response.status === 422) {
     nameIndicator.show("unavailable", response.message);
-    return;
-  }
-
-  if (response.status == 409) {
+    nameValid = false;
+  } else if (response.status === 409) {
     nameIndicator.show("taken", response.message);
-    return;
-  }
-
-  if (response.status !== 200) {
+    nameValid = false;
+  } else {
     nameIndicator.show("unavailable", response.message);
-    return Notifications.add(
+    nameValid = false;
+    Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
     );
   }
-});
 
-const checkEmailsMatch = (): void => {
-  const email = $(".page.pageLogin .register.side .emailInput").val();
-  const verifyEmail = $(
-    ".page.pageLogin .register.side .verifyEmailInput"
-  ).val();
-  verifyEmailIndicator.show(email === verifyEmail ? "match" : "mismatch");
-};
+  updateSignupButton();
+});
 
 const checkEmail = (): void => {
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
+  if (emailRegex.test(email)) {
+    emailValid = true;
+    emailIndicator.show("valid");
+  } else {
+    emailValid = false;
+    emailIndicator.show("invalid");
+  }
 
-  emailIndicator.show(emailRegex.test(email) ? "valid" : "invalid");
+  updateSignupButton();
+};
+
+const checkEmailsMatch = (): void => {
+  const email = $(".page.pageLogin .register.side .emailInput").val();
+  const verifyEmail = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val();
+  if (email === verifyEmail) {
+    emailMatches = true;
+    verifyEmailIndicator.show("match");
+  } else {
+    emailMatches = false;
+    verifyEmailIndicator.show("mismatch");
+  }
+
+  updateSignupButton();
 };
 
 const checkPassword = (): void => {
-  passwordIndicator.show("good");
   const password = $(
     ".page.pageLogin .register.side .passwordInput"
   ).val() as string;
 
   // Force user to use a capital letter, number, special character when setting up an account and changing password
   if (password.length < 8) {
+    passwordValid = false;
     passwordIndicator.show("short", "Password must be at least 8 characters");
     return;
+  } else {
+    const hasCapital = password.match(/[A-Z]/);
+    const hasNumber = password.match(/[\d]/);
+    const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+    if (!hasCapital || !hasNumber || !hasSpecial) {
+      passwordValid = false;
+      passwordIndicator.show(
+        "weak",
+        "Password must contain at least one capital letter, number, and special character"
+      );
+    } else {
+      passwordValid = true;
+      passwordIndicator.show("good", "Password is good");
+    }
   }
-
-  const hasCapital = password.match(/[A-Z]/);
-  const hasNumber = password.match(/[\d]/);
-  const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
-  if (!hasCapital || !hasNumber || !hasSpecial) {
-    passwordIndicator.show(
-      "weak",
-      "Password must contain at least one capital letter, number, and special character"
-    );
-    return;
-  }
-
-  passwordIndicator.show("good", "Password is good");
+  updateSignupButton();
 };
 
 const checkPasswordsMatch = (): void => {
@@ -101,9 +142,15 @@ const checkPasswordsMatch = (): void => {
   const verifyPassword = $(
     ".page.pageLogin .register.side .verifyPasswordInput"
   ).val();
-  verifyPasswordIndicator.show(
-    password === verifyPassword ? "match" : "mismatch"
-  );
+  if (password === verifyPassword) {
+    passwordMatches = true;
+    verifyPasswordIndicator.show("match");
+  } else {
+    passwordMatches = false;
+    verifyPasswordIndicator.show("mismatch");
+  }
+
+  updateSignupButton();
 };
 
 const nameIndicator = new InputIndicator(
