@@ -4,12 +4,6 @@ import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
 
-let nameValid = false,
-  emailValid = false,
-  emailMatches = false,
-  passwordValid = false,
-  passwordMatches = false;
-
 export function enableInputs(): void {
   $(".pageLogin .button").removeClass("disabled");
   $(".pageLogin input").prop("disabled", false);
@@ -32,16 +26,24 @@ const updateSignupButton = (): void => {
   const $button = $(".page.pageLogin .register.side .button");
 
   if (
-    !nameValid ||
-    !emailValid ||
-    !emailMatches ||
-    !passwordValid ||
-    !passwordMatches
+    nameIndicator.get() !== "available" ||
+    emailIndicator.get() !== "valid" ||
+    verifyEmailIndicator.get() !== "match" ||
+    passwordIndicator.get() !== "good" ||
+    verifyPasswordIndicator.get() !== "match"
   ) {
     $button.addClass("disabled");
-    return;
+  } else {
+    $button.removeClass("disabled");
   }
-  $button.removeClass("disabled");
+
+  console.log(
+    nameIndicator.get(),
+    emailIndicator.get(),
+    verifyEmailIndicator.get(),
+    passwordIndicator.get(),
+    verifyPasswordIndicator.get()
+  );
 };
 
 const checkNameDebounced = debounce(1000, async () => {
@@ -50,7 +52,6 @@ const checkNameDebounced = debounce(1000, async () => {
   ).val() as string;
 
   if (!val) {
-    nameValid = false;
     updateSignupButton();
     return;
   }
@@ -58,16 +59,12 @@ const checkNameDebounced = debounce(1000, async () => {
 
   if (response.status === 200) {
     nameIndicator.show("available", response.message);
-    nameValid = true;
   } else if (response.status === 422) {
     nameIndicator.show("unavailable", response.message);
-    nameValid = false;
   } else if (response.status === 409) {
     nameIndicator.show("taken", response.message);
-    nameValid = false;
   } else {
     nameIndicator.show("unavailable", response.message);
-    nameValid = false;
     Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
@@ -83,10 +80,8 @@ const checkEmail = (): void => {
 
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   if (emailRegex.test(email)) {
-    emailValid = true;
     emailIndicator.show("valid");
   } else {
-    emailValid = false;
     emailIndicator.show("invalid");
   }
 
@@ -99,10 +94,8 @@ const checkEmailsMatch = (): void => {
     ".page.pageLogin .register.side .verifyEmailInput"
   ).val();
   if (email === verifyEmail) {
-    emailMatches = true;
     verifyEmailIndicator.show("match");
   } else {
-    emailMatches = false;
     verifyEmailIndicator.show("mismatch");
   }
 
@@ -116,7 +109,6 @@ const checkPassword = (): void => {
 
   // Force user to use a capital letter, number, special character when setting up an account and changing password
   if (password.length < 8) {
-    passwordValid = false;
     passwordIndicator.show("short", "Password must be at least 8 characters");
     return;
   } else {
@@ -124,13 +116,11 @@ const checkPassword = (): void => {
     const hasNumber = password.match(/[\d]/);
     const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
     if (!hasCapital || !hasNumber || !hasSpecial) {
-      passwordValid = false;
       passwordIndicator.show(
         "weak",
         "Password must contain at least one capital letter, number, and special character"
       );
     } else {
-      passwordValid = true;
       passwordIndicator.show("good", "Password is good");
     }
   }
@@ -143,10 +133,8 @@ const checkPasswordsMatch = (): void => {
     ".page.pageLogin .register.side .verifyPasswordInput"
   ).val();
   if (password === verifyPassword) {
-    passwordMatches = true;
     verifyPasswordIndicator.show("match");
   } else {
-    passwordMatches = false;
     verifyPasswordIndicator.show("mismatch");
   }
 
