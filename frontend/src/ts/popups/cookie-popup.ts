@@ -40,7 +40,10 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        if ($("#cookiePopupWrapper").outerHeight(true) === 0) {
+        if (
+          $("#cookiePopupWrapper").is(":visible") === false ||
+          $("#cookiePopupWrapper").outerHeight(true) === 0
+        ) {
           visible = false;
         } else {
           visible = true;
