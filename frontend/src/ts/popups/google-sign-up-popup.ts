@@ -153,28 +153,25 @@ $("#googleSignUpPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-const nameIndicator = new InputIndicator(
-  $("#googleSignUpPopup .inputAndIndicator"),
-  {
-    available: {
-      icon: "fa-check",
-      level: 1,
-    },
-    unavailable: {
-      icon: "fa-times",
-      level: -1,
-    },
-    taken: {
-      icon: "fa-times",
-      level: -1,
-    },
-    checking: {
-      icon: "fa-circle-notch",
-      spinIcon: true,
-      level: 0,
-    },
-  }
-);
+const nameIndicator = new InputIndicator($("#googleSignUpPopup input"), {
+  available: {
+    icon: "fa-check",
+    level: 1,
+  },
+  unavailable: {
+    icon: "fa-times",
+    level: -1,
+  },
+  taken: {
+    icon: "fa-times",
+    level: -1,
+  },
+  checking: {
+    icon: "fa-circle-notch",
+    spinIcon: true,
+    level: 0,
+  },
+});
 
 const checkNameDebounced = debounce(1000, async () => {
   const val = $("#googleSignUpPopup input").val() as string;
