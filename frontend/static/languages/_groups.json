@@ -331,7 +331,8 @@
       "code_matlab",
       "code_sql",
       "code_perl",
-      "code_php"
+      "code_php",
+      "code_vim"
     ]
   },
   {

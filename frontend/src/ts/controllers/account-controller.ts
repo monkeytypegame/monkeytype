@@ -301,6 +301,8 @@ export function signIn(): void {
   authListener();
   LoginPage.showPreloader();
   LoginPage.disableInputs();
+  LoginPage.disableSignUpButton();
+  LoginPage.disableSignInButton();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -343,6 +345,8 @@ export function signIn(): void {
         Notifications.add(message, -1);
         LoginPage.hidePreloader();
         LoginPage.enableInputs();
+        LoginPage.enableSignInButton();
+        LoginPage.updateSignupButton();
       });
   });
 }
@@ -351,6 +355,8 @@ export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
   LoginPage.showPreloader();
   LoginPage.disableInputs();
+  LoginPage.disableSignUpButton();
+  LoginPage.disableSignInButton();
   authListener();
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -380,6 +386,8 @@ export async function signInWithGoogle(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
+      LoginPage.enableSignInButton();
+      LoginPage.updateSignupButton();
     });
 }
 
@@ -509,6 +517,7 @@ export function signOut(): void {
 
 async function signUp(): Promise<void> {
   LoginPage.disableInputs();
+  LoginPage.disableSignUpButton();
   LoginPage.showPreloader();
   const nname = ($(".pageLogin .register input")[0] as HTMLInputElement).value;
   const email = ($(".pageLogin .register input")[1] as HTMLInputElement).value;
@@ -523,6 +532,7 @@ async function signUp(): Promise<void> {
   if (nname === "" || email === "" || emailVerify === "" || password === "") {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     Notifications.add("Please fill in all fields", 0);
     return;
   }
@@ -534,16 +544,16 @@ async function signUp(): Promise<void> {
   ) {
     Notifications.add("Invalid email", 0, 3);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
@@ -551,8 +561,8 @@ async function signUp(): Promise<void> {
   if (password.length < 8) {
     Notifications.add("Password must be at least 8 characters", 0, 3);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
@@ -566,16 +576,16 @@ async function signUp(): Promise<void> {
       3
     );
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
   if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
@@ -634,8 +644,8 @@ async function signUp(): Promise<void> {
     const message = Misc.createErrorMessage(e, "Failed to create account");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     signOut();
     return;
   }
