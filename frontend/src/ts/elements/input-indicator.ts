@@ -8,6 +8,7 @@ interface InputIndicatorOption {
 export class InputIndicator {
   private parentElement: JQuery<HTMLElement>;
   private options: Record<string, InputIndicatorOption>;
+  private currentStatus: keyof typeof this.options | null;
 
   constructor(
     parentElement: JQuery<HTMLElement>,
@@ -18,6 +19,7 @@ export class InputIndicator {
     }
     this.parentElement = parentElement;
     this.options = options;
+    this.currentStatus = null;
 
     let indicator = `<div class="statusIndicator">`;
 
@@ -50,10 +52,13 @@ export class InputIndicator {
 
   hide(): void {
     this.parentElement.find(".statusIndicator div").addClass("hidden");
+    this.currentStatus = null;
   }
 
   show(optionId: keyof typeof this.options, messageOverride?: string): void {
     this.hide();
+
+    this.currentStatus = optionId;
 
     const indicator = this.parentElement.find(`[data-option-id="${optionId}"]`);
 
@@ -67,5 +72,9 @@ export class InputIndicator {
       }
       indicator.attr("aria-label", messageOverride);
     }
+  }
+
+  get(): keyof typeof this.options | null {
+    return this.currentStatus;
   }
 }
