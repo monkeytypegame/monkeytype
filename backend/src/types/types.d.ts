@@ -46,6 +46,7 @@ declare namespace MonkeyTypes {
       maxResults: number;
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
+      topResultsToAnnounce: number;
     };
   }
 
