@@ -14,7 +14,7 @@ interface DailyLeaderboardEntry {
 }
 interface DailyLeaderboardEntryWithRank extends Partial<DailyLeaderboardEntry> {
   rank: number | null;
-  count: number;
+  count?: number;
 }
 
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
@@ -110,7 +110,7 @@ export class DailyLeaderboard {
     minRank: number,
     maxRank: number,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry[]> {
+  ): Promise<DailyLeaderboardEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -132,7 +132,13 @@ export class DailyLeaderboard {
       .map((result) => JSON.parse(result))
       .sort(compareDailyLeaderboardEntries);
 
-    return normalizedResults;
+    const resultsWithRanks: DailyLeaderboardEntryWithRank[] =
+      normalizedResults.map((result, index) => ({
+        ...result,
+        rank: minRank + index + 1,
+      }));
+
+    return resultsWithRanks;
   }
 
   public async getRank(
