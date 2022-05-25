@@ -147,7 +147,7 @@ function updateFooter(lb: LbKey): void {
     `);
 
   let toppercent;
-  if (currentRank[lb]) {
+  if (currentTimeRange === "allTime" && currentRank[lb]) {
     const num = Misc.roundTo2(
       (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
     );
@@ -156,6 +156,7 @@ function updateFooter(lb: LbKey): void {
     } else {
       toppercent = `Top ${num}%`;
     }
+    toppercent = `<br><span class="sub">${toppercent}</span>`;
   }
 
   if (currentRank[lb]) {
@@ -164,7 +165,7 @@ function updateFooter(lb: LbKey): void {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
     <td>${entry.rank}</td>
-    <td><span class="top">You</span><br><span class="sub">${toppercent}</span></td>
+    <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -186,6 +187,8 @@ function updateFooter(lb: LbKey): void {
 }
 
 function checkLbMemory(lb: LbKey): void {
+  if (currentTimeRange === "daily") return;
+
   let side;
   if (lb === 15) {
     side = "left";
