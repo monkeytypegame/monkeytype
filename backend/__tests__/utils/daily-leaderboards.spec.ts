@@ -20,6 +20,7 @@ const dailyLeaderboardsConfig = {
     },
   ],
   dailyLeaderboardCacheSize: 3,
+  announcementRankRange: [1, 0],
 };
 
 describe("Daily Leaderboards", () => {

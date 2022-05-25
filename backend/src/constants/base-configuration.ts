@@ -27,7 +27,7 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     enabled: false,
   },
   favoriteQuotes: {
-    maxFavorites: 100,
+    maxFavorites: 0,
   },
   autoBan: {
     enabled: false,
@@ -39,8 +39,9 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     maxResults: 0,
     leaderboardExpirationTimeInDays: 0,
     validModeRules: [],
-    // GOTCHA MUST ALWAYS ATLEAST BE 1, LRUCache module will exit process without error
+    // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
+    announcementRankRange: [1, 0], // Inclusive, starting from 0
   },
 };
 

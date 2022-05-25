@@ -34,9 +34,11 @@ async function announceDailyLeaderboard(
     yesterday
   );
 
+  const [minRank, maxRank] = dailyLeaderboardsConfig.announcementRankRange;
+
   const topResults = await dailyLeaderboard.getResults(
-    0,
-    2,
+    minRank,
+    maxRank,
     dailyLeaderboardsConfig
   );
   if (topResults.length === 0) {
