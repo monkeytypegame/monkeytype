@@ -3,19 +3,14 @@ import { Queue, QueueScheduler } from "bullmq";
 
 const QUEUE_NAME = "george-tasks";
 
-type GeorgeTaskArgument = string | number;
-
 interface GeorgeTask {
   name: string;
-  args: GeorgeTaskArgument[];
+  args: any[];
 }
 
-function buildGeorgeTask(
-  task: string,
-  taskArgs: GeorgeTaskArgument[]
-): GeorgeTask {
+function buildGeorgeTask(taskName: string, taskArgs: any[]): GeorgeTask {
   return {
-    name: task,
+    name: taskName,
     args: taskArgs,
   };
 }
@@ -68,46 +63,49 @@ export async function updateDiscordRole(
   discordId: string,
   wpm: number
 ): Promise<void> {
-  const task = "updateRole";
-  const updateDiscordRoleTask = buildGeorgeTask(task, [discordId, wpm]);
-  await addToQueue(task, updateDiscordRoleTask);
+  const taskName = "updateRole";
+  const updateDiscordRoleTask = buildGeorgeTask(taskName, [discordId, wpm]);
+  await addToQueue(taskName, updateDiscordRoleTask);
 }
 
 export async function linkDiscord(
   discordId: string,
   uid: string
 ): Promise<void> {
-  const task = "linkDiscord";
-  const linkDiscordTask = buildGeorgeTask(task, [discordId, uid]);
-  await addToQueue(task, linkDiscordTask);
+  const taskName = "linkDiscord";
+  const linkDiscordTask = buildGeorgeTask(taskName, [discordId, uid]);
+  await addToQueue(taskName, linkDiscordTask);
 }
 
 export async function unlinkDiscord(
   discordId: string,
   uid: string
 ): Promise<void> {
-  const task = "unlinkDiscord";
-  const unlinkDiscordTask = buildGeorgeTask(task, [discordId, uid]);
-  await addToQueue(task, unlinkDiscordTask);
+  const taskName = "unlinkDiscord";
+  const unlinkDiscordTask = buildGeorgeTask(taskName, [discordId, uid]);
+  await addToQueue(taskName, unlinkDiscordTask);
 }
 
 export async function awardChallenge(
   discordId: string,
   challengeName: string
 ): Promise<void> {
-  const task = "awardChallenge";
-  const awardChallengeTask = buildGeorgeTask(task, [discordId, challengeName]);
-  await addToQueue(task, awardChallengeTask);
+  const taskName = "awardChallenge";
+  const awardChallengeTask = buildGeorgeTask(taskName, [
+    discordId,
+    challengeName,
+  ]);
+  await addToQueue(taskName, awardChallengeTask);
 }
 
 export async function announceLeaderboardUpdate(
   newRecords: any[],
   leaderboardId: string
 ): Promise<void> {
-  const task = "announceLeaderboardUpdate";
+  const taskName = "announceLeaderboardUpdate";
 
   const leaderboardUpdateTasks = newRecords.map((record) => {
-    const taskData = buildGeorgeTask(task, [
+    const taskData = buildGeorgeTask(taskName, [
       record.discordId ?? record.name,
       record.rank,
       leaderboardId,
@@ -118,10 +116,25 @@ export async function announceLeaderboardUpdate(
     ]);
 
     return {
-      name: task,
+      name: taskName,
       data: taskData,
     };
   });
 
   await addToQueueBulk(leaderboardUpdateTasks);
+}
+
+export async function announceDailyLeaderboardTopResults(
+  leaderboardId: string,
+  leaderboardTimestamp: number,
+  topResults: any[]
+): Promise<void> {
+  const taskName = "announceDailyLeaderboardTopResults";
+
+  const dailyLeaderboardTopResultsTask = buildGeorgeTask(taskName, [
+    taskName,
+    [leaderboardId, leaderboardTimestamp, topResults],
+  ]);
+
+  await addToQueue(taskName, dailyLeaderboardTopResultsTask);
 }
