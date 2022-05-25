@@ -11,9 +11,7 @@ interface DailyLeaderboardEntry {
   acc: number;
   consistency: number;
   timestamp: number;
-}
-interface DailyLeaderboardEntryWithRank extends Partial<DailyLeaderboardEntry> {
-  rank: number | null;
+  rank?: number;
   count?: number;
 }
 
@@ -110,7 +108,7 @@ export class DailyLeaderboard {
     minRank: number,
     maxRank: number,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntryWithRank[]> {
+  ): Promise<DailyLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -125,18 +123,19 @@ export class DailyLeaderboard {
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
-      maxRank
+      maxRank - 1
     );
 
     const normalizedResults: DailyLeaderboardEntry[] = results
       .map((result) => JSON.parse(result))
       .sort(compareDailyLeaderboardEntries);
 
-    const resultsWithRanks: DailyLeaderboardEntryWithRank[] =
-      normalizedResults.map((result, index) => ({
+    const resultsWithRanks: DailyLeaderboardEntry[] = normalizedResults.map(
+      (result, index) => ({
         ...result,
         rank: minRank + index + 1,
-      }));
+      })
+    );
 
     return resultsWithRanks;
   }
@@ -144,7 +143,7 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntryWithRank | null> {
+  ): Promise<DailyLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return null;
