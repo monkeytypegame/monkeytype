@@ -123,7 +123,7 @@ export class DailyLeaderboard {
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
-      maxRank - 1
+      maxRank
     );
 
     const normalizedResults: DailyLeaderboardEntry[] = results

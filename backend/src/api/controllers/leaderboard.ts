@@ -95,7 +95,7 @@ export async function getDailyLeaderboard(
   const dailyLeaderboard = getDailyLeaderboardWithError(req);
 
   const minRank = parseInt(skip as string, 10);
-  const maxRank = minRank + parseInt(limit as string, 10);
+  const maxRank = minRank + parseInt(limit as string, 10) - 1;
 
   const topResults = await dailyLeaderboard.getResults(
     minRank,
