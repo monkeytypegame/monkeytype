@@ -21,7 +21,10 @@ import {
   validateKeys,
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
-import { incrementResult } from "../../utils/prometheus";
+import {
+  incrementResult,
+  incrementDailyLeaderboard,
+} from "../../utils/prometheus";
 import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 
@@ -321,6 +324,7 @@ export async function addResult(
     (user.timeTyping ?? 0) > 7200;
 
   if (dailyLeaderboard && validResultCriteria) {
+    incrementDailyLeaderboard(result.mode, result.mode2, result.language);
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
       {
         name: user.name,
