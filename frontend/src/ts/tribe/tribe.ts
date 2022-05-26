@@ -169,7 +169,7 @@ export function initRace(): void {
   let everyoneReady = true;
   if (room?.users) {
     for (const user of Object.values(room.users)) {
-      if (user.isLeader || user.isAfk) return;
+      if (user.isLeader || user.isAfk) continue;
       if (!user.isReady) {
         everyoneReady = false;
       }

@@ -326,7 +326,7 @@ export async function updateChartMaxValues(): Promise<void> {
 
   for (const userId of Object.keys(Tribe.room.users)) {
     const result = Tribe.room.users[userId].result;
-    if (!result) return;
+    if (!result) continue;
     const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
     const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
     if (maxUserWpm > maxWpm) {
