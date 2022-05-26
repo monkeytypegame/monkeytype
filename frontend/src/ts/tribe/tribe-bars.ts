@@ -19,7 +19,7 @@ export function init(page: string): void {
   if (!room) return;
 
   for (const [userId, user] of Object.entries(room.users)) {
-    if (userId === Tribe.socket.id) return;
+    if (userId === Tribe.socket.id) continue;
     let me = false;
     if (userId === Tribe.socket.id) me = true;
     if (user.isTyping && el) {
