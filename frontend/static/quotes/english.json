@@ -35161,10 +35161,16 @@
       "id": 5962
     },
     {
-      "text": "Today, I consider myself the luckiest man on the face of the earth.\n",
+      "text": "Today, I consider myself the luckiest man on the face of the earth.",
       "source": "The Pride of the Yankees",
       "length": 67,
       "id": 5963
+    },
+    {
+      "text": "Listen to them. Children of the night. What music they make.\n",
+      "source": "Dracula",
+      "length": 60,
+      "id": 5964
     }
   ]
 }
