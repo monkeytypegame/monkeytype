@@ -5,8 +5,9 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import differenceInSeconds from "date-fns/differenceInSeconds";
 
-const currentLeaderboard = "time_15";
+let currentTimeRange: "allTime" | "daily" = "allTime";
 
 type LbKey = 15 | 60;
 
@@ -64,17 +65,30 @@ function reset(): void {
 function stopTimer(): void {
   clearInterval(updateTimer);
   updateTimer = undefined;
-  $("#leaderboards .subTitle").text("Next update in: --:--");
+  $("#leaderboards .subTitle").text("-");
 }
 
 function updateTimerElement(): void {
-  const date = new Date();
-  const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
-  const secondsToNextUpdate = 60 - date.getSeconds();
-  const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
-  $("#leaderboards .subTitle").text(
-    "Next update in: " + Misc.secondsToString(totalSeconds, true)
-  );
+  if (currentTimeRange === "daily") {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 1);
+    const dateNow = new Date();
+    dateNow.setUTCMilliseconds(0);
+    const diff = differenceInSeconds(date, dateNow);
+
+    $("#leaderboards .subTitle").text(
+      "Next reset in: " + Misc.secondsToString(diff, true)
+    );
+  } else {
+    const date = new Date();
+    const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
+    const secondsToNextUpdate = 60 - date.getSeconds();
+    const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
+    $("#leaderboards .subTitle").text(
+      "Next update in: " + Misc.secondsToString(totalSeconds, true)
+    );
+  }
 }
 
 function startTimer(): void {
@@ -133,7 +147,7 @@ function updateFooter(lb: LbKey): void {
     `);
 
   let toppercent;
-  if (currentRank[lb]) {
+  if (currentTimeRange === "allTime" && currentRank[lb]) {
     const num = Misc.roundTo2(
       (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
     );
@@ -142,14 +156,16 @@ function updateFooter(lb: LbKey): void {
     } else {
       toppercent = `Top ${num}%`;
     }
+    toppercent = `<br><span class="sub">${toppercent}</span>`;
   }
+
   if (currentRank[lb]) {
     const entry = currentRank[lb];
     const date = new Date(entry.timestamp);
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
     <td>${entry.rank}</td>
-    <td><span class="top">You</span><br><span class="sub">${toppercent}</span></td>
+    <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -171,6 +187,8 @@ function updateFooter(lb: LbKey): void {
 }
 
 function checkLbMemory(lb: LbKey): void {
+  if (currentTimeRange === "daily") return;
+
   let side;
   if (lb === 15) {
     side = "left";
@@ -221,6 +239,13 @@ function fillTable(lb: LbKey, prepend?: number): void {
   } else {
     side = "right";
   }
+
+  if (currentData[lb].length === 0) {
+    $(`#leaderboardsWrapper table.${side} tbody`).html(
+      "<tr><td colspan='7'>No results found</td></tr>"
+    );
+  }
+
   const loggedInUserName = DB.getSnapshot()?.name;
 
   let a = currentData[lb].length - leaderboardSingleLimit;
@@ -242,6 +267,11 @@ function fillTable(lb: LbKey, prepend?: number): void {
       meClassString = ' class="me"';
     }
     const date = new Date(entry.timestamp);
+
+    if (currentTimeRange === "daily" && !entry.rank) {
+      entry.rank = i + 1;
+    }
+
     html += `
     <tr ${meClassString}>
     <td>${
@@ -294,24 +324,39 @@ export function hide(): void {
     );
 }
 
-async function update(): Promise<void> {
-  $("#leaderboardsWrapper .buttons .button").removeClass("active");
-  $(
-    `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
-  ).addClass("active");
+function updateTitle(): void {
+  const el = $("#leaderboardsWrapper .mainTitle");
 
+  const timeRangeString = currentTimeRange === "daily" ? "Daily" : "All-Time";
+
+  el.text(`${timeRangeString} English Leaderboards`);
+}
+
+async function update(): Promise<void> {
   showLoader(15);
   showLoader(60);
 
-  const leaderboardRequests = [
-    Ape.leaderboards.get("english", "time", "15", 0),
-    Ape.leaderboards.get("english", "time", "60", 0),
-  ];
+  const timeModes = ["15", "60"];
+
+  const leaderboardRequests = timeModes.map((mode2) => {
+    return Ape.leaderboards.get({
+      language: "english",
+      mode: "time",
+      mode2,
+      isDaily: currentTimeRange === "daily",
+    });
+  });
 
   if (Auth.currentUser) {
     leaderboardRequests.push(
-      Ape.leaderboards.getRank("english", "time", "15"),
-      Ape.leaderboards.getRank("english", "time", "60")
+      ...timeModes.map((mode2) => {
+        return Ape.leaderboards.getRank({
+          language: "english",
+          mode: "time",
+          mode2,
+          isDaily: currentTimeRange === "daily",
+        });
+      })
     );
   }
 
@@ -319,6 +364,8 @@ async function update(): Promise<void> {
 
   const failedResponse = responses.find((response) => response.status !== 200);
   if (failedResponse) {
+    hideLoader(15);
+    hideLoader(60);
     return Notifications.add(
       "Failed to load leaderboards: " + failedResponse.message,
       -1
@@ -346,6 +393,12 @@ async function update(): Promise<void> {
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
   $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
+
+  updateTitle();
+  $("#leaderboardsWrapper .buttons .button").removeClass("active");
+  $(
+    `#leaderboardsWrapper .buttonGroup.timeRange .button.` + currentTimeRange
+  ).addClass("active");
 }
 
 async function requestMore(lb: LbKey, prepend = false): Promise<void> {
@@ -363,13 +416,14 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     skipVal = 0;
   }
 
-  const response = await Ape.leaderboards.get(
-    "english",
-    "time",
-    lb,
-    skipVal,
-    limitVal
-  );
+  const response = await Ape.leaderboards.get({
+    language: "english",
+    mode: "time",
+    mode2: lb.toString(),
+    isDaily: currentTimeRange === "daily",
+    skip: skipVal,
+    limit: limitVal,
+  });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
   if (response.status !== 200 || data.length === 0) {
@@ -392,7 +446,13 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 async function requestNew(lb: LbKey, skip: number): Promise<void> {
   showLoader(lb);
 
-  const response = await Ape.leaderboards.get("english", "time", lb, skip);
+  const response = await Ape.leaderboards.get({
+    language: "english",
+    mode: "time",
+    mode2: lb.toString(),
+    isDaily: currentTimeRange === "daily",
+    skip,
+  });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
   if (response.status === 503) {
@@ -522,7 +582,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
   "click",
   async () => {
-    if (currentRank[15].rank === undefined) return;
+    if (!currentRank[15]?.rank) return;
     leftScrollEnabled = false;
     await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
@@ -559,7 +619,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   "click",
   async () => {
-    if (currentRank[60].rank === undefined) return;
+    if (!currentRank[60]?.rank) return;
     leftScrollEnabled = false;
     await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
@@ -582,6 +642,20 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
     );
   }
 );
+
+$(
+  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .allTime"
+).on("click", () => {
+  currentTimeRange = "allTime";
+  update();
+});
+
+$(
+  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
+).on("click", () => {
+  currentTimeRange = "daily";
+  update();
+});
 
 $(document).on("click", "#top #menu .text-button", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {

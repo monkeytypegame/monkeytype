@@ -27,12 +27,21 @@ const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     enabled: false,
   },
   favoriteQuotes: {
-    maxFavorites: 100,
+    maxFavorites: 0,
   },
   autoBan: {
     enabled: false,
     maxCount: 5,
     maxHours: 1,
+  },
+  dailyLeaderboards: {
+    enabled: false,
+    maxResults: 0,
+    leaderboardExpirationTimeInDays: 0,
+    validModeRules: [],
+    // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
+    dailyLeaderboardCacheSize: 1,
+    topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
   },
 };
 
