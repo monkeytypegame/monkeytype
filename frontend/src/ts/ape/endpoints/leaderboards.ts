@@ -4,35 +4,37 @@ export default function getLeaderboardsEndpoints(
   apeClient: Ape.Client
 ): Ape.Endpoints["leaderboards"] {
   async function get(
-    language: string,
-    mode: MonkeyTypes.Mode,
-    mode2: string | number,
-    skip = 0,
-    limit = 50
+    query: Ape.EndpointTypes.LeadeboardQueryWithPagination
   ): Ape.EndpointData {
+    const { language, mode, mode2, isDaily, skip = 0, limit = 50 } = query;
+
     const searchQuery = {
       language,
       mode,
       mode2,
-      skip,
+      skip: Math.max(skip, 0),
       limit: Math.max(Math.min(limit, 50), 0),
     };
 
-    return await apeClient.get(BASE_PATH, { searchQuery });
+    const endpointPath = `${BASE_PATH}/${isDaily ? "daily" : ""}`;
+
+    return await apeClient.get(endpointPath, { searchQuery });
   }
 
   async function getRank(
-    language: string,
-    mode: MonkeyTypes.Mode,
-    mode2: string | number
+    query: Ape.EndpointTypes.LeaderboardQuery
   ): Ape.EndpointData {
+    const { language, mode, mode2, isDaily } = query;
+
     const searchQuery = {
       language,
       mode,
       mode2,
     };
 
-    return await apeClient.get(`${BASE_PATH}/rank`, { searchQuery });
+    const endpointPath = `${BASE_PATH}${isDaily ? "/daily" : ""}/rank`;
+
+    return await apeClient.get(endpointPath, { searchQuery });
   }
 
   return { get, getRank };

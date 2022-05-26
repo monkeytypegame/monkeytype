@@ -73,6 +73,12 @@ beforeEach(async () => {
   }
 });
 
+const realDateNow = Date.now;
+
+afterEach(() => {
+  Date.now = realDateNow;
+});
+
 afterAll(async () => {
   await connection.close();
 });

@@ -19,14 +19,14 @@ import {
   updatePassword,
 } from "firebase/auth";
 
-type Input = {
+interface Input {
   placeholder?: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
   disabled?: boolean;
   label?: string;
-};
+}
 
 let activePopup: SimplePopup | null = null;
 

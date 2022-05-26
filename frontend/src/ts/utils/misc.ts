@@ -74,7 +74,11 @@ export function isColorDark(hex: string): boolean {
   return hsl.lgt < 50;
 }
 
-type Theme = { name: string; bgColor: string; mainColor: string };
+interface Theme {
+  name: string;
+  bgColor: string;
+  mainColor: string;
+}
 
 let themesList: Theme[] = [];
 export async function getThemesList(): Promise<Theme[]> {
@@ -165,7 +169,10 @@ export async function getLayout(
   return layoutsList[layoutName];
 }
 
-type Font = { name: string; display?: string };
+interface Font {
+  name: string;
+  display?: string;
+}
 
 let fontsList: Font[] = [];
 export async function getFontsList(): Promise<Font[]> {

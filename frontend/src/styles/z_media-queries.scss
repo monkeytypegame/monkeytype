@@ -1,23 +1,15 @@
 @media only screen and (max-width: 1250px) {
   #leaderboardsWrapper #leaderboards {
-    grid-template-rows: 1.5rem auto;
-    padding: 1rem;
-    gap: 1rem;
     .mainTitle {
       font-size: 2rem;
-      line-height: 2rem;
     }
     .title {
       font-size: 1rem;
     }
     .leaderboardsTop {
       .buttonGroup {
-        gap: 0.1rem !important;
-
-        .button {
-          padding: 0.4rem !important;
-          font-size: 0.7rem !important;
-        }
+        grid-auto-flow: row;
+        gap: 0.5rem;
       }
     }
     .tables table {
@@ -98,14 +90,12 @@
 }
 
 @media only screen and (max-width: 900px) {
-  // #leaderboards {
-  //   .mainTitle {
-  //     font-size: 1.5rem !important;
-  //     line-height: 1.5rem !important;
-  //   }
-  // }
+  #leaderboards {
+    .mainTitle {
+      font-size: 1.5rem !important;
+    }
+  }
   #bannerCenter .banner .container {
-    grid-template-columns: 1fr auto;
     .image {
       display: none;
     }
@@ -310,7 +300,6 @@
 
   #leaderboardsWrapper {
     #leaderboards {
-      grid-template-rows: 2.5rem auto;
       .leaderboardsTop {
         flex-direction: column;
         align-items: baseline;
