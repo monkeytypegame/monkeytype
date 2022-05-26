@@ -35143,10 +35143,22 @@
       "id": 5959
     },
     {
-      "text": "When the going gets tough, the tough get going.\n",
+      "text": "When the going gets tough, the tough get going.",
       "source": "Joe Kennedy",
       "length": 47,
       "id": 5960
+    },
+    {
+      "text": "I'm going to make him an offer he can't refuse.",
+      "source": "The Godfather",
+      "length": 47,
+      "id": 5961
+    },
+    {
+      "text": "After all, tomorrow is another day!\n",
+      "source": "Gone with the Wind",
+      "length": 35,
+      "id": 5962
     }
   ]
 }
