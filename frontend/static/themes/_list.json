@@ -1,5 +1,10 @@
 [
   {
+    "name": "tokyo_night",
+    "bgColor": "#1a1b26",
+    "mainColor": "#e0af68"
+  },
+  {
     "name": "dark",
     "bgColor": "#111",
     "mainColor": "#eee"
