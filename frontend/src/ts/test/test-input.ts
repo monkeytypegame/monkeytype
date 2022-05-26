@@ -1,14 +1,14 @@
 import * as TestWords from "./test-words";
 import { roundTo2 } from "../utils/misc";
 
-type Keypress = {
+interface Keypress {
   count: number;
   errors: number;
   words: number[];
   afk: boolean;
-};
+}
 
-type KeypressTimings = {
+interface KeypressTimings {
   spacing: {
     current: number;
     array: number[] | "toolong";
@@ -17,7 +17,7 @@ type KeypressTimings = {
     current: number;
     array: number[] | "toolong";
   };
-};
+}
 
 class Input {
   current: string;
