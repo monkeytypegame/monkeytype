@@ -321,6 +321,7 @@ export async function addResult(
   const validResultCriteria =
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
     !bailedOut &&
+    !user.banned &&
     (user.timeTyping ?? 0) > 7200;
 
   if (dailyLeaderboard && validResultCriteria) {
