@@ -1,7 +1,7 @@
 import _ from "lodash";
 import LRUCache from "lru-cache";
 import * as RedisClient from "../init/redis";
-import { getCurrentDayTimestamp, matchesAPattern } from "./misc";
+import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 
 interface DailyLeaderboardEntry {
   uid: string;
@@ -18,21 +18,6 @@ interface DailyLeaderboardEntry {
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
-
-function compareDailyLeaderboardEntries(
-  a: DailyLeaderboardEntry,
-  b: DailyLeaderboardEntry
-): number {
-  if (a.wpm !== b.wpm) {
-    return b.wpm - a.wpm;
-  }
-
-  if (a.acc !== b.acc) {
-    return b.acc - a.acc;
-  }
-
-  return a.timestamp - b.timestamp;
-}
 
 export class DailyLeaderboard {
   private leaderboardResultsKeyName: string;
@@ -85,6 +70,8 @@ export class DailyLeaderboard {
       (currentDayTimestamp + leaderboardExpirationDurationInMilliseconds) / 1000
     );
 
+    const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
+
     // @ts-ignore
     const rank = await connection.addResult(
       2,
@@ -93,7 +80,7 @@ export class DailyLeaderboard {
       maxResults,
       leaderboardExpirationTimeInSeconds,
       entry.uid,
-      entry.wpm,
+      resultScore,
       JSON.stringify(entry)
     );
 
@@ -126,13 +113,9 @@ export class DailyLeaderboard {
       maxRank
     );
 
-    const normalizedResults: DailyLeaderboardEntry[] = results
-      .map((result) => JSON.parse(result))
-      .sort(compareDailyLeaderboardEntries);
-
-    const resultsWithRanks: DailyLeaderboardEntry[] = normalizedResults.map(
-      (result, index) => ({
-        ...result,
+    const resultsWithRanks: DailyLeaderboardEntry[] = results.map(
+      (resultJSON, index) => ({
+        ...JSON.parse(resultJSON),
         rank: minRank + index + 1,
       })
     );
