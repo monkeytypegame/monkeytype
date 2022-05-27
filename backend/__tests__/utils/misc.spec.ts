@@ -38,60 +38,31 @@ describe("Misc Utils", () => {
     });
   });
 
-  it("tensComplement", () => {
-    const testCases = [
-      {
-        input: 123,
-        expected: 877,
-      },
-      {
-        input: 877,
-        expected: 123,
-      },
-      {
-        input: 0,
-        expected: 0,
-      },
-      {
-        input: 86423,
-        expected: 13577,
-      },
-      {
-        input: 10998739999,
-        expected: 89001260001,
-      },
-    ];
-
-    _.each(testCases, ({ input, expected }) => {
-      expect(misc.tensComplement(input)).toBe(expected);
-    });
-  });
-
   it("kogascore", () => {
     const testCases = [
       {
         wpm: 214.8,
         acc: 93.04,
         timestamp: 1653586489000,
-        expectedScore: 1214800930436711,
+        expectedScore: 1214800930423111,
       },
       {
         wpm: 214.8,
         acc: 93.04,
         timestamp: 1653601763000,
-        expectedScore: 1214800930421437,
+        expectedScore: 1214800930407837,
       },
       {
         wpm: 199.37,
         acc: 97.69,
         timestamp: 1653588809000,
-        expectedScore: 1199370976934391,
+        expectedScore: 1199370976920791,
       },
       {
         wpm: 196.2,
         acc: 96.07,
         timestamp: 1653591901000,
-        expectedScore: 1196200960731299,
+        expectedScore: 1196200960717699,
       },
     ];
 

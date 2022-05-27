@@ -91,33 +91,21 @@ export function matchesAPattern(text: string, pattern: string): boolean {
   return regex.test(text);
 }
 
-export function tensComplement(num: number): number {
-  if (num === 0) {
-    return 0;
-  }
-
-  let i = 0;
-  let temp = num;
-
-  while (temp !== 0) {
-    ++i;
-    temp = Math.floor(temp / 10);
-  }
-
-  return Math.pow(10, i) - num;
-}
+export const MILLISECONDS_IN_DAY = 86400000;
 
 export function kogascore(wpm: number, acc: number, timestamp: number): number {
   const normalizedWpm = Math.floor(wpm * 100);
   const normalizedAcc = Math.floor(acc * 100);
 
-  const firstPart = (100000 + normalizedWpm) * 100000;
-  const secondPart = (firstPart + normalizedAcc) * 100000;
+  const padAmount = 100000;
+  const firstPart = (padAmount + normalizedWpm) * padAmount;
+  const secondPart = (firstPart + normalizedAcc) * padAmount;
 
-  const currentDayTimeMilliseconds = timestamp - (timestamp % 86400000);
-  const todaySeconds = Math.floor(
-    (timestamp - currentDayTimeMilliseconds) / 1000
+  const currentDayTimeMilliseconds =
+    timestamp - (timestamp % MILLISECONDS_IN_DAY);
+  const todayMilliseconds = timestamp - currentDayTimeMilliseconds;
+
+  return (
+    secondPart + Math.floor((MILLISECONDS_IN_DAY - todayMilliseconds) / 1000)
   );
-
-  return secondPart + tensComplement(todaySeconds);
 }
