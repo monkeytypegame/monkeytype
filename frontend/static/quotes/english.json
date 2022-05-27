@@ -35177,6 +35177,30 @@
       "source": "John F.Kennedy",
       "length": 53,
       "id": 5965
+    },
+    {
+      "text": "Life is ten percent what happens to you and ninety percent how you respond to it.",
+      "source": "Charles Swindoll",
+      "length": 81,
+      "id": 5966
+    },
+    {
+      "text": "It always seems impossible until it's done.",
+      "source": "Nelson Mandela",
+      "length": 43,
+      "id": 5967
+    },
+    {
+      "text": "Every great dream begins with a dreamer. Always remember, you have within you the strength, the patience, and the passion to reach for the stars to change the world.",
+      "source": "Harriet Tubman",
+      "length": 165,
+      "id": 5968
+    },
+    {
+      "text": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      "source": "Winston Churchill",
+      "length": 86,
+      "id": 5969
     }
   ]
 }
