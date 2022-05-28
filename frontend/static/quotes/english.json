@@ -50,7 +50,7 @@
       "length": 75
     },
     {
-      "text": "If you have to ask you will never know, if you know you need only ask.",
+      "text": "If you have to ask, you will never know. If you know, you need only ask.",
       "source": "Harry Potter and the Deathly Hallows",
       "id": 8,
       "length": 70
@@ -2682,12 +2682,6 @@
       "source": "Twilight",
       "id": 448,
       "length": 160
-    },
-    {
-      "text": "Welcome to the room of people who have rooms of people that they loved one day, docked away. Just because we check the guns at the door doesn't mean our brains will change from hand grenades.",
-      "source": "Heathens",
-      "id": 449,
-      "length": 191
     },
     {
       "text": "To the extent that experience is the sum of our memories and wisdom the sum of experience, having a better memory would mean knowing not only more about the world, but also more about myself.",
@@ -10418,12 +10412,6 @@
       "length": 274
     },
     {
-      "text": "Great, let's round up all the useless cats and hope a tree falls on them.",
-      "source": "Warriors: Power of Three #1: The Sight",
-      "id": 1757,
-      "length": 73
-    },
-    {
       "text": "Okay, I don't know you, but I do know that you can fix your attitude. Do you wanna go home and feel sorry for yourself about a man you didn't wanna marry? Or do you wanna go talk to that cute boy who's been looking at you and give him your number before I throw him in my Benz for myself?",
       "source": "Parks and Recreation",
       "id": 1758,
@@ -16952,12 +16940,6 @@
       "length": 236
     },
     {
-      "text": "There are spaces between the joints, and the blade of the knife has really no thickness.",
-      "source": "Basic Writings",
-      "id": 2863,
-      "length": 88
-    },
-    {
       "text": "Perhaps if you know you are insane then you are not insane. Or you are becoming sane, finally. Waking up.",
       "source": "The Man in the High Castle",
       "id": 2864,
@@ -18573,7 +18555,7 @@
     },
     {
       "text": "And I will strike down upon thee with great vengeance and furious anger those who would attempt to poison and destroy my brothers. And you will know my name is the Lord when I lay my vengeance upon thee.",
-      "source": "Pulp Fiction",
+      "source": "Ezekiel 25.17",
       "id": 3137,
       "length": 203
     },
@@ -20886,12 +20868,6 @@
       "source": "Speed Secrets: Professional Race Driving Techniques",
       "id": 3528,
       "length": 222
-    },
-    {
-      "text": "The devil found a clever way to infiltrate and bring his manipulation; a slender blonde in a cocktail dress struggling through the intoxication brought on by the gifting of drinks until she was ready to pay back in the bedroom, in the search to appease the demons in her head on a sterile surface in the bathroom.",
-      "source": "July (Part One)",
-      "id": 3529,
-      "length": 313
     },
     {
       "text": "I was proud of my work. And the buildings went up. When they were finished the damnedest thing happened. It was like the buildings were too good for us. Nobody told us that. It just felt uncomfortable, that's all.",
@@ -23708,12 +23684,6 @@
       "length": 192
     },
     {
-      "text": "I hope to hell when I do die somebody has sense enough to just dump me in the river or something.",
-      "source": "The Catcher in the Rye",
-      "id": 4002,
-      "length": 97
-    },
-    {
       "text": "\"I wish it need not have happened in my time,\" said Frodo. \"So do I,\" said Gandalf, \"and so do all who live to see such times. But that is not for them to decide. All we have to decide is what to do with the time that is given us.\"",
       "source": "The Lord of The Rings",
       "id": 4003,
@@ -25692,12 +25662,6 @@
       "source": "Juno",
       "id": 4336,
       "length": 99
-    },
-    {
-      "text": "Well, I wanna thank y'all for coming out today, and I wanna thank my supporters from the bottom of my heart. Because we have been tested - tested by fire. Our border has been put to the test, and let me tell you: we have failed that test. The aliens, the infiltrators, the outsiders, they come right across by light of day or dark of night. They'll bleed us, they're parasites. They'll bleed us until we as a city, a county, a state, a nation are all bled out. Make no mistake: we are at war. Every time an illegal dances across our border it is an act of aggression against this sovereign state, an overt act of terrorism.",
-      "source": "Machete",
-      "id": 4337,
-      "length": 623
     },
     {
       "text": "Studies suggest that the influence of parents is due to two factors: communication and receptivity. Parents communicate their feelings and preferences to children constantly. Because children have such a strong desire for parental approval, they are very receptive to their parents' views.",
@@ -28982,12 +28946,6 @@
       "length": 558
     },
     {
-      "text": "And then I hear the best thing to do is feed 'em to pigs. You gotta starve the pigs for a few days, then the sight of a chopped up body looks like curry to a drunk. You gotta shave the heads of your victims and pull the teeth out. You could do that after of course, but you don't want to go sieving pig shit do you? Ever seen the size of one of their molars? They go through bone like it's butter. You gotta have a few pigs though, you need about sixteen. They will go through a body that weighs two hundred pounds in about eight minutes. That means that a single pig can consume two pounds of uncooked flesh every minute... Hence the expression \"greedy as a pig.\"",
-      "source": "Snatch",
-      "id": 4892,
-      "length": 664
-    },
-    {
       "text": "Confession is not betrayal. What you say or do doesn't matter; only feelings matter. If they could make me stop loving you - that would be the real betrayal.",
       "source": "Nineteen Eighty Four",
       "id": 4893,
@@ -29750,7 +29708,7 @@
       "length": 67
     },
     {
-      "text": "I solemnly swear I am up to no good.",
+      "text": "I solemnly swear that I am up to no good.",
       "source": "Harry Potter and the Prisoner of Azkaban",
       "id": 5024,
       "length": 36
@@ -30008,7 +29966,7 @@
       "length": 101
     },
     {
-      "text": "'You know,' he said, sitting back, reflectively, 'it's at times like this that you kind of wonder if it's worth worrying about the fabric of space-time and the causal integrity Of the multidimensional probability matrix and the potential collapse of all waveforms in the Whole Sort of General Mish Mash and all that sort of stuff that's been bugging me.",
+      "text": "'You know,' he said, sitting back, reflectively, 'it's at times like this that you kind of wonder if it's worth worrying about the fabric of space-time and the causal integrity of the multidimensional probability matrix and the potential collapse of all waveforms in the Whole Sort of General Mish Mash and all that sort of stuff that's been bugging me.",
       "source": "Mostly Harmless",
       "id": 5067,
       "length": 353
@@ -30494,7 +30452,7 @@
       "id": 5148
     },
     {
-      "text": "'Thank you, my dear, for your offer,' said the wife, rising, 'but I'm afraid no man can expect two blue birds of happiness to flutter round his feet, tearing out their little feathers!'",
+      "text": "\"Thank you, my dear, for your offer,\" said the wife, rising, 'but I'm afraid no man can expect two blue birds of happiness to flutter round his feet, tearing out their little feathers!'",
       "source": "D.H. Lawrence, Two blue birds",
       "length": 185,
       "id": 5149
@@ -30746,7 +30704,7 @@
       "id": 5190
     },
     {
-      "text": "\"You see,\" he says to the girl, \"you closed your eyes. That was the difference. Sometimes you cannot believe what you see, you have to believe what you feel. And if you are ever going to have other people trust you, you must feel that you can trust them, too---even when you're in the dark. Even when you're falling.\"",
+      "text": "\"You see,\" he says to the girl, \"you closed your eyes. That was the difference. Sometimes you cannot believe what you see, you have to believe what you feel. And if you are ever going to have other people trust you, you must feel that you can trust them, too - even when you're in the dark. Even when you're falling.\"",
       "source": "Mitch Albom, tuesdays with Morrie",
       "length": 317,
       "id": 5191
@@ -31262,7 +31220,7 @@
       "id": 5280
     },
     {
-      "text": "A learning experience is one of those things that says, 'You know that thing you just did? Don't do that.",
+      "text": "A learning experience is one of those things that says \"You know that thing you just did? Don't do that.\"",
       "source": "Douglas Adams, The Salmon of Doubt",
       "length": 105,
       "id": 5281
@@ -31700,7 +31658,7 @@
       "id": 5361
     },
     {
-      "text": "Dear Mario: Please come to the castle. I've baked a cake for you. Your's Truly- Princess Toadstool Peach.",
+      "text": "Dear Mario: Please come to the castle. I've baked a cake for you. Yours Truly- Princess Toadstool Peach.",
       "source": "Super Mario 64",
       "length": 105,
       "id": 5362
@@ -32300,7 +32258,7 @@
       "id": 5467
     },
     {
-      "text": "How the f*** do you negotiate with a piece of software?",
+      "text": "How the hell do you negotiate with a piece of software?",
       "source": "Wade Watts, Ready Player Two",
       "length": 55,
       "id": 5468
@@ -32523,13 +32481,13 @@
     },
     {
       "text": "Mental? Well, let me tell you something, Mr. 100% Tip-Top Mental. My daughter may be no spring chicken, and her jaw may crack when she chews, and she may have noticeable trouble digesting raw vegetables. But one thing she is not, is mental!",
-      "source": "Sophia Petrillo, The Golden Girls",
+      "source": "The Golden Girls",
       "length": 240,
       "id": 5509
     },
     {
       "text": "Picture this. Two young girls, best friends, who share three things: some dough and a dream. Everything is going great, until one day, a fast-talking pepperoni salesman gallops into town. Of course, both girls are impressed. He dates one one night, and the other the next night. Pretty soon, he drives a wedge between them. Before you know it, the pizza suffers, the business suffers, the friendship suffers. The girls part company and head for America, never to see one another again. Rose, one of those girls was me. The other one, you probably know as Mama Celeste.",
-      "source": "Sophia Petrillo, The Golden Girls",
+      "source": "The Golden Girls",
       "length": 568,
       "id": 5510
     },
@@ -32660,7 +32618,7 @@
       "id": 5531
     },
     {
-      "text": "I have little sympathy with the rather prevalent concept that man is basically irrational, and that his impulses, if not controlled, will lead to destruction of others and self. Man's behavior is exquisitely rational, moving with subtle and ordered complexity toward the goals his organism is endeavoring to achieve. The tragedy for most of us is that our defenses keep us from being aware of this rationality, so that conciously we are moving in one direction, while organismically we are moving in another.",
+      "text": "I have little sympathy with the rather prevalent concept that man is basically irrational, and that his impulses, if not controlled, will lead to destruction of others and self. Man's behavior is exquisitely rational, moving with subtle and ordered complexity toward the goals his organism is endeavoring to achieve. The tragedy for most of us is that our defenses keep us from being aware of this rationality, so that consciously we are moving in one direction, while organismically we are moving in another.",
       "source": "Carl Rogers, On Becoming a Person",
       "length": 508,
       "id": 5532
@@ -33572,7 +33530,7 @@
       "id": 5697
     },
     {
-      "text": "Lets build a happy little cloud.\nLets build some happy little trees.",
+      "text": "Let's build a happy little cloud. Let's build some happy little trees.",
       "source": "Bob Ross",
       "length": 68,
       "id": 5698
@@ -33866,7 +33824,7 @@
       "id": 5746
     },
     {
-      "text": "Well, dreams, they feel real while we're in them right? It's only when we wake up then we realize that something was actually strange.",
+      "text": "Well, dreams, they feel real while we're in them right? It's only when we wake up that we realize that something was actually strange.",
       "source": "Inception",
       "length": 134,
       "id": 5747
@@ -34172,7 +34130,7 @@
       "id": 5797
     },
     {
-      "text": "\"There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though they have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.\"\n",
+      "text": "\"There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though they have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.\"",
       "source": "Death Note",
       "length": 678,
       "id": 5798
@@ -34190,7 +34148,7 @@
       "id": 5800
     },
     {
-      "text": "It may be hard right now but you must silent those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
+      "text": "It may be hard right now but you must silence those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
       "source": "one piece",
       "length": 182,
       "id": 5801
@@ -34598,7 +34556,7 @@
       "id": 5869
     },
     {
-      "text": "We all deserve love, even on the days when we aren't our best\n'Cause we all suck, but love can make us suck less\nWe all deserve love, it's the very best part of being alive\nAnd I would know I just turned 25",
+      "text": "We all deserve love, even on the days when we aren't our best. 'Cause we all suck, but love can make us suck less. We all deserve love, it's the very best part of being alive. And I would know I just turned 25",
       "source": "Lower Your Expectations - Bo Burnham",
       "length": 206,
       "id": 5870
