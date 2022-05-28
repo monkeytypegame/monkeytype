@@ -759,4 +759,9 @@
     "bgColor": "#ffffff",
     "mainColor": "#40d672"
   }
+  ,{
+    "name": "pop",
+    "bgColor": "#353432",
+    "mainColor": "#F8B571"
+  }
 ]
