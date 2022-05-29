@@ -52,8 +52,8 @@ async function announceDailyLeaderboard(
 }
 
 async function announceDailyLeaderboards(): Promise<void> {
-  const { dailyLeaderboards } = await getCachedConfiguration();
-  if (!dailyLeaderboards.enabled) {
+  const { dailyLeaderboards, maintenance } = await getCachedConfiguration();
+  if (!dailyLeaderboards.enabled || maintenance) {
     return;
   }
 

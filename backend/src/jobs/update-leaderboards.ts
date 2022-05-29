@@ -1,6 +1,7 @@
 import { CronJob } from "cron";
 import * as George from "../tasks/george";
 import * as LeaderboardsDAL from "../dal/leaderboards";
+import { getCachedConfiguration } from "../init/configuration";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";
 const RECENT_AGE_MINUTES = 10;
@@ -56,6 +57,11 @@ async function updateLeaderboardAndNotifyChanges(
 }
 
 async function updateLeaderboards(): Promise<void> {
+  const { maintenance } = await getCachedConfiguration();
+  if (maintenance) {
+    return;
+  }
+
   await updateLeaderboardAndNotifyChanges("15");
   await updateLeaderboardAndNotifyChanges("60");
 }
