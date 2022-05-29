@@ -403,7 +403,7 @@ export async function addGoogleAuth(): Promise<void> {
     .catch(function (error) {
       Loader.hide();
       Notifications.add(
-        "Failed to add Google authenication: " + error.message,
+        "Failed to add Google authentication: " + error.message,
         -1
       );
     });
@@ -484,13 +484,13 @@ export async function addPasswordAuth(
   linkWithCredential(user, credential)
     .then(function () {
       Loader.hide();
-      Notifications.add("Password authenication added", 1);
+      Notifications.add("Password authentication added", 1);
       Settings.updateAuthSections();
     })
     .catch(function (error) {
       Loader.hide();
       Notifications.add(
-        "Failed to add password authenication: " + error.message,
+        "Failed to add password authentication: " + error.message,
         -1
       );
     });
