@@ -16,6 +16,7 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
+  unlink,
   updatePassword,
 } from "firebase/auth";
 
@@ -314,7 +315,68 @@ list["updateEmail"] = new SimplePopup(
       Notifications.add("Email updated", 1);
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 3000);
+    } catch (e) {
+      const typedError = e as FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  (thisPopup) => {
+    const user = Auth.currentUser;
+    if (user === null) return;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "";
+      thisPopup.text = "Password authentication is not enabled";
+    }
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["removeGoogleAuth"] = new SimplePopup(
+  "removeGoogleAuth",
+  "text",
+  "Remove Google Authentication",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
+  "Remove",
+  async (_thisPopup, password) => {
+    try {
+      const user = Auth.currentUser;
+      if (user === null) return;
+      if (user.providerData.find((p) => p?.providerId === "password")) {
+        const credential = EmailAuthProvider.credential(
+          user.email as string,
+          password
+        );
+        await reauthenticateWithCredential(user, credential);
+      }
+      Loader.show();
+      unlink(user, "google.com")
+        .then(() => {
+          Loader.hide();
+          Notifications.add("Google authentication removed", 1);
+          Settings.updateAuthSections();
+        })
+        .catch((error) => {
+          Loader.hide();
+          Notifications.add("Something went wrong: " + error.message, -1);
+        });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } catch (e) {
       const typedError = e as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
@@ -396,7 +458,7 @@ list["updateName"] = new SimplePopup(
       if (DB.getSnapshot().needsToChangeName) {
         setTimeout(() => {
           location.reload();
-        }, 1000);
+        }, 3000);
       }
     } catch (e) {
       const typedError = e as FirebaseError;
@@ -468,7 +530,7 @@ list["updatePassword"] = new SimplePopup(
       Notifications.add("Password updated", 1);
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 3000);
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
@@ -765,7 +827,7 @@ list["resetSettings"] = new SimplePopup(
     UpdateConfig.reset();
     // setTimeout(() => {
     //   location.reload();
-    // }, 1000);
+    // }, 3000);
   },
   () => {
     //
@@ -1073,6 +1135,10 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
     list["unlinkDiscord"].show();
   }
 );
+
+$(".pageSettings #removeGoogleAuth").on("click", () => {
+  list["removeGoogleAuth"].show();
+});
 
 $("#resetSettingsButton").on("click", () => {
   list["resetSettings"].show();
