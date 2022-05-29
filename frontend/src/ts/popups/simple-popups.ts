@@ -292,7 +292,7 @@ list["updateEmail"] = new SimplePopup(
         Notifications.add("Emails don't match", 0);
         return;
       }
-      if (user.providerData[0].providerId === "password") {
+      if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
@@ -360,13 +360,14 @@ list["updateName"] = new SimplePopup(
     try {
       const user = Auth.currentUser;
       if (user === null) return;
-      if (user.providerData[0].providerId === "password") {
+
+      if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           pass
         );
         await reauthenticateWithCredential(user, credential);
-      } else if (user.providerData[0].providerId === "google.com") {
+      } else {
         await reauthenticateWithPopup(user, AccountController.gmailProvider);
       }
       Loader.show();
@@ -410,7 +411,7 @@ list["updateName"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth.currentUser;
     if (user === null) return;
-    if (user.providerData[0].providerId === "google.com") {
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
@@ -559,13 +560,13 @@ list["deleteAccount"] = new SimplePopup(
     try {
       const user = Auth.currentUser;
       if (user === null) return;
-      if (user.providerData[0].providerId === "password") {
+      if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
         );
         await reauthenticateWithCredential(user, credential);
-      } else if (user.providerData[0].providerId === "google.com") {
+      } else {
         await reauthenticateWithPopup(user, AccountController.gmailProvider);
       }
       Loader.show();
@@ -613,7 +614,8 @@ list["deleteAccount"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth.currentUser;
     if (user === null) return;
-    if (user.providerData[0].providerId === "google.com") {
+
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -705,13 +707,13 @@ list["resetPersonalBests"] = new SimplePopup(
     try {
       const user = Auth.currentUser;
       if (user === null) return;
-      if (user.providerData[0].providerId === "password") {
+      if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
         );
         await reauthenticateWithCredential(user, credential);
-      } else if (user.providerData[0].providerId === "google.com") {
+      } else {
         await reauthenticateWithPopup(user, AccountController.gmailProvider);
       }
       Loader.show();
@@ -741,7 +743,8 @@ list["resetPersonalBests"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth.currentUser;
     if (user === null) return;
-    if (user.providerData[0].providerId === "google.com") {
+
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
