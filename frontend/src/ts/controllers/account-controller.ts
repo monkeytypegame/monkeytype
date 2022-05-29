@@ -38,7 +38,6 @@ import {
   linkWithPopup,
   linkWithCredential,
   reauthenticateWithPopup,
-  unlink as unlinkAuth,
   getAdditionalUserInfo,
   sendPasswordResetEmail,
   User as UserType,
@@ -409,58 +408,6 @@ export async function addGoogleAuth(): Promise<void> {
     });
 }
 
-export function noGoogleNoMo(): void {
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "password")
-  ) {
-    unlinkAuth(user, "google.com")
-      .then(() => {
-        console.log("unlinked");
-        Settings.updateAuthSections();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-}
-
-export async function removeGoogleAuth(): Promise<void> {
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "password")
-  ) {
-    Loader.show();
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-    unlinkAuth(user, "google.com")
-      .then(() => {
-        Notifications.add("Google authentication removed", 1);
-        Loader.hide();
-        Settings.updateAuthSections();
-      })
-      .catch((error) => {
-        Loader.hide();
-        Notifications.add(
-          "Failed to remove Google authentication: " + error.message,
-          -1
-        );
-      });
-  } else {
-    Notifications.add(
-      "Password authentication needs to be enabled to remove Google authentication",
-      -1
-    );
-  }
-}
-
 export async function addPasswordAuth(
   email: string,
   password: string
@@ -708,10 +655,6 @@ $(".pageLogin .register .button").on("click", () => {
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
   addGoogleAuth();
-});
-
-$(".pageSettings #removeGoogleAuth").on("click", () => {
-  removeGoogleAuth();
 });
 
 $(document).on("click", ".pageAccount .sendVerificationEmail", () => {
