@@ -256,6 +256,22 @@ export async function loadUser(user: UserType): Promise<void> {
   if (VerificationController.data !== null) {
     VerificationController.verify(user.uid);
   }
+
+  if (TestLogic.notSignedInLastResult !== null) {
+    TestLogic.setNotSignedInUid(user.uid);
+
+    const response = await Ape.results.save(TestLogic.notSignedInLastResult);
+
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to save last result: " + response.message,
+        -1
+      );
+    }
+
+    TestLogic.clearNotSignedInResult();
+    Notifications.add("Last test result saved", 1);
+  }
 }
 
 const authListener = Auth.onAuthStateChanged(async function (user) {
@@ -313,23 +329,6 @@ export function signIn(): void {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
-        if (TestLogic.notSignedInLastResult !== null) {
-          TestLogic.setNotSignedInUid(e.user.uid);
-
-          const response = await Ape.results.save(
-            TestLogic.notSignedInLastResult
-          );
-
-          if (response.status !== 200) {
-            return Notifications.add(
-              "Failed to save last result: " + response.message,
-              -1
-            );
-          }
-
-          TestLogic.clearNotSignedInResult();
-          Notifications.add("Last test result saved", 1);
-        }
       })
       .catch(function (error) {
         let message = error.message;
