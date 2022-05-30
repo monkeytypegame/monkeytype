@@ -348,5 +348,9 @@
   {
     "name": "amharic",
     "languages": ["amharic"]
+  },
+  {
+    "name": "oromo",
+    "languages": ["oromo", "oromo_2k", "oromo_50k"]
   }
 ]
