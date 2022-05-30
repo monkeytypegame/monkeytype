@@ -34,6 +34,20 @@ declare namespace Ape {
   type EndpointData = Promise<Response>;
   type Endpoint = () => EndpointData;
 
+  declare namespace EndpointTypes {
+    interface LeaderboardQuery {
+      language: string;
+      mode: MonkeyTypes.Mode;
+      mode2: string | number;
+      isDaily?: boolean;
+    }
+
+    interface LeadeboardQueryWithPagination extends LeaderboardQuery {
+      skip?: number;
+      limit?: number;
+    }
+  }
+
   interface Endpoints {
     configs: {
       get: Endpoint;
@@ -41,18 +55,8 @@ declare namespace Ape {
     };
 
     leaderboards: {
-      get: (
-        language: string,
-        mode: MonkeyTypes.Mode,
-        mode2: string | number,
-        skip: number,
-        limit?: number
-      ) => EndpointData;
-      getRank: (
-        language: string,
-        mode: MonkeyTypes.Mode,
-        mode2: string | number
-      ) => EndpointData;
+      get: (query: EndpointTypes.LeadeboardQueryWithPagination) => EndpointData;
+      getRank: (query: EndpointTypes.LeaderboardQuery) => EndpointData;
     };
 
     presets: {

@@ -3,13 +3,13 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 
-type Quote = {
+interface Quote {
   _id: string;
   text: string;
   source: string;
   language: string;
   timestamp: number;
-};
+}
 
 let quotes: Quote[] = [];
 

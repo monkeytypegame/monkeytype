@@ -2565,7 +2565,6 @@
     "usilovat",
     "člun",
     "snižovat",
-    "Slovensko",
     "kouč",
     "věrný",
     "Česko",
@@ -2901,7 +2900,6 @@
     "úcta",
     "jeskyně",
     "nábytek",
-    "Polsko",
     "zlobit",
     "důl",
     "podání",
@@ -3859,7 +3857,6 @@
     "nápadně",
     "nejistota",
     "mýlit",
-    "Slovensko",
     "udělit",
     "výzkumný",
     "koření",
@@ -5644,7 +5641,6 @@
     "řasa",
     "elektronika",
     "květináč",
-    "Polsko",
     "dalekohled",
     "datový",
     "rezervace",
@@ -9634,6 +9630,8 @@
     "klasika",
     "liberál",
     "kalendářní",
-    "odolávat"
+    "odolávat",
+    "Slovensko",
+    "Polsko"
   ]
 }

@@ -40,7 +40,7 @@ export const configGet = rateLimit({
 // Leaderboards Routing
 export const leaderboardsGet = rateLimit({
   windowMs: ONE_HOUR,
-  max: 60 * REQUEST_MULTIPLIER,
+  max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });

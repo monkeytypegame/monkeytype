@@ -3,10 +3,10 @@ import { focusWords } from "../test/test-ui";
 
 let visible = false;
 
-type Accepted = {
+interface Accepted {
   security: boolean;
   analytics: boolean;
-};
+}
 
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies");
@@ -29,10 +29,7 @@ export function check(): void {
 }
 
 export function show(): void {
-  if (
-    $("#cookiePopupWrapper")[0] === undefined ||
-    $("#cookiePopupWrapper").outerHeight(true) === 0
-  ) {
+  if ($("#cookiePopupWrapper")[0] === undefined) {
     //removed by cookie popup blocking extension
     visible = false;
     return;
@@ -43,7 +40,14 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        visible = true;
+        if (
+          $("#cookiePopupWrapper").is(":visible") === false ||
+          $("#cookiePopupWrapper").outerHeight(true) === 0
+        ) {
+          visible = false;
+        } else {
+          visible = true;
+        }
       });
   }
 }

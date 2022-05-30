@@ -4,11 +4,11 @@ import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 
-type Data = {
+interface Data {
   accessToken: string;
   tokenType: string;
   uid?: string;
-};
+}
 
 export let data: Data | null = null;
 

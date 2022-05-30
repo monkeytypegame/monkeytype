@@ -7,16 +7,16 @@ import QuotesController from "../controllers/quotes-controller";
 
 const CAPTCHA_ID = 1;
 
-type State = {
+interface State {
   previousPopupShowCallback?: () => void;
   quoteToReport?: MonkeyTypes.Quote;
-};
+}
 
-type Options = {
+interface Options {
   quoteId: number;
   previousPopupShowCallback?: () => void;
   noAnim: boolean;
-};
+}
 
 const state: State = {
   previousPopupShowCallback: undefined,

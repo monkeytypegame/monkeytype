@@ -9,7 +9,10 @@ declare namespace MonkeyTypes {
 
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
 
-  type LanguageGroup = { name: string; languages: string[] };
+  interface LanguageGroup {
+    name: string;
+    languages: string[];
+  }
 
   type Accents = [string, string][];
 
@@ -282,13 +285,13 @@ declare namespace MonkeyTypes {
     hash?: string;
   }
 
-  type ApeKey = {
+  interface ApeKey {
     name: string;
     enabled: boolean;
     createdOn: number;
     modifiedOn: number;
     lastUsedOn: number;
-  };
+  }
 
   interface ApeKeys {
     [key: string]: ApeKey;
@@ -464,6 +467,7 @@ declare namespace MonkeyTypes {
 
   type FavoriteQuotes = Record<string, string[]>;
 
+  // Converting this to an interface causes a TS error
   type PartialRecord<K extends keyof any, T> = {
     [P in K]?: T;
   };

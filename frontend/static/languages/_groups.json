@@ -314,6 +314,7 @@
       "code_fsharp",
       "code_javascript",
       "code_javascript_1k",
+      "code_julia",
       "code_html",
       "code_pascal",
       "code_java",
@@ -329,7 +330,9 @@
       "code_luau",
       "code_matlab",
       "code_sql",
-      "code_perl"
+      "code_perl",
+      "code_php",
+      "code_vim"
     ]
   },
   {
@@ -343,7 +346,7 @@
     ]
   },
   {
-    "name":"amharic",
-    "languages":["amharic"]
+    "name": "amharic",
+    "languages": ["amharic"]
   }
 ]

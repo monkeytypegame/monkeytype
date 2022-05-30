@@ -2577,8 +2577,6 @@
     "liberation",
     "liberty",
     "library",
-    "license",
-    "license",
     "lie",
     "life",
     "lifelong",
@@ -3342,8 +3340,6 @@
     "power",
     "powerful",
     "practical",
-    "practice",
-    "practice",
     "practitioner",
     "praise",
     "pray",
@@ -3448,8 +3444,6 @@
     "profit",
     "profitable",
     "profound",
-    "program",
-    "program",
     "programming",
     "progress",
     "progressive",
@@ -4963,6 +4957,9 @@
     "yourself",
     "youth",
     "zero",
-    "zone"
+    "zone",
+    "license",
+    "practice",
+    "program"
   ]
 }

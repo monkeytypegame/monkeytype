@@ -3,12 +3,12 @@ import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import { randomElementFromArray } from "../utils/misc";
 
-type ClickSounds = {
+interface ClickSounds {
   [key: string]: {
     sounds: Howler.Howl[];
     counter: number;
   }[];
-};
+}
 
 let errorSound: Howler.Howl | null = null;
 let clickSounds: ClickSounds | null = null;
