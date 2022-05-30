@@ -132,8 +132,9 @@ export async function announceDailyLeaderboardTopResults(
   const taskName = "announceDailyLeaderboardTopResults";
 
   const dailyLeaderboardTopResultsTask = buildGeorgeTask(taskName, [
-    taskName,
-    [leaderboardId, leaderboardTimestamp, topResults],
+    leaderboardId,
+    leaderboardTimestamp,
+    topResults,
   ]);
 
   await addToQueue(taskName, dailyLeaderboardTopResultsTask);
