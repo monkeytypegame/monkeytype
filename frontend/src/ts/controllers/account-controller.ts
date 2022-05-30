@@ -38,7 +38,6 @@ import {
   linkWithPopup,
   linkWithCredential,
   reauthenticateWithPopup,
-  unlink as unlinkAuth,
   getAdditionalUserInfo,
   sendPasswordResetEmail,
   User as UserType,
@@ -257,6 +256,22 @@ export async function loadUser(user: UserType): Promise<void> {
   if (VerificationController.data !== null) {
     VerificationController.verify(user.uid);
   }
+
+  if (TestLogic.notSignedInLastResult !== null) {
+    TestLogic.setNotSignedInUid(user.uid);
+
+    const response = await Ape.results.save(TestLogic.notSignedInLastResult);
+
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to save last result: " + response.message,
+        -1
+      );
+    }
+
+    TestLogic.clearNotSignedInResult();
+    Notifications.add("Last test result saved", 1);
+  }
 }
 
 const authListener = Auth.onAuthStateChanged(async function (user) {
@@ -314,23 +329,6 @@ export function signIn(): void {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
-        if (TestLogic.notSignedInLastResult !== null) {
-          TestLogic.setNotSignedInUid(e.user.uid);
-
-          const response = await Ape.results.save(
-            TestLogic.notSignedInLastResult
-          );
-
-          if (response.status !== 200) {
-            return Notifications.add(
-              "Failed to save last result: " + response.message,
-              -1
-            );
-          }
-
-          TestLogic.clearNotSignedInResult();
-          Notifications.add("Last test result saved", 1);
-        }
       })
       .catch(function (error) {
         let message = error.message;
@@ -403,62 +401,10 @@ export async function addGoogleAuth(): Promise<void> {
     .catch(function (error) {
       Loader.hide();
       Notifications.add(
-        "Failed to add Google authenication: " + error.message,
+        "Failed to add Google authentication: " + error.message,
         -1
       );
     });
-}
-
-export function noGoogleNoMo(): void {
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "password")
-  ) {
-    unlinkAuth(user, "google.com")
-      .then(() => {
-        console.log("unlinked");
-        Settings.updateAuthSections();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-}
-
-export async function removeGoogleAuth(): Promise<void> {
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "password")
-  ) {
-    Loader.show();
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-    unlinkAuth(user, "google.com")
-      .then(() => {
-        Notifications.add("Google authentication removed", 1);
-        Loader.hide();
-        Settings.updateAuthSections();
-      })
-      .catch((error) => {
-        Loader.hide();
-        Notifications.add(
-          "Failed to remove Google authentication: " + error.message,
-          -1
-        );
-      });
-  } else {
-    Notifications.add(
-      "Password authentication needs to be enabled to remove Google authentication",
-      -1
-    );
-  }
 }
 
 export async function addPasswordAuth(
@@ -484,13 +430,13 @@ export async function addPasswordAuth(
   linkWithCredential(user, credential)
     .then(function () {
       Loader.hide();
-      Notifications.add("Password authenication added", 1);
+      Notifications.add("Password authentication added", 1);
       Settings.updateAuthSections();
     })
     .catch(function (error) {
       Loader.hide();
       Notifications.add(
-        "Failed to add password authenication: " + error.message,
+        "Failed to add password authentication: " + error.message,
         -1
       );
     });
@@ -708,10 +654,6 @@ $(".pageLogin .register .button").on("click", () => {
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
   addGoogleAuth();
-});
-
-$(".pageSettings #removeGoogleAuth").on("click", () => {
-  removeGoogleAuth();
 });
 
 $(document).on("click", ".pageAccount .sendVerificationEmail", () => {
