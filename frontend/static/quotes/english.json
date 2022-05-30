@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -35093,6 +35105,13 @@
       "length": 1983,
       "approvedBy": "ze_or",
       "id": 5958
+    },
+    {
+      "text": "I just want to apologize to Mike’s mom and Josh’s mom and my mom. And I’m sorry to everyone. I was very naive. I am so, so sorry for everything that has happened. Because in spite of what Mike says now, it is my fault. Because it was my project and I insisted. I insisted on everything. I insisted we weren’t lost. I insisted we keep going. I insisted that we walk south. Everything had to be my way and this is where we’ve ended up. And it’s all because of me that we’re here now: hungry and cold and hunted. I love you, Mom and Dad. I am so sorry... what is that? I’m scared to close my eyes and I’m scared to open them. I’m going to die out here.",
+      "source": "The Blair Witch Project",
+      "length": 649,
+      "approvedBy": "ze_or",
+      "id": 5959
     }
   ]
 }
