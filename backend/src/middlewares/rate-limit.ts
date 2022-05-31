@@ -166,7 +166,7 @@ export const resultsAdd = rateLimit({
 
 export const resultsTagsUpdate = rateLimit({
   windowMs: ONE_HOUR,
-  max: 30 * REQUEST_MULTIPLIER,
+  max: 100 * REQUEST_MULTIPLIER,
   keyGenerator: getAddress,
   handler: customHandler,
 });

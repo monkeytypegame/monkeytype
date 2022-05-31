@@ -59,6 +59,8 @@ export async function updateName(
 
   const user = await getUser(uid, "update name");
 
+  const oldName = user.name;
+
   if (
     !user?.needsToChangeName &&
     Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
@@ -66,6 +68,12 @@ export async function updateName(
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
 
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $push: { nameHistory: oldName },
+    }
+  );
   return await getUsersCollection().updateOne(
     { uid },
     {
