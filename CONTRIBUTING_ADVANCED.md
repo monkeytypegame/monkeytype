@@ -6,6 +6,7 @@
   - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
+  - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
   - [Backend (optional)](#backend-optional)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
@@ -70,6 +71,15 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
+
+#### Docker (Recommended but Optional)
+
+You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
+
+```bash
+cd frontend && docker-compose up
+```
+Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
 
 #### Backend (optional)
 
