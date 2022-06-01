@@ -17,7 +17,7 @@ const htmlWebpackPlugins = [
 ].map((name) => {
   return new HtmlWebpackPlugin({
     filename: `${name}.html`,
-    template: resolve(__dirname, `../static/${name}-page.html`),
+    template: resolve(__dirname, `../static/${name}.html`),
     inject: false,
   });
 });
