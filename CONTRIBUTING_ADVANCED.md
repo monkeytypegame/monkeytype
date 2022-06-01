@@ -74,7 +74,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
 #### Docker (Recommended but Optional)
 
-You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing Docker run the following command to start the frontend server:
+You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
 
 ```bash
 cd frontend && docker-compose up
