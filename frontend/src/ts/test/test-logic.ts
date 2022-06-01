@@ -343,7 +343,11 @@ export function restart(
     }
   }
   if (TestActive.get()) {
-    if (Config.repeatQuotes === "typing" && Config.mode === "quote") {
+    if (
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote" &&
+      Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
+    ) {
       withSameWordset = true;
     }
 
