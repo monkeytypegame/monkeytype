@@ -390,12 +390,12 @@ export async function updateTypingStats(
 export async function linkDiscord(
   uid: string,
   discordId: string,
-  discordAvatarUri: string | null
+  discordAvatarHash?: string
 ): Promise<UpdateResult> {
   await getUser(uid, "link discord");
 
   const updates = _.pickBy(
-    { discordId, avatarUri: discordAvatarUri },
+    { discordId, avatarHash: discordAvatarHash },
     _.identity
   );
 
@@ -407,7 +407,7 @@ export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
 
   return await getUsersCollection().updateOne(
     { uid },
-    { $unset: { discordId: "", avatarUri: "" } }
+    { $unset: { discordId: "", avatarHash: "" } }
   );
 }
 

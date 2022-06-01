@@ -155,10 +155,7 @@ export async function linkDiscord(
     );
   }
 
-  const avatarUri = avatar
-    ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`
-    : null;
-  await UserDAL.linkDiscord(uid, discordId, avatarUri);
+  await UserDAL.linkDiscord(uid, discordId, avatar);
 
   George.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);

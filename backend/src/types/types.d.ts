@@ -92,7 +92,7 @@ declare namespace MonkeyTypes {
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;
     needsToChangeName?: boolean;
-    avatarUri?: string;
+    avatarHash?: string;
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;
