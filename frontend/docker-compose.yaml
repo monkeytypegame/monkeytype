@@ -1,5 +1,6 @@
 services:
-  frontend:
+  monkeytype-frontend:
+    container_name: monkeytype-frontend
     image: node:gallium-bullseye
     restart: on-failure
     ports:
