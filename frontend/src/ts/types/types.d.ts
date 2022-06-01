@@ -463,7 +463,7 @@ declare namespace MonkeyTypes {
     config?: Config;
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
-    avatarHash?: string;
+    discordAvatar?: string;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
