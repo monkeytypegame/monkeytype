@@ -12,6 +12,7 @@ import {
   UpdateResult,
   WithId,
 } from "mongodb";
+import Logger from "../utils/logger";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -636,4 +637,5 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
+  Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
 }
