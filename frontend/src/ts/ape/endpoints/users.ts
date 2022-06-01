@@ -142,6 +142,15 @@ export default class Users {
   async unlinkDiscord(): Ape.EndpointData {
     return await this.httpClient.post(`${BASE_PATH}/discord/unlink`);
   }
+  
+  async updateDiscordAvatar(
+    tokenType: string,
+    accessToken: string
+  ): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/discord/avatar`, {
+      payload: { tokenType, accessToken },
+    });
+  }
 
   async addQuoteToFavorites(
     language: string,

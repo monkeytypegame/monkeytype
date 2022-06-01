@@ -292,6 +292,19 @@ router.post(
 );
 
 router.get(
+  "/discord/avatar",
+  RateLimit.userDiscordLink,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      tokenType: joi.string().required(),
+      accessToken: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.getDiscordAvatar)
+);
+
+router.get(
   "/personalBests",
   RateLimit.userGet,
   authenticateRequest({
