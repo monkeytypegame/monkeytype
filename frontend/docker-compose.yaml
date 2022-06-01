@@ -1,0 +1,9 @@
+services:
+  frontend:
+    image: node:gallium-bullseye
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../:/monkeytype
+    entrypoint: 'bash -c "cd /monkeytype && npm run dev-fe"'
