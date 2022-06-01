@@ -41,7 +41,7 @@ if (window.location.hostname === "localhost") {
   );
   $(".pageSettings .discordIntegration .buttons a").attr(
     "href",
-    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fverify&response_type=token&scope=identify"
+    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fverify&response_type=token&scope=identify"
   );
 }
 
