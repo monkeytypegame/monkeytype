@@ -137,7 +137,7 @@ export async function linkDiscord(
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
 
-  const { id: discordId } = await linkAccount(tokenType, accessToken);
+  const { id: discordId, avatar } = await linkAccount(tokenType, accessToken);
 
   if (!discordId) {
     throw new MonkeyError(
@@ -155,7 +155,7 @@ export async function linkDiscord(
     );
   }
 
-  await UserDAL.linkDiscord(uid, discordId);
+  await UserDAL.linkDiscord(uid, discordId, avatar);
 
   George.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);

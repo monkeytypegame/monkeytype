@@ -702,11 +702,11 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     } else UpdateConfig.setCustomTheme(false);
   } else {
     if (Config.customTheme) CommandlineLists.updateCustomThemeListCommands();
-    CommandlineLists.pushCurrent(
+    CommandlineLists.setCurrent([
       Config.customTheme
         ? CommandlineLists.customThemeListCommands
-        : CommandlineLists.themeCommands
-    );
+        : CommandlineLists.themeCommands,
+    ]);
     show();
   }
 });
