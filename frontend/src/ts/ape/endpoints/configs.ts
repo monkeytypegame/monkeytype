@@ -1,18 +1,15 @@
 const BASE_PATH = "/configs";
 
-export default function getConfigsEndpoints(
-  apeClient: Ape.Client
-): Ape.Endpoints["configs"] {
-  async function get(): Ape.EndpointData {
-    return await apeClient.get(BASE_PATH);
+export default class Configs {
+  constructor(private apeClient: Ape.HttpClient) {
+    this.apeClient = apeClient;
   }
 
-  async function save(config: MonkeyTypes.Config): Ape.EndpointData {
-    return await apeClient.patch(BASE_PATH, { payload: { config } });
+  async get(): Ape.EndpointData {
+    return await this.apeClient.get(BASE_PATH);
   }
 
-  return {
-    get,
-    save,
-  };
+  async save(config: MonkeyTypes.Config): Ape.EndpointData {
+    return await this.apeClient.patch(BASE_PATH, { payload: { config } });
+  }
 }
