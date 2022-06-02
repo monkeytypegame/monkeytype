@@ -357,6 +357,6 @@
   },
   {
     "name": "oromo",
-    "languages": ["oromo", "oromo_2k", "oromo_50k"]
+    "languages": ["oromo", "oromo_1k", "oromo_5k"]
   }
 ]
