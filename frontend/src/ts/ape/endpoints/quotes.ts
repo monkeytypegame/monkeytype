@@ -1,12 +1,12 @@
 const BASE_PATH = "/quotes";
 
 export default class Quotes {
-  constructor(private apeClient: Ape.HttpClient) {
-    this.apeClient = apeClient;
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
   async get(): Ape.EndpointData {
-    return await this.apeClient.get(BASE_PATH);
+    return await this.httpClient.get(BASE_PATH);
   }
 
   async submit(
@@ -22,7 +22,7 @@ export default class Quotes {
       captcha,
     };
 
-    return await this.apeClient.post(BASE_PATH, { payload });
+    return await this.httpClient.post(BASE_PATH, { payload });
   }
 
   async approveSubmission(
@@ -36,11 +36,11 @@ export default class Quotes {
       editSource,
     };
 
-    return await this.apeClient.post(`${BASE_PATH}/approve`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/approve`, { payload });
   }
 
   async rejectSubmission(quoteSubmissionId: string): Ape.EndpointData {
-    return await this.apeClient.post(`${BASE_PATH}/reject`, {
+    return await this.httpClient.post(`${BASE_PATH}/reject`, {
       payload: { quoteId: quoteSubmissionId },
     });
   }
@@ -51,7 +51,7 @@ export default class Quotes {
       language: quote.language,
     };
 
-    return await this.apeClient.get(`${BASE_PATH}/rating`, { searchQuery });
+    return await this.httpClient.get(`${BASE_PATH}/rating`, { searchQuery });
   }
 
   async addRating(quote: MonkeyTypes.Quote, rating: number): Ape.EndpointData {
@@ -61,7 +61,7 @@ export default class Quotes {
       language: quote.language,
     };
 
-    return await this.apeClient.post(`${BASE_PATH}/rating`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/rating`, { payload });
   }
 
   async report(
@@ -79,6 +79,6 @@ export default class Quotes {
       captcha,
     };
 
-    return await this.apeClient.post(`${BASE_PATH}/report`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
   }
 }

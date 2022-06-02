@@ -13,8 +13,8 @@ interface LeadeboardQueryWithPagination extends LeaderboardQuery {
 }
 
 export default class Leaderboards {
-  constructor(private apeClient: Ape.HttpClient) {
-    this.apeClient = apeClient;
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
   async get(query: LeadeboardQueryWithPagination): Ape.EndpointData {
@@ -30,7 +30,7 @@ export default class Leaderboards {
 
     const endpointPath = `${BASE_PATH}/${isDaily ? "daily" : ""}`;
 
-    return await this.apeClient.get(endpointPath, { searchQuery });
+    return await this.httpClient.get(endpointPath, { searchQuery });
   }
 
   async getRank(query: LeaderboardQuery): Ape.EndpointData {
@@ -44,6 +44,6 @@ export default class Leaderboards {
 
     const endpointPath = `${BASE_PATH}${isDaily ? "/daily" : ""}/rank`;
 
-    return await this.apeClient.get(endpointPath, { searchQuery });
+    return await this.httpClient.get(endpointPath, { searchQuery });
   }
 }

@@ -1,17 +1,17 @@
 const BASE_PATH = "/ape-keys";
 
 export default class ApeKeys {
-  constructor(private apeClient: Ape.HttpClient) {
-    this.apeClient = apeClient;
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
   async get(): Ape.EndpointData {
-    return await this.apeClient.get(BASE_PATH);
+    return await this.httpClient.get(BASE_PATH);
   }
 
   async generate(name: string, enabled: boolean): Ape.EndpointData {
     const payload = { name, enabled };
-    return await this.apeClient.post(BASE_PATH, { payload });
+    return await this.httpClient.post(BASE_PATH, { payload });
   }
 
   async update(
@@ -19,10 +19,10 @@ export default class ApeKeys {
     updates: { name?: string; enabled?: boolean }
   ): Ape.EndpointData {
     const payload = { ...updates };
-    return await this.apeClient.patch(`${BASE_PATH}/${apeKeyId}`, { payload });
+    return await this.httpClient.patch(`${BASE_PATH}/${apeKeyId}`, { payload });
   }
 
   async delete(apeKeyId: string): Ape.EndpointData {
-    return await this.apeClient.delete(`${BASE_PATH}/${apeKeyId}`);
+    return await this.httpClient.delete(`${BASE_PATH}/${apeKeyId}`);
   }
 }

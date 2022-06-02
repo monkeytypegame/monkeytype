@@ -1,12 +1,12 @@
 const BASE_PATH = "/presets";
 
 export default class Presets {
-  constructor(private apeClient: Ape.HttpClient) {
-    this.apeClient = apeClient;
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
   async get(): Ape.EndpointData {
-    return await this.apeClient.get(BASE_PATH);
+    return await this.httpClient.get(BASE_PATH);
   }
 
   async add(
@@ -18,7 +18,7 @@ export default class Presets {
       config: configChanges,
     };
 
-    return await this.apeClient.post(BASE_PATH, { payload });
+    return await this.httpClient.post(BASE_PATH, { payload });
   }
 
   async edit(
@@ -32,10 +32,10 @@ export default class Presets {
       config: configChanges,
     };
 
-    return await this.apeClient.patch(BASE_PATH, { payload });
+    return await this.httpClient.patch(BASE_PATH, { payload });
   }
 
   async delete(presetId: string): Ape.EndpointData {
-    return await this.apeClient.delete(`${BASE_PATH}/${presetId}`);
+    return await this.httpClient.delete(`${BASE_PATH}/${presetId}`);
   }
 }
