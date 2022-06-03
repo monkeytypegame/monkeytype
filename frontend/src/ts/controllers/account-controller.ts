@@ -228,11 +228,12 @@ export async function loadUser(user: UserType): Promise<void> {
     );
   }
   PageTransition.set(false);
-  AccountButton.update();
   AccountButton.loading(true);
   if ((await getDataAndInit()) === false) {
     signOut();
   }
+  const { discordId, discordAvatar } = DB.getSnapshot();
+  AccountButton.update(discordId, discordAvatar);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;

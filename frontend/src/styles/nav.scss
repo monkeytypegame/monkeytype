@@ -17,10 +17,39 @@
       margin-left: 0.25rem;
     }
 
-    //   &:hover {
-    //     cursor: pointer;
-    //     color: var(--main-color);
-    //   }
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      // background: red;
+      display: grid;
+      place-content: center center;
+    }
+
+    &.account {
+      .icon,
+      .avatar {
+        grid-column: 1/2;
+        grid-row: 1/2;
+      }
+
+      .avatar {
+        transition: opacity 0.125s, filter 0.125s, webkit-filter 0.125s;
+        width: 1.25rem;
+        height: 1.25rem;
+        background: var(--sub-color);
+        border-radius: 100%;
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        filter: saturate(0);
+        -webkit-filter: saturate(0);
+      }
+    }
+
+    &:hover.account .avatar {
+      filter: saturate(1);
+      -webkit-filter: saturate(1);
+    }
   }
 
   .separator {
@@ -40,6 +69,10 @@
 
 #top.focus #menu .text-button {
   color: transparent !important;
+}
+
+#top.focus #menu .text-button.account .avatar {
+  opacity: 0 !important;
 }
 
 #top {
