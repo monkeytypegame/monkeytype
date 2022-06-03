@@ -3,6 +3,7 @@ import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
+import * as AccountButton from "../elements/account-button";
 
 interface Data {
   accessToken: string;
@@ -40,6 +41,8 @@ export async function verify(): Promise<void> {
   }
 
   DB.setSnapshot(snapshot);
+
+  AccountButton.update(discordId, discordAvatar);
 
   Settings.updateDiscordSection();
 }
