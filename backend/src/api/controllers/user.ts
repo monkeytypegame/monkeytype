@@ -2,7 +2,7 @@ import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { linkAccount } from "../../utils/discord";
+import { getDiscordUser } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
@@ -137,7 +137,10 @@ export async function linkDiscord(
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
 
-  const { id: discordId, avatar } = await linkAccount(tokenType, accessToken);
+  const { id: discordId, avatar } = await getDiscordUser(
+    tokenType,
+    accessToken
+  );
 
   if (!discordId) {
     throw new MonkeyError(
@@ -178,6 +181,23 @@ export async function unlinkDiscord(
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
+}
+
+export async function updateDiscordAvatar(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { tokenType, accessToken } = req.body;
+
+  const userInfo = await UserDAL.getUser(uid, "get discord avatar");
+  if (!userInfo.discordId) {
+    throw new MonkeyError(404, "User does not have a linked Discord account");
+  }
+
+  const { id, avatar } = await getDiscordUser(tokenType, accessToken);
+  await UserDAL.updateDiscordAvatar(uid, id, avatar);
+
+  return new MonkeyResponse("Discord avatar updated", avatar);
 }
 
 export async function addTag(

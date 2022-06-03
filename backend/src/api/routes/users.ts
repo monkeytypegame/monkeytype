@@ -291,6 +291,19 @@ router.post(
   asyncHandler(UserController.unlinkDiscord)
 );
 
+router.put(
+  "/discord/avatar",
+  RateLimit.userDiscordLink,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      tokenType: joi.string().required(),
+      accessToken: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.updateDiscordAvatar)
+);
+
 router.get(
   "/personalBests",
   RateLimit.userGet,

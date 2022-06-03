@@ -408,6 +408,21 @@ export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
   );
 }
 
+export async function updateDiscordAvatar(
+  uid: string,
+  discordId: string,
+  discordAvatar?: string
+): Promise<void> {
+  const updateResult = await getUsersCollection().updateOne(
+    { uid, discordId },
+    { $set: { discordAvatar } }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new MonkeyError(404, "User not found");
+  }
+}
+
 export async function incrementBananas(
   uid: string,
   wpm
