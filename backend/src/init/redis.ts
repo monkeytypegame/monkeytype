@@ -72,5 +72,10 @@ export function isConnected(): boolean {
 }
 
 export function getConnection(): IORedis.Redis | undefined {
+  const status = connection?.status;
+  if (!connection || status !== "ready") {
+    return undefined;
+  }
+
   return connection;
 }
