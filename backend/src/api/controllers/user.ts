@@ -137,6 +137,7 @@ export async function linkDiscord(
   if (userInfo.discordId) {
     await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
     return new MonkeyResponse("Discord avatar updated", {
+      discordId,
       discordAvatar,
     });
   }
@@ -164,6 +165,7 @@ export async function linkDiscord(
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
+    discordAvatar,
   });
 }
 
