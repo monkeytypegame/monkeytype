@@ -195,9 +195,9 @@
 
       #discordButtonGroup {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: column;
+        justify-content: center;
         gap: 0.5rem;
-        margin-top: 1rem;
       }
 
       #unlinkDiscordButton,
