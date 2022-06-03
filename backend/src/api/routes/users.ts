@@ -301,7 +301,7 @@ router.put(
       accessToken: joi.string().required(),
     },
   }),
-  asyncHandler(UserController.udpateDiscordAvatar)
+  asyncHandler(UserController.updateDiscordAvatar)
 );
 
 router.get(
