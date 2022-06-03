@@ -197,7 +197,7 @@ export async function udpateDiscordAvatar(
   const { id, avatar } = await getDiscordUser(tokenType, accessToken);
   await UserDAL.updateDiscordAvatar(uid, id, avatar);
 
-  return new MonkeyResponse("Discord avatar retrieved", avatar);
+  return new MonkeyResponse("Discord avatar updated", avatar);
 }
 
 export async function addTag(
