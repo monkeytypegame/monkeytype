@@ -17,7 +17,6 @@ export function set(val: Data): void {
 
 export async function verify(): Promise<void> {
   if (data === null) return;
-  Notifications.add("Linking Discord account", 0, 3);
   Loader.show();
 
   const { accessToken, tokenType } = data;
