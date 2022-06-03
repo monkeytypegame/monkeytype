@@ -183,7 +183,7 @@ export async function unlinkDiscord(
   return new MonkeyResponse("Discord account unlinked");
 }
 
-export async function getDiscordAvatar(
+export async function udpateDiscordAvatar(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;

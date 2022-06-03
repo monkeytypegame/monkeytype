@@ -291,7 +291,7 @@ router.post(
   asyncHandler(UserController.unlinkDiscord)
 );
 
-router.get(
+router.put(
   "/discord/avatar",
   RateLimit.userDiscordLink,
   authenticateRequest(),
@@ -301,7 +301,7 @@ router.get(
       accessToken: joi.string().required(),
     },
   }),
-  asyncHandler(UserController.getDiscordAvatar)
+  asyncHandler(UserController.udpateDiscordAvatar)
 );
 
 router.get(
