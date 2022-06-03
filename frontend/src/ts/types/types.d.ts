@@ -420,8 +420,10 @@ declare namespace MonkeyTypes {
     };
   }
 
+  type UserBadge = "Collaborator" | "Developer" | "Discord Mod";
+
   interface LeaderboardEntry {
-    _id: string;
+    uid: string;
     difficulty: string;
     timestamp: number;
     language: string;
@@ -433,6 +435,8 @@ declare namespace MonkeyTypes {
     uid?: string;
     name: string;
     discordId?: string;
+    discordAvatar?: string;
+    badges?: UserBadge[];
     rank: number;
     count?: number;
     hidden?: boolean;

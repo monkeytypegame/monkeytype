@@ -14,6 +14,7 @@ interface DailyLeaderboardEntry {
   rank?: number;
   count?: number;
   discordAvatar?: string;
+  discordId?: string;
   badges?: MonkeyTypes.UserBadge[];
 }
 
