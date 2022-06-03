@@ -122,25 +122,24 @@ export async function linkDiscord(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const {
-    data: { tokenType, accessToken },
-  } = req.body;
+  const { tokenType, accessToken } = req.body;
 
   const userInfo = await UserDAL.getUser(uid, "link discord");
-  if (userInfo.discordId) {
-    throw new MonkeyError(
-      409,
-      "This account is already linked to a Discord account"
-    );
-  }
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
 
-  const { id: discordId, avatar } = await getDiscordUser(
+  const { id: discordId, avatar: discordAvatar } = await getDiscordUser(
     tokenType,
     accessToken
   );
+
+  if (userInfo.discordId) {
+    await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
+    return new MonkeyResponse("Discord avatar updated", {
+      discordAvatar,
+    });
+  }
 
   if (!discordId) {
     throw new MonkeyError(
@@ -158,12 +157,14 @@ export async function linkDiscord(
     );
   }
 
-  await UserDAL.linkDiscord(uid, discordId, avatar);
+  await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
   George.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
-  return new MonkeyResponse("Discord account linked", discordId);
+  return new MonkeyResponse("Discord account linked", {
+    discordId,
+  });
 }
 
 export async function unlinkDiscord(
@@ -181,23 +182,6 @@ export async function unlinkDiscord(
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
-}
-
-export async function updateDiscordAvatar(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-  const { tokenType, accessToken } = req.body;
-
-  const userInfo = await UserDAL.getUser(uid, "get discord avatar");
-  if (!userInfo.discordId) {
-    throw new MonkeyError(404, "User does not have a linked Discord account");
-  }
-
-  const { id, avatar } = await getDiscordUser(tokenType, accessToken);
-  await UserDAL.updateDiscordAvatar(uid, id, avatar);
-
-  return new MonkeyResponse("Discord avatar updated", avatar);
 }
 
 export async function addTag(

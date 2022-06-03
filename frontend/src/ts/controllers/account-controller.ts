@@ -255,7 +255,7 @@ export async function loadUser(user: UserType): Promise<void> {
   $(".pageAccount .group.createdDate").text(text);
 
   if (VerificationController.data !== null) {
-    VerificationController.verify(user.uid);
+    VerificationController.verify();
   }
 
   if (TestLogic.notSignedInLastResult !== null) {

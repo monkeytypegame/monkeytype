@@ -129,27 +129,14 @@ export default class Users {
     return await this.httpClient.post(`${BASE_PATH}/customThemes`, { payload });
   }
 
-  async linkDiscord(data: {
-    tokenType: string;
-    accessToken: string;
-    uid?: string;
-  }): Ape.EndpointData {
+  async linkDiscord(tokenType: string, accessToken: string): Ape.EndpointData {
     return await this.httpClient.post(`${BASE_PATH}/discord/link`, {
-      payload: { data },
+      payload: { tokenType, accessToken },
     });
   }
 
   async unlinkDiscord(): Ape.EndpointData {
     return await this.httpClient.post(`${BASE_PATH}/discord/unlink`);
-  }
-
-  async updateDiscordAvatar(
-    tokenType: string,
-    accessToken: string
-  ): Ape.EndpointData {
-    return await this.httpClient.put(`${BASE_PATH}/discord/avatar`, {
-      payload: { tokenType, accessToken },
-    });
   }
 
   async addQuoteToFavorites(
