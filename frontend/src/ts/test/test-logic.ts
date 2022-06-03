@@ -113,6 +113,10 @@ export async function punctuateWord(
 
       word = Misc.capitalizeFirstLetterOfEachWord(word);
 
+      if (currentLanguage == "turkish") {
+        word = word.replace(/I/g, "İ");
+      }
+
       if (currentLanguage == "spanish" || currentLanguage == "catalan") {
         const rand = Math.random();
         if (rand > 0.9) {
