@@ -335,6 +335,8 @@ export async function addResult(
         consistency: result.consistency,
         timestamp: result.timestamp,
         uid,
+        discordAvatar: user.discordAvatar,
+        badges: user.badges,
       },
       dailyLeaderboardsConfig
     );
