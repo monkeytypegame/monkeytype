@@ -49,10 +49,7 @@ function addApiRoutes(app: Application): void {
       const inMaintenance =
         process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
 
-      const isDevTryingToAccessTheConfigurationPanel =
-        process.env.MODE === "dev" && req.path.startsWith("/configuration");
-
-      if (inMaintenance && !isDevTryingToAccessTheConfigurationPanel) {
+      if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });
         return;
       }
