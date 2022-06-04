@@ -1,0 +1,84 @@
+:root {
+  --sub-color: #e1e1e1;
+  --highlight-color: #0085a8;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--sub-color);
+}
+
+#header {
+  background-color: #000;
+  color: #fff;
+  padding: 2rem;
+  display: flex;
+}
+
+#logo {
+  align-items: center;
+  background-color: transparent;
+  display: grid;
+  width: 4rem;
+  margin-right: 1rem;
+}
+
+#logo path {
+  fill: #fff;
+}
+
+#root {
+  margin: 2rem;
+  padding: 2rem;
+  background-color: #fff;
+}
+
+#save {
+  position: fixed;
+  right: 6rem;
+  bottom: 3rem;
+  background-color: var(--highlight-color);
+  color: #fff;
+  font-style: bold;
+  border-radius: 3px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  display: inline-block;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.base-input {
+  margin: 0.5rem;
+  border: 2px solid var(--sub-color);
+  border-radius: 3px;
+  background-color: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="checkbox"] {
+  display: inline-block;
+  accent-color: var(--highlight-color);
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.form-element {
+  padding-left: 3rem;
+  padding-top: 1rem;
+  border-left: var(--sub-color) 1px solid;
+  background: #fff;
+}
+
+#root > .form-element:first-child {
+  border-left: none;
+}
+
+.shadow {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}

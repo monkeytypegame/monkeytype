@@ -1,11 +1,14 @@
 import _ from "lodash";
 import psas from "./psas";
 import users from "./users";
+import { join } from "path";
+import express from "express";
 import quotes from "./quotes";
 import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
+import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
@@ -34,6 +37,11 @@ function addApiRoutes(app: Application): void {
     res.sendStatus(404);
   });
 
+  if (process.env.MODE === "dev") {
+    app.use("/configure", express.static(join(__dirname, "../../../private")));
+    app.use("/configuration", configuration);
+  }
+
   addSwaggerMiddlewares(app);
 
   app.use(
@@ -41,7 +49,10 @@ function addApiRoutes(app: Application): void {
       const inMaintenance =
         process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
 
-      if (inMaintenance) {
+      const isDevTryingToAccessTheConfigurationPanel =
+        process.env.MODE === "dev" && req.path.startsWith("/configuration");
+
+      if (inMaintenance && !isDevTryingToAccessTheConfigurationPanel) {
         res.status(503).json({ message: "Server is down for maintenance" });
         return;
       }
