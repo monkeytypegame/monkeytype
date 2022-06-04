@@ -1,11 +1,23 @@
 const BASE_PATH = "/leaderboards";
 
-export default function getLeaderboardsEndpoints(
-  apeClient: Ape.Client
-): Ape.Endpoints["leaderboards"] {
-  async function get(
-    query: Ape.EndpointTypes.LeadeboardQueryWithPagination
-  ): Ape.EndpointData {
+interface LeaderboardQuery {
+  language: string;
+  mode: MonkeyTypes.Mode;
+  mode2: string | number;
+  isDaily?: boolean;
+}
+
+interface LeadeboardQueryWithPagination extends LeaderboardQuery {
+  skip?: number;
+  limit?: number;
+}
+
+export default class Leaderboards {
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
+  }
+
+  async get(query: LeadeboardQueryWithPagination): Ape.EndpointData {
     const { language, mode, mode2, isDaily, skip = 0, limit = 50 } = query;
 
     const searchQuery = {
@@ -18,12 +30,10 @@ export default function getLeaderboardsEndpoints(
 
     const endpointPath = `${BASE_PATH}/${isDaily ? "daily" : ""}`;
 
-    return await apeClient.get(endpointPath, { searchQuery });
+    return await this.httpClient.get(endpointPath, { searchQuery });
   }
 
-  async function getRank(
-    query: Ape.EndpointTypes.LeaderboardQuery
-  ): Ape.EndpointData {
+  async getRank(query: LeaderboardQuery): Ape.EndpointData {
     const { language, mode, mode2, isDaily } = query;
 
     const searchQuery = {
@@ -34,8 +44,6 @@ export default function getLeaderboardsEndpoints(
 
     const endpointPath = `${BASE_PATH}${isDaily ? "/daily" : ""}/rank`;
 
-    return await apeClient.get(endpointPath, { searchQuery });
+    return await this.httpClient.get(endpointPath, { searchQuery });
   }
-
-  return { get, getRank };
 }

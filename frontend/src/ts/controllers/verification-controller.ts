@@ -7,7 +7,6 @@ import * as Loader from "../elements/loader";
 interface Data {
   accessToken: string;
   tokenType: string;
-  uid?: string;
 }
 
 export let data: Data | null = null;
@@ -16,24 +15,30 @@ export function set(val: Data): void {
   data = val;
 }
 
-export async function verify(uid: string): Promise<void> {
+export async function verify(): Promise<void> {
   if (data === null) return;
-  Notifications.add("Linking Discord account", 0, 3);
   Loader.show();
-  data.uid = uid;
 
-  const response = await Ape.users.linkDiscord(data);
+  const { accessToken, tokenType } = data;
 
+  const response = await Ape.users.linkDiscord(tokenType, accessToken);
   Loader.hide();
 
   if (response.status !== 200) {
     return Notifications.add("Failed to link Discord: " + response.message, -1);
   }
 
-  Notifications.add("Accounts linked", 1);
+  Notifications.add(response.message, 1);
 
   const snapshot = DB.getSnapshot();
-  snapshot.discordId = response.data.did;
+
+  const { discordId, discordAvatar } = response.data;
+  if (discordId) {
+    snapshot.discordId = discordId;
+  } else {
+    snapshot.discordAvatar = discordAvatar;
+  }
+
   DB.setSnapshot(snapshot);
 
   Settings.updateDiscordSection();

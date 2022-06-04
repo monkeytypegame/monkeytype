@@ -391,12 +391,16 @@ export async function linkDiscord(
   uid: string,
   discordId: string,
   discordAvatar?: string
-): Promise<UpdateResult> {
-  await getUser(uid, "link discord");
-
+): Promise<void> {
   const updates = _.pickBy({ discordId, discordAvatar }, _.identity);
+  const result = await getUsersCollection().updateOne(
+    { uid },
+    { $set: updates }
+  );
 
-  return await getUsersCollection().updateOne({ uid }, { $set: updates });
+  if (result.matchedCount === 0) {
+    throw new MonkeyError(404, "User not found");
+  }
 }
 
 export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
