@@ -21,8 +21,13 @@ body {
   align-items: center;
   background-color: transparent;
   display: grid;
-  width: 4rem;
+  width: 3rem;
   margin-right: 1rem;
+}
+
+#header h1 {
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 #logo path {
@@ -46,11 +51,13 @@ body {
   padding: 1rem 2rem;
   cursor: pointer;
   display: inline-block;
+  width: 125px;
+  text-align: center;
 }
 
 label {
   display: block;
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
 }
 
 .base-input {
@@ -70,7 +77,7 @@ input[type="checkbox"] {
 
 .form-element {
   padding-left: 3rem;
-  padding-top: 1rem;
+  padding-top: 0.25rem;
   border-left: var(--sub-color) 1px solid;
   background: #fff;
 }
@@ -81,4 +88,9 @@ input[type="checkbox"] {
 
 .shadow {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.inputLabel {
+  display: flex;
+  align-items: center;
 }

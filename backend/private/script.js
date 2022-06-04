@@ -69,9 +69,11 @@ const generateForm = (formSchema, initialData) => {
     switch (type) {
       case "boolean":
         parent.appendChild(buildBooleanInput(data, path));
+        parent.classList.add("inputLabel");
         break;
       case "number":
         parent.appendChild(buildNumberInput(schema, data, path));
+        parent.classList.add("inputLabel");
         break;
       case "group":
         const entries = Object.entries(elements);
@@ -107,6 +109,7 @@ window.onload = async () => {
   root?.appendChild(formElement);
 
   saveButton?.addEventListener("click", async () => {
+    saveButton.innerHTML = "Saving...";
     await fetch("/configuration", {
       method: "PATCH",
       headers: {
@@ -116,5 +119,9 @@ window.onload = async () => {
         configuration: changes,
       }),
     });
+    saveButton.innerHTML = "Saved!";
+    setTimeout(() => {
+      saveButton.innerHTML = "Save Changes";
+    }, 3000);
   });
 };
