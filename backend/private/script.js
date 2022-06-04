@@ -110,7 +110,7 @@ window.onload = async () => {
 
   saveButton?.addEventListener("click", async () => {
     saveButton.innerHTML = "Saving...";
-    await fetch("/configuration", {
+    const response = await fetch("/configuration", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -119,9 +119,17 @@ window.onload = async () => {
         configuration: changes,
       }),
     });
-    saveButton.innerHTML = "Saved!";
+    if (response.status === 200) {
+      saveButton.innerHTML = "Saved!";
+      saveButton.classList.add("good");
+    } else {
+      saveButton.innerHTML = "Failed!";
+      saveButton.classList.add("bad");
+    }
     setTimeout(() => {
       saveButton.innerHTML = "Save Changes";
+      saveButton.classList.remove("good");
+      saveButton.classList.remove("bad");
     }, 3000);
   });
 };

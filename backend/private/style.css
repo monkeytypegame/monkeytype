@@ -55,6 +55,14 @@ body {
   text-align: center;
 }
 
+#save.good {
+  background-color: #42c328;
+}
+
+#save.bad {
+  background-color: #d84b4b;
+}
+
 label {
   display: block;
   /* margin-bottom: 0.5rem; */
