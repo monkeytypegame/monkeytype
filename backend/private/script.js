@@ -50,7 +50,7 @@ const buildBooleanInput = (data, path) => {
 
 const buildUnknownInput = () => {
   const disclaimer = document.createElement("div");
-  disclaimer.innerHTML = "<i>This configuration is not yet supported</i>";
+  disclaimer.innerHTML = `<i class="unknown-input">This configuration is not yet supported</i>`;
 
   return disclaimer;
 };
@@ -69,11 +69,11 @@ const generateForm = (formSchema, initialData) => {
     switch (type) {
       case "boolean":
         parent.appendChild(buildBooleanInput(data, path));
-        parent.classList.add("inputLabel");
+        parent.classList.add("input-label");
         break;
       case "number":
         parent.appendChild(buildNumberInput(schema, data, path));
-        parent.classList.add("inputLabel");
+        parent.classList.add("input-label");
         break;
       case "group":
         const entries = Object.entries(elements);
@@ -94,6 +94,7 @@ const generateForm = (formSchema, initialData) => {
 
 window.onload = async () => {
   const root = document.querySelector("#root");
+  const formLoader = document.querySelector("#form-loader");
   const saveButton = document.querySelector("#save");
 
   const schemaResponse = await fetch("/configuration/schema");
@@ -105,11 +106,18 @@ window.onload = async () => {
   const { data: formSchema } = schemaResponseJson;
   const { data: initialData } = dataResponseJson;
 
+  formLoader.style.display = "none";
+
   const formElement = generateForm(formSchema, initialData);
-  root?.appendChild(formElement);
+  root?.prepend(formElement);
 
   saveButton?.addEventListener("click", async () => {
+    if (saveButton.disabled) {
+      return;
+    }
+
     saveButton.innerHTML = "Saving...";
+    saveButton.disabled = true;
     const response = await fetch("/configuration", {
       method: "PATCH",
       headers: {
@@ -130,6 +138,7 @@ window.onload = async () => {
       saveButton.innerHTML = "Save Changes";
       saveButton.classList.remove("good");
       saveButton.classList.remove("bad");
+      saveButton.disabled = false;
     }, 3000);
   });
 };

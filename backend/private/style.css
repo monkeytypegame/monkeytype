@@ -14,6 +14,13 @@ body {
   background-color: #000;
   color: #fff;
   padding: 2rem;
+}
+
+.header-container {
+  padding: 2rem;
+  padding-left: 0;
+  max-width: 60rem;
+  margin: 0 auto;
   display: flex;
 }
 
@@ -26,7 +33,6 @@ body {
 }
 
 #header h1 {
-  margin: 0;
   font-size: 1.5rem;
 }
 
@@ -35,9 +41,10 @@ body {
 }
 
 #root {
-  margin: 2rem;
   padding: 2rem;
   background-color: #fff;
+  max-width: 60rem;
+  margin: 2rem auto;
 }
 
 #save {
@@ -84,20 +91,48 @@ input[type="checkbox"] {
 
 .form-element {
   padding-left: 3rem;
-  padding-top: 0.25rem;
+  padding-top: 0.75rem;
   border-left: var(--sub-color) 1px solid;
   background: #fff;
 }
 
 #root > .form-element:first-child {
   border-left: none;
+  margin: 0;
+  padding: 0;
 }
 
 .shadow {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-.inputLabel {
+.input-label {
   display: flex;
   align-items: center;
+}
+
+.unknown-input {
+  color: #d84b4b;
+}
+
+.loader {
+  margin: auto;
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--highlight-color);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

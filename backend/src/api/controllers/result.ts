@@ -112,7 +112,7 @@ export async function addResult(
   delete result.hash;
   delete result.stringified;
   if (
-    req.ctx.configuration.resultObjectHashCheck.enabled &&
+    req.ctx.configuration.results.objectHashCheckEnabled &&
     resulthash.length === 40
   ) {
     //if its not 64 that means client is still using old hashing package

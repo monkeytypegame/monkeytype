@@ -22,6 +22,11 @@ export async function updateConfiguration(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { configuration } = req.body;
-  await Configuration.patchConfiguration(configuration);
+  const success = await Configuration.patchConfiguration(configuration);
+
+  if (!success) {
+    return new MonkeyResponse("Configuration update failed", {}, 500);
+  }
+
   return new MonkeyResponse("Configuration updated");
 }

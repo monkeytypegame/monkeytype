@@ -330,7 +330,7 @@ export async function addFavoriteQuote(
     uid,
     language,
     quoteId,
-    req.ctx.configuration.favoriteQuotes.maxFavorites
+    req.ctx.configuration.quotes.maxFavorites
   );
 
   return new MonkeyResponse("Quote added to favorites");

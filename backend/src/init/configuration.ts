@@ -112,7 +112,7 @@ async function pushConfiguration(
 
 export async function patchConfiguration(
   configurationUpdates: Partial<MonkeyTypes.Configuration>
-): Promise<void> {
+): Promise<boolean> {
   try {
     const currentConfiguration = _.cloneDeep(configuration);
     mergeConfigurations(currentConfiguration, configurationUpdates);
@@ -127,5 +127,9 @@ export async function patchConfiguration(
       "patch_configuration_failure",
       `Could not patch configuration: ${error.message}`
     );
+
+    return false;
   }
+
+  return true;
 }

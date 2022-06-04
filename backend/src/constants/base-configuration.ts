@@ -5,16 +5,18 @@
  */
 export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   maintenance: false,
-  quoteReport: {
-    enabled: false,
-    maxReports: 0,
-    contentReportLimit: 0,
+  results: {
+    savingEnabled: false,
+    objectHashCheckEnabled: false,
   },
-  quoteSubmit: {
-    enabled: false,
-  },
-  resultObjectHashCheck: {
-    enabled: false,
+  quotes: {
+    reporting: {
+      enabled: false,
+      maxReports: 0,
+      contentReportLimit: 0,
+    },
+    submissionsEnabled: false,
+    maxFavorites: 0,
   },
   apeKeys: {
     endpointsEnabled: false,
@@ -22,12 +24,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     maxKeysPerUser: 0,
     apeKeyBytes: 24,
     apeKeySaltRounds: 5,
-  },
-  enableSavingResults: {
-    enabled: false,
-  },
-  favoriteQuotes: {
-    maxFavorites: 0,
   },
   autoBan: {
     enabled: false,
@@ -53,43 +49,49 @@ export const CONFIGURATION_FORM_SCHEMA = {
       type: "boolean",
       label: "In Maintenance",
     },
-    quoteReport: {
+    results: {
       type: "group",
-      label: "Quote Reporting",
+      label: "Results",
       elements: {
-        enabled: {
+        savingEnabled: {
           type: "boolean",
-          label: "Enabled",
+          label: "Saving Results",
         },
-        maxReports: {
-          type: "number",
-          label: "Max Reports",
-          min: 0,
-        },
-        contentReportLimit: {
-          type: "number",
-          label: "Content Report Limit",
-          min: 0,
+        objectHashCheckEnabled: {
+          type: "boolean",
+          label: "Object Hash Check",
         },
       },
     },
-    quoteSubmit: {
+    quotes: {
       type: "group",
-      label: "Quote Submission",
+      label: "Quotes",
       elements: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
+        reporting: {
+          type: "group",
+          label: "Reporting",
+          elements: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxReports: {
+              type: "number",
+              label: "Max Reports",
+            },
+            contentReportLimit: {
+              type: "number",
+              label: "Content Report Limit",
+            },
+          },
         },
-      },
-    },
-    resultObjectHashCheck: {
-      type: "group",
-      label: "Result Object Hash Check",
-      elements: {
-        enabled: {
+        submissionsEnabled: {
           type: "boolean",
-          label: "Enabled",
+          label: "Submissions Enabled",
+        },
+        maxFavorites: {
+          type: "number",
+          label: "Max Favorites",
         },
       },
     },
@@ -119,27 +121,6 @@ export const CONFIGURATION_FORM_SCHEMA = {
           type: "number",
           label: "Ape Key Salt Rounds",
           min: 5,
-        },
-      },
-    },
-    enableSavingResults: {
-      type: "group",
-      label: "Saving Results",
-      elements: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
-        },
-      },
-    },
-    favoriteQuotes: {
-      type: "group",
-      label: "Favorite Quotes",
-      elements: {
-        maxFavorites: {
-          type: "number",
-          label: "Max Favorites",
-          min: 0,
         },
       },
     },

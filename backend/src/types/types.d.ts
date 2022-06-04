@@ -11,16 +11,18 @@ declare namespace MonkeyTypes {
 
   interface Configuration {
     maintenance: boolean;
-    quoteReport: {
-      enabled: boolean;
-      maxReports: number;
-      contentReportLimit: number;
+    quotes: {
+      reporting: {
+        enabled: boolean;
+        maxReports: number;
+        contentReportLimit: number;
+      };
+      submissionsEnabled: boolean;
+      maxFavorites: number;
     };
-    quoteSubmit: {
-      enabled: boolean;
-    };
-    resultObjectHashCheck: {
-      enabled: boolean;
+    results: {
+      savingEnabled: boolean;
+      objectHashCheckEnabled: boolean;
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -28,12 +30,6 @@ declare namespace MonkeyTypes {
       maxKeysPerUser: number;
       apeKeyBytes: number;
       apeKeySaltRounds: number;
-    };
-    enableSavingResults: {
-      enabled: boolean;
-    };
-    favoriteQuotes: {
-      maxFavorites: number;
     };
     autoBan: {
       enabled: boolean;
