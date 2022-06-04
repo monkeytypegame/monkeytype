@@ -80,7 +80,6 @@ const generateForm = (formSchema, initialData) => {
           parent.appendChild(childElement);
         });
         break;
-        break;
       default:
         parent.appendChild(buildUnknownInput());
     }
