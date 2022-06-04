@@ -274,11 +274,8 @@ router.post(
   authenticateRequest(),
   validateRequest({
     body: {
-      data: joi.object({
-        tokenType: joi.string().required(),
-        accessToken: joi.string().required(),
-        uid: joi.string(),
-      }),
+      tokenType: joi.string().required(),
+      accessToken: joi.string().required(),
     },
   }),
   asyncHandler(UserController.linkDiscord)

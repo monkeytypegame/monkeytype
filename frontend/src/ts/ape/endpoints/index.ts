@@ -1,19 +1,19 @@
-import getConfigsEndpoints from "./configs";
-import getLeaderboardsEndpoints from "./leaderboards";
-import getPresetsEndpoints from "./presets";
-import getPsasEndpoints from "./psas";
-import getQuotesEndpoints from "./quotes";
-import getResultsEndpoints from "./results";
-import getUsersEndpoints from "./users";
-import getApeKeysEndpoints from "./ape-keys";
+import Configs from "./configs";
+import Leaderboards from "./leaderboards";
+import Presets from "./presets";
+import Psas from "./psas";
+import Quotes from "./quotes";
+import Results from "./results";
+import Users from "./users";
+import ApeKeys from "./ape-keys";
 
 export default {
-  getConfigsEndpoints,
-  getLeaderboardsEndpoints,
-  getPresetsEndpoints,
-  getPsasEndpoints,
-  getQuotesEndpoints,
-  getResultsEndpoints,
-  getUsersEndpoints,
-  getApeKeysEndpoints,
+  Configs,
+  Leaderboards,
+  Presets,
+  Psas,
+  Quotes,
+  Results,
+  Users,
+  ApeKeys,
 };

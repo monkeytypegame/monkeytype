@@ -10,6 +10,7 @@ import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
+import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth } from "../firebase";
 import {
@@ -857,7 +858,11 @@ list["unlinkDiscord"] = new SimplePopup(
     }
 
     Notifications.add("Accounts unlinked", 1);
-    DB.getSnapshot().discordId = undefined;
+    const snap = DB.getSnapshot();
+    snap.discordAvatar = undefined;
+    snap.discordId = undefined;
+    AccountButton.update();
+    DB.setSnapshot(snap);
     Settings.updateDiscordSection();
   },
   () => {

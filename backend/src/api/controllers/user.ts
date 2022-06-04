@@ -2,7 +2,7 @@ import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { linkAccount } from "../../utils/discord";
+import { getDiscordUser } from "../../utils/discord";
 import { buildAgentLog } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
@@ -122,22 +122,25 @@ export async function linkDiscord(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const {
-    data: { tokenType, accessToken },
-  } = req.body;
+  const { tokenType, accessToken } = req.body;
 
   const userInfo = await UserDAL.getUser(uid, "link discord");
-  if (userInfo.discordId) {
-    throw new MonkeyError(
-      409,
-      "This account is already linked to a Discord account"
-    );
-  }
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
 
-  const { id: discordId, avatar } = await linkAccount(tokenType, accessToken);
+  const { id: discordId, avatar: discordAvatar } = await getDiscordUser(
+    tokenType,
+    accessToken
+  );
+
+  if (userInfo.discordId) {
+    await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
+    return new MonkeyResponse("Discord avatar updated", {
+      discordId,
+      discordAvatar,
+    });
+  }
 
   if (!discordId) {
     throw new MonkeyError(
@@ -155,12 +158,15 @@ export async function linkDiscord(
     );
   }
 
-  await UserDAL.linkDiscord(uid, discordId, avatar);
+  await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
   George.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
-  return new MonkeyResponse("Discord account linked", discordId);
+  return new MonkeyResponse("Discord account linked", {
+    discordId,
+    discordAvatar,
+  });
 }
 
 export async function unlinkDiscord(
