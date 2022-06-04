@@ -167,6 +167,7 @@ export const CONFIGURATION_FORM_SCHEMA = {
           label: "Valid Mode Rules",
           elements: {
             type: "group",
+            label: "Rule",
             elements: {
               language: {
                 type: "string",

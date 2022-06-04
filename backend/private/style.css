@@ -47,6 +47,26 @@ body {
   margin: 2rem auto;
 }
 
+.button {
+  background-color: var(--highlight-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+.array-input {
+  margin: 1rem auto;
+}
+
+.array-input-delete {
+  margin-left: 1rem;
+  background-color: #d84b4b;
+}
+
 #save {
   position: fixed;
   right: 6rem;

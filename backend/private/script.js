@@ -1,18 +1,5 @@
-const changes = {};
-
-const applyChanges = (path, value) => {
-  const subPaths = path.slice(1).split(".");
-  let current = changes;
-
-  subPaths.forEach((path, i) => {
-    if (i === subPaths.length - 1) {
-      current[path] = value;
-    } else {
-      current[path] = current[path] || {};
-      current = current[path];
-    }
-  });
-};
+let state = {};
+let schema = {};
 
 const buildLabel = (elementType, text) => {
   const labelElement = document.createElement("label");
@@ -22,30 +9,71 @@ const buildLabel = (elementType, text) => {
   return labelElement;
 };
 
-const buildNumberInput = (schema, data, path) => {
+const buildNumberInput = (schema, parentState, key) => {
   const input = document.createElement("input");
   input.classList.add("base-input");
   input.type = "number";
-  input.value = data;
+  input.value = parentState[key];
   input.min = schema.min || 0;
+
   input.addEventListener("change", () => {
     const normalizedValue = parseFloat(input.value, 10);
-    applyChanges(path, normalizedValue);
+    parentState[key] = normalizedValue;
   });
 
   return input;
 };
 
-const buildBooleanInput = (data, path) => {
+const buildBooleanInput = (parentState, key) => {
   const input = document.createElement("input");
   input.classList.add("base-input");
   input.type = "checkbox";
-  input.checked = data;
+  input.checked = parentState[key] || false;
+
   input.addEventListener("change", () => {
-    applyChanges(path, input.checked);
+    parentState[key] = input.checked;
   });
 
   return input;
+};
+
+const buildStringInput = (parentState, key) => {
+  const input = document.createElement("input");
+  input.classList.add("base-input");
+  input.type = "text";
+  input.value = parentState[key] || "";
+
+  input.addEventListener("change", () => {
+    parentState[key] = input.value;
+  });
+
+  return input;
+};
+
+const buildArrayInput = (parentState) => {
+  const inputControlsDiv = document.createElement("div");
+  inputControlsDiv.classList.add("array-input-controls");
+
+  const addButton = document.createElement("button");
+  addButton.innerHTML = "Add";
+  addButton.classList.add("array-input", "button");
+  addButton.addEventListener("click", () => {
+    parentState.push({});
+    rerender();
+  });
+
+  const removeButton = document.createElement("button");
+  removeButton.innerHTML = "Delete";
+  removeButton.classList.add("array-input", "array-input-delete", "button");
+  removeButton.addEventListener("click", () => {
+    parentState.pop();
+    rerender();
+  });
+
+  inputControlsDiv.appendChild(addButton);
+  inputControlsDiv.appendChild(removeButton);
+
+  return inputControlsDiv;
 };
 
 const buildUnknownInput = () => {
@@ -55,8 +83,14 @@ const buildUnknownInput = () => {
   return disclaimer;
 };
 
-const generateForm = (formSchema, initialData) => {
-  const buildForm = (schema, data, path = "") => {
+const render = (state, schema) => {
+  const build = (
+    schema,
+    data,
+    parentState,
+    currentKey = "",
+    path = "configuration"
+  ) => {
     const parent = document.createElement("div");
     parent.classList.add("form-element");
 
@@ -66,37 +100,60 @@ const generateForm = (formSchema, initialData) => {
       parent.appendChild(buildLabel(type, label));
     }
 
-    switch (type) {
-      case "boolean":
-        parent.appendChild(buildBooleanInput(data, path));
-        parent.classList.add("input-label");
-        break;
-      case "number":
-        parent.appendChild(buildNumberInput(schema, data, path));
-        parent.classList.add("input-label");
-        break;
-      case "group":
-        const entries = Object.entries(elements);
-        entries.forEach(([key, value]) => {
-          const childElement = buildForm(value, data[key], `${path}.${key}`);
-          parent.appendChild(childElement);
-        });
-        break;
-      default:
-        parent.appendChild(buildUnknownInput());
+    parent.id = path;
+
+    if (type === "group") {
+      const entries = Object.entries(elements);
+      entries.forEach(([key, value]) => {
+        const childElement = build(
+          value,
+          data[key],
+          data,
+          key,
+          `${path}.${key}`
+        );
+        parent.appendChild(childElement);
+      });
+    } else if (type === "array") {
+      const arrayInputControls = buildArrayInput(data);
+      parent.appendChild(arrayInputControls);
+
+      data.forEach((element, index) => {
+        const childElement = build(
+          elements,
+          element,
+          data,
+          `${currentKey}[${index}]`,
+          `${path}[${index}]`
+        );
+        parent.appendChild(childElement);
+      });
+    } else if (type === "number") {
+      parent.appendChild(buildNumberInput(schema, parentState, currentKey));
+      parent.classList.add("input-label");
+    } else if (type === "string") {
+      parent.appendChild(buildStringInput(parentState, currentKey));
+      parent.classList.add("input-label");
+    } else if (type === "boolean") {
+      parent.appendChild(buildBooleanInput(parentState, currentKey));
+      parent.classList.add("input-label");
+    } else {
+      parent.appendChild(buildUnknownInput());
     }
 
     return parent;
   };
 
-  return buildForm(formSchema, initialData);
+  return build(schema, state, state);
 };
 
-window.onload = async () => {
+function rerender() {
   const root = document.querySelector("#root");
-  const formLoader = document.querySelector("#form-loader");
-  const saveButton = document.querySelector("#save");
+  root.innerHTML = "";
+  root?.append(render(state, schema));
+}
 
+window.onload = async () => {
   const schemaResponse = await fetch("/configuration/schema");
   const dataResponse = await fetch("/configuration");
 
@@ -106,10 +163,12 @@ window.onload = async () => {
   const { data: formSchema } = schemaResponseJson;
   const { data: initialData } = dataResponseJson;
 
-  formLoader.style.display = "none";
+  state = initialData;
+  schema = formSchema;
 
-  const formElement = generateForm(formSchema, initialData);
-  root?.prepend(formElement);
+  rerender();
+
+  const saveButton = document.querySelector("#save");
 
   saveButton?.addEventListener("click", async () => {
     if (saveButton.disabled) {
@@ -124,7 +183,7 @@ window.onload = async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        configuration: changes,
+        configuration: state,
       }),
     });
     if (response.status === 200) {
