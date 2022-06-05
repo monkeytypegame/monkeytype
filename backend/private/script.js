@@ -50,7 +50,25 @@ const buildStringInput = (parentState, key) => {
   return input;
 };
 
-const buildArrayInput = (parentState) => {
+const defaultValueForType = (type) => {
+  switch (type) {
+    case "number":
+      return 0;
+    case "boolean":
+      return false;
+    case "string":
+      return "";
+    case "array":
+      return [];
+    case "object":
+      return {};
+  }
+
+  return null;
+};
+
+const buildArrayInput = (schema, parentState) => {
+  const itemType = schema.items.type;
   const inputControlsDiv = document.createElement("div");
   inputControlsDiv.classList.add("array-input-controls");
 
@@ -58,7 +76,7 @@ const buildArrayInput = (parentState) => {
   addButton.innerHTML = "Add";
   addButton.classList.add("array-input", "button");
   addButton.addEventListener("click", () => {
-    parentState.push({});
+    parentState.push(defaultValueForType(itemType));
     rerender();
   });
 
@@ -86,7 +104,7 @@ const buildUnknownInput = () => {
 const render = (state, schema) => {
   const build = (
     schema,
-    data,
+    state,
     parentState,
     currentKey = "",
     path = "configuration"
@@ -94,7 +112,7 @@ const render = (state, schema) => {
     const parent = document.createElement("div");
     parent.classList.add("form-element");
 
-    const { type, label, elements } = schema;
+    const { type, label, fields, items } = schema;
 
     if (label) {
       parent.appendChild(buildLabel(type, label));
@@ -102,32 +120,38 @@ const render = (state, schema) => {
 
     parent.id = path;
 
-    if (type === "group") {
-      const entries = Object.entries(elements);
+    if (type === "object") {
+      const entries = Object.entries(fields);
       entries.forEach(([key, value]) => {
+        if (!state[key]) {
+          state[key] = defaultValueForType(value.type);
+        }
+
         const childElement = build(
           value,
-          data[key],
-          data,
+          state[key],
+          state,
           key,
           `${path}.${key}`
         );
         parent.appendChild(childElement);
       });
     } else if (type === "array") {
-      const arrayInputControls = buildArrayInput(data);
+      const arrayInputControls = buildArrayInput(schema, state);
       parent.appendChild(arrayInputControls);
 
-      data.forEach((element, index) => {
-        const childElement = build(
-          elements,
-          element,
-          data,
-          `${currentKey}[${index}]`,
-          `${path}[${index}]`
-        );
-        parent.appendChild(childElement);
-      });
+      if (state && state.length > 0) {
+        state.forEach((element, index) => {
+          const childElement = build(
+            items,
+            element,
+            state,
+            `${currentKey}[${index}]`,
+            `${path}[${index}]`
+          );
+          parent.appendChild(childElement);
+        });
+      }
     } else if (type === "number") {
       parent.appendChild(buildNumberInput(schema, parentState, currentKey));
       parent.classList.add("input-label");

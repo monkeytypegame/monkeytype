@@ -42,17 +42,17 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
 };
 
 export const CONFIGURATION_FORM_SCHEMA = {
-  type: "group",
+  type: "object",
   label: "Server Configuration",
-  elements: {
+  fields: {
     maintenance: {
       type: "boolean",
       label: "In Maintenance",
     },
     results: {
-      type: "group",
+      type: "object",
       label: "Results",
-      elements: {
+      fields: {
         savingEnabled: {
           type: "boolean",
           label: "Saving Results",
@@ -64,13 +64,13 @@ export const CONFIGURATION_FORM_SCHEMA = {
       },
     },
     quotes: {
-      type: "group",
+      type: "object",
       label: "Quotes",
-      elements: {
+      fields: {
         reporting: {
-          type: "group",
+          type: "object",
           label: "Reporting",
-          elements: {
+          fields: {
             enabled: {
               type: "boolean",
               label: "Enabled",
@@ -96,9 +96,9 @@ export const CONFIGURATION_FORM_SCHEMA = {
       },
     },
     apeKeys: {
-      type: "group",
+      type: "object",
       label: "Ape Keys",
-      elements: {
+      fields: {
         endpointsEnabled: {
           type: "boolean",
           label: "Endpoints Enabled",
@@ -125,9 +125,9 @@ export const CONFIGURATION_FORM_SCHEMA = {
       },
     },
     autoBan: {
-      type: "group",
+      type: "object",
       label: "Auto Ban",
-      elements: {
+      fields: {
         enabled: {
           type: "boolean",
           label: "Enabled",
@@ -145,9 +145,9 @@ export const CONFIGURATION_FORM_SCHEMA = {
       },
     },
     dailyLeaderboards: {
-      type: "group",
+      type: "object",
       label: "Daily Leaderboards",
-      elements: {
+      fields: {
         enabled: {
           type: "boolean",
           label: "Enabled",
@@ -165,10 +165,10 @@ export const CONFIGURATION_FORM_SCHEMA = {
         validModeRules: {
           type: "array",
           label: "Valid Mode Rules",
-          elements: {
-            type: "group",
+          items: {
+            type: "object",
             label: "Rule",
-            elements: {
+            fields: {
               language: {
                 type: "string",
                 label: "Language",
