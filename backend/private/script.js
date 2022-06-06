@@ -67,13 +67,31 @@ const defaultValueForType = (type) => {
   return null;
 };
 
+const arrayFormElementDecorator = (childElement, parentState, index) => {
+  const decoratedElement = document.createElement("div");
+  decoratedElement.classList.add("array-form-element-decorator");
+
+  const removeButton = document.createElement("button");
+  removeButton.innerHTML = "X";
+  removeButton.classList.add("array-input", "array-input-delete", "button");
+  removeButton.addEventListener("click", () => {
+    parentState.splice(index, 1);
+    rerender();
+  });
+
+  decoratedElement.appendChild(childElement);
+  decoratedElement.appendChild(removeButton);
+
+  return decoratedElement;
+};
+
 const buildArrayInput = (schema, parentState) => {
   const itemType = schema.items.type;
   const inputControlsDiv = document.createElement("div");
   inputControlsDiv.classList.add("array-input-controls");
 
   const addButton = document.createElement("button");
-  addButton.innerHTML = "Add";
+  addButton.innerHTML = "Add One";
   addButton.classList.add("array-input", "button");
   addButton.addEventListener("click", () => {
     parentState.push(defaultValueForType(itemType));
@@ -81,10 +99,10 @@ const buildArrayInput = (schema, parentState) => {
   });
 
   const removeButton = document.createElement("button");
-  removeButton.innerHTML = "Delete";
+  removeButton.innerHTML = "Delete All";
   removeButton.classList.add("array-input", "array-input-delete", "button");
   removeButton.addEventListener("click", () => {
-    parentState.pop();
+    parentState.splice(0, parentState.length);
     rerender();
   });
 
@@ -149,7 +167,13 @@ const render = (state, schema) => {
             `${currentKey}[${index}]`,
             `${path}[${index}]`
           );
-          parent.appendChild(childElement);
+
+          const decoratedChildElement = arrayFormElementDecorator(
+            childElement,
+            state,
+            index
+          );
+          parent.appendChild(decoratedChildElement);
         });
       }
     } else if (type === "number") {

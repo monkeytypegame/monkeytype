@@ -113,7 +113,13 @@ input[type="checkbox"] {
   padding-left: 3rem;
   padding-top: 0.75rem;
   border-left: var(--sub-color) 1px solid;
+  border-bottom: var(--sub-color) 0.5px dotted;
   background: #fff;
+}
+
+.array-form-element-decorator {
+  display: flex;
+  align-items: flex-start;
 }
 
 #root > .form-element:first-child {
@@ -129,6 +135,7 @@ input[type="checkbox"] {
 .input-label {
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .unknown-input {
