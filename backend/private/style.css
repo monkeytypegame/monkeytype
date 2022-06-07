@@ -13,11 +13,10 @@ body {
 #header {
   background-color: #000;
   color: #fff;
-  padding: 2rem;
 }
 
 .header-container {
-  padding: 2rem;
+  padding: 0.5rem;
   padding-left: 0;
   max-width: 60rem;
   margin: 0 auto;
