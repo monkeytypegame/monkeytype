@@ -44,6 +44,9 @@ declare namespace MonkeyTypes {
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
     };
+    discordIntegration: {
+      enabled: boolean;
+    };
   }
 
   interface DecodedToken {
