@@ -2,8 +2,6 @@
 
 :root {
   --roundness: 0.5rem;
-  /* --sub-color: #e1e1e1; */
-  /* --highlight-color: #0085a8; */
   --bg-color: #323437;
   --main-color: #e2b714;
   --caret-color: #e2b714;
@@ -134,8 +132,7 @@ input[type="checkbox"] {
   padding-left: 3rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  border-left: var(--sub-color) 0.5px solid;
-  /* border-bottom: var(--sub-color) 0.5px dotted; */
+  border-left: #64666955 0.5px solid;
   background: #fff;
 }
 
