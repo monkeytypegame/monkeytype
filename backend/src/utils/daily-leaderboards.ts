@@ -13,6 +13,9 @@ interface DailyLeaderboardEntry {
   timestamp: number;
   rank?: number;
   count?: number;
+  discordAvatar?: string;
+  discordId?: string;
+  badgeIds?: number[];
 }
 
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";

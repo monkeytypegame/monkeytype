@@ -421,7 +421,7 @@ declare namespace MonkeyTypes {
   }
 
   interface LeaderboardEntry {
-    _id: string;
+    uid: string;
     difficulty: string;
     timestamp: number;
     language: string;
@@ -433,6 +433,8 @@ declare namespace MonkeyTypes {
     uid?: string;
     name: string;
     discordId?: string;
+    discordAvatar?: string;
+    badgeIds?: number[];
     rank: number;
     count?: number;
     hidden?: boolean;
