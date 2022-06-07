@@ -13,6 +13,15 @@
 @import url("https://fonts.googleapis.com/css?family=Noto+Naskh+Arabic&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap");
 
+@font-face {
+  font-family: "Boon";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Boon-400.ttf") format("truetype"),
+    url("../webfonts/Boon-400.otf") format("opentype");
+}
+
 :root {
   --roundness: 0.5rem;
   --font: "Roboto Mono", "Vazirmatn";
