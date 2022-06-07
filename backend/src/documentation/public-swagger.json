@@ -309,12 +309,12 @@
           "type": "string",
           "example": "6226b17aebc27a4a8d1ce04b"
         },
-        "badges": {
+        "badgeIds": {
           "type": "array",
           "items": {
-            "type": "string"
-          },
-          "example": ["Collaborator"]
+            "type": "integer",
+            "example": 1
+          }
         }
       }
     },

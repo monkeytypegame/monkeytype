@@ -63,8 +63,6 @@ declare namespace MonkeyTypes {
 
   // Data Model
 
-  type UserBadge = "Collaborator" | "Developer" | "Discord Mod";
-
   interface User {
     autoBanTimestamps?: number[];
     addedAt: number;
@@ -91,7 +89,7 @@ declare namespace MonkeyTypes {
     favoriteQuotes?: Record<string, string[]>;
     needsToChangeName?: boolean;
     discordAvatar?: string;
-    badges?: UserBadge[];
+    badgeIds?: number[];
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;

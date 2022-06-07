@@ -337,7 +337,7 @@ export async function addResult(
         uid,
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
-        badges: user.badges,
+        badgeIds: user.badgeIds,
       },
       dailyLeaderboardsConfig
     );

@@ -87,7 +87,7 @@ export async function update(
             [str + ".name"]: "$name",
             [str + ".discordId"]: "$discordId",
             [str + ".discordAvatar"]: "$discordAvatar",
-            [str + ".badges"]: "$badges",
+            [str + ".badgeIds"]: "$badgeIds",
           },
         },
         {

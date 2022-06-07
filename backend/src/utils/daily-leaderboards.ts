@@ -15,7 +15,7 @@ interface DailyLeaderboardEntry {
   count?: number;
   discordAvatar?: string;
   discordId?: string;
-  badges?: MonkeyTypes.UserBadge[];
+  badgeIds?: number[];
 }
 
 const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
