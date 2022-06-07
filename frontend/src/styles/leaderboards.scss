@@ -119,6 +119,23 @@
         border-spacing: 0;
         border-collapse: collapse;
 
+        .avatarAndName {
+          display: grid;
+          grid-template-columns: 1.25rem auto;
+          gap: 0.5rem;
+          place-items: center left;
+          .avatarPlaceholder {
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 1.25rem;
+            // background: var(--sub-color);
+            color: var(--sub-color);
+            // display: grid;
+            // place-content: center center;
+            border-radius: 100%;
+          }
+        }
+
         tr td:first-child {
           text-align: center;
         }

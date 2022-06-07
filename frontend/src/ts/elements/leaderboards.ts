@@ -272,12 +272,18 @@ function fillTable(lb: LbKey, prepend?: number): void {
       entry.rank = i + 1;
     }
 
+    let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+
+    if (entry.discordAvatar && entry.discordId) {
+      avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${entry.discordId}/${entry.discordAvatar}.png)"></div>`;
+    }
+
     html += `
     <tr ${meClassString}>
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td>${entry.name}</td>
+    <td><div class="avatarAndName">${avatar}${entry.name}</div></td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
