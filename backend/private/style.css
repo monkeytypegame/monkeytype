@@ -1,23 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
+
 :root {
-  --sub-color: #e1e1e1;
-  --highlight-color: #0085a8;
+  --roundness: 0.5rem;
+  /* --sub-color: #e1e1e1; */
+  /* --highlight-color: #0085a8; */
+  --bg-color: #323437;
+  --main-color: #e2b714;
+  --caret-color: #e2b714;
+  --sub-color: #646669;
+  --sub-alt-color: #2c2e31;
+  --text-color: #d1d0c5;
+  --error-color: #ca4754;
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Roboto Mono", sans-serif;
   margin: 0;
   padding: 0;
-  background: var(--sub-color);
+  background: var(--bg-color);
 }
 
 #header {
-  background-color: #000;
   color: #fff;
 }
 
 .header-container {
-  padding: 0.5rem;
-  padding-left: 0;
+  padding: 1rem 0;
   max-width: 60rem;
   margin: 0 auto;
   display: flex;
@@ -36,18 +44,19 @@ body {
 }
 
 #logo path {
-  fill: #fff;
+  fill: var(--main-color);
 }
 
 #root {
   padding: 2rem;
   background-color: #fff;
   max-width: 60rem;
-  margin: 2rem auto;
+  margin: 0rem auto;
+  border-radius: var(--roundness);
 }
 
 .button {
-  background-color: var(--highlight-color);
+  background-color: var(--bg-color);
   color: #fff;
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
@@ -55,6 +64,7 @@ body {
   cursor: pointer;
   font-size: 1rem;
   margin-right: 1rem;
+  font-family: "Roboto Mono";
 }
 
 .array-input {
@@ -70,8 +80,8 @@ body {
   position: fixed;
   right: 6rem;
   bottom: 3rem;
-  background-color: var(--highlight-color);
-  color: #fff;
+  background-color: var(--sub-alt-color);
+  color: var(--text-color);
   font-style: bold;
   border-radius: 3px;
   padding: 1rem 2rem;
@@ -79,14 +89,22 @@ body {
   display: inline-block;
   width: 125px;
   text-align: center;
+  transition: 0.125s;
+}
+
+#save:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
 }
 
 #save.good {
-  background-color: #42c328;
+  background-color: var(--main-color);
+  color: var(--bg-color);
 }
 
 #save.bad {
-  background-color: #d84b4b;
+  background-color: var(--error-color);
+  color: var(--bg-color);
 }
 
 label {
@@ -96,25 +114,28 @@ label {
 .base-input {
   margin: 0.5rem;
   border: 1px solid #767676;
-  border-radius: 3px;
+  border-radius: calc(var(--roundness) / 2);
   background-color: #fff;
   transition: all 0.2s ease-in-out;
   font-size: 1rem;
   padding: 0.25rem;
+  font-family: "Roboto Mono";
 }
 
 input[type="checkbox"] {
   display: inline-block;
-  accent-color: var(--highlight-color);
+  accent-color: var(--main-color);
+  color: white;
   width: 1.5rem;
   height: 1.5rem;
 }
 
 .form-element {
   padding-left: 3rem;
-  padding-top: 0.75rem;
-  border-left: var(--sub-color) 1px solid;
-  border-bottom: var(--sub-color) 0.5px dotted;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-left: var(--sub-color) 0.5px solid;
+  /* border-bottom: var(--sub-color) 0.5px dotted; */
   background: #fff;
 }
 
@@ -147,7 +168,7 @@ input[type="checkbox"] {
   margin: auto;
   width: 48px;
   height: 48px;
-  border: 5px solid var(--highlight-color);
+  border: 5px solid var(--bg-color);
   border-bottom-color: transparent;
   border-radius: 50%;
   display: block;
