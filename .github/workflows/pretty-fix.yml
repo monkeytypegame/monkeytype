@@ -10,7 +10,7 @@ on:
     - cron: "0 0 * * 0"
 
 jobs:
-  update-courses:
+  prettier-fix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
