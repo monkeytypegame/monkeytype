@@ -93,13 +93,17 @@ const logToDb = async (
   const logsCollection = db.collection<Log>("logs");
 
   logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
-  logsCollection.insertOne({
-    _id: new ObjectId(),
-    timestamp: Date.now(),
-    uid: uid ?? "",
-    event,
-    message,
-  });
+  logsCollection
+    .insertOne({
+      _id: new ObjectId(),
+      timestamp: Date.now(),
+      uid: uid ?? "",
+      event,
+      message,
+    })
+    .catch((error) => {
+      logger.error(`Could not log to db: ${error.message}`);
+    });
 };
 
 const Logger = {

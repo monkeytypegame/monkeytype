@@ -434,3 +434,13 @@ key {
     }
   }
 }
+
+.configureAPI.button {
+  position: fixed;
+  left: 2rem;
+  bottom: 2rem;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  text-decoration: none;
+}
