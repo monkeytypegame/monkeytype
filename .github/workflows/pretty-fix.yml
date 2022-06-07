@@ -34,6 +34,7 @@ jobs:
         run: |
           git add .
           git commit -m 'Prettier fix'
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
