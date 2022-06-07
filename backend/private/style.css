@@ -95,10 +95,12 @@ label {
 
 .base-input {
   margin: 0.5rem;
-  border: 2px solid var(--sub-color);
+  border: 1px solid #767676;
   border-radius: 3px;
   background-color: #fff;
   transition: all 0.2s ease-in-out;
+  font-size: 1rem;
+  padding: 0.25rem;
 }
 
 input[type="checkbox"] {
