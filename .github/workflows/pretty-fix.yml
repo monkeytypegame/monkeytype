@@ -32,6 +32,8 @@ jobs:
 
       - name: Create commits
         run: |
+          git config user.name 'monkeytypegeorge'
+          git config user.email 'monkeytypegeorge@gmail.com'
           git add .
           git commit -m 'Prettier fix'
 
