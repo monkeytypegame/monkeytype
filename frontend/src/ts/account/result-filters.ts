@@ -4,6 +4,8 @@ import Config from "../config";
 import * as Notifications from "../elements/notifications";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
+  _id: "default-result-filters-id",
+  name: "default result filters",
   difficulty: {
     normal: true,
     expert: true,
@@ -150,6 +152,11 @@ type AboveChartDisplay = MonkeyTypes.PartialRecord<
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    // id and name field do not correspond to any ui elements, no need to update
+    if (group === "_id" || group === "name") {
+      return;
+    }
+
     aboveChartDisplay[group] = {
       all: true,
       array: [],
@@ -355,6 +362,11 @@ $(
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
     (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+      // id and name field do not correspond to any ui elements, no need to update
+      if (group === "_id" || group === "name") {
+        return;
+      }
+
       (
         Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
       ).forEach((filter) => {
@@ -371,6 +383,11 @@ $(
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
     (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+      // id and name field do not correspond to any ui elements, no need to update
+      if (group === "_id" || group === "name") {
+        return;
+      }
+
       if (group !== "date") {
         (
           Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
@@ -404,6 +421,11 @@ $(
 
 $(".pageAccount .topFilters .button.allFilters").on("click", () => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    // id and name field do not correspond to any ui elements, no need to update
+    if (group === "_id" || group === "name") {
+      return;
+    }
+
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
     ).forEach((filter) => {
@@ -425,6 +447,11 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
 
 $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    // id and name field do not correspond to any ui elements, no need to update
+    if (group === "_id" || group === "name") {
+      return;
+    }
+
     (
       Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
     ).forEach((filter) => {
