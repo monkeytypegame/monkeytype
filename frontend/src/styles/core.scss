@@ -454,3 +454,27 @@ key {
   background-size: contain;
   background-repeat: no-repeat;
 }
+
+.badge {
+  background: var(--sub-color);
+  color: var(--text-color);
+  border-radius: calc(var(--roundness) / 2);
+  // padding: 0.15em 0.5em;
+  user-select: none;
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: baseline;
+  .fas,
+  .far {
+    margin-right: 0.3rem;
+    margin-left: 0.3rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+    font-size: 0.9em;
+  }
+  .text {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+    margin-right: 0.3rem;
+  }
+}

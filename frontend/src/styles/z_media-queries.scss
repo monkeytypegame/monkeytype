@@ -13,6 +13,9 @@
       }
     }
     .tables table {
+      .avatarNameBadge .badge .text {
+        display: none;
+      }
       tr td:first-child {
         padding-left: 0.25rem;
       }
@@ -203,13 +206,26 @@
   #commandLineInput {
     width: 600px !important;
   }
-  #leaderboardsWrapper #leaderboards {
-    .tables table {
-      tr td:nth-child(4) {
-        display: none;
+  #leaderboardsWrapper {
+    #leaderboards {
+      .leaderboardsTop {
+        flex-direction: column;
+        align-items: baseline;
       }
-      tr td:last-child {
-        width: 30%;
+      .tables {
+        grid-template-columns: unset;
+        table {
+          .avatarNameBadge .badge .text {
+            display: block;
+          }
+          tr td:last-child {
+            width: 30%;
+          }
+        }
+      }
+      .tables .rightTableWrapper,
+      .tables .leftTableWrapper {
+        height: calc(50vh - 8rem);
       }
     }
   }
@@ -241,6 +257,10 @@
         }
       }
     }
+  }
+  .badge::after,
+  .badge::before {
+    display: none;
   }
 }
 
@@ -296,22 +316,6 @@
 
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr;
-  }
-
-  #leaderboardsWrapper {
-    #leaderboards {
-      .leaderboardsTop {
-        flex-direction: column;
-        align-items: baseline;
-      }
-      .tables {
-        grid-template-columns: unset;
-      }
-      .tables .rightTableWrapper,
-      .tables .leftTableWrapper {
-        height: calc(50vh - 8rem);
-      }
-    }
   }
 }
 
@@ -548,6 +552,17 @@
     .tables .rightTableWrapper,
     .tables .leftTableWrapper {
       height: calc(50vh - 7rem);
+    }
+    .tables {
+      grid-template-columns: unset;
+      table {
+        .avatarNameBadge .badge .text {
+          display: block;
+        }
+        tr td:nth-child(4) {
+          display: none;
+        }
+      }
     }
   }
 }

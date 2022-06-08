@@ -6,6 +6,7 @@ import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
+import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 
@@ -178,7 +179,6 @@ function updateFooter(lb: LbKey): void {
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
-    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
@@ -283,7 +283,9 @@ function fillTable(lb: LbKey, prepend?: number): void {
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td><div class="avatarAndName">${avatar}${entry.name}</div></td>
+    <td><div class="avatarNameBadge">${avatar}${entry.name}${
+      entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""
+    }</div></td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -296,7 +298,6 @@ function fillTable(lb: LbKey, prepend?: number): void {
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
-    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>

@@ -702,4 +702,14 @@ declare namespace MonkeyTypes {
       };
     };
   }
+
+  interface UserBadge {
+    id: number;
+    name: string;
+    description: string;
+    icon?: string;
+    background?: string;
+    color?: string;
+    customStyle?: string;
+  }
 }

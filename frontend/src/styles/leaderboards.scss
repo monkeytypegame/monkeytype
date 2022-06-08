@@ -119,9 +119,9 @@
         border-spacing: 0;
         border-collapse: collapse;
 
-        .avatarAndName {
+        .avatarNameBadge {
           display: grid;
-          grid-template-columns: 1.25rem auto;
+          grid-template-columns: 1.25rem max-content auto;
           gap: 0.5rem;
           place-items: center left;
           .avatarPlaceholder {
@@ -133,6 +133,9 @@
             // display: grid;
             // place-content: center center;
             border-radius: 100%;
+          }
+          .badge {
+            font-size: 0.6rem;
           }
         }
 
