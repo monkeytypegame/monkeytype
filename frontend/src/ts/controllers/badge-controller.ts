@@ -17,7 +17,7 @@ const badges: MonkeyTypes.UserBadge[] = [
   },
   {
     id: 3,
-    name: "Discord Mod",
+    name: "Server Mod",
     description: "Discord server moderator",
     icon: "fa-hammer",
     color: "white",
