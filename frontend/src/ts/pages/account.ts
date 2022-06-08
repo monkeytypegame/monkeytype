@@ -1068,6 +1068,11 @@ $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
 });
 
+$(".pageAccount .customFilterButtons .filter-btns").on("click", (e) => {
+  ResultFilters.setCustomFilter(e.target.id);
+  update();
+});
+
 export const page = new Page(
   "account",
   $(".page.pageAccount"),

@@ -123,6 +123,7 @@ export async function getDataAndInit(): Promise<boolean> {
     });
     // filters = defaultResultFilters;
     ResultFilters.load();
+    ResultFilters.getCustomFilters();
   });
 
   if (snapshot.needsToChangeName) {
