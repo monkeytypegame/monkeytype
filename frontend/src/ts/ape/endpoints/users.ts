@@ -64,6 +64,20 @@ export default class Users {
     return await this.httpClient.delete(`${BASE_PATH}/personalBests`);
   }
 
+  async getCustomFilters(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/resultFilters`);
+  }
+
+  async addCustomFilter(filter: MonkeyTypes.ResultFilters): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/resultFilters`, {
+      payload: filter,
+    });
+  }
+
+  async removeCustomFilter(id: string): Ape.EndpointData {
+    return await this.httpClient.delete(`${BASE_PATH}/resultFilters/${id}`);
+  }
+
   async getTags(): Ape.EndpointData {
     return await this.httpClient.get(`${BASE_PATH}/tags`);
   }
