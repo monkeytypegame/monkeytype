@@ -680,8 +680,9 @@ const timeRangeSelector = $(
 });
 
 timeRangeSelector.on("select2:select", (e) => {
-  const timeRange = parseInt(e.params.data.id, 10);
-  update(timeRange);
+  currentTimeRange = "daily";
+  const daysBefore = parseInt(e.params.data.id, 10);
+  update(daysBefore);
 });
 
 $(
@@ -697,7 +698,8 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   timeRangeSelector.prop("disabled", false);
-  update();
+  const daysBefore = parseInt(timeRangeSelector.val() as string, 10);
+  update(daysBefore);
 });
 
 $(document).on("click", "#top #menu .text-button", (e) => {
