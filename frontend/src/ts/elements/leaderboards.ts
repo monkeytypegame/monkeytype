@@ -347,7 +347,7 @@ function updateTitle(): void {
   el.text(`${timeRangeString} English Leaderboards`);
 }
 
-async function update(): Promise<void> {
+async function update(daysBefore?: number): Promise<void> {
   showLoader(15);
   showLoader(60);
 
@@ -359,6 +359,7 @@ async function update(): Promise<void> {
       mode: "time",
       mode2,
       isDaily: currentTimeRange === "daily",
+      daysBefore,
     });
   });
 
@@ -370,6 +371,7 @@ async function update(): Promise<void> {
           mode: "time",
           mode2,
           isDaily: currentTimeRange === "daily",
+          daysBefore,
         });
       })
     );
@@ -658,10 +660,35 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   }
 );
 
+const timeRangeSelector = $(
+  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .dailyTimeSelect"
+).select2({
+  placeholder: "Filter by length",
+  width: "100%",
+  data: [
+    {
+      id: 0,
+      text: "Today",
+      selected: true,
+    },
+    {
+      id: 1,
+      text: "Yesterday",
+      selected: false,
+    },
+  ],
+});
+
+timeRangeSelector.on("select2:select", (e) => {
+  const timeRange = parseInt(e.params.data.id, 10);
+  update(timeRange);
+});
+
 $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .allTime"
 ).on("click", () => {
   currentTimeRange = "allTime";
+  timeRangeSelector.prop("disabled", true);
   update();
 });
 
@@ -669,6 +696,7 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
+  timeRangeSelector.prop("disabled", false);
   update();
 });
 

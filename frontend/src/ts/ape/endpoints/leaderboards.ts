@@ -5,6 +5,7 @@ interface LeaderboardQuery {
   mode: MonkeyTypes.Mode;
   mode2: string | number;
   isDaily?: boolean;
+  daysBefore?: number;
 }
 
 interface LeadeboardQueryWithPagination extends LeaderboardQuery {
@@ -18,7 +19,16 @@ export default class Leaderboards {
   }
 
   async get(query: LeadeboardQueryWithPagination): Ape.EndpointData {
-    const { language, mode, mode2, isDaily, skip = 0, limit = 50 } = query;
+    const {
+      language,
+      mode,
+      mode2,
+      isDaily,
+      skip = 0,
+      limit = 50,
+      daysBefore,
+    } = query;
+    const includeDaysBefore = isDaily && daysBefore;
 
     const searchQuery = {
       language,
@@ -26,6 +36,7 @@ export default class Leaderboards {
       mode2,
       skip: Math.max(skip, 0),
       limit: Math.max(Math.min(limit, 50), 0),
+      ...(includeDaysBefore && { daysBefore }),
     };
 
     const endpointPath = `${BASE_PATH}/${isDaily ? "daily" : ""}`;
@@ -34,12 +45,14 @@ export default class Leaderboards {
   }
 
   async getRank(query: LeaderboardQuery): Ape.EndpointData {
-    const { language, mode, mode2, isDaily } = query;
+    const { language, mode, mode2, isDaily, daysBefore } = query;
+    const includeDaysBefore = isDaily && daysBefore;
 
     const searchQuery = {
       language,
       mode,
       mode2,
+      ...(includeDaysBefore && { daysBefore }),
     };
 
     const endpointPath = `${BASE_PATH}${isDaily ? "/daily" : ""}/rank`;
