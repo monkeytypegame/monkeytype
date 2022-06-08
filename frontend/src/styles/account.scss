@@ -52,7 +52,8 @@
     margin-top: 1rem;
   }
 
-  .topFilters .buttons {
+  .topFilters .buttons,
+  .presetFilterButtons .buttons {
     display: flex;
     justify-content: space-evenly;
     gap: 1rem;
@@ -295,6 +296,21 @@
 }
 
 .pageAccount {
+  .group.presetFilterButtons {
+    .buttons.filter-btns {
+      .filter-presets {
+        display: grid;
+        grid-area: buttons;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+        grid-template-columns: 6fr 1fr;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        gap: 0.5rem;
+      }
+    }
+  }
+
   .group.filterButtons {
     gap: 1rem;
     display: grid;
