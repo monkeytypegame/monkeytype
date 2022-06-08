@@ -39,6 +39,9 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
   },
+  discordIntegration: {
+    enabled: false,
+  },
 };
 
 export const CONFIGURATION_FORM_SCHEMA = {
@@ -48,6 +51,16 @@ export const CONFIGURATION_FORM_SCHEMA = {
     maintenance: {
       type: "boolean",
       label: "In Maintenance",
+    },
+    discordIntegration: {
+      type: "object",
+      label: "Discord Integration",
+      fields: {
+        enabled: {
+          type: "boolean",
+          label: "Enabled",
+        },
+      },
     },
     results: {
       type: "object",
