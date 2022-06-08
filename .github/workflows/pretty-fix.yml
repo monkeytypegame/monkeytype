@@ -1,0 +1,45 @@
+name: Prettier Fix
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manually triggering this workflow"
+        required: false
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  prettier-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up date environment variables
+        run: |
+          echo "BRANCH_TITLE=pretty-fix-$(date +%s)" >> $GITHUB_ENV
+          echo "PR_TITLE=Prettier Fix - $(date)" >> $GITHUB_ENV
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.13.2"
+
+      - name: Install dependencies
+        run: npm i prettier@2.5.1 --save-dev --save-exact
+
+      - name: Pretty Check
+        run: npm run pretty-fix
+
+      - name: Create commits
+        run: |
+          git config user.name 'monkeytypegeorge'
+          git config user.email 'monkeytypegeorge@gmail.com'
+          git add .
+          git commit -m 'Prettier fix'
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: ${{ env.BRANCH_TITLE }}
+          title: ${{ env.PR_TITLE }}
+          body: ${{ env.PR_TITLE }}

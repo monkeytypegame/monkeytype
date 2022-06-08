@@ -1,11 +1,14 @@
 import _ from "lodash";
 import psas from "./psas";
 import users from "./users";
+import { join } from "path";
+import express from "express";
 import quotes from "./quotes";
 import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
+import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
@@ -33,6 +36,11 @@ function addApiRoutes(app: Application): void {
   app.get("/leaderboard", (_req, res) => {
     res.sendStatus(404);
   });
+
+  if (process.env.MODE === "dev") {
+    app.use("/configure", express.static(join(__dirname, "../../../private")));
+    app.use("/configuration", configuration);
+  }
 
   addSwaggerMiddlewares(app);
 

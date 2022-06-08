@@ -389,10 +389,18 @@ export async function updateTypingStats(
 
 export async function linkDiscord(
   uid: string,
-  discordId: string
-): Promise<UpdateResult> {
-  await getUser(uid, "link discord");
-  return await getUsersCollection().updateOne({ uid }, { $set: { discordId } });
+  discordId: string,
+  discordAvatar?: string
+): Promise<void> {
+  const updates = _.pickBy({ discordId, discordAvatar }, _.identity);
+  const result = await getUsersCollection().updateOne(
+    { uid },
+    { $set: updates }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new MonkeyError(404, "User not found");
+  }
 }
 
 export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
@@ -400,7 +408,7 @@ export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
 
   return await getUsersCollection().updateOne(
     { uid },
-    { $set: { discordId: undefined } }
+    { $unset: { discordId: "", discordAvatar: "" } }
   );
 }
 

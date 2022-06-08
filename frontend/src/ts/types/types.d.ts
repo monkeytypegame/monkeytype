@@ -421,7 +421,7 @@ declare namespace MonkeyTypes {
   }
 
   interface LeaderboardEntry {
-    _id: string;
+    uid: string;
     difficulty: string;
     timestamp: number;
     language: string;
@@ -433,6 +433,8 @@ declare namespace MonkeyTypes {
     uid?: string;
     name: string;
     discordId?: string;
+    discordAvatar?: string;
+    badgeIds?: number[];
     rank: number;
     count?: number;
     hidden?: boolean;
@@ -463,6 +465,7 @@ declare namespace MonkeyTypes {
     config?: Config;
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
+    discordAvatar?: string;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
@@ -698,5 +701,15 @@ declare namespace MonkeyTypes {
         [parameter: string]: string | number | boolean;
       };
     };
+  }
+
+  interface UserBadge {
+    id: number;
+    name: string;
+    description: string;
+    icon?: string;
+    background?: string;
+    color?: string;
+    customStyle?: string;
   }
 }

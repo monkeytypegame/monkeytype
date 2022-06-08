@@ -1,13 +1,15 @@
 const BASE_PATH = "/quotes";
 
-export default function getQuotesEndpoints(
-  apeClient: Ape.Client
-): Ape.Endpoints["quotes"] {
-  async function get(): Ape.EndpointData {
-    return await apeClient.get(BASE_PATH);
+export default class Quotes {
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
-  async function submit(
+  async get(): Ape.EndpointData {
+    return await this.httpClient.get(BASE_PATH);
+  }
+
+  async submit(
     text: string,
     source: string,
     language: string,
@@ -20,10 +22,10 @@ export default function getQuotesEndpoints(
       captcha,
     };
 
-    return await apeClient.post(BASE_PATH, { payload });
+    return await this.httpClient.post(BASE_PATH, { payload });
   }
 
-  async function approveSubmission(
+  async approveSubmission(
     quoteSubmissionId: string,
     editText?: string,
     editSource?: string
@@ -34,38 +36,35 @@ export default function getQuotesEndpoints(
       editSource,
     };
 
-    return await apeClient.post(`${BASE_PATH}/approve`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/approve`, { payload });
   }
 
-  async function rejectSubmission(quoteSubmissionId: string): Ape.EndpointData {
-    return await apeClient.post(`${BASE_PATH}/reject`, {
+  async rejectSubmission(quoteSubmissionId: string): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/reject`, {
       payload: { quoteId: quoteSubmissionId },
     });
   }
 
-  async function getRating(quote: MonkeyTypes.Quote): Ape.EndpointData {
+  async getRating(quote: MonkeyTypes.Quote): Ape.EndpointData {
     const searchQuery = {
       quoteId: quote.id,
       language: quote.language,
     };
 
-    return await apeClient.get(`${BASE_PATH}/rating`, { searchQuery });
+    return await this.httpClient.get(`${BASE_PATH}/rating`, { searchQuery });
   }
 
-  async function addRating(
-    quote: MonkeyTypes.Quote,
-    rating: number
-  ): Ape.EndpointData {
+  async addRating(quote: MonkeyTypes.Quote, rating: number): Ape.EndpointData {
     const payload = {
       quoteId: quote.id,
       rating,
       language: quote.language,
     };
 
-    return await apeClient.post(`${BASE_PATH}/rating`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/rating`, { payload });
   }
 
-  async function report(
+  async report(
     quoteId: string,
     quoteLanguage: string,
     reason: string,
@@ -80,16 +79,6 @@ export default function getQuotesEndpoints(
       captcha,
     };
 
-    return await apeClient.post(`${BASE_PATH}/report`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
   }
-
-  return {
-    get,
-    submit,
-    approveSubmission,
-    rejectSubmission,
-    getRating,
-    addRating,
-    report,
-  };
 }
