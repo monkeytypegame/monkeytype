@@ -274,7 +274,15 @@ function fillTable(lb: LbKey, prepend?: number): void {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    if (entry.discordAvatar && entry.discordId) {
+    const snap = DB.getSnapshot();
+    if (
+      Auth.currentUser &&
+      entry.uid === Auth.currentUser.uid &&
+      snap.discordAvatar &&
+      snap.discordId
+    ) {
+      avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${snap.discordId}/${snap.discordAvatar}.png)"></div>`;
+    } else if (entry.discordAvatar && entry.discordId) {
       avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${entry.discordId}/${entry.discordAvatar}.png)"></div>`;
     }
 
