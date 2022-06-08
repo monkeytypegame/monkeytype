@@ -150,6 +150,47 @@ export async function isDiscordIdAvailable(
   return _.isNil(user);
 }
 
+export async function addResultFilter(
+  uid: string,
+  filter: MonkeyTypes.ResultFilters
+): Promise<ObjectId> {
+  const _id = new ObjectId();
+  await getUsersCollection().updateOne(
+    { uid },
+    { $push: { customFilters: { ...filter, _id } } }
+  );
+  return _id;
+}
+
+export async function getResultFilters(
+  uid: string
+): Promise<MonkeyTypes.ResultFilters[]> {
+  const user = await getUser(uid, "get result filters");
+  return user.customFilters ?? [];
+}
+
+export async function removeResultFilter(
+  uid: string,
+  _id: string
+): Promise<UpdateResult> {
+  const user = await getUser(uid, "remove result filter");
+  const filterId = new ObjectId(_id);
+  if (
+    user.customFilters === undefined ||
+    user.customFilters.filter((t) => t._id.toHexString() === _id).length === 0
+  ) {
+    throw new MonkeyError(404, "Custom filter not found");
+  }
+
+  return await getUsersCollection().updateOne(
+    {
+      uid,
+      "customFilters._id": filterId,
+    },
+    { $pull: { customFilters: { _id: filterId } } }
+  );
+}
+
 export async function addTag(
   uid: string,
   name: string
