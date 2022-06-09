@@ -185,6 +185,14 @@
           tr:nth-child(odd) td {
             background: var(--sub-alt-color);
           }
+          td:nth-child(1) {
+            border-radius: calc(var(--roundness) / 2) 0 0
+              calc(var(--roundness) / 2);
+          }
+          td:last-child {
+            border-radius: 0 calc(var(--roundness) / 2)
+              calc(var(--roundness) / 2) 0;
+          }
         }
 
         tfoot {
