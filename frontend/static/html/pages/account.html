@@ -18,120 +18,184 @@
       <canvas id="miniResultChart"></canvas>
     </div>
     <div class="miniResultChartBg"></div>
-    <div class="triplegroup">
-      <div class="group globalTestsStarted">
-        <div class="title">tests started</div>
-        <div class="val">-</div>
+
+    <div class="profile">
+      <div class="info">
+        <div class="avatarAndName">
+          <div
+            class="avatar"
+            style="
+              background-image: url('https://cdn.discordapp.com/avatars/102819690287489024/a_af6c0b8ad26fdd6bcb86ed7bb40ee6e5.png');
+            "
+          ></div>
+          <div>
+            <div class="name">Miodec</div>
+            <div class="badges">
+              <div
+                class="badge"
+                aria-label="I helped make this"
+                data-balloon-pos="right"
+                style="color: white; animation: rgb-bg 10s linear infinite"
+              >
+                <i class="fas fa-rocket"></i>
+                <div class="text">Developer</div>
+              </div>
+            </div>
+            <div class="sub">Joined 01/01/01</div>
+          </div>
+        </div>
+        <div class="separator"></div>
+        <div class="typingStats">
+          <div class="big">
+            <div class="title">tests started</div>
+            <div class="value">1000</div>
+          </div>
+          <div class="big">
+            <div class="title">tests completed</div>
+            <div class="value">1000</div>
+          </div>
+          <div class="big">
+            <div class="title">time typing</div>
+            <div class="value">69:69:69</div>
+          </div>
+        </div>
+        <div class="separator"></div>
+        <div class="bio">
+          <div class="title">bio</div>
+          <div class="value">
+            Developing 😎 Monkeytype - the most customisable typing website in
+            the world.
+            <br />
+            <br />
+            Some more boring text to fill the space.
+          </div>
+        </div>
+        <div class="keyboard">
+          <div class="title">keyboard</div>
+          <div class="value">Apple Magic</div>
+        </div>
+        <div class="twitter">
+          <div class="title">twitter</div>
+          <div class="value">@jackmiodec</div>
+        </div>
+        <div></div>
       </div>
-      <div class="group globalTestsCompleted">
-        <div class="title">tests completed</div>
-        <div class="val">-</div>
-      </div>
-      <div class="group globalTimeTyping">
-        <div class="title">time typing</div>
-        <div class="val">-</div>
+      <!-- <div class="typingStats triplegroup">
+        <div class="group globalTestsStarted">
+          <div class="title">tests started</div>
+          <div class="val">-</div>
+        </div>
+        <div class="group globalTestsCompleted">
+          <div class="title">tests completed</div>
+          <div class="val">-</div>
+        </div>
+        <div class="group globalTimeTyping">
+          <div class="title">time typing</div>
+          <div class="val">-</div>
+        </div>
+      </div> -->
+      <div class="group personalBestTables">
+        <div class="title">personal bests</div>
+        <div class="tables">
+          <div class="titleAndTable timePbTable">
+            <table width="100%">
+              <thead>
+                <tr>
+                  <td width="1%">time</td>
+                  <td width="33%">
+                    wpm
+                    <br />
+                    <span class="sub">accuracy</span>
+                  </td>
+                  <td width="33%">
+                    raw
+                    <br />
+                    <span class="sub">consistency</span>
+                  </td>
+                  <td width="33%">date</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>15</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>30</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>60</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>120</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="button showAllTimePbs">show all</div>
+          </div>
+          <div class="titleAndTable wordsPbTable">
+            <table width="100%">
+              <thead>
+                <tr>
+                  <td width="1%">words</td>
+                  <td width="33%">
+                    wpm
+                    <br />
+                    <span class="sub">accuracy</span>
+                  </td>
+                  <td width="33%">
+                    raw
+                    <br />
+                    <span class="sub">consistency</span>
+                  </td>
+                  <td width="33%">date</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>10</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>25</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>50</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td>100</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="button showAllWordsPbs">show all</div>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="group createdDate">Account created on -</div>
-    <div class="group personalBestTables">
-      <div class="title">personal bests</div>
-      <div class="tables">
-        <div class="titleAndTable timePbTable">
-          <table width="100%">
-            <thead>
-              <tr>
-                <td width="1%">time</td>
-                <td width="33%">
-                  wpm
-                  <br />
-                  <span class="sub">accuracy</span>
-                </td>
-                <td width="33%">
-                  raw
-                  <br />
-                  <span class="sub">consistency</span>
-                </td>
-                <td width="33%">date</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>15</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>30</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>60</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>120</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="button showAllTimePbs">show all</div>
-        </div>
-        <div class="titleAndTable wordsPbTable">
-          <table width="100%">
-            <thead>
-              <tr>
-                <td width="1%">words</td>
-                <td width="33%">
-                  wpm
-                  <br />
-                  <span class="sub">accuracy</span>
-                </td>
-                <td width="33%">
-                  raw
-                  <br />
-                  <span class="sub">consistency</span>
-                </td>
-                <td width="33%">date</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>10</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>25</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>50</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>100</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="button showAllWordsPbs">show all</div>
-        </div>
-      </div>
-    </div>
 
     <div id="ad_account" class="hidden"></div>
 
