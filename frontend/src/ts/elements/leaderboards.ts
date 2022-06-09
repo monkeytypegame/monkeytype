@@ -361,6 +361,9 @@ function updateYesterdayButton(): void {
 }
 
 async function update(): Promise<void> {
+  leftScrollEnabled = false;
+  rightScrollEnabled = false;
+
   showLoader(15);
   showLoader(60);
 
@@ -439,6 +442,11 @@ async function update(): Promise<void> {
   $(
     `#leaderboardsWrapper .buttonGroup.timeRange .button.` + currentTimeRange
   ).addClass("active");
+  $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
+  $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
+
+  leftScrollEnabled = true;
+  rightScrollEnabled = true;
 }
 
 async function requestMore(lb: LbKey, prepend = false): Promise<void> {
