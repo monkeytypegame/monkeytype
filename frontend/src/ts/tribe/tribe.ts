@@ -452,7 +452,7 @@ socket.on("room_init_race", (e) => {
   seedrandom(e.seed, { global: true });
   console.log(`seed: ${e.seed}`);
   console.log(`random: ${Math.random()}`);
-  PageController.change("test");
+  PageController.change("test", true);
   TribeCountdown.show();
   TribeSound.play("start");
 });
