@@ -22,6 +22,11 @@ const LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT = {
   limit: joi.number().min(0).max(50),
 };
 
+const DAILY_LEADERBOARD_VALIDATION_SCHEMA = {
+  ...LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT,
+  daysBefore: joi.number().min(1).max(1),
+};
+
 const router = Router();
 
 const requireDailyLeaderboardsEnabled = validateConfiguration({
@@ -58,7 +63,7 @@ router.get(
   RateLimit.leaderboardsGet,
   authenticateRequest({ isPublic: true }),
   validateRequest({
-    query: LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT,
+    query: DAILY_LEADERBOARD_VALIDATION_SCHEMA,
   }),
   asyncHandler(LeaderboardController.getDailyLeaderboard)
 );
@@ -69,7 +74,7 @@ router.get(
   RateLimit.leaderboardsGet,
   authenticateRequest(),
   validateRequest({
-    query: BASE_LEADERBOARD_VALIDATION_SCHEMA,
+    query: DAILY_LEADERBOARD_VALIDATION_SCHEMA,
   }),
   asyncHandler(LeaderboardController.getDailyLeaderboardRank)
 );
