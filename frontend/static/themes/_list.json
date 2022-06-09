@@ -759,4 +759,9 @@
     "bgColor": "#ffffff",
     "mainColor": "#40d672"
   }
+  ,{
+    "name": "tron_orange",
+    "bgColor": "#0d1c1c",
+    "mainColor": "#f0e800"
+}
 ]

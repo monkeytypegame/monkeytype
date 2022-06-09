@@ -16,9 +16,9 @@ import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
 
-type SettingsGroups = {
+interface SettingsGroups {
   [key: string]: SettingsGroup;
-};
+}
 
 export const groups: SettingsGroups = {};
 

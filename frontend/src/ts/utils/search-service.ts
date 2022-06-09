@@ -13,6 +13,8 @@ interface SearchServiceOptions {
 
 interface InternalDocument {
   id: number;
+  maxTermFrequency: number;
+  termFrequencies: Record<string, number>;
 }
 
 interface ReverseIndex {
@@ -47,6 +49,18 @@ function inverseDocumentFrequency(
   return Math.log10(numberOfDocuments / numberOfDocumentsWithTerm);
 }
 
+const ALPHA = 0.4; // Smoothing term that dampens the contribution of tf/max tf
+
+function normalizedTermFrequency(
+  term: string,
+  document: InternalDocument
+): number {
+  return (
+    ALPHA +
+    (1 - ALPHA) * (document.termFrequencies[term] / document.maxTermFrequency)
+  );
+}
+
 function tokenize(text: string): string[] {
   return text.match(/[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+/g) || [];
 }
@@ -64,7 +78,11 @@ export const buildSearchService = <T>(
 
     const internalDocument: InternalDocument = {
       id: documentIndex,
+      termFrequencies: {},
+      maxTermFrequency: 0,
     };
+
+    let maxTermFrequency = 0;
 
     rawTokens.forEach((token) => {
       const stemmedToken = stemmer(token);
@@ -78,7 +96,19 @@ export const buildSearchService = <T>(
         reverseIndex[stemmedToken] = new Set<InternalDocument>();
       }
       reverseIndex[stemmedToken].add(internalDocument);
+
+      if (!(stemmedToken in internalDocument.termFrequencies)) {
+        internalDocument.termFrequencies[stemmedToken] = 0;
+      }
+
+      internalDocument.termFrequencies[stemmedToken]++;
+      maxTermFrequency = Math.max(
+        maxTermFrequency,
+        internalDocument.termFrequencies[stemmedToken]
+      );
     });
+
+    internalDocument.maxTermFrequency = maxTermFrequency;
   });
 
   const tokenSet = Object.keys(reverseIndex);
@@ -113,9 +143,10 @@ export const buildSearchService = <T>(
             documents.length,
             documentMatches.size
           );
-
           documentMatches.forEach((document) => {
             const currentScore = results.get(document.id) ?? 0;
+
+            const termFrequency = normalizedTermFrequency(token, document);
 
             const scoreForExactMatch = matchesSearchToken
               ? options.scoreForExactMatch
@@ -125,7 +156,7 @@ export const buildSearchService = <T>(
               : 0;
             const score = scoreForExactMatch + scoreForSimilarity;
 
-            const scoreForToken = score * idf;
+            const scoreForToken = score * idf * termFrequency;
 
             results.set(document.id, currentScore + scoreForToken);
           });

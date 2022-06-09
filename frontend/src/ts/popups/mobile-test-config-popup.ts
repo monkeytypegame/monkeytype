@@ -122,8 +122,8 @@ el.find(".timeGroup .button").on("click", (e) => {
 });
 
 el.find(".quoteGroup .button").on("click", (e) => {
-  let len: number | number[] = ($(e.currentTarget).attr("quote") ??
-    0) as number;
+  let len: number | number[] =
+    parseInt($(e.currentTarget).attr("quote") as string, 10) ?? 0;
   if (len == -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     hidePopup();

@@ -30,7 +30,7 @@ router.post(
   "/",
   validateConfiguration({
     criteria: (configuration) => {
-      return configuration.quoteSubmit.enabled;
+      return configuration.quotes.submissionsEnabled;
     },
     invalidMessage:
       "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
@@ -109,7 +109,7 @@ router.post(
   "/report",
   validateConfiguration({
     criteria: (configuration) => {
-      return configuration.quoteReport.enabled;
+      return configuration.quotes.reporting.enabled;
     },
     invalidMessage: "Quote reporting is unavailable.",
   }),

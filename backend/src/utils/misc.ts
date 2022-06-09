@@ -80,3 +80,32 @@ export function padNumbers(
     number.toString().padStart(maxLength, fillString)
   );
 }
+
+export function getCurrentDayTimestamp(): number {
+  const currentTime = Date.now();
+  return currentTime - (currentTime % 86400000);
+}
+
+export function matchesAPattern(text: string, pattern: string): boolean {
+  const regex = new RegExp(`^${pattern}$`);
+  return regex.test(text);
+}
+
+export const MILLISECONDS_IN_DAY = 86400000;
+
+export function kogascore(wpm: number, acc: number, timestamp: number): number {
+  const normalizedWpm = Math.floor(wpm * 100);
+  const normalizedAcc = Math.floor(acc * 100);
+
+  const padAmount = 100000;
+  const firstPart = (padAmount + normalizedWpm) * padAmount;
+  const secondPart = (firstPart + normalizedAcc) * padAmount;
+
+  const currentDayTimeMilliseconds =
+    timestamp - (timestamp % MILLISECONDS_IN_DAY);
+  const todayMilliseconds = timestamp - currentDayTimeMilliseconds;
+
+  return (
+    secondPart + Math.floor((MILLISECONDS_IN_DAY - todayMilliseconds) / 1000)
+  );
+}

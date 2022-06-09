@@ -73,13 +73,14 @@ export async function initSnapshot(): Promise<
       configResponse,
       tagsResponse,
       presetsResponse,
-    ].map((response: Ape.Response) => response.data);
+    ].map((response: Ape.HttpClientResponse) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
     snap.banned = userData.banned;
     snap.verified = userData.verified;
     snap.discordId = userData.discordId;
+    snap.discordAvatar = userData.discordAvatar;
     snap.needsToChangeName = userData.needsToChangeName;
     snap.globalStats = {
       time: userData.timeTyping,

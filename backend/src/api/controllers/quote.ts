@@ -131,8 +131,8 @@ export async function reportQuote(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const {
-    quoteReport: { maxReports, contentReportLimit },
-  } = req.ctx.configuration;
+    reporting: { maxReports, contentReportLimit },
+  } = req.ctx.configuration.quotes;
 
   const { quoteId, quoteLanguage, reason, comment, captcha } = req.body;
 

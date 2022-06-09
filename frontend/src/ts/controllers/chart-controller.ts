@@ -129,6 +129,11 @@ export const result: ChartWithUpdateColors<
     ],
   },
   options: {
+    layout: {
+      padding: {
+        top: 2,
+      },
+    },
     responsive: true,
     maintainAspectRatio: false,
     scales: {

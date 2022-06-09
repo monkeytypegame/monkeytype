@@ -5,6 +5,7 @@ import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-dis
 import * as db from "./init/db";
 import jobs from "./jobs";
 import { getLiveConfiguration } from "./init/configuration";
+import { initializeDailyLeaderboardsCache } from "./utils/daily-leaderboards";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
@@ -28,7 +29,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Firebase app initialized");
 
     Logger.info("Fetching live configuration...");
-    await getLiveConfiguration();
+    const liveConfiguration = await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
     Logger.info("Connecting to redis...");
@@ -40,6 +41,8 @@ async function bootServer(port: number): Promise<Server> {
       Logger.info("Initializing task queues...");
       initJobQueue(RedisClient.getConnection());
       Logger.success("Task queues initialized");
+
+      initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
     }
 
     Logger.info("Starting cron jobs...");

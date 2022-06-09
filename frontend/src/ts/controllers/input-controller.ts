@@ -616,6 +616,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // dont do anything special
     if (modalVisible) return;
 
+    // dont do anything on login so we can tab betweeen inputs
+    if (ActivePage.get() === "login") return;
+
     // tribe handling
     if (ActivePage.get() === "tribe") {
       if (Tribe.state >= 5) {

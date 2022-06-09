@@ -275,13 +275,13 @@ export function update(): void {
     let totalCons10 = 0;
     let consCount = 0;
 
-    type ActivityChartData = {
+    interface ActivityChartData {
       [key: number]: {
         amount: number;
         time: number;
         totalWpm: number;
       };
-    };
+    }
 
     const activityChartData: ActivityChartData = {};
 

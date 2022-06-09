@@ -15,11 +15,11 @@ try {
   git = undefined;
 }
 
-type AddQuoteReturn = {
+interface AddQuoteReturn {
   languageError?: number;
   duplicateId?: number;
   similarityScore?: number;
-};
+}
 
 export async function add(
   text: string,
@@ -86,18 +86,18 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
     .toArray();
 }
 
-type Quote = {
+interface Quote {
   id?: number;
   text: string;
   source: string;
   length: number;
   approvedBy: string;
-};
+}
 
-type ApproveReturn = {
+interface ApproveReturn {
   quote: Quote;
   message: string;
-};
+}
 
 export async function approve(
   quoteId: string,

@@ -24,7 +24,7 @@ router.post(
   "/",
   validateConfiguration({
     criteria: (configuration) => {
-      return configuration.enableSavingResults.enabled;
+      return configuration.results.savingEnabled;
     },
     invalidMessage: "Results are not being saved at this time.",
   }),
