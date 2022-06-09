@@ -483,7 +483,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
         }
-        if (obj.hover) if (!themeChosen) obj.hover();
+        if (obj.hover && !themeChosen) obj.hover();
       }
     });
   } catch (e) {}
