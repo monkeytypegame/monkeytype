@@ -102,7 +102,7 @@
   },
   {
     "name": "kurdish_central",
-    "languages": ["kurdish_central"]
+    "languages": ["kurdish_central", "kurdish_central_1.5k"]
   },
   {
     "name": "greek",
