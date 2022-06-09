@@ -28,7 +28,7 @@ export function init(page: string): void {
     if (!Tribe.room) return;
 
     for (const [userId, user] of Object.entries(Tribe.room.users)) {
-      if (user.isAfk) return;
+      if (user.isAfk) continue;
       el.append(`
         <tr class="user ${
           userId === Tribe.socket.id ? "me" : ""

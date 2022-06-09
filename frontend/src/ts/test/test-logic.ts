@@ -1682,6 +1682,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
   }
 
+  if (response.data.dailyLeaderboardRank) {
+    Notifications.add(
+      `New ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+        Misc.getPositionString(response.data.dailyLeaderboardRank),
+      1,
+      10,
+      "Daily Leaderboard",
+      "list-ol"
+    );
+  }
+
   resolveTestSavePromise({
     login: true,
     saved: true,

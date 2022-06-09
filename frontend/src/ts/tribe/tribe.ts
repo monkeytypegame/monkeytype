@@ -169,7 +169,7 @@ export function initRace(): void {
   let everyoneReady = true;
   if (room?.users) {
     for (const user of Object.values(room.users)) {
-      if (user.isLeader || user.isAfk) return;
+      if (user.isLeader || user.isAfk) continue;
       if (!user.isReady) {
         everyoneReady = false;
       }
@@ -466,9 +466,10 @@ socket.on("room_countdown", (e) => {
   if (e.time <= 3) TribeSound.play("cd");
 });
 
-socket.on("room_users_update", (e: { users: TribeTypes.User[] }) => {
+socket.on("room_users_update", (e: Record<string, TribeTypes.User>) => {
   if (!room) return;
-  for (const [userId, user] of Object.entries(e.users)) {
+
+  for (const [userId, user] of Object.entries(e)) {
     if (user.isTyping !== undefined) {
       room.users[userId].isTyping = user.isTyping;
     }

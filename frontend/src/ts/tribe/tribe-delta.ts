@@ -11,7 +11,7 @@ export function update(): void {
   let maxWpm = 0;
 
   for (const [userId, user] of Object.entries(Tribe.room.users)) {
-    if (userId === Tribe.socket.id) return;
+    if (userId === Tribe.socket.id) continue;
     if ((user?.progress?.wpm ?? 0) > maxWpm) maxWpm = user?.progress?.wpm ?? 0;
   }
 
