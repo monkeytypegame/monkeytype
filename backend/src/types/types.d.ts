@@ -3,18 +3,26 @@ type ObjectId = import("mongodb").ObjectId;
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
+  interface ValidModeRule {
+    language: string;
+    mode: string;
+    mode2: string;
+  }
+
   interface Configuration {
     maintenance: boolean;
-    quoteReport: {
-      enabled: boolean;
-      maxReports: number;
-      contentReportLimit: number;
+    quotes: {
+      reporting: {
+        enabled: boolean;
+        maxReports: number;
+        contentReportLimit: number;
+      };
+      submissionsEnabled: boolean;
+      maxFavorites: number;
     };
-    quoteSubmit: {
-      enabled: boolean;
-    };
-    resultObjectHashCheck: {
-      enabled: boolean;
+    results: {
+      savingEnabled: boolean;
+      objectHashCheckEnabled: boolean;
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -23,16 +31,21 @@ declare namespace MonkeyTypes {
       apeKeyBytes: number;
       apeKeySaltRounds: number;
     };
-    enableSavingResults: {
-      enabled: boolean;
-    };
-    favoriteQuotes: {
-      maxFavorites: number;
-    };
     autoBan: {
       enabled: boolean;
       maxCount: number;
       maxHours: number;
+    };
+    dailyLeaderboards: {
+      enabled: boolean;
+      leaderboardExpirationTimeInDays: number;
+      maxResults: number;
+      validModeRules: ValidModeRule[];
+      dailyLeaderboardCacheSize: number;
+      topResultsToAnnounce: number;
+    };
+    discordIntegration: {
+      enabled: boolean;
     };
   }
 
@@ -78,6 +91,8 @@ declare namespace MonkeyTypes {
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;
     needsToChangeName?: boolean;
+    discordAvatar?: string;
+    badgeIds?: number[];
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;

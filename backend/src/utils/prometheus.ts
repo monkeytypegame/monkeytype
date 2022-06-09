@@ -22,6 +22,12 @@ const result = new Counter({
   ],
 });
 
+const dailyLb = new Counter({
+  name: "daily_leaderboard_update_total",
+  help: "Counts daily leaderboard updates",
+  labelNames: ["mode", "mode2", "language"],
+});
+
 const resultLanguage = new Counter({
   name: "result_language_total",
   help: "Counts result langauge",
@@ -143,6 +149,14 @@ export function incrementResult(
   );
 
   resultDuration.observe(res.testDuration);
+}
+
+export function incrementDailyLeaderboard(
+  mode: string,
+  mode2: string,
+  language: string
+): void {
+  dailyLb.inc({ mode, mode2, language });
 }
 
 const clientVersionsCounter = new Counter({

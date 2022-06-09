@@ -6,6 +6,7 @@
   - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
+  - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
   - [Backend (optional)](#backend-optional)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
@@ -71,6 +72,16 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
 
+#### Docker (Recommended but Optional)
+
+You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
+
+```bash
+cd frontend && docker-compose up
+```
+
+Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
+
 #### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
@@ -93,9 +104,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 1. Run `npm run install:all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install-windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
-
-**Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
+2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 ## Standards and Guidelines
 

@@ -1,13 +1,15 @@
 const BASE_PATH = "/presets";
 
-export default function getPresetsEndpoints(
-  apeClient: Ape.Client
-): Ape.Endpoints["presets"] {
-  async function get(): Ape.EndpointData {
-    return await apeClient.get(BASE_PATH);
+export default class Presets {
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
-  async function add(
+  async get(): Ape.EndpointData {
+    return await this.httpClient.get(BASE_PATH);
+  }
+
+  async add(
     presetName: string,
     configChanges: MonkeyTypes.ConfigChanges
   ): Ape.EndpointData {
@@ -16,10 +18,10 @@ export default function getPresetsEndpoints(
       config: configChanges,
     };
 
-    return await apeClient.post(BASE_PATH, { payload });
+    return await this.httpClient.post(BASE_PATH, { payload });
   }
 
-  async function edit(
+  async edit(
     presetId: string,
     presetName: string,
     configChanges: MonkeyTypes.ConfigChanges
@@ -30,12 +32,10 @@ export default function getPresetsEndpoints(
       config: configChanges,
     };
 
-    return await apeClient.patch(BASE_PATH, { payload });
+    return await this.httpClient.patch(BASE_PATH, { payload });
   }
 
-  async function _delete(presetId: string): Ape.EndpointData {
-    return await apeClient.delete(`${BASE_PATH}/${presetId}`);
+  async delete(presetId: string): Ape.EndpointData {
+    return await this.httpClient.delete(`${BASE_PATH}/${presetId}`);
   }
-
-  return { get, add, edit, delete: _delete };
 }

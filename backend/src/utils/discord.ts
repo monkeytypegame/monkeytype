@@ -20,7 +20,7 @@ interface DiscordUser {
   public_flags?: number;
 }
 
-export async function linkAccount(
+export async function getDiscordUser(
   tokenType: string,
   accessToken: string
 ): Promise<DiscordUser> {

@@ -9,7 +9,7 @@
     padding: 1rem;
     display: grid;
     gap: 1rem 0;
-    grid-template-rows: 2rem auto;
+    grid-template-rows: auto auto;
     grid-template-areas:
       "title buttons"
       "tables tables";
@@ -18,23 +18,29 @@
     .leaderboardsTop {
       width: 200%;
       min-width: 100%;
-      display: flex;
+      display: grid;
       align-items: center;
       justify-content: space-between;
+      grid-template-areas:
+        "title buttons"
+        "subtitle buttons";
 
-      .buttonGroup .button {
-        padding: 0.4rem 2.18rem;
+      .buttons {
+        grid-area: buttons;
+        .buttonGroup .button {
+          padding: 0.4rem 2.18rem;
+        }
       }
     }
 
     .mainTitle {
       font-size: 2.5rem;
-      line-height: 2.5rem;
       grid-area: title;
     }
 
     .subTitle {
       color: var(--sub-color);
+      grid-area: subtitle;
     }
 
     .title {
@@ -113,6 +119,26 @@
         border-spacing: 0;
         border-collapse: collapse;
 
+        .avatarNameBadge {
+          display: grid;
+          grid-template-columns: 1.25rem max-content auto;
+          gap: 0.5rem;
+          place-items: center left;
+          .avatarPlaceholder {
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 1.25rem;
+            // background: var(--sub-color);
+            color: var(--sub-color);
+            // display: grid;
+            // place-content: center center;
+            border-radius: 100%;
+          }
+          .badge {
+            font-size: 0.6rem;
+          }
+        }
+
         tr td:first-child {
           text-align: center;
         }
@@ -177,8 +203,9 @@
       .buttonGroup {
         display: grid;
         grid-auto-flow: column;
+        grid-auto-columns: 1fr;
         gap: 1rem;
-        grid-area: 1/2;
+        grid-area: buttons;
       }
     }
   }
