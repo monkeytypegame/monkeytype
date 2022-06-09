@@ -44,6 +44,10 @@
     }
     tbody td:nth-child(1) {
       font-size: 1.5rem;
+      border-radius: var(--roundness) 0 0 var(--roundness);
+    }
+    tbody td:last-child {
+      border-radius: 0 var(--roundness) var(--roundness) 0;
     }
   }
 
@@ -344,6 +348,13 @@
 
     tbody tr:nth-child(odd) td {
       background: var(--sub-alt-color);
+    }
+
+    tbody td:nth-child(1) {
+      border-radius: var(--roundness) 0 0 var(--roundness);
+    }
+    tbody td:last-child {
+      border-radius: 0 var(--roundness) var(--roundness) 0;
     }
 
     td.infoIcons span {
