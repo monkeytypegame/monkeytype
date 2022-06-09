@@ -1,5 +1,5 @@
-const badges: MonkeyTypes.UserBadge[] = [
-  {
+const badges: Record<number, MonkeyTypes.UserBadge> = {
+  1: {
     id: 1,
     name: "Developer",
     description: "I made this",
@@ -7,7 +7,7 @@ const badges: MonkeyTypes.UserBadge[] = [
     color: "white",
     customStyle: "animation: rgb-bg 10s linear infinite;",
   },
-  {
+  2: {
     id: 2,
     name: "Collaborator",
     description: "I helped make this",
@@ -15,7 +15,7 @@ const badges: MonkeyTypes.UserBadge[] = [
     color: "white",
     customStyle: "animation: rgb-bg 10s linear infinite;",
   },
-  {
+  3: {
     id: 3,
     name: "Server Mod",
     description: "Discord server moderator",
@@ -23,7 +23,7 @@ const badges: MonkeyTypes.UserBadge[] = [
     color: "white",
     customStyle: "animation: rgb-bg 10s linear infinite;",
   },
-  {
+  4: {
     id: 4,
     name: "OG Account",
     description: "First 100 users on the site",
@@ -31,7 +31,7 @@ const badges: MonkeyTypes.UserBadge[] = [
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
-  {
+  5: {
     id: 5,
     name: "OG Discordian",
     description: "First 100 Discord server members",
@@ -39,14 +39,10 @@ const badges: MonkeyTypes.UserBadge[] = [
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
-];
-
-export function getById(id: number): MonkeyTypes.UserBadge | undefined {
-  return badges.find((b) => b.id === id);
-}
+};
 
 export function getHTMLById(id: number): string {
-  const badge = getById(id);
+  const badge = badges[id];
   if (!badge) {
     return "";
   }

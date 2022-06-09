@@ -275,15 +275,20 @@ function fillTable(lb: LbKey, prepend?: number): void {
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
     const snap = DB.getSnapshot();
-    if (
+
+    const isCurrentUser =
       Auth.currentUser &&
       entry.uid === Auth.currentUser.uid &&
       snap.discordAvatar &&
-      snap.discordId
-    ) {
-      avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${snap.discordId}/${snap.discordAvatar}.png)"></div>`;
-    } else if (entry.discordAvatar && entry.discordId) {
-      avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${entry.discordId}/${entry.discordAvatar}.png)"></div>`;
+      snap.discordId;
+
+    const entryHasAvatar = entry.discordAvatar && entry.discordId;
+
+    const avatarSource = (isCurrentUser && snap) || (entryHasAvatar && entry);
+
+    if (avatarSource) {
+      const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
+      avatar = `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
     }
 
     html += `
