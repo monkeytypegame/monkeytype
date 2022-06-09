@@ -288,7 +288,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
 
     if (avatarSource) {
       const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
-      avatar = `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
+      avatar += `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
     }
 
     html += `

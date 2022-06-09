@@ -133,6 +133,12 @@
             // display: grid;
             // place-content: center center;
             border-radius: 100%;
+            margin-top: -0.25rem;
+          }
+          .avatarPlaceholder,
+          .avatar {
+            grid-row: 1/2;
+            grid-column: 1/2;
           }
           .badge {
             font-size: 0.6rem;
