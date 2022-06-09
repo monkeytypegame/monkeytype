@@ -334,6 +334,7 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
+        $("leaderboardsWrapper .showYesterdayButton").removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -347,11 +348,27 @@ function updateTitle(): void {
   el.text(`${timeRangeString} English Leaderboards`);
 }
 
-async function update(daysBefore?: number): Promise<void> {
+function updateYesterdayButton(): void {
+  $("#leaderboardsWrapper .showYesterdayButton").addClass("hidden");
+  if (currentTimeRange === "daily") {
+    $("#leaderboardsWrapper .showYesterdayButton").removeClass("hidden");
+  }
+}
+
+async function update(): Promise<void> {
   showLoader(15);
   showLoader(60);
 
   const timeModes = ["15", "60"];
+
+  let daysBefore = 0;
+
+  if (
+    currentTimeRange === "daily" &&
+    $("#leaderboardsWrapper .showYesterdayButton").hasClass("active")
+  ) {
+    daysBefore = 1;
+  }
 
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
@@ -412,6 +429,7 @@ async function update(daysBefore?: number): Promise<void> {
   $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
 
   updateTitle();
+  updateYesterdayButton();
   $("#leaderboardsWrapper .buttons .button").removeClass("active");
   $(
     `#leaderboardsWrapper .buttonGroup.timeRange .button.` + currentTimeRange
@@ -660,36 +678,10 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   }
 );
 
-const timeRangeSelector = $(
-  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .dailyTimeSelect"
-).select2({
-  placeholder: "Filter by length",
-  width: "100%",
-  data: [
-    {
-      id: 0,
-      text: "Today",
-      selected: true,
-    },
-    {
-      id: 1,
-      text: "Yesterday",
-      selected: false,
-    },
-  ],
-});
-
-timeRangeSelector.on("select2:select", (e) => {
-  currentTimeRange = "daily";
-  const daysBefore = parseInt(e.params.data.id, 10);
-  update(daysBefore);
-});
-
 $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .allTime"
 ).on("click", () => {
   currentTimeRange = "allTime";
-  timeRangeSelector.prop("disabled", true);
   update();
 });
 
@@ -697,9 +689,13 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
-  timeRangeSelector.prop("disabled", false);
-  const daysBefore = parseInt(timeRangeSelector.val() as string, 10);
-  update(daysBefore);
+  $("#leaderboardsWrapper .showYesterdayButton").removeClass("active");
+  update();
+});
+
+$("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
+  $("#leaderboardsWrapper .showYesterdayButton").toggleClass("active");
+  update();
 });
 
 $(document).on("click", "#top #menu .text-button", (e) => {
