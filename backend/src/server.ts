@@ -41,9 +41,9 @@ async function bootServer(port: number): Promise<Server> {
       Logger.info("Initializing task queues...");
       initJobQueue(RedisClient.getConnection());
       Logger.success("Task queues initialized");
-
-      initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
     }
+
+    initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
 
     Logger.info("Starting cron jobs...");
     jobs.forEach((job) => job.start());

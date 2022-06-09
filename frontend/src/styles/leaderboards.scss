@@ -20,10 +20,10 @@
       min-width: 100%;
       display: grid;
       align-items: center;
-      justify-content: space-between;
+      grid-template-columns: max-content auto 20rem;
       grid-template-areas:
-        "title buttons"
-        "subtitle buttons";
+        "title yesterday buttons"
+        "subtitle subtitle buttons";
 
       .buttons {
         grid-area: buttons;
@@ -36,6 +36,11 @@
     .mainTitle {
       font-size: 2.5rem;
       grid-area: title;
+    }
+
+    .showYesterdayButton {
+      grid-area: "yesterday";
+      margin-left: 1rem;
     }
 
     .subTitle {
@@ -102,7 +107,7 @@
 
       .leftTableWrapper,
       .rightTableWrapper {
-        height: calc(100vh - 12rem);
+        height: calc(100vh - 14rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
@@ -208,9 +213,9 @@
     .buttons {
       .buttonGroup {
         display: grid;
-        grid-auto-flow: column;
+        grid-auto-flow: row;
+        gap: 0.5rem;
         grid-auto-columns: 1fr;
-        gap: 1rem;
         grid-area: buttons;
       }
     }
