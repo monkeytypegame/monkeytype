@@ -24,7 +24,7 @@ import * as TestActive from "../states/test-active";
 
 export const socket = io(
   window.location.hostname === "localhost"
-    ? "http://localhost:3000"
+    ? "http://localhost:3005"
     : "https://tribe.monkeytype.com",
   {
     // socket: io("http://localhost:3000", {
