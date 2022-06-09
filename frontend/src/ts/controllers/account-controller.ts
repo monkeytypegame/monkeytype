@@ -38,7 +38,6 @@ import {
   linkWithPopup,
   linkWithCredential,
   reauthenticateWithPopup,
-  unlink as unlinkAuth,
   getAdditionalUserInfo,
   sendPasswordResetEmail,
   User as UserType,
@@ -229,11 +228,12 @@ export async function loadUser(user: UserType): Promise<void> {
     );
   }
   PageTransition.set(false);
-  AccountButton.update();
   AccountButton.loading(true);
   if ((await getDataAndInit()) === false) {
     signOut();
   }
+  const { discordId, discordAvatar } = DB.getSnapshot();
+  AccountButton.update(discordId, discordAvatar);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -255,7 +255,23 @@ export async function loadUser(user: UserType): Promise<void> {
   $(".pageAccount .group.createdDate").text(text);
 
   if (VerificationController.data !== null) {
-    VerificationController.verify(user.uid);
+    VerificationController.verify();
+  }
+
+  if (TestLogic.notSignedInLastResult !== null) {
+    TestLogic.setNotSignedInUid(user.uid);
+
+    const response = await Ape.results.save(TestLogic.notSignedInLastResult);
+
+    if (response.status !== 200) {
+      return Notifications.add(
+        "Failed to save last result: " + response.message,
+        -1
+      );
+    }
+
+    TestLogic.clearNotSignedInResult();
+    Notifications.add("Last test result saved", 1);
   }
 }
 
@@ -302,6 +318,8 @@ export function signIn(): void {
   authListener();
   LoginPage.showPreloader();
   LoginPage.disableInputs();
+  LoginPage.disableSignUpButton();
+  LoginPage.disableSignInButton();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -313,23 +331,6 @@ export function signIn(): void {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
-        if (TestLogic.notSignedInLastResult !== null) {
-          TestLogic.setNotSignedInUid(e.user.uid);
-
-          const response = await Ape.results.save(
-            TestLogic.notSignedInLastResult
-          );
-
-          if (response.status !== 200) {
-            return Notifications.add(
-              "Failed to save last result: " + response.message,
-              -1
-            );
-          }
-
-          TestLogic.clearNotSignedInResult();
-          Notifications.add("Last test result saved", 1);
-        }
       })
       .catch(function (error) {
         let message = error.message;
@@ -344,6 +345,8 @@ export function signIn(): void {
         Notifications.add(message, -1);
         LoginPage.hidePreloader();
         LoginPage.enableInputs();
+        LoginPage.enableSignInButton();
+        LoginPage.updateSignupButton();
       });
   });
 }
@@ -352,6 +355,8 @@ export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
   LoginPage.showPreloader();
   LoginPage.disableInputs();
+  LoginPage.disableSignUpButton();
+  LoginPage.disableSignInButton();
   authListener();
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -381,6 +386,8 @@ export async function signInWithGoogle(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
+      LoginPage.enableSignInButton();
+      LoginPage.updateSignupButton();
     });
 }
 
@@ -396,62 +403,10 @@ export async function addGoogleAuth(): Promise<void> {
     .catch(function (error) {
       Loader.hide();
       Notifications.add(
-        "Failed to add Google authenication: " + error.message,
+        "Failed to add Google authentication: " + error.message,
         -1
       );
     });
-}
-
-export function noGoogleNoMo(): void {
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "password")
-  ) {
-    unlinkAuth(user, "google.com")
-      .then(() => {
-        console.log("unlinked");
-        Settings.updateAuthSections();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-}
-
-export async function removeGoogleAuth(): Promise<void> {
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "password")
-  ) {
-    Loader.show();
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-    unlinkAuth(user, "google.com")
-      .then(() => {
-        Notifications.add("Google authentication removed", 1);
-        Loader.hide();
-        Settings.updateAuthSections();
-      })
-      .catch((error) => {
-        Loader.hide();
-        Notifications.add(
-          "Failed to remove Google authentication: " + error.message,
-          -1
-        );
-      });
-  } else {
-    Notifications.add(
-      "Password authentication needs to be enabled to remove Google authentication",
-      -1
-    );
-  }
 }
 
 export async function addPasswordAuth(
@@ -477,13 +432,13 @@ export async function addPasswordAuth(
   linkWithCredential(user, credential)
     .then(function () {
       Loader.hide();
-      Notifications.add("Password authenication added", 1);
+      Notifications.add("Password authentication added", 1);
       Settings.updateAuthSections();
     })
     .catch(function (error) {
       Loader.hide();
       Notifications.add(
-        "Failed to add password authenication: " + error.message,
+        "Failed to add password authentication: " + error.message,
         -1
       );
     });
@@ -510,6 +465,7 @@ export function signOut(): void {
 
 async function signUp(): Promise<void> {
   LoginPage.disableInputs();
+  LoginPage.disableSignUpButton();
   LoginPage.showPreloader();
   const nname = ($(".pageLogin .register input")[0] as HTMLInputElement).value;
   const email = ($(".pageLogin .register input")[1] as HTMLInputElement).value;
@@ -524,23 +480,60 @@ async function signUp(): Promise<void> {
   if (nname === "" || email === "" || emailVerify === "" || password === "") {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     Notifications.add("Please fill in all fields", 0);
+    return;
+  }
+
+  if (
+    !email.match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )
+  ) {
+    Notifications.add("Invalid email", 0, 3);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
   if (email !== emailVerify) {
     Notifications.add("Emails do not match", 0, 3);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
+
+  // Force user to use a capital letter, number, special character when setting up an account and changing password
+  if (password.length < 8) {
+    Notifications.add("Password must be at least 8 characters", 0, 3);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
+
+  const hasCapital = password.match(/[A-Z]/);
+  const hasNumber = password.match(/[\d]/);
+  const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  if (!hasCapital || !hasNumber || !hasSpecial) {
+    Notifications.add(
+      "Password must contain at least one capital letter, number, and special character",
+      0,
+      3
+    );
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
   if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     return;
   }
 
@@ -599,8 +592,8 @@ async function signUp(): Promise<void> {
     const message = Misc.createErrorMessage(e, "Failed to create account");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
     signOut();
     return;
   }
@@ -663,10 +656,6 @@ $(".pageLogin .register .button").on("click", () => {
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
   addGoogleAuth();
-});
-
-$(".pageSettings #removeGoogleAuth").on("click", () => {
-  removeGoogleAuth();
 });
 
 $(document).on("click", ".pageAccount .sendVerificationEmail", () => {

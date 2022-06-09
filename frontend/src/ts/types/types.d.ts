@@ -9,7 +9,10 @@ declare namespace MonkeyTypes {
 
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
 
-  type LanguageGroup = { name: string; languages: string[] };
+  interface LanguageGroup {
+    name: string;
+    languages: string[];
+  }
 
   type Accents = [string, string][];
 
@@ -282,13 +285,13 @@ declare namespace MonkeyTypes {
     hash?: string;
   }
 
-  type ApeKey = {
+  interface ApeKey {
     name: string;
     enabled: boolean;
     createdOn: number;
     modifiedOn: number;
     lastUsedOn: number;
-  };
+  }
 
   interface ApeKeys {
     [key: string]: ApeKey;
@@ -418,7 +421,7 @@ declare namespace MonkeyTypes {
   }
 
   interface LeaderboardEntry {
-    _id: string;
+    uid: string;
     difficulty: string;
     timestamp: number;
     language: string;
@@ -430,6 +433,8 @@ declare namespace MonkeyTypes {
     uid?: string;
     name: string;
     discordId?: string;
+    discordAvatar?: string;
+    badgeIds?: number[];
     rank: number;
     count?: number;
     hidden?: boolean;
@@ -460,10 +465,12 @@ declare namespace MonkeyTypes {
     config?: Config;
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
+    discordAvatar?: string;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
 
+  // Converting this to an interface causes a TS error
   type PartialRecord<K extends keyof any, T> = {
     [P in K]?: T;
   };
@@ -701,5 +708,15 @@ declare namespace MonkeyTypes {
         [parameter: string]: string | number | boolean;
       };
     };
+  }
+
+  interface UserBadge {
+    id: number;
+    name: string;
+    description: string;
+    icon?: string;
+    background?: string;
+    color?: string;
+    customStyle?: string;
   }
 }

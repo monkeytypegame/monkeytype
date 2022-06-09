@@ -17,6 +17,9 @@ UpdateConfig.loadFromLocalStorage();
 if (window.location.hostname === "localhost") {
   $("#bottom .version .text").text("localhost");
   $("#bottom .version").css("opacity", 1);
+  $("body").prepend(
+    `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank'><i class="fas fa-fw fa-server"></i>Configure Server</a>`
+  );
 } else {
   Misc.getReleasesFromGitHub().then((v) => {
     NewVersionNotification.show(v[0].name);
@@ -50,7 +53,7 @@ $(document).ready(() => {
   }
   if (!window.localStorage.getItem("merchbannerclosed")) {
     Notifications.addBanner(
-      `Checkout our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
       "images/merchdropwebsite2.png",
       false,

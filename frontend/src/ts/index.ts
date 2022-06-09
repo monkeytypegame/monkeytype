@@ -28,7 +28,6 @@ import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
-import { noGoogleNoMo } from "./controllers/account-controller";
 import "./elements/leaderboards";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
@@ -54,5 +53,3 @@ extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
 extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
-
-extendedGlobal.noGoogleNoMo = noGoogleNoMo;

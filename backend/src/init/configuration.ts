@@ -1,15 +1,15 @@
-import * as db from "./db";
 import _ from "lodash";
+import * as db from "./db";
+import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
-import BASE_CONFIGURATION from "../constants/base-configuration";
-import { ObjectId } from "mongodb";
+import { BASE_CONFIGURATION } from "../constants/base-configuration";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
 function mergeConfigurations(
   baseConfiguration: MonkeyTypes.Configuration,
-  liveConfiguration: MonkeyTypes.Configuration
+  liveConfiguration: Partial<MonkeyTypes.Configuration>
 ): void {
   if (
     !_.isPlainObject(baseConfiguration) ||
@@ -108,4 +108,28 @@ async function pushConfiguration(
       `Could not push configuration: ${error.message}`
     );
   }
+}
+
+export async function patchConfiguration(
+  configurationUpdates: Partial<MonkeyTypes.Configuration>
+): Promise<boolean> {
+  try {
+    const currentConfiguration = _.cloneDeep(configuration);
+    mergeConfigurations(currentConfiguration, configurationUpdates);
+
+    await db
+      .collection("configuration")
+      .updateOne({}, { $set: currentConfiguration }, { upsert: true });
+
+    await getLiveConfiguration();
+  } catch (error) {
+    Logger.logToDb(
+      "patch_configuration_failure",
+      `Could not patch configuration: ${error.message}`
+    );
+
+    return false;
+  }
+
+  return true;
 }

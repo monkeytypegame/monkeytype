@@ -38,7 +38,7 @@ Refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 # Code of Conduct
 
-Before contributing to this repository, please read the [code of conduct](.master/CODE_OF_CONDUCT.md).
+Before contributing to this repository, please read the [code of conduct](./CODE_OF_CONDUCT.md).
 
 # Credits
 

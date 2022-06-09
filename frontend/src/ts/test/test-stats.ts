@@ -3,7 +3,7 @@ import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 
-type CharCount = {
+interface CharCount {
   spaces: number;
   correctWordChars: number;
   allCorrectChars: number;
@@ -11,16 +11,16 @@ type CharCount = {
   extraChars: number;
   missedChars: number;
   correctSpaces: number;
-};
+}
 
-type Keypress = {
+interface Keypress {
   count: number;
   errors: number;
   words: number[];
   afk: boolean;
-};
+}
 
-type KeypressTimings = {
+interface KeypressTimings {
   spacing: {
     current: number;
     array: number[] | "toolong";
@@ -29,9 +29,9 @@ type KeypressTimings = {
     current: number;
     array: number[] | "toolong";
   };
-};
+}
 
-type DebugStats = {
+interface DebugStats {
   lastResult?: MonkeyTypes.Result<MonkeyTypes.Mode>;
   start: number;
   end: number;
@@ -64,9 +64,9 @@ type DebugStats = {
     average: number;
     sd: number;
   };
-};
+}
 
-type Stats = {
+interface Stats {
   wpm: number;
   wpmRaw: number;
   acc: number;
@@ -78,7 +78,7 @@ type Stats = {
   time: number;
   spaces: number;
   correctSpaces: number;
-};
+}
 
 export let invalid = false;
 export let start: number, end: number;
