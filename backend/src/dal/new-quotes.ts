@@ -111,7 +111,10 @@ export async function approve(
     .collection<MonkeyTypes.NewQuote>("new-quotes")
     .findOne({ _id: new ObjectId(quoteId) });
   if (!targetQuote) {
-    throw new MonkeyError(404, "Quote not found");
+    throw new MonkeyError(
+      404,
+      "Quote not found. It might have already been reviewed. Please refresh the list."
+    );
   }
   const language = targetQuote.language;
   const quote: Quote = {
