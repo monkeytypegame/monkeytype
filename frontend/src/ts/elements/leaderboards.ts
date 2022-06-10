@@ -339,7 +339,7 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
-        daysBefore = 0;
+        let daysBefore = 0;
         $("leaderboardsWrapper .showYesterdayButton").removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
       }
