@@ -3,7 +3,7 @@ import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
-import { showNewCustomFilterePopup } from "../popups/new-custom-filter-popup";
+import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -101,7 +101,7 @@ export async function load(): Promise<void> {
     });
 
     filters.tags = newTags;
-    await updateCustomFilters();
+    await updateFilterPresets();
     save();
   } catch {
     console.log("error in loading result filters");
@@ -110,21 +110,36 @@ export async function load(): Promise<void> {
   }
 }
 
-export async function updateCustomFilters(): Promise<void> {
-  // remove all previous custom filter buttons
-  $(".pageAccount .customFilterButtons .filter-btns").html("");
+export async function updateFilterPresets(): Promise<void> {
+  // remove all previous filter preset buttons
+  $(".pageAccount .presetFilterButtons .filter-btns").html("");
 
-  // add button for each filter
-  DB.getSnapshot().customFilters.forEach((filter) => {
-    $(".pageAccount .customFilterButtons .filter-btns").append(
-      `<div class="button" id="${filter._id}">${filter.name} </div>`
-    );
-  });
+  const filterPresets = DB.getSnapshot().filterPresets;
+
+  // if user has filter presets
+  if (filterPresets.length > 0) {
+    // show region
+    $(".pageAccount .presetFilterButtons").show();
+
+    // add button for each filter
+    DB.getSnapshot().filterPresets.forEach((filter) => {
+      $(".pageAccount .group.presetFilterButtons .filter-btns").append(
+        `<div class="filter-presets">
+          <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+          <div class="button delete-filter-preset" data-id="${filter._id}">
+            <i class="fas fa-trash"></i>
+          </div>
+        </div>`
+      );
+    });
+  } else {
+    $(".pageAccount .presetFilterButtons").hide();
+  }
 }
 
 // sets the current filter to be a user custom filter
-export async function setCustomFilter(id: string): Promise<void> {
-  const filter = DB.getSnapshot().customFilters.find(
+export async function setFilterPreset(id: string): Promise<void> {
+  const filter = DB.getSnapshot().filterPresets.find(
     (filter) => filter._id === id
   );
   if (filter) {
@@ -135,16 +150,15 @@ export async function setCustomFilter(id: string): Promise<void> {
     updateActive();
   }
 
-  // make all custom filter butons inactive
-  DB.getSnapshot().customFilters.forEach((filter) => {
-    $(`#${filter._id}`).removeClass("active");
-  });
+  // make all filter preset butons inactive
+  $(
+    `.pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset`
+  ).removeClass("active");
 
-  // make current custom filter button active
-  $(`#${id}`).addClass("active");
-
-  // custom filter is selected -> show delete button
-  $("#deleteCutomFilterBtn").show();
+  // make current filter presest button active
+  $(
+    `.pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset[data-id=${id}]`
+  ).addClass("active");
 }
 
 function deepCopyFilter(
@@ -153,74 +167,62 @@ function deepCopyFilter(
   return JSON.parse(JSON.stringify(filter));
 }
 
-function addFilterToSnapshot(filter: MonkeyTypes.ResultFilters): void {
+function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
   const snapshot = DB.getSnapshot();
   DB.setSnapshot({
     ...snapshot,
-    customFilters: [...snapshot.customFilters, deepCopyFilter(filter)],
+    filterPresets: [...snapshot.filterPresets, deepCopyFilter(filter)],
   });
 }
 
 // callback function called by popup once user inputs name
-async function createCustomFilterCallback(name: string): Promise<void> {
-  const result = await Ape.users.addCustomFilter({ ...filters, name });
+async function createFilterPresetCallback(name: string): Promise<void> {
+  const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   if (result.status === 200) {
-    addFilterToSnapshot({ ...filters, name, _id: result.data });
-    updateCustomFilters();
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
+    updateFilterPresets();
   } else {
-    Notifications.add("Error creating custom filters: " + result.message, -1);
-    console.log("error creating custom filter: " + result.message);
+    Notifications.add("Error creating filter preset: " + result.message, -1);
+    console.log("error creating filter preset: " + result.message);
   }
 }
 
 // shows popup for user to select name
-export async function startCreateCustomFilter(): Promise<void> {
-  showNewCustomFilterePopup((name: string) => createCustomFilterCallback(name));
+export async function startCreateFilterPreset(): Promise<void> {
+  showNewResultFilterPresetPopup((name: string) =>
+    createFilterPresetCallback(name)
+  );
 }
 
-function removeFilterFromSnapshot(id: string): void {
+function removeFilterPresetFromSnapshot(id: string): void {
   const snapshot = DB.getSnapshot();
-  const customFilters = [...snapshot.customFilters];
-  console.log("before deletion");
-  console.log(snapshot);
-  const toDeleteIx = customFilters.findIndex((filter) => filter._id === id);
+  const filterPresets = [...snapshot.filterPresets];
+  const toDeleteIx = filterPresets.findIndex((filter) => filter._id === id);
 
   if (toDeleteIx > -1) {
-    customFilters.splice(toDeleteIx, 1);
+    filterPresets.splice(toDeleteIx, 1);
   }
-  console.log("after deletion");
-  console.log(customFilters);
-  DB.setSnapshot({ ...snapshot, customFilters: customFilters });
+  DB.setSnapshot({ ...snapshot, filterPresets });
 }
 
-// deletes the current selected custom filter
-export async function deleteCustomFilter(): Promise<void> {
-  const result = await Ape.users.removeCustomFilter(filters._id);
+// deletes the currently selected filter preset
+export async function deleteFilterPreset(id: string): Promise<void> {
+  const result = await Ape.users.removeResultFilterPreset(id);
   if (result.status === 200) {
-    removeFilterFromSnapshot(filters._id);
-    updateCustomFilters();
+    removeFilterPresetFromSnapshot(id);
+    updateFilterPresets();
     reset();
   } else {
-    Notifications.add("Error deleting custom filters: " + result.message, -1);
-    console.log("error deleting custom filter", result.message);
+    Notifications.add("Error deleting filter preset: " + result.message, -1);
+    console.log("error deleting filter preset", result.message);
   }
 }
 
-// un selects a custom filter (when a user changes the filter)
-function deSelectCustomFilter(): void {
-  // make all custom filter buttons inactive
-  DB.getSnapshot().customFilters.forEach((filter) => {
-    $(`#${filter._id}`).removeClass("active");
-  });
-
-  // hide delete button
-  $("#deleteCutomFilterBtn").hide();
-
-  // hide custom filter section
-  $(".pageAccount .customFilterButtons").slideUp(250);
-  $(".pageAccount .topFilters .button.toggleCustomFilters").removeClass(
-    "active"
-  );
+function deSelectFilterPreset(): void {
+  // make all filter preset buttons inactive
+  $(
+    ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset"
+  ).removeClass("active");
 }
 
 export function getFilters(): MonkeyTypes.ResultFilters {
@@ -419,8 +421,8 @@ export function toggle<G extends MonkeyTypes.Group>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): void {
-  // user is changing the filters -> current filter is no longer a custom filter
-  deSelectCustomFilter();
+  // user is changing the filters -> current filter is no longer a filter preset
+  deSelectFilterPreset();
 
   try {
     if (group === "date") {
@@ -539,8 +541,8 @@ $(
 });
 
 $(".pageAccount .topFilters .button.allFilters").on("click", () => {
-  // user is changing the filters -> current filter is no longer a custom filter
-  deSelectCustomFilter();
+  // user is changing the filters -> current filter is no longer a filter preset
+  deSelectFilterPreset();
 
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
@@ -568,8 +570,8 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
 });
 
 $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
-  // user is changing the filters -> current filter is no longer a custom filter
-  deSelectCustomFilter();
+  // user is changing the filters -> current filter is no longer a filter preset
+  deSelectFilterPreset();
 
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
@@ -689,15 +691,14 @@ Misc.getFunboxList().then((funboxModes) => {
   });
 });
 
-$("#createCutomFilterBtn").on("click", () => {
-  startCreateCustomFilter();
+$(".pageAccount .topFilters .button.createFilterPresetBtn").on("click", () => {
+  startCreateFilterPreset();
 });
-$("#deleteCutomFilterBtn").on("click", () => {
-  deleteCustomFilter();
-});
-$(".pageAccount .topFilters .button.toggleCustomFilters").on("click", () => {
-  $(".pageAccount .customFilterButtons").slideToggle(250);
-  $(".pageAccount .topFilters .button.toggleCustomFilters").toggleClass(
-    "active"
-  );
-});
+
+$(document).on(
+  "click",
+  ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .delete-filter-preset",
+  (e) => {
+    deleteFilterPreset($(e.target).data("id"));
+  }
+);

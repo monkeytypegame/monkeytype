@@ -1060,17 +1060,21 @@ $(document).on(
   }
 );
 
+$(document).on(
+  "click",
+  ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset",
+  (e) => {
+    ResultFilters.setFilterPreset($(e.target).data("id"));
+    update();
+  }
+);
+
 $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
 });
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
-});
-
-$(".pageAccount .customFilterButtons .filter-btns").on("click", (e) => {
-  ResultFilters.setCustomFilter(e.target.id);
-  update();
 });
 
 export const page = new Page(
