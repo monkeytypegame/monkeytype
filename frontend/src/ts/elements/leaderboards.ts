@@ -323,6 +323,8 @@ function fillTable(lb: LbKey, prepend?: number): void {
   }
 }
 
+const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
+
 export function hide(): void {
   $("#leaderboardsWrapper")
     .stop(true, true)
@@ -339,7 +341,7 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
-        $("leaderboardsWrapper .showYesterdayButton").removeClass("active");
+        showYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -354,9 +356,9 @@ function updateTitle(): void {
 }
 
 function updateYesterdayButton(): void {
-  $("#leaderboardsWrapper .showYesterdayButton").addClass("hidden");
+  showYesterdayButton.addClass("hidden");
   if (currentTimeRange === "daily") {
-    $("#leaderboardsWrapper .showYesterdayButton").removeClass("hidden");
+    showYesterdayButton.removeClass("hidden");
   }
 }
 
@@ -369,14 +371,9 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  let daysBefore = 0;
-
-  if (
-    currentTimeRange === "daily" &&
-    $("#leaderboardsWrapper .showYesterdayButton").hasClass("active")
-  ) {
-    daysBefore = 1;
-  }
+  const isViewingDailyAndButtonIsActive =
+    currentTimeRange === "daily" && showYesterdayButton.hasClass("active");
+  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
 
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
@@ -702,12 +699,12 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
-  $("#leaderboardsWrapper .showYesterdayButton").removeClass("active");
+  showYesterdayButton.removeClass("active");
   update();
 });
 
 $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
-  $("#leaderboardsWrapper .showYesterdayButton").toggleClass("active");
+  showYesterdayButton.toggleClass("active");
   update();
 });
 
