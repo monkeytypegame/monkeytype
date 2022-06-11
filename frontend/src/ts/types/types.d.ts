@@ -466,6 +466,7 @@ declare namespace MonkeyTypes {
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
+    filterPresets: ResultFilters[];
   }
 
   type FavoriteQuotes = Record<string, string[]>;
