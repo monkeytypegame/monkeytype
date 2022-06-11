@@ -249,6 +249,20 @@ export const userClearPB = rateLimit({
   handler: customHandler,
 });
 
+export const userCustomFilterAdd = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const userCustomFilterRemove = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
 export const userTagsGet = rateLimit({
   windowMs: ONE_HOUR,
   max: 60 * REQUEST_MULTIPLIER,
