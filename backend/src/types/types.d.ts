@@ -47,6 +47,10 @@ declare namespace MonkeyTypes {
     discordIntegration: {
       enabled: boolean;
     };
+    customFilters: {
+      enabled: boolean;
+      maxFiltersPerUser: number;
+    };
   }
 
   interface DecodedToken {
