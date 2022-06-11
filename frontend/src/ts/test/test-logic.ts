@@ -1,58 +1,59 @@
+import objectHash from "object-hash";
 import Ape from "../ape";
-import * as TestUI from "./test-ui";
-import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
-import QuotesController from "../controllers/quotes-controller";
-import * as Notifications from "../elements/notifications";
-import * as CustomText from "./custom-text";
-import * as TestStats from "./test-stats";
-import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as Focus from "./focus";
-import * as Funbox from "./funbox";
-import * as Keymap from "../elements/keymap";
-import * as ThemeController from "../controllers/theme-controller";
-import * as PaceCaret from "./pace-caret";
-import * as Caret from "./caret";
-import * as LiveWpm from "./live-wpm";
-import * as LiveAcc from "./live-acc";
-import * as LiveBurst from "./live-burst";
-import * as TimerProgress from "./timer-progress";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
-import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
-import * as PbCrown from "./pb-crown";
-import * as TestTimer from "./test-timer";
-import * as OutOfFocus from "./out-of-focus";
-import * as AccountButton from "../elements/account-button";
-import * as DB from "../db";
-import * as Replay from "./replay";
-import * as Poetry from "./poetry";
-import * as Wikipedia from "./wikipedia";
-import * as TodayTracker from "./today-tracker";
-import * as WeakSpot from "./weak-spot";
-import * as Wordset from "./wordset";
+import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
-import * as BritishEnglish from "./british-english";
-import * as EnglishPunctuation from "./english-punctuation";
-import * as LazyMode from "./lazy-mode";
-import * as Result from "./result";
-import * as MonkeyPower from "../elements/monkey-power";
-import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
-import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
-import * as TestState from "./test-state";
+import QuotesController from "../controllers/quotes-controller";
+import * as ThemeController from "../controllers/theme-controller";
+import * as DB from "../db";
+import * as AccountButton from "../elements/account-button";
+import * as Keymap from "../elements/keymap";
+import * as Last10Average from "../elements/last-10-average";
 import * as ModesNotice from "../elements/modes-notice";
-import * as PageTransition from "../states/page-transition";
+import * as MonkeyPower from "../elements/monkey-power";
+import * as Notifications from "../elements/notifications";
+import { Auth } from "../firebase";
 import * as ConfigEvent from "../observables/config-event";
 import * as TimerEvent from "../observables/timer-event";
-import * as Last10Average from "../elements/last-10-average";
+import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
+import * as ActivePage from "../states/active-page";
+import * as PageTransition from "../states/page-transition";
+import * as TestActive from "../states/test-active";
+import * as Misc from "../utils/misc";
+import * as BritishEnglish from "./british-english";
+import * as Caret from "./caret";
+import * as CustomText from "./custom-text";
+import * as EnglishPunctuation from "./english-punctuation";
+import * as Focus from "./focus";
+import * as Funbox from "./funbox";
+import * as GitHub from "./github";
+import * as LazyMode from "./lazy-mode";
+import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
+import * as LiveWpm from "./live-wpm";
+import * as ManualRestart from "./manual-restart-tracker";
 import * as Monkey from "./monkey";
-import objectHash from "object-hash";
-import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth } from "../firebase";
+import * as OutOfFocus from "./out-of-focus";
+import * as PaceCaret from "./pace-caret";
+import * as PbCrown from "./pb-crown";
+import * as Poetry from "./poetry";
+import * as PractiseWords from "./practise-words";
+import * as Replay from "./replay";
+import * as Result from "./result";
+import * as ShiftTracker from "./shift-tracker";
+import * as TestInput from "./test-input";
+import * as TestState from "./test-state";
+import * as TestStats from "./test-stats";
+import * as TestTimer from "./test-timer";
+import * as TestUI from "./test-ui";
+import * as TestWords from "./test-words";
+import * as TimerProgress from "./timer-progress";
+import * as TodayTracker from "./today-tracker";
+import * as WeakSpot from "./weak-spot";
+import * as Wikipedia from "./wikipedia";
+import * as Wordset from "./wordset";
 
 let failReason = "";
 
@@ -873,7 +874,9 @@ export async function init(): Promise<void> {
     const wordset = Wordset.withWords(wordList, Config.funbox);
 
     if (
-      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
+      (Config.funbox == "wikipedia" ||
+        Config.funbox == "poetry" ||
+        Config.funbox == "github") &&
       Config.mode != "custom"
     ) {
       let wordCount = 0;
@@ -883,10 +886,20 @@ export async function init(): Promise<void> {
         (Config.mode == "words" && Config.words >= wordCount) ||
         (Config.mode === "time" && wordCount < 100)
       ) {
-        const section =
-          Config.funbox == "wikipedia"
-            ? await Wikipedia.getSection(Config.language)
-            : await Poetry.getPoem();
+        let section;
+        switch (Config.funbox) {
+          case "wikipedia":
+            section = await Wikipedia.getSection(Config.language);
+            break;
+          case "poetry":
+            section = await Poetry.getPoem();
+            break;
+          case "github":
+            section = await GitHub.getSection(Config.language);
+            break;
+          default:
+            console.log(`Unknown funbox type ${Config.funbox}`);
+        }
 
         if (section === undefined) continue;
 

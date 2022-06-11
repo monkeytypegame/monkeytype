@@ -143,6 +143,12 @@
     "type": "script",
     "affectsWordGeneration": true,
     "info": "Nonsense words that look like the current language."
+  },
+  {
+    "name": "github",
+    "type": "script",
+    "affectsWordGeneration": true,
+    "info": "Practice typing real source code from GitHub."
   }
 ]
 
