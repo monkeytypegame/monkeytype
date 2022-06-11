@@ -2,6 +2,8 @@ import * as Misc from "../utils/misc";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import Ape from "../ape/index";
+import { showNewCustomFilterePopup } from "../popups/new-custom-filter-popup";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -62,13 +64,14 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   },
 };
 
+// current activated filter
 export let filters = defaultResultFilters;
 
 function save(): void {
   window.localStorage.setItem("resultFilters", JSON.stringify(filters));
 }
 
-export function load(): void {
+export async function load(): Promise<void> {
   console.log("loading filters");
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
@@ -98,13 +101,126 @@ export function load(): void {
     });
 
     filters.tags = newTags;
-
+    await updateCustomFilters();
     save();
   } catch {
     console.log("error in loading result filters");
     filters = defaultResultFilters;
     save();
   }
+}
+
+export async function updateCustomFilters(): Promise<void> {
+  // remove all previous custom filter buttons
+  $(".pageAccount .customFilterButtons .filter-btns").html("");
+
+  // add button for each filter
+  DB.getSnapshot().customFilters.forEach((filter) => {
+    $(".pageAccount .customFilterButtons .filter-btns").append(
+      `<div class="button" id="${filter._id}">${filter.name} </div>`
+    );
+  });
+}
+
+// sets the current filter to be a user custom filter
+export async function setCustomFilter(id: string): Promise<void> {
+  const filter = DB.getSnapshot().customFilters.find(
+    (filter) => filter._id === id
+  );
+  if (filter) {
+    // deep copy filter
+    filters = deepCopyFilter(filter);
+
+    save();
+    updateActive();
+  }
+
+  // make all custom filter butons inactive
+  DB.getSnapshot().customFilters.forEach((filter) => {
+    $(`#${filter._id}`).removeClass("active");
+  });
+
+  // make current custom filter button active
+  $(`#${id}`).addClass("active");
+
+  // custom filter is selected -> show delete button
+  $("#deleteCutomFilterBtn").show();
+}
+
+function deepCopyFilter(
+  filter: MonkeyTypes.ResultFilters
+): MonkeyTypes.ResultFilters {
+  return JSON.parse(JSON.stringify(filter));
+}
+
+function addFilterToSnapshot(filter: MonkeyTypes.ResultFilters): void {
+  const snapshot = DB.getSnapshot();
+  DB.setSnapshot({
+    ...snapshot,
+    customFilters: [...snapshot.customFilters, deepCopyFilter(filter)],
+  });
+}
+
+// callback function called by popup once user inputs name
+async function createCustomFilterCallback(name: string): Promise<void> {
+  const result = await Ape.users.addCustomFilter({ ...filters, name });
+  if (result.status === 200) {
+    addFilterToSnapshot({ ...filters, name, _id: result.data });
+    updateCustomFilters();
+  } else {
+    Notifications.add("Error creating custom filters: " + result.message, -1);
+    console.log("error creating custom filter: " + result.message);
+  }
+}
+
+// shows popup for user to select name
+export async function startCreateCustomFilter(): Promise<void> {
+  showNewCustomFilterePopup((name: string) => createCustomFilterCallback(name));
+}
+
+function removeFilterFromSnapshot(id: string): void {
+  const snapshot = DB.getSnapshot();
+  const customFilters = [...snapshot.customFilters];
+  console.log("before deletion");
+  console.log(snapshot);
+  const toDeleteIx = customFilters.findIndex((filter) => filter._id === id);
+
+  if (toDeleteIx > -1) {
+    customFilters.splice(toDeleteIx, 1);
+  }
+  console.log("after deletion");
+  console.log(customFilters);
+  DB.setSnapshot({ ...snapshot, customFilters: customFilters });
+}
+
+// deletes the current selected custom filter
+export async function deleteCustomFilter(): Promise<void> {
+  const result = await Ape.users.removeCustomFilter(filters._id);
+  if (result.status === 200) {
+    removeFilterFromSnapshot(filters._id);
+    updateCustomFilters();
+    reset();
+  } else {
+    Notifications.add("Error deleting custom filters: " + result.message, -1);
+    console.log("error deleting custom filter", result.message);
+  }
+}
+
+// un selects a custom filter (when a user changes the filter)
+function deSelectCustomFilter(): void {
+  // make all custom filter buttons inactive
+  DB.getSnapshot().customFilters.forEach((filter) => {
+    $(`#${filter._id}`).removeClass("active");
+  });
+
+  // hide delete button
+  $("#deleteCutomFilterBtn").hide();
+
+  // hide custom filter section
+  $(".pageAccount .customFilterButtons").slideUp(250);
+  $(".pageAccount .topFilters .button.toggleCustomFilters").removeClass(
+    "active"
+  );
 }
 
 export function getFilters(): MonkeyTypes.ResultFilters {
@@ -303,6 +419,9 @@ export function toggle<G extends MonkeyTypes.Group>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): void {
+  // user is changing the filters -> current filter is no longer a custom filter
+  deSelectCustomFilter();
+
   try {
     if (group === "date") {
       (Object.keys(getGroup("date")) as MonkeyTypes.Filter<"date">[]).forEach(
@@ -420,6 +539,9 @@ $(
 });
 
 $(".pageAccount .topFilters .button.allFilters").on("click", () => {
+  // user is changing the filters -> current filter is no longer a custom filter
+  deSelectCustomFilter();
+
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
@@ -446,6 +568,9 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
 });
 
 $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
+  // user is changing the filters -> current filter is no longer a custom filter
+  deSelectCustomFilter();
+
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
@@ -562,4 +687,17 @@ Misc.getFunboxList().then((funboxModes) => {
       )}</div>`
     );
   });
+});
+
+$("#createCutomFilterBtn").on("click", () => {
+  startCreateCustomFilter();
+});
+$("#deleteCutomFilterBtn").on("click", () => {
+  deleteCustomFilter();
+});
+$(".pageAccount .topFilters .button.toggleCustomFilters").on("click", () => {
+  $(".pageAccount .customFilterButtons").slideToggle(250);
+  $(".pageAccount .topFilters .button.toggleCustomFilters").toggleClass(
+    "active"
+  );
 });
