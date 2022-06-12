@@ -169,35 +169,35 @@ router.delete(
   asyncHandler(UserController.clearPb)
 );
 
-const requireResultFiltersEnabled = validateConfiguration({
+const requireFilterPresetsEnabled = validateConfiguration({
   criteria: (configuration) => {
-    return configuration.customFilters.enabled;
+    return configuration.results.filterPresets.enabled;
   },
-  invalidMessage: "Custom Filters are not available at this time.",
+  invalidMessage: "Result filter presets are not available at this time.",
 });
 
 router.post(
-  "/resultFilters",
+  "/resultFilterPresets",
   RateLimit.userCustomFilterAdd,
-  requireResultFiltersEnabled,
+  requireFilterPresetsEnabled,
   authenticateRequest(),
   validateRequest({
     body: filterSchema,
   }),
-  asyncHandler(UserController.addResultFilter)
+  asyncHandler(UserController.addResultFilterPreset)
 );
 
 router.delete(
-  "/resultFilters/:filterId",
+  "/resultFilterPresets/:presetId",
   RateLimit.userCustomFilterRemove,
-  requireResultFiltersEnabled,
+  requireFilterPresetsEnabled,
   authenticateRequest(),
   validateRequest({
     params: {
-      filterId: joi.string().required(),
+      presetId: joi.string().required(),
     },
   }),
-  asyncHandler(UserController.removeResultFilter)
+  asyncHandler(UserController.removeResultFilterPreset)
 );
 
 router.get(

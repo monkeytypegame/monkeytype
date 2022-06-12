@@ -8,6 +8,10 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   results: {
     savingEnabled: false,
     objectHashCheckEnabled: false,
+    filterPresets: {
+      enabled: false,
+      maxPresetsPerUser: 0,
+    },
   },
   quotes: {
     reporting: {
@@ -42,10 +46,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   discordIntegration: {
     enabled: false,
   },
-  customFilters: {
-    enabled: false,
-    maxFiltersPerUser: 0,
-  },
 };
 
 export const CONFIGURATION_FORM_SCHEMA = {
@@ -77,6 +77,21 @@ export const CONFIGURATION_FORM_SCHEMA = {
         objectHashCheckEnabled: {
           type: "boolean",
           label: "Object Hash Check",
+        },
+        filterPresets: {
+          type: "object",
+          label: "Filter Presets",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxPresetsPerUser: {
+              type: "number",
+              label: "Max Presets Per User",
+              min: 0,
+            },
+          },
         },
       },
     },
@@ -210,21 +225,6 @@ export const CONFIGURATION_FORM_SCHEMA = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
-        },
-      },
-    },
-    customFilters: {
-      type: "object",
-      label: "Custom Filters",
-      fields: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
-        },
-        maxFiltersPerUser: {
-          type: "number",
-          label: "Max Filters per user",
-          min: 0,
         },
       },
     },

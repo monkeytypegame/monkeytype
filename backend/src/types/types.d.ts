@@ -23,6 +23,10 @@ declare namespace MonkeyTypes {
     results: {
       savingEnabled: boolean;
       objectHashCheckEnabled: boolean;
+      filterPresets: {
+        enabled: boolean;
+        maxPresetsPerUser: number;
+      };
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -46,10 +50,6 @@ declare namespace MonkeyTypes {
     };
     discordIntegration: {
       enabled: boolean;
-    };
-    customFilters: {
-      enabled: boolean;
-      maxFiltersPerUser: number;
     };
   }
 
@@ -97,7 +97,7 @@ declare namespace MonkeyTypes {
     needsToChangeName?: boolean;
     discordAvatar?: string;
     badgeIds?: number[];
-    customFilters?: ResultFilters[];
+    resultFilterPresets?: ResultFilters[];
   }
 
   interface ResultFilters {
