@@ -47,6 +47,10 @@ declare namespace MonkeyTypes {
     discordIntegration: {
       enabled: boolean;
     };
+    customFilters: {
+      enabled: boolean;
+      maxFiltersPerUser: number;
+    };
   }
 
   interface DecodedToken {
@@ -93,6 +97,69 @@ declare namespace MonkeyTypes {
     needsToChangeName?: boolean;
     discordAvatar?: string;
     badgeIds?: number[];
+    customFilters?: ResultFilters[];
+  }
+
+  interface ResultFilters {
+    _id: ObjectId;
+    name: string;
+    difficulty: {
+      normal: boolean;
+      expert: boolean;
+      master: boolean;
+    };
+    mode: {
+      words: boolean;
+      time: boolean;
+      quote: boolean;
+      zen: boolean;
+      custom: boolean;
+    };
+    words: {
+      10: boolean;
+      25: boolean;
+      50: boolean;
+      100: boolean;
+      custom: boolean;
+    };
+    time: {
+      15: boolean;
+      30: boolean;
+      60: boolean;
+      120: boolean;
+      custom: boolean;
+    };
+    quoteLength: {
+      short: boolean;
+      medium: boolean;
+      long: boolean;
+      thicc: boolean;
+    };
+    punctuation: {
+      on: boolean;
+      off: boolean;
+    };
+    numbers: {
+      on: boolean;
+      off: boolean;
+    };
+    date: {
+      last_day: boolean;
+      last_week: boolean;
+      last_month: boolean;
+      last_3months: boolean;
+      all: boolean;
+    };
+    tags: {
+      [tagId: string]: boolean;
+    };
+    language: {
+      [language: string]: boolean;
+    };
+    funbox: {
+      none?: boolean;
+      [funbox: string]: boolean;
+    };
   }
 
   type UserQuoteRatings = Record<string, Record<string, number>>;

@@ -186,6 +186,31 @@ export async function unlinkDiscord(
   return new MonkeyResponse("Discord account unlinked");
 }
 
+export async function addResultFilter(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const filter = req.body;
+  const { maxFiltersPerUser } = req.ctx.configuration.customFilters;
+
+  const createdId = await UserDAL.addResultFilter(
+    uid,
+    filter,
+    maxFiltersPerUser
+  );
+  return new MonkeyResponse("Result filter created", createdId);
+}
+
+export async function removeResultFilter(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { filterId } = req.params;
+
+  await UserDAL.removeResultFilter(uid, filterId);
+  return new MonkeyResponse("Result filter deleted");
+}
+
 export async function addTag(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
