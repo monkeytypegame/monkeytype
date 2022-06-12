@@ -43,7 +43,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     enabled: false,
   },
   customFilters: {
-    enabled: true,
+    enabled: false,
     maxFiltersPerUser: 0,
   },
 };
