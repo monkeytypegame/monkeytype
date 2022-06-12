@@ -7,6 +7,7 @@
       font-size: 1rem;
     }
     .leaderboardsTop {
+      grid-template-columns: max-content;
       .buttonGroup {
         grid-auto-flow: row;
         gap: 0.5rem;
@@ -211,6 +212,17 @@
       .leaderboardsTop {
         flex-direction: column;
         align-items: baseline;
+        grid-template-areas:
+          "title title"
+          "subtitle subtitle"
+          "yesterday yesterday"
+          "buttons buttons";
+        .buttonGroup {
+          grid-auto-flow: column;
+        }
+        .showYesterdayButton {
+          margin-left: 0;
+        }
       }
       .tables {
         grid-template-columns: unset;
@@ -225,7 +237,7 @@
       }
       .tables .rightTableWrapper,
       .tables .leftTableWrapper {
-        height: calc(50vh - 8rem);
+        height: calc(50vh - 10rem);
       }
     }
   }
@@ -551,7 +563,7 @@
     width: 85vw;
     .tables .rightTableWrapper,
     .tables .leftTableWrapper {
-      height: calc(50vh - 7rem);
+      height: calc(50vh - 10rem);
     }
     .tables {
       grid-template-columns: unset;

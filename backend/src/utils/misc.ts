@@ -81,17 +81,17 @@ export function padNumbers(
   );
 }
 
+export const MILLISECONDS_IN_DAY = 86400000;
+
 export function getCurrentDayTimestamp(): number {
   const currentTime = Date.now();
-  return currentTime - (currentTime % 86400000);
+  return currentTime - (currentTime % MILLISECONDS_IN_DAY);
 }
 
 export function matchesAPattern(text: string, pattern: string): boolean {
   const regex = new RegExp(`^${pattern}$`);
   return regex.test(text);
 }
-
-export const MILLISECONDS_IN_DAY = 86400000;
 
 export function kogascore(wpm: number, acc: number, timestamp: number): number {
   const normalizedWpm = Math.floor(wpm * 100);

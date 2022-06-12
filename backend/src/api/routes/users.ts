@@ -10,6 +10,7 @@ import {
 import * as RateLimit from "../../middlewares/rate-limit";
 import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { isUsernameValid } from "../../utils/validation";
+import filterSchema from "../schemas/filter-schema";
 
 const router = Router();
 
@@ -166,6 +167,37 @@ router.delete(
   RateLimit.userClearPB,
   authenticateRequest(),
   asyncHandler(UserController.clearPb)
+);
+
+const requireResultFiltersEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.customFilters.enabled;
+  },
+  invalidMessage: "Custom Filters are not available at this time.",
+});
+
+router.post(
+  "/resultFilters",
+  RateLimit.userCustomFilterAdd,
+  requireResultFiltersEnabled,
+  authenticateRequest(),
+  validateRequest({
+    body: filterSchema,
+  }),
+  asyncHandler(UserController.addResultFilter)
+);
+
+router.delete(
+  "/resultFilters/:filterId",
+  RateLimit.userCustomFilterRemove,
+  requireResultFiltersEnabled,
+  authenticateRequest(),
+  validateRequest({
+    params: {
+      filterId: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.removeResultFilter)
 );
 
 router.get(

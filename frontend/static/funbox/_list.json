@@ -92,7 +92,7 @@
   {
     "name": "plus_two",
     "type": "script",
-    "info": "Only two future word are visible."
+    "info": "Only two future words are visible."
   },
   {
     "name": "read_ahead_easy",
@@ -102,7 +102,7 @@
   {
     "name": "read_ahead",
     "type": "style",
-    "info": "Current and the next word is invisible!"
+    "info": "Current and the next word are invisible!"
   },
   {
     "name": "read_ahead_hard",
