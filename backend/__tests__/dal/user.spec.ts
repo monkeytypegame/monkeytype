@@ -1,5 +1,7 @@
 import _ from "lodash";
+import { ObjectId } from "mongodb";
 import {
+  addResultFilter,
   addUser,
   clearPb,
   getUser,
@@ -18,6 +20,67 @@ const mockPersonalBest = {
   raw: 230,
   wpm: 215,
   timestamp: 13123123,
+};
+
+const mockResultFilter = {
+  _id: new ObjectId(),
+  name: "sfdkjhgdf",
+  difficulty: {
+    normal: true,
+    expert: false,
+    master: false,
+  },
+  mode: {
+    words: false,
+    time: true,
+    quote: false,
+    zen: false,
+    custom: false,
+  },
+  words: {
+    "10": false,
+    "25": false,
+    "50": false,
+    "100": false,
+    custom: false,
+  },
+  time: {
+    "15": false,
+    "30": true,
+    "60": false,
+    "120": false,
+    custom: false,
+  },
+  quoteLength: {
+    short: false,
+    medium: false,
+    long: false,
+    thicc: false,
+  },
+  punctuation: {
+    on: false,
+    off: true,
+  },
+  numbers: {
+    on: false,
+    off: true,
+  },
+  date: {
+    last_day: false,
+    last_week: false,
+    last_month: false,
+    last_3months: false,
+    all: true,
+  },
+  tags: {
+    none: true,
+  },
+  language: {
+    english: true,
+  },
+  funbox: {
+    none: true,
+  },
 };
 
 describe("UserDal", () => {
@@ -253,5 +316,40 @@ describe("UserDal", () => {
     const updatedUser = await getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(undefined);
     expect(updatedUser.autoBanTimestamps).toEqual([36000000]);
+  });
+
+  it("addResultFilters should return error if uuid not found", async () => {
+    // given
+    await addUser("test name", "test email", "TestID");
+
+    // when, then
+    await expect(
+      addResultFilter("non existing uid", mockResultFilter, 5)
+    ).rejects.toThrow("User not found");
+  });
+
+  it("addResultFilters should return error if user has reached maximum", async () => {
+    // given
+    await addUser("test name", "test email", "TestID");
+    await addResultFilter("TestID", mockResultFilter, 1);
+
+    // when, then
+    await expect(
+      addResultFilter("TestID", mockResultFilter, 1)
+    ).rejects.toThrow("Maximum number of custom filters reached for user.");
+  });
+
+  it("addResultFilters success", async () => {
+    // given
+    await addUser("test name", "test email", "TestID");
+
+    // when
+    const result = await addResultFilter("TestID", mockResultFilter, 1);
+
+    // then
+    const user = await getUser("TestID", "test add result filters");
+    const createdFilter = user.customFilters ?? [];
+
+    expect(result).toStrictEqual(createdFilter[0]._id);
   });
 });

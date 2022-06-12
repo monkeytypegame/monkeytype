@@ -42,6 +42,10 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   discordIntegration: {
     enabled: false,
   },
+  customFilters: {
+    enabled: true,
+    maxFiltersPerUser: 0,
+  },
 };
 
 export const CONFIGURATION_FORM_SCHEMA = {
@@ -206,6 +210,21 @@ export const CONFIGURATION_FORM_SCHEMA = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
+        },
+      },
+    },
+    customFilters: {
+      type: "object",
+      label: "Custom Filters",
+      fields: {
+        enabled: {
+          type: "boolean",
+          label: "Enabled",
+        },
+        maxFiltersPerUser: {
+          type: "number",
+          label: "Max Filters per user",
+          min: 0,
         },
       },
     },
