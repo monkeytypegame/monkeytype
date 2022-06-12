@@ -70,7 +70,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
+   - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
 
 #### Docker (Recommended but Optional)
 
@@ -79,6 +79,7 @@ You can use docker to run the frontend development environment. This will take c
 ```bash
 cd frontend && docker-compose up
 ```
+
 Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
 
 #### Backend (optional)
@@ -100,7 +101,7 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
-1. Run `npm run install:all` in the project root to install all dependencies.
+1. Run `npm run install-all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install-windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
 2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
