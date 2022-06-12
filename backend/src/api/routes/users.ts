@@ -173,7 +173,7 @@ const requireFilterPresetsEnabled = validateConfiguration({
   criteria: (configuration) => {
     return configuration.results.filterPresets.enabled;
   },
-  invalidMessage: "Custom Filters are not available at this time.",
+  invalidMessage: "Result filter presets are not available at this time.",
 });
 
 router.post(

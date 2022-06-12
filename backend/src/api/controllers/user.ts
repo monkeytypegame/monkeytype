@@ -198,7 +198,7 @@ export async function addResultFilterPreset(
     filter,
     maxPresetsPerUser
   );
-  return new MonkeyResponse("Result filter created", createdId);
+  return new MonkeyResponse("Result filter preset created", createdId);
 }
 
 export async function removeResultFilterPreset(
@@ -208,7 +208,7 @@ export async function removeResultFilterPreset(
   const { presetId } = req.params;
 
   await UserDAL.removeResultFilterPreset(uid, presetId);
-  return new MonkeyResponse("Result filter deleted");
+  return new MonkeyResponse("Result filter preset deleted");
 }
 
 export async function addTag(
