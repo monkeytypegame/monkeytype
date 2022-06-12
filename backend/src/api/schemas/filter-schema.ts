@@ -2,7 +2,16 @@ import joi from "joi";
 
 const FILTER_SCHEMA = {
   _id: joi.string().required(),
-  name: joi.string().required(),
+  name: joi
+    .string()
+    .required()
+    .regex(/^[0-9a-zA-Z_.-]+$/)
+    .max(16)
+    .messages({
+      "string.pattern.base":
+        "Filter name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
+      "string.max": "Filter name exceeds maximum of 16 characters",
+    }),
   difficulty: joi
     .object({
       normal: joi.bool().required(),
