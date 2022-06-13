@@ -10,11 +10,11 @@ export function clear(): void {
 export function update(): void {
   const snapshot = DB.getSnapshot();
 
-  if (snapshot.globalStats !== undefined) {
-    // let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
-    // let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
-    // let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
-    const seconds = snapshot?.globalStats?.time ?? 0;
+  if (snapshot.typingStats !== undefined) {
+    // let th = Math.floor(DB.getSnapshot().typingStats.time / 3600);
+    // let tm = Math.floor((DB.getSnapshot().typingStats.time % 3600) / 60);
+    // let ts = Math.floor((DB.getSnapshot().typingStats.time % 3600) % 60);
+    const seconds = snapshot?.typingStats?.timeTyping ?? 0;
     let string = "";
     if (seconds === 0) {
       string = "-";
@@ -24,15 +24,15 @@ export function update(): void {
     $(".pageAccount .globalTimeTyping .val").text(string);
   }
 
-  if (snapshot.globalStats !== undefined) {
+  if (snapshot.typingStats !== undefined) {
     $(".pageAccount .globalTestsStarted .val").text(
-      snapshot.globalStats.started as number
+      snapshot.typingStats.startedTests as number
     );
   }
 
-  if (snapshot.globalStats !== undefined) {
+  if (snapshot.typingStats !== undefined) {
     $(".pageAccount .globalTestsCompleted .val").text(
-      snapshot.globalStats.completed as number
+      snapshot.typingStats.completedTests as number
     );
   }
 }

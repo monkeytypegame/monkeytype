@@ -232,10 +232,10 @@ declare namespace MonkeyTypes {
     _id: string;
   }
 
-  interface Stats {
-    time: number;
-    started: number;
-    completed?: number;
+  interface TypingStats {
+    timeTyping: number;
+    startedTests: number;
+    completedTests: number;
   }
 
   interface ChartData {
@@ -459,7 +459,7 @@ declare namespace MonkeyTypes {
     tags: Tag[];
     favouriteThemes?: string[];
     lbMemory?: LeaderboardMemory;
-    globalStats?: Stats;
+    typingStats?: TypingStats;
     quoteMod?: boolean;
     discordId?: string;
     config?: Config;

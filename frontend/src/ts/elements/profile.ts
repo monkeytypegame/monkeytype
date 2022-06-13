@@ -49,15 +49,17 @@ export function update(
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
   const typingStatsEl = details.find(".typingStats");
-  typingStatsEl.find(".started .value").text(profile.globalStats?.started ?? 0);
+  typingStatsEl
+    .find(".started .value")
+    .text(profile.typingStats?.startedTests ?? 0);
   typingStatsEl
     .find(".completed .value")
-    .text(profile.globalStats?.completed ?? 0);
+    .text(profile.typingStats?.completedTests ?? 0);
   typingStatsEl
     .find(".timeTyping .value")
     .text(
       Misc.secondsToString(
-        Math.round(profile.globalStats?.time ?? 0),
+        Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true
       )
