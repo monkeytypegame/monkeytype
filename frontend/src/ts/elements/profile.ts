@@ -128,7 +128,7 @@ export function updateNameFontSize(where: "account"): void {
   if (!details) return;
   const nameField = details.find(".name");
   const nameFieldParent = nameField.parent();
-  const upperLimit = Misc.convertRemToPixels(3);
+  const upperLimit = Misc.convertRemToPixels(2.5);
   // const nameFieldParentWidth = nameField.parent().width() ?? 0;
   let fontSize = Misc.convertRemToPixels(1);
   let nameWidth;
