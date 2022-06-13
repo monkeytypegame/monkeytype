@@ -43,7 +43,6 @@ import {
   User as UserType,
 } from "firebase/auth";
 import { Auth } from "../firebase";
-import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
@@ -244,15 +243,6 @@ export async function loadUser(user: UserType): Promise<void> {
   LoginPage.hidePreloader();
 
   // showFavouriteThemesAtTheTop();
-
-  let text = "Account created on " + user.metadata.creationTime;
-
-  const creationDate = new Date(user.metadata.creationTime as string);
-  const diffDays = differenceInDays(new Date(), creationDate);
-
-  text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
-
-  $(".pageAccount .group.createdDate").text(text);
 
   if (VerificationController.data !== null) {
     VerificationController.verify();
