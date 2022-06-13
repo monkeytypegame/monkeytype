@@ -158,12 +158,12 @@
           }
           .test {
             color: var(--sub-color);
-            justify-content: end;
+            align-content: end;
           }
           .wpm {
             font-size: 3.5rem;
             line-height: 3.2rem;
-            justify-content: center;
+            align-content: center;
           }
           .acc {
             font-size: 1.5rem;
@@ -278,6 +278,9 @@
         &.wide {
           grid-column: span 2;
           grid-template-columns: 1fr 1fr;
+          .time {
+            grid-column: span 2;
+          }
         }
       }
       .separator {
