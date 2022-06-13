@@ -360,5 +360,9 @@
   {
     "name": "oromo",
     "languages": ["oromo", "oromo_1k", "oromo_5k"]
+  },
+  {
+    "name": "wordle",
+    "languages": ["wordle", "wordle_1k"]
   }
 ]
