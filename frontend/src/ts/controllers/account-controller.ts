@@ -561,13 +561,12 @@ async function signUp(): Promise<void> {
       if (response.status === 200) {
         const result = TestLogic.notSignedInLastResult;
         DB.saveLocalResult(result);
-        DB.updateLocalStats({
-          time:
-            result.testDuration +
+        DB.updateLocalStats(
+          1,
+          result.testDuration +
             result.incompleteTestSeconds -
-            result.afkDuration,
-          started: 1,
-        });
+            result.afkDuration
+        );
       }
     }
     Notifications.add("Account created", 1, 3);
