@@ -17,7 +17,6 @@ import * as PractiseWords from "./practise-words";
 import * as TestLogic from "./test-logic";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestActive from "../states/test-active";
-// Rizwan TODO: This file should work after tribe's conversion to typescript
 import * as Tribe from "../tribe/tribe";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

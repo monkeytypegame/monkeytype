@@ -1,5 +1,5 @@
 import { Howl } from "howler";
-import * as Tribe from "./tribe"; // Rizwan TODO: This should work as soon as tribe files wiill be converted to typescript
+import * as Tribe from "./tribe";
 
 const sounds: Record<string, Howl> = {
   join: new Howl({ src: "/sound/tribe-sounds/join.wav" }),

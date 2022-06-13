@@ -15,7 +15,7 @@ import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
 import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as QuoteSearchPopupWrapper from "../popups/quote-search-popup";
-import * as TribeStartRacePopup from "../popups/tribe-start-race-popup"; // Rizwan TODO: This will start appearing once the popups
+import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
