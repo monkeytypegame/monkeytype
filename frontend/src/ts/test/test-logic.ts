@@ -1191,13 +1191,12 @@ export async function retrySavingResult(): Promise<void> {
   }
 
   DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats({
-    time:
-      completedEvent.testDuration +
+  DB.updateLocalStats(
+    TestStats.restartCount + 1,
+    completedEvent.testDuration +
       completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration,
-    started: TestStats.restartCount + 1,
-  });
+      completedEvent.afkDuration
+  );
 
   AnalyticsController.log("testCompleted");
 
@@ -1594,13 +1593,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats({
-    time:
-      completedEvent.testDuration +
+  DB.updateLocalStats(
+    TestStats.restartCount + 1,
+    completedEvent.testDuration +
       completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration,
-    started: TestStats.restartCount + 1,
-  });
+      completedEvent.afkDuration
+  );
 
   AnalyticsController.log("testCompleted");
 

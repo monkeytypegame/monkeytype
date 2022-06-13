@@ -773,21 +773,21 @@ export function saveLocalResult(
   }
 }
 
-export function updateLocalStats(stats: MonkeyTypes.TypingStats): void {
+export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
   if (snapshot.typingStats === undefined) {
     snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
   if (snapshot !== null && snapshot.typingStats !== undefined) {
     if (snapshot.typingStats.timeTyping == undefined) {
-      snapshot.typingStats.timeTyping = stats.timeTyping;
+      snapshot.typingStats.timeTyping = time;
     } else {
-      snapshot.typingStats.timeTyping += stats.timeTyping;
+      snapshot.typingStats.timeTyping += time;
     }
     if (snapshot.typingStats.startedTests == undefined) {
-      snapshot.typingStats.startedTests = stats.startedTests;
+      snapshot.typingStats.startedTests = started;
     } else {
-      snapshot.typingStats.startedTests += stats.startedTests;
+      snapshot.typingStats.startedTests += started;
     }
     if (snapshot.typingStats.completedTests == undefined) {
       snapshot.typingStats.completedTests = 1;
