@@ -14,6 +14,7 @@ import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
+import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 
 import type { ScaleChartOptions } from "chart.js";
@@ -240,6 +241,8 @@ export function update(): void {
     AllTimeStats.update();
 
     PbTables.update();
+
+    Profile.update("account", DB.getSnapshot());
 
     chartData = [];
     accChartData = [];
@@ -864,7 +867,13 @@ export function update(): void {
     Misc.swapElements(
       $(".pageAccount .preloader"),
       $(".pageAccount .content"),
-      250
+      250,
+      () => {
+        Profile.updateNameFontSize("account");
+      },
+      () => {
+        Profile.updateNameFontSize("account");
+      }
     );
   }
   if (DB.getSnapshot() === null) {

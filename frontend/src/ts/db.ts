@@ -92,6 +92,9 @@ export async function initSnapshot(): Promise<
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+    snap.details = userData.details;
+    snap.addedAt = userData.addedAt;
+    snap.badgeIds = userData.badgeIds;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format

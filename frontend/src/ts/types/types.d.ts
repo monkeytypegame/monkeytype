@@ -466,6 +466,19 @@ declare namespace MonkeyTypes {
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
+    details?: UserDetails;
+    badgeIds?: number[];
+    addedAt: number;
+  }
+
+  interface UserDetails {
+    bio: string;
+    keyboard: string;
+    socialLinks: {
+      twitter: string;
+      github: string;
+      website: string;
+    };
   }
 
   type FavoriteQuotes = Record<string, string[]>;

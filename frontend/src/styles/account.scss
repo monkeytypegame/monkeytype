@@ -195,7 +195,7 @@
       }
     }
 
-    .info {
+    .details {
       // grid-template-columns: 1fr 2fr;
       grid-area: info;
       display: grid;
@@ -229,8 +229,11 @@
           }
         }
         .name {
-          font-size: 3rem;
-          line-height: 2.5rem;
+          // font-size: 3rem;
+          // line-height: 2.5rem;
+          font-size: 1rem;
+          line-height: 100%;
+          width: max-content;
         }
         .badge {
           width: max-content;
@@ -243,12 +246,28 @@
           margin-top: 0.35rem;
         }
       }
+      .socials .value {
+        display: grid;
+        grid-auto-flow: column;
+        gap: 0.25rem;
+        width: max-content;
+        a {
+          color: var(--text-color);
+          &:hover {
+            color: var(--main-color);
+          }
+        }
+      }
       .typingStats {
         display: grid;
         gap: 0.5rem;
         grid-row: span 2;
         align-content: space-between;
         align-self: stretch;
+        &.wide {
+          grid-column: span 2;
+          grid-template-columns: 1fr 1fr;
+        }
       }
       .separator {
         width: 0.5rem;
