@@ -869,10 +869,12 @@ export function update(): void {
       $(".pageAccount .content"),
       250,
       () => {
-        Profile.updateNameFontSize("account");
+        // Profile.updateNameFontSize("account");
       },
       () => {
-        Profile.updateNameFontSize("account");
+        setTimeout(() => {
+          Profile.updateNameFontSize("account");
+        }, 1);
       }
     );
   }
