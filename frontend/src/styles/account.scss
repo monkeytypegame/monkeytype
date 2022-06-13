@@ -151,12 +151,19 @@
           gap: 0.25rem;
           justify-self: center;
           justify-items: center;
+          .test,
+          .wpm,
+          .acc {
+            display: grid;
+          }
           .test {
             color: var(--sub-color);
+            justify-content: end;
           }
           .wpm {
             font-size: 3.5rem;
             line-height: 3.2rem;
+            justify-content: center;
           }
           .acc {
             font-size: 1.5rem;
@@ -164,15 +171,11 @@
             // justify-self: end;
             opacity: 0.75;
           }
-          .rawcon {
-            justify-self: end;
-            color: var(--sub-color);
-          }
         }
 
         .fullTest {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr;
           gap: 0.25rem;
           background: var(--sub-alt-color);
           z-index: 1;
@@ -184,7 +187,7 @@
           }
           div:first-child,
           div:last-child {
-            grid-column: span 2;
+            // grid-column: span 2;
             color: var(--sub-color);
             text-align: center;
           }
@@ -244,6 +247,7 @@
         }
         .badge {
           width: max-content;
+          font-size: 0.6em;
         }
         .joined {
           color: var(--sub-color);
