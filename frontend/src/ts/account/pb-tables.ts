@@ -370,7 +370,7 @@ function buildPbHtml(
       <div class="test">${modeString}</div>
       <div class="wpm">${Math.round(pbData.wpm * multiplier)}</div>
       <div class="acc">${
-        pbData.acc === undefined ? "-" : pbData.acc + "%"
+        pbData.acc === undefined ? "-" : Math.round(pbData.acc) + "%"
       }</div>
     </div>
     <div class="fullTest">
