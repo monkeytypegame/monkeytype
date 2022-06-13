@@ -112,7 +112,7 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 
 export function flattenObjectDeep(
   obj: Record<string, any>,
-  prefix: string = ""
+  prefix = ""
 ): Record<string, any> {
   const result: Record<string, any> = {};
   const keys = Object.keys(obj);

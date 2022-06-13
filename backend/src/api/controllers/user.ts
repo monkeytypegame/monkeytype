@@ -371,3 +371,59 @@ export async function removeFavoriteQuote(
 
   return new MonkeyResponse("Quote removed from favorites");
 }
+
+export async function getProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.params;
+
+  const {
+    name,
+    banned,
+    badgeIds,
+    profile,
+    personalBests,
+    completedTests,
+    startedTests,
+    timeTyping,
+  } = await UserDAL.getUser(uid, "get user profile");
+
+  const profileData = {
+    name,
+    banned,
+    badgeIds,
+    personalBests,
+    typingStats: {
+      completedTests,
+      startedTests,
+      timeTyping,
+    },
+    details: {
+      bio: "",
+      keyboard: "",
+      socialProfiles: {},
+      ...profile,
+    },
+  };
+
+  return new MonkeyResponse("Profile retrieved", profileData);
+}
+
+export async function updateProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { bio, keyboard, socialProfiles } = req.body;
+
+  const updates: Partial<MonkeyTypes.UserProfile> = {
+    bio: bio as string,
+    keyboard: keyboard as string,
+    socialProfiles: {
+      ...socialProfiles,
+    },
+  };
+
+  await UserDAL.updateProfile(uid, updates);
+
+  return new MonkeyResponse("Profile updated");
+}

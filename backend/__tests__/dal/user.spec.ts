@@ -8,6 +8,7 @@ import {
   getUsersCollection,
   recordAutoBanEvent,
   updateName,
+  updateProfile,
 } from "../../src/dal/user";
 
 const mockPersonalBest = {
@@ -351,5 +352,53 @@ describe("UserDal", () => {
     const createdFilter = user.resultFilterPresets ?? [];
 
     expect(result).toStrictEqual(createdFilter[0]._id);
+  });
+
+  it("updateProfile should appropriately handle multiple profile updates", async () => {
+    await addUser("test name", "test email", "TestID");
+
+    await updateProfile("TestID", {
+      bio: "test bio",
+    });
+
+    const user = await getUser("TestID", "test add result filters");
+    expect(user.profile).toStrictEqual({
+      bio: "test bio",
+    });
+
+    await updateProfile("TestID", {
+      keyboard: "test keyboard",
+      socialProfiles: {
+        twitter: "test twitter",
+      },
+    });
+
+    const updatedUser = await getUser("TestID", "test add result filters");
+    expect(updatedUser.profile).toStrictEqual({
+      bio: "test bio",
+      keyboard: "test keyboard",
+      socialProfiles: {
+        twitter: "test twitter",
+      },
+    });
+
+    await updateProfile("TestID", {
+      bio: "test bio 2",
+      socialProfiles: {
+        github: "test github",
+        website: "test website",
+      },
+    });
+
+    const updatedUser2 = await getUser("TestID", "test add result filters");
+    expect(updatedUser2.profile).toStrictEqual({
+      bio: "test bio 2",
+      keyboard: "test keyboard",
+      socialProfiles: {
+        twitter: "test twitter",
+        github: "test github",
+        website: "test website",
+      },
+    });
   });
 });

@@ -391,4 +391,45 @@ router.delete(
   asyncHandler(UserController.removeFavoriteQuote)
 );
 
+router.get(
+  "/:uid/profile",
+  RateLimit.userGet,
+  authenticateRequest({
+    isPublic: true,
+  }),
+  validateRequest({
+    params: {
+      uid: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.getProfile)
+);
+
+router.patch(
+  "/profile",
+  RateLimit.userGet,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      bio: joi.string().max(150),
+      keyboard: joi.string().max(75),
+      socialProfiles: joi
+        .object({
+          twitter: joi.string().max(20),
+          github: joi.string().max(20),
+          website: joi.string().uri({
+            scheme: "https",
+            domain: {
+              tlds: {
+                allow: true,
+              },
+            },
+          }),
+        })
+        .max(200),
+    },
+  }),
+  asyncHandler(UserController.updateProfile)
+);
+
 export default router;

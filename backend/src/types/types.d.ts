@@ -70,6 +70,16 @@ declare namespace MonkeyTypes {
 
   // Data Model
 
+  interface UserProfile {
+    bio: string;
+    keyboard: string;
+    socialProfiles: {
+      twitter?: string;
+      github?: string;
+      website?: string;
+    };
+  }
+
   interface User {
     autoBanTimestamps?: number[];
     addedAt: number;
@@ -98,6 +108,7 @@ declare namespace MonkeyTypes {
     discordAvatar?: string;
     badgeIds?: number[];
     resultFilterPresets?: ResultFilters[];
+    profile?: UserProfile;
   }
 
   interface ResultFilters {
