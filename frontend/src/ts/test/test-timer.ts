@@ -17,7 +17,6 @@ import * as TestActive from "../states/test-active";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as TestLogic from "./test-logic";
-// Rizwan TODO: This should work once the tribe files are converted to typescript
 import * as Tribe from "../tribe/tribe";
 import * as TribeBars from "../tribe/tribe-bars";
 

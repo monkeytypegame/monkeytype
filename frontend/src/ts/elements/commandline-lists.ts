@@ -3397,6 +3397,12 @@ export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
 }
 
 const listsObject = {
+  commandsQuoteLengthConfig,
+  commandsWordCount,
+  commandsMode,
+  commandsNumbers,
+  commandsPunctuation,
+  commandsTimeConfig,
   commandsChallenges,
   commandsLanguages,
   commandsDifficulty,

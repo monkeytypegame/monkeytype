@@ -3,7 +3,6 @@ import * as Funbox from "../test/funbox";
 // import * as Notifications from "./notifications";
 import * as CustomText from "../test/custom-text";
 
-// Rizwan TODO: This should work after tribe files are converted to typescript
 import * as TribeButtons from "./tribe-buttons";
 import * as Tribe from "./tribe";
 

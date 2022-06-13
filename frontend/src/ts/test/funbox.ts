@@ -5,7 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
-import * as TribeConfig from "../tribe/tribe-config"; // Rizwan TODO: This will work once the file is converted to typescript
+import * as TribeConfig from "../tribe/tribe-config";
 
 let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
 let memoryTimer: number | null = null;
