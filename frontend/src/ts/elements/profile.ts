@@ -126,7 +126,7 @@ export function update(
     details.find(".socials").removeClass("hidden");
   }
 
-  if (!keyboard && !socials) {
+  if (!socials) {
     details.find(".typingStats").addClass("wide");
   } else {
     details.find(".typingStats").removeClass("wide");
