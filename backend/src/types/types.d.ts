@@ -51,6 +51,9 @@ declare namespace MonkeyTypes {
     discordIntegration: {
       enabled: boolean;
     };
+    profiles: {
+      enabled: boolean;
+    };
   }
 
   interface DecodedToken {

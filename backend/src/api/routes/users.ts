@@ -391,9 +391,17 @@ router.delete(
   asyncHandler(UserController.removeFavoriteQuote)
 );
 
+const requireProfilesEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.profiles.enabled;
+  },
+  invalidMessage: "Profiles are not available at this time",
+});
+
 router.get(
   "/:uid/profile",
-  RateLimit.userGet,
+  RateLimit.userProfileGet,
+  requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
   }),
@@ -407,7 +415,8 @@ router.get(
 
 router.patch(
   "/profile",
-  RateLimit.userGet,
+  RateLimit.userProfileUpdate,
+  requireProfilesEnabled,
   authenticateRequest(),
   validateRequest({
     body: {

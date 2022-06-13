@@ -46,6 +46,9 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   discordIntegration: {
     enabled: false,
   },
+  profiles: {
+    enabled: false,
+  },
 };
 
 export const CONFIGURATION_FORM_SCHEMA = {
@@ -225,6 +228,16 @@ export const CONFIGURATION_FORM_SCHEMA = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
+        },
+      },
+    },
+    profiles: {
+      type: "object",
+      label: "User Profiles",
+      fields: {
+        enabled: {
+          type: "boolean",
+          label: "Enabled",
         },
       },
     },
