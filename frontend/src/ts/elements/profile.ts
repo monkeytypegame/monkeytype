@@ -13,9 +13,11 @@ export function update(
     details = $(".pageAccount .profile .details");
   }
 
+  const banned = profile.banned === true;
+
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
-  if (profile.discordAvatar && profile.discordId) {
+  if (profile.discordAvatar && profile.discordId && !banned) {
     details
       .find(".avatar")
       .css(
@@ -24,36 +26,35 @@ export function update(
       );
   }
 
-  if (profile.badgeIds) {
+  if (profile.badgeIds && !banned) {
     details.find(".badges").append(getHTMLById(profile.badgeIds[0]));
   }
 
   details.find(".name").text(profile.name);
+
+  if (banned) {
+    details
+      .find(".name")
+      .append(
+        `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
+      );
+  }
+
   updateNameFontSize(where);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
-
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
-
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
-
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
-  const bio = profile.details?.bio ?? null;
-  details.find(".bio .value").text(bio ?? "");
-
-  const keyboard = profile.details?.keyboard ?? null;
-  details.find(".keyboard .value").text(keyboard ?? "");
-
-  details
-    .find(".typingStats .started .value")
-    .text(profile.globalStats?.started ?? 0);
-  details
-    .find(".typingStats .completed .value")
+  const typingStatsEl = details.find(".typingStats");
+  typingStatsEl.find(".started .value").text(profile.globalStats?.started ?? 0);
+  typingStatsEl
+    .find(".completed .value")
     .text(profile.globalStats?.completed ?? 0);
-  details
-    .find(".typingStats .timeTyping .value")
+  typingStatsEl
+    .find(".timeTyping .value")
     .text(
       Misc.secondsToString(
         Math.round(profile.globalStats?.time ?? 0),
@@ -62,38 +63,48 @@ export function update(
       )
     );
 
-  let socials = null;
-  if (
-    profile.details?.socialLinks.github ||
-    profile.details?.socialLinks.twitter ||
-    profile.details?.socialLinks.website
-  ) {
-    socials = true;
-    const socialsEl = details.find(".socials .value");
-    socialsEl.empty();
+  let bio = false;
+  let keyboard = false;
+  let socials = false;
 
-    const git = profile.details?.socialLinks.github;
-    if (git) {
-      socialsEl.append(
-        `<a href='github.com/${git}' aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
-      );
-    }
+  if (!banned) {
+    bio = profile.details?.bio ? true : false;
+    details.find(".bio .value").text(profile.details?.bio ?? "");
 
-    const twitter = profile.details?.socialLinks.twitter;
-    if (twitter) {
-      socialsEl.append(
-        `<a href='twitter.com/${twitter}' aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
-      );
-    }
+    keyboard = profile.details?.keyboard ? true : false;
+    details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
-    const website = profile.details?.socialLinks.website;
-    if (website) {
-      socialsEl.append(
-        `<a href='${website}' aria-label="${website}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
-      );
+    if (
+      profile.details?.socialLinks.github ||
+      profile.details?.socialLinks.twitter ||
+      profile.details?.socialLinks.website
+    ) {
+      socials = true;
+      const socialsEl = details.find(".socials .value");
+      socialsEl.empty();
+
+      const git = profile.details?.socialLinks.github;
+      if (git) {
+        socialsEl.append(
+          `<a href='github.com/${git}' aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+        );
+      }
+
+      const twitter = profile.details?.socialLinks.twitter;
+      if (twitter) {
+        socialsEl.append(
+          `<a href='twitter.com/${twitter}' aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+        );
+      }
+
+      const website = profile.details?.socialLinks.website;
+      if (website) {
+        socialsEl.append(
+          `<a href='${website}' aria-label="${website}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+        );
+      }
     }
   }
-
   //structure
   if (!bio) {
     details.find(".bio").addClass("hidden");
