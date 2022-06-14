@@ -249,15 +249,17 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
 export function setFunbox(
   funbox: string,
   nosave?: boolean,
-  tribeOverride?: boolean
+  tribeOverride = false
 ): boolean {
   // Rizwan TODO: Merge from the config.js on the newtribe branch
   console.log(tribeOverride); // Rizwan TODO: Remove this later
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+  if (!TribeConfig.canChange(tribeOverride)) return false;
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
+  if (!tribeOverride) TribeConfig.sync();
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
