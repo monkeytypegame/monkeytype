@@ -147,43 +147,43 @@ export function sync(): void {
   if (!Tribe.getSelf()?.isLeader) return;
   setLoadingIndicator(true);
   TribeButtons.disableStartButton();
-  if (syncConfigTimeout === null) {
-    syncConfigTimeout = setTimeout(() => {
-      // setLoadingIndicator(false);
-      let mode2;
-      if (Config.mode === "time") {
-        mode2 = Config.time;
-      } else if (Config.mode === "words") {
-        mode2 = Config.words;
-      } else if (Config.mode === "quote") {
-        mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
-      }
-      Tribe.socket.emit("room_update_config", {
-        config: {
-          mode: Config.mode,
-          mode2: mode2,
-          difficulty: Config.difficulty,
-          language: Config.language,
-          punctuation: Config.punctuation,
-          numbers: Config.numbers,
-          funbox: Config.funbox,
-          lazyMode: Config.lazyMode,
-          stopOnError: Config.stopOnError,
-          minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
-          minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
-          minBurst:
-            Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
-          customText: {
-            text: CustomText.text,
-            isWordRandom: CustomText.isWordRandom,
-            isTimeRandom: CustomText.isTimeRandom,
-            word: CustomText.word,
-            time: CustomText.time,
-          },
+  if (syncConfigTimeout !== null) return;
+
+  syncConfigTimeout = setTimeout(() => {
+    // setLoadingIndicator(false);
+    let mode2;
+    if (Config.mode === "time") {
+      mode2 = Config.time;
+    } else if (Config.mode === "words") {
+      mode2 = Config.words;
+    } else if (Config.mode === "quote") {
+      mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
+    }
+    Tribe.socket.emit("room_update_config", {
+      config: {
+        mode: Config.mode,
+        mode2: mode2,
+        difficulty: Config.difficulty,
+        language: Config.language,
+        punctuation: Config.punctuation,
+        numbers: Config.numbers,
+        funbox: Config.funbox,
+        lazyMode: Config.lazyMode,
+        stopOnError: Config.stopOnError,
+        minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
+        minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
+        minBurst:
+          Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
+        customText: {
+          text: CustomText.text,
+          isWordRandom: CustomText.isWordRandom,
+          isTimeRandom: CustomText.isTimeRandom,
+          word: CustomText.word,
+          time: CustomText.time,
         },
-      });
-      clearTimeout(syncConfigTimeout as NodeJS.Timeout);
-      syncConfigTimeout = null;
-    }, 500);
-  }
+      },
+    });
+    clearTimeout(syncConfigTimeout as NodeJS.Timeout);
+    syncConfigTimeout = null;
+  }, 500);
 }
