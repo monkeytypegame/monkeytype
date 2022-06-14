@@ -52,7 +52,7 @@ import {
 } from "../test/test-config";
 
 export const gmailProvider = new GoogleAuthProvider();
-export var canCall = true;
+export let canCall = true;
 
 export function sendVerificationEmail(): void {
   Loader.show();
