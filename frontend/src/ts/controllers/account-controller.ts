@@ -52,7 +52,7 @@ import {
 } from "../test/test-config";
 
 export const gmailProvider = new GoogleAuthProvider();
-export let canCall = true;
+let canCall = true;
 
 export function sendVerificationEmail(): void {
   Loader.show();
@@ -351,12 +351,10 @@ export function signIn(): void {
   });
 }
 
-export function forgotPassword(email: any): void {
+export async function forgotPassword(email: any): Promise<void> {
   if (canCall) {
-    console.log(canCall);
     if (email) {
-      console.log(email);
-      sendPasswordResetEmail(Auth, email)
+      await sendPasswordResetEmail(Auth, email)
         .then(function () {
           // Email sent.
           Notifications.add("Email sent", 1, 2);
@@ -370,7 +368,6 @@ export function forgotPassword(email: any): void {
     setTimeout(function () {
       canCall = true;
     }, 5000);
-    console.log(canCall);
   } else {
     Notifications.add("You sent too many requests", -1);
   }
