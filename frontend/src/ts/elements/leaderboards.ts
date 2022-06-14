@@ -275,15 +275,20 @@ function fillTable(lb: LbKey, prepend?: number): void {
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
     const snap = DB.getSnapshot();
-    if (
+
+    const isCurrentUser =
       Auth.currentUser &&
       entry.uid === Auth.currentUser.uid &&
       snap.discordAvatar &&
-      snap.discordId
-    ) {
-      avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${snap.discordId}/${snap.discordAvatar}.png)"></div>`;
-    } else if (entry.discordAvatar && entry.discordId) {
-      avatar = `<div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${entry.discordId}/${entry.discordAvatar}.png)"></div>`;
+      snap.discordId;
+
+    const entryHasAvatar = entry.discordAvatar && entry.discordId;
+
+    const avatarSource = (isCurrentUser && snap) || (entryHasAvatar && entry);
+
+    if (avatarSource) {
+      const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
+      avatar += `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
     }
 
     html += `
@@ -318,6 +323,8 @@ function fillTable(lb: LbKey, prepend?: number): void {
   }
 }
 
+const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
+
 export function hide(): void {
   $("#leaderboardsWrapper")
     .stop(true, true)
@@ -334,6 +341,7 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
+        showYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -347,11 +355,25 @@ function updateTitle(): void {
   el.text(`${timeRangeString} English Leaderboards`);
 }
 
+function updateYesterdayButton(): void {
+  showYesterdayButton.addClass("hidden");
+  if (currentTimeRange === "daily") {
+    showYesterdayButton.removeClass("hidden");
+  }
+}
+
 async function update(): Promise<void> {
+  leftScrollEnabled = false;
+  rightScrollEnabled = false;
+
   showLoader(15);
   showLoader(60);
 
   const timeModes = ["15", "60"];
+
+  const isViewingDailyAndButtonIsActive =
+    currentTimeRange === "daily" && showYesterdayButton.hasClass("active");
+  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
 
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
@@ -359,6 +381,7 @@ async function update(): Promise<void> {
       mode: "time",
       mode2,
       isDaily: currentTimeRange === "daily",
+      daysBefore,
     });
   });
 
@@ -370,6 +393,7 @@ async function update(): Promise<void> {
           mode: "time",
           mode2,
           isDaily: currentTimeRange === "daily",
+          daysBefore,
         });
       })
     );
@@ -410,10 +434,16 @@ async function update(): Promise<void> {
   $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
 
   updateTitle();
+  updateYesterdayButton();
   $("#leaderboardsWrapper .buttons .button").removeClass("active");
   $(
     `#leaderboardsWrapper .buttonGroup.timeRange .button.` + currentTimeRange
   ).addClass("active");
+  $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
+  $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
+
+  leftScrollEnabled = true;
+  rightScrollEnabled = true;
 }
 
 async function requestMore(lb: LbKey, prepend = false): Promise<void> {
@@ -669,6 +699,12 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
+  showYesterdayButton.removeClass("active");
+  update();
+});
+
+$("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
+  showYesterdayButton.toggleClass("active");
   update();
 });
 

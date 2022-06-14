@@ -19,6 +19,7 @@ import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
+let themeChosen = false;
 
 function showInput(
   command: string,
@@ -172,6 +173,7 @@ function updateSuggested(): void {
 }
 
 export let show = (): void => {
+  themeChosen = false;
   if (!$(".page.pageLoading").hasClass("hidden")) return;
   Focus.set(false);
   $("#commandLine").removeClass("hidden");
@@ -513,7 +515,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
         }
-        if (obj.hover) obj.hover();
+        if (obj.hover && !themeChosen) obj.hover();
       }
     });
   } catch (e) {}
@@ -523,6 +525,7 @@ $(document).on(
   "click",
   "#commandLineWrapper #commandLine .suggestions .entry",
   (e) => {
+    themeChosen = true;
     $(".suggestions .entry").removeClass("activeKeyboard");
     trigger($(e.currentTarget).attr("command") as string);
   }

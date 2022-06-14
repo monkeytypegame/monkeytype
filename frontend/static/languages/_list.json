@@ -172,6 +172,7 @@
   ,"code_javascript"
   ,"code_javascript_1k"
   ,"code_julia"
+  ,"code_haskell"
   ,"code_html"
   ,"code_pascal"
   ,"code_java"
@@ -202,4 +203,6 @@
   ,"oromo"
   ,"oromo_1k"
   ,"oromo_5k"
+  ,"wordle"
+  ,"wordle_1k"
 ]
