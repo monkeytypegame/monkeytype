@@ -586,6 +586,22 @@ const languageSelector = $(
       id: "spanish",
       text: "spanish",
     },
+    {
+      id: "german",
+      text: "german",
+    },
+    {
+      id: "portuguese",
+      text: "portuguese",
+    },
+    {
+      id: "indonesian",
+      text: "indonesian",
+    },
+    {
+      id: "italian",
+      text: "italian",
+    },
   ],
 });
 
