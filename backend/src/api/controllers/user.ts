@@ -381,7 +381,7 @@ export async function getProfile(
     name,
     banned,
     badgeIds,
-    profile,
+    profileDetails,
     personalBests,
     completedTests,
     startedTests,
@@ -402,7 +402,7 @@ export async function getProfile(
       bio: "",
       keyboard: "",
       socialProfiles: {},
-      ...profile,
+      ...profileDetails,
     },
   };
 
@@ -415,7 +415,7 @@ export async function updateProfile(
   const { uid } = req.ctx.decodedToken;
   const { bio, keyboard, socialProfiles } = req.body;
 
-  const updates: Partial<MonkeyTypes.UserProfile> = {
+  const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
     bio: bio as string,
     keyboard: keyboard as string,
     socialProfiles: {
@@ -423,7 +423,7 @@ export async function updateProfile(
     },
   };
 
-  await UserDAL.updateProfile(uid, updates);
+  await UserDAL.updateProfile(uid, profileDetailsUpdates);
 
   return new MonkeyResponse("Profile updated");
 }

@@ -73,7 +73,7 @@ declare namespace MonkeyTypes {
 
   // Data Model
 
-  interface UserProfile {
+  interface UserProfileDetails {
     bio: string;
     keyboard: string;
     socialProfiles: {
@@ -111,7 +111,7 @@ declare namespace MonkeyTypes {
     discordAvatar?: string;
     badgeIds?: number[];
     resultFilterPresets?: ResultFilters[];
-    profile?: UserProfile;
+    profileDetails?: UserProfileDetails;
   }
 
   interface ResultFilters {

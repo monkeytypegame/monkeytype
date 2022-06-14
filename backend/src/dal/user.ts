@@ -699,10 +699,10 @@ export async function recordAutoBanEvent(
 
 export async function updateProfile(
   uid: string,
-  updates: Partial<MonkeyTypes.UserProfile>
+  updates: Partial<MonkeyTypes.UserProfileDetails>
 ): Promise<void> {
   const profileUpdates = _.pickBy(
-    flattenObjectDeep(updates, "profile"),
+    flattenObjectDeep(updates, "profileDetails"),
     (value) => value !== undefined
   );
 
@@ -714,7 +714,7 @@ export async function updateProfile(
     { upsert: true }
   );
 
-  if (updateResult.modifiedCount === 0) {
+  if (updateResult.matchedCount === 0) {
     throw new MonkeyError(404, "User not found");
   }
 }

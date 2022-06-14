@@ -362,7 +362,7 @@ describe("UserDal", () => {
     });
 
     const user = await getUser("TestID", "test add result filters");
-    expect(user.profile).toStrictEqual({
+    expect(user.profileDetails).toStrictEqual({
       bio: "test bio",
     });
 
@@ -374,7 +374,7 @@ describe("UserDal", () => {
     });
 
     const updatedUser = await getUser("TestID", "test add result filters");
-    expect(updatedUser.profile).toStrictEqual({
+    expect(updatedUser.profileDetails).toStrictEqual({
       bio: "test bio",
       keyboard: "test keyboard",
       socialProfiles: {
@@ -391,7 +391,7 @@ describe("UserDal", () => {
     });
 
     const updatedUser2 = await getUser("TestID", "test add result filters");
-    expect(updatedUser2.profile).toStrictEqual({
+    expect(updatedUser2.profileDetails).toStrictEqual({
       bio: "test bio 2",
       keyboard: "test keyboard",
       socialProfiles: {
