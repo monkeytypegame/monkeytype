@@ -7,7 +7,7 @@
       font-size: 1rem;
     }
     .leaderboardsTop {
-      grid-template-columns: max-content;
+      grid-template-columns: auto 1fr max-content;
       .buttonGroup {
         grid-auto-flow: row;
         gap: 0.5rem;
@@ -217,6 +217,10 @@
           "subtitle subtitle"
           "yesterday yesterday"
           "buttons buttons";
+        grid-template-columns: 1fr;
+        .buttons {
+          margin-top: 0.5rem;
+        }
         .buttonGroup {
           grid-auto-flow: column;
         }
@@ -359,6 +363,9 @@
         gap: 1rem;
       }
     }
+  }
+  #leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup {
+    grid-auto-flow: row;
   }
   #commandLine,
   #commandLineInput {
