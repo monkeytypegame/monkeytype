@@ -27,8 +27,11 @@
 
       .buttons {
         grid-area: buttons;
-        .buttonGroup .button {
-          padding: 0.4rem 2.18rem;
+        .timeRange {
+          grid-template-columns: 1fr 1fr;
+          .select2 {
+            grid-column: span 2;
+          }
         }
       }
     }
