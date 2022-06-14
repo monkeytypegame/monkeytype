@@ -351,11 +351,9 @@ export function signIn(): void {
   });
 }
 
-export function forgotPassword(
-  email: any
-  ): void {
-    if (canCall) {
-      console.log(canCall);
+export function forgotPassword(email: any): void {
+  if (canCall) {
+    console.log(canCall);
     if (email) {
       console.log(email);
       sendPasswordResetEmail(Auth, email)
@@ -369,16 +367,14 @@ export function forgotPassword(
         });
     }
     canCall = false;
-    setTimeout(function(){
-        canCall = true;
+    setTimeout(function () {
+      canCall = true;
     }, 5000);
     console.log(canCall);
   } else {
     Notifications.add("You sent too many requests", -1);
   }
-
 }
-
 
 export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
@@ -631,8 +627,8 @@ async function signUp(): Promise<void> {
 $(".pageLogin #forgotPasswordButton").on("click", () => {
   const emailField =
     ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
-    const email = prompt("Email address", emailField);
-    forgotPassword(email);
+  const email = prompt("Email address", emailField);
+  forgotPassword(email);
 });
 
 $(".pageLogin .login input").keyup((e) => {
