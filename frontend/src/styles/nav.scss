@@ -9,28 +9,29 @@
   width: fit-content;
   width: -moz-fit-content;
 
-  .icon-button {
-    //   .icon {
-    //     display: grid;
-    //     align-items: center;
-    //     justify-items: center;
-    //     text-align: center;
-    //     width: 1.25rem;
-    //     height: 1.25rem;
-    //   }
-    text-decoration: none;
-
+  .text-button {
     .text {
       font-size: 0.65rem;
-      line-height: 0.65rem;
+      line-height: 1rem;
       align-self: center;
       margin-left: 0.25rem;
     }
 
-    //   &:hover {
-    //     cursor: pointer;
-    //     color: var(--main-color);
-    //   }
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      // background: red;
+      display: grid;
+      place-content: center center;
+    }
+
+    &.account {
+      .icon,
+      .avatar {
+        grid-column: 1/2;
+        grid-row: 1/2;
+      }
+    }
   }
 
   .separator {
@@ -40,7 +41,7 @@
   }
 }
 
-#top.focus #menu .icon-button.discord::after {
+#top.focus #menu .text-button.discord::after {
   background: transparent;
 }
 
@@ -48,8 +49,12 @@
   color: transparent !important;
 }
 
-#top.focus #menu .icon-button {
+#top.focus #menu .text-button {
   color: transparent !important;
+}
+
+#top.focus #menu .text-button.account .avatar {
+  opacity: 0 !important;
 }
 
 #top {
@@ -117,20 +122,10 @@
     transition: 0.125s;
     .mobileConfig {
       display: none;
-      .icon-button {
-        display: grid;
-        grid-auto-flow: column;
-        align-content: center;
-        transition: 0.25s;
+      .text-button {
         margin-right: -1rem;
         padding: 0.5rem 1rem;
         font-size: 2rem;
-        border-radius: var(--roundness);
-        cursor: pointer;
-        color: var(--sub-color);
-        &:hover {
-          color: var(--text-color);
-        }
       }
     }
 
@@ -157,9 +152,12 @@
         }
 
         .buttons {
-          font-size: 0.7rem;
-          line-height: 0.7rem;
           display: flex;
+          .text-button {
+            font-size: 0.7rem;
+            line-height: 0.7rem;
+            padding: 0px 0.15rem;
+          }
         }
         &.disabled {
           pointer-events: none;
@@ -176,33 +174,6 @@
       }
     }
   }
-
-  .result {
-    display: grid;
-    grid-auto-flow: column;
-    grid-gap: 1rem;
-    width: min-content;
-    width: -moz-min-content;
-    transition: 0.25s;
-    grid-column: 3/4;
-    grid-row: 1/2;
-
-    .group {
-      .title {
-        font-size: 0.65rem;
-        line-height: 0.65rem;
-        color: var(--sub-color);
-      }
-
-      .val {
-        font-size: 1.7rem;
-        line-height: 1.7rem;
-        color: var(--main-color);
-        transition: 0.25s;
-      }
-    }
-  }
-
   //top focus
   &.focus {
     color: var(--sub-color) !important;

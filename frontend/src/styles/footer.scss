@@ -11,6 +11,10 @@
   .keyTips {
     transition: 0.25s;
     margin-bottom: 2rem;
+    line-height: 1.25rem;
+    key {
+      margin: 0 0.25rem;
+    }
   }
 
   #supportMeButton {
@@ -40,11 +44,15 @@
   }
 
   .leftright {
+    user-select: none;
     display: grid;
     grid-template-columns: auto auto;
     gap: 1rem;
     a {
       text-decoration: none;
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding: 0;
     }
     .left {
       text-align: left;
@@ -72,10 +80,6 @@
       align-items: baseline;
       width: max-content;
       width: -moz-available;
-      &:hover {
-        color: var(--text-color);
-        cursor: pointer;
-      }
     }
   }
 

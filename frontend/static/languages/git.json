@@ -20,7 +20,6 @@
     "rebase",
     "reflog",
     "remote",
-    "reset",
     "revert",
     "status",
     "diff",

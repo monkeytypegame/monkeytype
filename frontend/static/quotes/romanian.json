@@ -1,0 +1,53 @@
+{
+  "language": "romanian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Trecutul trebuie să rămână, în viețile noastre, la fel de plin de posibilități ca viitorul.",
+      "source": "Inocenții",
+      "length": 91,
+      "id": 1
+    },
+    {
+      "text": "Admir întotdeauna ocolurile prin spațiu și timp pe care le face destinul.",
+      "source": "Inocenții",
+      "length": 73,
+      "id": 2
+    },
+    {
+      "text": "Toți oamenii mari au fost cândva niște copii, dar puțini dintre ei și-o reamintesc.",
+      "source": "Micul Prinț",
+      "length": 83,
+      "id": 3
+    },
+    {
+      "text": "Fiecare dintre noi este (era) pastișa caricaturală a celuilalt.",
+      "source": "Cartea de nisip",
+      "length": 63,
+      "id": 4
+    },
+    {
+      "text": "E mare stăpân rușinarea, și om să fii ca să nu i te pleci dacă o cunoști.",
+      "source": "Mara",
+      "length": 73,
+      "id": 5
+    },
+    {
+      "text": "Norocul nu umblă târâș, ci zboară pe aripi iuți și-ți iese, când îi vine rândul, fără de veste-n cale: degeaba îl cauți când nu-l găsești; degeaba fugi când el aleargă după tine; norocul tău e numai al tău, și chiar dacă nu l-ai cunoaște tu pe el, te cunoaște el pe tine și nu te părăsește.",
+      "source": "Mara",
+      "length": 290,
+      "id": 6
+    },
+    {
+      "text": "S-a dus, cu toate aceste, și după-amiazăzi la Lipova, s-a dus cum merge omul osândit să-și ia pedeapsa, dar s-a dus râzând, fiindcă era crescută de maica Aegidia, care mereu îi zicea: „Să râzi când îți vine să plângi și să plângi numai când vezi pe alții plângâng”.",
+      "source": "Mara",
+      "length": 265,
+      "id": 7
+    }
+  ]
+}

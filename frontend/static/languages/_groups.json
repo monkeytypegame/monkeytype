@@ -8,12 +8,17 @@
       "english_10k",
       "english_25k",
       "english_450k",
-      "english_commonly_misspelled"
+      "english_commonly_misspelled",
+      "english_contractions"
     ]
   },
   {
     "name": "spanish",
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
+  },
+  {
+    "name": "nepali",
+    "languages": ["nepali", "nepali_1k"]
   },
   {
     "name": "french",
@@ -32,7 +37,7 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k"]
+    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha"]
   },
   {
     "name": "arabic",
@@ -49,12 +54,27 @@
     ]
   },
   {
+    "name": "latin",
+    "languages": ["latin"]
+  },
+  {
+    "name": "afrikaans",
+    "languages": ["afrikaans", "afrikaans_1k", "afrikaans_10k"]
+  },
+  {
     "name": "mongolian",
     "languages": ["mongolian", "mongolian_10k"]
   },
   {
     "name": "russian",
-    "languages": ["russian", "russian_1k", "russian_10k"]
+    "languages": [
+      "russian",
+      "russian_1k",
+      "russian_10k",
+      "russian_25k",
+      "russian_50k",
+      "russian_375k"
+    ]
   },
   {
     "name": "polish",
@@ -78,7 +98,11 @@
   },
   {
     "name": "indonesian",
-    "languages": ["indonesian", "indonesian_1k"]
+    "languages": ["indonesian", "indonesian_1k", "indonesian_10k"]
+  },
+  {
+    "name": "kurdish_central",
+    "languages": ["kurdish_central"]
   },
   {
     "name": "greek",
@@ -130,7 +154,7 @@
   },
   {
     "name": "hebrew",
-    "languages": ["hebrew"]
+    "languages": ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"]
   },
   {
     "name": "icelandic",
@@ -162,7 +186,7 @@
   },
   {
     "name": "persian",
-    "languages": ["persian"]
+    "languages": ["persian", "persian_1k", "persian_5k"]
   },
   {
     "name": "kazakh",
@@ -241,12 +265,20 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "armenian",
+    "languages": ["armenian_western", "armenian_western_1k"]
+  },
+  {
     "name": "japanese",
     "languages": ["japanese_hiragana", "japanese_katakana"]
   },
   {
     "name": "hindi",
     "languages": ["hindi", "hindi_1k"]
+  },
+  {
+    "name": "sanskrit",
+    "languages": ["sanskrit"]
   },
   {
     "name": "macedonian",
@@ -262,8 +294,20 @@
     "languages": ["belarusian_1k"]
   },
   {
+    "name": "azerbaijani",
+    "languages": ["azerbaijani", "azerbaijani_1k"]
+  },
+  {
     "name": "malayalam",
     "languages": ["malayalam"]
+  },
+  {
+    "name": "sinhala",
+    "languages": ["sinhala"]
+  },
+  {
+    "name": "toki_pona",
+    "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
     "name": "code",
@@ -273,8 +317,12 @@
       "code_csharp",
       "code_c++",
       "code_dart",
+      "code_brainfck",
+      "code_fsharp",
       "code_javascript",
       "code_javascript_1k",
+      "code_julia",
+      "code_haskell",
       "code_html",
       "code_pascal",
       "code_java",
@@ -284,9 +332,15 @@
       "code_ruby",
       "code_r",
       "code_swift",
+      "code_scala",
       "code_bash",
       "code_lua",
-      "code_luau"
+      "code_luau",
+      "code_matlab",
+      "code_sql",
+      "code_perl",
+      "code_php",
+      "code_vim"
     ]
   },
   {
@@ -294,10 +348,21 @@
     "languages": [
       "lojban_gismu",
       "lojban_cmavo",
-      "toki_pona",
       "pig_latin",
       "twitch_emotes",
       "git"
     ]
+  },
+  {
+    "name": "amharic",
+    "languages": ["amharic"]
+  },
+  {
+    "name": "oromo",
+    "languages": ["oromo", "oromo_1k", "oromo_5k"]
+  },
+  {
+    "name": "wordle",
+    "languages": ["wordle", "wordle_1k"]
   }
 ]

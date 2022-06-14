@@ -50,10 +50,10 @@
       "length": 75
     },
     {
-      "text": "If you have to ask you will never know, if you know you need only ask.",
+      "text": "If you have to ask, you will never know. If you know, you need only ask.",
       "source": "Harry Potter and the Deathly Hallows",
       "id": 8,
-      "length": 70
+      "length": 72
     },
     {
       "text": "Your memory is the glue that binds your life together.",
@@ -528,12 +528,6 @@
       "source": "The Magician's Nephew",
       "id": 88,
       "length": 120
-    },
-    {
-      "text": "And he told us of his life in the land of submarines.",
-      "source": "Yellow Submarine",
-      "id": 89,
-      "length": 53
     },
     {
       "text": "That was what I wanted, but I don't need it to be gone. I can love you and I can love life and bear the pain all at the same time. I think the pain might even make the rest better, the way a good setting can make a diamond look better.",
@@ -2619,7 +2613,7 @@
     },
     {
       "text": "History is not merely a linear collection of points that we pass through on a timeline. They are connected by a line. No, perhaps it is more accurate to say that they are made to connect.",
-      "source": "Serial Lain Experiments",
+      "source": "Serial Experiments Lain",
       "id": 438,
       "length": 187
     },
@@ -2682,12 +2676,6 @@
       "source": "Twilight",
       "id": 448,
       "length": 160
-    },
-    {
-      "text": "Welcome to the room of people who have rooms of people that they loved one day, docked away. Just because we check the guns at the door doesn't mean our brains will change from hand grenades.",
-      "source": "Heathens",
-      "id": 449,
-      "length": 191
     },
     {
       "text": "To the extent that experience is the sum of our memories and wisdom the sum of experience, having a better memory would mean knowing not only more about the world, but also more about myself.",
@@ -2900,10 +2888,10 @@
       "length": 161
     },
     {
-      "text": "I'll close my eyes and then I won't see the love you do not feel when you're holding me. Morning will come and I'll do what's right. Just give me till then to give up this fight.",
+      "text": "I'll close my eyes. Then I won't see the love you don't feel when you're holding me. Morning will come, and I'll do what's right. Just give me till then to give up this fight.",
       "source": "I Can't Make You Love Me",
       "id": 485,
-      "length": 178
+      "length": 175
     },
     {
       "text": "Remember that humor is written backwards. That means you first find the cliche you want to work on, then build a story around it.",
@@ -4038,12 +4026,6 @@
       "source": "Shiver",
       "id": 675,
       "length": 264
-    },
-    {
-      "text": "And I know that you got everything, but I got nothing here without you.",
-      "source": "One Last Time",
-      "id": 676,
-      "length": 71
     },
     {
       "text": "You can have my isolation, you can have the hate that it brings, you can have my absence of faith, you can have my everything.",
@@ -5420,10 +5402,10 @@
       "length": 354
     },
     {
-      "text": "You are older than me. Do you still feel the pain of the scars that won't heal? Your eyes have died but you see more than I. You're a star in the face of the sky.",
+      "text": "You are older than me. Do you still feel the pain of the scars that won't heal? Your eyes have died but you see more than I. Daniel you're a star in the face of the sky.",
       "source": "Daniel",
       "id": 908,
-      "length": 162
+      "length": 169
     },
     {
       "text": "Kinda cold, walking home. Growing older on my own. Feels so strange to say when I am not alone. Faith will claim to be a friend to those she own but she will never try to call when I'm by the phone.",
@@ -5643,7 +5625,7 @@
     },
     {
       "text": "You can know the name of a bird in all the languages of the world, but when you're finished, you'll know absolutely nothing whatever about the bird. So let's look at the bird and see what it's doing - that's what counts. I learned very early the difference between knowing the name of something and knowing something.",
-      "source": "Birds",
+      "source": "Richard Feynman",
       "id": 946,
       "length": 317
     },
@@ -7214,10 +7196,10 @@
       "length": 231
     },
     {
-      "text": "I can't make you love me if you don't. You can't make your heart feel something it won't. Here in the dark in these final hours I will lay down my heart and I'll feel the power.",
+      "text": "I can't make you love me if you don't. You can't make your heart feel something it won't. Here in the dark, in these final hours, I will lay down my heart, and I'll feel the power.",
       "source": "I Can't Make You Love Me",
       "id": 1214,
-      "length": 177
+      "length": 180
     },
     {
       "text": "I didn't know it would be people you barely knew becoming friends that harbored you. And dreams you didn't even know you had - coming true. I didn't know it would be superpowers rising up out of tragedies, and perfect moments in a nearly empty classroom.",
@@ -7394,10 +7376,10 @@
       "length": 249
     },
     {
-      "text": "I became yearbook photographer because I liked the idea that I could sort of watch life without having to be part of it. But when you're yearbook photographer, you're like never in the picture.",
+      "text": "I became a yearbook photographer because I liked the idea that I could sort of watch life without having to be part of it. But when you're yearbook photographer, you're like never in the picture.",
       "source": "My So-Called Life",
       "id": 1244,
-      "length": 193
+      "length": 195
     },
     {
       "text": "Time is a tool you can put on the wall or wear it on your wrist. The past is far behind us, the future doesn't exist. Time is a ruler to measure the day, it doesn't go backwards, only one way. Time went new and got old like history. Stuff from the past went into a mystery. It's out of my hands, I'm only a clock. Don't worry, I'm sure you'll be fine, but eventually everyone runs out of time.",
@@ -7754,12 +7736,6 @@
       "length": 373
     },
     {
-      "text": "He told me this whole story about when a Jew is on the show he always loses to a Gentile and then the Gentile wins more money. I mean who could dream up a scheme like that?",
-      "source": "Quiz Show",
-      "id": 1306,
-      "length": 172
-    },
-    {
       "text": "Look round at the courses of the stars, as if thou wert going along with them; and constantly consider the changes of the elements into one another; for such thoughts purge away the filth of the terrene life.",
       "source": "Meditations",
       "id": 1307,
@@ -7818,12 +7794,6 @@
       "source": "Amores",
       "id": 1316,
       "length": 76
-    },
-    {
-      "text": "An ox wanders off and you spend time looking for it.",
-      "source": "Oregon Trail",
-      "id": 1317,
-      "length": 52
     },
     {
       "text": "They live meaningless lives. They waste their precious days over nothing. No matter how old they get, they'll continue to say \"My real life hasn't started yet. The real me is still asleep, so that's why my life is such garbage.\" They continue to tell themselves that. And they age. And on their deathbeds, they will finally realize. The life they lived was the real thing.",
@@ -7986,12 +7956,6 @@
       "source": "Clannad",
       "id": 1344,
       "length": 247
-    },
-    {
-      "text": "Contrary to the feminist cant, there are many things we can learn from men's perspective about life and personal identity. To refuse to learn anything that could prove beneficial to yourself is a working definition of stupid.",
-      "source": "Ten Stupid Things Women Do to Mess Up Their Lives",
-      "id": 1345,
-      "length": 225
     },
     {
       "text": "When I left my home and my family, I was no more than a boy in the company of strangers in the quiet of the railway station, running scared, laying low, seeking out the poorer quarters where the ragged people go. Looking for the places only they would know.",
@@ -8252,12 +8216,6 @@
       "length": 291
     },
     {
-      "text": "Ever since I was a child, folks have thought they had me pegged, because of the way I am, the way I talk. And they're always wrong.",
-      "source": "Capote",
-      "id": 1390,
-      "length": 131
-    },
-    {
       "text": "Love is a command, not just a feeling. Somehow, in the romantic world of music and theater we have made love to be what it is not. We have so mixed it with beauty and charm and sensuality and contact that we have robbed it of its higher call of cherishing and nurturing.",
       "source": "I, Isaac, Take Thee, Rebekah: Moving from Romance to Lasting Love",
       "id": 1391,
@@ -8402,7 +8360,7 @@
       "length": 206
     },
     {
-      "text": "When you lose control, you'll reap the harvest you have sown. And as the fear grows, the bad blood slows and turns to stone. And it's too late to lose the weight you used to need to throw around. So have a good drown, as you go down, all alone... dragged down by the stone.",
+      "text": "When you lose control, you'll reap the harvest you have sown. And as the fear grows, the bad blood slows and turns to stone. And it's too late to lose the weight you used to need to throw around. So have a good drown, as you go down, all alone... Dragged down by the stone.",
       "source": "Dogs",
       "id": 1415,
       "length": 273
@@ -8924,7 +8882,7 @@
       "length": 299
     },
     {
-      "text": "Last night I dreamt I went to Manderely again. It seemed to me I stood by the iron gate leading to the drive, and for a while I could not enter, for the way was barred to me. There was a padlock and a chain upon the gate. I called in my dream to the lodge-keeper, and had no answer, and peering closer through the rusted spokes of the gate I saw that the lodge was uninhabited.",
+      "text": "Last night I dreamt I went to Manderley again. It seemed to me I stood by the iron gate leading to the drive, and for a while I could not enter, for the way was barred to me. There was a padlock and a chain upon the gate. I called in my dream to the lodge-keeper, and had no answer, and peering closer through the rusted spokes of the gate I saw that the lodge was uninhabited.",
       "source": "Rebecca",
       "id": 1503,
       "length": 377
@@ -9354,12 +9312,6 @@
       "source": "The Book of Five Rings",
       "id": 1577,
       "length": 194
-    },
-    {
-      "text": "It wasn't something that I thought about, but I knew that you were absolute in doubt. I just really wanna talk to you again, that's how I know that I'ma haunt you in the end. It wasn't something 'til you brought it up, I knew that you were tryna make it out. Without a single scar, clawing at my arm, I saw you in his car, swear I knew it from the start.",
-      "source": "Absolute In Doubt",
-      "id": 1578,
-      "length": 354
     },
     {
       "text": "You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose. You're on your own. And you know what you know. And YOU are the one who'll decide where to go.",
@@ -9896,10 +9848,10 @@
       "length": 228
     },
     {
-      "text": "My love is alive way down in my heart. Although we are miles apart, if you ever need a helping hand I'll be there on the double as fast as I can.",
+      "text": "My love is alive way down in my heart. Although we are miles apart, if you ever need a helping hand I'll be there on the double just as fast as I can.",
       "source": "Ain't No Mountain High Enough",
       "id": 1668,
-      "length": 145
+      "length": 150
     },
     {
       "text": "There's a love that's divine and it's yours and it's mine. Like the sun at the end of the day, we should give thanks and pray to the One.",
@@ -10430,12 +10382,6 @@
       "length": 274
     },
     {
-      "text": "Great, let's round up all the useless cats and hope a tree falls on them.",
-      "source": "Warriors: Power of Three #1: The Sight",
-      "id": 1757,
-      "length": 73
-    },
-    {
       "text": "Okay, I don't know you, but I do know that you can fix your attitude. Do you wanna go home and feel sorry for yourself about a man you didn't wanna marry? Or do you wanna go talk to that cute boy who's been looking at you and give him your number before I throw him in my Benz for myself?",
       "source": "Parks and Recreation",
       "id": 1758,
@@ -10766,12 +10712,6 @@
       "length": 210
     },
     {
-      "text": "Imagine there's no heaven. It's easy if you try. No hell below us, above us only sky. Imagine all the people living for today. Imagine there's no countries. It isn't hard to do. Nothing to kill or die for and no religion too. Imagine all the people living life in peace.",
-      "source": "Imagine",
-      "id": 1814,
-      "length": 270
-    },
-    {
       "text": "According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway. Because bees don't care what humans think is impossible.",
       "source": "The Bee Movie",
       "id": 1815,
@@ -10820,10 +10760,10 @@
       "length": 273
     },
     {
-      "text": "The good news is that your child has a natural desire to do well. Your job as parent is to bring out this quality and cherish it until the day your kids leave home, and then some.",
+      "text": "The good news is that your child has a natural desire to do well. Your job as a parent is to bring out this quality and cherish it until the day your kids leave home, and then some.",
       "source": "Raising Smart Kids for Dummies",
       "id": 1823,
-      "length": 179
+      "length": 181
     },
     {
       "text": "All the blue light reflections that color my mind when I sleep. And the lovesick rejections that accompany the company I keep. All the razor perceptions that cut just a little too deep. Hey I can bleed as well as anyone, but I need someone to help me sleep.",
@@ -11168,12 +11108,6 @@
       "length": 315
     },
     {
-      "text": "A census taker once tried to test me. I ate his liver with some fava beans and a nice Chianti.",
-      "source": "The Silence of the Lambs",
-      "id": 1881,
-      "length": 94
-    },
-    {
       "text": "I will need my spectacles and a clear head. Today I broke my rules and I drank vodka. Tomorrow I will translate it, and then I will bring what I've done to your home.",
       "source": "Eastern Promises",
       "id": 1882,
@@ -11436,12 +11370,6 @@
       "source": "The Wire",
       "id": 1925,
       "length": 249
-    },
-    {
-      "text": "I remember the night you were charged with practicing iambic pentameter without a license.",
-      "source": "Cheers",
-      "id": 1926,
-      "length": 90
     },
     {
       "text": "I'll live on and carry your name, and be what you always thought I could be. I hope we meet at the end. But I'll never forgive the world for taking my best friend.",
@@ -11738,7 +11666,7 @@
       "length": 62
     },
     {
-      "text": "One Ring to rule them all, One Ring to find them, One Ring to bring them all and in the darkness bind them.",
+      "text": "One ring to rule them all, one ring to find them, one ring to bring them all and in the darkness bind them.",
       "source": "The Fellowship of the Ring",
       "id": 1978,
       "length": 107
@@ -11937,7 +11865,7 @@
     },
     {
       "text": "There is no good and evil, there is only power and those too weak to seek it.",
-      "source": "Harry Potter and the Philosopher's Stone",
+      "source": "Harry Potter and the Sorcerer's Stone",
       "id": 2012,
       "length": 77
     },
@@ -12636,12 +12564,6 @@
       "source": "Designing with Web Standards",
       "id": 2129,
       "length": 363
-    },
-    {
-      "text": "He looked at her the way all women want to be looked at by a man.",
-      "source": "The Great Gatsby",
-      "id": 2130,
-      "length": 65
     },
     {
       "text": "Too many times we stand aside and let the waters slip away 'til what we put off 'til tomorrow has now become today. So don't you sit upon the shoreline and say you're satisfied. Choose to chance the rapids and dare to dance the tide.",
@@ -13922,12 +13844,6 @@
       "length": 285
     },
     {
-      "text": "Any customer can have a car painted any color that he wants so long as it is black.",
-      "source": "My Life and Work",
-      "id": 2345,
-      "length": 83
-    },
-    {
       "text": "The inability to envision a certain kind of person doing a certain kind of thing because you've never seen someone who looks like him do it before is not just a vice. It's a luxury. What begins as a failure of the imagination ends as a market inefficiency: when you rule out an entire class of people from doing a job simply by their appearance, you are less likely to find the best person for the job.",
       "source": "Moneyball",
       "id": 2346,
@@ -13962,12 +13878,6 @@
       "source": "The Stranger",
       "id": 2351,
       "length": 237
-    },
-    {
-      "text": "I think I really like it best when you can kid the pants off a girl when the opportunity arises.",
-      "source": "The Catcher in the Rye",
-      "id": 2352,
-      "length": 96
     },
     {
       "text": "I guess this is just another lost cause, Mr. Paine. All you people don't know about lost causes. Mr. Paine does. He said once they were the only causes worth fighting for and he fought for them once. For the only reason any man ever fights for them. Because of just one plain simple rule. Love thy neighbor.",
@@ -14630,12 +14540,6 @@
       "length": 567
     },
     {
-      "text": "Roll the window down this cool night air is curious.",
-      "source": "Passenger",
-      "id": 2464,
-      "length": 52
-    },
-    {
       "text": "A man who doesn't spend time with his family can never be a real man.",
       "source": "The Godfather",
       "id": 2465,
@@ -14712,12 +14616,6 @@
       "source": "Office Space",
       "id": 2477,
       "length": 392
-    },
-    {
-      "text": "It was love at first sight, at last sight, at ever and ever sight.",
-      "source": "Lolita",
-      "id": 2478,
-      "length": 66
     },
     {
       "text": "If you ever looked at me once with what I know is in you, I would be your slave.",
@@ -15372,12 +15270,6 @@
       "source": "The Twilight Zone",
       "id": 2591,
       "length": 370
-    },
-    {
-      "text": "I wish I were a girl again, half-savage and hardy, and free.",
-      "source": "Wuthering Heights",
-      "id": 2592,
-      "length": 60
     },
     {
       "text": "Dear Theodosia, what to say to you? You have my eyes, you have your mother's name, when you came into the world you cried. And it broke my heart. I've dedicated every day to you. Domestic life was never quite my style.",
@@ -16112,12 +16004,6 @@
       "length": 239
     },
     {
-      "text": "I drive by this place a lot and I see you here. I see a lot of people around you.",
-      "source": "Taxi Driver",
-      "id": 2718,
-      "length": 81
-    },
-    {
       "text": "The only people for me are the mad ones, the ones who are mad to live, mad to talk, mad to be saved, desirous of everything at the same time, the ones who never yawn or say a commonplace thing, but burn, burn, burn, like fabulous yellow Roman candles exploding like spiders across the stars, and in the middle, you see the blue center-light pop, and everybody goes ahh...",
       "source": "On the Road",
       "id": 2719,
@@ -16380,12 +16266,6 @@
       "source": "The Wire",
       "id": 2763,
       "length": 140
-    },
-    {
-      "text": "You know I can't stop thinking about you, baby, and all of the magic coins that I need to collect.",
-      "source": "Gonna Make You Happy Tonight",
-      "id": 2764,
-      "length": 98
     },
     {
       "text": "I conducted a personal interview with her to discover why she was in such a foul mood. \"What? You want to know why I'm in a bad mood even with this party going on? It's because it's a party. Everyone makes a huge mess, then they go home when they're all tired out without even thinking of helping to clean up. Or are you saying that you do?\" I didn't want to help so I just poured her some sake from a nearby bottle and her mood instantly improved. It appears that she does not dislike drinking.",
@@ -16970,12 +16850,6 @@
       "length": 236
     },
     {
-      "text": "There are spaces between the joints, and the blade of the knife has really no thickness.",
-      "source": "Basic Writings",
-      "id": 2863,
-      "length": 88
-    },
-    {
       "text": "Perhaps if you know you are insane then you are not insane. Or you are becoming sane, finally. Waking up.",
       "source": "The Man in the High Castle",
       "id": 2864,
@@ -17076,12 +16950,6 @@
       "source": "Speed Secrets: Professional Race Driving Techniques",
       "id": 2880,
       "length": 405
-    },
-    {
-      "text": "I'm as mad as hell and I'm not going to take this anymore!",
-      "source": "Network",
-      "id": 2881,
-      "length": 58
     },
     {
       "text": "You stand before the gates of the Lord's Labyrinth. Within these walls the Lady of Justice doth preside. She shall weigh your mind in one hand, your heart in the other. Should she find you wanting, death shall be your sentence. Should she find you worthy, you will be given the loyalty and love of an empire.",
@@ -17894,12 +17762,6 @@
       "length": 175
     },
     {
-      "text": "I'm so into you, I can barely breathe. And all I want to do, is to fall in deep. But close ain't close enough, till we cross the line. So name a game to play, and I'll roll the dice.",
-      "source": "Into You",
-      "id": 3019,
-      "length": 182
-    },
-    {
       "text": "Salvation must grow out of understanding, total understanding can follow only from total experience, and experience must be won by the laborious discipline of shaping one's absolute attention.",
       "source": "The Divine Comedy",
       "id": 3020,
@@ -18518,12 +18380,6 @@
       "length": 169
     },
     {
-      "text": "I'm a beatbox rocker. And you're dancing to my beat. I'm a beatbox rocker. And you're dancing to my beat. I'm a beatbox rocker. And you're dancing to my beat. I'm a beatbox rocker. And I never sound the same.",
-      "source": "Beatbox Rocker",
-      "id": 3125,
-      "length": 208
-    },
-    {
       "text": "Resistance is the measurement of the ability of electrons to move through a material. A copper wire with a large diameter has lower resistance to the flow of electrons than a copper wire with a small diameter. You need to understand resistance because almost every electronics project you do involves a resistor. Resistors have controlled amounts of resistance, which allows you to control the flow of electrons in a circuit.",
       "source": "Electronics For Dummies",
       "id": 3126,
@@ -18591,7 +18447,7 @@
     },
     {
       "text": "And I will strike down upon thee with great vengeance and furious anger those who would attempt to poison and destroy my brothers. And you will know my name is the Lord when I lay my vengeance upon thee.",
-      "source": "Pulp Fiction",
+      "source": "Ezekiel 25.17",
       "id": 3137,
       "length": 203
     },
@@ -19028,12 +18884,6 @@
       "length": 208
     },
     {
-      "text": "Listen, I know we've had our problems in the past, but we've got a show to do tonight. Pull together as a team. Life's too short. I say let's let bygones be bygones. If you took the raisins, if you didn't take the raisins. They weren't even my raisins. I was just curious because it seems like a strange thing to do, to walk into a room, audition, and walk out with a box of raisins. Anyway, whatever. If you ever want to tell me about it, the door to my office is always open. In the event that I get an office. You'll come in, we'll talk about the raisins, have a nice laugh.",
-      "source": "Seinfeld",
-      "id": 3210,
-      "length": 577
-    },
-    {
       "text": "She gives me feelings like I never felt before. I'm breaking promises, she's breaking every law. She used to look good to me, but now I find her simply irresistible.",
       "source": "Simply Irresistible",
       "id": 3211,
@@ -19280,7 +19130,7 @@
       "length": 565
     },
     {
-      "text": "The more things change, the more they stay the same. I'm not sure who the first person was who said that. Probably Shakespeare. Or maybe Sting. But at the moment, it's the sentence that best explains my tragic flaw: my inability to change. I don't think I'm alone in this. The more I get to know other people, the more I realize it's kind of everyone's flaw. Staying exactly the same for as long as possible, standing perfectly still... it feels safer somehow.",
+      "text": "The more things change, the more they stay the same. I'm not sure who the first person who said that was. Probably Shakespeare. Or maybe Sting. But at the moment, it's the sentence that best explains my tragic flaw: my inability to change. I don't think I'm alone in this. The more I get to know other people, the more I realize it's kind of everyone's flaw. Staying exactly the same for as long as possible, standing perfectly still... it feels safer somehow.",
       "source": "Everwood",
       "id": 3252,
       "length": 460
@@ -19610,12 +19460,6 @@
       "length": 404
     },
     {
-      "text": "You think there's something feminine about it? My father was the tallest, handsomest, vainest man in New York, and he got his nails done. He had his fourth coronary behind the wheel and hit a tree. The windshield severed his arm, and he was dead, so they never put it back on. In the casket he had one hand. The nails were perfect.",
-      "source": "Mad Men",
-      "id": 3307,
-      "length": 331
-    },
-    {
       "text": "Boars are only worth two experience points apiece. Do you know how many we would have to kill to get up thirty levels? - Yes. Sixty five million, three hundred and forty thousand, two hundred and eighty five. Which should take us seven weeks, five days, thirteen hours, and twenty minutes, giving ourselves three hours a night to sleep. What do you say, guys? You can just hang outside in the sun all day tossing a ball around... or you can sit at your computer and do something that matters.",
       "source": "South Park",
       "id": 3308,
@@ -19842,12 +19686,6 @@
       "source": "Gulliver's Travels",
       "id": 3345,
       "length": 310
-    },
-    {
-      "text": "We were playing checkers. I used to kid her once in a while because she wouldn't take her kings out of the back row. But I didn't kid her much though. You never wanted to kid Jane too much. I think I really like it best when you can kid the pants off a girl when the opportunity arises, but it's a funny thing. The girls I like best are ones I never feel much like kidding.",
-      "source": "The Catcher in the Rye",
-      "id": 3346,
-      "length": 373
     },
     {
       "text": "Let's say life is this square of the sidewalk. We're born at this crack and we die at that crack. Now we find ourselves somewhere inside the square, and in the process of walking out of it, suddenly we realize our time in here is fleeting. Is our quick experience here pointless? Does anything we say or do in here really matter? Have we done anything important? Have we been happy? Have we made the most of these precious footsteps?",
@@ -20138,12 +19976,6 @@
       "length": 480
     },
     {
-      "text": "I feel the Aryan in my blood, it's scarier than a Blood. Been looking for holy water, now I'm praying for a flood. It feel like time passing me by slower than a slug, while this feeling inside of my body seep in like a drug. Will you hug me, rub me on the back like a child?",
-      "source": "AfricAryaN",
-      "id": 3397,
-      "length": 274
-    },
-    {
       "text": "Sure is mellow grazin' in the grass. What a trip just watchin' as the world goes past. There are too many groovy things to see while grazin' in the grass. Flowers with colors for takin', everything outta sight.",
       "source": "Grazing In The Grass",
       "id": 3398,
@@ -20196,12 +20028,6 @@
       "source": "The Brothers Karamazov",
       "id": 3406,
       "length": 607
-    },
-    {
-      "text": "And she was mine, she was mine, the key was in my fist, my fist was in my pocket, she was mine.",
-      "source": "Lolita",
-      "id": 3407,
-      "length": 95
     },
     {
       "text": "Finding a way into a criminal organization is about observing social dynamics. You start with a target. You're looking for just the right person to approach. People in the inner circle are usually too tough to go after - anyone with real power is bound to be cautious. Drivers and bodyguards are easier, but they usually don't have real access. You want someone with enough juice to be hungry for more, someone desperate to make a move. In short, you're looking for a frustrated middle manager.",
@@ -20918,12 +20744,6 @@
       "length": 222
     },
     {
-      "text": "The devil found a clever way to infiltrate and bring his manipulation; a slender blonde in a cocktail dress struggling through the intoxication brought on by the gifting of drinks until she was ready to pay back in the bedroom, in the search to appease the demons in her head on a sterile surface in the bathroom.",
-      "source": "July (Part One)",
-      "id": 3529,
-      "length": 313
-    },
-    {
       "text": "I was proud of my work. And the buildings went up. When they were finished the damnedest thing happened. It was like the buildings were too good for us. Nobody told us that. It just felt uncomfortable, that's all.",
       "source": "Breaking Away",
       "id": 3530,
@@ -21014,10 +20834,10 @@
       "length": 410
     },
     {
-      "text": "You speak in abbreviations because real life conversation moves too slowly. You're the media's creation, yeah, your free will has been taken and you don't know.",
+      "text": "You speak in abbreviations because real life conversation moves too slow. You're the media's creation, yeah, your free will has been taken and you don't know.",
       "source": "Culture Shock",
       "id": 3545,
-      "length": 160
+      "length": 158
     },
     {
       "text": "My feeling is if you're the CEO of a company and you're dumb enough to leave your login info on a Post-it note on your desk, while the people that you ripped off are physically in your office, it's not a hack. It's barely social engineering. It's more like natural selection.",
@@ -21276,12 +21096,6 @@
       "source": "Back to the Future",
       "id": 3588,
       "length": 324
-    },
-    {
-      "text": "Dreams are just your brain processing random rigmarole it couldn't find a place for: it don't mean nothin'. Except you feel guilty about kissing Olive when you want to be kissing some dead girl you can't.",
-      "source": "Pushing Daisies",
-      "id": 3589,
-      "length": 204
     },
     {
       "text": "Dad, I may not be the best but I come to believe that I got it in me to be somebody in this world. And it's not because I'm so different from you either; it's because I'm the same. I mean I can be just as hard-headed and just as tough. I only hope I can be as good a man as you. Sure, Wernher von Braun is a great scientist but he isn't my hero.",
@@ -21740,12 +21554,6 @@
       "length": 291
     },
     {
-      "text": "Kids, there's nothing more cool than being hugged by someone you like. But if someone tries to touch you in a place or in a way that makes you feel uncomfortable, that's no good! It's your body. No one has the right to touch you if you don't want them to. So what do you do? First, you say 'No!' Then, you get outta there! Most important, you gotta tell someone you trust, like your parents, your teacher, a police officer.",
-      "source": "Adventures of Sonic the Hedgehog",
-      "id": 3668,
-      "length": 423
-    },
-    {
       "text": "She seemed to know, to accept, to welcome her position, the citadel of the family, the strong place that could not be taken. And since old Tom and the children could not know hurt or fear unless she acknowledged hurt or fear, she had practiced denying them in herself. And since, when a joyful thing happened, they looked to see whether joy was on her, it was her habit to build up laughter out of inadequate materials. She seemed to know that if she swayed the family shook, and if she ever deeply wavered or despaired the family would fall.",
       "source": "The Grapes of Wrath",
       "id": 3669,
@@ -21782,10 +21590,10 @@
       "length": 124
     },
     {
-      "text": "There are few people in the world who have more opportunity for getting close to the hot, interesting things of one's time than the special correspondent of a great paper. He is enabled to see \"the wheels go round;\" has the chance of getting his knowledge at first hand. In stirring times the drama of life is to him like the first night of a play. There are no preconceived opinions for him to go by; he ought not to, at least, be influenced by any prejudices; and the account of the performance is to some extent like that of the dramatic critic, inasmuch as that the verdict of the public or of history has either to confirm or reverse his own judgment.",
+      "text": "There are few people in the world who have more opportunity for getting close to the hot, interesting things of one's time than the special correspondent of a great paper. He is enabled to see \"the wheels go round;\" has the chance of getting his knowledge at first hand. In stirring times the drama of life is to him like the first night of a play. There are no preconceived opinions for him to go by; he ought not to, at least, be influenced by any prejudices; and the account of the performance is to some extent like that of the dramatic critic, in as much as that the verdict of the public or of history has either to confirm or reverse his own judgment.",
       "source": "Impressions of a War Correspondent",
       "id": 3675,
-      "length": 656
+      "length": 658
     },
     {
       "text": "To be, or not to be: that is the question: whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or to take arms against a sea of troubles, and by opposing end them?",
@@ -22617,7 +22425,7 @@
     },
     {
       "text": "The quick brown fox jumps over the lazy dog.",
-      "source": "Unknown",
+      "source": "\"Current Notes\", The Boston Journal",
       "id": 3814,
       "length": 44
     },
@@ -22970,7 +22778,7 @@
       "length": 284
     },
     {
-      "text": "Dear Sushie, You followed Mario, didn't you? How are you doing? I never expected you'd go with him. I want to hear about you, Mario and everything else, so why don't you come to see me when you finish traveling? If you have a hard time climbing the tree, I'll come down for you.",
+      "text": "Dear Sushie, you followed Mario, didn't you? How are you doing? I never expected you'd go with him. I want to hear about you, Mario and everything else, so why don't you come to see me when you finish traveling? If you have a hard time climbing the tree, I'll come down for you.",
       "source": "Paper Mario",
       "id": 3873,
       "length": 278
@@ -23012,12 +22820,6 @@
       "length": 404
     },
     {
-      "text": "The supreme question about a work of art is out of how deep a life does it spring.",
-      "source": "Ulysses",
-      "id": 3880,
-      "length": 82
-    },
-    {
       "text": "Why study science? Science, more than any other discipline, provides us with tools to learn about the world. Science is not a listing of facts; science is an invitation to observe the world, ask questions, and puzzle over problems and enjoy the process of solving them. From the time children begin to perceive their environment, they are involved in science.",
       "source": "Magnets and Motors: Teacher's Guide",
       "id": 3881,
@@ -23048,10 +22850,10 @@
       "length": 265
     },
     {
-      "text": "All we can know is that we know nothing. And that's the height of human wisdom.",
+      "text": "All we can know, is that we know nothing. And that's the height of human wisdom.",
       "source": "War and Peace",
       "id": 3886,
-      "length": 79
+      "length": 80
     },
     {
       "text": "I am, somehow, less interested in the weight and convolutions of Einstein's brain than in the near certainty that people of equal talent have lived and died in cotton fields and sweatshops.",
@@ -23060,10 +22862,10 @@
       "length": 189
     },
     {
-      "text": "Harry could hardly believe this was real. Four weeks with nothing, not the tiniest hint of a plan to remove him from Privet Drive, and suddenly a whole bunch of wizards was standing matter-of-factly in the house as though this were a long-standing arrangement. He glanced at the people surrounding Lupin; they were still gazing avidly at him. He felt very conscious of the fact that he had not combed his hair for four days.",
+      "text": "Harry could hardly believe this was real. Four weeks with nothing, not the tiniest hint of a plan to remove him from Privet Drive, and suddenly a whole bunch of wizards were standing matter-of-factly in the house as though this were a long-standing arrangement. He glanced at the people surrounding Lupin; they were still gazing avidly at him. He felt very conscious of the fact that he had not combed his hair for four days.",
       "source": "Harry Potter and the Order of the Phoenix",
       "id": 3888,
-      "length": 424
+      "length": 425
     },
     {
       "text": "I love Canada. I miss the heat of India, the food, the house lizards on the walls, the musicals on the silver screen, the cows wandering the streets, the crows cawing, even the talk of cricket matches, but I love Canada. It is a great country much too cold for good sense, inhabited by compassionate, intelligent people with bad hairdos. Anyway, I have nothing to go home to in Pondicherry.",
@@ -23744,12 +23546,6 @@
       "length": 192
     },
     {
-      "text": "I hope to hell when I do die somebody has sense enough to just dump me in the river or something.",
-      "source": "The Catcher in the Rye",
-      "id": 4002,
-      "length": 97
-    },
-    {
       "text": "\"I wish it need not have happened in my time,\" said Frodo. \"So do I,\" said Gandalf, \"and so do all who live to see such times. But that is not for them to decide. All we have to decide is what to do with the time that is given us.\"",
       "source": "The Lord of The Rings",
       "id": 4003,
@@ -23778,12 +23574,6 @@
       "source": "WarGames",
       "id": 4007,
       "length": 85
-    },
-    {
-      "text": "I've interviewed several people, but you see, those that cook don't clean and those that clean don't speak any identifiable language.",
-      "source": "Soap",
-      "id": 4008,
-      "length": 133
     },
     {
       "text": "Facts can be thought of as objective or subjective. Things and events are objective facts. A subjective fact is one that is limited to the subject experiencing it. Establishing the reality of subjective facts depends entirely on the trustworthiness of those who claim to be experiencing them.",
@@ -24273,7 +24063,7 @@
     },
     {
       "text": "There is a difference between the Holy Spirit coming and residing within us and us receiving the clothing with power that Jesus spoke of - the baptism of the Holy Spirit.",
-      "source": "The Born Identity",
+      "source": "The Bourne Identity",
       "id": 4090,
       "length": 170
     },
@@ -24650,12 +24440,6 @@
       "length": 358
     },
     {
-      "text": "'Cause I was born a virgin covered in blood and free of sin, and that's the exact shape I wanna make when I jump off this bridge.",
-      "source": "August (Part Two)",
-      "id": 4155,
-      "length": 129
-    },
-    {
       "text": "In the past, all a King had to do was look respectable in uniform and not fall off his horse. Now we must invade people's homes and ingratiate ourselves with them. This family's been reduced to those lowest, basest of all creatures. We've become actors!",
       "source": "The King's Speech",
       "id": 4156,
@@ -24966,12 +24750,6 @@
       "source": "Breaking Bad",
       "id": 4207,
       "length": 554
-    },
-    {
-      "text": "Hmm, looks like the chad is still hanging on that one, but I'm sure they'll count it.",
-      "source": "Postal 2",
-      "id": 4208,
-      "length": 85
     },
     {
       "text": "Why so much grief for me? No man will hurl me down to Death, against my fate. And fate? No one alive has ever escaped it, neither brave man nor coward, I tell you - it's born with us the day that we are born.",
@@ -25742,12 +25520,6 @@
       "length": 99
     },
     {
-      "text": "Well, I wanna thank y'all for coming out today, and I wanna thank my supporters from the bottom of my heart. Because we have been tested - tested by fire. Our border has been put to the test, and let me tell you: we have failed that test. The aliens, the infiltrators, the outsiders, they come right across by light of day or dark of night. They'll bleed us, they're parasites. They'll bleed us until we as a city, a county, a state, a nation are all bled out. Make no mistake: we are at war. Every time an illegal dances across our border it is an act of aggression against this sovereign state, an overt act of terrorism.",
-      "source": "Machete",
-      "id": 4337,
-      "length": 623
-    },
-    {
       "text": "Studies suggest that the influence of parents is due to two factors: communication and receptivity. Parents communicate their feelings and preferences to children constantly. Because children have such a strong desire for parental approval, they are very receptive to their parents' views.",
       "source": "American Government and Politics Today: The Essentials",
       "id": 4338,
@@ -26174,12 +25946,6 @@
       "length": 173
     },
     {
-      "text": "Despondent, lugubrious, no future. We turned our bodies to computer. We are our own nature, abuser, no future, computer, abuser. I can tell every day I stay all the whiteness turns to grey. All the grey to Cimmeria as the black is setting in. Digital black, oh! We've sunken into our illusion, we've fashioned colossal confusion. I am the word of the last human; illusion, confusion, last human. I can see it all around the land. I can feel it with the back of my hand. I can hear a roaring silence of the murky caliginous. I've heard the dark beast has said that the world is like a brittle egg. He can crush it with only breath, and he can bring a black wave of death. Digital black.",
-      "source": "Digital Black",
-      "id": 4410,
-      "length": 685
-    },
-    {
       "text": "A zealot might be, for instance, an individual with a personal motive for revenge so overpowering that it ensures complete dedication to the cause. Or, through intensive training and psychological manipulation, an elite team of fanatic followers can be trained to sacrifice even their own lives to accomplish a given mission.",
       "source": "Ninja Mind Control",
       "id": 4411,
@@ -26568,12 +26334,6 @@
       "source": "Subdivisions",
       "id": 4475,
       "length": 292
-    },
-    {
-      "text": "For I am a sinner in the hands of an angry God. Bloody Mary full of vodka, blessed are you among cocktails. Pray for me now and at the hour of my death, which I hope is soon. Amen.",
-      "source": "Archer",
-      "id": 4476,
-      "length": 180
     },
     {
       "text": "Often, we assume that a familiar situation will be but a repeat performance of a similar situation we've experienced before. But, in the strictest sense, there are no repeat performances. Every situation is unique, and we must be alert to its uniqueness.",
@@ -27404,10 +27164,10 @@
       "length": 437
     },
     {
-      "text": "Why are we still here? Just to suffer? Every night, I can feel my leg... and my arm... even my fingers. The body I've lost... the comrades I've lost... won't stop hurting... It's like they're all still there. You feel it, too, don't you? I'm gonna make them give back our past.",
+      "text": "Why are we still here? Just to suffer? Every night, I can feel my leg... and my arm... even my fingers. The body I've lost... the comrades I've lost... won't stop hurting... It's like they're all still there. You feel it too, don't you? I'm gonna make them give back our past.",
       "source": "Metal Gear Solid V: The Phantom Pain",
       "id": 4617,
-      "length": 277
+      "length": 276
     },
     {
       "text": "Hating the Empire, getting revenge... It's all I ever thought about. But I never did anything about it. I mean, I realized there was nothing I could do. It made me feel hollow, alone. And then... I'd miss my brother. I'd say stuff like \"I'm gonna be a sky pirate\", or some other stupid thing. Just anything to keep my mind off it. I was just... I was running away. I needed to get away from his death.",
@@ -27542,12 +27302,6 @@
       "length": 164
     },
     {
-      "text": "Culture was the seed of proliferation but it's gotten melded into an inharmonic whole, to an inharmonic whole. Consciousness has plagued us and we cannot shake it though we think we're in control, though we think we're in control. Questions that besiege us in life are testament of our helplessness.",
-      "source": "No Control",
-      "id": 4640,
-      "length": 299
-    },
-    {
       "text": "Something just came out of the back of a helicopter. It's a dark object, perhaps a skydiver plummeting to the earth from only two thousand feet in the air. There's a third. No parachutes yet. Those can't be skydivers. I can't tell just yet what they are but oh my God! They're turkeys!",
       "source": "WKRP in Cincinnati",
       "id": 4641,
@@ -27600,12 +27354,6 @@
       "source": "Parasite",
       "id": 4649,
       "length": 477
-    },
-    {
-      "text": "I have already computed the charge of nursing a beggar's child (in which list I reckon all cottagers, laborers, and four-fifths of the farmers) to be about two shillings per annum, rags included; and I believe no gentleman would repine to give ten shillings for the carcass of a good fat child, which, as I have said, will make four dishes of excellent nutritive meat, when he hath only some particular friend or his own family to dine with him. Thus the squire will learn to be a good landlord, and grow popular among his tenants; the mother will have eight shillings net profit, and be fit for work till she produces another child.",
-      "source": "A Modest Proposal",
-      "id": 4650,
-      "length": 633
     },
     {
       "text": "It was the kind of voice that the ear follows up and down, as if each speech is an arrangement of notes that will never be played again.",
@@ -28286,12 +28034,6 @@
       "length": 103
     },
     {
-      "text": "I mind how once we lay such a transparent summer morning, how you settled your head athwart my hips and gently turn'd over upon me, and parted the shirt from my bosom-bone, and plunged your tongue to my bare-stript heart, and reach'd till you felt my beard, and reach'd till you held my feet.",
-      "source": "Leaves of Grass",
-      "id": 4766,
-      "length": 292
-    },
-    {
       "text": "To move through a tree of paths using hill climbing, proceed as in depth-first search, but order the choices according to some heuristic measure of remaining distance. The better the heuristic measure is, the better hill climbing will be relative to ordinary depth-first search.",
       "source": "Artificial Intelligence Second Edition",
       "id": 4767,
@@ -28398,12 +28140,6 @@
       "source": "Beetlejuice",
       "id": 4784,
       "length": 120
-    },
-    {
-      "text": "Hello! Allow me to introduce myself. My name is Shady. It's so nice to meet you. It's been a long time. I'm sorry I've been away so long. My name is Shady. I never meant to leave you.",
-      "source": "Hello",
-      "id": 4785,
-      "length": 183
     },
     {
       "text": "In the case of college students, 80 to 90 percent of respondents invariably say that they are more skillful, safer drivers than others in the class.",
@@ -28556,10 +28292,10 @@
       "length": 398
     },
     {
-      "text": "Hi, my name is Jane. We hardly know each other, but that's about to change. You're gonna get to know a lot about me, and maybe even more than you imagine. This whole thing's kind of like a blind date - I mean here we are in your brand-new Corvette, running along the superinformation highway. Put your big muscular arm around me and whisper sweet nothings in my ear, and I promise you'll do whatever your little heart desires. BUT, only if you make the right moves. Just imagine watching me get propositioned by my sleazeball boss. BUT, if you make the wrong moves, you could turn me into a nun. Imagine that. Me? A nun? HA! I don't think so. But it's really all up to you. God knows what you'll do with that hot little mouse of yours. Point is: life's a game, and this game is full of life.",
+      "text": "Hi, my name is Jane. We hardly know each other, but that's about to change. You're gonna get to know a lot about me, and maybe even more than you imagine. This whole thing's kind of like a blind date - I mean here we are in your brand-new Corvette, running along the superinformation highway. Put your big, muscular arm around me and whisper sweet nothings in my ear, and I promise you'll do whatever your little heart desires. BUT, only if you make the right moves. Just imagine watching me get propositioned by my sleazeball boss. BUT, if you make the wrong moves, you could turn me into a nun. Imagine that. Me? A nun? HA! I don't think so. But it's really all up to you. God knows what you'll do with that hot, little mouse of yours. Point is: life's a game, and this game is full of life.",
       "source": "Plumbers Don't Wear Ties",
       "id": 4811,
-      "length": 791
+      "length": 793
     },
     {
       "text": "New thoughts and hopes were whirling through my mind, and all the colors of my life were changing.",
@@ -29036,12 +28772,6 @@
       "length": 558
     },
     {
-      "text": "And then I hear the best thing to do is feed 'em to pigs. You gotta starve the pigs for a few days, then the sight of a chopped up body looks like curry to a drunk. You gotta shave the heads of your victims and pull the teeth out. You could do that after of course, but you don't want to go sieving pig shit do you? Ever seen the size of one of their molars? They go through bone like it's butter. You gotta have a few pigs though, you need about sixteen. They will go through a body that weighs two hundred pounds in about eight minutes. That means that a single pig can consume two pounds of uncooked flesh every minute... Hence the expression \"greedy as a pig.\"",
-      "source": "Snatch",
-      "id": 4892,
-      "length": 664
-    },
-    {
       "text": "Confession is not betrayal. What you say or do doesn't matter; only feelings matter. If they could make me stop loving you - that would be the real betrayal.",
       "source": "Nineteen Eighty Four",
       "id": 4893,
@@ -29222,10 +28952,10 @@
       "length": 94
     },
     {
-      "text": "Then listen up! When I joined the core, we didn't have any fancy schmancy tanks! We had sticks! Two sticks and a rock for a whole platoon. And we had to share the rock. Buck up, boy, you're one very lucky marine!",
+      "text": "Then listen up! When I joined the Corps, we didn't have any fancy schmancy tanks! We had sticks! Two sticks and a rock for a whole platoon. And we had to share the rock. Buck up, boy, you're one very lucky marine!",
       "source": "Halo 2",
       "id": 4924,
-      "length": 212
+      "length": 213
     },
     {
       "text": "A pulse of energy wipes the galaxy clean of all its life. Vivisection of the cosmos, a dogma of the damned. The rule of ancients ceases to exist. Alone in a vast obscurity of infinite perception. Billions have vanished before my eyes. Psychopathic devastation is the rule of our demise. Sliding forward into the tale of which return is not an option, isolation, incubation of the virulent contagion.",
@@ -29256,12 +28986,6 @@
       "source": "Cornbread Nation: The Best of Southern Food Writing",
       "id": 4929,
       "length": 353
-    },
-    {
-      "text": "I don't want to talk to you no more, you empty-headed animal food trough wiper! I fart in your general direction! Your mother was a hamster and your father smelt of elderberries!",
-      "source": "Monty Python and the Holy Grail",
-      "id": 4930,
-      "length": 178
     },
     {
       "text": "As a child, I was aware that, at night, infrared vision would reveal monsters hiding in the bedroom closet only if they were warm-blooded. But everybody knows that your average bedroom monster is reptilian and cold-blooded.",
@@ -29810,13 +29534,13 @@
       "length": 67
     },
     {
-      "text": "I solemnly swear I am up to no good.",
+      "text": "I solemnly swear that I am up to no good.",
       "source": "Harry Potter and the Prisoner of Azkaban",
       "id": 5024,
-      "length": 36
+      "length": 41
     },
     {
-      "text": "Honestly, am I the only person who's ever bothered to read 'Hogwarts: A History?'",
+      "text": "Honestly, am I the only person who's ever bothered to read \"Hogwarts: A History?\"",
       "source": "Harry Potter and the Prisoner of Azkaban",
       "id": 5025,
       "length": 81
@@ -29828,7 +29552,7 @@
       "length": 103
     },
     {
-      "text": "I am what I am, an' I'm not ashamed. 'Never be ashamed,' my ol' dad used ter say, 'there's some who'll hold it against you, but they're not worth botherin' with.'",
+      "text": "I am what I am, an' I'm not ashamed. \"Never be ashamed,\" my ol' dad used ter say, \"there's some who'll hold it against you, but they're not worth botherin' with.\"",
       "source": "Harry Potter and the Goblet of Fire",
       "id": 5027,
       "length": 162
@@ -29978,7 +29702,7 @@
       "length": 77
     },
     {
-      "text": "'No, Harry, you listen,' said Hermione. 'We're coming with you. That was decided months ago - years, really.'",
+      "text": "\"No, Harry, you listen,\" said Hermione. \"We're coming with you. That was decided months ago - years, really.\"",
       "source": "Harry Potter and the Deathly Hallows",
       "id": 5052,
       "length": 109
@@ -30068,13 +29792,13 @@
       "length": 101
     },
     {
-      "text": "'You know,' he said, sitting back, reflectively, 'it's at times like this that you kind of wonder if it's worth worrying about the fabric of space-time and the causal integrity Of the multidimensional probability matrix and the potential collapse of all waveforms in the Whole Sort of General Mish Mash and all that sort of stuff that's been bugging me.",
+      "text": "'You know,' he said, sitting back, reflectively, 'it's at times like this that you kind of wonder if it's worth worrying about the fabric of space-time and the causal integrity of the multidimensional probability matrix and the potential collapse of all waveforms in the Whole Sort of General Mish Mash and all that sort of stuff that's been bugging me.",
       "source": "Mostly Harmless",
       "id": 5067,
       "length": 353
     },
     {
-      "text": "NO ADMITTANCE. NOT EVEN TO AUTHORIZED PERSONNEL. YOU ARE WASTING YOUR TIME HERE. GO AWAY.",
+      "text": "No admittance. Not even to authorized personnel. You are wasting your time here. Go away.",
       "source": "Mostly Harmless",
       "length": 89,
       "id": 5068
@@ -30086,7 +29810,7 @@
       "id": 5069
     },
     {
-      "text": "Fall, though, is the worst. Few things are worse than fall in New York, Some of the things that live in the lower intestines of rats would disagree, but most of the things that live in the lower intestines of rats are highly disagreeable anyways, so their opinion can and should be discounted.",
+      "text": "Fall, though, is the worst. Few things are worse than fall in New York. Some of the things that live in the lower intestines of rats would disagree, but most of the things that live in the lower intestines of rats are highly disagreeable anyways, so their opinion can and should be discounted.",
       "source": "Mostly Harmless",
       "length": 293,
       "id": 5070
@@ -30192,12 +29916,6 @@
       "source": "Captain Jack Sparrow, Pirates of the Caribbean: The Curse of the Black Pearl",
       "length": 60,
       "id": 5087
-    },
-    {
-      "text": "Please remove any metallic items you're carrying, keys, loose change... Holy shit!",
-      "source": "Security Personnel, The Matrix",
-      "length": 82,
-      "id": 5088
     },
     {
       "text": "I'm disinclined to acquiesce to your request... Means no.",
@@ -30470,12 +30188,6 @@
       "id": 5133
     },
     {
-      "text": "Anyways, let's talk about WAFFLES! I like waffles. Waffles are cool. Waffles is a funny word. There's a Teen Titans Go episode called \"Waffles\" where the word \"Waffles\" is said a hundred-something times. It's pretty annoying.",
-      "source": "The Longest Text Ever",
-      "length": 225,
-      "id": 5134
-    },
-    {
       "text": "It's crazy to think that everything we could ever possibly say or write is massively outweighed by meaningless strings of letters and punctuation.",
       "source": "The Longest Text Ever",
       "length": 146,
@@ -30518,9 +30230,9 @@
       "id": 5141
     },
     {
-      "text": "Have you ever had a dream, Neo, that you seemed so sure it was real? But if you were unable to wake from that dream, how would you tell the difference between the dream world & the real world?",
+      "text": "Have you ever had a dream, Neo, that you seemed so sure it was real? But if you were unable to wake from that dream, how would you tell the difference between the dream world and the real world?",
       "source": "Morpheus, The Matrix",
-      "length": 192,
+      "length": 194,
       "id": 5142
     },
     {
@@ -30560,7 +30272,7 @@
       "id": 5148
     },
     {
-      "text": "'Thank you, my dear, for your offer,' said the wife, rising, 'but I'm afraid no man can expect two blue birds of happiness to flutter round his feet, tearing out their little feathers!'",
+      "text": "\"Thank you, my dear, for your offer,\" said the wife, rising, 'but I'm afraid no man can expect two blue birds of happiness to flutter round his feet, tearing out their little feathers!'",
       "source": "D.H. Lawrence, Two blue birds",
       "length": 185,
       "id": 5149
@@ -30584,9 +30296,9 @@
       "id": 5152
     },
     {
-      "text": "Slow starvation, the doctor called it! You see he went to work in such a way! Would keep the shop on; wouldn't have a soul touch his boots except himself. When he got an order, it took him such a time. People won't wait. He lost everybody. And there he'd sit, goin' on and on--I will say that for him--not a man in London made a better boot! But look at the competition! He never advertised! Would 'ave the best leather, too, and do it all 'imself. Well, there it is. What could you expect with his ideas?",
+      "text": "Slow starvation, the doctor called it! You see he went to work in such a way! Would keep the shop on; wouldn't have a soul touch his boots except himself. When he got an order, it took him such a time. People won't wait. He lost everybody. And there he'd sit, goin' on and on - I will say that for him - not a man in London made a better boot! But look at the competition! He never advertised! Would 'ave the best leather, too, and do it all 'imself. Well, there it is. What could you expect with his ideas?",
       "source": "John Galsworthy, Quality",
-      "length": 505,
+      "length": 507,
       "id": 5153
     },
     {
@@ -30596,7 +30308,7 @@
       "id": 5154
     },
     {
-      "text": "You know what my favorite color combination is? Yellow text on a magenta background. Oh, and don't forget the Comic Sans. That is just pure beauty right there. In fact, it's used in the first frame (well, close enough) of \"history of the entire world, i guess\", which makes me love that video even more.",
+      "text": "You know what my favorite color combination is? Yellow text on a magenta background. Oh, and don't forget the Comic Sans. That is just pure beauty right there. In fact, it's used in the first frame (well, close enough) of \"history of the entire world, I guess\", which makes me love that video even more.",
       "source": "The Longest Text Ever",
       "length": 303,
       "id": 5155
@@ -30758,7 +30470,7 @@
       "id": 5181
     },
     {
-      "text": "You know Mitch, now that I'm dying. I've become much more interesting to people.",
+      "text": "You know Mitch, now that I'm dying, I've become much more interesting to people.",
       "source": "Mitch Albom, tuesdays with Morrie",
       "length": 80,
       "id": 5182
@@ -30800,9 +30512,9 @@
       "id": 5188
     },
     {
-      "text": "Miodec you've literally made one the best typing websites on the web to date but you still lazily sit there watching youtube videos with a measly 140 wpm smh. And have you forgotten about tribes completely? That's like saying ur gonna kill someone, but then never do it and leave them scared for the rest of their life (bad example) except you tell us about tribes and leave everyone excited but never deliver.",
+      "text": "Miodec you've literally made one of the best typing websites on the web to date but you still lazily sit there watching youtube videos with a measly 140 wpm smh. And have you forgotten about tribes completely? That's like saying ur gonna hurt someone, but then never do it and leave them scared for the rest of their life (bad example) except you tell us about tribes and leave everyone excited but never deliver.",
       "source": "Miodec Bully Rank Copy Pasta",
-      "length": 410,
+      "length": 413,
       "id": 5189
     },
     {
@@ -30812,7 +30524,7 @@
       "id": 5190
     },
     {
-      "text": "\"You see,\" he says to the girl, \"you closed your eyes. That was the difference. Sometimes you cannot believe what you see, you have to believe what you feel. And if you are ever going to have other people trust you, you must feel that you can trust them, too---even when you're in the dark. Even when you're falling.\"",
+      "text": "\"You see,\" he says to the girl, \"you closed your eyes. That was the difference. Sometimes you cannot believe what you see, you have to believe what you feel. And if you are ever going to have other people trust you, you must feel that you can trust them, too - even when you're in the dark. Even when you're falling.\"",
       "source": "Mitch Albom, tuesdays with Morrie",
       "length": 317,
       "id": 5191
@@ -31050,12 +30762,6 @@
       "source": "Pooh, Winnie-the-Pooh",
       "length": 112,
       "id": 5232
-    },
-    {
-      "text": "Some people care too much. I think it's called love.",
-      "source": "Pooh, Winnie-the-Pooh",
-      "length": 52,
-      "id": 5233
     },
     {
       "text": "\"Now let me see,\" he thought, as he took his last lick of the inside of the jar, \"where was I going, Ah, yes, Eeyore.\" He got up slowly. And then, suddenly, he remembered. He had eaten Eeyore's present!",
@@ -31334,7 +31040,7 @@
       "id": 5280
     },
     {
-      "text": "A learning experience is one of those things that says, 'You know that thing you just did? Don't do that.",
+      "text": "A learning experience is one of those things that says \"You know that thing you just did? Don't do that.\"",
       "source": "Douglas Adams, The Salmon of Doubt",
       "length": 105,
       "id": 5281
@@ -31424,22 +31130,10 @@
       "id": 5296
     },
     {
-      "text": "Hi, I'm Steve. I drive a car. It's in a tree. Just kidding, my name's not Steve.",
-      "source": "Bill Wurtz - hi, i'm steve",
-      "length": 80,
-      "id": 5297
-    },
-    {
       "text": "Visual illusions such as the Necker Cube or the Penrose Impossible Triangle or the Hollow Mask illusion demonstrate that the 'reality' we see consists of constrained models constructed in the brain. The Necker Cube's two-dimensional pattern of lines on paper is compatible with two alternative constructions of a three-dimensional cube, and the brain adopts the two models in turn: the alternation is palpable and its frequency can even be measured. The Penrose Triangle's lines on paper are incompatible with any real-world object. These illusions tease the brain's model-construction software, thereby revealing its existence.",
       "source": "Richard Dawkins, Science in the soul",
       "length": 628,
       "id": 5298
-    },
-    {
-      "text": "Wanna know more about Greenland? Too bad, I'm going to tell you about Mexico.",
-      "source": "Bill Wurtz - Wild Frolicking Adventures of Informational Education",
-      "length": 77,
-      "id": 5299
     },
     {
       "text": "Don't bounce me off the wall again, that was mostly violent.",
@@ -31452,18 +31146,6 @@
       "source": "Bill Wurtz - still a piece of garbage",
       "length": 60,
       "id": 5301
-    },
-    {
-      "text": "Jingle bells, I'm a cop.",
-      "source": "Bill Wurtz - jingle bells",
-      "length": 24,
-      "id": 5302
-    },
-    {
-      "text": "Open the country. Stop having it be closed.",
-      "source": "Bill Wurtz - history of japan",
-      "length": 43,
-      "id": 5303
     },
     {
       "text": "I think I am probably a house, and you are probably a lamp... or a fax machine.",
@@ -31502,22 +31184,10 @@
       "id": 5309
     },
     {
-      "text": "Lamp oil, rope, bombs, you want it? It's yours, my friend. As long as you have enough rupees... Sorry Link, I don't give credit. Come back when you're a little... hmm richer.",
+      "text": "Lamp oil, rope, bombs, you want it? It's yours, my friend, as long as you have enough rubies. Sorry Link, I can't give credit. Come back when you're a little... hmm richer!",
       "source": "Morshu, Link: The Faces of Evil",
-      "length": 174,
+      "length": 172,
       "id": 5310
-    },
-    {
-      "text": "Joke's over! You're dead!",
-      "source": "Phoenix, Valorant",
-      "length": 25,
-      "id": 5311
-    },
-    {
-      "text": "I would build a great wall, and nobody builds walls better than me, believe me, and I'll build them very inexpensively. I will build a great great wall on our southern border and I'll have Mexico pay for that wall.",
-      "source": "Donald Trump",
-      "length": 214,
-      "id": 5312
     },
     {
       "text": "How silly, she was thinking, to use the word ready. When can you be ready for anything? Or is life, in fact, a continuum of things you must prepare for, and only with perfect preparation can you exist in the present?",
@@ -31572,12 +31242,6 @@
       "source": "Maurice Ravel",
       "length": 52,
       "id": 5321
-    },
-    {
-      "text": "I don't sing because I'm happy; I'm happy because I sing.",
-      "source": "William James",
-      "length": 57,
-      "id": 5322
     },
     {
       "text": "I can't understand why people are frightened of new ideas. I'm frightened of the old ones.",
@@ -31665,7 +31329,7 @@
     },
     {
       "text": "Fire roared through the bifurcated city of Ankh-Morpork. Where it licked the Wizards' Quarter it burned blue and green and was even laced with strange sparks of the eighth color, octarine; where its outriders found their way into the vats and oil stores all along Merchant Street it progressed in a series of blazing fountains and explosions; in the streets of the perfume blenders it burned with a sweetness; where it touched bundles of rare and dry herbs in the storerooms of the drugmasters it made men go mad and talk to God.",
-      "source": "Terry Pratchet, The Color of Magic",
+      "source": "Terry Pratchett, The Color of Magic",
       "length": 529,
       "id": 5337
     },
@@ -31704,12 +31368,6 @@
       "source": "George Bernard Shaw",
       "length": 108,
       "id": 5343
-    },
-    {
-      "text": "Van Gogh would've sold more than one painting if he'd put tigers in them.",
-      "source": "Bill Watterson",
-      "length": 73,
-      "id": 5344
     },
     {
       "text": "It's hard to see Heaven when you know you're Hell-bound.",
@@ -31808,7 +31466,7 @@
       "id": 5361
     },
     {
-      "text": "Dear Mario: Please come to the castle. I've baked a cake for you. Your's Truly- Princess Toadstool Peach.",
+      "text": "Dear Mario: Please come to the castle. I've baked a cake for you. Yours Truly - Princess Toadstool Peach.",
       "source": "Super Mario 64",
       "length": 105,
       "id": 5362
@@ -31958,12 +31616,6 @@
       "id": 5386
     },
     {
-      "text": "All we had to do, was follow the damn train, CJ!",
-      "source": "GTA: San Andreas",
-      "length": 48,
-      "id": 5387
-    },
-    {
       "text": "There once was a tiger striped cat. This cat died a million deaths, revived and lived a million lives, and he was owned by various people who he didn't really care for. The cat wasn't afraid to die. Then one day the cat became a stray cat, which meant he was free. He met a white female cat, and the two of them spent their days together happily. Well, years passed, and the white cat grew weak and died of old age. The tiger striped cat cried a million times, and then he died too. Except this time, he didn't come back to life.",
       "source": "Cowboy Bebop",
       "length": 529,
@@ -32036,9 +31688,9 @@
       "id": 5399
     },
     {
-      "text": "Dear Me 10 Years from now, If you still feel the need to listen to this again, then maybe something went wrong? Or did you change? Do you remember? What happened? Is life better, or worst? It's never too late to try and fix things. Right now, you're probably wondering how I felt when you wrote this. Well, right now, I guess I feel like I don't have a lot of control of my life, but it's exciting nonetheless. I'm smart and handsome, and I have goals to work toward. So.. me in 10 years from now, if you're reading this and you feel like things haven't changed, then just remember that it's never too late. The world around you must be different by now, but it doesn't mean you have to be. Stay positive, and keep doing your best.",
+      "text": "Dear Me 10 Years from now, If you still feel the need to listen to this again, then maybe something went wrong? Or did you change? Do you remember? What happened? Is life better, or worse? It's never too late to try and fix things. Right now, you're probably wondering how I felt when you wrote this. Well, right now, I guess I feel like I don't have a lot of control of my life, but it's exciting nonetheless. I'm smart and handsome, and I have goals to work toward. So... me in 10 years from now, if you're reading this and you feel like things haven't changed, then just remember that it's never too late. The world around you must be different by now, but it doesn't mean you have to be. Stay positive, and keep doing your best.",
       "source": "Faye Valentine, Cowboy Bebop",
-      "length": 731,
+      "length": 732,
       "id": 5400
     },
     {
@@ -32046,12 +31698,6 @@
       "source": "Robert Jordan",
       "length": 74,
       "id": 5401
-    },
-    {
-      "text": "If the world is ending, a woman will want to fix her hair. If the world's ending, a woman will take the time to tell a man something he's done wrong.",
-      "source": "Robert Jordan, The Wheel of Time",
-      "length": 149,
-      "id": 5402
     },
     {
       "text": "How do I take off a mask when it stops being a mask, when it's as much a part of me as I am?",
@@ -32187,7 +31833,7 @@
     },
     {
       "text": "Now, if you two don't mind I'll be off to bed before either of you come up with another clever idea to get us killed - or worse, expelled!",
-      "source": "Harry Potter and the Philosopher’s Stone",
+      "source": "Harry Potter and the Philosopher's Stone",
       "length": 138,
       "id": 5425
     },
@@ -32202,12 +31848,6 @@
       "source": "Gemini Home Entertainment, Artificial Computer Learning",
       "length": 190,
       "id": 5427
-    },
-    {
-      "text": "Dormammu, I've come to bargain.",
-      "source": "Doctor Strange, Doctor Strange",
-      "length": 31,
-      "id": 5428
     },
     {
       "text": "So, might I offer you some advice? Forget everything you think you know.",
@@ -32306,27 +31946,21 @@
       "id": 5444
     },
     {
-      "text": "There's just news. There's no good or bad.",
-      "source": "Oogway, Kung Fu Panda",
-      "length": 42,
-      "id": 5445
-    },
-    {
       "text": "Gestures are all that I have; sometimes they must be grand in nature.",
       "source": "Enzo, The Art of Racing In The Rain (Garth Stein)",
       "length": 69,
       "id": 5446
     },
     {
-      "text": "Do not pity the dead, Harry. Pity the living, and, above all those who live without love.",
+      "text": "Do not pity the dead, Harry. Pity the living and above all, those who live without love.",
       "source": "Harry Potter And The Deathly Hallows",
-      "length": 89,
+      "length": 88,
       "id": 5447
     },
     {
-      "text": "Have you ever had a dream, Neo, that you seemed so sure it was real? But if were unable to wake up from that dream, how would you tell the difference between the dream world & the real world?",
+      "text": "Have you ever had a dream, Neo, that you seemed so sure it was real? But if you were unable to wake up from that dream, how would you tell the difference between the dream world & the real world?",
       "source": "The Matrix",
-      "length": 191,
+      "length": 195,
       "id": 5449
     },
     {
@@ -32378,9 +32012,9 @@
       "id": 5460
     },
     {
-      "text": "Being human totally sucks most of the time. Videogames are the only thing that make life bearable.",
+      "text": "Being human totally sucks most of the time. Video games are the only things that make life bearable.",
       "source": "Anorak's Almanac, Ready Player One",
-      "length": 98,
+      "length": 100,
       "id": 5461
     },
     {
@@ -32412,18 +32046,6 @@
       "source": "Ready Player Two",
       "length": 588,
       "id": 5466
-    },
-    {
-      "text": "Everybody wants to rule the world.",
-      "source": "Wade Watts, Ready Player Two",
-      "length": 34,
-      "id": 5467
-    },
-    {
-      "text": "How the f*** do you negotiate with a piece of software?",
-      "source": "Wade Watts, Ready Player Two",
-      "length": 55,
-      "id": 5468
     },
     {
       "text": "The world's population was fast approaching ten billion people, and Mother Earth was making it abundantly clear that she could no longer sustain all of us.",
@@ -32492,9 +32114,9 @@
       "id": 5483
     },
     {
-      "text": "Have you ever watched the jet cars race on the boulevard?...I sometimes think drivers don't know what grass is, or flowers, because they never see them slowly...If you showed a driver a green blur, Oh yes! He'd say, that's grass! A pink blur! That's a rose garden! White blurs are houses. Brown blurs are cows.",
+      "text": "Have you ever watched the jet cars race on the boulevard?... I sometimes think drivers don't know what grass is, or flowers, because they never see them slowly... If you showed a driver a green blur, Oh yes! He'd say, that's grass! A pink blur! That's a rose garden! White blurs are houses. Brown blurs are cows.",
       "source": "Fahrenheit 451",
-      "length": 310,
+      "length": 312,
       "id": 5484
     },
     {
@@ -32564,15 +32186,15 @@
       "id": 5495
     },
     {
-      "text": "Human beings do not survive on bread alone ... but on the nourishments of liberty. For what indeed is a man without freedom ... naught but a mechanism, trapped in the cogwheels of eternity.",
+      "text": "Human beings do not survive on bread alone... but on the nourishments of liberty. For what indeed is a man without freedom... naught but a mechanism, trapped in the cogwheels of eternity.",
       "source": "Star Trek: The Original Series",
-      "length": 189,
+      "length": 187,
       "id": 5496
     },
     {
-      "text": "Your will to survive, your love of life, your passion to know ... Everything that is truest and best in all species of beings has been revealed to you. Those are the qualities that make a civilization worthy to survive.",
+      "text": "Your will to survive, your love of life, your passion to know... Everything that is truest and best in all species of beings has been revealed to you. Those are the qualities that make a civilization worthy to survive.",
       "source": "Star Trek: The Original Series",
-      "length": 219,
+      "length": 218,
       "id": 5497
     },
     {
@@ -32612,12 +32234,6 @@
       "id": 5503
     },
     {
-      "text": "I cannot believe this shit! First I get a bullshit assignment, now Mr. Rice-a-Roni don't even speak American. C'mon, man, my ride over here. Put your bag in the back.",
-      "source": "Rush Hour",
-      "length": 166,
-      "id": 5504
-    },
-    {
       "text": "It's like how hot dogs come in packs of 10, and buns come in packs of eight or 12; you have to buy nine packs to make it come out even.",
       "source": "Miss Rollings (Swoosie Kurtz) - True Stories",
       "length": 135,
@@ -32643,13 +32259,13 @@
     },
     {
       "text": "Mental? Well, let me tell you something, Mr. 100% Tip-Top Mental. My daughter may be no spring chicken, and her jaw may crack when she chews, and she may have noticeable trouble digesting raw vegetables. But one thing she is not, is mental!",
-      "source": "Sophia Petrillo, The Golden Girls",
+      "source": "The Golden Girls",
       "length": 240,
       "id": 5509
     },
     {
       "text": "Picture this. Two young girls, best friends, who share three things: some dough and a dream. Everything is going great, until one day, a fast-talking pepperoni salesman gallops into town. Of course, both girls are impressed. He dates one one night, and the other the next night. Pretty soon, he drives a wedge between them. Before you know it, the pizza suffers, the business suffers, the friendship suffers. The girls part company and head for America, never to see one another again. Rose, one of those girls was me. The other one, you probably know as Mama Celeste.",
-      "source": "Sophia Petrillo, The Golden Girls",
+      "source": "The Golden Girls",
       "length": 568,
       "id": 5510
     },
@@ -32684,21 +32300,15 @@
       "id": 5515
     },
     {
-      "text": "I'm not gonna kill myself because if my depression wants me dead THAT badly it's gonna have to start shutting my organs down like a REAL disease instead of being a coward and hiding in my brain and trying to get ME to do it's dirty work for it!",
-      "source": "scottishsafehouse - Tumblr",
-      "length": 244,
-      "id": 5516
-    },
-    {
       "text": "Human touch. Our first form of communication. Safety, security, comfort, all in the gentle caress of a finger. Or the brush of lips on a soft cheek. It connects us when we're happy, bolsters us in times of fear, excites us in times of passion and love. We need that touch from the one we love, almost as much as we need air to breathe. But I never understood the importance of touch. His touch. Until I couldn't have it. So if you're watching this, and you're able, touch him. Touch her. Life's too short to waste a second.",
       "source": "Five Feet Apart",
       "length": 523,
       "id": 5517
     },
     {
-      "text": "Tom, don't let anybody kid you. It's all personal, every bit of business. Every piece of shit every man has to eat every day of his life is personal. They call it business. OK. But it's personal as hell. You know where I learned that from? The Don. My old man. The Godfather. If a bolt of lightning hit a friend of his the old man would take it personal. He took my going into the Marines personal. That's what makes him great. The Great Don. He takes everything personal Like God. He knows every feather that falls from the tail of a sparrow or however the hell it goes? Right? And you know something? Accidents don't happen to people who take accidents as a personal insult.",
+      "text": "Tom, don't let anybody kid you. It's all personal, every bit of business. Every piece of shit every man has to eat every day of his life is personal. They call it business. OK. But it's personal as hell. You know where I learned that from? The Don. My old man. The Godfather. If a bolt of lightning hit a friend of his the old man would take it personal. He took my going into the Marines personal. That's what makes him great. The Great Don. He takes everything personal. Like God. He knows every feather that falls from the tail of a sparrow or however the hell it goes? Right? And you know something? Accidents don't happen to people who take accidents as a personal insult.",
       "source": "The Godfather",
-      "length": 676,
+      "length": 677,
       "id": 5518
     },
     {
@@ -32708,9 +32318,9 @@
       "id": 5519
     },
     {
-      "text": "Unfortunately, my birthday has always been the lousiest day of the year. It all began on the day of my actual birth... both of my parents failed to show up. By the age of 5, I was forced to throw my own surprise party at Gunther Goat Cheese's: the goat-cheesiest place in all of Drusselstein. Many of my closest friends were there: Count Wolfgang,  Betty the She-Boar, Ratputin, and the licekins, Olga and Chicago Joe. But one should never walk the paths of Drusselstein with uncovered doonkleberry cake, lest the doonkleberry bats swarm.",
+      "text": "Unfortunately, my birthday has always been the lousiest day of the year. It all began on the day of my actual birth... both of my parents failed to show up. By the age of 5, I was forced to throw my own surprise party at Gunther Goat Cheese's: the goat-cheesiest place in all of Drusselstein. Many of my closest friends were there: Count Wolfgang, Betty the She-Boar, Ratputin, and the licekins, Olga and Chicago Joe. But one should never walk the paths of Drusselstein with uncovered doonkleberry cake, lest the doonkleberry bats swarm.",
       "source": "Dr. Doofenshmirtz, Phineas and Ferb",
-      "length": 538,
+      "length": 537,
       "id": 5520
     },
     {
@@ -32780,9 +32390,9 @@
       "id": 5531
     },
     {
-      "text": "I have little sympathy with the rather prevalent concept that man is basically irrational, and that his impulses, if not controlled, will lead to destruction of others and self. Man's behavior is exquisitely rational, moving with subtle and ordered complexity toward the goals his organism is endeavoring to achieve. The tragedy for most of us is that our defenses keep us from being aware of this rationality, so that conciously we are moving in one direction, while organismically we are moving in another.",
+      "text": "I have little sympathy with the rather prevalent concept that man is basically irrational, and that his impulses, if not controlled, will lead to destruction of others and self. Man's behavior is exquisitely rational, moving with subtle and ordered complexity toward the goals his organism is endeavoring to achieve. The tragedy for most of us is that our defenses keep us from being aware of this rationality, so that consciously we are moving in one direction, while organismically we are moving in another.",
       "source": "Carl Rogers, On Becoming a Person",
-      "length": 508,
+      "length": 509,
       "id": 5532
     },
     {
@@ -32828,15 +32438,9 @@
       "id": 5539
     },
     {
-      "text": "To prove your love and devotion, I require a sacrifice. Your son Isaac will be this sacrifice. Go into his room and end his life as an offering to me, to prove that you love me above all else!",
-      "source": "The Binding of Isaac",
-      "length": 192,
-      "id": 5540
-    },
-    {
-      "text": "Let's go to a place where everything is made of blocks, and the only limit is your imagination. Let's go wherever you want to go. Climb the tallest mountains, venture down to the darkest caves. Build whatever you want; day or night, rain or shine, because this is the most significant sandbox you'll ever set foot in. Build a majestic castle, invent a new machine, or take a ride on a roller coaster. Play with friends, build your little community. Protect yourself with the strongest armor that you can craft, and fight off the danger of the night. No one can tell you what you can or can not do. With no rules to follow, this adventure is up to you.",
+      "text": "Let's go to a place where everything is made of blocks, and the only limit is your imagination. Let's go wherever you want to go. Climb the tallest mountains, venture down to the darkest caves. Build whatever you want; day or night, rain or shine, because this is the most significant sandbox you'll ever set foot in. Build a majestic castle, invent a new machine, or take a ride on a roller coaster. Play with friends, build your little community. Protect yourself with the strongest armor that you can craft, and fight off the danger of the night. No one can tell you what you can or cannot do. With no rules to follow, this adventure is up to you.",
       "source": "Minecraft",
-      "length": 651,
+      "length": 650,
       "id": 5541
     },
     {
@@ -32858,9 +32462,9 @@
       "id": 5544
     },
     {
-      "text": "Hi am Heavy Weapons Guy, and this is my weapon. She weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon, for twelve seconds.",
+      "text": "I am Heavy Weapons guy, and this is my weapon. She weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon, for twelve seconds.",
       "source": "Team Fortess 2, Meet the Heavy",
-      "length": 256,
+      "length": 255,
       "id": 5545
     },
     {
@@ -33044,7 +32648,7 @@
       "id": 5587
     },
     {
-      "text": "You've gotta dance like there's nobody watching, Love like you'll never be hurt, Sing like there's nobody listening, And live like it's heaven on earth.",
+      "text": "You've gotta dance like there's nobody watching, love like you'll never be hurt, sing like there's nobody listening, and live like it's heaven on earth.",
       "source": "William W. Purkey",
       "length": 152,
       "id": 5588
@@ -33122,7 +32726,7 @@
       "id": 5600
     },
     {
-      "text": "All that is gold does not glitter, Not all those who wander are lost; The old that is strong does not wither, Deep roots are not reached by the frost. From the ashes a fire shall be woken, A light from the shadows shall spring; Renewed shall be blade that was broken, The crownless again shall be king.",
+      "text": "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost. From the ashes a fire shall be woken, a light from the shadows shall spring; renewed shall be blade that was broken, the crownless again shall be king.",
       "source": "J.R.R. Tolkien, The Fellowship of the Ring",
       "length": 302,
       "id": 5601
@@ -33312,12 +32916,6 @@
       "source": "Guillaume de Machaut, \"The Fountain of Love\"",
       "length": 61,
       "id": 5632
-    },
-    {
-      "text": "New Crystal Gems! Congregate! That means come over here and do a cool pose.",
-      "source": "Rebecca sugar",
-      "length": 75,
-      "id": 5633
     },
     {
       "text": "I'm sick of following my dreams. I'm just going to ask them where they're going and hook up with them later.",
@@ -33572,12 +33170,6 @@
       "id": 5676
     },
     {
-      "text": "Music is ... A higher revelation than all Wisdom & Philosophy.",
-      "source": "Ludwig van Beethoven",
-      "length": 62,
-      "id": 5677
-    },
-    {
       "text": "Simplicity, patience, compassion.\\nThese three are your greatest treasures.\\nSimple in actions and thoughts, you return to the source of being.\\nPatient with both friends and enemies,\\nyou accord with the way things are.\\nCompassionate toward yourself,\\nyou reconcile all beings in the world.",
       "source": "Tao Te Ching",
       "length": 292,
@@ -33596,22 +33188,16 @@
       "id": 5680
     },
     {
-      "text": "Hello? No this isn't the bird man of Bikini bottom. What? No! I don't live in a bird cage! Who is this? Joe mama? Well listen up Joe, I hate to break it to you but flying is Impossible. I have to go now. My head just hit the ceiling. Huh?",
+      "text": "Hello? No this isn't the bird man of Bikini bottom. What? No! I don't live in a bird cage! Who is this? Joe Mama? Well listen up Joe, I hate to break it to you but flying is impossible. I have to go now. My head just hit the ceiling. Huh?",
       "source": "Spongebob SquarePants",
       "length": 238,
       "id": 5681
     },
     {
       "text": "He will spend hundreds of years travelling the world, learning all there is to know. He will learn every language. He will read every book. He will know every land. He will spend thousands of years creating stunning works of art. He will learn to meditate to control all pain. As wars will be fought and great loves found. And lost. And found. Lost. And found. And found. And found. And memories built upon memories until life runs on an endless loop. He will father hundreds of thousands of children whose own exponential offspring he'll slowly lose track of through the years. Whose millions of beautiful lives will all eventually be swept again from the Earth. And still, Bill will continue. He will learn more about life than any being in history, but death will forever be a stranger to him. People will come and go until names lose all meaning. Until people lose all meaning and vanish entirely from the world. And still, Bill will live on. He will befriend the next inhabitants of the Earth, beings of light who revere him as a god. And Bill will outlive them all. For millions and millions of years. Exploring, learning, living. Until the Earth is swallowed beneath his feet. Until the sun is long since gone. Until time loses all meaning, and the moment comes that he knows only the position of the stars and sees them whether his eyes are closed or open. Until he forgets his name and the place where he'd once come from. He lives, and he lives until all of the lights go out.",
-      "source": "It’s Such a Beautiful Day",
+      "source": "It's Such a Beautiful Day",
       "length": 1486,
       "id": 5682
-    },
-    {
-      "text": "First the dinosaurs roamed the Earth, eating nothing but cavemen and eucalyptus plants. Then a nuclear bomb went off and made them all extinct, which gave rise to the radioactive people who illuminated the eternal night that followed. Then it was boring for a long time until late seventies (that's 1970s) when I was born, Eikichi Onizuka, 22 years old, destined to be a great teacher.",
-      "source": "Great Teacher Onizuka",
-      "length": 385,
-      "id": 5683
     },
     {
       "text": "Whenever you are about to find fault with someone, ask yourself the following question: What fault of mine most nearly resembles the one I am about to criticize?",
@@ -33698,7 +33284,7 @@
       "id": 5697
     },
     {
-      "text": "Let's build a happy little cloud.\nLet's build some happy little trees.",
+      "text": "Let's build a happy little cloud. Let's build some happy little trees.",
       "source": "Bob Ross",
       "length": 70,
       "id": 5698
@@ -33878,9 +33464,9 @@
       "id": 5727
     },
     {
-      "text": "Know thy self, know thy enemy. A thousand battles, a thousand victories.",
+      "text": "Know thyself, know thy enemy. A thousand battles, a thousand victories.",
       "source": "Sun Tzu, The Art of War",
-      "length": 72,
+      "length": 71,
       "id": 5728
     },
     {
@@ -33938,9 +33524,9 @@
       "id": 5737
     },
     {
-      "text": "Woke up, Fell out of bed. Dragged a comb across my head. Found my way downstairs and drank a cup. And looking up, I noticed I was late. Found my coat and grabbed my hat. Made the bus in seconds flat. Found my way upstairs and had a smoke. And somebody spoke and I went into a dream",
+      "text": "Woke up, fell out of bed. Dragged a comb across my head. Found my way downstairs and drank a cup. And looking up, I noticed I was late. Found my coat and grabbed my hat. Made the bus in seconds flat. Found my way upstairs and had a smoke. And somebody spoke and I went into a dream.",
       "source": "The Beatles - A Day in the Life",
-      "length": 281,
+      "length": 282,
       "id": 5738
     },
     {
@@ -33992,22 +33578,16 @@
       "id": 5746
     },
     {
-      "text": "Well, dreams, they feel real while we're in them right? It's only when we wake up then we realize that something was actually strange.",
+      "text": "Well, dreams, they feel real while we're in them right? It's only when we wake up that we realize that something was actually strange.",
       "source": "Inception",
       "length": 134,
       "id": 5747
     },
     {
-      "text": "This reversing the flow of time, doesn't us being here now, meant it never happened?",
+      "text": "This reversing the flow of time, doesn't us being here now, mean it never happened?",
       "source": "The Protagonist, Tenet",
-      "length": 84,
+      "length": 83,
       "id": 5748
-    },
-    {
-      "text": "I was so young when I was born, my eyes could not yet see and by the time of my first dawn somebody holding me they said \"I welcome you to Crackerbox Palace we've been expecting you. You bring such joy in Crackerbox Palace, no matter where you roam know our love is true\"",
-      "source": "Crackerbox Palace",
-      "length": 271,
-      "id": 5749
     },
     {
       "text": "Baby, you made me believe I could fall in love at first sight.  How you stopped me with your body, I'm under your curse.",
@@ -34028,7 +33608,7 @@
       "id": 5752
     },
     {
-      "text": "Listen to me, Morty. I know that new situations can be intimidating. You're lookin' around and it's all scary and different, but y'know... meeting them head-on, charging into 'em like a bull — that's how we grow as people.",
+      "text": "Listen to me, Morty. I know that new situations can be intimidating. You're lookin' around and it's all scary and different, but y'know... meeting them head-on, charging into 'em like a bull - that's how we grow as people.",
       "source": "Rick and Morty",
       "length": 222,
       "id": 5753
@@ -34046,7 +33626,7 @@
       "id": 5755
     },
     {
-      "text": "What can I say — I like to talk. I'm a strong believer in the power of words. If you're not willing to communicate, then the problem just sits there. If you just keep staring at it without doing anything, eventually you'll watch every last opportunity to resolve it slip away before your eyes.",
+      "text": "What can I say - I like to talk. I'm a strong believer in the power of words. If you're not willing to communicate, then the problem just sits there. If you just keep staring at it without doing anything, eventually you'll watch every last opportunity to resolve it slip away before your eyes.",
       "source": "Genshin Impact",
       "length": 293,
       "id": 5756
@@ -34082,9 +33662,9 @@
       "id": 5761
     },
     {
-      "text": "In a perfect world I'd have all ten fingers on my left hand, so my right would just be a fist for punching",
+      "text": "In a perfect world I'd have all ten fingers on my left hand, so my right would just be a fist for punching.",
       "source": "The Office",
-      "length": 106,
+      "length": 107,
       "id": 5762
     },
     {
@@ -34136,9 +33716,9 @@
       "id": 5770
     },
     {
-      "text": "Toby is in HR, which technically means he works for corporate. So he's really not a part of our family. Also, he's divorced, so he's really not a part of his family",
+      "text": "Toby is in HR, which technically means he works for corporate. So he's really not a part of our family. Also, he's divorced, so he's really not a part of his family.",
       "source": "The Office",
-      "length": 164,
+      "length": 165,
       "id": 5771
     },
     {
@@ -34160,9 +33740,9 @@
       "id": 5774
     },
     {
-      "text": "Too many of us are not living our dreams because we are living our fears",
+      "text": "Too many of us are not living our dreams because we are living our fears.",
       "source": "A Friend",
-      "length": 72,
+      "length": 73,
       "id": 5775
     },
     {
@@ -34182,12 +33762,6 @@
       "source": "Naoki Urasawa's Monster",
       "length": 244,
       "id": 5778
-    },
-    {
-      "text": "Killing people is simple. All you have to do is forget the taste of sugar.",
-      "source": "Naoki Urasawa's Monster",
-      "length": 74,
-      "id": 5779
     },
     {
       "text": "If my mind can conceive it, and my heart can believe it, then I can achieve it.",
@@ -34214,12 +33788,6 @@
       "id": 5783
     },
     {
-      "text": "You either die a hero or you live long enough to see yourself become the villain.",
-      "source": "The Dark Knight (2008)",
-      "length": 81,
-      "id": 5784
-    },
-    {
       "text": "If somehow the Lord gave me a second chance at that moment, I would do it all over again.",
       "source": "The Last Of Us 2",
       "length": 89,
@@ -34232,9 +33800,9 @@
       "id": 5786
     },
     {
-      "text": "To achieve great things, two things are needed; a plan, and not quite enough time.",
+      "text": "To achieve great things, two things are needed: a plan and not quite enough time.",
       "source": "Leonard Bernstein",
-      "length": 82,
+      "length": 81,
       "id": 5787
     },
     {
@@ -34298,9 +33866,9 @@
       "id": 5797
     },
     {
-      "text": "\"There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though they have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.\"\n",
+      "text": "\"There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though they have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.\"",
       "source": "Death Note",
-      "length": 678,
+      "length": 677,
       "id": 5798
     },
     {
@@ -34316,9 +33884,9 @@
       "id": 5800
     },
     {
-      "text": "It may be hard right now but you must silent those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
+      "text": "It may be hard right now but you must silence those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
       "source": "one piece",
-      "length": 182,
+      "length": 183,
       "id": 5801
     },
     {
@@ -34478,9 +34046,9 @@
       "id": 5827
     },
     {
-      "text": "The silver trump of freedom had roused my soul to eternal wakefulness. Freedom now appeared, to disappear no more forever. It was heard in every sound, and seen in every thing. It was ever present to torment me with a sense of my wretched condition. I saw nothing without seeing it, I saw heard nothing without hearing it, and felt nothing without feeling it. It looked in every star, it smiled in every calm, breathed in every wind, and moved in every storm.",
+      "text": "The silver trump of freedom had roused my soul to eternal wakefulness. Freedom now appeared, to disappear no more forever. It was heard in every sound, and seen in every thing. It was ever present to torment me with a sense of my wretched condition. I saw nothing without seeing it, I heard nothing without hearing it, and felt nothing without feeling it. It looked in every star, it smiled in every calm, breathed in every wind, and moved in every storm.",
       "source": "Frederick Douglas, Narrative of the Life of Frederick Douglass, An American Slave",
-      "length": 459,
+      "length": 455,
       "id": 5828
     },
     {
@@ -34532,7 +34100,7 @@
       "id": 5836
     },
     {
-      "text": "Listen, Just because you have psychic powers, it doesn't make you any less human. It's the same as people who are fast, people who are book smart, and people with strong body odor. Psychic powers are just another characteristic. You must embrace that as a part of yourself and continue to live positively. The truth behind one's charm is kindness. Become a good person. That is all.",
+      "text": "Listen. Just because you have psychic powers, it doesn't make you any less human. It's the same as people who are fast, people who are book smart, and people with strong body odor. Psychic powers are just another characteristic. You must embrace that as a part of yourself and continue to live positively. The truth behind one's charm is kindness. Become a good person. That is all.",
       "source": "Mob Psycho 100",
       "length": 382,
       "id": 5837
@@ -34622,9 +34190,9 @@
       "id": 5852
     },
     {
-      "text": "\"The past is so much less terrifying than the future,\" he explained after some coaxing. \"Even the most terrifying terrible era of the past is at least knowable. It can be studied. The world survived it. But in the present, one never knows when the whole world survived it. But in the present, oe never knows when the whole world could come to a terrible, crashing end.",
+      "text": "\"The past is so much less terrifying than the future,\" he explained after some coaxing. \"Even the most terrifying terrible era of the past is at least knowable. It can be studied. The world survived it. But in the present, one never knows when the whole world survived it. But in the present, one never knows when the whole world could come to a terrible, crashing end.",
       "source": "A Map of Days",
-      "length": 368,
+      "length": 369,
       "id": 5853
     },
     {
@@ -34724,9 +34292,9 @@
       "id": 5869
     },
     {
-      "text": "We all deserve love, even on the days when we aren't our best\n'Cause we all suck, but love can make us suck less\nWe all deserve love, it's the very best part of being alive\nAnd I would know I just turned 25",
+      "text": "We all deserve love, even on the days when we aren't our best. 'Cause we all suck, but love can make us suck less. We all deserve love, it's the very best part of being alive. And I would know I just turned 25",
       "source": "Lower Your Expectations - Bo Burnham",
-      "length": 206,
+      "length": 209,
       "id": 5870
     },
     {
@@ -34748,7 +34316,7 @@
       "id": 5873
     },
     {
-      "text": "It’s the ship that made the Kessel run in less than twelve parsecs. I’ve outrun Imperial starships. Not the local bulk cruisers, mind you. I’m talking about the big Corellian ships, now. She’s fast enough for you, old man.",
+      "text": "It's the ship that made the Kessel run in less than twelve parsecs. I've outrun Imperial starships. Not the local bulk cruisers, mind you. I'm talking about the big Corellian ships, now. She's fast enough for you, old man.",
       "source": "Han Solo - Star Wars",
       "length": 222,
       "id": 5874
@@ -34824,12 +34392,6 @@
       "source": "Prince Andrew, BBC Interview",
       "length": 186,
       "id": 5886
-    },
-    {
-      "text": "We believe climate change will ultimately be solved by 'can do' capitalism; not 'don't do' governments seeking to control people's lives and tell them what to do, with interventionist regulation and taxes that just force up your cost of living and force businesses to close.",
-      "source": "Scott Morrison",
-      "length": 274,
-      "id": 5887
     },
     {
       "text": "No one's gonna take me alive. Time has come to make things right. You and I must fight for our rights. You and I must fight to survive.",
@@ -34922,21 +34484,21 @@
       "id": 5902
     },
     {
-      "text": "He took up his glass and sniffed at it. The stuff grew not less but more horrible with every mouthful he drank. But it had become the element he swam in. It was his life, is death, and his resurrection. It was gin that sank him into stupor every night, and gin that revived him every morning.",
+      "text": "He took up his glass and sniffed at it. The stuff grew not less but more horrible with every mouthful he drank. But it had become the element he swam in. It was his life, his death, and his resurrection. It was gin that sank him into stupor every night, and gin that revived him every morning.",
       "source": "Nineteen Eighty-Four",
-      "length": 292,
+      "length": 293,
       "id": 5903
     },
     {
-      "text": "He gazed up at the enormous face. Forty years it had taken him to learn what kind of smile was hidden beneath the dark moustache. O cruel, needless misunderstanding! O stubborn, self-willed exile from the loving breast!",
+      "text": "He gazed up at the enormous face. Forty years it had taken him to learn what kind of smile was hidden beneath the dark moustache. O cruel, needless misunderstanding! O stubborn, self-willed exile from the loving breast! But it was all right, everything was all right, the struggle was finished. He had won the victory over himself. He loved Big Brother.",
       "source": "Nineteen Eighty-Four",
-      "length": 219,
+      "length": 353,
       "id": 5904
     },
     {
-      "text": "But it was all right, everything was all right, the struggle was finished. He had won the victory over himself. He loved Big Brother.",
-      "source": "Nineteen Eighty-Four",
-      "length": 133,
+      "text": "He put his hands in his coat pockets and turned back eagerly to his scrutiny of the house, as though my presence marred the sacredness of the vigil. So I walked away and left him standing there in the moonlight - watching over nothing.",
+      "source": "The Great Gatsby",
+      "length": 235,
       "id": 5905
     },
     {
@@ -34964,9 +34526,9 @@
       "id": 5909
     },
     {
-      "text": "so much depends upon a red wheel barrow glazed with rain water right beside the white chickens.",
+      "text": "So much depends upon a red wheel barrow glazed with rain water beside the white chickens.",
       "source": "William Carlos Williams",
-      "length": 95,
+      "length": 89,
       "id": 5910
     },
     {
@@ -34992,6 +34554,1104 @@
       "source": "Epicurus",
       "length": 117,
       "id": 5914
-    }
+    },
+    {
+      "text": "I'm hacking the FBI. Step one: identify the target and its flaws. There are always flaws. I learned that early in life. My first hack, the local library, a vulnerable FTP server in its AS400. A far cry from the Android zero days I'm using to own the FBI standard-issue smartphone. The library was a test to see if I could even get into the system. I've since set greater goals. For instance, step two: build malware and prepare an attack. At my fingertips, the zero day is wrapped in code like a Christmas present, then becomes an exploit, the programmatic expression of my will. Step three: a reverse shell, two-stage exploit. The ideal package. Load the malware into a femtocell delivery system - my personal cell tower that'll intercept all mobile data. Similar to my first time, when I found myself staring at late book fees, employee names, member addresses. Everything was revealed. The secret of the perfect hack? Make it infallible. Hidden within the kernel is a logic bomb, malicious code designed to execute under circumstances I've programmed. Should the FBI take an image of the femtocell, all memory will self-corrupt, or explode. Step four: Write the script. Why do it myself? Because that's how I learned, and I know exactly what, when, and how it's going to run. I didn't do anything harmful my first time. Just looked around. But I felt so powerful. 11 years old and in complete control of the Washington Township Public Library. Today is different. I hacked the world. Final step: launch the attack. Once I do, I'll own the Android phone of every FBI agent in that building. I'll own Evil Corp's network, applications, everything. Domain Admin. This, the thrill of owning a system, this is the greatest rush. God access. The feeling never gets old.",
+      "source": "Mr. Robot",
+      "length": 1766,
+      "id": 5915
+    },
+    {
+      "text": "I remember when I was a kid I got into web design by ripping off sites I liked. All you had to do was view source on your browser and there it was. The code. You could copy-paste it, modify it a little, put your name on it, and like that, it was your site. View source. What if we had that for people? Would people really wanna see?",
+      "source": "Mr. Robot",
+      "length": 332,
+      "id": 5916
+    },
+    {
+      "text": "Lot 666, then: a chandelier in pieces. Some of you may recall the strange affair of the Phantom of the Opera: a mystery never fully explained. We are told ladies and gentlemen, that this is the very chandelier which figures in the famous disaster. Our workshops have restored it and fitted up parts of it with wiring for the new electric light, so that we may get a hint of what it may look like when re-assembled. Perhaps we may frighten away the ghost of so many years ago with a little illumination, gentlemen?",
+      "source": "The Phantom of the Opera",
+      "length": 513,
+      "id": 5917
+    },
+    {
+      "text": "They say nothing lasts forever; dreams change, trends come and go, but friendships never go out of style.",
+      "source": "Sex and the City",
+      "length": 105,
+      "id": 5918
+    },
+    {
+      "text": "He said: \"One day you'll leave this world behind. So live a life you will remember.\" My father told me when I was just a child: \"These are the nights that never die.\" My father told me...",
+      "source": "Avicii - The Nights",
+      "length": 187,
+      "id": 5919
+    },
+    {
+      "text": "What do I do? System architecture. Networking and security. No one in this house can touch me on that. But does anyone appreciate that? While you were busy minoring in gender studies and singing a capella at Sarah Lawrence, I was gaining root access to NSA servers. I was one click away from starting a second Iranian revolution. I prevent cross-site scripting, I monitor for DDoS attacks, emergency database rollbacks, and faulty transaction handlings. The Internet heard of it? Transfers half a petabyte of data every minute. Do you have any idea how that happens? All those YouTube ones and zeroes streaming directly to your little smart phone day after day? Every joe who gets outraged if he can't get the new dubstep Skrillex remix in under 12 seconds? It's not magic, it's talent and sweat. People like me, ensuring your packets get delivered, un-sniffed. So what do I do? I make sure that one bad config on one key component doesn't bankrupt the entire company. That's what I do.",
+      "source": "Bertram Gilfoyle - Silicon Valley",
+      "length": 986,
+      "id": 5920
+    },
+    {
+      "text": "Myanmar and Brazil. Amusing coincidence that two of the three countries that provide the world's sesame seeds have such large cicada population, no? The cicadas of Myanmar emerge every 13 years, while the Brazilian cicadas emerge every 17. Next year they will hatch, simultaneously, for the first time in 221 years. Crops from both countries will be decimated. Unlike Myanmar and Brazil, Indonesia has no cicada population. I was surprised to see Indonesian sesame seed futures priced so low. I made a purchase. And now, if the shortage spikes the global price even ten percent. We'll profit... Evan? 'Sixty-eight million dollars.' If you wish, I could tap that projected revenue and make you a bridge loan of 15 million dollars, gentlemen.",
+      "source": "Peter Gregory - Silicon Valley",
+      "length": 740,
+      "id": 5921
+    },
+    {
+      "text": "So the crime was a trip to the market. The sentence, a lifetime of hurt. As she saw through tears. Her home of thirty of years, reduced to rubble and dirt. And she cursed those who would approach her and hold papers up to her face, and say \"You should feel blessed you live in the U.S and not some other hellish place\"",
+      "source": "Mischief Brew - Save a City",
+      "length": 318,
+      "id": 5922
+    },
+    {
+      "text": "If it starts with an explosion do you end it with a bang? First the whistles start a-blowin' then the guilty finally hang. There's a storm on the horizon and the waters on the rise, we're watching history repeatin' with the changin' times. The figureheads keep talking but they're buried in the sand. Everyone is pointing fingers, everybody plays their hand. The fix is in, the game is rigged, the pawns are polarized. You either pick a side or think outside the picket lines.",
+      "source": "Matt Pless - When the Frayed Wind Blows",
+      "length": 476,
+      "id": 5923
+    },
+    {
+      "text": "Time passed. Even with the power throbbing through her head it was a painfully hard task, like threading a needle by moonlight, but eventually she had a handful of silver. In the slow, heavy world in which she now appeared to be she took the hank and threw it slowly towards Esk. It became a cloud, swirled like a whirlpool and vanished. She was aware of a shrill chittering noise, and shadows on the edge of sight. Well, it happened to everyone sooner or later. They had come, drawn as always by a discharge of magic. You just had to learn to ignore them.",
+      "source": "Terry Pratchett - Equal Rites",
+      "length": 556,
+      "id": 5925
+    },
+    {
+      "text": "I'm not interested in stories about the past or any crap of that kind because the woods are burning, boys, you understand? There's a big blaze going on all around. I was fired today.",
+      "source": "Death of a Salesman",
+      "length": 182,
+      "id": 5926
+    },
+    {
+      "text": "I realized that selling was the greatest career a man could want. 'Cause what could be more satisfying than to be able to go, at the age of eighty-four, into twenty or thirty different cities, and pick up a phone, and be remembered and loved and helped by so many different people?",
+      "source": "Death of a Salesman",
+      "length": 281,
+      "id": 5927
+    },
+    {
+      "text": "I put thirty-four years into this firm, and now I can't pay my insurance! You can't eat the orange and throw the peel away - a man is not a piece of fruit!",
+      "source": "Death of a Salesman",
+      "length": 155,
+      "id": 5928
+    },
+    {
+      "text": "Willy, when're you gonna realize that them things don't mean anything? You named him Howard, but you can't sell that. The only thing you got in this world is what you can sell. And the funny thing is that you're a salesman, and you don't know that.",
+      "source": "Death of a Salesman",
+      "length": 248,
+      "id": 5929
+    },
+    {
+      "text": "How the hell did I ever get the idea I was a salesman there? I even believed myself that I'd been a salesman for him! And then he gave me one look and I realized what a ridiculous lie my whole life has been. We've been talking in a dream for fifteen years. I was a shipping clerk.",
+      "source": "Death of a Salesman",
+      "length": 280,
+      "id": 5930
+    },
+    {
+      "text": "It's not what you do. It's who you know and the smile on your face! It's contacts, contacts! The whole wealth of Alaska passes over the lunch table at the Commodore Hotel, and that's the wonder, the wonder of this country, that a man can end with diamonds here on the basis of being liked!",
+      "source": "Death of a Salesman",
+      "length": 289,
+      "id": 5931
+    },
+    {
+      "text": "I started to move and to make some kind of joke but Joey mumbled something and I put my head down to hear. Joey raised his head as I lowered mine and we kissed, as it were, by accident. Then, for the first time in my life, I was really aware of another person's body, of another person's smell.",
+      "source": "James Baldwin - Giovanni's Room",
+      "length": 294,
+      "id": 5932
+    },
+    {
+      "text": "Infuse your life with action. Don't wait for it to happen. Make it happen. Make your own future. Make your own hope. Make your own love. And whatever your beliefs, honor your creator, not by passively waiting for grace to come down from upon high, but by doing what you can to make grace happen... yourself, right now, right down here on Earth.",
+      "source": "Bradely Whitefod",
+      "length": 344,
+      "id": 5933
+    },
+    {
+      "text": "After all, seasons change, so do cities; people come into your life and people go. But it’s comforting to know that the ones you love are always in your heart. And if you’re very lucky, a plane ride away.",
+      "source": "Sex and the City",
+      "length": 204,
+      "approvedBy": "ze_or",
+      "id": 5934
+    },
+    {
+      "text": "You want to know something funny? After everything you've done, I would have saved you.",
+      "source": "Batman: Arkham City",
+      "length": 87,
+      "approvedBy": "ze_or",
+      "id": 5935
+    },
+    {
+      "text": "Drainage! Drainage, Eli, you boy. Drained dry. I'm so sorry. Here, if you have a milkshake, and I have a milkshake, and I have a straw. There it is, that's a straw, you see? You watching? And my straw reaches across the room, and starts to drink your milkshake. I... drink... your... milkshake! I drink it up! Did you think your song and dance and your superstition would help you, Eli? I am the Third Revelation! I am who the Lord has chosen!",
+      "source": "There Will be Blood",
+      "length": 443,
+      "approvedBy": "ze_or",
+      "id": 5936
+    },
+    {
+      "text": "When my mama came from Cuba, she felt like one tiny grain of sand from the beaches we left behind. She bought a winter coat and a pair of velvet gloves. Her hands were cracked from the cleaning fluids. But the gloves hid that. We had to assert our dignity in small ways. That's why these napkins are beautiful. That's why my mother's gloves were beautiful. Little details that tell the world we are not invisible.",
+      "source": "In The Heights",
+      "length": 413,
+      "approvedBy": "ze_or",
+      "id": 5937
+    },
+    {
+      "text": "What do tigers dream of when they take their little tiger snooze? Do they dream of mauling zebras or Halle Berry in her Catwoman suit? Don't you worry your pretty striped head, we're gonna get you back to Tyson and your cozy tiger bed. And then we're gonna find our best friend Doug, and then we're gonna give him a best friend hug. Doug, Doug, oh, Doug, Dougie, Dougie, Doug, Doug! But if he's been murdered by crystal meth tweakers... well then we're shit out of luck.",
+      "source": "The Hangover",
+      "length": 470,
+      "approvedBy": "ze_or",
+      "id": 5938
+    },
+    {
+      "text": "You send me something like that and then you don't pick up your phone? I'm trying to have a nice peaceful dinner with my family, which is something you wouldn't understand because you don't have one. You wanna play mind games with me? Huh? Well so whatever you meant by your little link, I meant when I said I want you out of my apartment tonight! And I want confirmation! By text, not a link. Via text, \"Howie, I am gone!\" Don't you call me!",
+      "source": "Uncut Gems",
+      "length": 442,
+      "approvedBy": "ze_or",
+      "id": 5939
+    },
+    {
+      "text": "Reporting from the Weather Balloon, over the smoke stacks, over the city, The Weather Man.",
+      "source": "Little Inferno",
+      "length": 90,
+      "approvedBy": "ze_or",
+      "id": 5940
+    },
+    {
+      "text": "Look at you, Hacker. A pathetic creature of meat and bone, panting and sweating as you run through my corridors. How can you challenge a perfect, immortal machine?",
+      "source": "System Shock 2 ",
+      "length": 163,
+      "approvedBy": "ze_or",
+      "id": 5941
+    },
+    {
+      "text": "From today, dialling 999 won't get you the emergency services. And that's not the only thing that's changing. Nicer ambulances, faster response times and better looking drivers means they're not the emergency services. They're your emergency services. So! Remember the new number: 0118 999 881 999 119 725 3",
+      "source": "IT Crowd",
+      "length": 307,
+      "id": 5942
+    },
+    {
+      "text": "It's a long, hard, dusty road you'll journey on through a world you never known. Only time will tell you if or not if your life has been in vain. Each morning sunrise brings question and query, each sunset brings you more doubts. Always you're searching for what, you're not even sure, melting away like an icicle on fire",
+      "source": "Xavier: Renegade Angel",
+      "length": 321,
+      "id": 5943
+    },
+    {
+      "text": "Powers are for the weak. I have no powers. I mean, unless you count the power to blow minds with my weapons-grade philosophical insights.",
+      "source": "Xavier: Renegade Angel",
+      "length": 137,
+      "id": 5944
+    },
+    {
+      "text": "But would you kindly ponder this question: What would your good do if evil didn't exist, and what would the earth look like if all the shadows disappeared? After all, shadows are cast by things and people. Here is the shadow of my sword. But shadows also come from trees and living beings. Do you want to strip the earth of all trees and living things just because of your fantasy of enjoying naked light? You're stupid.",
+      "source": "The Master and Margarita",
+      "length": 420,
+      "id": 5945
+    },
+    {
+      "text": "What is my perfect crime? I break into Tiffany’s at midnight. Do I go for the vault? No, I go for the chandelier. It’s priceless. As I’m taking it down, a woman catches me. She tells me to stop. It’s her father’s business. She’s Tiffany. I say no. We make love all night. In the morning, the cops come and I escape in one of their uniforms. I tell her to meet me in Mexico, but I go to Canada. I don’t trust her. Besides, I like the cold. Thirty years later, I get a postcard. I have a son and he’s the chief of police. This is where the story gets interesting. I tell Tiffany to meet me in Paris by the Trocadero. She’s been waiting for me all these years. She’s never taken another lover. I don’t care. I don’t show up. I go to Berlin. That’s where I stashed the chandelier.",
+      "source": "Dwight K. Schrute - The Office (US)",
+      "length": 776,
+      "id": 5946
+    },
+    {
+      "text": "In Japan, heart surgeon. Number one. Steady hand. One day, Yakuza boss need new heart. I do operation. But, mistake! Yakuza boss die. Yakuza very mad. I hide in fishing boat, come to America. No English, no food, no money. Darryl give me job. Now I have house, American car, and new woman. Darryl save life. My big secret: I kill yakuza boss on purpose. I good surgeon. The best!",
+      "source": "The Office",
+      "length": 379,
+      "id": 5947
+    },
+    {
+      "text": "Hey! I wanna say something. I've been trying to be more honest lately, and I just wanna say a few things. I did the coal walk! Just, I did it. Michael, you couldn't even do that. Maybe I should be your boss. Wow I feel really good right now. [pause] Why didn't any of you come to my art show? I invited all of you. That really sucked. It's like sometimes some of you act like I don't even exist. Jim, I called off my wedding because of you. And now we're not even friends. And things are just like weird between us. And that sucks. And I miss you. You were my best friend before you went to Stamford. And I really miss you. I shouldn't have been with Roy, and there were a lot of reasons to call off my wedding. But the truth is, I didn't care about any of those reasons until I met you. And now you're with someone else. And that's fine. It's, whatever, it's not what I'm- I'm not- Okay my feet really hurt. The thing that I'm just trying to say to you, Jim, and to everyone else in the circle, I guess, is that I miss having fun with you. Just you, not everyone in the circle. Okay. I am gonna go walk in the water now. Yep. It's a good day.",
+      "source": "Pam Beesly - The Office (US)",
+      "length": 1143,
+      "id": 5948
+    },
+    {
+      "text": "I was going to quit, but Jan offered me a three-month, paid vacation and a company car. All I had to do was sign something saying I won't sue. Gil and I are going to Europe. Kids, sometimes it pays to be gay.",
+      "source": "Oscar Martinez - The Office (US)",
+      "length": 208,
+      "id": 5949
+    },
+    {
+      "text": "Well, this is what happened. Ryan's big project was the web site, which wasn't doing so well. So Ryan, to give the impression of sales, recorded them twice. Once as office sales, and once as web site sales. Which is what we refer to in the business as misleading the shareholders. Another good term is fraud. The real crime, I think, was the beard.",
+      "source": "Oscar Martinez - The Office (US)",
+      "length": 348,
+      "id": 5950
+    },
+    {
+      "text": "Our gathering was not as strange a thing as it might have appeared. A xenophobe would see a company of foreigners in camouflage uniforms, carrying out military drills and calisthenics, and might imagine us to be the lead element of some nefarious Asian invasion of the American homeland, a Yellow Peril in the Golden State, a diabolical dream of Ming the Merciless sprung to life. Far from it. The General's men, by preparing themselves to invade our now communist homeland, were in fact turning themselves into new Americans. After all, nothing was more American than wielding a gun and committing oneself to die for freedom and independence, unless it was wielding that gun to take away someone else’s freedom and independence.",
+      "source": "The Sympathizer (Viet Thanh Nguyen)",
+      "length": 729,
+      "id": 5951
+    },
+    {
+      "text": "What do those who struggle against power do when they seize power? What does the revolutionary do when the revolution triumphs? Why do those who call for independence and freedom take away the independence and freedom of others? And is it sane or insane to believe, as so many around us apparently do, in nothing? We can only answer these questions for ourselves. Our life and our death have taught us always to sympathize with the undesirables among the undesirables. Thus magnetized by experience, our compass continually points toward those who suffer.",
+      "source": "The Sympathizer (Viet Thanh Nguyen)",
+      "length": 555,
+      "id": 5952
+    },
+    {
+      "text": "What had I intuited at last? Namely this: while nothing is more precious than independence and freedom, nothing is also more precious than independence and freedom! These two slogans are almost the same, but not quite. The first inspiring slogan was Ho Chi Min’s empty suit, which he no longer wore. How could he? He was dead. The second slogan was the tricky one, the joke. It was Uncle Ho’s empty suit turned inside out, a sartorial sensation that only a man of two minds, or a man with no face, dared to wear. This odd suit suited me, for it was of a cutting-edge cut. Wearing this inside-out suit, my seams exposed in an unseemly way, I understood, at last, how our revolution had gone from being the vanguard of political change to the rearguard hoarding power. In this transformation, we were not unusual. Hadn’t the French and the Americans done exactly the same? Once revolutionaries themselves, they had become imperialists, colonizing and occupying our defiant little land, taking away our freedom in the name of saving us. Our revolution took considerably longer than theirs, and was considerably bloodier, but we made up for lost time. When it came to learning the worst habits of our French masters and their American replacements, we quickly proved ourselves the best. We, too, could abuse grand ideals! Having liberated ourselves in the name of independence and freedom—I was so tired of saying these words!—we then deprived our defeated brethren of the same.",
+      "source": "The Sympathizer (Viet Thanh Nguyen)",
+      "length": 1474,
+      "id": 5953
+    },
+    {
+      "text": "No, I want someone to tell me what to wear every morning. I want someone to tell me what to eat. What to like. What to hate. What to rage about. What to listen to. What band to like. What to buy tickets for. What to joke about. What not to joke about. I want someone to tell me what to believe in. Who to vote for and who to love and how to...tell them. I just think I want someone to tell me how to live my life, Father, because so far, I think I’ve been getting it wrong. And I know that’s why people want someone like you in their lives, because you just tell them how to do it. You just tell them what to do and what they’ll get out of the end of it, even though I don’t believe your bullshit and I know that scientifically nothing that I do makes any difference in the end, anyway, I’m still scared. Why am I still scared? So just tell me what to do. Just fucking tell me what to do, Father.",
+      "source": "Fleabag",
+      "length": 896,
+      "id": 5954
+    },
+    {
+      "text": "I wish to confess. I saved you. I saved this city. All your worthless lives. I should have let Stannis kill you all. Yes, Father, I’m guilty. Guilty. Is that what you want to hear? I didn’t poison the king. Of that I’m innocent. I’m guilty of a far more monstrous crime. I’m guilty of being a dwarf. I’ve been on trial for that my entire life. I did not do it. I did not kill Joffrey, but I wish that I had. Watching your vicious bastard die gave me more relief than a thousand lying whores. I wish I was the monster you think I am! I wish I had enough poison for the whole pack of you. I would gladly give my life to watch you all swallow it. I will not give my life for Joffrey’s murder, and I know I’ll get no justice here, so I will let the Gods decide my fate. I demand a trial by combat.",
+      "source": "Tyrion Lannister - Game of Thrones",
+      "length": 793,
+      "id": 5955
+    },
+    {
+      "text": "You were born broken. That’s your birthright. And now you can fill your life with projects - your books, and your movies, and your little girlfriends but that won’t make you whole. You’re BoJack Horseman. There’s no cure for that.",
+      "source": "Bojack Horseman",
+      "length": 230,
+      "approvedBy": "ze_or",
+      "id": 5956
+    },
+    {
+      "text": "The only reason I must rely on this sword is because I am imperfect. A true warrior... needs no sword.",
+      "source": "Vinland Saga",
+      "length": 102,
+      "approvedBy": "ze_or",
+      "id": 5957
+    },
+    {
+      "text": "In my restless dreams, I see that town. Silent Hill. You promised me you'd take me\nthere again someday. But you never did. Well, I'm alone there now... In our 'special place'... Waiting for you... Waiting for you to come to see me. But you never do. And so I wait, wrapped in my cocoon of pain and loneliness. I know I've done a terrible thing to you. Something you'll never forgive me for. I wish I could change that, but I can't. I feel so pathetic and ugly laying here, waiting for you... Every day I stare up at the cracks in the ceiling and all I can think about is how unfair it all is... The doctor came today. He told me I could go home for a short stay. It’s not that I'm getting better. It’s just that this may be my last chance... I think you know what I mean... Even so, I'm glad to be coming home. I've missed you terribly. But I'm afraid, James. I'm afraid you don't really want me to come home. Whenever you come see me, I can tell how hard it is on you... I don't know if you hate me or pity me... Or maybe I just disgust you... I'm sorry about that. When I first learned that I was going to die, I just didn't want to accept it. I was so angry all the time and I struck out at everyone I loved most. Especially you, James. That's why I understand if you do hate me. But I want you to know this, James. I'll always love you. Even though our life together had to end like this, I still wouldn't trade it for the world. We had some wonderful years together. Well, this letter has gone on too long, so I'll say goodbye. I told the nurse to give this to you after I'm gone. That means that as you read this, I'm already dead. I can't tell you to remember me, but I can't bear for you to forget me. These last few years since I became ill... I'm so sorry for what I did to you, did to us... You've given me so much and I haven't been able to return a single thing. That's why I want you to live for yourself now. Do what's best for you, James. James... You made me happy.",
+      "source": "Silent Hill 2",
+      "length": 1982,
+      "approvedBy": "ze_or",
+      "id": 5958
+    },
+    {
+      "text": "Then a hurricane came, and devastation reigned, our man saw his future drip, dripping down the drain, put a pencil to his temple, connected it to his brain, and he wrote his first refrain, a testament to his pain.",
+      "source": "Hamilton",
+      "length": 213,
+      "id": 5959
+    },
+    {
+      "text": "Well, the word got around, they said, \"This kid is insane, man\" took up a collection just to send him to the mainland. \"Get your education, don't forget from whence you came, and the world is gonna know your name. What's your name, man?\"",
+      "source": "Hamilton",
+      "length": 237,
+      "id": 5960
+    },
+    {
+      "text": "There would have been nothin' left to do for someone less astute, he woulda been dead or destitute without a cent of restitution, started workin', clerkin' for his late mother's landlord, tradin' sugar cane and rum and all the things he can't afford. Scammin' for every book he can get his hands on, plannin' for the future see him now as he stands on the bow of a ship headed for a new land, In New York you can be a new man.",
+      "source": "Hamilton",
+      "length": 426,
+      "id": 5961
+    },
+    {
+      "text": "Sir... I heard your name at Princeton. I was seeking an accelerated course of study when I got sort of out of sorts with a buddy of yours. I may have punched him. It's a blur, sir. He handles the financials?",
+      "source": "Hamilton",
+      "length": 207,
+      "id": 5962
+    },
+    {
+      "text": "Yes! I wanted to do what you did. Graduate in two, then join the revolution. He looked at me like I was stupid, I'm not stupid. So how'd you do it? How'd you graduate so fast?",
+      "source": "Hamilton",
+      "length": 175,
+      "id": 5963
+    },
+    {
+      "text": "You're an orphan. Of course! I'm an orphan. God, I wish there was a war! Then we could prove that we're worth more than anyone bargained for...",
+      "source": "Hamilton",
+      "length": 143,
+      "id": 5964
+    },
+    {
+      "text": "I'm just like my country, I'm young, scrappy and hungry, and I'm not throwing away my shot! I'm 'a get a scholarship to King's College. I prob'ly shouldn't brag, but dag, I amaze and astonish. The problem is I got a lot of brains but no polish. I gotta holler just to be heard. With every word, I drop knowledge! I'm a diamond in the rough, a shiny piece of coal tryin' to reach my goal. My power of speech: unimpeachable. Only nineteen but my mind is older. These New York City streets get colder, I shoulder ev'ry burden, ev'ry disadvantage I have learned to manage, I don't have a gun to brandish, I walk these streets famished. The plan is to fan this spark into a flame. But damn, it's getting dark, so let me spell out the name, I am the A-l-e-x-a-n-d-e-r, we are meant to be. A colony that runs independently. Meanwhile, Britain keeps shittin' on us endlessly. Essentially, they tax us relentlessly, then King George turns around, runs a spending spree. He ain't ever gonna set his descendants free, so there will be a revolution in this century. Enter me! Don't be shocked when your hist'ry book mentions me. I will lay down my life if it sets us free. Eventually, you'll see my ascendancy, and I am not throwing away my shot.",
+      "source": "Hamilton",
+      "length": 1234,
+      "id": 5965
+    },
+    {
+      "text": "I dream of life without a monarchy. The unrest in France will lead to 'onarchy? 'Onarchy? How you say, how you say, 'anarchy?' When I fight, I make the other side panicky.",
+      "source": "Hamilton",
+      "length": 171,
+      "id": 5966
+    },
+    {
+      "text": "I'm a tailor's apprentice, and I got y'all knuckleheads in loco parentis. I'm joining the rebellion cuz I know it's my chance to socially advance, instead of sewin' some pants!",
+      "source": "Hamilton",
+      "length": 176,
+      "id": 5967
+    },
+    {
+      "text": "Geniuses, lower your voices. You keep out of trouble and you double your choices. I'm with you, but the situation is fraught. You've got to be carefully taught: If you talk, you're gonna get shot!",
+      "source": "Hamilton",
+      "length": 196,
+      "id": 5968
+    },
+    {
+      "text": "Burr, check what we got. Mister Lafayette, hard rock like Lancelot, I think your pants look hot, Laurens, I like you a lot. Let's hatch a plot blacker than the kettle callin' the pot. What are the odds the gods would put us all in one spot, poppin' a squat on conventional wisdom, like it or not, a bunch of revolutionary manumission abolitionists? Give me a position, show me where the ammunition is! Oh, am I talkin' too loud? Sometimes I get over excited, shoot off at the mouth. I never had a group of friends before, I promise that I'll make y'all proud.",
+      "source": "Hamilton",
+      "length": 559,
+      "id": 5969
+    },
+    {
+      "text": "I imagine death so much it feels more like a memory When's it gonna get me? In my sleep? Seven feet ahead of me? If I see it comin', do I run or do I let it be? Is it like a beat without a melody? See, I never thought I'd live past twenty. Where I come from some get half as many. Ask anybody why we livin' fast and we laugh, reach for a flask, we have to make this moment last, that's plenty. Scratch that, this is not a moment, it's the movement where all the hungriest brothers with something to prove went? Foes oppose us, we take an honest stand, we roll like Moses, claimin' our promised land. And? If we win our independence? 'Zat a guarantee of freedom for our descendants? Or will the blood we shed begin an endless cycle of vengeance and death with no defendants? I know the action in the street is excitin', but Jesus, between all the bleedin' 'n fightin' I've been readin' 'n writin'. We need to handle our financial situation. Are we a nation of states? What's the state of our nation? I'm past patiently waitin'. I'm passionately smashin' every expectation, every action's an act of creation! I'm laughin' in the face of casualties and sorrow, for the first time, I'm thinkin' past tomorrow.",
+      "source": "Hamilton",
+      "length": 1205,
+      "id": 5970
+    },
+    {
+      "text": "There's nothing rich folks love more than going downtown and slummin' it with the poor. They pull up in their carriages and gawk at the students in the common Just to watch them talk. Take Philip Schuyler: the man is loaded. Uh-oh, but little does he know that his daughters, Peggy, Angelica, Eliza sneak into the city just to watch all the guys at work, work!",
+      "source": "Hamilton",
+      "length": 360,
+      "id": 5971
+    },
+    {
+      "text": "I've been reading Common Sense by Thomas Paine. So men say that I'm intense or I'm insane. You want a revolution? I want a revelation, so listen to my declaration: \"We hold these truths to be self-evident That all men are created equal\". And when I meet Thomas Jefferson, I'm 'a compel him to include women in the sequel!",
+      "source": "Hamilton",
+      "length": 321,
+      "id": 5972
+    },
+    {
+      "text": "Hear ye, hear ye! My name is Samuel Seabury, and I present \"Free Thoughts on the Proceedings of the Continental Congress!\" Heed not the rabble who scream revolution, they have not your interests at heart. Chaos and bloodshed are not a solution. Don't let them lead you astray. This Congress does not speak for me. They're playing a dangerous game. I pray the king shows you his mercy. For shame, for shame...",
+      "source": "Hamilton",
+      "length": 408,
+      "id": 5973
+    },
+    {
+      "text": "He'd have you all unravel at the sound of screams but the revolution is comin'. The have-nots are gonna win this, it's hard to listen to you with a straight face. Chaos and bloodshed already haunt us, honestly you shouldn't even talk. And what about Boston? Look at the cost, n' all that we've lost n' you talk about Congress?! My dog speaks more eloquently than thee!",
+      "source": "Hamilton",
+      "length": 368,
+      "id": 5974
+    },
+    {
+      "text": "As a kid in the Caribbean I wished for a war. I knew that I was poor, I knew it was the only way to rise up! If they tell my story I am either gonna die on the battlefield in glory or rise up! We will fight for this land but there's only one man who can give us a command so we can rise up! Understand? It's the only way to rise up! Rise up! Here he comes!",
+      "source": "Hamilton",
+      "length": 356,
+      "id": 5975
+    },
+    {
+      "text": "Check it. Can I be real a second? For just a millisecond? Let down my guard and tell the people how I feel a second? Now I'm the model of a modern major general, the venerated Virginian veteran whose men are all lining up, to put me up on a pedestal, writin' letters to relatives embellishin' my elegance and eloquence, but the elephant is in the room, the truth is in ya face when ya hear the British cannons go... boom! Any hope of success is fleeting, how can I keep leading when the people I'm leading keep retreating? We put a stop to the bleeding as the British take Brooklyn, knight takes rook, but look, we are outgunned, outmanned, outnumbered, outplanned. We gotta make an all out stand. Ayo, I'm gonna need a right-hand man.",
+      "source": "Hamilton",
+      "length": 735,
+      "id": 5976
+    },
+    {
+      "text": "Sir, I was a captain under General Montgomery until he caught a bullet in the neck in Quebec, and well, in summary... I think that I could be of some assistance. I admire how you keep firing on the British from a distance. I have some questions, a couple of suggestions on how to fight instead of fleeing west.",
+      "source": "Hamilton",
+      "length": 310,
+      "id": 5977
+    },
+    {
+      "text": "On the contrary. I called you here because our odds are beyond scary. Your reputation precedes you, but I have to laugh. Hamilton, how come no one can get you on their staff? Don't get me wrong, you're a young man, of great renown. I know you stole British cannons when we were still downtown. Nathaniel Green and Henry Knox wanted to hire you...",
+      "source": "Hamilton",
+      "length": 346,
+      "id": 5978
+    },
+    {
+      "text": "It's alright, you want to fight, you've got a hunger. I was just like you when I was younger. Head full of fantasies of dyin' like a martyr? Dying is easy, young man. Living is harder.",
+      "source": "Hamilton",
+      "length": 184,
+      "id": 5979
+    },
+    {
+      "text": "I'm being honest. I'm working with a third of what our Congress has promised. We are a powder keg about to explode, I need someone like you to lighten the load. So?",
+      "source": "Hamilton",
+      "length": 164,
+      "id": 5980
+    },
+    {
+      "text": "I'll write to Congress and tell 'em we need supplies, you rally the guys, master the element of surprise. I'll rise above my station, organize your information, 'til we rise to the occasion of our new nation. Sir!",
+      "source": "Hamilton",
+      "length": 213,
+      "id": 5981
+    },
+    {
+      "text": "I have never been the type to try and grab the spotlight. We were at a revel with some rebels on a hot night, laughin' at my sister as she's dazzling the room then you walked in and my heart went \"Boom!\" Tryin' to catch your eye from the side of the ballroom, everybody's dancin' and the band's top volume. Grind to the rhythm as we wine and dine. Grab my sister, and whisper, \"Yo, this one's mine.\" My sister made her way across the room to you and I got nervous, thinking \"What's she gonna do?\" She grabbed you by the arm, I'm thinkin' \"I'm through\" Then you look back at me and suddenly I'm helpless!",
+      "source": "Hamilton",
+      "length": 603,
+      "id": 5982
+    },
+    {
+      "text": "Two weeks later, In the living room stressin' My father's stone-faced while you're asking for his blessin'. I'm dying inside, as you wine and dine and I'm tryin' not to cry, 'cause there's nothing that your mind can't do. My father makes his way across the room to you. I panic for a second, thinking, \"we're through\" But then he shakes your hand and says, \"Be true\" And you turn back to me, smiling, and I'm helpless!",
+      "source": "Hamilton",
+      "length": 418,
+      "id": 5983
+    },
+    {
+      "text": "Eliza, I don't have a dollar to my name, an acre of land, a troop to command, a dollop of fame. All I have's my honor, a tolerance for pain, a couple of college credits and my top-notch brain. Insane, your family brings out a different side of me, Peggy confides in me, Angelica tried to take a bite of me, no stress, my love for you is never in doubt. We'll get a little place in Harlem and we'll figure it out. I've been livin' without a family since I was a child. My father left, my mother died, I grew up buckwild. But I'll never forget my mother's face, that was real, and long as I'm alive, Eliza, swear to God, you'll never feel so helpless!",
+      "source": "Hamilton",
+      "length": 649,
+      "id": 5984
+    },
+    {
+      "text": "I remember that night, I just might regret that night for the rest of my days. I remember those soldier boys tripping over themselves to win our praise. I remember that dreamlike candlelight like a dream that you can't quite place, but Alexander, I'll never forget the first time I saw your face. I have never been the same, Intelligent eyes in a hunger-pang frame, And when you said \"Hi,\" I forgot my dang name, set my heart aflame, ev'ry part aflame, this is not a game.",
+      "source": "Hamilton",
+      "length": 472,
+      "id": 5985
+    },
+    {
+      "text": "So this is what it feels like to match wits with someone at your level! What the hell is the catch? It's the feeling of freedom, of seein' the light, it's Ben Franklin with a key and a kite! You see it, right? The conversation lasted two minutes, maybe three minutes, ev'rything we said in total agreement, it's a dream and it's a bit of a dance, a bit of a posture, it's a bit of a stance. He's a bit of a flirt, but I'm 'a give it a chance. I asked about his fam'ly, did you see his answer? His hands started fidgeting, he looked askance? He's penniless, he's flying by the seat of his pants. Handsome, boy, does he know it! Peach fuzz, and he can't even grow it! I wanna take him far away from this place, then I turn and see my sister's face and she is helpless. And I know she is helpless. And her eyes are just helpless. And I realize three fundamental truths at the exact same time.",
+      "source": "Hamilton",
+      "length": 889,
+      "id": 5986
+    },
+    {
+      "text": "I'm a girl in a world in which my only job is to marry rich. My father has no sons so I'm the one who has to social climb for one, so I'm the oldest and the wittiest and the gossip in New York City is insidious, And Alexander is penniless, Ha! That doesn't mean I want him any less.",
+      "source": "Hamilton",
+      "length": 282,
+      "id": 5987
+    },
+    {
+      "text": "I know my sister like I know my own mind, you will never find anyone as trusting or as kind. If I tell her that I love him she'd be silently resigned, he'd be mine. She would say, \"I'm fine\", she'd be lying. But when I fantasize at night it's Alexander's eyes, as I romanticize what might have been if I hadn't sized him up so quickly. At least my dear Eliza's his wife; at least I keep his eyes in my life.",
+      "source": "Hamilton",
+      "length": 407,
+      "id": 5988
+    },
+    {
+      "text": "Ignore them. Congrats to you, Lieutenant Colonel. I wish I had your command instead of manning George's journal.",
+      "source": "Hamilton",
+      "length": 112,
+      "id": 5989
+    },
+    {
+      "text": "Love doesn't discriminate between the sinners and the saints, it takes and it takes and it takes and we keep loving anyway. We laugh and we cry and we break and we make our mistakes. And if there's a reason I'm by her side when so many have tried then I'm willing to wait for it. I'm willing to wait for it.",
+      "source": "Hamilton",
+      "length": 307,
+      "id": 5990
+    },
+    {
+      "text": "Death doesn't discriminate between the sinners and the saints, it takes and it takes and it takes and we keep living anyway. We rise and we fall and we break and we make our mistakes. And if there's a reason I'm still alive when everyone who loves me has died I'm willing to wait for it.",
+      "source": "Hamilton",
+      "length": 287,
+      "id": 5991
+    },
+    {
+      "text": "Hamilton doesn't hesitate. He exhibits no restraint. He takes and he takes and he takes and he keeps winning anyway. He changes the game. He plays and he raises the stakes. And if there's a reason he seems to thrive when so few survive, then Goddamnit I'm willing to wait for it.",
+      "source": "Hamilton",
+      "length": 279,
+      "id": 5992
+    },
+    {
+      "text": "I have never seen the General so despondent. I have taken over writing all his correspondence. Congress writes, \"George, attack the British forces.\" I shoot back, we have resorted to eating our horses. Local merchants deny us equipment, assistance, they only take British money, so sing a song of sixpence.",
+      "source": "Hamilton",
+      "length": 306,
+      "id": 5993
+    },
+    {
+      "text": "Alex, listen. There's only one way for us to win this. Provoke outrage, outright. Don't engage, strike by night. Remain relentless 'til their troops take flight.",
+      "source": "Hamilton",
+      "length": 161,
+      "id": 5994
+    },
+    {
+      "text": "I stay at work with Hamilton, we write essays against slavery, and every day's a test of our camaraderie and bravery.",
+      "source": "Hamilton",
+      "length": 117,
+      "id": 5995
+    },
+    {
+      "text": "We cut supply lines, we steal contraband, we pick and choose our battles and places to take a stand. And ev'ry day, \"Sir, entrust me with a command,\" and ev'ry day, he dismisses me out of hand.",
+      "source": "Hamilton",
+      "length": 193,
+      "id": 5996
+    },
+    {
+      "text": "Washington cannot be left alone to his devices indecisive, from crisis to crisis. The best thing he can do for the revolution is turn n' go back to plantin' tobacco in Mount Vernon.",
+      "source": "Hamilton",
+      "length": 181,
+      "id": 5997
+    },
+    {
+      "text": "Well, I don't have your name. I don't have your titles. I don't have your land. But, if you- if you gave me command of a battalion, a group of men to lead, I could fly above my station after the war.",
+      "source": "Hamilton",
+      "length": 199,
+      "id": 5998
+    },
+    {
+      "text": "I knew you'd fight until the war was won. But you deserve a chance to meet your son. Look around, look around at how lucky we are to be alive right now.Look at where you are. Look at where you started. The fact that you're alive is a miracle. Just stay alive, that would be enough. And if this child shares a fraction of your smile or a fragment of your mind, look out world! That would be enough. I don't pretend to know the challenges you're facing. The worlds you keep erasing and creating in your mind. But I'm not afraid. I know who I married. So long as you come home at the end of the day that would be enough. We don't need a legacy. We don't need money. If I could grant you peace of mind, If you could let me inside your heart... Oh, let me be a part of the narrative in the story they will write someday. Let this moment be the first chapter: where you decide to stay and I could be enough and we could be enough, that would be enough.",
+      "source": "Hamilton",
+      "length": 946,
+      "id": 5999
+    },
+    {
+      "text": "How does a ragtag volunteer army in need of a shower somehow defeat a global superpower? How do we emerge victorious from the quagmire? Leave the battlefield waving Betsy Ross' flag higher? Yo. Turns out we have a secret weapon! An immigrant you know and love who's unafraid to step in! He's constantly confusin', confoundin' the British henchmen. Ev'ryone give it up for America's favorite fighting Frenchman!",
+      "source": "Hamilton",
+      "length": 410,
+      "id": 6000
+    },
+    {
+      "text": "Alexander Hamilton, troops are waiting in the field for you. If you join us right now, together we can turn the tide. Oh, Alexander Hamilton, I have soldiers who will yield for you. If we manage to get this right, they'll surrender by early light. The world will never be the same, Alexander...",
+      "source": "Hamilton",
+      "length": 294,
+      "id": 6001
+    },
+    {
+      "text": "I was younger then you are now when I was given my first command. I led my men straight into a massacre. I witnessed their deaths firsthand. I made every mistake, I felt the shame rise in me, and even now I lie awake, knowing history has its eyes on me.",
+      "source": "Hamilton",
+      "length": 253,
+      "id": 6002
+    },
+    {
+      "text": "Let me tell you what I wish I'd known when I was young and dreamed of glory: You have no control: Who lives, who dies, who tells your story. I know that we can win. I know that greatness lies in you. But remember from here on in, history has its eyes on you.",
+      "source": "Hamilton",
+      "length": 258,
+      "id": 6003
+    },
+    {
+      "text": "I imagine death so much it feels more like a memory. This is where it gets me: on my feet, the enemy ahead of me. If this is the end of me, at least I have a friend with me, weapon in my hand, a command, and my men with me. Then I remember my Eliza's expecting me... not only that, my Eliza's expecting. We gotta go, gotta get the job done, gotta start a new nation, gotta meet my son! Take the bullets out your gun! The bullets out your gun! We move under cover and we move as one through the night, we have one shot to live another day. We cannot let a stray gunshot give us away. We will fight up close, seize the moment and stay in it. It's either that or meet the business end of a bayonet. The code word is 'Rochambeau', dig me? You have your orders now, go, man, go!",
+      "source": "Hamilton",
+      "length": 773,
+      "id": 6004
+    },
+    {
+      "text": "A tailor spyin' on the British government! I take their measurements, information and then I smuggle it! To my brother's revolutionary covenant I'm runnin' with the Sons of Liberty and I am lovin' it! See, that's what happens when you up against the ruffians. We in the shit now, somebody gotta shovel it! Hercules Mulligan, I need no introduction, when you knock me down I get the fuck back up again!",
+      "source": "Hamilton",
+      "length": 401,
+      "id": 6005
+    },
+    {
+      "text": "We negotiate the terms of surrender. I see George Washington smile. We escort their men out of Yorktown. They stagger home single file. Tens of thousands of people flood the streets. There are screams and church bells ringing. And as our fallen foes retreat, I hear the drinking song they're singing...",
+      "source": "Hamilton",
+      "length": 302,
+      "id": 6006
+    },
+    {
+      "text": "Oh Philip, when you smile I am undone. My son. Look at my son. Pride is not the word I'm looking for. There is so much more inside me now. Oh Philip, you outshine the morning sun. My son. When you smile, I fall apart. And I thought I was so smart. My father wasn't around. I swear that I'll be around for you. I'll do whatever it takes. I'll make the world safe and sound for you...",
+      "source": "Hamilton",
+      "length": 382,
+      "id": 6007
+    },
+    {
+      "text": "Gentlemen of the jury, I'm curious, bear with me. Are you aware that we're making hist'ry? This is the first murder trial of our brand-new nation. The liberty behind deliberation.",
+      "source": "Hamilton",
+      "length": 179,
+      "id": 6008
+    },
+    {
+      "text": "Corruption's such an old song that we can sing along in harmony and nowhere is it stronger than in Albany. This colony's economy's increasingly stalling and honestly, that's why public service seems to be calling me. I practiced the law, I practic'ly perfected it. I've seen injustice in the world and I've corrected it. Now for a strong central democracy, If not, then I'll be Socrates throwing verbal rocks at these mediocrities.",
+      "source": "Hamilton",
+      "length": 431,
+      "id": 6009
+    },
+    {
+      "text": "I know I talk too much, I'm abrasive. You're incredible in court. You're succinct, persuasive. My client needs a strong defense. You're the solution.",
+      "source": "Hamilton",
+      "length": 149,
+      "id": 6010
+    },
+    {
+      "text": "Burr, we studied and we fought and we killed for the notion of a nation we now get to build. For once in your life, take a stand with pride. I don't understand how you stand to the side.",
+      "source": "Hamilton",
+      "length": 186,
+      "id": 6011
+    },
+    {
+      "text": "I'll keep all my plans close to my chest. I'll wait here and see which way the wind will blow. I'm taking my time, watching the afterbirth of a nation, watching the tension grow.",
+      "source": "Hamilton",
+      "length": 178,
+      "id": 6012
+    },
+    {
+      "text": "I am sailing off to London. I'm accompanied by someone who always pays. I have found a wealthy husband who will keep me in comfort for all my days. He is not a lot of fun, but there's no one who can match you for turn of phrase. My Alexander.",
+      "source": "Hamilton",
+      "length": 242,
+      "id": 6013
+    },
+    {
+      "text": "Alexander joins forces with James Madison and John Jay to write a series of essays defending the new United States Constitution, entitled The Federalist Papers. The plan was to write a total of twenty-five essays, the work divided evenly among the three men. In the end, they wrote eighty-five essays, in the span of six months. John Jay got sick after writing five. James Madison wrote twenty-nine. Hamilton wrote the other fifty-one!",
+      "source": "Hamilton",
+      "length": 435,
+      "id": 6014
+    },
+    {
+      "text": "They are asking me to lead. I am doing the best I can to get the people that I need, I'm asking you to be my right hand man.",
+      "source": "Hamilton",
+      "length": 124,
+      "id": 6015
+    },
+    {
+      "text": "How does the bastard orphan, immigrant decorated war vet unite the colonies through more debt? Fight the other founding fathers til he has to forfeit? Have it all, lose it all, you ready for more yet? Treasury Secretary. Washington's the President, ev'ry American experiment sets a precedent. Not so fast. Someone came along to resist him. Pissed him off until we had a two-party system. You haven't met him yet, you haven't had the chance, 'cause he's been kickin' ass as the ambassador to France but someone's gotta keep the American promise. You simply must meet Thomas. Thomas!",
+      "source": "Hamilton",
+      "length": 581,
+      "id": 6016
+    },
+    {
+      "text": "France is following us to revolution, there is no more status quo. But the sun comes up and the world still spins. I helped Lafayette draft a declaration, then I said, 'I gotta go. I gotta be in Monticello.' Now the work at home begins...",
+      "source": "Hamilton",
+      "length": 238,
+      "id": 6017
+    },
+    {
+      "text": "There's a letter on my desk from the President. Haven't even put my bags down yet. Sally be a lamb, darlin', won'tcha open it? It says the President's assembling a cabinet and that I am to be the Secretary of State, great! And that I'm already Senate-approved... I just got home and now I'm headed up to New York.",
+      "source": "Hamilton",
+      "length": 313,
+      "id": 6018
+    },
+    {
+      "text": "Thomas, we are engaged in a battle for our nation's very soul. Can you get us out of the mess we're in? Hamilton's new financial plan is nothing less than government control. I've been fighting for the South alone. Where have you been? We have to win.",
+      "source": "Hamilton",
+      "length": 251,
+      "id": 6019
+    },
+    {
+      "text": "Ladies and gentlemen, you coulda been anywhere in the world tonight, but you're here with us in New York City. Are you ready for a cabinet meeting? The issue on the table: Secretary Hamilton's plan to assume state debt and establish a national bank. Secretary Jefferson, you have the floor, sir.",
+      "source": "Hamilton",
+      "length": 295,
+      "id": 6020
+    },
+    {
+      "text": "'Life, liberty and the pursuit of happiness.' We fought for these ideals; we shouldn't settle for less. These are wise words, enterprising men quote 'em. Don't act surprised, you guys, cuz I wrote 'em. But Hamilton forgets his plan would have the government assume state's debts. Now, place your bets as to who that benefits: the very seat of government where Hamilton sits. Ooh, if the shoe fits, wear it. If New York's in debt, why should Virginia bear it? Uh! Our debts are paid, I'm afraid. Don't tax the South cuz we got it made in the shade. In Virginia, we plant seeds in the ground. We create. You just wanna move our money around. This financial plan is an outrageous demand, and it's too many damn pages for any man to understand. Stand with me in the land of the free and pray to God we never see Hamilton's candidacy. Look, when Britain taxed our tea, we got frisky. Imagine what gon' happen when you try to tax our whisky.",
+      "source": "Hamilton",
+      "length": 935,
+      "id": 6021
+    },
+    {
+      "text": "Thomas. That was a real nice declaration. Welcome to the present, we're running a real nation. Would you like to join us, or stay mellow, Doin' whatever the hell it is you do in Monticello? If we assume the debts, the union gets A new line of credit, a financial diuretic. How do you not get it? If we're aggressive and competitive The union gets a boost. You'd rather give it a sedative? A civics lesson from a slaver. Hey neighbor, Your debts are paid cuz you don't pay for labor. \"We plant seeds in the South. We create.\" Yeah, keep ranting, we know who's really doing the planting. And another thing, Mr. Age of Enlightenment, Don't lecture me about the war, you didn't fight in it. You think I'm frightened of you, man? We almost died in a trench while you were off getting high with the French. Thomas Jefferson, always hesitant with the President, reticent, there isn't a plan he doesn't jettison. Madison, you're mad as a hatter, son, take your medicine. Damn, you're in worse shape than the national debt is in.",
+      "source": "Hamilton",
+      "length": 1020,
+      "id": 6022
+    },
+    {
+      "text": "My dearest, Angelica, \"tomorrow and tomorrow and tomorrow creeps in this petty pace from day to day\" I trust you'll understand the reference to another Scottish tragedy without my having to name the play. They think me Macbeth, and ambition is my folly, I'm a polymath, a pain in the ass, a massive pain, Madison is Banquo, Jefferson's Macduff And Birnam Wood is Congress on its way to Dunsinane.",
+      "source": "Hamilton",
+      "length": 396,
+      "id": 6023
+    },
+    {
+      "text": "Daddy, daddy, look. My name is Philip. I am a poet. I wrote this poem just to show it. And I just turned nine. You can write rhymes, but you can't write mine. I practice French and play piano with my mother. I have a sister but I want a little brother. My daddy's trying to start America's bank. Un deux trois quatre cinq!",
+      "source": "Hamilton",
+      "length": 322,
+      "id": 6024
+    },
+    {
+      "text": "My dearest Alexander, You must get through to Jefferson. Sit down with him and compromise, don't stop 'til you agree your fav'rite older sister, Angelica, reminds you there's someone in your corner all the way across the sea. In a letter I received from you two weeks ago I noticed a comma in the middle of a phrase. It changed the meaning. Did you intend this? One stroke and you've consumed my waking days. It says: \"My dearest Angelica\" With a comma after \"dearest.\" You've written \"My dearest, Angelica.\" Anyway, all this to say I'm coming home this summer at my sister's invitation, I'll be there with your fam'ly if you make your way upstate. I know you're very busy, I know your work's important, but I'm crossing the ocean and I just can't wait. You won't be an ocean away. You will only be a moment away...",
+      "source": "Hamilton",
+      "length": 815,
+      "id": 6025
+    },
+    {
+      "text": "That's when I began to pray: Lord, show me how to say no to this. I don't know how to say no to this.",
+      "source": "Hamilton",
+      "length": 101,
+      "id": 6026
+    },
+    {
+      "text": "The immigrant emerges with unprecedented financial power, a system he can shape however he wants. The Virginians emerge with the nation's capital. And here's the piece de resistance: No one else was in the room where it happened.",
+      "source": "Hamilton",
+      "length": 229,
+      "id": 6027
+    },
+    {
+      "text": "No one really knows how the parties get to yes. The pieces that are sacrificed in ev'ry game of chess. We just assume that it happens. But no one else is in the room where it happens.",
+      "source": "Hamilton",
+      "length": 183,
+      "id": 6028
+    },
+    {
+      "text": "Maybe we can solve one problem with another and win a victory for the Southerners, in other words- a quid pro quo.",
+      "source": "Hamilton",
+      "length": 114,
+      "id": 6029
+    },
+    {
+      "text": "My God! In God we trust. But we'll never really know what got discussed. Click-boom then it happened. And no one else was in the room where it happened.",
+      "source": "Hamilton",
+      "length": 152,
+      "id": 6030
+    },
+    {
+      "text": "When you got skin in the game, you stay in the game. But you don't get a win unless you play in the game. Oh, you get love for it. You get hate for it. You get nothing if you wait for it, wait for it, wait!",
+      "source": "Hamilton",
+      "length": 206,
+      "id": 6031
+    },
+    {
+      "text": "God help and forgive me, I wanna build something that's gonna outlive me. What do you want, Burr? If you stand for nothing, Burr, then what do you fall for?",
+      "source": "Hamilton",
+      "length": 156,
+      "id": 6032
+    },
+    {
+      "text": "The art of the compromise, hold your nose and close your eyes. We want our leaders to save the day, We dream of a brand new start, but we dream in the dark for the most part. Dark as a tomb where it happens. I've got to be in the room where it happens.",
+      "source": "Hamilton",
+      "length": 252,
+      "id": 6033
+    },
+    {
+      "text": "Oh, Wall Street thinks you're great. You'll always be adored by the things you create. But upstate, people think you're crooked! And Schuyler's seat was up for grabs, so I took it.",
+      "source": "Hamilton",
+      "length": 180,
+      "id": 6034
+    },
+    {
+      "text": "I changed parties to seize the opportunity I saw. I swear, your pride will be the death of us all! Beware: it goeth before the fall...",
+      "source": "Hamilton",
+      "length": 134,
+      "id": 6035
+    },
+    {
+      "text": "The issue on the table: France is on the verge of war with England. Do we provide aid and troops to our French allies or do we stay out of it? Remember, my decision on this matter is not subject to congressional approval. The only person you have to convince is me. Secretary Jefferson, you have the floor, sir.",
+      "source": "Hamilton",
+      "length": 311,
+      "id": 6036
+    },
+    {
+      "text": "When we were on death's door, when we were needy, we made a promise, we signed a treaty. We needed money and guns and half a chance. Who provided those funds? In return, they didn't ask for land, only a promise that we'd lend a hand and stand with them if they fought against oppressors, and revolution is messy but now is the time to stand. Stand with our brothers as they fight against tyranny. I know that Alexander Hamilton is here and he would rather not have this debate. I'll remind you that he is not Secretary of State. He knows nothing of loyalty, smells like new money, dresses like fake royalty, desperate to rise above his station, everything he does betrays the ideals of our nation.",
+      "source": "Hamilton",
+      "length": 697,
+      "id": 6037
+    },
+    {
+      "text": "You must be out of your Goddamn mind if you think the President is gonna bring the nation to the brink of meddling in the middle of a military mess, a game of chess, where France is Queen and Kingless. We signed a treaty with a King whose head is now in a basket. Would you like to take it out and ask it? \"Should we honor our treaty, King Louis' head?\" \"Uh... do whatever you want, I'm super dead.\"",
+      "source": "Hamilton",
+      "length": 399,
+      "id": 6038
+    },
+    {
+      "text": "Have you an ounce of regret? You accumulate debt, you accumulate power, yet in their hour of need, you forget.",
+      "source": "Hamilton",
+      "length": 110,
+      "id": 6039
+    },
+    {
+      "text": "Lafayette's a smart man, he'll be fine. And before he was your friend, he was mine. If we try to fight in every revolution in the world, we never stop. Where do we draw the line?",
+      "source": "Hamilton",
+      "length": 178,
+      "id": 6040
+    },
+    {
+      "text": "Ev'ry action has its equal, opposite reactions. Thanks to Hamilton, our cab'net's fractured into factions. Try not to crack under the stress, we're breaking down like fractions. We smack each other in the press, and we don't print retractions. I get no satisfaction witnessing his fits of passion. The way he primps and preens and dresses like the pits of fashion. Our poorest citizens, our farmers, live ration to ration as Wall Street robs 'em blind in search of chips to cash in.",
+      "source": "Hamilton",
+      "length": 482,
+      "id": 6041
+    },
+    {
+      "text": "I'm in the cabinet. I am complicit in watching him grabbin' at power and kiss it. If Washington isn't gon' listen to disciplined dissidents, this is the difference: This kid is out!",
+      "source": "Hamilton",
+      "length": 181,
+      "id": 6042
+    },
+    {
+      "text": "If I say goodbye, the nation learns to move on. It outlives me when I'm gone. Like the scripture says: \"Everyone shall sit under their own vine and fig tree and no one shall make them afraid.\" They'll be safe in the nation we've made. I wanna sit under my own vine and fig tree. A moment alone in the shade, at home in this nation we've made.",
+      "source": "Hamilton",
+      "length": 342,
+      "id": 6043
+    },
+    {
+      "text": "Though, in reviewing the incidents of my administration, I am unconscious of intentional error, I am nevertheless too sensible of my defects not to think it probable that I may have committed many errors. I shall also carry with me the hope that my country will view them with indulgence; And that, after forty-five years of my life dedicated to its service with an upright zeal the faults of incompetent abilities will be consigned to oblivion, as I myself must soon be to the mansions of rest. I anticipate with pleasing expectation that retreat in which I promise myself to realize the sweet enjoyment of partaking, in the midst of my fellowcitizens, the benign influence of good laws Under a free government, the ever-favorite object of my heart, and the happy reward, as I trust, Of our mutual cares, labors, and dangers.",
+      "source": "Hamilton",
+      "length": 826,
+      "id": 6044
+    },
+    {
+      "text": "They say George Washington's yielding his power and stepping away. 'Zat true? I wasn't aware that was something a person could do. I'm perplexed. Are they gonna keep on replacing whoever's in charge? If so, who's next? There's nobody else in their country who looms quite as large...",
+      "source": "Hamilton",
+      "length": 283,
+      "id": 6045
+    },
+    {
+      "text": "This is great! He's out of power. He holds no office. And he just destroyed President John Adams, the only other significant member of his party.",
+      "source": "Hamilton",
+      "length": 145,
+      "id": 6046
+    },
+    {
+      "text": "She courted me. Escorted me to bed and when she had me in a corner that's when Reynolds extorted me for a sordid fee. I paid him quarterly. I may have mortally wounded my prospects but my papers are orderly! As you can see I kept a record of every check in my checkered History. Check it again against your list n' see consistency. I never spent a cent that wasn't mine, you sent the dogs after my scent, that's fine. Yes, I have reasons for shame but I have not committed treason and sullied my good name. As you can see I have done nothing to provoke legal action. Are my answers to your satisfaction?",
+      "source": "Hamilton",
+      "length": 603,
+      "id": 6047
+    },
+    {
+      "text": "You and your words flooded my senses. Your sentences left me defenseless. You built me palaces out of paragraphs, you built cathedrals. I'm re-reading the letters you wrote me. I'm searching and scanning for answers in every line, for some kind of sign, and when you were mine the world seemed to burn.",
+      "source": "Hamilton",
+      "length": 302,
+      "id": 6048
+    },
+    {
+      "text": "You published the letters she wrote you. You told the whole world how you brought this girl into our bed. In clearing your name, you have ruined our lives. Do you know what Angelica said When she read what you'd done? She said, \"You have married an Icarus. He has flown too close to the sun.\"",
+      "source": "Hamilton",
+      "length": 292,
+      "id": 6049
+    },
+    {
+      "text": "Alright. So this is what you're gonna do: Stand there like a man until Eacker is in front of you. When the time comes, fire your weapon in the air. This will put an end to the whole affair.",
+      "source": "Hamilton",
+      "length": 189,
+      "id": 6050
+    },
+    {
+      "text": "I spend hours in the garden. I walk alone to the store, and it's quiet uptown. I never liked the quiet before. I take the children to church on Sunday, a sign of the cross at the door, and I pray. That never used to happen before.",
+      "source": "Hamilton",
+      "length": 230,
+      "id": 6051
+    },
+    {
+      "text": "If I could spare his life, If I could trade his life for mine, he'd be standing here right now and you would smile, and that would be enough. I don't pretend to know the challenges we're facing. I know there's no replacing what we've lost and you need time. But I'm not afraid, I know who I married. Just let me stay here by your side, That would be enough.",
+      "source": "Hamilton",
+      "length": 357,
+      "id": 6052
+    },
+    {
+      "text": "Ev'ry action has an equal, opposite reaction. John Adams shat the bed. I love the guy, but he's in traction. Poor Alexander Hamilton? He is missing in action. So now I'm facing Aaron Burr! With his own faction.",
+      "source": "Hamilton",
+      "length": 210,
+      "id": 6053
+    },
+    {
+      "text": "But when all is said and all is done, Jefferson has beliefs. Burr has none.",
+      "source": "Hamilton",
+      "length": 75,
+      "id": 6054
+    },
+    {
+      "text": "Dear Alexander: I am slow to anger, but I toe the line as I reckon with the effects of your life on mine. I look back on where I failed, and in every place I checked, the only common thread has been your disrespect. Now you call me \"amoral,\" a \"dangerous disgrace,\" if you've got something to say, name a time and place, face to face.",
+      "source": "Hamilton",
+      "length": 334,
+      "id": 6055
+    },
+    {
+      "text": "Mr. Vice President, I am not the reason no one trusts you. No one knows what you believe. I will not equivocate on my opinion, I have always worn it on my sleeve. Even if I said what you think I said, you would need to cite a more specific grievance. Here's an itemized list of thirty years of disagreements. Hey, I have not been shy. I am just a guy in the public eye tryin' to do my best for our republic. I don't wanna fight, But I won't apologize for doing what's right.",
+      "source": "Hamilton",
+      "length": 474,
+      "id": 6056
+    },
+    {
+      "text": "Burr, your grievance is legitimate. I stand by what I said, every bit of it. You stand only for yourself. It's what you do. I can't apologize because it's true.",
+      "source": "Hamilton",
+      "length": 160,
+      "id": 6057
+    },
+    {
+      "text": "I watched Hamilton examine the terrain. I wish I could tell you what was happ'ning in his brain. This man has poisoned my political pursuits!",
+      "source": "Hamilton",
+      "length": 141,
+      "id": 6058
+    },
+    {
+      "text": "Hamilton drew first position. Looking, to the world, like a man on a mission. This is a soldier with a marksman's ability. The doctor turned around so he could have deniability.",
+      "source": "Hamilton",
+      "length": 177,
+      "id": 6059
+    },
+    {
+      "text": "They won't teach you this in your classes, but look it up, Hamilton was wearing his glasses. Why? If not to take deadly aim? It's him or me, the world will never be the same. I had only one thought before the slaughter: This man will not make an orphan of my daughter.",
+      "source": "Hamilton",
+      "length": 268,
+      "id": 6060
+    },
+    {
+      "text": "I imagine death so much it feels more like a memory. Is this where it gets me, on my feet, sev'ral feet ahead of me? I see it coming, do I run or fire my gun or let it be? There is no beat, no melody. Burr, my first friend, my enemy, maybe the last face I ever see, If I throw away my shot, is this how you remember me? What if this bullet is my legacy? Legacy. What is a legacy? It's planting seeds in a garden you never get to see. I wrote some notes at the beginning of a song someone will sing for me. America, you great unfinished symphony, you sent for me. You let me make a difference. A place where even orphan immigrants can leave their fingerprints and rise up. I'm running out of time. I'm running, and my time's up. Wise up. Eyes up. I catch a glimpse of the other side. Laurens leads a soldiers' chorus on the other side. My son is on the other side. He's with my mother on the other side. Washington is watching from the other side. Teach me how to say goodbye. Rise up, rise up, rise up, Eliza, My love, take your time. I'll see you on the other side. Raise a glass to freedom...",
+      "source": "Hamilton",
+      "length": 1094,
+      "id": 6061
+    },
+    {
+      "text": "I'll give him this: his financial system is a work of genius. I couldn't undo it if I tried. And I tried.",
+      "source": "Hamilton",
+      "length": 105,
+      "id": 6062
+    },
+    {
+      "text": "He took our country from bankruptcy to prosperity. I hate to admit it, but he doesn't get enough credit for all the credit he gave us.",
+      "source": "Hamilton",
+      "length": 134,
+      "id": 6063
+    },
+    {
+      "text": "Twenty years from now you will be more disappointed by the things that you didn't do than by the ones you did do.",
+      "source": "Mark Twain",
+      "length": 113,
+      "id": 6064
+    },
+    {
+      "text": "There are no secrets to success. It is the result of preparation, hard work, and learning from failure.",
+      "source": "Colin Powell",
+      "length": 103,
+      "id": 6065
+    },
+    {
+      "text": "Success seems to be connected with action. Successful people keep moving. They make mistakes but they don't quit.",
+      "source": "Conrad Hilton",
+      "length": 113,
+      "id": 6066
+    },
+    {
+      "text": "Don't be distracted by criticism. Remember — the only taste of success some people get is to take a bite out of you.",
+      "source": "Zig Ziglar",
+      "length": 116,
+      "id": 6067
+    },
+    {
+      "text": "Today, I consider myself the luckiest man on the face of the earth.",
+      "source": "The Pride of the Yankees",
+      "length": 67,
+      "id": 6068
+    },
+    {
+      "text": "The real test is not whether you avoid this failure, because you won't. It's whether you let it harden or shame you into inaction, or whether you learn from it; whether you choose to persevere.",
+      "source": "Barack Obama",
+      "length": 193,
+      "id": 6069
+    },
+    {
+      "text": "The best and most beautiful things in the world cannot be seen or even touched — they must be felt with the heart.",
+      "source": "Helen Keller",
+      "length": 114,
+      "id": 6070
+    },
+    {
+      "text": "Life is ten percent what happens to you and ninety percent how you respond to it.",
+      "source": "Charles Swindoll",
+      "length": 81,
+      "id": 6071
+    },
+    {
+      "text": "If you look at what you have in life, you'll always have more. If you look at what you don't have in life, you'll never have enough.",
+      "source": "Oprah Winfrey",
+      "length": 132,
+      "id": 6072
+    },
+    {
+      "text": "Every great dream begins with a dreamer. Always remember, you have within you the strength, the patience, and the passion to reach for the stars to change the world.",
+      "source": "Harriet Tubman",
+      "length": 165,
+      "id": 6073
+    },
+    {
+      "text": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      "source": "Winston Churchill",
+      "length": 86,
+      "id": 6074
+    },
+    {
+      "text": "I just want to apologize to Mike’s mom and Josh’s mom and my mom. And I’m sorry to everyone. I was very naive. I am so, so sorry for everything that has happened. Because in spite of what Mike says now, it is my fault. Because it was my project and I insisted. I insisted on everything. I insisted we weren’t lost. I insisted we keep going. I insisted that we walk south. Everything had to be my way and this is where we’ve ended up. And it’s all because of me that we’re here now: hungry and cold and hunted. I love you, Mom and Dad. I am so sorry... what is that? I’m scared to close my eyes and I’m scared to open them. I’m going to die out here.",
+      "source": "The Blair Witch Project",
+      "length": 649,
+      "approvedBy": "ze_or",
+      "id": 6075
+    },
+    {
+      "text": "I had always been inspired by storytellers. I loved my job as an HR Manager. It allowed me to interact with different people from different places, each one having their own different stories, bringing their own songs to the dance. Life was a choatic struggle, trying to search for where I belonged and who I was supposed to be. Each person I had interviewed had his or her own fascinating story, which made me wonder: what's my story? I didn't want to be normal, just like so many people I had met in life. Being only twenty-six, I wasn't exactly sure what the meaning of my life would really be, and where I could find it.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 624,
+      "id": 6076
+    },
+    {
+      "text": "Every weekend I found myself sitting and listening to amazing authors at the cafe Coffee & Us. I was drawn to authors, fascinated by their ability to create other people's stories. How could they draw the turth from each individual and build a beautifully woven tale? I guess, having stories stuck in my own soul was the reason I needed to hear other people's stories. But I didn't just want to hear stories; my heart was aching to tell a beautiful story which would change people's lives, or at least mine. So there I was at Coffee & Us, my hands wrapped around a warm, soothing cup of coffee. I could listen to the world around me, hear the songs of life, or I could put my earplugs in and mute out of the world. I had seen so many writers come through these doors, and often I wondered if this cafe had some magic within its walls.",
+      "source": "Everyone hashes on a story - Savi Sharma",
+      "length": 834,
+      "id": 6077
+    },
+    {
+      "text": "Kabir, the manager, paused in his duties and addressed me, When are you going to stop dreaming about being an author, Meera, and finally write a book? His voice might have sounded stern to an outsider, but Kabir had become my good friend. I'm not sure when, but at some point while I was becoming a regular visitor to his cafe, our casual conversation had blossomed into a warm friendship. He respected my opinions, and I treasured his. I don't know, I said, frowning.",
+      "source": "Everyone hashes on a story - Savi Sharma",
+      "length": 468,
+      "id": 6078
+    },
+    {
+      "text": "I ran my fingers through my long hair and let out a frustated sigh, looking around at all the people in the small cafe. I think I will know when it is the right story to write. I just haven't come across it yet. I'm still searching for that unique story, the one that will inspire me to take that next step.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 307,
+      "id": 6079
+    },
+    {
+      "text": "He strolled to the counter where another cup of my favourite coffee-a frothy cappuccino-was placed. Kabir set it in the front of me, smiling gently. I am sure, one day, I will be here, pouring coffee and fetching people their orders, as I listen to you up there. The place is going to be packed; you will see. He smiled at the thought and I wondered for a moment if this was my dream or his. Of course, as friends, even our dreams would work in unison, wouldn't they?",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 467,
+      "id": 6080
+    },
+    {
+      "text": "Still, I lacked the confidence he seemed to have in my future success. As much as I wanted to take that next step to give my words the life they deserved, something held me back. I glanced over at the small area where so many writers had stood, taking a small sip of their ice water and clearing their throats before speaking the words I craved to say.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 352,
+      "id": 6081
+    },
+    {
+      "text": "I don't think I would be good enough to stand up there and face the world and a group of readers. It must take a lot of courage for them to do what they do, I said, blowing on my coffee before taking a tentative sip. I smiled as the frothy bubbles clung to my lip and licked them off delicately. What if someone laughed at what I wrote?.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 337,
+      "id": 6082
+    },
+    {
+      "text": "My friend chuckled. They would only laugh if you were reading something funny, he said confidently. Now tell me are you coming for the author's meet next weekend? he asked.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 172,
+      "id": 6083
+    },
+    {
+      "text": "Definitely, I said. What would the weekend bring for some? Would I still be lost in search of my story? Live life in moments, not in days or years or your schedules. It's our misconception - most of the time - that we live our lives the way we want. Every single step that we take is influenced by others. Only the part that we hide from everyone else and keep deep within our heart, is our own. I strongly urge you all to realize that hidden part of yours. Go, live that part. Live your life. Don't let your dreams die within you. Trust me, your struggle, your fight, will be worth the risk in opening yourself up. Get up. Inhale the air of passion. Start your journey. Grab your dreams. Enjoy your mistakes. Dance to the rhythm of your heartbeats. Smile. Laugh. Love. Live.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 775,
+      "id": 6084
+    },
+    {
+      "text": "Author Arjun Mehra uttered these final words with confidence. His hands where clasped together as he looked expectantly around the cafe. His eyes met mine, and I felt my heart beat a little faster. It was as if he was speaking directly to me. But, in fact, he had touched the hearts of every single person in the cafe with his mesmerizing words. How was it that an author could hold such a magical power over people? I closed my eyes and imagined that I was the speaker, standing confidently in front of an audience. I smiled softly to myself. Perhaps one day I would actually be able to move a crowd like this.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 611,
+      "id": 6085
+    },
+    {
+      "text": "What's your story, young girl? I was torn away from my thoughts when I realized Mr. Mehra was pointing directly at me. His soft brown eye were holding mine, kindly, but with a challenging glint. What's your purpose in life? He softened his question with a smile and, suddenly, it felt like a friend was speaking to me.",
+      "source": "Everyone hashes on a story - Savi Sharma",
+      "length": 318,
+      "id": 6086
+    },
+    {
+      "text": "I took a deep breath. I .. I want to write like you, I began nervously, twisting the napkin in my hands as I decided to answer him as truthfully as I could. But I don't know what to write. I am inspired by the world around me, but I am still in search of a story that can change the lives of people. My words sounded hesitant to my ears and I wished I hadn't spoken them.",
+      "source": "Everyone has a story - Savi Sharma",
+      "length": 371,
+      "id": 6087
+    },
+    {
+      "text": "I walked back home. The narrow lanes of the old city were bustling with the evening crowd. My house and Ishaan's were only half a kilometre apart. Everything in my world fell between this distance. I passed by the Nana park, extra packed with kids playing cricket as India had won the match. I played here almost every day of my school life. We still come here sometimes, but now we prefer the abandoned bank branch compound near my home.",
+      "source": "The 3 mistakes of my life - Chetan Bhagat",
+      "length": 438,
+      "id": 6088
+    },
+    {
+      "text": "This earth is His, to Him belong those vast and boundless skies; Both seas within him rest, and yet in that small pool he lies.",
+      "source": "Atharva veda",
+      "length": 127,
+      "id": 6089
+    },
+    {
+      "text": "Whenever human beings find themselves alone, as a natural reaction, they start looking for company. Whenever they are in trouble, they look for someone to help them. Whenever they reach an impasse, they look to someone to show them the way out. Every recurrent anguish, longing, and desire finds its own special helper. For the people who come to me in distress, I am but a go-between in their effort to propitiate demonic forces with prayers and offerings. This is not a correct approach at all and should never be followed. One must understand the difference between a fear-hidden vision of destiny and the vision that enables us to seek the enemy of fulfilment within ourselves.",
+      "source": "Wings of Fire - A P J Abdul Kalam",
+      "length": 681,
+      "id": 6090
+    },
+    {
+      "text": "A king may think over his state affairs with the concentration of a duck and unfold his valour like a lion. Like a wolf he should ambush the enemy, and if occasion demands, flee like a rabbit.",
+      "source": "The ways of the Victorious King",
+      "length": 192,
+      "id": 6091
+    },
+    {
+      "text": "One must be a fox to recognize traps, and a lion to fight off wolves.",
+      "source": "The Prince - Niccolo Machiavelli",
+      "length": 69,
+      "id": 6092
+    },
+    {
+      "text": "Imitate the stork in biding your time, but when the time is right, act with swift and sure aim even as the stork does.",
+      "source": "Tirukkurral",
+      "length": 118,
+      "id": 6093
+    },
+    {
+      "text": "You are willing to die, you coward, but not to live.",
+      "source": "Steppenwolf",
+      "length": 52,
+      "id": 6094
+    },
+    {
+      "text": "They let me pick. Did I ever tell you that? Choose whichever Spartan I wanted. You know me. I did my research, watched as you became the soldier we needed you to be. Like the others, you were strong and swift and brave. A natural leader. But you had something they didn't. Something no one saw but me. Can you guess? Luck... Was I wrong?",
+      "source": "Halo 3",
+      "length": 337,
+      "id": 6095
+    },
+    {
+    "text": "Love like rain, can nourish from above, drenching couples with a soaking joy. But sometimes under the angry heat of life, love dries on the surface and must nourish from below, tending to its roots keeping itself alive.",
+    "source": "By The River Piedra I Sat Down And Wept",
+    "length": 219,
+    "id": 6096
+}
   ]
 }

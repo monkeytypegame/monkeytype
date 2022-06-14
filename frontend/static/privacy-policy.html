@@ -6,11 +6,13 @@
     <title>Privacy Policy | Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
     <link rel="stylesheet" href="css/balloon.css" />
-    <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
     <link rel="shortcut icon" href="images/fav.png" />
+    <% for (var css in htmlWebpackPlugin.files.css) { %>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>" />
+    <% } %>
     <meta name="name" content="Monkeytype" />
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
     <meta
@@ -204,7 +206,7 @@
         </ul>
 
         <h1 id="Data_Storage">How do we store your data?</h1>
-        <p>Monkeytype securely stores your data using Firebase Firestore.</p>
+        <p>Monkeytype securely stores your data using MongoDB.</p>
 
         <h1 id="Data_Protection_Rights">
           What are your data protection rights?
@@ -318,7 +320,7 @@
           Monkeytype keeps its privacy policy under regular review and places
           any updates on this web page. The Monkeytype privacy policy may be
           subject to change at any given time without notice. This privacy
-          policy was last updated on 22 April 2021.
+          policy was last updated on 21 February 2022.
         </p>
         <!-- TODO: add way to view when file was last committed to using the GitHub api-->
 
@@ -348,10 +350,8 @@
         </span>
       </div>
     </div>
-    <!-- TODO: Add image to go back to top of page -->
   </body>
   <script defer>
-    // TODO: Add notification that appears when username copy is successful from notifications module
     function copyUserName() {
       if (true) {
         navigator.clipboard.writeText("Miodec#1512");

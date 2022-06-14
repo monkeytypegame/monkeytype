@@ -1,26 +1,22 @@
 @media only screen and (max-width: 1250px) {
   #leaderboardsWrapper #leaderboards {
-    grid-template-rows: 1.5rem auto;
-    padding: 1rem;
-    gap: 1rem;
     .mainTitle {
       font-size: 2rem;
-      line-height: 2rem;
     }
     .title {
       font-size: 1rem;
     }
     .leaderboardsTop {
+      grid-template-columns: max-content;
       .buttonGroup {
-        gap: 0.1rem !important;
-
-        .button {
-          padding: 0.4rem !important;
-          font-size: 0.7rem !important;
-        }
+        grid-auto-flow: row;
+        gap: 0.5rem;
       }
     }
     .tables table {
+      .avatarNameBadge .badge .text {
+        display: none;
+      }
       tr td:first-child {
         padding-left: 0.25rem;
       }
@@ -32,13 +28,18 @@
       }
     }
   }
+  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr 1fr max-content;
+  }
 }
 
 @media only screen and (max-width: 1050px) {
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr 1fr;
   }
-
+  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr;
+  }
   #result .morestats {
     gap: 1rem;
     grid-template-rows: 1fr 1fr;
@@ -93,18 +94,17 @@
 }
 
 @media only screen and (max-width: 900px) {
-  // #leaderboards {
-  //   .mainTitle {
-  //     font-size: 1.5rem !important;
-  //     line-height: 1.5rem !important;
-  //   }
-  // }
+  #leaderboards {
+    .mainTitle {
+      font-size: 1.5rem !important;
+    }
+  }
   #bannerCenter .banner .container {
-    grid-template-columns: 1fr auto;
     .image {
       display: none;
     }
-    .lefticon {
+    .lefticon,
+    .righticon {
       display: none;
     }
     .text {
@@ -168,7 +168,7 @@
       line-height: 0.8rem;
       margin-top: -0.5rem;
 
-      .icon-button {
+      .text-button {
         padding: 0.25rem;
       }
     }
@@ -207,13 +207,37 @@
   #commandLineInput {
     width: 600px !important;
   }
-  #leaderboardsWrapper #leaderboards {
-    .tables table {
-      tr td:nth-child(4) {
-        display: none;
+  #leaderboardsWrapper {
+    #leaderboards {
+      .leaderboardsTop {
+        flex-direction: column;
+        align-items: baseline;
+        grid-template-areas:
+          "title title"
+          "subtitle subtitle"
+          "yesterday yesterday"
+          "buttons buttons";
+        .buttonGroup {
+          grid-auto-flow: column;
+        }
+        .showYesterdayButton {
+          margin-left: 0;
+        }
       }
-      tr td:last-child {
-        width: 30%;
+      .tables {
+        grid-template-columns: unset;
+        table {
+          .avatarNameBadge .badge .text {
+            display: block;
+          }
+          tr td:last-child {
+            width: 30%;
+          }
+        }
+      }
+      .tables .rightTableWrapper,
+      .tables .leftTableWrapper {
+        height: calc(50vh - 10rem);
       }
     }
   }
@@ -245,6 +269,10 @@
         }
       }
     }
+  }
+  .badge::after,
+  .badge::before {
+    display: none;
   }
 }
 
@@ -300,23 +328,6 @@
 
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr;
-  }
-
-  #leaderboardsWrapper {
-    #leaderboards {
-      grid-template-rows: 2.5rem auto;
-      .leaderboardsTop {
-        flex-direction: column;
-        align-items: baseline;
-      }
-      .tables {
-        grid-template-columns: unset;
-      }
-      .tables .rightTableWrapper,
-      .tables .leftTableWrapper {
-        height: calc(50vh - 8rem);
-      }
-    }
   }
 }
 
@@ -384,6 +395,14 @@
 }
 
 @media only screen and (max-width: 550px) {
+  #cookiePopupWrapper {
+    #cookiePopup,
+    .extensionMessage {
+      right: 1rem;
+      bottom: 1rem;
+      width: calc(100vw - 2rem);
+    }
+  }
   #keymap {
     .row {
       height: 1.25rem;
@@ -483,7 +502,7 @@
       }
     }
     #menu {
-      .icon-button {
+      .text-button {
         padding: 0;
       }
     }
@@ -544,7 +563,18 @@
     width: 85vw;
     .tables .rightTableWrapper,
     .tables .leftTableWrapper {
-      height: calc(50vh - 7rem);
+      height: calc(50vh - 10rem);
+    }
+    .tables {
+      grid-template-columns: unset;
+      table {
+        .avatarNameBadge .badge .text {
+          display: block;
+        }
+        tr td:nth-child(4) {
+          display: none;
+        }
+      }
     }
   }
 }

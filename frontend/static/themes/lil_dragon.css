@@ -2,7 +2,8 @@
   --bg-color: #ebe1ef;
   --main-color: #8a5bd6;
   --caret-color: #212b43;
-  --sub-color: #ac76e5;
+  --sub-color: #a28db8;
+  --sub-alt-color: #dac7e2;
   --text-color: #212b43;
   --error-color: #f794ca;
   --error-extra-color: #f279c2;
@@ -10,10 +11,10 @@
   --colorful-error-extra-color: #f279c2;
 }
 
-#menu .icon-button {
+#menu .text-button {
   color: #ba96db;
 }
 
-#menu .icon-button:hover {
+#menu .text-button:hover {
   color: #212b43;
 }

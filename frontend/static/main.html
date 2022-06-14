@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%= compilation.assets["html/head.html"].source() %>
+
+  <body>
+    <%= compilation.assets["html/warnings.html"].source() %>
+
+    <div id="ad_rich_media" class="hidden"></div>
+    <div class="customBackground"></div>
+    <div id="backgroundLoader" style="display: none"></div>
+    <div id="bannerCenter" class="focus"></div>
+    <div id="notificationCenter">
+      <div class="history"></div>
+    </div>
+    <div id="timerWrapper">
+      <div id="timer" class="timerMain"></div>
+    </div>
+
+    <div
+      class="nameChangeMessage"
+      style="
+        background-color: var(--main-color);
+        padding: 0.5rem;
+        text-align: center;
+        color: var(--bg-color);
+        display: none;
+      "
+    >
+      Important information about your account. Please click this message.
+    </div>
+
+    <%= compilation.assets["html/popups.html"].source() %>
+
+    <div style="display: flex; justify-content: space-around">
+      <div id="centerContent" class="hidden">
+        <%= compilation.assets["html/top.html"].source() %>
+        <div id="middle">
+          <%= compilation.assets["html/pages/loading.html"].source() %> <%=
+          compilation.assets["html/pages/test.html"].source() %> <%=
+          compilation.assets["html/pages/about.html"].source() %> <%=
+          compilation.assets["html/pages/settings.html"].source() %> <%=
+          compilation.assets["html/pages/login.html"].source() %> <%=
+          compilation.assets["html/pages/account.html"].source() %>
+        </div>
+
+        <%= compilation.assets["html/bottom.html"].source() %>
+
+        <div class="footerads hidden">
+          <div
+            id="ad_footer"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+          <div
+            id="ad_footer2"
+            class="hidden"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/jquery.color.min.js"></script>
+  <script src="js/easing.min.js"></script>
+  <script src="js/html2canvas.min.js"></script>
+  <script src="js/select2.min.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</html>

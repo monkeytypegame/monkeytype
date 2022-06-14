@@ -264,6 +264,12 @@
       "source": "date-fns sourcecode",
       "length": 268,
       "id": 43
+    },
+    {
+      "text": "function toLatLng (str) {\r\n\tvar match = /^\\s*?(-?[0-9]+\\.?[0-9]+?)\\s*,\\s*(-?[0-9]+\\.?[0-9]+?)\\s*$/.exec(str);\r\n\r\n\tif (match && match.length === 3) {\r\n\t\tvar lat = parseFloat(match[1]);\r\n\t\tvar lng = parseFloat(match[2]);\r\n\r\n\t\tif ((lat >= -90) && (lat <= 90) && (lng >= -180) && (lng <= 180)) {\r\n\t\t\treturn [lat, lng];\r\n\t\t}\r\n\t\telse {\r\n\t\t\treturn null;\r\n\t\t}\r\n\t}\r\n\treturn null;\r\n}",
+      "source": "Mark Stosberg - parse-coordinates sourcecode",
+      "length": 373,
+      "id": 44
     }
   ]
 }

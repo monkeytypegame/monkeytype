@@ -290,9 +290,9 @@
       "id": 47
     },
     {
-      "text": "Nos esquecemos completamente das manias de assassinato e suicídio de Tyler enquanto assitimos a outro arquivo deslizar pela lateral do prédio e cair, as gavetas se abrirem no ar e pilhas de papéis branos serem apanhados por uma corrente de ar e se espalharem no vento.",
+      "text": "Nos esquecemos completamente das manias de assassinato e suicídio de Tyler enquanto assistimos a outro arquivo deslizar pela lateral do prédio e cair, as gavetas se abrirem no ar e pilhas de papéis brancos serem apanhados por uma corrente de ar e se espalharem no vento.",
       "source": "Chuck Palahniuk, Clube da luta",
-      "length": 268,
+      "length": 270,
       "id": 48
     },
     {
@@ -308,7 +308,7 @@
       "id": 50
     },
     {
-      "text": "O visto para os Estados Unidos deve ter ficado pronto. Meus pais estavam tentando conseguir vistos antes de me levarem para o orfanato. Por isso eles venderam a livraria para poderem abrir outra nos Estados Unidos. Uma vez meu pai me contou uma história sobre um judeu que era livreiro nos Estados Unidos. lá as estantes são feitas de ouro maciço.",
+      "text": "O visto para os Estados Unidos deve ter ficado pronto. Meus pais estavam tentando conseguir vistos antes de me levarem para o orfanato. Por isso eles venderam a livraria para poderem abrir outra nos Estados Unidos. Uma vez meu pai me contou uma história sobre um judeu que era livreiro nos Estados Unidos, Lá as estantes são feitas de ouro maciço.",
       "source": "Morris Gleitzman, Uma vez",
       "length": 347,
       "id": 51
@@ -348,6 +348,12 @@
       "source": "Alphonse Daudet",
       "length": 52,
       "id": 57
+    },
+    {
+      "text": "Cientistas começaram a realizar experimentos semelhantes, tentando descobrir modos de ajudar as crianças a aumentar suas capacidades autorregulatórias. Descobriram que lhes ensinar truques simples, como distrair-se fazendo um desenho, ou imaginando uma moldura em volta do marshmallow, para que parecesse mais uma foto e menos uma tentação real, ajudava-lhes a aprender o autocontrole.",
+      "source": "Charles Duhigg, O poder do hábito",
+      "length": 385,
+      "id": 58
     }
   ]
 }
