@@ -20,10 +20,10 @@
       min-width: 100%;
       display: grid;
       align-items: center;
-      grid-template-columns: max-content auto 20rem;
+      grid-template-columns: auto 1fr 20rem;
       grid-template-areas:
-        "title yesterday buttons"
-        "subtitle subtitle buttons";
+        "title title buttons"
+        "subtitle yesterday buttons";
 
       .buttons {
         grid-area: buttons;
@@ -44,6 +44,9 @@
     .showYesterdayButton {
       grid-area: "yesterday";
       margin-left: 1rem;
+      .fas {
+        margin-right: 0.3rem;
+      }
     }
 
     .subTitle {
