@@ -574,7 +574,7 @@ $("#leaderboardsWrapper").on("click", (e) => {
 const languageSelector = $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect"
 ).select2({
-  placeholder: "Filter by length",
+  placeholder: "select a language",
   width: "100%",
   data: [
     {
