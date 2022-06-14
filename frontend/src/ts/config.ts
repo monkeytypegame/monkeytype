@@ -150,11 +150,11 @@ export function setMode(
   const previous = config.mode;
   config.mode = mode;
   if (config.mode == "custom") {
-    setPunctuation(false, true);
-    setNumbers(false, true);
+    setPunctuation(false, true, tribeOverride);
+    setNumbers(false, true, tribeOverride);
   } else if (config.mode == "quote") {
-    setPunctuation(false, true);
-    setNumbers(false, true);
+    setPunctuation(false, true, tribeOverride);
+    setNumbers(false, true, tribeOverride);
   } else if (config.mode == "zen") {
     if (config.paceCaret != "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
@@ -251,8 +251,6 @@ export function setFunbox(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  // Rizwan TODO: Merge from the config.js on the newtribe branch
-  console.log(tribeOverride); // Rizwan TODO: Remove this later
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
   if (!TribeConfig.canChange(tribeOverride)) return false;
 
