@@ -353,22 +353,21 @@ export function signIn(): void {
 
 export async function forgotPassword(email: any): Promise<void> {
   if (!canCall) return Notifications.add("You sent too many requests", -1);
-  if (email != "") {
-    try {
-      await sendPasswordResetEmail(Auth, email);
-      Notifications.add("Email sent", 1, 2);
-    } catch (error) {
-      if (error instanceof Error) {
-        Notifications.add(error.message, -1);
-      }
-    }
-    canCall = false;
-    setTimeout(function () {
-      canCall = true;
-    }, 10000);
-  } else {
-    Notifications.add("Please enter an email!", -1);
+  if (!email) return Notifications.add("Please enter an email!", -1);
+
+  try {
+    await sendPasswordResetEmail(Auth, email);
+    Notifications.add("Email sent", 1, 2);
+  } catch (error) {
+    Notifications.add(
+      Misc.createErrorMessage(error, "Failed to send email"),
+      -1
+    );
   }
+  canCall = false;
+  setTimeout(function () {
+    canCall = true;
+  }, 10000);
 }
 
 export async function signInWithGoogle(): Promise<void> {
