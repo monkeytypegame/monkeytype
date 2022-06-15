@@ -140,7 +140,6 @@
     "floor",
     "fma",
     "mfax",
-    "min",
     "fmod",
     "fract",
     "frexp",
