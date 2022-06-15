@@ -712,6 +712,6 @@ $(document).on(
   "click",
   ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .delete-filter-preset",
   (e) => {
-    deleteFilterPreset($(e.target).data("id"));
+    deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
