@@ -3,6 +3,7 @@ import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
+import * as Loader from "../elements/loader";
 import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
@@ -180,10 +181,13 @@ function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
 // callback function called by popup once user inputs name
 async function createFilterPresetCallback(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
+  Loader.show();
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
+  Loader.hide();
   if (result.status === 200) {
     addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
     updateFilterPresets();
+    Notifications.add("Filter preset created", 1);
   } else {
     Notifications.add("Error creating filter preset: " + result.message, -1);
     console.log("error creating filter preset: " + result.message);
@@ -210,11 +214,14 @@ function removeFilterPresetFromSnapshot(id: string): void {
 
 // deletes the currently selected filter preset
 export async function deleteFilterPreset(id: string): Promise<void> {
+  Loader.show();
   const result = await Ape.users.removeResultFilterPreset(id);
+  Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
     updateFilterPresets();
     reset();
+    Notifications.add("Filter preset deleted", 1);
   } else {
     Notifications.add("Error deleting filter preset: " + result.message, -1);
     console.log("error deleting filter preset", result.message);
