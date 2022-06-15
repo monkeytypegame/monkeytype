@@ -340,7 +340,8 @@
       "code_sql",
       "code_perl",
       "code_php",
-      "code_vim"
+      "code_vim",
+      "code_opencl"
     ]
   },
   {
