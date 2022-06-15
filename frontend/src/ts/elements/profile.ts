@@ -27,7 +27,7 @@ export function update(
   }
 
   if (profile.badgeIds && !banned) {
-    details.find(".badges").append(getHTMLById(profile.badgeIds[0]));
+    details.find(".badges").empty().append(getHTMLById(profile.badgeIds[0]));
   }
 
   details.find(".name").text(profile.name);
@@ -108,6 +108,9 @@ export function update(
     }
   }
   //structure
+
+  const bioAndKey = bio || keyboard;
+
   if (!bio) {
     details.find(".bio").addClass("hidden");
   } else {
@@ -120,16 +123,34 @@ export function update(
     details.find(".keyboard").removeClass("hidden");
   }
 
-  if (!socials) {
-    details.find(".socials").addClass("hidden");
+  if (!bioAndKey) {
+    details.find(".bioAndKeyboard").addClass("hidden");
+    details.find(".sep2").addClass("hidden");
   } else {
-    details.find(".socials").removeClass("hidden");
+    details.find(".bioAndKeyboard").removeClass("hidden");
+    details.find(".sep2").removeClass("hidden");
   }
 
   if (!socials) {
-    details.find(".typingStats").addClass("wide");
+    details.find(".socials").addClass("hidden");
+    details.find(".sep3").addClass("hidden");
   } else {
-    details.find(".typingStats").removeClass("wide");
+    details.find(".socials").removeClass("hidden");
+    details.find(".sep3").removeClass("hidden");
+  }
+
+  details.removeClass("none");
+  details.removeClass("bioAndKey");
+  details.removeClass("soc");
+  details.removeClass("both");
+  if (!socials && !bioAndKey) {
+    details.addClass("none");
+  } else if (socials && !bioAndKey) {
+    details.addClass("soc");
+  } else if (!socials && bioAndKey) {
+    details.addClass("bioAndKey");
+  } else if (socials && bioAndKey) {
+    details.addClass("both");
   }
 }
 
@@ -141,9 +162,9 @@ export function updateNameFontSize(where: "account"): void {
   if (!details) return;
   const nameField = details.find(".name");
   const nameFieldParent = nameField.parent();
-  const upperLimit = Misc.convertRemToPixels(2.5);
+  const upperLimit = Misc.convertRemToPixels(2);
   // const nameFieldParentWidth = nameField.parent().width() ?? 0;
-  let fontSize = Misc.convertRemToPixels(1);
+  let fontSize = 15;
   let nameWidth;
   let parentWidth;
   do {

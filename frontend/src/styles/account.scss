@@ -371,11 +371,11 @@
   display: grid;
   gap: 2rem;
   // grid-template-columns:  auto;
-  grid-template-columns: 22rem auto;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
-    "info pbsTime"
-    "info pbsWords";
+    "info info"
+    "pbsTime pbsWords";
 
   .pbsWords {
     grid-area: pbsWords;
@@ -437,9 +437,11 @@
         .test {
           color: var(--sub-color);
           align-content: end;
+          font-size: 0.8em;
+          line-height: 100%;
         }
         .wpm {
-          font-size: 3.5em;
+          font-size: 2.5em;
           line-height: 100%;
           align-content: center;
         }
@@ -460,6 +462,7 @@
         opacity: 0;
         transition: 0.125s;
         justify-items: center;
+        font-size: 0.8em;
         &:hover {
           opacity: 1;
         }
@@ -481,12 +484,91 @@
     // grid-template-columns: 1fr 2fr;
     grid-area: info;
     display: grid;
-    gap: 1rem 2rem;
+    gap: 1rem 1rem;
     background: var(--sub-alt-color);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: var(--roundness);
     align-content: center;
-    grid-template-columns: 1fr 1fr;
+    // grid-template-columns: 15rem auto 15rem auto 2fr auto auto;
+
+    grid-auto-flow: column;
+
+    &.none {
+      grid-template-areas: "avAndName sep1 typingStats ";
+      grid-template-columns: 17.5rem auto 1fr;
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+        align-self: center;
+        align-items: center;
+        .value {
+          font-size: 2rem;
+          line-height: 1.9rem;
+        }
+      }
+    }
+
+    &.bioAndKey {
+      grid-template-areas: "avAndName sep1 typingStats sep2 bioAndKey";
+      grid-template-columns: 17.5rem auto 1fr auto 2fr;
+      .typingStats {
+        .value {
+          font-size: 1.5rem;
+          line-height: 1.3rem;
+        }
+      }
+    }
+
+    &.soc {
+      grid-template-areas: "avAndName sep1 typingStats sep3 socials";
+      grid-template-columns: 17.5rem auto 1fr auto auto;
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+        align-self: center;
+        align-items: center;
+        .value {
+          font-size: 2rem;
+          line-height: 1.9rem;
+        }
+      }
+    }
+
+    &.both {
+      grid-template-areas: "avAndName sep1 typingStats sep2 bioAndKey sep3 socials";
+      grid-template-columns: 17.5rem auto 1fr auto 2fr auto auto;
+      .typingStats {
+        .value {
+          font-size: 1.5rem;
+          line-height: 1.3rem;
+        }
+      }
+      .bio,
+      .keyboard {
+        font-size: 0.75rem;
+      }
+    }
+
+    .avatarAndName {
+      grid-area: avAndName;
+    }
+    .sep1 {
+      grid-area: sep1;
+    }
+    .typingStats {
+      grid-area: typingStats;
+    }
+    .sep2 {
+      grid-area: sep2;
+    }
+    .bioAndKeyboard {
+      grid-area: bioAndKey;
+    }
+    .sep3 {
+      grid-area: sep3;
+    }
+    .socials {
+      grid-area: socials;
+    }
+
     .avatarAndName {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -494,14 +576,17 @@
       align-items: center;
       .avatars {
         display: grid;
+        font-size: 5rem;
+        line-height: 5rem;
+        height: 5rem;
         .placeholderAvatar {
-          font-size: 6rem;
-          line-height: 6rem;
+          // font-size: 5rem;
+          // line-height: 6rem;
           margin-left: 0.1rem;
           color: var(--sub-color);
         }
         .avatar {
-          height: 6rem;
+          height: 100%;
           aspect-ratio: 1/1;
           width: auto;
         }
@@ -529,37 +614,47 @@
       }
       .joined {
         color: var(--sub-color);
+        font-size: 0.7em;
       }
       .badge,
       .joined {
         margin-top: 0.35rem;
       }
     }
-    .socials .value {
+    .socials {
       display: grid;
-      grid-auto-flow: column;
-      gap: 0.25rem;
-      width: max-content;
-      a {
-        color: var(--text-color);
-        &:hover {
-          color: var(--main-color);
+      justify-content: end;
+      .value {
+        display: grid;
+        gap: 0.25rem;
+        width: max-content;
+        align-items: center;
+        height: 100%;
+        a {
+          color: var(--text-color);
+          &:hover {
+            color: var(--main-color);
+          }
         }
       }
     }
     .typingStats {
       display: grid;
       gap: 0.5rem;
-      grid-row: span 2;
-      align-content: space-between;
+      align-content: space-around;
       align-self: stretch;
-      &.wide {
-        grid-column: span 2;
-        grid-template-columns: 1fr 1fr;
-        .time {
-          grid-column: span 2;
-        }
-      }
+      grid-auto-flow: column;
+    }
+    .bioAndKeyboard {
+      display: grid;
+      gap: 0.5rem;
+      align-content: space-around;
+      align-self: stretch;
+      grid-auto-flow: column;
+    }
+    .typingStats.vertical,
+    .bioAndKeyboard.vertical {
+      grid-auto-flow: row;
     }
     .separator {
       width: 0.5rem;
@@ -572,21 +667,6 @@
         font-size: 1.5rem;
         line-height: 1.3rem;
       }
-    }
-    .verybig {
-      .value {
-        font-size: 2rem;
-        line-height: 1.9rem;
-      }
-    }
-    .bio,
-    .avatarAndName,
-    .separator {
-      grid-column: span 2;
-    }
-    .typingStats,
-    .socials {
-      align-self: end;
     }
     .title {
       font-size: 0.8rem;

@@ -31,13 +31,6 @@
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr 1fr max-content;
   }
-  .profile {
-    // grid-template-columns: 1.25fr 2fr;
-    .details .verybig .value {
-      font-size: 1.5rem;
-      line-height: 1.3rem;
-    }
-  }
 }
 
 @media only screen and (max-width: 1050px) {
@@ -105,6 +98,10 @@
 }
 
 @media only screen and (max-width: 900px) {
+  .profile .pbsWords,
+  .profile .pbsTime {
+    font-size: 1rem;
+  }
   .profile {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
@@ -112,6 +109,15 @@
       "info"
       "pbsTime"
       "pbsWords";
+    .details.none {
+      grid-template-areas:
+        "avAndName"
+        "typingStats";
+      grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+    }
   }
   #leaderboards {
     .mainTitle {
@@ -424,10 +430,17 @@
 }
 
 @media only screen and (max-width: 550px) {
+  .profile .pbsWords,
+  .profile .pbsTime {
+    font-size: 0.9rem;
+  }
   .profile {
     .pbsWords,
     .pbsTime {
       grid-template-columns: 1fr 1fr;
+    }
+    .details.none .typingStats {
+      grid-template-columns: 1fr;
     }
   }
   #cookiePopupWrapper {
@@ -615,28 +628,6 @@
 }
 
 @media only screen and (max-width: 400px) {
-  .profile {
-    .details {
-      grid-template-columns: 1fr;
-      .bio,
-      .avatarAndName {
-        grid-column: span 1;
-      }
-      .avatarAndName .avatars .placeholderAvatar {
-        font-size: 4rem;
-        line-height: 4rem;
-      }
-      .avatarAndName .avatars .avatar {
-        height: 4rem;
-      }
-    }
-  }
-  .profile .details #top .logo .bottom {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    margin-top: 0;
-  }
-
   #top .config {
     grid-gap: 0.25rem;
     .group .buttons {
