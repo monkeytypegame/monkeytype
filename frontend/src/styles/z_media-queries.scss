@@ -127,15 +127,25 @@
       }
     }
     .details.both {
-      grid-template-columns: 1.25fr auto 1.25fr auto auto;
+      grid-template-columns: 1.25fr auto 1.25fr auto;
       grid-template-areas:
-        "avAndName sep2 bioAndKey sep3 socials"
-        "typingStats typingStats typingStats sep3 socials";
-      .sep1 {
+        "avAndName sep2 bioAndKey bioAndKey"
+        "typingStats typingStats typingStats socials";
+      .sep1,
+      .sep3 {
         display: none;
       }
       .typingStats {
         grid-template-columns: 1fr 1fr 1fr;
+      }
+      .socials {
+        justify-content: start;
+        .title {
+          display: block;
+        }
+        .value {
+          grid-auto-flow: column;
+        }
       }
     }
     .details.none {
@@ -365,7 +375,7 @@
       grid-template-areas:
         "avAndName bioAndKey"
         "typingStats typingStats";
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       .separator {
         display: none;
       }
@@ -400,7 +410,7 @@
         "avAndName bioAndKey"
         "typingStats typingStats"
         "socials socials";
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       .separator {
         display: none;
       }
