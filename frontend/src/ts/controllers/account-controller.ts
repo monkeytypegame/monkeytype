@@ -52,6 +52,7 @@ import {
 } from "../test/test-config";
 
 export const gmailProvider = new GoogleAuthProvider();
+let canCall = true;
 
 export function sendVerificationEmail(): void {
   Loader.show();
@@ -350,6 +351,31 @@ export function signIn(): void {
   });
 }
 
+export async function forgotPassword(email: any): Promise<void> {
+  if (!canCall) {
+    return Notifications.add(
+      "Please wait before requesting another password reset link",
+      0,
+      5000
+    );
+  }
+  if (!email) return Notifications.add("Please enter an email!", -1);
+
+  try {
+    await sendPasswordResetEmail(Auth, email);
+    Notifications.add("Email sent", 1, 2);
+  } catch (error) {
+    Notifications.add(
+      Misc.createErrorMessage(error, "Failed to send email"),
+      -1
+    );
+  }
+  canCall = false;
+  setTimeout(function () {
+    canCall = true;
+  }, 10000);
+}
+
 export async function signInWithGoogle(): Promise<void> {
   UpdateConfig.setChangedBeforeDb(false);
   LoginPage.showPreloader();
@@ -602,17 +628,7 @@ $(".pageLogin #forgotPasswordButton").on("click", () => {
   const emailField =
     ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
   const email = prompt("Email address", emailField);
-  if (email) {
-    sendPasswordResetEmail(Auth, email)
-      .then(function () {
-        // Email sent.
-        Notifications.add("Email sent", 1, 2);
-      })
-      .catch(function (error) {
-        // An error happened.
-        Notifications.add(error.message, -1);
-      });
-  }
+  forgotPassword(email);
 });
 
 $(".pageLogin .login input").keyup((e) => {
