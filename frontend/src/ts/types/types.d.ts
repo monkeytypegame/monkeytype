@@ -92,7 +92,7 @@ declare namespace MonkeyTypes {
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
-  type PaceCaret = "off" | "average" | "pb" | "custom";
+  type PaceCaret = "off" | "average" | "pb" | "last" | "custom";
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
@@ -469,6 +469,7 @@ declare namespace MonkeyTypes {
     details?: UserDetails;
     badgeIds?: number[];
     addedAt: number;
+    filterPresets: ResultFilters[];
   }
 
   interface UserDetails {
@@ -489,6 +490,8 @@ declare namespace MonkeyTypes {
   };
 
   interface ResultFilters {
+    _id: string;
+    name: string;
     difficulty: {
       normal: boolean;
       expert: boolean;
