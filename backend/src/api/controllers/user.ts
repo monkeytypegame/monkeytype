@@ -1,3 +1,4 @@
+import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
@@ -388,11 +389,17 @@ export async function getProfile(
     timeTyping,
   } = await UserDAL.getUser(uid, "get user profile");
 
+  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
+  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+
   const profileData = {
     name,
     banned,
     badgeIds,
-    personalBests,
+    personalBests: {
+      time: validTimePbs,
+      words: validWordsPbs,
+    },
     typingStats: {
       completedTests,
       startedTests,
