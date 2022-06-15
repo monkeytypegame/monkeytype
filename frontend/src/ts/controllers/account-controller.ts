@@ -352,24 +352,22 @@ export function signIn(): void {
 }
 
 export async function forgotPassword(email: any): Promise<void> {
-  if (canCall) {
-    if (email) {
-      await sendPasswordResetEmail(Auth, email)
-        .then(function () {
-          // Email sent.
-          Notifications.add("Email sent", 1, 2);
-        })
-        .catch(function (error) {
-          // An error happened.
-          Notifications.add(error.message, -1);
-        });
+  if (!canCall) return Notifications.add("You sent too many requests", -1);
+  if (email != "") {
+    try {
+      await sendPasswordResetEmail(Auth, email);
+      Notifications.add("Email sent", 1, 2);
+    } catch (error) {
+      if (error instanceof Error) {
+        Notifications.add(error.message, -1);
+      }
     }
     canCall = false;
     setTimeout(function () {
       canCall = true;
-    }, 5000);
+    }, 10000);
   } else {
-    Notifications.add("You sent too many requests", -1);
+    Notifications.add("Please enter an email!", -1);
   }
 }
 
