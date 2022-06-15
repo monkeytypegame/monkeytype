@@ -115,9 +115,12 @@ export async function updateFilterPresets(): Promise<void> {
   // remove all previous filter preset buttons
   $(".pageAccount .presetFilterButtons .filter-btns").html("");
 
-  const filterPresets = DB.getSnapshot().filterPresets.map(
-    (filter) => (filter.name = filter.name.replace(/_/g, " "))
-  );
+  const filterPresets = DB.getSnapshot().filterPresets.map((filter) => {
+    filter.name = filter.name.replace(/_/g, " ");
+    return filter;
+  });
+
+  console.log(filterPresets);
 
   // if user has filter presets
   if (filterPresets.length > 0) {
