@@ -38,6 +38,11 @@
   .profile .pbsTime {
     font-size: 0.8rem;
   }
+  .profile .details.bioAndKey {
+    .bioAndKeyboard .value {
+      font-size: 0.75rem;
+    }
+  }
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr 1fr;
   }
@@ -111,6 +116,12 @@
       "pbsWords";
     .details.soc {
       grid-template-columns: 1.25fr auto 1fr auto auto;
+      .typingStats {
+        grid-template-columns: 1fr;
+      }
+    }
+    .details.bioAndKey {
+      grid-template-columns: 1.25fr auto auto auto 1fr;
       .typingStats {
         grid-template-columns: 1fr;
       }
@@ -326,7 +337,11 @@
       "info"
       "pbsTime"
       "pbsWords";
-    .details {
+    .details.none {
+      grid-template-areas:
+        "avAndName"
+        "typingStats";
+      grid-template-columns: 1fr;
       .separator {
         display: none;
       }
@@ -334,11 +349,17 @@
         grid-template-columns: 1fr 1fr 1fr;
       }
     }
-    .details.none {
+    .details.bioAndKey {
       grid-template-areas:
-        "avAndName"
-        "typingStats";
+        "avAndName bioAndKey"
+        "typingStats typingStats";
       grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
     }
     .details.soc {
       grid-template-areas:
@@ -346,6 +367,12 @@
         "typingStats"
         "socials";
       grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
       .socials {
         justify-content: start;
         .title {
@@ -489,6 +516,16 @@
     }
     .details.none .typingStats {
       grid-template-columns: 1fr;
+    }
+    .details.bioAndKey {
+      grid-template-areas:
+        "avAndName"
+        "bioAndKey"
+        "typingStats";
+      grid-template-columns: 1fr;
+      .typingStats {
+        grid-template-columns: 1fr;
+      }
     }
   }
   #cookiePopupWrapper {
