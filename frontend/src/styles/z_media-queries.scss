@@ -110,12 +110,16 @@
       "pbsTime"
       "pbsWords";
     .details.none {
-      grid-template-areas:
-        "avAndName"
-        "typingStats";
-      grid-template-columns: 1fr;
-      .separator {
-        display: none;
+      grid-template-columns: 1fr auto 1fr;
+      .typingStats {
+        grid-template-columns: 1fr;
+        // grid-template-areas:
+        //   "avAndName"
+        //   "typingStats";
+        // grid-template-columns: 1fr;
+        // .separator {
+        //   display: none;
+        // }
       }
     }
   }
@@ -309,6 +313,26 @@
 }
 
 @media only screen and (max-width: 650px) {
+  .profile {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "info"
+      "pbsTime"
+      "pbsWords";
+    .details.none {
+      grid-template-areas:
+        "avAndName"
+        "typingStats";
+      grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+  }
   #quoteRatePopup {
     .ratingStats {
       grid-template-columns: 1fr 1fr !important;
