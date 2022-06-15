@@ -114,7 +114,9 @@ export async function updateFilterPresets(): Promise<void> {
   // remove all previous filter preset buttons
   $(".pageAccount .presetFilterButtons .filter-btns").html("");
 
-  const filterPresets = DB.getSnapshot().filterPresets;
+  const filterPresets = DB.getSnapshot().filterPresets.map(
+    (filter) => (filter.name = filter.name.replace(/_/g, " "))
+  );
 
   // if user has filter presets
   if (filterPresets.length > 0) {
@@ -177,6 +179,7 @@ function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
 
 // callback function called by popup once user inputs name
 async function createFilterPresetCallback(name: string): Promise<void> {
+  name = name.replace(/ /g, "_");
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   if (result.status === 200) {
     addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
