@@ -186,29 +186,29 @@ export async function unlinkDiscord(
   return new MonkeyResponse("Discord account unlinked");
 }
 
-export async function addResultFilter(
+export async function addResultFilterPreset(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const filter = req.body;
-  const { maxFiltersPerUser } = req.ctx.configuration.customFilters;
+  const { maxPresetsPerUser } = req.ctx.configuration.results.filterPresets;
 
-  const createdId = await UserDAL.addResultFilter(
+  const createdId = await UserDAL.addResultFilterPreset(
     uid,
     filter,
-    maxFiltersPerUser
+    maxPresetsPerUser
   );
-  return new MonkeyResponse("Result filter created", createdId);
+  return new MonkeyResponse("Result filter preset created", createdId);
 }
 
-export async function removeResultFilter(
+export async function removeResultFilterPreset(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { filterId } = req.params;
+  const { presetId } = req.params;
 
-  await UserDAL.removeResultFilter(uid, filterId);
-  return new MonkeyResponse("Result filter deleted");
+  await UserDAL.removeResultFilterPreset(uid, presetId);
+  return new MonkeyResponse("Result filter preset deleted");
 }
 
 export async function addTag(

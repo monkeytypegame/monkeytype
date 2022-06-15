@@ -1203,8 +1203,10 @@
   }
 }
 
-#tagsWrapper {
-  #tagsEdit {
+#tagsWrapper,
+#newResultFilterPresetPopupWrapper {
+  #tagsEdit,
+  #newResultFilterPresetPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;

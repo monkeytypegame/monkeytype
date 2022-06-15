@@ -705,8 +705,12 @@ async function getNextWord(
       regenarationCount < 100 &&
       (previousWord == randomWord ||
         previousWord2 == randomWord ||
-        (!Config.punctuation && randomWord == "I") ||
-        (!Config.punctuation && /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
+        (Config.mode !== "custom" &&
+          !Config.punctuation &&
+          randomWord == "I") ||
+        (Config.mode !== "custom" &&
+          !Config.punctuation &&
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();

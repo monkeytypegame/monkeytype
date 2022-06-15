@@ -9,6 +9,7 @@ import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
+let currentLanguage = "english";
 
 type LbKey = 15 | 60;
 
@@ -351,8 +352,10 @@ function updateTitle(): void {
   const el = $("#leaderboardsWrapper .mainTitle");
 
   const timeRangeString = currentTimeRange === "daily" ? "Daily" : "All-Time";
+  const capitalizedLanguage =
+    currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1);
 
-  el.text(`${timeRangeString} English Leaderboards`);
+  el.text(`${timeRangeString} ${capitalizedLanguage} Leaderboards`);
 }
 
 function updateYesterdayButton(): void {
@@ -377,7 +380,7 @@ async function update(): Promise<void> {
 
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
-      language: "english",
+      language: currentLanguage,
       mode: "time",
       mode2,
       isDaily: currentTimeRange === "daily",
@@ -389,7 +392,7 @@ async function update(): Promise<void> {
     leaderboardRequests.push(
       ...timeModes.map((mode2) => {
         return Ape.leaderboards.getRank({
-          language: "english",
+          language: currentLanguage,
           mode: "time",
           mode2,
           isDaily: currentTimeRange === "daily",
@@ -462,7 +465,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   }
 
   const response = await Ape.leaderboards.get({
-    language: "english",
+    language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
     isDaily: currentTimeRange === "daily",
@@ -492,7 +495,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   showLoader(lb);
 
   const response = await Ape.leaderboards.get({
-    language: "english",
+    language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
     isDaily: currentTimeRange === "daily",
@@ -568,10 +571,45 @@ $("#leaderboardsWrapper").on("click", (e) => {
   }
 });
 
-// $("#leaderboardsWrapper .buttons .button").on("click",(e) => {
-//   currentLeaderboard = $(e.target).attr("board");
-//   update();
-// });
+const languageSelector = $(
+  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect"
+).select2({
+  placeholder: "select a language",
+  width: "100%",
+  data: [
+    {
+      id: "english",
+      text: "english",
+      selected: true,
+    },
+    {
+      id: "spanish",
+      text: "spanish",
+    },
+    {
+      id: "german",
+      text: "german",
+    },
+    {
+      id: "portuguese",
+      text: "portuguese",
+    },
+    {
+      id: "indonesian",
+      text: "indonesian",
+    },
+    {
+      id: "italian",
+      text: "italian",
+    },
+  ],
+});
+
+languageSelector.on("select2:select", (e) => {
+  currentLanguage = e.params.data.id;
+  updateTitle();
+  update();
+});
 
 let leftScrollEnabled = true;
 
@@ -692,6 +730,10 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .allTime"
 ).on("click", () => {
   currentTimeRange = "allTime";
+  currentLanguage = "english";
+  languageSelector.prop("disabled", true);
+  languageSelector.val("english");
+  languageSelector.trigger("change");
   update();
 });
 
@@ -700,6 +742,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   showYesterdayButton.removeClass("active");
+  languageSelector.prop("disabled", false);
   update();
 });
 

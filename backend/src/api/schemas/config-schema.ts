@@ -76,7 +76,7 @@ const CONFIG_SCHEMA = joi.object({
   startGraphsAtZero: joi.boolean(),
   swapEscAndTab: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
-  paceCaret: joi.string().valid("off", "average", "pb", "custom"),
+  paceCaret: joi.string().valid("off", "average", "pb", "last", "custom"),
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
