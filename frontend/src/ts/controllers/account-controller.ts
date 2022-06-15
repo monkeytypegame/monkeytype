@@ -352,7 +352,13 @@ export function signIn(): void {
 }
 
 export async function forgotPassword(email: any): Promise<void> {
-  if (!canCall) return Notifications.add("You sent too many requests", -1);
+  if (!canCall) {
+    return Notifications.add(
+      "Please wait before requesting another password reset link",
+      0,
+      5000
+    );
+  }
   if (!email) return Notifications.add("Please enter an email!", -1);
 
   try {
