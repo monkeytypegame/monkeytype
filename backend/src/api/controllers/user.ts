@@ -416,11 +416,9 @@ export async function updateProfile(
   const { bio, keyboard, socialProfiles } = req.body;
 
   const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
-    bio: bio as string,
-    keyboard: keyboard as string,
-    socialProfiles: {
-      ...socialProfiles,
-    },
+    bio,
+    keyboard,
+    socialProfiles,
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates);
