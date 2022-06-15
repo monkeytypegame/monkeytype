@@ -52,14 +52,19 @@
     margin-top: 1rem;
   }
 
-  .topFilters .buttons,
-  .presetFilterButtons .buttons {
+  .topFilters .buttons {
     display: flex;
     justify-content: space-evenly;
     gap: 1rem;
     .button {
       width: 100%;
     }
+  }
+
+  .presetFilterButtons .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
 
   .miniResultChartWrapper {
@@ -300,10 +305,9 @@
     .buttons.filter-btns {
       .filter-presets {
         display: grid;
-        grid-area: buttons;
         grid-auto-columns: 1fr;
         grid-auto-flow: column;
-        grid-template-columns: 6fr 1fr;
+        grid-template-columns: 1fr auto;
         margin-bottom: 0.5rem;
         width: 100%;
         gap: 0.5rem;

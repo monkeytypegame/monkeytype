@@ -127,7 +127,7 @@ export async function updateFilterPresets(): Promise<void> {
         `<div class="filter-presets">
           <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
           <div class="button delete-filter-preset" data-id="${filter._id}">
-            <i class="fas fa-trash"></i>
+            <i class="fas fa-fw fa-trash"></i>
           </div>
         </div>`
       );
