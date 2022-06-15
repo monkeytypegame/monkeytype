@@ -61,6 +61,12 @@
     }
   }
 
+  .presetFilterButtons .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
   .miniResultChartWrapper {
     // pointer-events: none;
     z-index: 999;
@@ -295,6 +301,19 @@
 }
 
 .pageAccount {
+  .group.presetFilterButtons {
+    .buttons.filter-btns {
+      .filter-presets {
+        display: grid;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
+        grid-template-columns: 1fr auto;
+        width: 100%;
+        gap: 0.5rem;
+      }
+    }
+  }
+
   .group.filterButtons {
     gap: 1rem;
     display: grid;

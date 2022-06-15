@@ -466,6 +466,7 @@ declare namespace MonkeyTypes {
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
+    filterPresets: ResultFilters[];
   }
 
   type FavoriteQuotes = Record<string, string[]>;
@@ -476,6 +477,8 @@ declare namespace MonkeyTypes {
   };
 
   interface ResultFilters {
+    _id: string;
+    name: string;
     difficulty: {
       normal: boolean;
       expert: boolean;

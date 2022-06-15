@@ -1060,6 +1060,15 @@ $(document).on(
   }
 );
 
+$(document).on(
+  "click",
+  ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset",
+  (e) => {
+    ResultFilters.setFilterPreset($(e.target).data("id"));
+    update();
+  }
+);
+
 $(".pageAccount .content .below .smoothing input").on("input", () => {
   applyHistorySmoothing();
 });
