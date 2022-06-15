@@ -355,7 +355,9 @@ export function setPaceCaret(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("pace caret", val, [["custom", "off", "average", "pb"]])
+    !isConfigValueValid("pace caret", val, [
+      ["custom", "off", "average", "pb", "last"],
+    ])
   ) {
     return false;
   }

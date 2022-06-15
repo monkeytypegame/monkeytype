@@ -92,7 +92,7 @@ declare namespace MonkeyTypes {
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
-  type PaceCaret = "off" | "average" | "pb" | "custom";
+  type PaceCaret = "off" | "average" | "pb" | "last" | "custom";
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
