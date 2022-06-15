@@ -624,6 +624,9 @@
     .socials {
       display: grid;
       justify-content: end;
+      .title {
+        display: none;
+      }
       .value {
         display: grid;
         gap: 0.25rem;
