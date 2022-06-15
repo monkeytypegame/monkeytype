@@ -7,7 +7,6 @@ import MonkeyError from "../utils/error";
 import {
   Collection,
   DeleteResult,
-  InsertOneResult,
   ObjectId,
   UpdateResult,
   WithId,
@@ -24,20 +23,23 @@ export async function addUser(
   name: string,
   email: string,
   uid: string
-): Promise<InsertOneResult<MonkeyTypes.User>> {
-  const user = await getUsersCollection().findOne({ uid });
-  if (user) {
-    throw new MonkeyError(409, "User document already exists", "addUser");
-  }
-
-  const currentDate = Date.now();
-  return await getUsersCollection().insertOne({
-    _id: new ObjectId(),
+): Promise<void> {
+  const newUserDocument: MonkeyTypes.User = {
     name,
     email,
     uid,
-    addedAt: currentDate,
-  });
+    addedAt: Date.now(),
+  };
+
+  const result = await getUsersCollection().updateOne(
+    { uid },
+    { $setOnInsert: newUserDocument },
+    { upsert: true }
+  );
+
+  if (result.upsertedCount === 0) {
+    throw new MonkeyError(409, "User document already exists", "addUser");
+  }
 }
 
 export async function deleteUser(uid: string): Promise<DeleteResult> {
