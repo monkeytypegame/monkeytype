@@ -387,7 +387,16 @@ export async function getProfile(
     completedTests,
     startedTests,
     timeTyping,
+    addedAt,
   } = await UserDAL.getUser(uid, "get user profile");
+
+  if (banned) {
+    return new MonkeyResponse("Profile retrived: banned user", {
+      name,
+      banned,
+      addedAt,
+    });
+  }
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
@@ -396,6 +405,7 @@ export async function getProfile(
     name,
     banned,
     badgeIds,
+    addedAt,
     personalBests: {
       time: validTimePbs,
       words: validWordsPbs,

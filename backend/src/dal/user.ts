@@ -707,14 +707,18 @@ export async function updateProfile(
   );
 
   const updateResult = await getUsersCollection().updateOne(
-    { uid },
+    {
+      uid,
+      banned: {
+        $ne: true,
+      },
+    },
     {
       $set: profileUpdates,
-    },
-    { upsert: true }
+    }
   );
 
   if (updateResult.matchedCount === 0) {
-    throw new MonkeyError(404, "User not found");
+    throw new MonkeyError(403, "User is banned");
   }
 }
