@@ -26,7 +26,6 @@
     "long",
     "float",
     "double",
-    "half",
     "size_t",
     "ptrdiff_t",
     "intptr_t",
