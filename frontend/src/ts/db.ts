@@ -89,6 +89,7 @@ export async function initSnapshot(): Promise<
     };
     if (userData.quoteMod === true) snap.quoteMod = true;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
+    snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;

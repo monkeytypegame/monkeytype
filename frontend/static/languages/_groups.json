@@ -340,7 +340,8 @@
       "code_sql",
       "code_perl",
       "code_php",
-      "code_vim"
+      "code_vim",
+      "code_opencl"
     ]
   },
   {
@@ -360,5 +361,9 @@
   {
     "name": "oromo",
     "languages": ["oromo", "oromo_1k", "oromo_5k"]
+  },
+  {
+    "name": "wordle",
+    "languages": ["wordle", "wordle_1k"]
   }
 ]

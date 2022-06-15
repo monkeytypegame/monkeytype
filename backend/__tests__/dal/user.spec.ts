@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
 import {
-  addResultFilter,
+  addResultFilterPreset,
   addUser,
   clearPb,
   getUser,
@@ -318,37 +318,37 @@ describe("UserDal", () => {
     expect(updatedUser.autoBanTimestamps).toEqual([36000000]);
   });
 
-  it("addResultFilters should return error if uuid not found", async () => {
+  it("addResultFilterPreset should return error if uuid not found", async () => {
     // given
     await addUser("test name", "test email", "TestID");
 
     // when, then
     await expect(
-      addResultFilter("non existing uid", mockResultFilter, 5)
+      addResultFilterPreset("non existing uid", mockResultFilter, 5)
     ).rejects.toThrow("User not found");
   });
 
-  it("addResultFilters should return error if user has reached maximum", async () => {
+  it("addResultFilterPreset should return error if user has reached maximum", async () => {
     // given
     await addUser("test name", "test email", "TestID");
-    await addResultFilter("TestID", mockResultFilter, 1);
+    await addResultFilterPreset("TestID", mockResultFilter, 1);
 
     // when, then
     await expect(
-      addResultFilter("TestID", mockResultFilter, 1)
+      addResultFilterPreset("TestID", mockResultFilter, 1)
     ).rejects.toThrow("Maximum number of custom filters reached for user.");
   });
 
-  it("addResultFilters success", async () => {
+  it("addResultFilterPreset success", async () => {
     // given
     await addUser("test name", "test email", "TestID");
 
     // when
-    const result = await addResultFilter("TestID", mockResultFilter, 1);
+    const result = await addResultFilterPreset("TestID", mockResultFilter, 1);
 
     // then
     const user = await getUser("TestID", "test add result filters");
-    const createdFilter = user.customFilters ?? [];
+    const createdFilter = user.resultFilterPresets ?? [];
 
     expect(result).toStrictEqual(createdFilter[0]._id);
   });

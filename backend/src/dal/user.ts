@@ -150,14 +150,14 @@ export async function isDiscordIdAvailable(
   return _.isNil(user);
 }
 
-export async function addResultFilter(
+export async function addResultFilterPreset(
   uid: string,
   filter: MonkeyTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
   // ensure limit not reached
   const filtersCount = (
-    (await getUser(uid, "Add Result filter")).customFilters ?? []
+    (await getUser(uid, "Add Result filter")).resultFilterPresets ?? []
   ).length;
 
   if (filtersCount >= maxFiltersPerUser) {
@@ -170,20 +170,21 @@ export async function addResultFilter(
   const _id = new ObjectId();
   await getUsersCollection().updateOne(
     { uid },
-    { $push: { customFilters: { ...filter, _id } } }
+    { $push: { resultFilterPresets: { ...filter, _id } } }
   );
   return _id;
 }
 
-export async function removeResultFilter(
+export async function removeResultFilterPreset(
   uid: string,
   _id: string
 ): Promise<void> {
   const user = await getUser(uid, "remove result filter");
   const filterId = new ObjectId(_id);
   if (
-    user.customFilters === undefined ||
-    user.customFilters.filter((t) => t._id.toHexString() === _id).length === 0
+    user.resultFilterPresets === undefined ||
+    user.resultFilterPresets.filter((t) => t._id.toHexString() === _id)
+      .length === 0
   ) {
     throw new MonkeyError(404, "Custom filter not found");
   }
@@ -191,9 +192,9 @@ export async function removeResultFilter(
   await getUsersCollection().updateOne(
     {
       uid,
-      "customFilters._id": filterId,
+      "resultFilterPresets._id": filterId,
     },
-    { $pull: { customFilters: { _id: filterId } } }
+    { $pull: { resultFilterPresets: { _id: filterId } } }
   );
 }
 
