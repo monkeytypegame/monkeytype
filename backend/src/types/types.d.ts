@@ -51,6 +51,9 @@ declare namespace MonkeyTypes {
     discordIntegration: {
       enabled: boolean;
     };
+    profiles: {
+      enabled: boolean;
+    };
   }
 
   interface DecodedToken {
@@ -69,6 +72,16 @@ declare namespace MonkeyTypes {
   }
 
   // Data Model
+
+  interface UserProfileDetails {
+    bio: string;
+    keyboard: string;
+    socialProfiles: {
+      twitter?: string;
+      github?: string;
+      website?: string;
+    };
+  }
 
   interface User {
     autoBanTimestamps?: number[];
@@ -98,6 +111,7 @@ declare namespace MonkeyTypes {
     discordAvatar?: string;
     badgeIds?: number[];
     resultFilterPresets?: ResultFilters[];
+    profileDetails?: UserProfileDetails;
   }
 
   interface ResultFilters {

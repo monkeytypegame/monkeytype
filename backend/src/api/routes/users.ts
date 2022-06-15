@@ -391,4 +391,54 @@ router.delete(
   asyncHandler(UserController.removeFavoriteQuote)
 );
 
+const requireProfilesEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.profiles.enabled;
+  },
+  invalidMessage: "Profiles are not available at this time",
+});
+
+router.get(
+  "/:uid/profile",
+  RateLimit.userProfileGet,
+  requireProfilesEnabled,
+  authenticateRequest({
+    isPublic: true,
+  }),
+  validateRequest({
+    params: {
+      uid: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.getProfile)
+);
+
+router.patch(
+  "/profile",
+  RateLimit.userProfileUpdate,
+  requireProfilesEnabled,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      bio: joi.string().max(150),
+      keyboard: joi.string().max(75),
+      socialProfiles: joi
+        .object({
+          twitter: joi.string().max(20),
+          github: joi.string().max(20),
+          website: joi.string().uri({
+            scheme: "https",
+            domain: {
+              tlds: {
+                allow: true,
+              },
+            },
+          }),
+        })
+        .max(200),
+    },
+  }),
+  asyncHandler(UserController.updateProfile)
+);
+
 export default router;

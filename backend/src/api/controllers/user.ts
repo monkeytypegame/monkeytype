@@ -1,3 +1,4 @@
+import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
@@ -370,4 +371,74 @@ export async function removeFavoriteQuote(
   await UserDAL.removeFavoriteQuote(uid, language, quoteId);
 
   return new MonkeyResponse("Quote removed from favorites");
+}
+
+export async function getProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.params;
+
+  const {
+    name,
+    banned,
+    badgeIds,
+    profileDetails,
+    personalBests,
+    completedTests,
+    startedTests,
+    timeTyping,
+    addedAt,
+  } = await UserDAL.getUser(uid, "get user profile");
+
+  if (banned) {
+    return new MonkeyResponse("Profile retrived: banned user", {
+      name,
+      banned,
+      addedAt,
+    });
+  }
+
+  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
+  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+
+  const profileData = {
+    name,
+    banned,
+    badgeIds,
+    addedAt,
+    personalBests: {
+      time: validTimePbs,
+      words: validWordsPbs,
+    },
+    typingStats: {
+      completedTests,
+      startedTests,
+      timeTyping,
+    },
+    details: {
+      bio: "",
+      keyboard: "",
+      socialProfiles: {},
+      ...profileDetails,
+    },
+  };
+
+  return new MonkeyResponse("Profile retrieved", profileData);
+}
+
+export async function updateProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { bio, keyboard, socialProfiles } = req.body;
+
+  const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
+    bio,
+    keyboard,
+    socialProfiles,
+  };
+
+  await UserDAL.updateProfile(uid, profileDetailsUpdates);
+
+  return new MonkeyResponse("Profile updated");
 }
