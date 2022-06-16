@@ -1,5 +1,6 @@
 import _ from "lodash";
 import profanities from "../constants/profanities";
+import { matchesAPattern } from "./misc";
 
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
@@ -30,9 +31,18 @@ export function isUsernameValid(name: string): boolean {
 }
 
 export function containsProfanity(text: string): boolean {
-  const normalizedText = text.toLowerCase();
+  const normalizedText = text.toLowerCase().split(" ");
 
-  return profanities.some((profanity) => normalizedText.includes(profanity));
+  const hasProfanity = profanities.some((profanity) => {
+    const normalizedProfanity = _.escapeRegExp(profanity.toLowerCase());
+    const prefixedProfanity = `${normalizedProfanity}.*`;
+
+    return normalizedText.some((word) => {
+      return matchesAPattern(word, prefixedProfanity);
+    });
+  });
+
+  return hasProfanity;
 }
 
 export function isTagPresetNameValid(name: string): boolean {

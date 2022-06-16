@@ -82,7 +82,6 @@ const profanities = [
   "fart",
   "flipping the bird",
   "fudge packer",
-  "fuk",
   "fukah",
   "fuken",
   "fuker",
@@ -438,6 +437,8 @@ const profanities = [
   "wop",
   "yed",
   "zabourah",
+  "tit",
+  "ass",
 ];
 
 export default profanities;
