@@ -1628,7 +1628,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (response.data.dailyLeaderboardRank) {
     Notifications.add(
-      `New ${Config.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
         Misc.getPositionString(response.data.dailyLeaderboardRank),
       1,
       10,
