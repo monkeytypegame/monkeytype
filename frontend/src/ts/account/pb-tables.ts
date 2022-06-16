@@ -1,9 +1,20 @@
-import * as DB from "../db";
 import Config from "../config";
 import format from "date-fns/format";
 
-function clearTables(): void {
-  $(".pageAccount .profile .pbsWords").html(`
+function clearTables(isProfile: boolean): void {
+  const source = isProfile ? "Profile" : "Account";
+
+  const showAllButton = `<div  
+  class="showAllButton button"
+  data-balloon-pos="left"
+  aria-label="Show all personal bests"
+>
+  <i class="fas fa-ellipsis-v"></i>
+</div>`;
+
+  const htmlToShow = isProfile ? "" : showAllButton;
+
+  $(`.page${source} .profile .pbsWords`).html(`
       <div class="group">
       <div class="quick">
         <div class="test">10 words</div>
@@ -32,15 +43,9 @@ function clearTables(): void {
         <div class="acc">-</div>
       </div>
     </div>
-    <div
-      class="showAllButton button"
-      data-balloon-pos="left"
-      aria-label="Show all personal bests"
-    >
-      <i class="fas fa-ellipsis-v"></i>
-    </div>
+    ${htmlToShow}
   `);
-  $(".pageAccount .profile .pbsTime").html(`
+  $(`.page${source} .profile .pbsTime`).html(`
       <div class="group">
       <div class="quick">
         <div class="test">15 seconds</div>
@@ -69,284 +74,58 @@ function clearTables(): void {
         <div class="acc">-</div>
       </div>
     </div>
-    <div
-      class="showAllButton button"
-      data-balloon-pos="left"
-      aria-label="Show all personal bests"
-    >
-      <i class="fas fa-ellipsis-v"></i>
-    </div>
+    ${htmlToShow}
   `);
 }
 
-export function update(): void {
-  clearTables();
+export function update(
+  personalBests?: MonkeyTypes.PersonalBests,
+  isProfile = false
+): void {
+  clearTables(isProfile);
 
-  const pb = DB.getSnapshot().personalBests;
-  if (pb === undefined) return;
+  if (personalBests === undefined) return;
   let text = "";
 
-  // try {
-  //   pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = ``;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText = format(date, "dd MMM yyyy");
-  //   }
-  //   text += `<tr>
-  //     <td>15</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>15</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // try {
-  //   pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //   <td>30</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>30</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // try {
-  //   pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //     <td>60</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>60</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // try {
-  //   pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //     <td>120</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>120</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // $(".pageAccount .timePbTable tbody").html(text);
+  const source = isProfile ? "Profile" : "Account";
 
-  // try {
-  //   pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //     <td>10</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>10</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // try {
-  //   pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //     <td>25</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>25</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // try {
-  //   pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //     <td>50</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>50</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  // try {
-  //   pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
-  //   dateText = `-<br><span class="sub">-</span>`;
-  //   const date = new Date(pbData.timestamp);
-  //   if (pbData.timestamp) {
-  //     dateText =
-  //       format(date, "dd MMM yyyy") +
-  //       "<br><div class='sub'>" +
-  //       format(date, "HH:mm") +
-  //       "</div>";
-  //   }
-  //   text += `<tr>
-  //     <td>100</td>
-  //     <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
-  //     pbData.acc === undefined ? "-" : pbData.acc + "%"
-  //   }</span></td>
-  //     <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
-  //     pbData.consistency === undefined ? "-" : pbData.consistency + "%"
-  //   }</span></td>
-  //     <td>${dateText}</td>
-  //   </tr>`;
-  // } catch (e) {
-  //   text += `<tr>
-  //     <td>100</td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //     <td>-<br><span class="sub">-</span></td>
-  //   </tr>`;
-  // }
-  $(".pageAccount .wordsPbTable tbody").html(text);
+  $(`.page${source} .wordsPbTable tbody`).html(text);
 
   text = "";
   [15, 30, 60, 120].forEach((mode2) => {
-    text += buildPbHtml(pb, "time", mode2);
+    text += buildPbHtml(personalBests, "time", mode2);
   });
-  $(".pageAccount .profile .pbsTime").html(
-    text +
-      `<div
-  class="showAllButton button"
-  data-balloon-pos="left"
-  aria-label="Show all personal bests"
->
-  <i class="fas fa-ellipsis-v"></i>
-</div>`
-  );
+
+  if (!isProfile) {
+    $(`.page${source} .profile .pbsTime`).html(
+      text +
+        `<div
+    class="showAllButton button"
+    data-balloon-pos="left"
+    aria-label="Show all personal bests"
+  >
+    <i class="fas fa-ellipsis-v"></i>
+  </div>`
+    );
+  }
 
   text = "";
   [10, 25, 50, 100].forEach((mode2) => {
-    text += buildPbHtml(pb, "words", mode2);
+    text += buildPbHtml(personalBests, "words", mode2);
   });
-  $(".pageAccount .profile .pbsWords").html(
-    text +
-      `<div
+
+  if (!isProfile) {
+    $(`.page${source} .profile .pbsWords`).html(
+      text +
+        `<div
   class="showAllButton button"
   data-balloon-pos="left"
   aria-label="Show all personal bests"
 >
   <i class="fas fa-ellipsis-v"></i>
 </div>`
-  );
+    );
+  }
 }
 
 function buildPbHtml(

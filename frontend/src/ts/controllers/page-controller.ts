@@ -45,7 +45,11 @@ export async function change(
         page = "account";
       }
 
-      if (!Auth.currentUser && page === "profile") {
+      if (
+        !Auth.currentUser &&
+        window.location.search === "" &&
+        page === "profile"
+      ) {
         page = "login";
       }
 
@@ -53,6 +57,15 @@ export async function change(
         Auth.currentUser &&
         window.location.pathname === "/profile" &&
         window.location.search === ""
+      ) {
+        page = "account";
+      }
+
+      const userId = Misc.findGetParameter("uid");
+
+      if (
+        Auth.currentUser?.uid === userId &&
+        window.location.pathname === "/profile"
       ) {
         page = "account";
       }
@@ -76,6 +89,10 @@ export async function change(
     const previousPage = pages[ActivePage.get() as MonkeyTypes.Page];
     const nextPage = pages[page];
 
+    const historyUrl =
+      nextPage.pathname +
+      (nextPage.pathname === "/profile" ? window.location.search : "");
+
     previousPage?.beforeHide();
     PageTransition.set(true);
     ActivePage.set(undefined);
@@ -90,7 +107,7 @@ export async function change(
         previousPage?.afterHide();
         nextPage.element.addClass("active");
         resolve();
-        history.pushState(nextPage.pathname, "", nextPage.pathname);
+        history.pushState(nextPage.pathname, "", historyUrl);
         nextPage?.afterShow();
       },
       async () => {

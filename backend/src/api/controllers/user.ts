@@ -388,28 +388,40 @@ export async function getProfile(
     startedTests,
     timeTyping,
     addedAt,
+    discordAvatar,
+    discordId,
   } = await UserDAL.getUser(uid, "get user profile");
+
+  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
+  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+
+  const typingStats = {
+    completedTests,
+    startedTests,
+    timeTyping,
+  };
+
+  const relevantPersonalBests = {
+    time: validTimePbs,
+    words: validWordsPbs,
+  };
 
   if (banned) {
     return new MonkeyResponse("Profile retrived: banned user", {
       name,
       banned,
       addedAt,
+      typingStats,
+      personalBests: relevantPersonalBests,
     });
   }
-
-  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
-  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
 
   const profileData = {
     name,
     banned,
     badgeIds,
     addedAt,
-    personalBests: {
-      time: validTimePbs,
-      words: validWordsPbs,
-    },
+    personalBests: relevantPersonalBests,
     typingStats: {
       completedTests,
       startedTests,
@@ -421,6 +433,8 @@ export async function getProfile(
       socialProfiles: {},
       ...profileDetails,
     },
+    discordAvatar,
+    discordId,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);

@@ -240,9 +240,10 @@ export function update(): void {
     ChartController.accountActivity.updateColors();
     AllTimeStats.update();
 
-    PbTables.update();
+    const snapshot = DB.getSnapshot();
 
-    Profile.update("account", DB.getSnapshot());
+    PbTables.update(snapshot.personalBests);
+    Profile.update("account", snapshot);
 
     chartData = [];
     accChartData = [];
