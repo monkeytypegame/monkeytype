@@ -695,6 +695,11 @@ $(document).keydown(async (event) => {
 
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {
+    const modalVisible =
+      !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+
+    if (modalVisible) return;
+
     // change page if not on test page
     if (ActivePage.get() !== "test") {
       PageController.change("test");
