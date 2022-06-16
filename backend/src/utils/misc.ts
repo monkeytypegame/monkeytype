@@ -146,5 +146,8 @@ export function sanitizeString(str: string | undefined): string | undefined {
     return str;
   }
 
-  return str.replace(/[\u0300-\u036F]/g, "").trim();
+  return str
+    .replace(/[\u0300-\u036F]/g, "")
+    .replace(/\s{3,}/g, "  ")
+    .trim();
 }
