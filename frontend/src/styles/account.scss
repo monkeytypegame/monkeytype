@@ -417,6 +417,9 @@
         color: var(--bg-color);
       }
     }
+    .editProfileButton {
+      font-size: 0.9rem;
+    }
     .group {
       justify-self: center;
       display: grid;
@@ -491,6 +494,8 @@
     padding: 1rem;
     border-radius: var(--roundness);
     align-content: center;
+    padding-right: 2rem;
+
     // grid-template-columns: 15rem auto 15rem auto 2fr auto auto;
 
     grid-auto-flow: column;
