@@ -306,7 +306,7 @@ router.patch(
 
 const requireDiscordIntegrationEnabled = validateConfiguration({
   criteria: (configuration) => {
-    return configuration.discordIntegration.enabled;
+    return configuration.users.discordIntegration.enabled;
   },
   invalidMessage: "Discord integration is not available at this time",
 });

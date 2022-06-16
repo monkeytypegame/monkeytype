@@ -37,6 +37,9 @@ declare namespace MonkeyTypes {
       profiles: {
         enabled: boolean;
       };
+      discordIntegration: {
+        enabled: boolean;
+      };
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -53,9 +56,6 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
-    };
-    discordIntegration: {
-      enabled: boolean;
     };
   }
 
