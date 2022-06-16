@@ -389,6 +389,20 @@ $(document).ready(() => {
     if (PageTransition.get()) return event.preventDefault();
     // opens command line if escape or ctrl/cmd + shift + p
     if (
+      event.key === "Escape" &&
+      !$("#commandLineWrapper").hasClass("hidden")
+    ) {
+      if (CommandlineLists.current.length > 1) {
+        CommandlineLists.current.pop();
+        $("#commandLine").removeClass("allCommands");
+        show();
+      } else {
+        hide();
+      }
+      UpdateConfig.setFontFamily(Config.fontFamily, true);
+      return;
+    }
+    if (
       (event.key === "Escape" && Config.quickRestart !== "esc") ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
@@ -401,23 +415,12 @@ $(document).ready(() => {
 
       if (popupVisible) return;
 
-      if (!$("#commandLineWrapper").hasClass("hidden")) {
-        if (CommandlineLists.current.length > 1) {
-          CommandlineLists.current.pop();
-          $("#commandLine").removeClass("allCommands");
-          show();
-        } else {
-          hide();
-        }
-        UpdateConfig.setFontFamily(Config.fontFamily, true);
+      if (Config.singleListCommandLine == "on") {
+        useSingleListCommandLine(false);
       } else {
-        if (Config.singleListCommandLine == "on") {
-          useSingleListCommandLine(false);
-        } else {
-          CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
-        }
-        show();
+        CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
       }
+      show();
     }
   });
 });
