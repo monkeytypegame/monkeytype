@@ -1114,17 +1114,16 @@ export function setQuickRestartMode(mode: "off" | "esc" | "tab", nosave?: boolea
 
   config.quickRestart = mode;
   if (config.quickRestart === "tab") {
-    $("#restartTestButton").removeClass("hidden");
-    $("#restartTestButton").css("opacity", 1);
+    $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips")
-      .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
+      .html(`<key>tab</key> - restart test<br>
       <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else if (config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
-    $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
+    $("#bottom .keyTips").html(`<key>esc</key> - restart test<br>
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
   } else {
-    $("#restartTestButton").addClass("hidden");
+    $("#restartTestButton").removeClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test`);
   }
   saveToLocalStorage("quickRestart", nosave);
