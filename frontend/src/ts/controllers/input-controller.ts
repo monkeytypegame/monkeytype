@@ -611,7 +611,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
-  if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
+  if (Config.quickRestart === "tab") {
     // dont do anything special
     if (modalVisible) return;
 
@@ -691,6 +691,25 @@ $(document).keydown(async (event) => {
   //tab
   if (event.key == "Tab") {
     handleTab(event, popupVisible);
+  }
+
+  //esc
+  if (event.key === "Escape" && Config.quickRestart === "esc") {
+    // change page if not on test page
+    if (ActivePage.get() !== "test") {
+      PageController.change("test");
+      return;
+    }
+
+    // in case we are in a long test, setting manual restart
+    if (event.shiftKey) {
+      ManualRestart.set();
+    } else {
+      ManualRestart.reset();
+    }
+
+    //otherwise restart
+    TestLogic.restart(false, false, event);
   }
 
   if (!allowTyping) return;
