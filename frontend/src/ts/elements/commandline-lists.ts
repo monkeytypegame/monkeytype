@@ -908,29 +908,6 @@ const commandsLazyMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsSwapEscAndTab: MonkeyTypes.CommandsGroup = {
-  title: "Swap esc and tab...",
-  configKey: "swapEscAndTab",
-  list: [
-    {
-      id: "setSwapEscAndTabOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setSwapEscAndTab(false);
-      },
-    },
-    {
-      id: "setSwapEscAndTabOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setSwapEscAndTab(true);
-      },
-    },
-  ],
-};
-
 const commandsShowAllLines: MonkeyTypes.CommandsGroup = {
   title: "Show all lines...",
   configKey: "showAllLines",
@@ -2893,12 +2870,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Start graphs at zero...",
       icon: "fa-chart-line",
       subgroup: commandsStartGraphsAtZero,
-    },
-    {
-      id: "changeSwapEscAndTab",
-      display: "Swap esc and tab...",
-      icon: "fa-exchange-alt",
-      subgroup: commandsSwapEscAndTab,
     },
     {
       id: "changeLazyMode",

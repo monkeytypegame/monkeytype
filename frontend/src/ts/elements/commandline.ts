@@ -387,14 +387,13 @@ $("#commandLine input").keyup((e) => {
 $(document).ready(() => {
   $(document).on("keydown", (event) => {
     if (PageTransition.get()) return event.preventDefault();
-    // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
+    // opens command line if escape or ctrl/cmd + shift + p
     if (
       event.key === "Escape" ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
-        event.shiftKey) ||
-      (event.key === "Tab" && Config.swapEscAndTab)
+        event.shiftKey)
     ) {
       event.preventDefault();
 
@@ -411,7 +410,7 @@ $(document).ready(() => {
           hide();
         }
         UpdateConfig.setFontFamily(Config.fontFamily, true);
-      } else if (event.key === "Tab" || !Config.swapEscAndTab) {
+      } else {
         if (Config.singleListCommandLine == "on") {
           useSingleListCommandLine(false);
         } else {

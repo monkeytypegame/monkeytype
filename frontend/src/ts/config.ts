@@ -339,16 +339,6 @@ export function setShowOutOfFocusWarning(
   return true;
 }
 
-export function setSwapEscAndTab(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("swap esc and tab", val, ["boolean"])) return false;
-
-  config.swapEscAndTab = val;
-  saveToLocalStorage("swapEscAndTab", nosave);
-  ConfigEvent.dispatch("swapEscAndTab", config.swapEscAndTab);
-
-  return true;
-}
-
 //pace caret
 export function setPaceCaret(
   val: MonkeyTypes.PaceCaret,
@@ -1793,7 +1783,6 @@ export function apply(
     setFunbox(configObj.funbox, true);
     setRandomTheme(configObj.randomTheme, true);
     setShowAllLines(configObj.showAllLines, true);
-    setSwapEscAndTab(configObj.swapEscAndTab, true);
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);

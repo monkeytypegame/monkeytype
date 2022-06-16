@@ -74,7 +74,6 @@ const CONFIG_SCHEMA = joi.object({
   playSoundOnClick: joi.string().valid("off", ..._.range(1, 8).map(_.toString)),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),
-  swapEscAndTab: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
   paceCaret: joi.string().valid("off", "average", "pb", "custom"),
   paceCaretCustomSpeed: joi.number().min(0),

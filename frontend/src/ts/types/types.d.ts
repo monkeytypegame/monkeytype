@@ -351,7 +351,6 @@ declare namespace MonkeyTypes {
     playSoundOnClick: PlaySoundOnClick;
     soundVolume: SoundVolume;
     startGraphsAtZero: boolean;
-    swapEscAndTab: boolean;
     showOutOfFocusWarning: boolean;
     paceCaret: PaceCaret;
     paceCaretCustomSpeed: number;

@@ -196,11 +196,6 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFlipTestColors,
     "button"
   );
-  groups["swapEscAndTab"] = new SettingsGroup(
-    "swapEscAndTab",
-    UpdateConfig.setSwapEscAndTab,
-    "button"
-  );
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,

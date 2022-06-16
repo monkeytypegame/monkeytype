@@ -689,10 +689,7 @@ $(document).keydown(async (event) => {
   }
 
   //tab
-  if (
-    (event.key == "Tab" && !Config.swapEscAndTab) ||
-    (event.key == "Escape" && Config.swapEscAndTab)
-  ) {
+  if (event.key == "Tab") {
     handleTab(event, popupVisible);
   }
 

@@ -3,32 +3,32 @@ import * as Caret from "./test/caret";
 import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
 import * as TestActive from "./states/test-active";
-import * as ConfigEvent from "./observables/config-event";
+// import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
 
-export function updateKeytips(): void {
-  if (Config.swapEscAndTab) {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (
-    <key>tab</key>
-    )`);
-    $("#bottom .keyTips").html(`
-    <key>esc</key> - restart test<br>
-      <key>tab</key> - command line`);
-  } else {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (
-    <key>esc</key>
-    )`);
-    $("#bottom .keyTips").html(`
-    <key>tab</key> - restart test<br>
-      <key>esc</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
-  }
-}
+// export function updateKeytips(): void {
+//   if (Config.swapEscAndTab) {
+//     $(".pageSettings .tip").html(`
+//     tip: You can also change all these settings quickly using the
+//     command line (
+//     <key>tab</key>
+//     )`);
+//     $("#bottom .keyTips").html(`
+//     <key>esc</key> - restart test<br>
+//       <key>tab</key> - command line`);
+//   } else {
+//     $(".pageSettings .tip").html(`
+//     tip: You can also change all these settings quickly using the
+//     command line (
+//     <key>esc</key>
+//     )`);
+//     $("#bottom .keyTips").html(`
+//     <key>tab</key> - restart test<br>
+//       <key>esc</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
+//   }
+// }
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error): void {
@@ -107,6 +107,6 @@ $(window).on("resize", () => {
   debouncedEvent();
 });
 
-ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "swapEscAndTab") updateKeytips();
-});
+// ConfigEvent.subscribe((eventKey) => {
+//   if (eventKey === "swapEscAndTab") updateKeytips();
+// });

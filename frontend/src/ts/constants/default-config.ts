@@ -63,7 +63,6 @@ export default <MonkeyTypes.Config>{
   playSoundOnClick: "off",
   soundVolume: "0.5",
   startGraphsAtZero: true,
-  swapEscAndTab: false,
   showOutOfFocusWarning: true,
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
