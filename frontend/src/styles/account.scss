@@ -390,7 +390,8 @@
   }
 
   .pbsWords,
-  .pbsTime {
+  .pbsTime,
+  .details {
     user-select: none;
     background: var(--sub-alt-color);
     padding: 1rem;
@@ -400,7 +401,8 @@
     grid-template-columns: 1fr 1fr 1fr 1fr auto;
     justify-items: baseline;
     position: relative;
-    .showAllButton {
+    .showAllButton,
+    .editProfileButton {
       height: 100%;
       align-items: center;
       align-content: center;

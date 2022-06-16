@@ -1,8 +1,10 @@
+import * as DB from "../db";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
+import * as EditProfilePopup from "../popups/edit-profile-popup";
 
 export function update(
   where: "account",
@@ -77,29 +79,29 @@ export function update(
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialLinks.github ||
-      profile.details?.socialLinks.twitter ||
-      profile.details?.socialLinks.website
+      profile.details?.socialProfiles.github ||
+      profile.details?.socialProfiles.twitter ||
+      profile.details?.socialProfiles.website
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
       socialsEl.empty();
 
-      const git = profile.details?.socialLinks.github;
+      const git = profile.details?.socialProfiles.github;
       if (git) {
         socialsEl.append(
-          `<a href='github.com/${git}' aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          `<a href='https://github.com/${git}/' aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
-      const twitter = profile.details?.socialLinks.twitter;
+      const twitter = profile.details?.socialProfiles.twitter;
       if (twitter) {
         socialsEl.append(
-          `<a href='twitter.com/${twitter}' aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          `<a href='https://twitter.com/${twitter}' aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
-      const website = profile.details?.socialLinks.website;
+      const website = profile.details?.socialProfiles.website;
       if (website) {
         socialsEl.append(
           `<a href='${website}' aria-label="${website}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
@@ -174,6 +176,12 @@ export function updateNameFontSize(where: "account"): void {
     parentWidth = nameFieldParent.width() ?? 0;
   } while (nameWidth < parentWidth - 10 && fontSize < upperLimit);
 }
+
+$(".details .editProfileButton").on("click", () => {
+  EditProfilePopup.show(() => {
+    update("account", DB.getSnapshot());
+  });
+});
 
 const throttledEvent = throttle(250, () => {
   updateNameFontSize("account");

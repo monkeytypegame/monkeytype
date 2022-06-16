@@ -420,22 +420,24 @@ router.patch(
   authenticateRequest(),
   validateRequest({
     body: {
-      bio: joi.string().max(150),
-      keyboard: joi.string().max(75),
-      socialProfiles: joi
-        .object({
-          twitter: joi.string().max(20),
-          github: joi.string().max(20),
-          website: joi.string().uri({
+      bio: joi.string().max(150).allow(""),
+      keyboard: joi.string().max(75).allow(""),
+      socialProfiles: joi.object({
+        twitter: joi.string().max(20).allow(""),
+        github: joi.string().max(39).allow(""),
+        website: joi
+          .string()
+          .uri({
             scheme: "https",
             domain: {
               tlds: {
                 allow: true,
               },
             },
-          }),
-        })
-        .max(200),
+          })
+          .max(200)
+          .allow(""),
+      }),
     },
   }),
   asyncHandler(UserController.updateProfile)

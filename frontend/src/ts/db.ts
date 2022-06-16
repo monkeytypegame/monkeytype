@@ -93,7 +93,7 @@ export async function initSnapshot(): Promise<
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
-    snap.details = userData.details;
+    snap.details = userData.profileDetails;
     snap.addedAt = userData.addedAt;
     snap.badgeIds = userData.badgeIds;
 
