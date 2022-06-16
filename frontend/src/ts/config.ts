@@ -1109,24 +1109,23 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
 }
 
 //quick restart
-export function setQuickRestartMode(mode: "off" | "esc" | "tab", nosave?: boolean): boolean {
-  if (!isConfigValueValid("quick restart mode", mode, [["off", "esc","tab"]])) return false;
+export function setQuickRestartMode(
+  mode: "off" | "esc" | "tab",
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("quick restart mode", mode, [["off", "esc", "tab"]])
+  ) {
+    return false;
+  }
+
+  if (mode === "off") {
+    $(".pageTest #restartTestButton").removeClass("hidden");
+  } else {
+    $(".pageTest #restartTestButton").addClass("hidden");
+  }
 
   config.quickRestart = mode;
-  if (config.quickRestart === "tab") {
-    $("#restartTestButton").addClass("hidden");
-    $("#bottom .keyTips")
-      .html(`<key>tab</key> - restart test<br>
-      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
-  } else if (config.quickRestart === "esc") {
-    $("#restartTestButton").addClass("hidden");
-    $("#bottom .keyTips").html(`<key>esc</key> - restart test<br>
-    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
-  } else {
-    $("#restartTestButton").removeClass("hidden");
-    $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
-  }
   saveToLocalStorage("quickRestart", nosave);
   ConfigEvent.dispatch("quickRestart", config.quickRestart);
 
