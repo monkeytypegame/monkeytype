@@ -389,7 +389,7 @@ $(document).ready(() => {
     if (PageTransition.get()) return event.preventDefault();
     // opens command line if escape or ctrl/cmd + shift + p
     if (
-      event.key === "Escape" ||
+      (event.key === "Escape" && Config.quickRestart !== "esc") ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
