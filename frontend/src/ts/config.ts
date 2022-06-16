@@ -1108,24 +1108,27 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-//quick tab
-export function setQuickTabMode(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("quick tab mode", mode, ["boolean"])) return false;
+//quick restart
+export function setQuickRestartMode(mode: "off" | "esc" | "tab", nosave?: boolean): boolean {
+  if (!isConfigValueValid("quick restart mode", mode, [["off", "esc","tab"]])) return false;
 
-  config.quickTab = mode;
-  if (!config.quickTab) {
+  config.quickRestart = mode;
+  if (config.quickRestart === "tab") {
     $("#restartTestButton").removeClass("hidden");
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
       <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
-  } else {
+  } else if (config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
     <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
+  } else {
+    $("#restartTestButton").addClass("hidden");
+    $("#bottom .keyTips").html(`<key>tab</key> - restart test`);
   }
-  saveToLocalStorage("quickTab", nosave);
-  ConfigEvent.dispatch("quickTab", config.quickTab);
+  saveToLocalStorage("quickRestart", nosave);
+  ConfigEvent.dispatch("quickRestart", config.quickRestart);
 
   return true;
 }
@@ -1741,7 +1744,7 @@ export function apply(
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
-    setQuickTabMode(configObj.quickTab, true);
+    setQuickRestartMode(configObj.quickRestart, true);
     setKeyTips(configObj.showKeyTips, true);
     setTimeConfig(configObj.time, true);
     setQuoteLength(configObj.quoteLength, true);

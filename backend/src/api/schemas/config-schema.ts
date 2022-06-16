@@ -27,7 +27,7 @@ const CONFIG_SCHEMA = joi.object({
   showLiveWpm: joi.boolean(),
   showTimerProgress: joi.boolean(),
   smoothCaret: joi.boolean(),
-  quickTab: joi.boolean(),
+  quickRestart: joi.string().valid("off", "tab", "esc"),
   punctuation: joi.boolean(),
   numbers: joi.boolean(),
   words: joi.number().min(0),

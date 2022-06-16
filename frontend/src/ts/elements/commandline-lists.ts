@@ -2135,24 +2135,32 @@ const commandsSmoothCaret: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsQuickTab: MonkeyTypes.CommandsGroup = {
-  title: "Quick tab...",
-  configKey: "quickTab",
+const commandsQuickRestart: MonkeyTypes.CommandsGroup = {
+  title: "Quick restart...",
+  configKey: "quickRestart",
   list: [
     {
-      id: "changeQuickTabOn",
-      display: "on",
-      configValue: true,
+      id: "changeQuickRestartTab",
+      display: "tab",
+      configValue: "tab",
       exec: (): void => {
-        UpdateConfig.setQuickTabMode(true);
+        UpdateConfig.setQuickRestartMode("tab");
       },
     },
     {
-      id: "changeQuickTabOff",
-      display: "off",
-      configValue: false,
+      id: "changeQuickRestartEsc",
+      display: "esc",
+      configValue: "esc",
       exec: (): void => {
-        UpdateConfig.setQuickTabMode(false);
+        UpdateConfig.setQuickRestartMode("esc");
+      },
+    },
+    {
+      id: "changeQuickRestartOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setQuickRestartMode("off");
       },
     },
   ],
@@ -2711,10 +2719,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsSmoothCaret,
     },
     {
-      id: "changeQuickTab",
-      display: "Quick tab...",
+      id: "changeQuickRestart",
+      display: "Quick restart...",
       icon: "fa-redo-alt",
-      subgroup: commandsQuickTab,
+      subgroup: commandsQuickRestart,
     },
     {
       id: "changeRepeatQuotes",

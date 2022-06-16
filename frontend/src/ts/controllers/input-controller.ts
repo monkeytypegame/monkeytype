@@ -611,11 +611,11 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
-  if (Config.quickTab) {
+  if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     // dont do anything special
     if (modalVisible) return;
 
-    // dont do anything on login so we can tab betweeen inputs
+    // dont do anything on login so we can tab/esc betweeen inputs
     if (ActivePage.get() === "login") return;
 
     // change page if not on test page

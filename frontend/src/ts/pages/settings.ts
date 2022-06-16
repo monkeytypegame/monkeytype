@@ -34,9 +34,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setDifficulty,
     "button"
   );
-  groups["quickTab"] = new SettingsGroup(
-    "quickTab",
-    UpdateConfig.setQuickTabMode,
+  groups["quickRestart"] = new SettingsGroup(
+    "quickRestart",
+    UpdateConfig.setQuickRestartMode,
     "button"
   );
   groups["showLiveWpm"] = new SettingsGroup(
