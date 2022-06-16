@@ -44,6 +44,18 @@ export async function change(
       if (Auth.currentUser && page === "login") {
         page = "account";
       }
+
+      if (!Auth.currentUser && page === "profile") {
+        page = "login";
+      }
+
+      if (
+        Auth.currentUser &&
+        window.location.pathname === "/profile" &&
+        window.location.search === ""
+      ) {
+        page = "account";
+      }
     }
 
     if (!force && ActivePage.get() === page) {
