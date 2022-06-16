@@ -11,7 +11,6 @@ import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
-import { updateKeytips } from "./ui";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -1125,7 +1124,6 @@ export function setQuickRestartMode(
   } else {
     $(".pageTest #restartTestButton").addClass("hidden");
   }
-  updateKeytips();
   config.quickRestart = mode;
   saveToLocalStorage("quickRestart", nosave);
   ConfigEvent.dispatch("quickRestart", config.quickRestart);
