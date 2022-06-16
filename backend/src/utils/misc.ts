@@ -140,3 +140,11 @@ export function flattenObjectDeep(
 
   return result;
 }
+
+export function sanitizeString(str: string | undefined): string | undefined {
+  if (!str) {
+    return str;
+  }
+
+  return str.replace(/[\u0300-\u036F]/g, "");
+}

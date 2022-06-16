@@ -4,7 +4,7 @@ import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { getDiscordUser } from "../../utils/discord";
-import { buildAgentLog } from "../../utils/misc";
+import { buildAgentLog, sanitizeString } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 
@@ -433,9 +433,9 @@ export async function updateProfile(
   const { bio, keyboard, socialProfiles } = req.body;
 
   const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
-    bio,
-    keyboard,
-    socialProfiles,
+    bio: sanitizeString(bio),
+    keyboard: sanitizeString(keyboard),
+    socialProfiles: _.mapValues(socialProfiles, sanitizeString),
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates);
