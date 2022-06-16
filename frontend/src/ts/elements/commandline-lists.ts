@@ -1493,6 +1493,15 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       },
     },
     {
+      id: "setPaceCaretLast",
+      display: "last",
+      configValue: "last",
+      exec: (): void => {
+        UpdateConfig.setPaceCaret("last");
+        TestLogic.restart();
+      },
+    },
+    {
       id: "setPaceCaretAverage",
       display: "average",
       configValue: "average",

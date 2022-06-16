@@ -77,7 +77,7 @@ export async function init(): Promise<void> {
     wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (TestState.isPaceRepeat == true) {
+  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat == true) {
     wpm = TestStats.lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
