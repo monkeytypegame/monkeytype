@@ -15,6 +15,10 @@ export function update(
     details = $(".pageAccount .profile .details");
   }
 
+  // ============================================================================
+  // DO FREAKING NOT USE .HTML HERE - USER INPUT!!!!!!
+  // ============================================================================
+
   const banned = profile.banned === true;
 
   if (!details || !profile || !profile.name || !profile.addedAt) return;
