@@ -1,18 +1,14 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Misc from "../utils/misc";
-import { Auth } from "../firebase";
+// import { Auth } from "../firebase";
 import { update } from "../elements/profile";
 import * as Notifications from "../elements/notifications";
-import * as PageController from "../controllers/page-controller";
+// import * as PageController from "../controllers/page-controller";
 
 async function hydrateProfile(): Promise<void> {
-  const currentUserId = Auth.currentUser?.uid;
+  // const currentUserId = Auth.currentUser?.uid;
   const userId = Misc.findGetParameter("uid");
-
-  if (!userId || !currentUserId || userId === currentUserId) {
-    return PageController.change("account");
-  }
 
   const response = await Ape.users.getProfile(userId);
 
