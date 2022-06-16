@@ -662,6 +662,10 @@
       align-self: stretch;
       grid-auto-flow: column;
     }
+    .bio .value,
+    .keyboard .value {
+      white-space: pre-line;
+    }
     .typingStats.vertical,
     .bioAndKeyboard.vertical {
       grid-auto-flow: row;
