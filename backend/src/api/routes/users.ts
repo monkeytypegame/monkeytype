@@ -393,7 +393,7 @@ router.delete(
 
 const requireProfilesEnabled = validateConfiguration({
   criteria: (configuration) => {
-    return configuration.profiles.enabled;
+    return configuration.users.profiles.enabled;
   },
   invalidMessage: "Profiles are not available at this time",
 });

@@ -29,11 +29,17 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     apeKeyBytes: 24,
     apeKeySaltRounds: 5,
   },
-  autoBan: {
-    enabled: false,
-    maxCount: 5,
-    maxHours: 1,
+  users: {
+    autoBan: {
+      enabled: false,
+      maxCount: 5,
+      maxHours: 1,
+    },
+    profiles: {
+      enabled: false,
+    },
   },
+
   dailyLeaderboards: {
     enabled: false,
     maxResults: 0,
@@ -44,9 +50,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
   },
   discordIntegration: {
-    enabled: false,
-  },
-  profiles: {
     enabled: false,
   },
 };
@@ -159,26 +162,43 @@ export const CONFIGURATION_FORM_SCHEMA = {
         },
       },
     },
-    autoBan: {
+    users: {
       type: "object",
-      label: "Auto Ban",
+      label: "Users",
       fields: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
+        autoBan: {
+          type: "object",
+          label: "Auto Ban",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxCount: {
+              type: "number",
+              label: "Max Count",
+              min: 0,
+            },
+            maxHours: {
+              type: "number",
+              label: "Max Hours",
+              min: 0,
+            },
+          },
         },
-        maxCount: {
-          type: "number",
-          label: "Max Count",
-          min: 0,
-        },
-        maxHours: {
-          type: "number",
-          label: "Max Hours",
-          min: 0,
+        profiles: {
+          type: "object",
+          label: "User Profiles",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
         },
       },
     },
+
     dailyLeaderboards: {
       type: "object",
       label: "Daily Leaderboards",
@@ -228,16 +248,6 @@ export const CONFIGURATION_FORM_SCHEMA = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
-        },
-      },
-    },
-    profiles: {
-      type: "object",
-      label: "User Profiles",
-      fields: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
         },
       },
     },
