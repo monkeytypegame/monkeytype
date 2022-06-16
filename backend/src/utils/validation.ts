@@ -29,6 +29,12 @@ export function isUsernameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
+export function containsProfanity(text: string): boolean {
+  const normalizedText = text.toLowerCase();
+
+  return profanities.some((profanity) => normalizedText.includes(profanity));
+}
+
 export function isTagPresetNameValid(name: string): boolean {
   if (_.isNil(name) || !inRange(name.length, 1, 16)) {
     return false;
