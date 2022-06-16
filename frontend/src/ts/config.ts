@@ -1124,7 +1124,8 @@ export function setQuickRestartMode(mode: "off" | "esc" | "tab", nosave?: boolea
     <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
   } else {
     $("#restartTestButton").removeClass("hidden");
-    $("#bottom .keyTips").html(`<key>tab</key> - restart test`);
+    $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   saveToLocalStorage("quickRestart", nosave);
   ConfigEvent.dispatch("quickRestart", config.quickRestart);
