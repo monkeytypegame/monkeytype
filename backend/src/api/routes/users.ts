@@ -9,7 +9,7 @@ import {
 } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import apeRateLimit from "../../middlewares/ape-rate-limit";
-import { isUsernameValid } from "../../utils/validation";
+import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
 
 const router = Router();
@@ -306,7 +306,7 @@ router.patch(
 
 const requireDiscordIntegrationEnabled = validateConfiguration({
   criteria: (configuration) => {
-    return configuration.discordIntegration.enabled;
+    return configuration.users.discordIntegration.enabled;
   },
   invalidMessage: "Discord integration is not available at this time",
 });
@@ -393,7 +393,7 @@ router.delete(
 
 const requireProfilesEnabled = validateConfiguration({
   criteria: (configuration) => {
-    return configuration.profiles.enabled;
+    return configuration.users.profiles.enabled;
   },
   invalidMessage: "Profiles are not available at this time",
 });
@@ -413,6 +413,18 @@ router.get(
   asyncHandler(UserController.getProfile)
 );
 
+const profileDetailsBase = joi
+  .string()
+  .allow("")
+  .custom((value, helpers) => {
+    return containsProfanity(value)
+      ? helpers.error("string.pattern.base")
+      : value;
+  })
+  .messages({
+    "string.pattern.base": "Profanity detected. Please remove it.",
+  });
+
 router.patch(
   "/profile",
   RateLimit.userProfileUpdate,
@@ -420,22 +432,22 @@ router.patch(
   authenticateRequest(),
   validateRequest({
     body: {
-      bio: joi.string().max(150),
-      keyboard: joi.string().max(75),
-      socialProfiles: joi
-        .object({
-          twitter: joi.string().max(20),
-          github: joi.string().max(20),
-          website: joi.string().uri({
+      bio: profileDetailsBase.max(150),
+      keyboard: profileDetailsBase.max(75),
+      socialProfiles: joi.object({
+        twitter: profileDetailsBase.max(20),
+        github: profileDetailsBase.max(39),
+        website: profileDetailsBase
+          .uri({
             scheme: "https",
             domain: {
               tlds: {
                 allow: true,
               },
             },
-          }),
-        })
-        .max(200),
+          })
+          .max(200),
+      }),
     },
   }),
   asyncHandler(UserController.updateProfile)

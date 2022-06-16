@@ -473,12 +473,12 @@ declare namespace MonkeyTypes {
   }
 
   interface UserDetails {
-    bio: string;
-    keyboard: string;
-    socialLinks: {
-      twitter: string;
-      github: string;
-      website: string;
+    bio?: string;
+    keyboard?: string;
+    socialProfiles: {
+      twitter?: string;
+      github?: string;
+      website?: string;
     };
   }
 

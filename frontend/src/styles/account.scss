@@ -390,7 +390,8 @@
   }
 
   .pbsWords,
-  .pbsTime {
+  .pbsTime,
+  .details {
     user-select: none;
     background: var(--sub-alt-color);
     padding: 1rem;
@@ -400,7 +401,8 @@
     grid-template-columns: 1fr 1fr 1fr 1fr auto;
     justify-items: baseline;
     position: relative;
-    .showAllButton {
+    .showAllButton,
+    .editProfileButton {
       height: 100%;
       align-items: center;
       align-content: center;
@@ -414,6 +416,9 @@
       &:hover {
         color: var(--bg-color);
       }
+    }
+    .editProfileButton {
+      font-size: 0.9rem;
     }
     .group {
       justify-self: center;
@@ -489,6 +494,8 @@
     padding: 1rem;
     border-radius: var(--roundness);
     align-content: center;
+    padding-right: 2rem;
+
     // grid-template-columns: 15rem auto 15rem auto 2fr auto auto;
 
     grid-auto-flow: column;
@@ -654,6 +661,10 @@
       align-content: space-around;
       align-self: stretch;
       grid-auto-flow: column;
+    }
+    .bio .value,
+    .keyboard .value {
+      white-space: pre-line;
     }
     .typingStats.vertical,
     .bioAndKeyboard.vertical {
