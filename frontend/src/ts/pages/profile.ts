@@ -11,6 +11,7 @@ async function hydrateProfile(): Promise<void> {
   const response = await Ape.users.getProfile(userId ?? "");
 
   if (response.status !== 200) {
+    $(".pageProfile .failedToLoad").removeClass("hidden");
     return Notifications.add("Failed to load profile: " + response.message, -1);
   }
 
@@ -25,6 +26,7 @@ export const page = new Page(
   $(".page.pageProfile"),
   "/profile",
   () => {
+    $(".pageProfile .failedToLoad").addClass("hidden");
     $(".pageProfile .content").addClass("hidden");
   },
   () => {
