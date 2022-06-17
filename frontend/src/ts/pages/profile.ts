@@ -16,6 +16,8 @@ async function hydrateProfile(): Promise<void> {
 
   Profile.update("profile", response.data);
   PbTables.update(response.data.personalBests, true);
+
+  $(".pageProfile .content").removeClass("hidden");
 }
 
 export const page = new Page(
@@ -23,7 +25,7 @@ export const page = new Page(
   $(".page.pageProfile"),
   "/profile",
   () => {
-    //
+    $(".pageProfile .content").addClass("hidden");
   },
   () => {
     //

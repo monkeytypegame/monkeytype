@@ -146,6 +146,10 @@
             border-radius: 100%;
             margin-top: -0.25rem;
           }
+          .entryName {
+            text-decoration: none;
+            color: var(--text-color);
+          }
           .avatarPlaceholder,
           .avatar {
             grid-row: 1/2;

@@ -89,43 +89,32 @@ export function update(
 
   const source = isProfile ? "Profile" : "Account";
 
-  $(`.page${source} .wordsPbTable tbody`).html(text);
+  $(`.page${source} .profile .pbsTime`).html("");
+  $(`.page${source} .profile .pbsWords`).html("");
 
   text = "";
   [15, 30, 60, 120].forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
   });
 
-  if (!isProfile) {
-    $(`.page${source} .profile .pbsTime`).html(
-      text +
-        `<div
-    class="showAllButton button"
-    data-balloon-pos="left"
-    aria-label="Show all personal bests"
-  >
-    <i class="fas fa-ellipsis-v"></i>
-  </div>`
-    );
-  }
+  const showAllButton = isProfile
+    ? ""
+    : `<div
+      class="showAllButton button"
+      data-balloon-pos="left"
+      aria-label="Show all personal bests"
+    >
+      <i class="fas fa-ellipsis-v"></i>
+    </div>`;
+
+  $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 
   text = "";
   [10, 25, 50, 100].forEach((mode2) => {
     text += buildPbHtml(personalBests, "words", mode2);
   });
 
-  if (!isProfile) {
-    $(`.page${source} .profile .pbsWords`).html(
-      text +
-        `<div
-  class="showAllButton button"
-  data-balloon-pos="left"
-  aria-label="Show all personal bests"
->
-  <i class="fas fa-ellipsis-v"></i>
-</div>`
-    );
-  }
+  $(`.page${source} .profile .pbsWords`).append(text + showAllButton);
 }
 
 function buildPbHtml(
@@ -162,7 +151,10 @@ function buildPbHtml(
       } con</div>
       <div>${dateText}</div>
     </div>`;
+
+    console.log(retval);
   } catch (e) {
+    console.log(e);
     retval = `<div class="quick">
     <div class="test">${modeString}</div>
     <div class="wpm">-</div>

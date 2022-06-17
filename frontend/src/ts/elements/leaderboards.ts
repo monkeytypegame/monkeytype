@@ -297,9 +297,12 @@ function fillTable(lb: LbKey, prepend?: number): void {
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td><div class="avatarNameBadge">${avatar}${entry.name}${
-      entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""
-    }</div></td>
+    <td>
+    <div class="avatarNameBadge">${avatar}
+      <a class="entryName" href=${`/profile?uid=${entry.uid}`}>${entry.name}</a>
+      ${entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""}
+    </div>
+    </td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -317,6 +320,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
   </tr>
   `;
   }
+
   if (!prepend) {
     $(`#leaderboardsWrapper table.${side} tbody`).append(html);
   } else {
