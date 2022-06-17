@@ -151,10 +151,7 @@ function buildPbHtml(
       } con</div>
       <div>${dateText}</div>
     </div>`;
-
-    console.log(retval);
   } catch (e) {
-    console.log(e);
     retval = `<div class="quick">
     <div class="test">${modeString}</div>
     <div class="wpm">-</div>

@@ -11,14 +11,14 @@ async function hydrateProfile(): Promise<void> {
   const response = await Ape.users.getProfile(userId ?? "");
 
   if (response.status !== 200) {
-    $(".pageProfile .failedToLoad").removeClass("hidden");
+    $(".page.pageProfile .failedToLoad").removeClass("hidden");
     return Notifications.add("Failed to load profile: " + response.message, -1);
   }
 
   Profile.update("profile", response.data);
   PbTables.update(response.data.personalBests, true);
 
-  $(".pageProfile .content").removeClass("hidden");
+  $(".page.pageProfile .content").removeClass("hidden");
 }
 
 export const page = new Page(
@@ -26,16 +26,16 @@ export const page = new Page(
   $(".page.pageProfile"),
   "/profile",
   () => {
-    $(".pageProfile .failedToLoad").addClass("hidden");
-    $(".pageProfile .content").addClass("hidden");
+    $(".page.pageProfile .failedToLoad").addClass("hidden");
+    $(".page.pageProfile .content").addClass("hidden");
+  },
+  () => {
+    //
   },
   () => {
     //
   },
   async () => {
     await hydrateProfile();
-  },
-  () => {
-    //
   }
 );

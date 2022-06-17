@@ -6,6 +6,7 @@ import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
+import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
@@ -299,7 +300,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
     }</td>
     <td>
     <div class="avatarNameBadge">${avatar}
-      <a class="entryName" href=${`/profile?uid=${entry.uid}`}>${entry.name}</a>
+      <span class="entryName" uid=${entry.uid}>${entry.name}</span>
       ${entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""}
     </div>
     </td>
@@ -326,6 +327,15 @@ function fillTable(lb: LbKey, prepend?: number): void {
   } else {
     $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
   }
+
+  $(".entryName").on("click", (e) => {
+    const uid = $(e.target).attr("uid");
+    if (uid) {
+      window.history.replaceState(null, "", "/profile?uid=" + uid);
+      change("profile", true);
+      hide();
+    }
+  });
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");

@@ -52,23 +52,23 @@ export async function change(
       ) {
         page = "login";
       }
+    }
 
-      if (
-        Auth.currentUser &&
-        window.location.pathname === "/profile" &&
-        window.location.search === ""
-      ) {
-        page = "account";
-      }
+    if (
+      Auth.currentUser &&
+      window.location.pathname === "/profile" &&
+      window.location.search === ""
+    ) {
+      page = "account";
+    }
 
-      const userId = Misc.findGetParameter("uid");
+    const userId = Misc.findGetParameter("uid");
 
-      if (
-        Auth.currentUser?.uid === userId &&
-        window.location.pathname === "/profile"
-      ) {
-        page = "account";
-      }
+    if (
+      Auth.currentUser?.uid === userId &&
+      window.location.pathname === "/profile"
+    ) {
+      page = "account";
     }
 
     if (!force && ActivePage.get() === page) {
