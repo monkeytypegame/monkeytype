@@ -4,6 +4,7 @@ import "../styles/index.scss";
 import "./firebase";
 
 import * as DB from "./db";
+import "./ui";
 import Config from "./config";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
@@ -20,7 +21,6 @@ import "./popups/edit-preset-popup";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
-import "./ui";
 import "./pages/about";
 import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
