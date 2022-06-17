@@ -27,6 +27,7 @@ import {
 } from "../../utils/prometheus";
 import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
+import AutoRoleList from "../../constants/auto-roles";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -292,7 +293,11 @@ export async function addResult(
     }
   }
 
-  if (result.challenge && user.discordId) {
+  if (
+    result.challenge &&
+    AutoRoleList.includes(result.challenge) &&
+    user.discordId
+  ) {
     George.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;

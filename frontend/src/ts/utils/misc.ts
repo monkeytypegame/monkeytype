@@ -782,6 +782,22 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+const unescapedToEscapedHtml: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "/": "&#x2F;",
+};
+
+export function escapeHTML(str: string): string {
+  return Object.entries(unescapedToEscapedHtml).reduce(
+    (previous, [current, value]) => previous.replace(current, value),
+    str
+  );
+}
+
 export function cleanTypographySymbols(textToClean: string): string {
   const specials = {
     "“": '"', // &ldquo;	&#8220;
