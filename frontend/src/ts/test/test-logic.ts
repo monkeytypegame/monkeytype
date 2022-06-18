@@ -335,8 +335,10 @@ export function restart(
         )
       ) {
         let message = "Use your mouse to confirm.";
-        if (Config.quickTab) {
+        if (Config.quickRestart === "tab") {
           message = "Press shift + tab or use your mouse to confirm.";
+        } else if (Config.quickRestart === "esc") {
+          message = "Press shift + escape or use your mouse to confirm.";
         }
         Notifications.add("Quick restart disabled. " + message, 0, 3);
         return;
