@@ -16,7 +16,6 @@ import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
 import format from "date-fns/format";
 import Ape from "../ape";
-import { Auth } from "../firebase";
 
 import type { ScaleChartOptions } from "chart.js";
 
@@ -646,8 +645,8 @@ export function update(): void {
     // gets the users rank
     const timeModes = ["15", "60"];
 
-    const leaderboardRequests = timeModes.map((mode2) => {
-      return Ape.leaderboards.get({
+    const rankRequest = timeModes.map((mode2) => {
+      return Ape.leaderboards.getRank({
         language: "english",
         mode: "time",
         mode2,
@@ -655,22 +654,9 @@ export function update(): void {
       });
     });
 
-    if (Auth.currentUser) {
-      leaderboardRequests.push(
-        ...timeModes.map((mode2) => {
-          return Ape.leaderboards.getRank({
-            language: "english",
-            mode: "time",
-            mode2,
-            isDaily: false,
-          });
-        })
-      );
-    }
-
-    Promise.all(leaderboardRequests).then((data) => {
-      userRank.rank15 = data[2].data ? data[2].data : undefined;
-      userRank.rank30 = data[3].data ? data[3].data : undefined;
+    Promise.all(rankRequest).then((data) => {
+      userRank.rank15 = data[0].data ? data[0].data : undefined;
+      userRank.rank30 = data[1].data ? data[1].data : undefined;
     });
     console.log(userRank);
     console.log(eligableToRanking);
