@@ -42,7 +42,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   6: {
     id: 6,
     name: "Supporter",
-    description: "Test description",
+    description: "Patreon supporters",
     icon: "fa-shield-heart",
     color: "var(--bg-color)",
     background: "var(--main-color)",
@@ -50,7 +50,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   7: {
     id: 7,
     name: "Sugar Daddy",
-    description: "Test description",
+    description: "description",
     icon: "fa-peach",
     color: "var(--bg-color)",
     background: "var(--main-color)",
