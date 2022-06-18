@@ -262,8 +262,8 @@ export function update(): void {
 
     let eligableToRanking = false;
     const userRank = {
-      rank15: {},
-      rank30: {},
+      rank15: undefined,
+      rank30: undefined,
     };
 
     const rawWpm = {
