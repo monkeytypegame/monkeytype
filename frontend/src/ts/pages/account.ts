@@ -15,6 +15,8 @@ import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as ActivePage from "../states/active-page";
 import format from "date-fns/format";
+import Ape from "../ape";
+import { Auth } from "../firebase";
 
 import type { ScaleChartOptions } from "chart.js";
 
@@ -259,6 +261,12 @@ export function update(): void {
     let totalAcc = 0;
     let totalAcc10 = 0;
 
+    let eligableToRanking = false;
+    const userRank = {
+      rank15: {},
+      rank30: {},
+    };
+
     const rawWpm = {
       total: 0,
       count: 0,
@@ -284,7 +292,6 @@ export function update(): void {
     }
 
     const activityChartData: ActivityChartData = {};
-
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
     DB.getSnapshot().results?.forEach(
@@ -630,6 +637,43 @@ export function update(): void {
         totalWpm += result.wpm;
       }
     );
+
+    // checks if the account has typed for more than 2 hours
+    if ((DB.getSnapshot().globalStats?.time ?? 0) >= 7200) {
+      eligableToRanking = true;
+    }
+
+    // gets the users rank
+    const timeModes = ["15", "60"];
+
+    const leaderboardRequests = timeModes.map((mode2) => {
+      return Ape.leaderboards.get({
+        language: "english",
+        mode: "time",
+        mode2,
+        isDaily: false,
+      });
+    });
+
+    if (Auth.currentUser) {
+      leaderboardRequests.push(
+        ...timeModes.map((mode2) => {
+          return Ape.leaderboards.getRank({
+            language: "english",
+            mode: "time",
+            mode2,
+            isDaily: false,
+          });
+        })
+      );
+    }
+
+    Promise.all(leaderboardRequests).then((data) => {
+      userRank.rank15 = data[2].data ? data[2].data : undefined;
+      userRank.rank30 = data[3].data ? data[3].data : undefined;
+    });
+    console.log(userRank);
+    console.log(eligableToRanking);
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
