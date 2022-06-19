@@ -638,60 +638,41 @@ export function update(): void {
       eligableToRanking = true;
     }
 
-    const timeModes = ["15", "60"];
+    const modeDifferences = ["15", "60"];
+    const mode = "time";
 
-    const rankRequest = timeModes.map((mode2) => {
+    const rankRequest = modeDifferences.map((mode2) => {
       return Ape.leaderboards.getRank({
         language: "english",
-        mode: "time",
+        mode,
         mode2,
         isDaily: false,
       });
     });
 
     Promise.all(rankRequest).then((data) => {
-      if (data[0].status !== 200) {
-        $(".pageAccount .userRank15 .error").text("Error retreaving rank");
-      }
-      if (data[1].status !== 200) {
-        $(".pageAccount .userRank60 .error").text("Error retreaving rank");
-      }
+      for (let i = 0; i < 2; i++) {
+        if (data[i].status !== 200) {
+          $(`.pageAccount .userRank${i} .error`).text("Error retreaving rank");
+          continue;
+        }
+        if (!eligableToRanking) {
+          $(`.pageAccount .userRank${i} .error`).text("Not enough time typed");
+          continue;
+        }
+        if (!data[i]["data"]) {
+          $(`.pageAccount .userRank${i} error`).text("Not qualified");
+          continue;
+        }
 
-      if (!eligableToRanking) {
-        $(".pageAccount .userRank15 .error").text("Not enough time typed");
-        $(".pageAccount .userRank60 .error").text("Not enough time typed");
-        return;
+        $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
       }
-
-      if (!data[0]["data"]) {
-        $(".pageAccount .userRank15 .error").text("Not qualified");
-      }
-      if (!data[1]["data"]) {
-        $(".pageAccount .userRank60 .error").text("Not qualified");
-      }
-
-      $(".pageAccount .userRank15 .val").text(
-        data[0].status !== 200
-          ? "-"
-          : data[0]["data"] !== null
-          ? data[0]["data"]["rank"]
-          : "-"
-      );
-
-      //$(".pageAccount .userRank60 .title").text("time 60 leaderboard rank");
-      $(".pageAccount .userRank60 .val").text(
-        data[1].status !== 200
-          ? "-"
-          : data[1]["data"] !== null
-          ? data[1]["data"]["rank"]
-          : "-"
-      );
     });
 
-    const rankRequestDaily = timeModes.map((mode2) => {
+    const rankRequestDaily = modeDifferences.map((mode2) => {
       return Ape.leaderboards.getRank({
         language: "english",
-        mode: "time",
+        mode,
         mode2,
         isDaily: true,
         daysBefore: 0,
@@ -699,6 +680,8 @@ export function update(): void {
     });
 
     Promise.all(rankRequestDaily).then((data) => {
+      console.log(data);
+
       if (data[0].status !== 200) {
         $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
         return;
@@ -709,7 +692,7 @@ export function update(): void {
         return;
       }
 
-      if (data[0]["data"] && data[1]["data"] === null) {
+      if (!data[0]["data"] && !data[1]["data"]) {
         $(".pageAccount .userRankDaily .error").text("Not qualified");
         return;
       }
