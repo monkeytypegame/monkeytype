@@ -33,7 +33,8 @@ class Notification {
     }
   ) {
     this.type = type;
-    this.message = Misc.escapeHTML(message);
+    this.message =
+      this.type === "Notification" ? Misc.escapeHTML(message) : message;
     this.level = level;
     if (type === "banner") {
       this.duration = duration as number;
