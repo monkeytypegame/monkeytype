@@ -24,8 +24,6 @@ export function loading(truefalse: boolean): void {
 export function update(discordId?: string, discordAvatar?: string): void {
   if (Auth.currentUser != null) {
     if (discordAvatar && discordId) {
-      usingAvatar = true;
-
       // Replace font-awesome account icon with Discord avatar only if it loads successfully
       // https://stackoverflow.com/a/5058336/9080819
       const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
@@ -34,6 +32,7 @@ export function update(discordId?: string, discordAvatar?: string): void {
         .on("load", function () {
           $(this).remove();
 
+          usingAvatar = true;
           $("#top #menu .account .avatar").css(
             "background-image",
             `url(${avatarUrl})`
