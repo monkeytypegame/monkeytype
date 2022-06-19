@@ -666,6 +666,9 @@ export function update(): void {
         }
 
         $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
+        $(`.pageAccount .userRank${i} .title`).html(
+          `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
+        );
       }
     });
 
