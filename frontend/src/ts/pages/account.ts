@@ -261,10 +261,6 @@ export function update(): void {
     let totalAcc10 = 0;
 
     let eligableToRanking = false;
-    const userRank = {
-      rank15: undefined,
-      rank30: undefined,
-    };
 
     const rawWpm = {
       total: 0,
@@ -643,26 +639,82 @@ export function update(): void {
     }
 
     // checks if the user can have a rank and then gets it
-    if (eligableToRanking) {
-      // gets the users rank
-      const timeModes = ["15", "60"];
+    // gets the users rank
+    const timeModes = ["15", "60"];
 
-      const rankRequest = timeModes.map((mode2) => {
-        return Ape.leaderboards.getRank({
-          language: "english",
-          mode: "time",
-          mode2,
-          isDaily: false,
-        });
+    const rankRequest = timeModes.map((mode2) => {
+      return Ape.leaderboards.getRank({
+        language: "english",
+        mode: "time",
+        mode2,
+        isDaily: false,
       });
+    });
 
-      Promise.all(rankRequest).then((data) => {
-        userRank.rank15 = data[0].data ? data[0].data : undefined;
-        userRank.rank30 = data[1].data ? data[1].data : undefined;
+    Promise.all(rankRequest).then((data) => {
+      if (!eligableToRanking) {
+        Notifications.add(
+          "Your account must have 2 hours typed to be placed on the leaderboard: " +
+            0
+        );
+      }
+      for (const element of data) {
+        if (element.status !== 200) {
+          Notifications.add(
+            "Failed to load daily rank: " + data[0].message,
+            -1
+          );
+          break;
+        }
+      }
+
+      $(".pageAccount .userRank15 .val").text(
+        !eligableToRanking
+          ? "-"
+          : data[0].status !== 200
+          ? "-"
+          : data[0]
+          ? data[0]["data"]["rank"]
+          : "Not qualified"
+      );
+
+      //$(".pageAccount .userRank60 .title").text("time 60 leaderboard rank");
+      $(".pageAccount .userRank60 .val").text(
+        !eligableToRanking
+          ? "-"
+          : data[1].status !== 200
+          ? "-"
+          : data[1]
+          ? data[1]["data"]["rank"]
+          : "Not qualified"
+      );
+    });
+
+    const rankRequestDaily = timeModes.map((mode2) => {
+      return Ape.leaderboards.getRank({
+        language: "english",
+        mode: "time",
+        mode2,
+        isDaily: true,
+        daysBefore: 0,
       });
-      console.log(userRank);
-      console.log(eligableToRanking);
-    }
+    });
+
+    Promise.all(rankRequestDaily).then((data) => {
+      // highest daily rank
+      if (data[0].status !== 200) {
+        Notifications.add("Failed to load daily rank: " + data[0].message, -1);
+      }
+      $(".pageAccount .userRankDaily .val").text(
+        !eligableToRanking
+          ? "-"
+          : data[1].status !== 200
+          ? "-"
+          : data[1]
+          ? data[1]["data"]["rank"]
+          : "Not qualified"
+      );
+    });
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
