@@ -29,6 +29,7 @@ export function update(discordId?: string, discordAvatar?: string): void {
         "background-image",
         `url(https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png)`
       );
+      $("#top #menu .account .icon").addClass("hidden");
       $("#top #menu .account .avatar").removeClass("hidden");
     } else {
       $("#top #menu .account .avatar").addClass("hidden");
