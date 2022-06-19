@@ -371,6 +371,13 @@
     "parameters": ["shrek.txt",null,null]
   }
   ,{
+    "name": "lookAtMeIAmTheDeveloperNow",
+    "display": "Look at me. I am the developer now.",
+    "autoRole": true,
+    "type": "script",
+    "parameters": ["sourcecde.txt",null,null]
+  }
+  ,{
     "name": "beLikeWater",
     "display": "Be like water",
     "type": "funbox",
@@ -703,12 +710,5 @@
     "display": "Feet warrior",
     "type": "customTime",
     "parameters": [3600]
-  }
-  ,{
-    "name": "lookAtMeIAmTheDeveloperNow",
-    "display": "Look at me. I am the developer now.",
-    "autoRole": true,
-    "type": "script",
-    "parameters": ["sourcecde.txt",null,null]
   }
 ]
