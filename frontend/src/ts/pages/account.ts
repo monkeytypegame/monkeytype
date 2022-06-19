@@ -260,7 +260,7 @@ export function update(): void {
     let totalAcc = 0;
     let totalAcc10 = 0;
 
-    let eligableToRanking = false;
+    let eligibleToRanking = false;
 
     const rawWpm = {
       total: 0,
@@ -635,103 +635,102 @@ export function update(): void {
 
     // checks if the account has typed for more than 2 hours
     if ((DB.getSnapshot().globalStats?.time ?? 0) >= 7200) {
-      eligableToRanking = true;
+      eligibleToRanking = true;
     }
 
     const modeDifferences = ["15", "60"];
     const mode = "time";
 
-    const rankRequest = modeDifferences.map((mode2) => {
-      return Ape.leaderboards.getRank({
-        language: "english",
-        mode,
-        mode2,
-        isDaily: false,
+    if (eligibleToRanking) {
+      const rankRequest = modeDifferences.map((mode2) => {
+        return Ape.leaderboards.getRank({
+          language: Config.language,
+          mode,
+          mode2,
+          isDaily: false,
+        });
       });
-    });
 
-    Promise.all(rankRequest).then((data) => {
-      for (let i = 0; i < 2; i++) {
-        if (data[i].status !== 200) {
-          $(`.pageAccount .userRank${i} .error`).text("Error retreaving rank");
-          continue;
-        }
-        if (!eligableToRanking) {
-          $(`.pageAccount .userRank${i} .error`).text("Not enough time typed");
-          continue;
-        }
-        if (!data[i]["data"]) {
-          $(`.pageAccount .userRank${i} error`).text("Not qualified");
-          continue;
-        }
+      Promise.all(rankRequest).then((data) => {
+        for (let i = 0; i < 2; i++) {
+          if (data[i].status !== 200) {
+            $(`.pageAccount .userRank${i} .error`).text(
+              "Error retrieving rank"
+            );
+            continue;
+          }
 
-        $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
-        if (Config.alwaysShowCPM) {
-          $(`.pageAccount .userRank${i} .testInfo`).text(
-            `cpm: ${data[i]["data"]["wpm"] * 5}`
+          if (!data[i]["data"]) {
+            $(`.pageAccount .userRank${i} error`).text("Not qualified");
+            continue;
+          }
+
+          $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
+          if (Config.alwaysShowCPM) {
+            $(`.pageAccount .userRank${i} .testInfo`).text(
+              `cpm: ${data[i]["data"]["wpm"] * 5}`
+            );
+          } else {
+            $(`.pageAccount .userRank${i} .testInfo`).text(
+              `wpm: ${data[i]["data"]["wpm"]}`
+            );
+          }
+
+          $(`.pageAccount .userRank${i} .title`).html(
+            `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
           );
-        } else {
-          $(`.pageAccount .userRank${i} .testInfo`).text(
-            `wpm: ${data[i]["data"]["wpm"]}`
-          );
+        }
+      });
+
+      const rankRequestDaily = modeDifferences.map((mode2) => {
+        return Ape.leaderboards.getRank({
+          language: Config.language,
+          mode,
+          mode2,
+          isDaily: true,
+          daysBefore: 0,
+        });
+      });
+
+      Promise.all(rankRequestDaily).then((data) => {
+        if (data[0].status !== 200 || data[1].status !== 200) {
+          $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
+          return;
         }
 
-        $(`.pageAccount .userRank${i} .title`).html(
-          `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
+        if (!data[0]["data"] && !data[1]["data"]) {
+          $(".pageAccount .userRankDaily .error").text("Not qualified");
+          return;
+        }
+
+        let userRankIndex = 0;
+
+        if (data[0]["data"]["rank"] < data[1]["data"]["rank"]) {
+          userRankIndex = 1;
+        }
+
+        $(".pageAccount .userRankDaily .val").text(
+          data[userRankIndex]["data"]["rank"]
+        );
+        $(".pageAccount .userRankDaily .mode").html(
+          `${mode} ${modeDifferences[userRankIndex]}}`
+        );
+      });
+
+      if (Config.alwaysShowCPM) {
+        $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+          "cpm"
+        );
+      } else {
+        $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+          "wpm"
         );
       }
-    });
-
-    const rankRequestDaily = modeDifferences.map((mode2) => {
-      return Ape.leaderboards.getRank({
-        language: "english",
-        mode,
-        mode2,
-        isDaily: true,
-        daysBefore: 0,
-      });
-    });
-
-    Promise.all(rankRequestDaily).then((data) => {
-      console.log(data);
-
-      if (data[0].status !== 200 || data[1].status !== 200) {
-        $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
-        return;
-      }
-
-      if (!eligableToRanking) {
-        $(".pageAccount .userRankDaily .error").text("Not enough time typed");
-        return;
-      }
-
-      if (!data[0]["data"] && !data[1]["data"]) {
-        $(".pageAccount .userRankDaily .error").text("Not qualified");
-        return;
-      }
-
-      let userRankIndex = 0;
-
-      if (data[0]["data"]["rank"] < data[1]["data"]["rank"]) {
-        userRankIndex = 1;
-      }
-
-      $(".pageAccount .userRankDaily .val").text(
-        data[userRankIndex]["data"]["rank"]
-      );
-      $(".pageAccount .userRankDaily .mode").html(
-        `${mode} ${modeDifferences[userRankIndex]}}`
-      );
-    });
-
-    if (Config.alwaysShowCPM) {
-      $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
-        "cpm"
-      );
     } else {
-      $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
-        "wpm"
-      );
+      $(".pageAccount .userRankDaily .error").text("Not enough time typed");
+
+      $(`.pageAccount .userRank0 .error`).text("Not enough time typed");
+      $(`.pageAccount .userRank1 .error`).text("Not enough time typed");
     }
 
     loadMoreLines();
