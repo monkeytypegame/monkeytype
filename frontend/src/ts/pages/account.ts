@@ -666,6 +666,16 @@ export function update(): void {
         }
 
         $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
+        if (Config.alwaysShowCPM) {
+          $(`.pageAccount .userRank${i} .testInfo`).text(
+            `cpm: ${data[i]["data"]["wpm"] * 5}`
+          );
+        } else {
+          $(`.pageAccount .userRank${i} .testInfo`).text(
+            `wpm: ${data[i]["data"]["wpm"]}`
+          );
+        }
+
         $(`.pageAccount .userRank${i} .title`).html(
           `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
         );
@@ -685,7 +695,7 @@ export function update(): void {
     Promise.all(rankRequestDaily).then((data) => {
       console.log(data);
 
-      if (data[0].status !== 200) {
+      if (data[0].status !== 200 || data[1].status !== 200) {
         $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
         return;
       }
@@ -700,13 +710,18 @@ export function update(): void {
         return;
       }
 
-      if (data[0]["data"]["rank"] > data[1]["data"]["rank"]) {
-        $(".pageAccount .userRankDaily .val").text(data[0]["data"]["rank"]);
-        $(".pageAccount .userRankDaily .mode").text("time 15");
-      } else {
-        $(".pageAccount .userRankDaily .val").text(data[1]["data"]["rank"]);
-        $(".pageAccount .userRankDaily .mode").text("time 60");
+      let userRankIndex = 0;
+
+      if (data[0]["data"]["rank"] < data[1]["data"]["rank"]) {
+        userRankIndex = 1;
       }
+
+      $(".pageAccount .userRankDaily .val").text(
+        data[userRankIndex]["data"]["rank"]
+      );
+      $(".pageAccount .userRankDaily .mode").html(
+        `${mode} ${modeDifferences[userRankIndex]}}`
+      );
     });
 
     if (Config.alwaysShowCPM) {
