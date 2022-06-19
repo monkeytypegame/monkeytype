@@ -692,4 +692,11 @@
     "type": "customTime",
     "parameters": [3600]
   }
+  ,{
+    "name": "lookAtMeIAmTheDeveloperNow",
+    "display": "Look at me. I am the developer now.",
+    "autoRole": true,
+    "type": "script",
+    "parameters": ["sourcecde.txt",null,null]
+  }
 ]
