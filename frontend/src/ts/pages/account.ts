@@ -638,8 +638,6 @@ export function update(): void {
       eligableToRanking = true;
     }
 
-    // checks if the user can have a rank and then gets it
-    // gets the users rank
     const timeModes = ["15", "60"];
 
     const rankRequest = timeModes.map((mode2) => {
@@ -652,41 +650,41 @@ export function update(): void {
     });
 
     Promise.all(rankRequest).then((data) => {
-      if (!eligableToRanking) {
-        Notifications.add(
-          "Your account must have 2 hours typed to be placed on the leaderboard: " +
-            0
-        );
+      if (data[0].status !== 200) {
+        $(".pageAccount .userRank15 .error").text("Error retreaving rank");
       }
-      for (const element of data) {
-        if (element.status !== 200) {
-          Notifications.add(
-            "Failed to load daily rank: " + data[0].message,
-            -1
-          );
-          break;
-        }
+      if (data[1].status !== 200) {
+        $(".pageAccount .userRank60 .error").text("Error retreaving rank");
+      }
+
+      if (!eligableToRanking) {
+        $(".pageAccount .userRank15 .error").text("Not enough time typed");
+        $(".pageAccount .userRank60 .error").text("Not enough time typed");
+        return;
+      }
+
+      if (!data[0]["data"]) {
+        $(".pageAccount .userRank15 .error").text("Not qualified");
+      }
+      if (!data[1]["data"]) {
+        $(".pageAccount .userRank60 .error").text("Not qualified");
       }
 
       $(".pageAccount .userRank15 .val").text(
-        !eligableToRanking
+        data[0].status !== 200
           ? "-"
-          : data[0].status !== 200
-          ? "-"
-          : data[0]
+          : data[0]["data"] !== null
           ? data[0]["data"]["rank"]
-          : "Not qualified"
+          : "-"
       );
 
       //$(".pageAccount .userRank60 .title").text("time 60 leaderboard rank");
       $(".pageAccount .userRank60 .val").text(
-        !eligableToRanking
+        data[1].status !== 200
           ? "-"
-          : data[1].status !== 200
-          ? "-"
-          : data[1]
+          : data[1]["data"] !== null
           ? data[1]["data"]["rank"]
-          : "Not qualified"
+          : "-"
       );
     });
 
@@ -701,19 +699,28 @@ export function update(): void {
     });
 
     Promise.all(rankRequestDaily).then((data) => {
-      // highest daily rank
       if (data[0].status !== 200) {
-        Notifications.add("Failed to load daily rank: " + data[0].message, -1);
+        $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
+        return;
       }
-      $(".pageAccount .userRankDaily .val").text(
-        !eligableToRanking
-          ? "-"
-          : data[1].status !== 200
-          ? "-"
-          : data[1]
-          ? data[1]["data"]["rank"]
-          : "Not qualified"
-      );
+
+      if (!eligableToRanking) {
+        $(".pageAccount .userRankDaily .error").text("Not enough time typed");
+        return;
+      }
+
+      if (data[0]["data"] && data[1]["data"] === null) {
+        $(".pageAccount .userRankDaily .error").text("Not qualified");
+        return;
+      }
+
+      if (data[0]["data"]["rank"] > data[1]["data"]["rank"]) {
+        $(".pageAccount .userRankDaily .val").text(data[0]["data"]["rank"]);
+        $(".pageAccount .userRankDaily .mode").text("time 15");
+      } else {
+        $(".pageAccount .userRankDaily .val").text(data[1]["data"]["rank"]);
+        $(".pageAccount .userRankDaily .mode").text("time 60");
+      }
     });
 
     if (Config.alwaysShowCPM) {

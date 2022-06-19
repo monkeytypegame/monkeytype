@@ -179,6 +179,11 @@
       color: var(--sub-color);
     }
 
+    .error {
+      color: var(--error-color);
+      font-size: 1rem;
+    }
+
     .val {
       font-size: 3rem;
       line-height: 3.5rem;
