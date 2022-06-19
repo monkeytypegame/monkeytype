@@ -642,24 +642,27 @@ export function update(): void {
       eligableToRanking = true;
     }
 
-    // gets the users rank
-    const timeModes = ["15", "60"];
+    // checks if the user can have a rank and then gets it
+    if (eligableToRanking) {
+      // gets the users rank
+      const timeModes = ["15", "60"];
 
-    const rankRequest = timeModes.map((mode2) => {
-      return Ape.leaderboards.getRank({
-        language: "english",
-        mode: "time",
-        mode2,
-        isDaily: false,
+      const rankRequest = timeModes.map((mode2) => {
+        return Ape.leaderboards.getRank({
+          language: "english",
+          mode: "time",
+          mode2,
+          isDaily: false,
+        });
       });
-    });
 
-    Promise.all(rankRequest).then((data) => {
-      userRank.rank15 = data[0].data ? data[0].data : undefined;
-      userRank.rank30 = data[1].data ? data[1].data : undefined;
-    });
-    console.log(userRank);
-    console.log(eligableToRanking);
+      Promise.all(rankRequest).then((data) => {
+        userRank.rank15 = data[0].data ? data[0].data : undefined;
+        userRank.rank30 = data[1].data ? data[1].data : undefined;
+      });
+      console.log(userRank);
+      console.log(eligableToRanking);
+    }
 
     if (Config.alwaysShowCPM) {
       $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
