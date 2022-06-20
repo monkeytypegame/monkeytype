@@ -9,6 +9,8 @@ const DEV_CONFIG = {
     compress: true,
     port: 3000,
     open: true,
+    hot: false,
+    liveReload: true,
     historyApiFallback: true,
     client: {
       overlay: false,
