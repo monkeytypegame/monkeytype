@@ -3,7 +3,6 @@ const { merge } = require("webpack-merge");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const BASE_CONFIG = require("./config.base");
 
