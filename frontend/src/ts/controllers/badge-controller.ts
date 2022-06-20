@@ -42,18 +42,18 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   6: {
     id: 6,
     name: "Supporter",
-    description: "Supporting the site",
+    description: "Donated money",
     icon: "fa-heart",
-    color: "white",
-    background: "#cc2c44",
+    color: "var(--bg-color)",
+    background: "var(--sub-color)",
   },
   7: {
     id: 7,
     name: "Sugar Daddy",
-    description: "description",
+    description: "Donated a lot of money",
     icon: "fa-gem",
-    color: "black",
-    background: "#e8b414",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
   },
 };
 
