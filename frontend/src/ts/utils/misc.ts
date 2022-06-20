@@ -789,7 +789,6 @@ export function escapeHTML(str: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-  console.log(str);
 
   return str;
 }
