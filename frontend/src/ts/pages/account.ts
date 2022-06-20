@@ -660,23 +660,19 @@ export function update(): void {
         }
 
         if (!data[i]["data"]) {
-          console.log(data);
-
           $(`.pageAccount .userRank${i} .error`).text("Not qualified");
-          continue;
-        }
-
-        $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
-        if (Config.alwaysShowCPM) {
-          $(`.pageAccount .userRank${i} .testInfo`).text(
-            `cpm: ${data[i]["data"]["wpm"] * 5}`
-          );
         } else {
-          $(`.pageAccount .userRank${i} .testInfo`).text(
-            `wpm: ${data[i]["data"]["wpm"]}`
-          );
+          $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
+          if (Config.alwaysShowCPM) {
+            $(`.pageAccount .userRank${i} .testInfo`).text(
+              `cpm: ${data[i]["data"]["wpm"] * 5}`
+            );
+          } else {
+            $(`.pageAccount .userRank${i} .testInfo`).text(
+              `wpm: ${data[i]["data"]["wpm"]}`
+            );
+          }
         }
-
         $(`.pageAccount .userRank${i} .title`).html(
           `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
         );
@@ -722,7 +718,7 @@ export function update(): void {
         isNull ? "-" : dataDaily[userRankIndex]["data"]["rank"]
       );
       $(".pageAccount .userRankDaily .mode").html(
-        isNull ? "" : `${mode} ${modeDifferences[userRankIndex]}}`
+        isNull ? "" : `${mode} ${modeDifferences[userRankIndex]}`
       );
 
       if (Config.alwaysShowCPM) {
