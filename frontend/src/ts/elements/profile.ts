@@ -6,14 +6,14 @@ import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
 
+type ProfileViewPaths = "profile" | "account";
+
 export function update(
-  where: "account",
+  where: ProfileViewPaths,
   profile: Partial<MonkeyTypes.Snapshot>
 ): void {
-  let details;
-  if (where === "account") {
-    details = $(".pageAccount .profile .details");
-  }
+  const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
+  const details = $(`.page${elementClass} .profile .details`);
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML HERE - USER INPUT!!!!!!
@@ -23,13 +23,17 @@ export function update(
 
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
+  details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
-    details
-      .find(".avatar")
-      .css(
-        "background-image",
-        `url(https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png)`
-      );
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png`;
+    $("<img/>")
+      .attr("src", avatarUrl)
+      .on("load", (event) => {
+        $(event.currentTarget).remove();
+        details.find(".placeholderAvatar").addClass("hidden");
+
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+      });
   }
 
   if (profile.badgeIds && !banned) {
@@ -160,7 +164,7 @@ export function update(
   }
 }
 
-export function updateNameFontSize(where: "account"): void {
+export function updateNameFontSize(where: ProfileViewPaths): void {
   let details;
   if (where === "account") {
     details = $(".pageAccount .profile .details");

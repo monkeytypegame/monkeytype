@@ -104,13 +104,17 @@ export async function getUser(
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
-    await admin.auth().deleteUser(uid);
-    throw new MonkeyError(
-      404,
-      "User not found. Please try to sign up again.",
-      "get user",
-      uid
-    );
+    if (e.status === 404) {
+      await admin.auth().deleteUser(uid);
+      throw new MonkeyError(
+        404,
+        "User not found. Please try to sign up again.",
+        "get user",
+        uid
+      );
+    }
+
+    throw e;
   }
 
   const agentLog = buildAgentLog(req);
@@ -388,33 +392,41 @@ export async function getProfile(
     startedTests,
     timeTyping,
     addedAt,
+    discordId,
+    discordAvatar,
   } = await UserDAL.getUser(uid, "get user profile");
-
-  if (banned) {
-    return new MonkeyResponse("Profile retrived: banned user", {
-      name,
-      banned,
-      addedAt,
-    });
-  }
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
 
-  const profileData = {
+  const typingStats = {
+    completedTests,
+    startedTests,
+    timeTyping,
+  };
+
+  const relevantPersonalBests = {
+    time: validTimePbs,
+    words: validWordsPbs,
+  };
+
+  const baseProfile = {
     name,
     banned,
-    badgeIds,
     addedAt,
-    personalBests: {
-      time: validTimePbs,
-      words: validWordsPbs,
-    },
-    typingStats: {
-      completedTests,
-      startedTests,
-      timeTyping,
-    },
+    typingStats,
+    personalBests: relevantPersonalBests,
+    discordId,
+    discordAvatar,
+  };
+
+  if (banned) {
+    return new MonkeyResponse("Profile retrived: banned user", baseProfile);
+  }
+
+  const profileData = {
+    ...baseProfile,
+    badgeIds,
     details: {
       bio: "",
       keyboard: "",

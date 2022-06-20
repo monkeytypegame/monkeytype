@@ -287,6 +287,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
 
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
+
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",

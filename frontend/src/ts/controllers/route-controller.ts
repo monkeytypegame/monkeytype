@@ -11,6 +11,7 @@ const mappedRoutes = {
   "/about": "pageLoading",
   "/account": "pageAccount",
   "/verify": "pageLoading",
+  "/profile": "pageLoading",
 };
 
 export function handleInitialPageClasses(pathname: string): void {
@@ -45,7 +46,7 @@ $(window).on("popstate", (e) => {
   } else if (state == "about") {
     // show about
     PageController.change("about");
-  } else if (state == "account" || state == "login") {
+  } else if (state === "account" || state === "login") {
     if (Auth.currentUser) {
       PageController.change("account");
     } else {
