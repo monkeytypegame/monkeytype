@@ -175,9 +175,18 @@
   ,{
     "name": "accuracy",
     "display": "Accuracy",
+    "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required."
+    "message": "Minimum 60wpm and 100% accuracy required.",
+    "requirements" : {
+      "wpm": {
+        "min": 60
+      },
+      "accuracy": {
+        "min": 100
+      }
+    }
   }
   ,{
     "name": "accuracyExpert",
@@ -185,6 +194,7 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -206,6 +216,7 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -227,6 +238,7 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -357,6 +369,13 @@
     "display": "Get off my swamp",
     "type": "script",
     "parameters": ["shrek.txt",null,null]
+  }
+  ,{
+    "name": "lookAtMeIAmTheDeveloperNow",
+    "display": "Look at me. I am the developer now.",
+    "autoRole": true,
+    "type": "script",
+    "parameters": ["sourcecde.txt",null,null]
   }
   ,{
     "name": "beLikeWater",

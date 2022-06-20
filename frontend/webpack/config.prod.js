@@ -1,3 +1,4 @@
+const { resolve } = require("path");
 const { merge } = require("webpack-merge");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");

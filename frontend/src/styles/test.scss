@@ -485,9 +485,14 @@
   padding: 1rem;
   border-radius: var(--roundness);
   /* margin-top: 1rem; */
-  transition: 0.25s;
+  transition: 0.125s;
   z-index: 999;
   pointer-events: none;
+  top: -2.5rem;
+
+  &.focus {
+    top: 0rem;
+  }
 
   i {
     margin-right: 0.5rem;

@@ -24,6 +24,8 @@ async function getLatest(): Promise<MonkeyTypes.PSA[]> {
       "PSA request failed. If this issue persists the server might be experiencing unexpected down time. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> or <a target= '_blank' href='https://twitter.com/monkeytypegame'>Twitter</a> for more information.",
       -1,
       "exclamation-triangle",
+      true,
+      undefined,
       true
     );
     return [];
