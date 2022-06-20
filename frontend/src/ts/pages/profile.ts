@@ -138,12 +138,13 @@ export const page = new Page(
   $(".page.pageProfile"),
   "/profile",
   () => {
-    reset();
-  },
-  () => {
     //
   },
   () => {
+    reset();
+  },
+  () => {
+    reset();
     update();
   },
   () => {
