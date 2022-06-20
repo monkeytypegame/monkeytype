@@ -161,25 +161,43 @@
         </div>
       </div>
     </div>
-    <div class="section quickTab" id="quickTab">
-      <h1>quick tab mode</h1>
+    <div class="section quickRestart" id="quickRestart">
+      <h1>quick restart</h1>
       <div class="text">
         Press
         <key>tab</key>
-        to quickly restart the test, or to quickly jump to the test page. This
-        function disables tab navigation on the website.
+        or
+        <key>esc</key>
+        to quickly restart the test, or to quickly jump to the test page. The
+        "tab" setting disables tab navigation on the website, while the "esc"
+        disables opening the command line with
+        <key>esc</key>
+        .
       </div>
       <div class="buttons">
         <div
           class="button"
-          quickTab="false"
+          quickRestart="off"
           tabindex="0"
           onclick="this.blur();"
         >
           off
         </div>
-        <div class="button" quickTab="true" tabindex="0" onclick="this.blur();">
-          on
+        <div
+          class="button"
+          quickRestart="tab"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          tab
+        </div>
+        <div
+          class="button"
+          quickRestart="esc"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          esc
         </div>
       </div>
     </div>
@@ -715,28 +733,6 @@
         <div
           class="button"
           hideExtraLetters="true"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          on
-        </div>
-      </div>
-    </div>
-    <div class="section swapEscAndTab" section="">
-      <h1>swap esc and tab</h1>
-      <div class="text">Swap the behavior of tab and escape keys.</div>
-      <div class="buttons">
-        <div
-          class="button"
-          swapEscAndTab="false"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          off
-        </div>
-        <div
-          class="button"
-          swapEscAndTab="true"
           tabindex="0"
           onclick="this.blur();"
         >
