@@ -355,6 +355,16 @@
       gap: 1rem;
     }
   }
+
+  .profile {
+    .details {
+      padding-right: 3rem;
+    }
+    .pbsTime,
+    .pbsWords {
+      padding-right: 2rem;
+    }
+  }
 }
 
 .header-sorted {

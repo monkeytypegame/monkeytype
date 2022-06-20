@@ -44,7 +44,7 @@
     border-radius: var(--roundness);
     align-content: center;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     justify-items: baseline;
     position: relative;
 
@@ -152,7 +152,6 @@
     padding: 1rem;
     border-radius: var(--roundness);
     align-content: center;
-    padding-right: 2rem;
 
     // grid-template-columns: 15rem auto 15rem auto 2fr auto auto;
 
