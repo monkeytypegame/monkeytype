@@ -62,6 +62,14 @@ export async function update(
 }> {
   const str = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const start1 = performance.now();
+
+  const timeTypingMatch = {
+    $gt: 7200,
+  };
+  if (process.env.MODE === "dev") {
+    timeTypingMatch.$gt = 0;
+  }
+
   const lb = await db
     .collection<MonkeyTypes.LeaderboardEntry>("users")
     .aggregate<MonkeyTypes.LeaderboardEntry>(
@@ -78,7 +86,7 @@ export async function update(
               $exists: true,
             },
             banned: { $exists: false },
-            timeTyping: { $gt: 7200 },
+            timeTypingMatch,
           },
         },
         {
