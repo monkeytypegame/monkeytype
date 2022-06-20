@@ -103,13 +103,17 @@ export async function getUser(
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
-    await admin.auth().deleteUser(uid);
-    throw new MonkeyError(
-      404,
-      "User not found. Please try to sign up again.",
-      "get user",
-      uid
-    );
+    if (e.status === 404) {
+      await admin.auth().deleteUser(uid);
+      throw new MonkeyError(
+        404,
+        "User not found. Please try to sign up again.",
+        "get user",
+        uid
+      );
+    }
+
+    throw e;
   }
 
   const agentLog = buildAgentLog(req);
