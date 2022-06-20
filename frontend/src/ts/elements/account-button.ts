@@ -29,8 +29,8 @@ export function update(discordId?: string, discordAvatar?: string): void {
       const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
       $("<img/>")
         .attr("src", avatarUrl)
-        .on("load", function () {
-          $(this).remove();
+        .on("load", (event) => {
+          $(event.currentTarget).remove();
 
           usingAvatar = true;
           $("#top #menu .account .avatar").css(
