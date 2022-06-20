@@ -8,20 +8,6 @@ const ExtraWatchWebpackPlugin = require("extra-watch-webpack-plugin");
 
 let circularImports = 0;
 
-const htmlWebpackPlugins = [
-  "terms-of-service",
-  "security-policy",
-  "privacy-policy",
-  "email-handler",
-  "das",
-].map((name) => {
-  return new HtmlWebpackPlugin({
-    filename: `${name}.html`,
-    template: resolve(__dirname, `../static/${name}.html`),
-    inject: false,
-  });
-});
-
 /** @type { import('webpack').Configuration } */
 const BASE_CONFIG = {
   entry: {
@@ -110,7 +96,6 @@ const BASE_CONFIG = {
       template: resolve(__dirname, "../static/main.html"),
       inject: "body",
     }),
-    ...htmlWebpackPlugins,
     new MiniCssExtractPlugin({
       filename: "./css/style.[chunkhash:8].css",
     }),
