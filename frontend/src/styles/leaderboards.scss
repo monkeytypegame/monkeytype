@@ -135,7 +135,9 @@
           grid-template-columns: 1.25rem max-content auto;
           gap: 0.5rem;
           place-items: center left;
-          .avatarPlaceholder {
+          .avatar {
+            display: flex;
+
             width: 1.25rem;
             height: 1.25rem;
             font-size: 1.25rem;
@@ -144,10 +146,7 @@
             // display: grid;
             // place-content: center center;
             border-radius: 100%;
-            margin-top: -0.25rem;
-          }
-          .avatarPlaceholder,
-          .avatar {
+
             grid-row: 1/2;
             grid-column: 1/2;
           }

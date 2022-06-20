@@ -7,6 +7,7 @@ import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
+import { loadDiscordAvatar } from "../utils/load-discord-avatar";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -232,7 +233,7 @@ function checkLbMemory(lb: LbKey): void {
   }
 }
 
-function fillTable(lb: LbKey, prepend?: number): void {
+async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   if (!currentData[lb]) {
     return;
   }
@@ -276,23 +277,16 @@ function fillTable(lb: LbKey, prepend?: number): void {
       entry.rank = i + 1;
     }
 
-    let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-
-    const snap = DB.getSnapshot();
-
-    const isCurrentUser =
-      Auth.currentUser &&
-      entry.uid === Auth.currentUser.uid &&
-      snap.discordAvatar &&
-      snap.discordId;
-
-    const entryHasAvatar = entry.discordAvatar && entry.discordId;
-
-    const avatarSource = (isCurrentUser && snap) || (entryHasAvatar && entry);
-
-    if (avatarSource) {
-      const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
-      avatar += `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
+    // Load Discord avatar or use placeholder icon
+    let avatar: string;
+    try {
+      const avatarUrl = await loadDiscordAvatar(
+        entry.discordId,
+        entry.discordAvatar
+      );
+      avatar = `<div class="avatar"><img src="${avatarUrl}" /></div>`;
+    } catch {
+      avatar = `<div class="avatar"><i class="fas fa-user-circle"></i></div>`;
     }
 
     html += `
