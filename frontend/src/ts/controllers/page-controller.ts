@@ -62,15 +62,6 @@ export async function change(
       page = "account";
     }
 
-    const userId = Misc.findGetParameter("uid");
-
-    if (
-      Auth.currentUser?.uid === userId &&
-      window.location.pathname === "/profile"
-    ) {
-      page = "account";
-    }
-
     if (!force && ActivePage.get() === page) {
       console.log(`page ${page} already active`);
       return;
