@@ -327,7 +327,7 @@ export async function addResult(
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
     !bailedOut &&
     !user.banned &&
-    (user.timeTyping ?? 0) > 7200;
+    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);

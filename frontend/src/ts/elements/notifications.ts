@@ -30,10 +30,11 @@ class Notification {
     customIcon?: string,
     closeCallback = (): void => {
       //
-    }
+    },
+    allowHTML?: boolean
   ) {
     this.type = type;
-    this.message = Misc.escapeHTML(message);
+    this.message = allowHTML ? message : Misc.escapeHTML(message);
     this.level = level;
     if (type === "banner") {
       this.duration = duration as number;
@@ -224,7 +225,8 @@ export function add(
   duration?: number,
   customTitle?: string,
   customIcon?: string,
-  closeCallback?: () => void
+  closeCallback?: () => void,
+  allowHTML?: boolean
 ): void {
   // notificationHistory.push(
   new Notification(
@@ -234,7 +236,8 @@ export function add(
     duration,
     customTitle,
     customIcon,
-    closeCallback
+    closeCallback,
+    allowHTML
   ).show();
   // );
 }
@@ -244,7 +247,8 @@ export function addBanner(
   level = -1,
   customIcon = "bullhorn",
   sticky = false,
-  closeCallback?: () => void
+  closeCallback?: () => void,
+  allowHTML?: boolean
 ): void {
   // notificationHistory.push(
   new Notification(
@@ -254,7 +258,8 @@ export function addBanner(
     sticky ? -1 : 0,
     undefined,
     customIcon,
-    closeCallback
+    closeCallback,
+    allowHTML
   ).show();
   // );
 }
