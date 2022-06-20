@@ -27,7 +27,8 @@ const CONFIG_SCHEMA = joi.object({
   showLiveWpm: joi.boolean(),
   showTimerProgress: joi.boolean(),
   smoothCaret: joi.boolean(),
-  quickTab: joi.boolean(),
+  quickRestart: joi.string().valid("off", "tab", "esc"),
+  quickTab: joi.boolean(), //todo remove after a week
   punctuation: joi.boolean(),
   numbers: joi.boolean(),
   words: joi.number().min(0),
@@ -74,7 +75,6 @@ const CONFIG_SCHEMA = joi.object({
   playSoundOnClick: joi.string().valid("off", ..._.range(1, 8).map(_.toString)),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),
-  swapEscAndTab: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
   paceCaret: joi.string().valid("off", "average", "pb", "last", "custom"),
   paceCaretCustomSpeed: joi.number().min(0),

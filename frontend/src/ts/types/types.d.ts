@@ -309,7 +309,7 @@ declare namespace MonkeyTypes {
     showLiveWpm: boolean;
     showTimerProgress: boolean;
     smoothCaret: boolean;
-    quickTab: boolean;
+    quickRestart: "off" | "esc" | "tab";
     punctuation: boolean;
     numbers: boolean;
     words: WordsModes;
@@ -351,7 +351,6 @@ declare namespace MonkeyTypes {
     playSoundOnClick: PlaySoundOnClick;
     soundVolume: SoundVolume;
     startGraphsAtZero: boolean;
-    swapEscAndTab: boolean;
     showOutOfFocusWarning: boolean;
     paceCaret: PaceCaret;
     paceCaretCustomSpeed: number;

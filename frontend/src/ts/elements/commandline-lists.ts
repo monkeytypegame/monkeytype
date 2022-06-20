@@ -908,29 +908,6 @@ const commandsLazyMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsSwapEscAndTab: MonkeyTypes.CommandsGroup = {
-  title: "Swap esc and tab...",
-  configKey: "swapEscAndTab",
-  list: [
-    {
-      id: "setSwapEscAndTabOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setSwapEscAndTab(false);
-      },
-    },
-    {
-      id: "setSwapEscAndTabOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setSwapEscAndTab(true);
-      },
-    },
-  ],
-};
-
 const commandsShowAllLines: MonkeyTypes.CommandsGroup = {
   title: "Show all lines...",
   configKey: "showAllLines",
@@ -2158,24 +2135,32 @@ const commandsSmoothCaret: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsQuickTab: MonkeyTypes.CommandsGroup = {
-  title: "Quick tab...",
-  configKey: "quickTab",
+const commandsQuickRestart: MonkeyTypes.CommandsGroup = {
+  title: "Quick restart...",
+  configKey: "quickRestart",
   list: [
     {
-      id: "changeQuickTabOn",
-      display: "on",
-      configValue: true,
+      id: "changeQuickRestartTab",
+      display: "tab",
+      configValue: "tab",
       exec: (): void => {
-        UpdateConfig.setQuickTabMode(true);
+        UpdateConfig.setQuickRestartMode("tab");
       },
     },
     {
-      id: "changeQuickTabOff",
-      display: "off",
-      configValue: false,
+      id: "changeQuickRestartEsc",
+      display: "esc",
+      configValue: "esc",
       exec: (): void => {
-        UpdateConfig.setQuickTabMode(false);
+        UpdateConfig.setQuickRestartMode("esc");
+      },
+    },
+    {
+      id: "changeQuickRestartOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setQuickRestartMode("off");
       },
     },
   ],
@@ -2734,10 +2719,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsSmoothCaret,
     },
     {
-      id: "changeQuickTab",
-      display: "Quick tab...",
+      id: "changeQuickRestart",
+      display: "Quick restart...",
       icon: "fa-redo-alt",
-      subgroup: commandsQuickTab,
+      subgroup: commandsQuickRestart,
     },
     {
       id: "changeRepeatQuotes",
@@ -2902,12 +2887,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Start graphs at zero...",
       icon: "fa-chart-line",
       subgroup: commandsStartGraphsAtZero,
-    },
-    {
-      id: "changeSwapEscAndTab",
-      display: "Swap esc and tab...",
-      icon: "fa-exchange-alt",
-      subgroup: commandsSwapEscAndTab,
     },
     {
       id: "changeLazyMode",
