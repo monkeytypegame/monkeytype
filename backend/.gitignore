@@ -3,3 +3,4 @@ log_success.txt
 log_failed.txt
 build
 worker.*
+docker-compose.override.yml
