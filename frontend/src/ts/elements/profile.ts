@@ -24,12 +24,19 @@ export function update(
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
   if (profile.discordAvatar && profile.discordId && !banned) {
-    details
-      .find(".avatar")
-      .css(
-        "background-image",
-        `url(https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png)`
-      );
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png`;
+    $("<img/>")
+      .attr("src", avatarUrl)
+      .on("load", (event) => {
+        $(event.currentTarget).remove();
+
+        details
+          .find(".avatar")
+          .css(
+            "background-image",
+            `url(https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png)`
+          );
+      });
   }
 
   if (profile.badgeIds && !banned) {
