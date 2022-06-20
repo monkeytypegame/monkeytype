@@ -298,7 +298,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
         .on("load", (event) => {
           $(event.currentTarget).remove();
 
-          avatar += `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
+          avatar = `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
         });
     }
 

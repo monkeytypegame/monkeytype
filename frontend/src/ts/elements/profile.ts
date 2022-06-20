@@ -23,19 +23,16 @@ export function update(
 
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
+  details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png`;
     $("<img/>")
       .attr("src", avatarUrl)
       .on("load", (event) => {
         $(event.currentTarget).remove();
+        details.find(".placeholderAvatar").addClass("hidden");
 
-        details
-          .find(".avatar")
-          .css(
-            "background-image",
-            `url(https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png)`
-          );
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
       });
   }
 
