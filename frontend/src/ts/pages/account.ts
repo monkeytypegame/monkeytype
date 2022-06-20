@@ -231,7 +231,7 @@ function applyHistorySmoothing(): void {
 }
 
 export function update(): void {
-  function cont(): void {
+  async function cont(): Promise<void> {
     LoadingPage.updateText("Displaying stats...");
     LoadingPage.updateBar(100);
     console.log("updating account page");
@@ -651,36 +651,36 @@ export function update(): void {
         });
       });
 
-      Promise.all(rankRequest).then((data) => {
-        for (let i = 0; i < 2; i++) {
-          if (data[i].status !== 200) {
-            $(`.pageAccount .userRank${i} .error`).text(
-              "Error retrieving rank"
-            );
-            continue;
-          }
+      const data = await Promise.all(rankRequest);
 
-          if (!data[i]["data"]) {
-            $(`.pageAccount .userRank${i} error`).text("Not qualified");
-            continue;
-          }
+      for (let i = 0; i < 2; i++) {
+        if (data[i].status !== 200) {
+          $(`.pageAccount .userRank${i} .error`).text("Error retrieving rank");
+          continue;
+        }
 
-          $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
-          if (Config.alwaysShowCPM) {
-            $(`.pageAccount .userRank${i} .testInfo`).text(
-              `cpm: ${data[i]["data"]["wpm"] * 5}`
-            );
-          } else {
-            $(`.pageAccount .userRank${i} .testInfo`).text(
-              `wpm: ${data[i]["data"]["wpm"]}`
-            );
-          }
+        if (!data[i]["data"]) {
+          console.log(data);
 
-          $(`.pageAccount .userRank${i} .title`).html(
-            `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
+          $(`.pageAccount .userRank${i} .error`).text("Not qualified");
+          continue;
+        }
+
+        $(`.pageAccount .userRank${i} .val`).text(data[i]["data"]["rank"]);
+        if (Config.alwaysShowCPM) {
+          $(`.pageAccount .userRank${i} .testInfo`).text(
+            `cpm: ${data[i]["data"]["wpm"] * 5}`
+          );
+        } else {
+          $(`.pageAccount .userRank${i} .testInfo`).text(
+            `wpm: ${data[i]["data"]["wpm"]}`
           );
         }
-      });
+
+        $(`.pageAccount .userRank${i} .title`).html(
+          `leaderboard rank <br /> (${mode} ${modeDifferences[i]})`
+        );
+      }
 
       const rankRequestDaily = modeDifferences.map((mode2) => {
         return Ape.leaderboards.getRank({
@@ -692,30 +692,38 @@ export function update(): void {
         });
       });
 
-      Promise.all(rankRequestDaily).then((data) => {
-        if (data[0].status !== 200 || data[1].status !== 200) {
-          $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
-          return;
-        }
+      const dataDaily = await Promise.all(rankRequestDaily);
+      let isNull = false;
 
-        if (!data[0]["data"] && !data[1]["data"]) {
-          $(".pageAccount .userRankDaily .error").text("Not qualified");
-          return;
-        }
+      if (dataDaily[0].status !== 200 || dataDaily[1].status !== 200) {
+        $(".pageAccount .userRankDaily .error").text("Error retrieving rank");
+      }
 
-        let userRankIndex = 0;
+      if (!dataDaily[0]["data"] && !dataDaily[1]["data"]) {
+        $(".pageAccount .userRankDaily .error").text("Not qualified");
+        isNull = true;
+      }
 
-        if (data[0]["data"]["rank"] < data[1]["data"]["rank"]) {
+      let userRankIndex = 0;
+
+      if (!isNull) {
+        if (!dataDaily[0]["data"]) {
+          userRankIndex = 1;
+        } else if (!dataDaily[1]["data"]) {
+          userRankIndex = 0;
+        } else if (
+          dataDaily[0]["data"]["rank"] < dataDaily[1]["data"]["rank"]
+        ) {
           userRankIndex = 1;
         }
+      }
 
-        $(".pageAccount .userRankDaily .val").text(
-          data[userRankIndex]["data"]["rank"]
-        );
-        $(".pageAccount .userRankDaily .mode").html(
-          `${mode} ${modeDifferences[userRankIndex]}}`
-        );
-      });
+      $(".pageAccount .userRankDaily .val").text(
+        isNull ? "-" : dataDaily[userRankIndex]["data"]["rank"]
+      );
+      $(".pageAccount .userRankDaily .mode").html(
+        isNull ? "" : `${mode} ${modeDifferences[userRankIndex]}}`
+      );
 
       if (Config.alwaysShowCPM) {
         $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
@@ -732,7 +740,6 @@ export function update(): void {
       $(`.pageAccount .userRank0 .error`).text("Not enough time typed");
       $(`.pageAccount .userRank1 .error`).text("Not enough time typed");
     }
-
     loadMoreLines();
     ////////
 
