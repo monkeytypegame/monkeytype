@@ -24,12 +24,23 @@ export function loading(truefalse: boolean): void {
 export function update(discordId?: string, discordAvatar?: string): void {
   if (Auth.currentUser != null) {
     if (discordAvatar && discordId) {
-      usingAvatar = true;
-      $("#top #menu .account .avatar").css(
-        "background-image",
-        `url(https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png)`
-      );
-      $("#top #menu .account .avatar").removeClass("hidden");
+      // Replace font-awesome account icon with Discord avatar only if it loads successfully
+      // https://stackoverflow.com/a/5058336/9080819
+      const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
+      $("<img/>")
+        .attr("src", avatarUrl)
+        .on("load", (event) => {
+          $(event.currentTarget).remove();
+
+          usingAvatar = true;
+          $("#top #menu .account .avatar").css(
+            "background-image",
+            `url(${avatarUrl})`
+          );
+
+          $("#top #menu .account .icon").addClass("hidden");
+          $("#top #menu .account .avatar").removeClass("hidden");
+        });
     } else {
       $("#top #menu .account .avatar").addClass("hidden");
     }

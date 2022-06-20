@@ -19,7 +19,15 @@ function setMemory(id: string): void {
 
 async function getLatest(): Promise<MonkeyTypes.PSA[]> {
   const response = await Ape.psas.get();
-  if (response.message === "Server is down for maintenance") {
+  if (response.status === 500) {
+    Notifications.addBanner(
+      "PSA request failed. If this issue persists the server might be experiencing unexpected down time. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> or <a target= '_blank' href='https://twitter.com/monkeytypegame'>Twitter</a> for more information.",
+      -1,
+      "exclamation-triangle",
+      true
+    );
+    return [];
+  } else if (response.status === 503) {
     Notifications.addBanner(
       "Server is currently under maintenance. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> for more info.",
       -1,
