@@ -18,6 +18,7 @@ import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 
 import type { ScaleChartOptions } from "chart.js";
+import { Auth } from "../firebase";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -240,9 +241,10 @@ export function update(): void {
     ChartController.accountActivity.updateColors();
     AllTimeStats.update();
 
-    PbTables.update();
+    const snapshot = DB.getSnapshot();
 
-    Profile.update("account", DB.getSnapshot());
+    PbTables.update(snapshot.personalBests);
+    Profile.update("account", snapshot);
 
     chartData = [];
     accChartData = [];
@@ -1086,6 +1088,19 @@ $(".pageAccount .content .below .smoothing input").on("input", () => {
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
+});
+
+$(document).on("click", ".pageAccount .profile .details .copyLink", () => {
+  const url = "https://monkeytype.com/profile?uid=" + Auth.currentUser?.uid;
+
+  navigator.clipboard.writeText(url).then(
+    function () {
+      Notifications.add("URL Copied to clipboard", 0);
+    },
+    function () {
+      alert("Failed to copy using the Clipboard API. Here's the link: " + url);
+    }
+  );
 });
 
 export const page = new Page(

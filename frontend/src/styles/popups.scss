@@ -1209,6 +1209,7 @@
   #tagsEdit,
   #newResultFilterPresetPopup,
   #editProfilePopup {
+    max-height: 90vh;
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;

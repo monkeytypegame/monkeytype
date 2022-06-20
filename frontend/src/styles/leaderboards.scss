@@ -146,6 +146,11 @@
             border-radius: 100%;
             margin-top: -0.25rem;
           }
+          .entryName {
+            text-decoration: none;
+            color: var(--text-color);
+            cursor: pointer;
+          }
           .avatarPlaceholder,
           .avatar {
             grid-row: 1/2;
