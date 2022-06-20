@@ -99,13 +99,13 @@ export function update(
 
   const showAllButton = isProfile
     ? ""
-    : `<div
+    : `<div class="buttonGroup"><div
       class="showAllButton button"
       data-balloon-pos="left"
       aria-label="Show all personal bests"
     >
       <i class="fas fa-ellipsis-v"></i>
-    </div>`;
+    </div></div>`;
 
   $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 

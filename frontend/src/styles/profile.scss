@@ -47,20 +47,32 @@
     grid-template-columns: 1fr 1fr 1fr 1fr auto;
     justify-items: baseline;
     position: relative;
-    .showAllButton,
-    .editProfileButton {
-      height: 100%;
-      align-items: center;
-      align-content: center;
-      display: grid;
+
+    .buttonGroup {
       position: absolute;
+
+      height: 100%;
       right: 0;
       top: 0;
       width: 2rem;
-      border-radius: 0 var(--roundness) var(--roundness) 0;
-      color: var(--sub-color);
-      &:hover {
-        color: var(--bg-color);
+      display: grid;
+
+      .button:first-child {
+        border-top-right-radius: var(--roundness);
+      }
+      .button:last-child {
+        border-bottom-right-radius: var(--roundness);
+      }
+      .button {
+        align-items: center;
+        align-content: center;
+        display: grid;
+        height: 100%;
+        color: var(--sub-color);
+        border-radius: 0;
+        &:hover {
+          color: var(--bg-color);
+        }
       }
     }
     .editProfileButton {
