@@ -100,13 +100,12 @@ async function apply(): Promise<void> {
         if (resultsSaveResponse.status === 200) {
           const result = TestLogic.notSignedInLastResult;
           DB.saveLocalResult(result);
-          DB.updateLocalStats({
-            time:
-              result.testDuration +
+          DB.updateLocalStats(
+            1,
+            result.testDuration +
               result.incompleteTestSeconds -
-              result.afkDuration,
-            started: 1,
-          });
+              result.afkDuration
+          );
         }
       }
       signedInUser = undefined;

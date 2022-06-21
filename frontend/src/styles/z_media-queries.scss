@@ -34,6 +34,15 @@
 }
 
 @media only screen and (max-width: 1050px) {
+  .profile .pbsWords,
+  .profile .pbsTime {
+    font-size: 0.8rem;
+  }
+  .profile .details.bioAndKey {
+    .bioAndKeyboard .value {
+      font-size: 0.75rem;
+    }
+  }
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr 1fr;
   }
@@ -94,6 +103,66 @@
 }
 
 @media only screen and (max-width: 900px) {
+  .profile .pbsWords,
+  .profile .pbsTime {
+    font-size: 1rem;
+  }
+  .profile {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "info"
+      "pbsTime"
+      "pbsWords";
+    .details.soc {
+      grid-template-columns: 1.25fr auto 1fr auto auto;
+      .typingStats {
+        grid-template-columns: 1fr;
+      }
+    }
+    .details.bioAndKey {
+      grid-template-columns: 1.25fr auto auto auto 1fr;
+      .typingStats {
+        grid-template-columns: 1fr;
+      }
+    }
+    .details.both {
+      grid-template-columns: 1.25fr auto 1.25fr auto;
+      grid-template-areas:
+        "avAndName sep2 bioAndKey bioAndKey"
+        "typingStats typingStats typingStats socials";
+      .sep1,
+      .sep3 {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+        width: 100%;
+      }
+      .socials {
+        justify-content: start;
+        .title {
+          display: block;
+        }
+        .value {
+          grid-auto-flow: column;
+        }
+      }
+    }
+    .details.none {
+      grid-template-columns: 1fr auto 1fr;
+      .typingStats {
+        grid-template-columns: 1fr;
+        // grid-template-areas:
+        //   "avAndName"
+        //   "typingStats";
+        // grid-template-columns: 1fr;
+        // .separator {
+        //   display: none;
+        // }
+      }
+    }
+  }
   #leaderboards {
     .mainTitle {
       font-size: 1.5rem !important;
@@ -284,6 +353,82 @@
 }
 
 @media only screen and (max-width: 650px) {
+  .profile {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "info"
+      "pbsTime"
+      "pbsWords";
+    .details.none {
+      grid-template-areas:
+        "avAndName"
+        "typingStats";
+      grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+    .details.bioAndKey {
+      grid-template-areas:
+        "avAndName bioAndKey"
+        "typingStats typingStats";
+      grid-template-columns: 1fr 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+    .details.soc {
+      grid-template-areas:
+        "avAndName"
+        "typingStats"
+        "socials";
+      grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .socials {
+        justify-content: start;
+        .title {
+          display: block;
+        }
+        .value {
+          grid-auto-flow: column;
+        }
+      }
+    }
+    .details.both {
+      grid-template-areas:
+        "avAndName bioAndKey"
+        "typingStats typingStats"
+        "socials socials";
+      grid-template-columns: 1fr 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .socials {
+        justify-content: start;
+        .title {
+          display: block;
+        }
+        .value {
+          grid-auto-flow: column;
+        }
+      }
+    }
+  }
   #quoteRatePopup {
     .ratingStats {
       grid-template-columns: 1fr 1fr !important;
@@ -405,6 +550,40 @@
 }
 
 @media only screen and (max-width: 550px) {
+  .profile .pbsWords,
+  .profile .pbsTime {
+    font-size: 0.9rem;
+  }
+  .profile {
+    .pbsWords,
+    .pbsTime {
+      grid-template-columns: 1fr 1fr;
+    }
+    .details.none .typingStats {
+      grid-template-columns: 1fr;
+    }
+    .details.bioAndKey {
+      grid-template-areas:
+        "avAndName"
+        "bioAndKey"
+        "typingStats";
+      grid-template-columns: 1fr;
+      .typingStats {
+        grid-template-columns: 1fr;
+      }
+    }
+    .details.both {
+      grid-template-areas:
+        "avAndName"
+        "bioAndKey"
+        "typingStats"
+        "socials";
+      grid-template-columns: 1fr;
+      .typingStats {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
   #cookiePopupWrapper {
     #cookiePopup,
     .extensionMessage {
@@ -590,12 +769,6 @@
 }
 
 @media only screen and (max-width: 400px) {
-  #top .logo .bottom {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    margin-top: 0;
-  }
-
   #top .config {
     grid-gap: 0.25rem;
     .group .buttons {

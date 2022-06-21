@@ -70,4 +70,73 @@ describe("Misc Utils", () => {
       expect(misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
     });
   });
+
+  it("flattenObjectDeep", () => {
+    const testCases = [
+      {
+        obj: {
+          a: {
+            b: {
+              c: 1,
+            },
+          },
+          d: 2,
+          e: [],
+        },
+        expected: {
+          "a.b.c": 1,
+          d: 2,
+          e: [],
+        },
+      },
+      {
+        obj: {
+          a: {
+            b: {
+              c: 1,
+            },
+          },
+          d: {
+            e: {
+              f: 2,
+              g: 3,
+            },
+          },
+        },
+        expected: {
+          "a.b.c": 1,
+          "d.e.f": 2,
+          "d.e.g": 3,
+        },
+      },
+      {
+        obj: {
+          a: {
+            b: {
+              c: 1,
+              d: {
+                e: 2,
+                f: 3,
+                g: {},
+              },
+            },
+          },
+        },
+        expected: {
+          "a.b.c": 1,
+          "a.b.d.e": 2,
+          "a.b.d.f": 3,
+          "a.b.d.g": {},
+        },
+      },
+      {
+        obj: {},
+        expected: {},
+      },
+    ];
+
+    _.each(testCases, ({ obj, expected }) => {
+      expect(misc.flattenObjectDeep(obj)).toEqual(expected);
+    });
+  });
 });

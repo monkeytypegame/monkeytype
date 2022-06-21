@@ -29,6 +29,7 @@ const CONFIG_SCHEMA = joi.object({
   smoothCaret: joi.boolean(),
   quickRestart: joi.string().valid("off", "tab", "esc"),
   quickTab: joi.boolean(), //todo remove after a week
+  swapEscAndTab: joi.boolean(), // and this
   punctuation: joi.boolean(),
   numbers: joi.boolean(),
   words: joi.number().min(0),

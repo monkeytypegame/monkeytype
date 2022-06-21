@@ -9,7 +9,7 @@ import {
 } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import apeRateLimit from "../../middlewares/ape-rate-limit";
-import { isUsernameValid } from "../../utils/validation";
+import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
 
 const router = Router();
@@ -306,7 +306,7 @@ router.patch(
 
 const requireDiscordIntegrationEnabled = validateConfiguration({
   criteria: (configuration) => {
-    return configuration.discordIntegration.enabled;
+    return configuration.users.discordIntegration.enabled;
   },
   invalidMessage: "Discord integration is not available at this time",
 });
@@ -389,6 +389,68 @@ router.delete(
     },
   }),
   asyncHandler(UserController.removeFavoriteQuote)
+);
+
+const requireProfilesEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.users.profiles.enabled;
+  },
+  invalidMessage: "Profiles are not available at this time",
+});
+
+router.get(
+  "/:uid/profile",
+  RateLimit.userProfileGet,
+  requireProfilesEnabled,
+  authenticateRequest({
+    isPublic: true,
+  }),
+  validateRequest({
+    params: {
+      uid: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.getProfile)
+);
+
+const profileDetailsBase = joi
+  .string()
+  .allow("")
+  .custom((value, helpers) => {
+    return containsProfanity(value)
+      ? helpers.error("string.pattern.base")
+      : value;
+  })
+  .messages({
+    "string.pattern.base": "Profanity detected. Please remove it.",
+  });
+
+router.patch(
+  "/profile",
+  RateLimit.userProfileUpdate,
+  requireProfilesEnabled,
+  authenticateRequest(),
+  validateRequest({
+    body: {
+      bio: profileDetailsBase.max(150),
+      keyboard: profileDetailsBase.max(75),
+      socialProfiles: joi.object({
+        twitter: profileDetailsBase.max(20),
+        github: profileDetailsBase.max(39),
+        website: profileDetailsBase
+          .uri({
+            scheme: "https",
+            domain: {
+              tlds: {
+                allow: true,
+              },
+            },
+          })
+          .max(200),
+      }),
+    },
+  }),
+  asyncHandler(UserController.updateProfile)
 );
 
 export default router;
