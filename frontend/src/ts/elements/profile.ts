@@ -28,7 +28,7 @@ export async function update(
     const avatarUrl = await Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
-      128
+      512
     );
 
     if (avatarUrl) {
