@@ -656,12 +656,6 @@
       "length": 200
     },
     {
-      "text": "There is nothing a man cannot do once he accepts the fact that there is no god.",
-      "source": "Don't Breathe",
-      "id": 111,
-      "length": 79
-    },
-    {
       "text": "For as it is not one swallow or one fine day that makes a spring, so it is not one day or a short time that makes a man blessed and happy.",
       "source": "Nicomachean Ethics",
       "id": 112,
@@ -2583,7 +2577,7 @@
     },
     {
       "text": "And in the end, it's not the years in your life that count: It's the life in your years.",
-      "source": "Abraham Lincoln Quote",
+      "source": "Abraham Lincoln",
       "id": 433,
       "length": 88
     },
@@ -2910,12 +2904,6 @@
       "source": "The Handmaid's Tale",
       "id": 488,
       "length": 104
-    },
-    {
-      "text": "Games are bad. They make you mad. Games are bad. They make you mad. Games are bad. They make you mad.",
-      "source": "Postal 2",
-      "id": 489,
-      "length": 101
     },
     {
       "text": "We never get to change the past. We never get to know the future. No reason to wish for one place rather than another; no reason to say I wish I were home, or I wish I were in an exotic new place that is not my home. They will all be the same as this place. Here the experience of existing comes clear. This world is our body.",
@@ -3345,7 +3333,7 @@
     },
     {
       "text": "Maybe our old wounds teach us something. They remind us where we've been and what we've overcome. They teach us lessons about what to avoid in the future. That's what we like to think. But that's not always the way it is. Sometimes there are things we just have to learn over again.",
-      "source": "Grey's Academy",
+      "source": "Grey's Anatomy",
       "id": 562,
       "length": 282
     },
@@ -5522,12 +5510,6 @@
       "length": 181
     },
     {
-      "text": "The awful thing is that beauty is mysterious as well as terrible. God and the devil are fighting there and the battlefield is the heart of man.",
-      "source": "The Brothers Karamazov",
-      "id": 929,
-      "length": 143
-    },
-    {
       "text": "Seriously though, in this day and age I don't know why we're still cutting open frogs to see what's inside them. If somebody tells me there's a heart and intestines inside a frog, I'm willing to take their word for it.",
       "source": "Diary of a Wimpy Kid: The Third Wheel",
       "id": 930,
@@ -6345,7 +6327,7 @@
     },
     {
       "text": "A time being is someone who lives in time, and that means you, and me, and every one of us who is, or was, or ever will be. As for me, right now I am sitting in a French maid cafe in Akiba Electricity Town, listening to a sad chanson that is playing sometime in your past, which is also my present, writing this and wondering about you, somewhere in my future. And if you're reading this, then maybe by now you're wondering about me, too.",
-      "source": "A Tale for the Time Being: A Novel",
+      "source": "Serial Experiments Lain",
       "id": 1069,
       "length": 438
     },
@@ -6584,7 +6566,7 @@
       "length": 215
     },
     {
-      "text": "The more you see the less you know, the less you find out as you go. I knew much more then than I do now.",
+      "text": "The more you see the less you know, the less you find out as you go. I knew much more then, than I do now.",
       "source": "City of Blinding Lights",
       "id": 1110,
       "length": 105
@@ -7287,7 +7269,7 @@
     },
     {
       "text": "When I was a young man, I had liberty, but I did not see it. I had time, but I did not know it. And I had love, but I did not feel it. Many decades would pass before I understood the meaning of all three. And now, the twilight of my life, this understanding has passed into contentment.",
-      "source": "Assassin's Creed 2",
+      "source": "Assassin's Creed: Embers",
       "id": 1229,
       "length": 286
     },
@@ -7778,7 +7760,7 @@
       "length": 188
     },
     {
-      "text": "There's something we need to find, something hidden here in the castle and it may help us defeat You Know Who. Right what is it? We don't know. Where is it? We don't know that either, I realized that's not much to go on. That's nothing to go on.",
+      "text": "There's something we need to find, something hidden here in the castle and it may help us defeat You Know Who. Right what is it? We don't know. Where is it? We don't know that either, I realize that's not much to go on. That's nothing to go on.",
       "source": "Harry Potter and the Deathly Hallows",
       "id": 1314,
       "length": 245
@@ -11523,7 +11505,7 @@
     },
     {
       "text": "My tea's gone cold, I'm wondering why I got out of bed at all. The morning rain clouds up my window, and I can't see at all. And even if I could it'd all be gray, but your picture on my wall. It reminds me that it's not so bad, it's not so bad.",
-      "source": "Stan",
+      "source": "Dido - Thank You",
       "id": 1953,
       "length": 244
     },
@@ -12126,12 +12108,6 @@
       "source": "Fly Me to the Moon",
       "id": 2056,
       "length": 328
-    },
-    {
-      "text": "So glad of this as they I cannot be, who are surprised withal.",
-      "source": "The Tempest",
-      "id": 2057,
-      "length": 62
     },
     {
       "text": "Bypasses are devices that allow some people to dash from point A to point B very fast while other people dash from point B to point A very fast. People living at point C, being a point directly in between, are often given to wonder what's so great about point A that so many people from point B are so keen to get there, and what's so great about point B that so many people from point A are so keen to get there. They often wish that people would just once and for all work out where the hell they wanted to be.",
@@ -13754,12 +13730,6 @@
       "length": 515
     },
     {
-      "text": "You're just a whiny little basket case who's milking this depression thing for all it's worth. So here it is, four in the afternoon and you get to do exactly what you want, well, way to go. Now excuse me, but I got a zillion chores to do or Mom and Dad are gonna kick my butt.",
-      "source": "Roseanne",
-      "id": 2331,
-      "length": 276
-    },
-    {
       "text": "'Cause what the world needs now is a new kind of tension 'cause the old one just bores me to death. 'Cause what the world needs now is another folk singer like I need a hole in my head.",
       "source": "Teen Angst (What the World Needs Now)",
       "id": 2332,
@@ -14997,7 +14967,7 @@
     },
     {
       "text": "Desmond? I heard your name once before Desmond, a long time ago. And now it lingers in my mind like an image from an old dream. I do not know where you are, or by what means you can hear me. But I know you are listening. I have lived my life as best I could, not knowing its purpose, but drawn forward like a moth to a distant moon. And here, at last, I discover a strange truth. That I am only a conduit for a message that eludes my understanding. Who are we, who have been so blessed to share our stories like this? To speak across centuries? Maybe you will answer all the questions I have asked. Maybe you will be the one to make all this suffering worth something in the end.",
-      "source": "Assassin's Creed 2",
+      "source": "Assassin's Creed: Revelations",
       "id": 2544,
       "length": 679
     },
@@ -17018,12 +16988,6 @@
       "length": 89
     },
     {
-      "text": "Never seen her glowing all that bright she's throwing like some aurora from her head it's growing. Reaching to the ground and all around like a Navajo blanket. Never heard her singing. Now she's gently ringing like copper wind chimes. What on earth is bringing up this stream? The cat who got the cream is licking her lips and smiling like her Cheshire cousin. She claims she's found a way to make her own light. All you do is smile, you banish the night.",
-      "source": "Burning with Optimism's Flames",
-      "id": 2894,
-      "length": 455
-    },
-    {
       "text": "You think you find a way to deal with these things. In med school, you develop a clinical detachment to death. In your FBI training, you are confronted with cases, the most terrible and violent cases. You think you can look into the face of pure evil. And then you find yourself paralyzed by it.",
       "source": "The X-Files",
       "id": 2895,
@@ -17868,12 +17832,6 @@
       "source": "Umineko WHEN THEY CRY Episode 2: Turn of the Golden Witch",
       "id": 3038,
       "length": 247
-    },
-    {
-      "text": "When you marry champagne, you can't trade it in for beer. You're stuck with it.",
-      "source": "The Leopard Man",
-      "id": 3039,
-      "length": 79
     },
     {
       "text": "Hey! You listen to me. The next time you try to stop Sam, I will ruin you! I know what you've done, and I know how to destroy you. You may not know how much power I have, but you will find out if I even hear of you trying to thwart Sam and his video gaming. This is his mission! This is his dream! And we are a team. A team who kills anyone who stands in our way. Do you understand me?",
@@ -19208,7 +19166,7 @@
       "length": 317
     },
     {
-      "text": "I know that the idea of raising well-rounded, smarter kids can be daunting. And sadly, no easy formula exists. Kids are as complex, varied, and exciting individuals as you are. The good news is that your child has a natural desire to do well. Your job as parent is to bring out this quality and cherish it until the day your kids leave home, and then some.",
+      "text": "I know that the idea of raising well-rounded, smarter kids can be daunting. And sadly, no easy formula exists. Kids are as complex, varied, and exciting individuals as you are. The good news is that your child has a natural desire to do well. Your job as a parent is to bring out this quality and cherish it until the day your kids leave home, and then some.",
       "source": "Raising Smart Kids for Dummies",
       "id": 3266,
       "length": 356
@@ -19854,12 +19812,6 @@
       "source": "The Idiot",
       "id": 3376,
       "length": 250
-    },
-    {
-      "text": "I hope to someday have the faith to believe in God as much as he believes in me.",
-      "source": "All My Friends Are Trees",
-      "id": 3377,
-      "length": 80
     },
     {
       "text": "She told me don't worry about it. She told me don't worry no more. We both know we can't go without it. She told me you'll never be alone.",
@@ -20768,12 +20720,6 @@
       "length": 266
     },
     {
-      "text": "Once upon a time there was a lovely princess, but she had an enchantment upon her of a fearful sort which could only be broken by love's first kiss. She was locked away in a castle guarded by a terrible fire-breathing dragon. Many brave knights had attempted to free her from this dreadful prison, but none prevailed. She waited in the dragon's keep in the highest room of the tallest tower for her true love and true love's first kiss.",
-      "source": "Shrek",
-      "id": 3535,
-      "length": 436
-    },
-    {
       "text": "To me our relationship makes perfect sense. You want me to propose to you, I propose to you. You say no, I say fine, I never wanna see you again. You drive me nuts telling me you want me to propose again, I do, you turn me down. Next thing I know I'm in a court of law where I've got to propose to you or go to jail. It's the classic American love story.",
       "source": "Cheers",
       "id": 3536,
@@ -21644,12 +21590,6 @@
       "length": 94
     },
     {
-      "text": "I hate bactine because it gets on my fingers and I get eczema from the lidocaine.",
-      "source": "South Park: The Fractured But Whole",
-      "id": 3685,
-      "length": 81
-    },
-    {
       "text": "I don't think man was meant to attain happiness so easily. Happiness is like those palaces in fairy tales whose gates are guarded by dragons: we must fight in order to conquer it.",
       "source": "The Count of Monte Cristo",
       "id": 3686,
@@ -21974,7 +21914,7 @@
       "length": 88
     },
     {
-      "text": "Do I really look like a guy with a plan? You know what I am? I'm a dog chasing cars. I wouldn't know what to do with one if I caught it. You know, I just do things. The mob has plans, the cops have plans, you know, they're schemers. Schemers trying to control their worlds. I'm not a schemer. I try to show the schemers how pathetic their attempts to control things really are.",
+      "text": "Do I really look like a guy with a plan? You know what I am? I'm a dog chasing cars. I wouldn't know what to do with one if I caught it. You know, I just do things. The Mob has plans, the cops have plans, Gordon's got plans, you know, they're schemers. Schemers trying to control their worlds. I'm not a schemer. I try to show the schemers how pathetic their attempts to control things really are.",
       "source": "The Dark Knight",
       "id": 3740,
       "length": 377
@@ -24362,16 +24302,10 @@
       "length": 185
     },
     {
-      "text": "There was but one question he left unasked, and it vibrated between his lines: if gross miscalculations of a person's value could occur on a baseball field, before a live audience of thirty thousand, and a television audience of millions more, what did that say about the measurement of performance in other lines of work? If professional baseball players could be over- or undervalued, who couldn't?",
+      "text": "There was but one question he left unasked, and it vibrated between his lines: if gross miscalculations of a person's value could occur on a baseball field, before a live audience of thirty thousand, and a television audience of millions more, what did that say about the measurement of performance in other lines of work? If professional baseball players could be over or undervalued, who couldn't?",
       "source": "Moneyball",
       "id": 4143,
       "length": 400
-    },
-    {
-      "text": "Banana brains, you're the apple of my eye. Stay with me tonight 'cause I'm having the best time of my life.",
-      "source": "Banana Brain",
-      "id": 4144,
-      "length": 107
     },
     {
       "text": "Ahem. Pardon me, but the point of this afternoon is to pretend that you might one day make a valuable contribution to society. Perhaps you could play along. For example, Ms. Polk, you might want to look into journalism, which is a profession where they actually pay people to be cynical and disaffected.",
@@ -25904,12 +25838,6 @@
       "length": 432
     },
     {
-      "text": "I'm going to kill a stranger, so don't you be a stranger.",
-      "source": "No Reptiles",
-      "id": 4405,
-      "length": 57
-    },
-    {
       "text": "The study of global social phenomena raises several difficulties that are not commonly encountered when research questions are posed at less comprehensive levels. Problems of arising from aggregation, diffusion, and path dependence, to name three, plague any attempt at answering questions that are posed at a global level. Ultimately, all these problems arise from the fact that there is only one world available for us to study, and when the world itself is the scope of the analysis, additional worlds are not available for validating initial results.",
       "source": "Global Social Change: Historical and Comparative Perspectives",
       "id": 4406,
@@ -26196,12 +26124,6 @@
       "source": "Fargo (TV)",
       "id": 4454,
       "length": 154
-    },
-    {
-      "text": "Oh yes, the past can hurt. But you can either run from it, or learn from it.",
-      "source": "The Lion King",
-      "id": 4455,
-      "length": 76
     },
     {
       "text": "Books are not absolutely dead things, but do contain a potency of life in them to be as active as that soul was whose progeny they are; nay, they do preserve as in a vial the purest efficacy and extraction of that living intellect that bred them. I know they are as lively, and as vigorously productive, as those fabulous dragon's teeth; and being sown up and down, may chance to spring up armed men. And yet, on the other hand, unless wariness be used, as good almost kill a man as kill a good book. Who kills a man kills a reasonable creature, God's image; but he who destroys a good book, kills reason itself, kills the image of God, as it were in the eye. Many a man lives a burden to the earth; but a good book is the precious life-blood of a master spirit, embalmed and treasured up on purpose to a life beyond life.",
@@ -26856,12 +26778,6 @@
       "source": "White Nights",
       "id": 4567,
       "length": 59
-    },
-    {
-      "text": "Let me get two hamburgers with just pickles, two cheeseburgers, and another cheeseburger everything on them, four more hamburgers with everything, a cheeseburger with no pickles, and a cheeseburger with nothing but pickles, two more hamburgers with everything but onions on one and everything but pickles, mustard, and tomatoes on the other, three large fries, six medium fries, one large fry, a junior fry, and two junior fries, two more cheeseburgers with extra cheese and bacon, two more junior fries, and a hamburger with everything, two more hamburgers with everything, and two more hamburgers with everything, four large cokes, and a large sprite, two large cokes, and a small sprite, five large cokes, and one large coke, and a small coke, three small cokes, and a small coke, and a small coke.",
-      "source": "MADtv",
-      "id": 4568,
-      "length": 801
     },
     {
       "text": "The moment one constructs a device to carry into practice a crude idea, he finds himself unavoidably engrossed with the details and defects of the apparatus. As he goes on improving and reconstructing, his force of concentration diminishes and he loses sight of the great underlying principle. Results may be obtained but always at the sacrifice of quality. My method is different. I do not rush into actual work. When I get an idea, I start at once building it up in my imagination. I change the construction, make improvements and operate the device in my mind. It is absolutely immaterial to me whether I run my turbine in thought or test it in my shop.",
@@ -28272,12 +28188,6 @@
       "source": "The Sound and the Fury",
       "id": 4810,
       "length": 398
-    },
-    {
-      "text": "Hi, my name is Jane. We hardly know each other, but that's about to change. You're gonna get to know a lot about me, and maybe even more than you imagine. This whole thing's kind of like a blind date - I mean here we are in your brand-new Corvette, running along the superinformation highway. Put your big, muscular arm around me and whisper sweet nothings in my ear, and I promise you'll do whatever your little heart desires. BUT, only if you make the right moves. Just imagine watching me get propositioned by my sleazeball boss. BUT, if you make the wrong moves, you could turn me into a nun. Imagine that. Me? A nun? HA! I don't think so. But it's really all up to you. God knows what you'll do with that hot, little mouse of yours. Point is: life's a game, and this game is full of life.",
-      "source": "Plumbers Don't Wear Ties",
-      "id": 4811,
-      "length": 793
     },
     {
       "text": "New thoughts and hopes were whirling through my mind, and all the colors of my life were changing.",
@@ -30650,7 +30560,7 @@
       "id": 5217
     },
     {
-      "text": "'I don't feel very much like Pooh today,' said Pooh. 'There, there,' said Piglet. 'I'll bring you tea and honey until you do.'",
+      "text": "\"I don't feel very much like Pooh today,\" said Pooh. \"There, there,\" said Piglet. \"I'll bring you tea and honey until you do.\"",
       "source": "Pooh and Piglet, Winnie-the-Pooh",
       "length": 126,
       "id": 5218
@@ -31316,7 +31226,7 @@
       "id": 5338
     },
     {
-      "text": "Now he saw the familiar wide river beside the path differently. He saw all of the light and color and history it contained and carried in its slow - moving water; and he knew that there was an Elsewhere from which it came, and an Elsewhere to which it was going.",
+      "text": "Now he saw the familiar wide river beside the path differently. He saw all of the light and color and history it contained and carried in its slow-moving water; and he knew that there was an Elsewhere from which it came, and an Elsewhere to which it was going.",
       "source": "Lois Lowry, The Giver",
       "length": 262,
       "id": 5339
@@ -31401,7 +31311,7 @@
     },
     {
       "text": "You get anxious about confronting somebody in your life. That anxiety cripples you and you start wondering why you're anxious. Now you're becoming anxious about being anxious. Oh, no! Doubly anxious! Now you're anxious about your anxiety, which is causing more anxiety. Quick, where's the whiskey?",
-      "source": "Mark Manson, THE SUBTLE ART OF NOT GIVING A FUCK",
+      "source": "Mark Manson, THE SUBTLE ART OF NOT GIVING A F***",
       "length": 297,
       "id": 5355
     },
@@ -32102,12 +32012,6 @@
       "id": 5485
     },
     {
-      "text": "Hello. It's me, Choromatsu. I'm currently in Egypt. I heard that pieces of shit were more popular, so I tried being one, and... I was arrested. I'm scared. I didn't want to be held prisoner by anything anymore, so I left Japan, and now I'm literally a prisoner. Life's pretty funny isn't it? But some good things came out of this. I don't have time to think about anything other than eating, going to the bathroom, and sleeping, so I don't let the little things get me down. There's no envy, no self-loathing, and no hope. And because there's no hope, I'm in a lovely state where there's also no despair. I don't know how much happier I am being a prisoner physically versus being one mentally, but the fact that I'm thinking this way might be a sign that I'm still a prisoner. I shouldn't feel trapped, but I do, but I also feel trapped by the fact that I don't feel trapped over feeling trapped. What the hell am I even saying? I feel like I might go insane. Anyway I'm going to try to live life without being held prisoner by anyone.",
-      "source": "Osomatsu-san 3rd Season",
-      "length": 1036,
-      "id": 5486
-    },
-    {
       "text": "She wished she had cancer instead. She'd trade Alzheimer's for cancer in a heartbeat. She felt ashamed for wishing this, and it was certainly a pointless bargaining, but she permitted herself the fantasy anyway. With cancer, she'd have something to fight. There was surgery, radiation, and chemotherapy. There was the chance that she could win. Her family and the community at Harvard would rally behind her battle and consider it noble. And even if it defeated her in the end, she'd be able to look them knowingly in the eye and say good-bye before she left.",
       "source": "Lisa Genova, Still Alice",
       "length": 559,
@@ -32150,7 +32054,7 @@
       "id": 5493
     },
     {
-      "text": "Genius doesn't work on an assembly line basis. Did Einstein, Kazanga or Sitar of Vulcan produce new and revolutionary theories on a regular schedule? You can't simply say, 'Today I will be brilliant'.",
+      "text": "Genius doesn't work on an assembly line basis. Did Einstein, Kazanga or Sitar of Vulcan produce new and revolutionary theories on a regular schedule? You can't simply say, \"Today I will be brilliant.\"",
       "source": "Star Trek: The Original Series",
       "length": 200,
       "id": 5494
@@ -32210,7 +32114,7 @@
       "id": 5503
     },
     {
-      "text": "It's like how hot dogs come in packs of 10, and buns come in packs of eight or 12; you have to buy nine packs to make it come out even.",
+      "text": "You know how hot dogs come 10 to a pack, and buns in packs of eight or 12; you gotta buy nine packs to make 'em all match up!",
       "source": "Miss Rollings (Swoosie Kurtz) - True Stories",
       "length": 135,
       "id": 5505
@@ -33548,12 +33452,6 @@
       "id": 5745
     },
     {
-      "text": "I spent last night in the arms of a girl in Louisiana, and though I'm out on the highway, my thoughts are still with her. Such a strange combination of a woman and a child. Such a strange situation stoppin' every hundred miles, callin' Baton Rouge.",
-      "source": "Garth Brooks - Callin' Baton Rouge",
-      "length": 248,
-      "id": 5746
-    },
-    {
       "text": "Well, dreams, they feel real while we're in them right? It's only when we wake up that we realize that something was actually strange.",
       "source": "Inception",
       "length": 134,
@@ -33578,7 +33476,7 @@
       "id": 5751
     },
     {
-      "text": "You know. I've been working here for 44 years. Ain't nobody ever ordered nothing but T-Bone steak and a baked potato. Except this one asshole from New York tried to order trout back in 1987. We don't sell no goddamned trout. T-bone steaks. So either you don't want the corn on the cob, or you don't want the green beans. So what don't you want?",
+      "text": "You know. I've been working here for 44 years. Ain't nobody ever ordered nothing but T-Bone steak and a baked potato. Except this one asshole from New York tried to order trout back in 1987. We don't sell no goddamned trout. T-Bone steaks. So either you don't want the corn on the cob, or you don't want the green beans. So what don't you want?",
       "source": "Hell or High Water",
       "length": 344,
       "id": 5752
@@ -33861,7 +33759,7 @@
     },
     {
       "text": "It may be hard right now but you must silence those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
-      "source": "one piece",
+      "source": "One Piece",
       "length": 183,
       "id": 5801
     },
