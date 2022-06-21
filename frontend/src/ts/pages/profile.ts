@@ -16,7 +16,7 @@ function reset(): void {
             </div>
             <div class="avatar"></div>
           </div>
-          <div>
+          <div style="padding-left: 50px;">
             <div class="name">-</div>
             <div class="badges"></div>
             <div class="joined" data-balloon-pos="up">-</div>

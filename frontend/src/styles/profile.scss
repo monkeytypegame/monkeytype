@@ -234,12 +234,10 @@
     }
 
     .avatarAndName {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 1rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
       .avatars {
-        display: grid;
         font-size: 5rem;
         line-height: 5rem;
         height: 5rem;
