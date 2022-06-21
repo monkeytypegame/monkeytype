@@ -108,7 +108,7 @@ const BASE_CONFIG = {
     new HtmlWebpackPlugin({
       filename: "./index.html",
       template: resolve(__dirname, "../static/main.html"),
-      inject: "body",
+      inject: "false",
     }),
     ...htmlWebpackPlugins,
     new MiniCssExtractPlugin({
