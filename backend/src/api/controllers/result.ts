@@ -237,7 +237,7 @@ export async function addResult(
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
         //autoban
-        const autoBanConfig = req.ctx.configuration.autoBan;
+        const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {
           await recordAutoBanEvent(
             uid,

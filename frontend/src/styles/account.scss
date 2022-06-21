@@ -44,6 +44,10 @@
     }
     tbody td:nth-child(1) {
       font-size: 1.5rem;
+      border-radius: var(--roundness) 0 0 var(--roundness);
+    }
+    tbody td:last-child {
+      border-radius: 0 var(--roundness) var(--roundness) 0;
     }
   }
 
@@ -277,6 +281,13 @@
       background: var(--sub-alt-color);
     }
 
+    tbody td:nth-child(1) {
+      border-radius: var(--roundness) 0 0 var(--roundness);
+    }
+    tbody td:last-child {
+      border-radius: 0 var(--roundness) var(--roundness) 0;
+    }
+
     td.infoIcons span {
       margin: 0 0.1rem;
     }
@@ -342,6 +353,16 @@
       display: grid;
       grid-auto-flow: column;
       gap: 1rem;
+    }
+  }
+
+  .profile {
+    .details {
+      padding-right: 3rem;
+    }
+    .pbsTime,
+    .pbsWords {
+      padding-right: 2rem;
     }
   }
 }
