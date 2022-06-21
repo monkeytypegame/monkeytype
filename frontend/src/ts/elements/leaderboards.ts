@@ -554,7 +554,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     return;
   }
   currentData[lb] = data;
-  fillTable(lb);
+  await fillTable(lb);
   hideLoader(lb);
 }
 
