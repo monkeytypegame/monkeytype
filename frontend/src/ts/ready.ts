@@ -59,7 +59,8 @@ $(document).ready(() => {
       false,
       () => {
         window.localStorage.setItem("merchbannerclosed", "true");
-      }
+      },
+      true
     );
   }
   // if (!window.localStorage.getItem("dasbannerclosed")) {

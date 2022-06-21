@@ -8,10 +8,10 @@ import * as EditProfilePopup from "../popups/edit-profile-popup";
 
 type ProfileViewPaths = "profile" | "account";
 
-export function update(
+export async function update(
   where: ProfileViewPaths,
   profile: Partial<MonkeyTypes.Snapshot>
-): void {
+): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
   const details = $(`.page${elementClass} .profile .details`);
 
@@ -25,15 +25,16 @@ export function update(
 
   details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${profile.discordId}/${profile.discordAvatar}.png`;
-    $("<img/>")
-      .attr("src", avatarUrl)
-      .on("load", (event) => {
-        $(event.currentTarget).remove();
-        details.find(".placeholderAvatar").addClass("hidden");
+    const avatarUrl = await Misc.getDiscordAvatarUrl(
+      profile.discordId,
+      profile.discordAvatar,
+      256
+    );
 
-        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-      });
+    if (avatarUrl) {
+      details.find(".placeholderAvatar").addClass("hidden");
+      details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+    }
   }
 
   if (profile.badgeIds && !banned) {
