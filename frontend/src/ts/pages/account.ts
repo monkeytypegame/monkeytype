@@ -757,6 +757,16 @@ export function update(): void {
     loadMoreLines();
     ////////
 
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+        "cpm"
+      );
+    } else {
+      $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+        "wpm"
+      );
+    }
+
     const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
     const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
     const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
