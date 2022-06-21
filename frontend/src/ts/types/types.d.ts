@@ -92,7 +92,7 @@ declare namespace MonkeyTypes {
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
-  type PaceCaret = "off" | "average" | "pb" | "custom";
+  type PaceCaret = "off" | "average" | "pb" | "last" | "custom";
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
@@ -309,7 +309,7 @@ declare namespace MonkeyTypes {
     showLiveWpm: boolean;
     showTimerProgress: boolean;
     smoothCaret: boolean;
-    quickTab: boolean;
+    quickRestart: "off" | "esc" | "tab";
     punctuation: boolean;
     numbers: boolean;
     words: WordsModes;
@@ -351,7 +351,6 @@ declare namespace MonkeyTypes {
     playSoundOnClick: PlaySoundOnClick;
     soundVolume: SoundVolume;
     startGraphsAtZero: boolean;
-    swapEscAndTab: boolean;
     showOutOfFocusWarning: boolean;
     paceCaret: PaceCaret;
     paceCaretCustomSpeed: number;
@@ -466,6 +465,7 @@ declare namespace MonkeyTypes {
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
+    filterPresets: ResultFilters[];
   }
 
   type FavoriteQuotes = Record<string, string[]>;
@@ -476,6 +476,8 @@ declare namespace MonkeyTypes {
   };
 
   interface ResultFilters {
+    _id: string;
+    name: string;
     difficulty: {
       normal: boolean;
       expert: boolean;

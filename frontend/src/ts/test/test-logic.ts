@@ -341,8 +341,10 @@ export function restart(
         )
       ) {
         let message = "Use your mouse to confirm.";
-        if (Config.quickTab) {
+        if (Config.quickRestart === "tab") {
           message = "Press shift + tab or use your mouse to confirm.";
+        } else if (Config.quickRestart === "esc") {
+          message = "Press shift + escape or use your mouse to confirm.";
         }
         Notifications.add("Quick restart disabled. " + message, 0, 3);
         return;
@@ -712,8 +714,12 @@ async function getNextWord(
       regenarationCount < 100 &&
       (previousWord == randomWord ||
         previousWord2 == randomWord ||
-        (!Config.punctuation && randomWord == "I") ||
-        (!Config.punctuation && /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
+        (Config.mode !== "custom" &&
+          !Config.punctuation &&
+          randomWord == "I") ||
+        (Config.mode !== "custom" &&
+          !Config.punctuation &&
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -1683,7 +1689,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (response.data.dailyLeaderboardRank) {
     Notifications.add(
-      `New ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
         Misc.getPositionString(response.data.dailyLeaderboardRank),
       1,
       10,

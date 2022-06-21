@@ -783,9 +783,14 @@ export function escapeRegExp(str: string): string {
 }
 
 export function escapeHTML(str: string): string {
-  return String(str).replace(/[^\w. ]/gi, function (c) {
-    return "&#" + c.charCodeAt(0) + ";";
-  });
+  str = str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  return str;
 }
 
 export function cleanTypographySymbols(textToClean: string): string {

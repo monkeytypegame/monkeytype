@@ -612,11 +612,11 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
-  if (Config.quickTab) {
+  if (Config.quickRestart === "tab") {
     // dont do anything special
     if (modalVisible) return;
 
-    // dont do anything on login so we can tab betweeen inputs
+    // dont do anything on login so we can tab/esc betweeen inputs
     if (ActivePage.get() === "login") return;
 
     // tribe handling
@@ -743,15 +743,32 @@ $(document).on("keydown", async (event) => {
   }
 
   //tab
-  if (
-    (event.key == "Tab" && !Config.swapEscAndTab) ||
-    (event.key == "Escape" && Config.swapEscAndTab)
-  ) {
-    if ([10, 11, 12].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
-      event.preventDefault();
+  if (event.key == "Tab") {
+    handleTab(event, popupVisible);
+  }
+
+  //esc
+  if (event.key === "Escape" && Config.quickRestart === "esc") {
+    const modalVisible =
+      !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+
+    if (modalVisible) return;
+
+    // change page if not on test page
+    if (ActivePage.get() !== "test") {
+      PageController.change("test");
       return;
     }
-    handleTab(event, popupVisible);
+
+    // in case we are in a long test, setting manual restart
+    if (event.shiftKey) {
+      ManualRestart.set();
+    } else {
+      ManualRestart.reset();
+    }
+
+    //otherwise restart
+    TestLogic.restart(false, false, event);
   }
 
   if (!allowTyping) return;

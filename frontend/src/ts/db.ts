@@ -89,6 +89,7 @@ export async function initSnapshot(): Promise<
     };
     if (userData.quoteMod === true) snap.quoteMod = true;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
+    snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
@@ -106,6 +107,15 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
+      //swap legacy values to new ones
+      if (configData.quickTab === true) {
+        configData.quickRestart = "tab";
+      }
+
+      if (configData.swapEscAndTab === true) {
+        configData.quickRestart = "esc";
+      }
+
       const newConfig = {
         ...DefaultConfig,
       };

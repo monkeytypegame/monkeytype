@@ -2,20 +2,12 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commandline-lists";
-import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
 import { Auth } from "../firebase";
-import * as PractiseWords from "../test/practise-words";
-import * as SimplePopups from "../popups/simple-popups";
-import * as CustomWordAmountPopup from "../popups/custom-word-amount-popup";
-import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
-import * as CustomTextPopup from "../popups/custom-text-popup";
-import * as QuoteSearchPopupWrapper from "../popups/quote-search-popup";
-import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
@@ -395,62 +387,40 @@ $("#commandLine input").keyup((e) => {
 $(document).ready(() => {
   $(document).on("keydown", (event) => {
     if (PageTransition.get()) return event.preventDefault();
-    // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
+    // opens command line if escape or ctrl/cmd + shift + p
     if (
-      event.key === "Escape" ||
+      event.key === "Escape" &&
+      !$("#commandLineWrapper").hasClass("hidden")
+    ) {
+      if (CommandlineLists.current.length > 1) {
+        CommandlineLists.current.pop();
+        $("#commandLine").removeClass("allCommands");
+        show();
+      } else {
+        hide();
+      }
+      UpdateConfig.setFontFamily(Config.fontFamily, true);
+      return;
+    }
+    if (
+      (event.key === "Escape" && Config.quickRestart !== "esc") ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
-        event.shiftKey) ||
-      (event.key === "Tab" && Config.swapEscAndTab)
+        event.shiftKey)
     ) {
       event.preventDefault();
 
       const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
-      if (!$("#leaderboardsWrapper").hasClass("hidden")) {
-        //maybe add more condition for closing other dialogs in the future as well
-        event.preventDefault();
-        Leaderboards.hide();
-      } else if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        PractiseWords.hidePopup();
-      } else if (!$("#simplePopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        SimplePopups.hide();
-      } else if (!$("#customWordAmountPopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        CustomWordAmountPopup.hide();
-      } else if (!$("#customTestDurationPopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        CustomTestDurationPopup.hide();
-      } else if (!$("#customTextPopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        CustomTextPopup.hide();
-      } else if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        QuoteSearchPopupWrapper.hide();
-      } else if (!$("#tribeStartRacePopupWrapper").hasClass("hidden")) {
-        event.preventDefault();
-        TribeStartRacePopup.hide();
-      } else if (!$("#commandLineWrapper").hasClass("hidden")) {
-        if (CommandlineLists.current.length > 1) {
-          CommandlineLists.current.pop();
-          $("#commandLine").removeClass("allCommands");
-          show();
-        } else {
-          hide();
-        }
-        UpdateConfig.setFontFamily(Config.fontFamily, true);
-      } else if (event.key === "Tab" || !Config.swapEscAndTab) {
-        if (Config.singleListCommandLine == "on") {
-          useSingleListCommandLine(false);
-        } else {
-          CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
-        }
-        show();
+
+      if (Config.singleListCommandLine == "on") {
+        useSingleListCommandLine(false);
+      } else {
+        CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
       }
+      show();
     }
   });
 });
