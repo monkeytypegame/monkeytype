@@ -120,8 +120,6 @@ export async function updateFilterPresets(): Promise<void> {
     return filter;
   });
 
-  console.log(filterPresets);
-
   // if user has filter presets
   if (filterPresets.length > 0) {
     // show region

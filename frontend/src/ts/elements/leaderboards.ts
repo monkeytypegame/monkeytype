@@ -6,6 +6,7 @@ import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
+import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
@@ -135,7 +136,7 @@ function updateFooter(lb: LbKey): void {
 
   if (
     window.location.hostname !== "localhost" &&
-    (DB.getSnapshot().globalStats?.time ?? 0) < 7200
+    (DB.getSnapshot().typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
@@ -292,7 +293,13 @@ function fillTable(lb: LbKey, prepend?: number): void {
 
     if (avatarSource) {
       const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
-      avatar += `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
+      $("<img/>")
+        .attr("src", avatarUrl)
+        .on("load", (event) => {
+          $(event.currentTarget).remove();
+
+          avatar = `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
+        });
     }
 
     html += `
@@ -300,9 +307,12 @@ function fillTable(lb: LbKey, prepend?: number): void {
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td><div class="avatarNameBadge">${avatar}${entry.name}${
-      entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""
-    }</div></td>
+    <td>
+    <div class="avatarNameBadge">${avatar}
+      <span class="entryName" uid=${entry.uid}>${entry.name}</span>
+      ${entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""}
+    </div>
+    </td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -320,11 +330,21 @@ function fillTable(lb: LbKey, prepend?: number): void {
   </tr>
   `;
   }
+
   if (!prepend) {
     $(`#leaderboardsWrapper table.${side} tbody`).append(html);
   } else {
     $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
   }
+
+  $(".entryName").on("click", (e) => {
+    const uid = $(e.target).attr("uid");
+    if (uid) {
+      window.history.replaceState(null, "", "/profile?uid=" + uid);
+      change("profile", true);
+      hide();
+    }
+  });
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");

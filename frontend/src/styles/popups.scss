@@ -1204,15 +1204,39 @@
 }
 
 #tagsWrapper,
-#newResultFilterPresetPopupWrapper {
+#newResultFilterPresetPopupWrapper,
+#editProfilePopupWrapper {
   #tagsEdit,
-  #newResultFilterPresetPopup {
+  #newResultFilterPresetPopup,
+  #editProfilePopup {
+    max-height: 90vh;
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
     display: grid;
     gap: 1rem;
     overflow-y: scroll;
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+  }
+}
+
+#editProfilePopup {
+  label {
+    color: var(--sub-color);
+  }
+  input {
+    width: 100%;
+  }
+  textarea {
+    resize: vertical;
+    width: 100%;
+    padding: 10px;
+    line-height: 1.2rem;
+    min-height: 5rem;
+    max-height: 10rem;
   }
 }
 

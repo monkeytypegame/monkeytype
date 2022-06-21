@@ -342,6 +342,20 @@ export const userDiscordUnlink = rateLimit({
   handler: customHandler,
 });
 
+export const userProfileGet = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 100 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
+export const userProfileUpdate = rateLimit({
+  windowMs: ONE_HOUR,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
 // ApeKeys Routing
 export const apeKeysGet = rateLimit({
   windowMs: ONE_HOUR,

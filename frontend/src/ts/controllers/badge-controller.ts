@@ -26,7 +26,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   4: {
     id: 4,
     name: "OG Account",
-    description: "First 100 users on the site",
+    description: "First 1000 users on the site",
     icon: "fa-baby",
     color: "var(--bg-color)",
     background: "var(--main-color)",
@@ -34,7 +34,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   5: {
     id: 5,
     name: "OG Discordian",
-    description: "First 100 Discord server members",
+    description: "First 1000 Discord server members",
     icon: "fa-baby",
     color: "var(--bg-color)",
     background: "var(--main-color)",

@@ -28,6 +28,19 @@ declare namespace MonkeyTypes {
         maxPresetsPerUser: number;
       };
     };
+    users: {
+      autoBan: {
+        enabled: boolean;
+        maxCount: number;
+        maxHours: number;
+      };
+      profiles: {
+        enabled: boolean;
+      };
+      discordIntegration: {
+        enabled: boolean;
+      };
+    };
     apeKeys: {
       endpointsEnabled: boolean;
       acceptKeys: boolean;
@@ -35,11 +48,7 @@ declare namespace MonkeyTypes {
       apeKeyBytes: number;
       apeKeySaltRounds: number;
     };
-    autoBan: {
-      enabled: boolean;
-      maxCount: number;
-      maxHours: number;
-    };
+
     dailyLeaderboards: {
       enabled: boolean;
       leaderboardExpirationTimeInDays: number;
@@ -47,9 +56,6 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
-    };
-    discordIntegration: {
-      enabled: boolean;
     };
   }
 
@@ -69,6 +75,16 @@ declare namespace MonkeyTypes {
   }
 
   // Data Model
+
+  interface UserProfileDetails {
+    bio: string;
+    keyboard: string;
+    socialProfiles: {
+      twitter?: string;
+      github?: string;
+      website?: string;
+    };
+  }
 
   interface User {
     autoBanTimestamps?: number[];
@@ -98,6 +114,7 @@ declare namespace MonkeyTypes {
     discordAvatar?: string;
     badgeIds?: number[];
     resultFilterPresets?: ResultFilters[];
+    profileDetails?: UserProfileDetails;
   }
 
   interface ResultFilters {

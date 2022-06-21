@@ -43,7 +43,6 @@ import {
   User as UserType,
 } from "firebase/auth";
 import { Auth } from "../firebase";
-import differenceInDays from "date-fns/differenceInDays";
 import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
@@ -246,15 +245,6 @@ export async function loadUser(user: UserType): Promise<void> {
 
   // showFavouriteThemesAtTheTop();
 
-  let text = "Account created on " + user.metadata.creationTime;
-
-  const creationDate = new Date(user.metadata.creationTime as string);
-  const diffDays = differenceInDays(new Date(), creationDate);
-
-  text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
-
-  $(".pageAccount .group.createdDate").text(text);
-
   if (VerificationController.data !== null) {
     VerificationController.verify();
   }
@@ -297,6 +287,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
 
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
+
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
       "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
@@ -597,13 +588,12 @@ async function signUp(): Promise<void> {
       if (response.status === 200) {
         const result = TestLogic.notSignedInLastResult;
         DB.saveLocalResult(result);
-        DB.updateLocalStats({
-          time:
-            result.testDuration +
+        DB.updateLocalStats(
+          1,
+          result.testDuration +
             result.incompleteTestSeconds -
-            result.afkDuration,
-          started: 1,
-        });
+            result.afkDuration
+        );
       }
     }
     Notifications.add("Account created", 1, 3);

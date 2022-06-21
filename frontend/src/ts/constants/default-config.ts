@@ -67,7 +67,7 @@ export default <MonkeyTypes.Config>{
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
   repeatedPace: true,
-  pageWidth: "100",
+  pageWidth: "125",
   chartAccuracy: true,
   chartStyle: "line",
   minWpm: "off",

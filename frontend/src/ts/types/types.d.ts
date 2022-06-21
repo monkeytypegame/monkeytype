@@ -232,10 +232,10 @@ declare namespace MonkeyTypes {
     _id: string;
   }
 
-  interface Stats {
-    time: number;
-    started: number;
-    completed?: number;
+  interface TypingStats {
+    timeTyping: number;
+    startedTests: number;
+    completedTests: number;
   }
 
   interface ChartData {
@@ -458,14 +458,27 @@ declare namespace MonkeyTypes {
     tags: Tag[];
     favouriteThemes?: string[];
     lbMemory?: LeaderboardMemory;
-    globalStats?: Stats;
+    typingStats?: TypingStats;
     quoteMod?: boolean;
     discordId?: string;
     config?: Config;
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
+    details?: UserDetails;
+    badgeIds?: number[];
+    addedAt: number;
     filterPresets: ResultFilters[];
+  }
+
+  interface UserDetails {
+    bio?: string;
+    keyboard?: string;
+    socialProfiles: {
+      twitter?: string;
+      github?: string;
+      website?: string;
+    };
   }
 
   type FavoriteQuotes = Record<string, string[]>;
@@ -665,7 +678,14 @@ declare namespace MonkeyTypes {
     colorfulErrorExtra: string;
   }
 
-  type Page = "loading" | "test" | "about" | "settings" | "account" | "login";
+  type Page =
+    | "loading"
+    | "test"
+    | "about"
+    | "settings"
+    | "account"
+    | "login"
+    | "profile";
 
   //  type ActivePage = `page${Page}` | undefined;
 
