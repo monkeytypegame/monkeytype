@@ -1153,3 +1153,23 @@ export function isAnyPopupVisible(): boolean {
   }
   return popupVisible;
 }
+
+export const getDiscordAvatarUrl = async (
+  discordId?: string,
+  discordAvatar?: string,
+  discordAvatarSize = 32
+): Promise<string | null> => {
+  if (!discordId || !discordAvatar) {
+    return null;
+  }
+
+  // An invalid request to this URL will return a 404.
+  const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}?size=${discordAvatarSize}`;
+
+  const response = await fetch(avatarUrl);
+  if (!response.ok) {
+    return null;
+  }
+
+  return avatarUrl;
+};

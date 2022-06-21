@@ -233,7 +233,7 @@ function checkLbMemory(lb: LbKey): void {
   }
 }
 
-function fillTable(lb: LbKey, prepend?: number): void {
+async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   if (!currentData[lb]) {
     return;
   }
@@ -252,6 +252,37 @@ function fillTable(lb: LbKey, prepend?: number): void {
   }
 
   const loggedInUserName = DB.getSnapshot()?.name;
+
+  const snap = DB.getSnapshot();
+
+  const avatarUrlPromises = currentData[lb].map((entry) => {
+    const isCurrentUser =
+      Auth.currentUser &&
+      entry.uid === Auth.currentUser.uid &&
+      snap.discordAvatar &&
+      snap.discordId;
+
+    const entryHasAvatar = entry.discordAvatar && entry.discordId;
+
+    const avatarSource: Partial<
+      MonkeyTypes.Snapshot | MonkeyTypes.LeaderboardEntry
+    > = (isCurrentUser && snap) || (entryHasAvatar && entry) || {};
+
+    return Misc.getDiscordAvatarUrl(
+      avatarSource.discordId,
+      avatarSource.discordAvatar
+    );
+  });
+
+  const avatarUrls = (await Promise.allSettled(avatarUrlPromises)).map(
+    (promise) => {
+      if (promise.status === "fulfilled") {
+        return promise.value;
+      }
+
+      return null;
+    }
+  );
 
   let a = currentData[lb].length - leaderboardSingleLimit;
   let b = currentData[lb].length;
@@ -279,27 +310,9 @@ function fillTable(lb: LbKey, prepend?: number): void {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    const snap = DB.getSnapshot();
-
-    const isCurrentUser =
-      Auth.currentUser &&
-      entry.uid === Auth.currentUser.uid &&
-      snap.discordAvatar &&
-      snap.discordId;
-
-    const entryHasAvatar = entry.discordAvatar && entry.discordId;
-
-    const avatarSource = (isCurrentUser && snap) || (entryHasAvatar && entry);
-
-    if (avatarSource) {
-      const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
-      $("<img/>")
-        .attr("src", avatarUrl)
-        .on("load", (event) => {
-          $(event.currentTarget).remove();
-
-          avatar = `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
-        });
+    const currentEntryAvatarUrl = avatarUrls[i];
+    if (currentEntryAvatarUrl !== null) {
+      avatar = `<div class="avatar" style="background-image:url(${currentEntryAvatarUrl})"></div>`;
     }
 
     html += `
