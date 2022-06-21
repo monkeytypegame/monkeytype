@@ -265,7 +265,7 @@ export function update(): void {
     let totalAcc = 0;
     let totalAcc10 = 0;
 
-    let eligibleToRanking = false;
+    let eligibleToRanking = true;
 
     const rawWpm = {
       total: 0,
@@ -639,8 +639,11 @@ export function update(): void {
     );
 
     // checks if the account has typed for more than 2 hours
-    if ((DB.getSnapshot().globalStats?.time ?? 0) >= 7200) {
-      eligibleToRanking = true;
+    if (
+      window.location.hostname !== "localhost" &&
+      (DB.getSnapshot().typingStats?.timeTyping ?? 0) < 7200
+    ) {
+      eligibleToRanking = false;
     }
 
     const modeDifferences = ["15", "60"];
@@ -740,6 +743,12 @@ export function update(): void {
 
       $(`.pageAccount .userRank0 .error`).text("Not enough time typed");
       $(`.pageAccount .userRank1 .error`).text("Not enough time typed");
+      $(`.pageAccount .userRank0 .title`).html(
+        `leaderboard rank <br /> (${mode} ${modeDifferences[0]})`
+      );
+      $(`.pageAccount .userRank1 .title`).html(
+        `leaderboard rank <br /> (${mode} ${modeDifferences[1]})`
+      );
     }
     loadMoreLines();
     ////////
