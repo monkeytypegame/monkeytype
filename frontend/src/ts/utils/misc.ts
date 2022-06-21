@@ -1164,12 +1164,12 @@ export async function getDiscordAvatarUrl(
   }
 
   // An invalid request to this URL will return a 404.
-  const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}?size=${discordAvatarSize}`;
+  try {
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}?size=${discordAvatarSize}`;
+    await fetch(avatarUrl);
 
-  const response = await fetch(avatarUrl);
-  if (!response.ok) {
-    return null;
-  }
+    return avatarUrl;
+  } catch (error) {}
 
-  return avatarUrl;
+  return null;
 }
