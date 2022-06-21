@@ -147,7 +147,7 @@ function buildPbHtml(
       <div>${Math.round(pbData.raw * multiplier)} raw</div>
       <div>${pbData.acc === undefined ? "-" : Math.round(pbData.acc)} acc</div>
       <div>${
-        pbData.consistency === undefined ? "-" : Math.round(pbData.acc)
+        pbData.consistency === undefined ? "-" : Math.round(pbData.consistency)
       } con</div>
       <div>${dateText}</div>
     </div>`;
