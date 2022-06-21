@@ -1154,11 +1154,11 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
-export const getDiscordAvatarUrl = async (
+export async function getDiscordAvatarUrl(
   discordId?: string,
   discordAvatar?: string,
   discordAvatarSize = 32
-): Promise<string | null> => {
+): Promise<string | null> {
   if (!discordId || !discordAvatar) {
     return null;
   }
@@ -1172,4 +1172,4 @@ export const getDiscordAvatarUrl = async (
   }
 
   return avatarUrl;
-};
+}
