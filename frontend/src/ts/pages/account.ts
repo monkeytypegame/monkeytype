@@ -708,26 +708,30 @@ export function update(): void {
         isNull = true;
       }
 
-      let userRankIndex = 0;
-
       if (!isNull) {
+        let userRankIndex = 0;
+        const userRank = {
+          0: dataDaily[0]["data"]["rank"],
+          1: dataDaily[1]["data"]["rank"],
+        };
+
         if (!dataDaily[0]["data"]) {
           userRankIndex = 1;
-        } else if (!dataDaily[1]["data"]) {
-          userRankIndex = 0;
-        } else if (
-          dataDaily[0]["data"]["rank"] < dataDaily[1]["data"]["rank"]
-        ) {
+        } else if (userRank[0] > userRank[1]) {
           userRankIndex = 1;
+        } else if (userRank[0] === userRank[1]) {
+          if (dataDaily[0]["data"]["wpm"] < dataDaily[1]["data"]["wpm"]) {
+            userRankIndex = 1;
+          }
         }
-      }
 
-      $(".pageAccount .userRankDaily .val").text(
-        isNull ? "-" : dataDaily[userRankIndex]["data"]["rank"]
-      );
-      $(".pageAccount .userRankDaily .mode").html(
-        isNull ? "" : `${mode} ${modeDifferences[userRankIndex]}`
-      );
+        $(".pageAccount .userRankDaily .val").text(
+          dataDaily[userRankIndex]["data"]["rank"]
+        );
+        $(".pageAccount .userRankDaily .mode").html(
+          `${mode} ${modeDifferences[userRankIndex]}`
+        );
+      }
 
       if (Config.alwaysShowCPM) {
         $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
