@@ -82,10 +82,10 @@ export async function initSnapshot(): Promise<
     snap.discordId = userData.discordId;
     snap.discordAvatar = userData.discordAvatar;
     snap.needsToChangeName = userData.needsToChangeName;
-    snap.globalStats = {
-      time: userData.timeTyping,
-      started: userData.startedTests,
-      completed: userData.completedTests,
+    snap.typingStats = {
+      timeTyping: userData.timeTyping,
+      startedTests: userData.startedTests,
+      completedTests: userData.completedTests,
     };
     if (userData.quoteMod === true) snap.quoteMod = true;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
@@ -93,6 +93,9 @@ export async function initSnapshot(): Promise<
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+    snap.details = userData.profileDetails;
+    snap.addedAt = userData.addedAt;
+    snap.badgeIds = userData.badgeIds;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format
@@ -780,26 +783,26 @@ export function saveLocalResult(
   }
 }
 
-export function updateLocalStats(stats: MonkeyTypes.Stats): void {
+export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
-  if (snapshot.globalStats === undefined) {
-    snapshot.globalStats = {} as MonkeyTypes.Stats;
+  if (snapshot.typingStats === undefined) {
+    snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
-  if (snapshot !== null && snapshot.globalStats !== undefined) {
-    if (snapshot.globalStats.time == undefined) {
-      snapshot.globalStats.time = stats.time;
+  if (snapshot !== null && snapshot.typingStats !== undefined) {
+    if (snapshot.typingStats.timeTyping == undefined) {
+      snapshot.typingStats.timeTyping = time;
     } else {
-      snapshot.globalStats.time += stats.time;
+      snapshot.typingStats.timeTyping += time;
     }
-    if (snapshot.globalStats.started == undefined) {
-      snapshot.globalStats.started = stats.started;
+    if (snapshot.typingStats.startedTests == undefined) {
+      snapshot.typingStats.startedTests = started;
     } else {
-      snapshot.globalStats.started += stats.started;
+      snapshot.typingStats.startedTests += started;
     }
-    if (snapshot.globalStats.completed == undefined) {
-      snapshot.globalStats.completed = 1;
+    if (snapshot.typingStats.completedTests == undefined) {
+      snapshot.typingStats.completedTests = 1;
     } else {
-      snapshot.globalStats.completed += 1;
+      snapshot.typingStats.completedTests += 1;
     }
   }
 

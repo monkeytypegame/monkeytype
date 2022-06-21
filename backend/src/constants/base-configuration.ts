@@ -29,11 +29,20 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     apeKeyBytes: 24,
     apeKeySaltRounds: 5,
   },
-  autoBan: {
-    enabled: false,
-    maxCount: 5,
-    maxHours: 1,
+  users: {
+    discordIntegration: {
+      enabled: false,
+    },
+    autoBan: {
+      enabled: false,
+      maxCount: 5,
+      maxHours: 1,
+    },
+    profiles: {
+      enabled: false,
+    },
   },
+
   dailyLeaderboards: {
     enabled: false,
     maxResults: 0,
@@ -42,9 +51,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
-  },
-  discordIntegration: {
-    enabled: false,
   },
 };
 
@@ -55,16 +61,6 @@ export const CONFIGURATION_FORM_SCHEMA = {
     maintenance: {
       type: "boolean",
       label: "In Maintenance",
-    },
-    discordIntegration: {
-      type: "object",
-      label: "Discord Integration",
-      fields: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
-        },
-      },
     },
     results: {
       type: "object",
@@ -156,26 +152,53 @@ export const CONFIGURATION_FORM_SCHEMA = {
         },
       },
     },
-    autoBan: {
+    users: {
       type: "object",
-      label: "Auto Ban",
+      label: "Users",
       fields: {
-        enabled: {
-          type: "boolean",
-          label: "Enabled",
+        discordIntegration: {
+          type: "object",
+          label: "Discord Integration",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
         },
-        maxCount: {
-          type: "number",
-          label: "Max Count",
-          min: 0,
+        autoBan: {
+          type: "object",
+          label: "Auto Ban",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxCount: {
+              type: "number",
+              label: "Max Count",
+              min: 0,
+            },
+            maxHours: {
+              type: "number",
+              label: "Max Hours",
+              min: 0,
+            },
+          },
         },
-        maxHours: {
-          type: "number",
-          label: "Max Hours",
-          min: 0,
+        profiles: {
+          type: "object",
+          label: "User Profiles",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
         },
       },
     },
+
     dailyLeaderboards: {
       type: "object",
       label: "Daily Leaderboards",

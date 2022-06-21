@@ -21,26 +21,26 @@ export function loading(truefalse: boolean): void {
   }
 }
 
-export function update(discordId?: string, discordAvatar?: string): void {
+export async function update(
+  discordId?: string,
+  discordAvatar?: string
+): Promise<void> {
   if (Auth.currentUser != null) {
     if (discordAvatar && discordId) {
-      // Replace font-awesome account icon with Discord avatar only if it loads successfully
-      // https://stackoverflow.com/a/5058336/9080819
-      const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`;
-      $("<img/>")
-        .attr("src", avatarUrl)
-        .on("load", (event) => {
-          $(event.currentTarget).remove();
+      const discordAvatarUrl = await Misc.getDiscordAvatarUrl(
+        discordId,
+        discordAvatar
+      );
+      if (discordAvatarUrl) {
+        $("#top #menu .account .avatar").css(
+          "background-image",
+          `url(${discordAvatarUrl})`
+        );
+        usingAvatar = true;
 
-          usingAvatar = true;
-          $("#top #menu .account .avatar").css(
-            "background-image",
-            `url(${avatarUrl})`
-          );
-
-          $("#top #menu .account .icon").addClass("hidden");
-          $("#top #menu .account .avatar").removeClass("hidden");
-        });
+        $("#top #menu .account .icon").addClass("hidden");
+        $("#top #menu .account .avatar").removeClass("hidden");
+      }
     } else {
       $("#top #menu .account .avatar").addClass("hidden");
     }

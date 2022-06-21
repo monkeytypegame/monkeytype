@@ -944,6 +944,7 @@ export function swapElements(
   ) {
     //one of them is hidden and the other is visible
     if (el1.hasClass("hidden")) {
+      middleCallback();
       callback();
       return false;
     }
@@ -974,6 +975,7 @@ export function swapElements(
       );
   } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
+    middleCallback();
     $(el2)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -987,6 +989,7 @@ export function swapElements(
         }
       );
   } else {
+    middleCallback();
     callback();
   }
 
@@ -1149,4 +1152,28 @@ export function isAnyPopupVisible(): boolean {
     }
   }
   return popupVisible;
+}
+
+export async function getDiscordAvatarUrl(
+  discordId?: string,
+  discordAvatar?: string,
+  discordAvatarSize = 32
+): Promise<string | null> {
+  if (!discordId || !discordAvatar) {
+    return null;
+  }
+
+  // An invalid request to this URL will return a 404.
+  try {
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
+
+    const response = await fetch(avatarUrl);
+    if (!response.ok) {
+      return null;
+    }
+
+    return avatarUrl;
+  } catch (error) {}
+
+  return null;
 }

@@ -7,10 +7,10 @@ export default {
   coverageThreshold: {
     global: {
       // These percentages should never decrease
-      statements: 37,
+      statements: 38,
       branches: 38,
-      functions: 20,
-      lines: 40,
+      functions: 21,
+      lines: 41,
     },
   },
 };

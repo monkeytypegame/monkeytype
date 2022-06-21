@@ -146,6 +146,11 @@
             border-radius: 100%;
             margin-top: -0.25rem;
           }
+          .entryName {
+            text-decoration: none;
+            color: var(--text-color);
+            cursor: pointer;
+          }
           .avatarPlaceholder,
           .avatar {
             grid-row: 1/2;
@@ -190,6 +195,14 @@
 
           tr:nth-child(odd) td {
             background: var(--sub-alt-color);
+          }
+          td:nth-child(1) {
+            border-radius: calc(var(--roundness) / 2) 0 0
+              calc(var(--roundness) / 2);
+          }
+          td:last-child {
+            border-radius: 0 calc(var(--roundness) / 2)
+              calc(var(--roundness) / 2) 0;
           }
         }
 
