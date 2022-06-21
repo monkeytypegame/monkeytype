@@ -108,6 +108,13 @@ select:-webkit-autofill:focus {
   color: var(--text-color);
   outline: none;
 }
+.select2-container--default.select2-container--disabled
+  .select2-selection--single {
+  background: var(--sub-alt-color) !important;
+  opacity: 0.33;
+  cursor: default;
+  pointer-events: none;
+}
 
 .select2-selection {
   background: var(--sub-alt-color);
@@ -154,6 +161,11 @@ select:-webkit-autofill:focus {
   border: none;
   height: auto;
   border-radius: var(--roundness);
+}
+
+.select2-container--default.select2-container--disabled
+  .select2-selection--single {
+  background: #5051517a;
 }
 
 .select2-selection:focus {

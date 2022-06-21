@@ -7,6 +7,7 @@ import * as PageTest from "../pages/test";
 import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
+import * as PageProfile from "../pages/profile";
 import * as PageTransition from "../states/page-transition";
 import { Auth } from "../firebase";
 
@@ -32,6 +33,7 @@ export async function change(
         "/settings": "settings",
         "/about": "about",
         "/account": "account",
+        "/profile": "profile",
       };
       let path = pages[window.location.pathname as keyof typeof pages];
       if (!path) {
@@ -42,6 +44,22 @@ export async function change(
       if (Auth.currentUser && page === "login") {
         page = "account";
       }
+
+      if (
+        !Auth.currentUser &&
+        window.location.search === "" &&
+        page === "profile"
+      ) {
+        page = "login";
+      }
+    }
+
+    if (
+      Auth.currentUser &&
+      window.location.pathname === "/profile" &&
+      window.location.search === ""
+    ) {
+      page = "account";
     }
 
     if (!force && ActivePage.get() === page) {
@@ -56,10 +74,15 @@ export async function change(
       about: PageAbout.page,
       account: Account.page,
       login: PageLogin.page,
+      profile: PageProfile.page,
     };
 
     const previousPage = pages[ActivePage.get() as MonkeyTypes.Page];
     const nextPage = pages[page];
+
+    const historyUrl =
+      nextPage.pathname +
+      (nextPage.pathname === "/profile" ? window.location.search : "");
 
     previousPage?.beforeHide();
     PageTransition.set(true);
@@ -75,7 +98,7 @@ export async function change(
         previousPage?.afterHide();
         nextPage.element.addClass("active");
         resolve();
-        history.pushState(nextPage.pathname, "", nextPage.pathname);
+        history.pushState(nextPage.pathname, "", historyUrl);
         nextPage?.afterShow();
       },
       async () => {

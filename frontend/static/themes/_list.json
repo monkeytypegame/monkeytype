@@ -763,5 +763,10 @@
     "name": "tron_orange",
     "bgColor": "#0d1c1c",
     "mainColor": "#f0e800"
-}
+  }
+  ,{
+    "name": "hedge",
+    "bgColor": "#386641",
+    "mainColor": "#6a994e"
+  }
 ]

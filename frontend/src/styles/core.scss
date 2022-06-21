@@ -443,6 +443,7 @@ key {
   grid-auto-flow: column;
   gap: 0.5rem;
   text-decoration: none;
+  z-index: 999999999;
 }
 
 .avatar {

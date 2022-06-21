@@ -109,3 +109,45 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
     secondPart + Math.floor((MILLISECONDS_IN_DAY - todayMilliseconds) / 1000)
   );
 }
+
+export function flattenObjectDeep(
+  obj: Record<string, any>,
+  prefix = ""
+): Record<string, any> {
+  const result: Record<string, any> = {};
+  const keys = Object.keys(obj);
+
+  keys.forEach((key) => {
+    const value = obj[key];
+
+    const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
+
+    if (_.isPlainObject(value)) {
+      const flattened = flattenObjectDeep(value);
+      const flattenedKeys = Object.keys(flattened);
+
+      if (flattenedKeys.length === 0) {
+        result[newPrefix] = value;
+      }
+
+      flattenedKeys.forEach((flattenedKey) => {
+        result[`${newPrefix}.${flattenedKey}`] = flattened[flattenedKey];
+      });
+    } else {
+      result[newPrefix] = value;
+    }
+  });
+
+  return result;
+}
+
+export function sanitizeString(str: string | undefined): string | undefined {
+  if (!str) {
+    return str;
+  }
+
+  return str
+    .replace(/[\u0300-\u036F]/g, "")
+    .trim()
+    .replace(/\s{3,}/g, "  ");
+}

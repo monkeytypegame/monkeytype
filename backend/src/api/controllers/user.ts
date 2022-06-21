@@ -1,9 +1,10 @@
+import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { getDiscordUser } from "../../utils/discord";
-import { buildAgentLog } from "../../utils/misc";
+import { buildAgentLog, sanitizeString } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 
@@ -103,13 +104,17 @@ export async function getUser(
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
-    await admin.auth().deleteUser(uid);
-    throw new MonkeyError(
-      404,
-      "User not found. Please try to sign up again.",
-      "get user",
-      uid
-    );
+    if (e.status === 404) {
+      await admin.auth().deleteUser(uid);
+      throw new MonkeyError(
+        404,
+        "User not found. Please try to sign up again.",
+        "get user",
+        uid
+      );
+    }
+
+    throw e;
   }
 
   const agentLog = buildAgentLog(req);
@@ -186,29 +191,29 @@ export async function unlinkDiscord(
   return new MonkeyResponse("Discord account unlinked");
 }
 
-export async function addResultFilter(
+export async function addResultFilterPreset(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const filter = req.body;
-  const { maxFiltersPerUser } = req.ctx.configuration.customFilters;
+  const { maxPresetsPerUser } = req.ctx.configuration.results.filterPresets;
 
-  const createdId = await UserDAL.addResultFilter(
+  const createdId = await UserDAL.addResultFilterPreset(
     uid,
     filter,
-    maxFiltersPerUser
+    maxPresetsPerUser
   );
-  return new MonkeyResponse("Result filter created", createdId);
+  return new MonkeyResponse("Result filter preset created", createdId);
 }
 
-export async function removeResultFilter(
+export async function removeResultFilterPreset(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { filterId } = req.params;
+  const { presetId } = req.params;
 
-  await UserDAL.removeResultFilter(uid, filterId);
-  return new MonkeyResponse("Result filter deleted");
+  await UserDAL.removeResultFilterPreset(uid, presetId);
+  return new MonkeyResponse("Result filter preset deleted");
 }
 
 export async function addTag(
@@ -370,4 +375,82 @@ export async function removeFavoriteQuote(
   await UserDAL.removeFavoriteQuote(uid, language, quoteId);
 
   return new MonkeyResponse("Quote removed from favorites");
+}
+
+export async function getProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.params;
+
+  const {
+    name,
+    banned,
+    badgeIds,
+    profileDetails,
+    personalBests,
+    completedTests,
+    startedTests,
+    timeTyping,
+    addedAt,
+    discordId,
+    discordAvatar,
+  } = await UserDAL.getUser(uid, "get user profile");
+
+  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
+  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+
+  const typingStats = {
+    completedTests,
+    startedTests,
+    timeTyping,
+  };
+
+  const relevantPersonalBests = {
+    time: validTimePbs,
+    words: validWordsPbs,
+  };
+
+  const baseProfile = {
+    name,
+    banned,
+    addedAt,
+    typingStats,
+    personalBests: relevantPersonalBests,
+    discordId,
+    discordAvatar,
+  };
+
+  if (banned) {
+    return new MonkeyResponse("Profile retrived: banned user", baseProfile);
+  }
+
+  const profileData = {
+    ...baseProfile,
+    badgeIds,
+    details: {
+      bio: "",
+      keyboard: "",
+      socialProfiles: {},
+      ...profileDetails,
+    },
+  };
+
+  return new MonkeyResponse("Profile retrieved", profileData);
+}
+
+export async function updateProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { bio, keyboard, socialProfiles } = req.body;
+
+  const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
+    bio: sanitizeString(bio),
+    keyboard: sanitizeString(keyboard),
+    socialProfiles: _.mapValues(socialProfiles, sanitizeString),
+  };
+
+  await UserDAL.updateProfile(uid, profileDetailsUpdates);
+
+  return new MonkeyResponse("Profile updated");
 }

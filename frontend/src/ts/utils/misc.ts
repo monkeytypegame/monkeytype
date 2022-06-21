@@ -782,6 +782,17 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+export function escapeHTML(str: string): string {
+  str = str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  return str;
+}
+
 export function cleanTypographySymbols(textToClean: string): string {
   const specials = {
     "“": '"', // &ldquo;	&#8220;
@@ -933,6 +944,7 @@ export function swapElements(
   ) {
     //one of them is hidden and the other is visible
     if (el1.hasClass("hidden")) {
+      middleCallback();
       callback();
       return false;
     }
@@ -963,6 +975,7 @@ export function swapElements(
       );
   } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
+    middleCallback();
     $(el2)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -976,6 +989,7 @@ export function swapElements(
         }
       );
   } else {
+    middleCallback();
     callback();
   }
 

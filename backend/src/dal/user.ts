@@ -7,12 +7,12 @@ import MonkeyError from "../utils/error";
 import {
   Collection,
   DeleteResult,
-  InsertOneResult,
   ObjectId,
   UpdateResult,
   WithId,
 } from "mongodb";
 import Logger from "../utils/logger";
+import { flattenObjectDeep } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -24,20 +24,23 @@ export async function addUser(
   name: string,
   email: string,
   uid: string
-): Promise<InsertOneResult<MonkeyTypes.User>> {
-  const user = await getUsersCollection().findOne({ uid });
-  if (user) {
-    throw new MonkeyError(409, "User document already exists", "addUser");
-  }
-
-  const currentDate = Date.now();
-  return await getUsersCollection().insertOne({
-    _id: new ObjectId(),
+): Promise<void> {
+  const newUserDocument: MonkeyTypes.User = {
     name,
     email,
     uid,
-    addedAt: currentDate,
-  });
+    addedAt: Date.now(),
+  };
+
+  const result = await getUsersCollection().updateOne(
+    { uid },
+    { $setOnInsert: newUserDocument },
+    { upsert: true }
+  );
+
+  if (result.upsertedCount === 0) {
+    throw new MonkeyError(409, "User document already exists", "addUser");
+  }
 }
 
 export async function deleteUser(uid: string): Promise<DeleteResult> {
@@ -150,14 +153,14 @@ export async function isDiscordIdAvailable(
   return _.isNil(user);
 }
 
-export async function addResultFilter(
+export async function addResultFilterPreset(
   uid: string,
   filter: MonkeyTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
   // ensure limit not reached
   const filtersCount = (
-    (await getUser(uid, "Add Result filter")).customFilters ?? []
+    (await getUser(uid, "Add Result filter")).resultFilterPresets ?? []
   ).length;
 
   if (filtersCount >= maxFiltersPerUser) {
@@ -170,20 +173,21 @@ export async function addResultFilter(
   const _id = new ObjectId();
   await getUsersCollection().updateOne(
     { uid },
-    { $push: { customFilters: { ...filter, _id } } }
+    { $push: { resultFilterPresets: { ...filter, _id } } }
   );
   return _id;
 }
 
-export async function removeResultFilter(
+export async function removeResultFilterPreset(
   uid: string,
   _id: string
 ): Promise<void> {
   const user = await getUser(uid, "remove result filter");
   const filterId = new ObjectId(_id);
   if (
-    user.customFilters === undefined ||
-    user.customFilters.filter((t) => t._id.toHexString() === _id).length === 0
+    user.resultFilterPresets === undefined ||
+    user.resultFilterPresets.filter((t) => t._id.toHexString() === _id)
+      .length === 0
   ) {
     throw new MonkeyError(404, "Custom filter not found");
   }
@@ -191,9 +195,9 @@ export async function removeResultFilter(
   await getUsersCollection().updateOne(
     {
       uid,
-      "customFilters._id": filterId,
+      "resultFilterPresets._id": filterId,
     },
-    { $pull: { customFilters: { _id: filterId } } }
+    { $pull: { resultFilterPresets: { _id: filterId } } }
   );
 }
 
@@ -693,4 +697,30 @@ export async function recordAutoBanEvent(
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
   Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
+}
+
+export async function updateProfile(
+  uid: string,
+  updates: Partial<MonkeyTypes.UserProfileDetails>
+): Promise<void> {
+  const profileUpdates = _.pickBy(
+    flattenObjectDeep(updates, "profileDetails"),
+    (value) => value !== undefined
+  );
+
+  const updateResult = await getUsersCollection().updateOne(
+    {
+      uid,
+      banned: {
+        $ne: true,
+      },
+    },
+    {
+      $set: profileUpdates,
+    }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new MonkeyError(403, "User is banned");
+  }
 }

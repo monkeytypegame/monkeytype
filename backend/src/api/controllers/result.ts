@@ -27,6 +27,7 @@ import {
 } from "../../utils/prometheus";
 import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
+import AutoRoleList from "../../constants/auto-roles";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -236,7 +237,7 @@ export async function addResult(
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
         //autoban
-        const autoBanConfig = req.ctx.configuration.autoBan;
+        const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {
           await recordAutoBanEvent(
             uid,
@@ -292,7 +293,11 @@ export async function addResult(
     }
   }
 
-  if (result.challenge && user.discordId) {
+  if (
+    result.challenge &&
+    AutoRoleList.includes(result.challenge) &&
+    user.discordId
+  ) {
     George.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
@@ -322,7 +327,7 @@ export async function addResult(
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
     !bailedOut &&
     !user.banned &&
-    (user.timeTyping ?? 0) > 7200;
+    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);
