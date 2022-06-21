@@ -235,7 +235,7 @@
 
     .avatarAndName {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 5rem 1fr;
       gap: 1rem;
       align-items: center;
       .avatars {
