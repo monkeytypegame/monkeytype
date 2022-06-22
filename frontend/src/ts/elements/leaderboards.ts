@@ -361,6 +361,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 }
 
 const viewYesterdayButton = $("#leaderboardsWrapper .viewYesterdayButton");
+const viewTodayButton = $("#leaderboardsWrapper .viewTodayButton");
 
 export function hide(): void {
   $("#leaderboardsWrapper")
