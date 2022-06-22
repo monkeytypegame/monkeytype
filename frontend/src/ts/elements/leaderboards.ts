@@ -401,6 +401,18 @@ function updateYesterdayButton(): void {
   }
 }
 
+function getDailyLeaderboardQuery(): { isDaily: boolean; daysBefore: number } {
+  const isDaily = currentTimeRange === "daily";
+  const isViewingDailyAndButtonIsActive =
+    isDaily && showYesterdayButton.hasClass("active");
+  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
+
+  return {
+    isDaily,
+    daysBefore,
+  };
+}
+
 async function update(): Promise<void> {
   leftScrollEnabled = false;
   rightScrollEnabled = false;
@@ -410,17 +422,14 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const isViewingDailyAndButtonIsActive =
-    currentTimeRange === "daily" && showYesterdayButton.hasClass("active");
-  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
+  const dailyLeaderboardQuery = getDailyLeaderboardQuery();
 
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
       mode2,
-      isDaily: currentTimeRange === "daily",
-      daysBefore,
+      ...dailyLeaderboardQuery,
     });
   });
 
@@ -431,8 +440,7 @@ async function update(): Promise<void> {
           language: currentLanguage,
           mode: "time",
           mode2,
-          isDaily: currentTimeRange === "daily",
-          daysBefore,
+          ...dailyLeaderboardQuery,
         });
       })
     );
@@ -504,9 +512,9 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
-    isDaily: currentTimeRange === "daily",
     skip: skipVal,
     limit: limitVal,
+    ...getDailyLeaderboardQuery(),
   });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
@@ -534,8 +542,8 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
-    isDaily: currentTimeRange === "daily",
     skip,
+    ...getDailyLeaderboardQuery(),
   });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
