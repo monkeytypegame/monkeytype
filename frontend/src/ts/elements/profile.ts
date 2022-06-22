@@ -119,9 +119,14 @@ export async function update(
       }
 
       const website = profile.details?.socialProfiles.website;
+
+      //regular expression to get website name from url
+      const regex = /^https?:\/\/(?:www\.)?([^/]+)/;
+      const websiteName = website?.match(regex)?.[1] ?? website;
+
       if (website) {
         socialsEl.append(
-          `<a href='${website}' aria-label="${website}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          `<a href='${website}' aria-label="${websiteName}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
