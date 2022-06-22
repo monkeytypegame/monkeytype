@@ -182,9 +182,6 @@
       "wpm": {
         "min": 60
       },
-      "acc": {
-        "exact": 100
-      },
       "afk": {
         "max": 5
       },
@@ -203,9 +200,6 @@
       "wpm": {
         "min": 60
       },
-      "acc": {
-        "exact": 100
-      },
       "afk": {
         "max": 5
       },
@@ -223,9 +217,6 @@
     "requirements" : {
       "wpm": {
         "min": 60
-      },
-      "acc": {
-        "exact": 100
       },
       "afk": {
         "max": 5
