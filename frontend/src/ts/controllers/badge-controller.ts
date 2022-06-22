@@ -76,5 +76,5 @@ export function getHTMLById(id: number, noText = false): string {
     badge.description
   }" data-balloon-pos="right" style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
-  }${noText ? "" : `<div class="text">${badge.name}</div></div>`}`;
+  }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
 }
