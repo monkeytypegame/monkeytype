@@ -38,7 +38,14 @@ export async function update(
   }
 
   if (profile.badgeIds && !banned) {
-    details.find(".badges").empty().append(getHTMLById(profile.badgeIds[0]));
+    const firstBadgeId = profile.badgeIds[0];
+    const restOfBadges = profile.badgeIds.filter((bid) => bid !== firstBadgeId);
+    let restHTML = "";
+    for (const bid of restOfBadges) {
+      restHTML += await getHTMLById(bid, true);
+    }
+    details.find(".badges").empty().append(getHTMLById(firstBadgeId));
+    details.find(".allBadges").empty().append(restHTML);
   }
 
   details.find(".name").text(profile.name);
