@@ -1224,6 +1224,8 @@
 }
 
 #editProfilePopup {
+  width: 100%;
+  max-width: 600px;
   label {
     color: var(--sub-color);
   }

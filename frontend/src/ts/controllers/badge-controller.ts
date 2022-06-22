@@ -57,7 +57,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   },
 };
 
-export function getHTMLById(id: number): string {
+export function getHTMLById(id: number, noText = false): string {
   const badge = badges[id];
   if (!badge) {
     return "";
@@ -76,5 +76,5 @@ export function getHTMLById(id: number): string {
     badge.description
   }" data-balloon-pos="right" style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
-  }<div class="text">${badge.name}</div></div>`;
+  }${noText ? "" : `<div class="text">${badge.name}</div></div>`}`;
 }
