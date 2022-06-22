@@ -379,7 +379,6 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
-        viewYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -399,6 +398,13 @@ function updateYesterdayButton(): void {
   viewYesterdayButton.addClass("hidden");
   if (currentTimeRange === "daily") {
     viewYesterdayButton.removeClass("hidden");
+  }
+}
+
+function updateTodayButton(): void {
+  viewTodayButton.addClass("hidden");
+  if (currentTimeRange === "daily") {
+    viewTodayButton.removeClass("hidden");
   }
 }
 
@@ -475,6 +481,7 @@ async function update(): Promise<void> {
 
   updateTitle();
   updateYesterdayButton();
+  updateTodayButton();
   $("#leaderboardsWrapper .buttons .button").removeClass("active");
   $(
     `#leaderboardsWrapper .buttonGroup.timeRange .button.` + currentTimeRange
@@ -778,13 +785,21 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
-  viewYesterdayButton.removeClass("active");
   languageSelector.prop("disabled", false);
   update();
 });
 
 $("#leaderboardsWrapper .viewYesterdayButton").on("click", () => {
-  viewYesterdayButton.toggleClass("active");
+  viewYesterdayButton.hide();
+  viewTodayButton.show();
+  console.log("today button showing");
+  update();
+});
+
+$("#leaderboardsWrapper .viewTodayButton").on("click", () => {
+  viewTodayButton.hide();
+  viewYesterdayButton.show();
+  console.log("yesterday button showing");
   update();
 });
 
