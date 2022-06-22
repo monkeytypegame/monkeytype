@@ -1,4 +1,5 @@
 import Ape from "../ape";
+import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -42,16 +43,62 @@ const keyboardInput = $("#editProfilePopup .keyboard");
 const twitterInput = $("#editProfilePopup .twitter");
 const githubInput = $("#editProfilePopup .github");
 const websiteInput = $("#editProfilePopup .website");
+const badgeIdsSelect = $("#editProfilePopup .badge-selection-container");
+
+let currentSelectedBadgeIndex = -1;
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
-  const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
+  const { badgeIds } = snapshot;
+  const { bio, keyboard, socialProfiles, selectedBadgeIndex } =
+    snapshot.details ?? {};
 
   bioInput.val(bio ?? "");
   keyboardInput.val(keyboard ?? "");
   twitterInput.val(socialProfiles?.twitter ?? "");
   githubInput.val(socialProfiles?.github ?? "");
   websiteInput.val(socialProfiles?.website ?? "");
+  badgeIdsSelect.html("");
+
+  const badgeIdsLength = badgeIds?.length ?? 0;
+
+  let badgeIndexToSelect = -1;
+
+  if (selectedBadgeIndex !== undefined) {
+    badgeIndexToSelect = selectedBadgeIndex;
+  } else if (badgeIdsLength !== 0) {
+    badgeIndexToSelect = 0;
+  }
+
+  currentSelectedBadgeIndex = badgeIndexToSelect;
+
+  badgeIds?.forEach((badgeId: number, i: number) => {
+    const badgeOption = getHTMLById(badgeId);
+    const badgeWrapper = `<div class="badge-selection-item ${
+      i === badgeIndexToSelect ? "selected" : ""
+    }" selection-index=${i}>${badgeOption}</div>`;
+    badgeIdsSelect.append(badgeWrapper);
+  });
+
+  badgeIdsSelect.prepend(
+    `<div class="badge-selection-item ${
+      badgeIndexToSelect === -1 ? "selected" : ""
+    }" selection-index=${-1}>
+      <div class="badge" aria-label="No badge" data-balloon-pos="right">
+        <i class="fas fa-frown-open"></i>
+        <div class="text">none</div>
+      </div>
+    </div>`
+  );
+
+  $(".badge-selection-item").on("click", ({ currentTarget }) => {
+    const selectionIndex = $(currentTarget).attr("selection-index") as string;
+    const selectionIndexInt = parseInt(selectionIndex, 10);
+    currentSelectedBadgeIndex = Math.min(selectionIndexInt, badgeIdsLength - 1);
+
+    badgeIdsSelect.find(".badge-selection-item").removeClass("selected");
+    $(currentTarget).addClass("selected");
+  });
 }
 
 function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
@@ -64,6 +111,7 @@ function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
   const updates: MonkeyTypes.UserDetails = {
     bio,
     keyboard,
+    selectedBadgeIndex: currentSelectedBadgeIndex,
     socialProfiles: {
       twitter,
       github,

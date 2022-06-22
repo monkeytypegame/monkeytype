@@ -703,9 +703,10 @@ export async function updateProfile(
   uid: string,
   updates: Partial<MonkeyTypes.UserProfileDetails>
 ): Promise<void> {
-  const profileUpdates = _.pickBy(
+  const profileUpdates = _.omitBy(
     flattenObjectDeep(updates, "profileDetails"),
-    (value) => value !== undefined
+    (value) =>
+      value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
   );
 
   const updateResult = await getUsersCollection().updateOne(
