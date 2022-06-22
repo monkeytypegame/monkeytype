@@ -343,6 +343,7 @@ export async function addResult(
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
         badgeIds: user.badgeIds,
+        selectedBadgeIndex: user.profileDetails?.selectedBadgeIndex,
       },
       dailyLeaderboardsConfig
     );

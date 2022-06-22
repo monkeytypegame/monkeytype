@@ -428,6 +428,7 @@ export async function getProfile(
     ...baseProfile,
     badgeIds,
     details: {
+      selectedBadgeIndex: profileDetails?.selectedBadgeIndex || 0,
       bio: "",
       keyboard: "",
       socialProfiles: {},
@@ -442,9 +443,10 @@ export async function updateProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { bio, keyboard, socialProfiles } = req.body;
+  const { bio, keyboard, socialProfiles, selectedBadgeIndex } = req.body;
 
   const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
+    selectedBadgeIndex,
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
     socialProfiles: _.mapValues(socialProfiles, sanitizeString),

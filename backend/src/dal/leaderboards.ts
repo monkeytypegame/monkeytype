@@ -90,6 +90,7 @@ export async function update(
             [str + ".discordId"]: "$discordId",
             [str + ".discordAvatar"]: "$discordAvatar",
             [str + ".badgeIds"]: "$badgeIds",
+            [str + ".selectedBadgeIndex"]: "$profileDetails.selectedBadgeIndex",
           },
         },
         {

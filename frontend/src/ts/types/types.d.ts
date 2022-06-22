@@ -434,6 +434,7 @@ declare namespace MonkeyTypes {
     discordId?: string;
     discordAvatar?: string;
     badgeIds?: number[];
+    selectedBadgeIndex?: number;
     rank: number;
     count?: number;
     hidden?: boolean;
@@ -474,6 +475,7 @@ declare namespace MonkeyTypes {
   interface UserDetails {
     bio?: string;
     keyboard?: string;
+    selectedBadgeIndex?: number;
     socialProfiles: {
       twitter?: string;
       github?: string;

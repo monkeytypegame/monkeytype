@@ -38,7 +38,9 @@ export async function update(
   }
 
   if (profile.badgeIds && !banned) {
-    details.find(".badges").empty().append(getHTMLById(profile.badgeIds[0]));
+    const selectedBadge =
+      profile.badgeIds[profile.details?.selectedBadgeIndex ?? 0];
+    details.find(".badges").empty().append(getHTMLById(selectedBadge));
   }
 
   details.find(".name").text(profile.name);
