@@ -360,7 +360,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   });
 }
 
-const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
+const viewYesterdayButton = $("#leaderboardsWrapper .viewYesterdayButton");
 
 export function hide(): void {
   $("#leaderboardsWrapper")
@@ -378,7 +378,7 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
-        showYesterdayButton.removeClass("active");
+        viewYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -395,9 +395,9 @@ function updateTitle(): void {
 }
 
 function updateYesterdayButton(): void {
-  showYesterdayButton.addClass("hidden");
+  viewYesterdayButton.addClass("hidden");
   if (currentTimeRange === "daily") {
-    showYesterdayButton.removeClass("hidden");
+    viewYesterdayButton.removeClass("hidden");
   }
 }
 
@@ -411,7 +411,7 @@ async function update(): Promise<void> {
   const timeModes = ["15", "60"];
 
   const isViewingDailyAndButtonIsActive =
-    currentTimeRange === "daily" && showYesterdayButton.hasClass("active");
+    currentTimeRange === "daily" && viewYesterdayButton.hasClass("active");
   const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
 
   const leaderboardRequests = timeModes.map((mode2) => {
@@ -777,13 +777,13 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
-  showYesterdayButton.removeClass("active");
+  viewYesterdayButton.removeClass("active");
   languageSelector.prop("disabled", false);
   update();
 });
 
-$("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
-  showYesterdayButton.toggleClass("active");
+$("#leaderboardsWrapper .viewYesterdayButton").on("click", () => {
+  viewYesterdayButton.toggleClass("active");
   update();
 });
 
