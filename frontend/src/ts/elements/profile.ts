@@ -5,6 +5,7 @@ import * as Misc from "../utils/misc";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
+import * as ActivePage from "../states/active-page";
 
 type ProfileViewPaths = "profile" | "account";
 
@@ -176,6 +177,8 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   let details;
   if (where === "account") {
     details = $(".pageAccount .profile .details");
+  } else if (where === "profile") {
+    details = $(".pageProfile .profile .details");
   }
   if (!details) return;
   const nameField = details.find(".name");
@@ -200,7 +203,10 @@ $(".details .editProfileButton").on("click", () => {
 });
 
 const throttledEvent = throttle(250, () => {
-  updateNameFontSize("account");
+  const activePage = ActivePage.get();
+  if (activePage && ["account", "profile"].includes(activePage)) {
+    updateNameFontSize(activePage as ProfileViewPaths);
+  }
 });
 
 $(window).on("resize", () => {
