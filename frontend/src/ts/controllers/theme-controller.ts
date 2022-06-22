@@ -194,16 +194,20 @@ export function randomizeTheme(): void {
       randomList = DB.getSnapshot().customThemes.map((ct) => ct._id);
     }
 
-    const previousTheme = randomTheme;
-    randomTheme = Misc.randomElementFromArray(randomList);
+    //! setting randomThemeIndex to 0 everytime randomizeTheme is called
 
-    // if (Config.randomTheme === "custom") {
-    // changeCustomTheme(randomTheme, true);
-    // } else {
+    let randomThemeIndex = 0;
+    const randomTheme = randomList[randomThemeIndex];
+    randomThemeIndex++;
+
+    if (randomThemeIndex >= randomList.length) {
+      Misc.shuffle(randomList);
+      randomThemeIndex = 0;
+    }
+
     preview(randomTheme, Config.randomTheme === "custom");
-    // }
 
-    if (previousTheme != randomTheme) {
+    if (randomThemeIndex >= randomList.length) {
       let name = randomTheme.replace(/_/g, " ");
       if (Config.randomTheme === "custom") {
         name = (
