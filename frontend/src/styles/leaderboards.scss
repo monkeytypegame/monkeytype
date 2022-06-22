@@ -49,6 +49,15 @@
       }
     }
 
+    .viewTodayButton {
+      grid-area: "today";
+      margin-left: 1rem;
+
+      .fas {
+        margin-right: 0.3rem;
+      }
+    }
+
     .subTitle {
       color: var(--sub-color);
       grid-area: subtitle;
