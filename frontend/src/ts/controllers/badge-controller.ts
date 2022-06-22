@@ -55,6 +55,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
+  8: {
+    id: 8,
+    name: "Monkey Supporter",
+    description: "Donated more money",
+    icon: "fa-heart",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
+  },
 };
 
 export function getHTMLById(id: number, noText = false): string {
@@ -73,7 +81,7 @@ export function getHTMLById(id: number, noText = false): string {
     style += badge.customStyle;
   }
   return `<div class="badge" aria-label="${
-    badge.description
+    (noText ? badge.name + ": " : "") + badge.description
   }" data-balloon-pos="right" style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
   }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
