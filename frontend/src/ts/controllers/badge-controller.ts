@@ -66,7 +66,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   9: {
     id: 9,
     name: "Bug Hunter",
-    description: "Spotted bugs on the site",
+    description: "Reported bugs on the site",
     icon: "fa-bug",
     color: "var(--bg-color)",
     background: "var(--main-color)",
