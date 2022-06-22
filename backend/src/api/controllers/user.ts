@@ -426,14 +426,8 @@ export async function getProfile(
 
   const profileData = {
     ...baseProfile,
-    inventory,
-    details: {
-      selectedBadgeIndex: profileDetails?.selectedBadgeIndex || 0,
-      bio: "",
-      keyboard: "",
-      socialProfiles: {},
-      ...profileDetails,
-    },
+    badgeIds,
+    details: profileDetails,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);
