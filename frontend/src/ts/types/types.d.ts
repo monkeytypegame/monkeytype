@@ -466,7 +466,7 @@ declare namespace MonkeyTypes {
     needsToChangeName?: boolean;
     discordAvatar?: string;
     details?: UserDetails;
-    badgeIds?: number[];
+    inventory?: UserInventory;
     addedAt: number;
     filterPresets: ResultFilters[];
   }
@@ -479,6 +479,15 @@ declare namespace MonkeyTypes {
       github?: string;
       website?: string;
     };
+  }
+
+  interface UserInventory {
+    badges: Badge[];
+  }
+
+  interface Badge {
+    id: number;
+    selected?: boolean;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
