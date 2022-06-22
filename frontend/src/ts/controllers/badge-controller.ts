@@ -59,7 +59,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     id: 8,
     name: "White Hat",
     description: "Reported critical vulnerabilities on the site",
-    icon: "fa-hat-wizard",
+    icon: "fa-user-secret",
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
