@@ -37,15 +37,20 @@ export async function update(
     }
   }
 
-  if (profile.badgeIds && !banned) {
-    const firstBadgeId = profile.badgeIds[0];
-    const restOfBadges = profile.badgeIds.filter((bid) => bid !== firstBadgeId);
-    let restHTML = "";
-    for (const bid of restOfBadges) {
-      restHTML += await getHTMLById(bid, true);
+  if (profile.inventory?.badges && !banned) {
+    let mainHtml = "";
+    let restHtml = "";
+
+    for (const badge of profile.inventory.badges) {
+      if (badge.selected === true) {
+        mainHtml = await getHTMLById(badge.id);
+      } else {
+        restHtml += await getHTMLById(badge.id, true);
+      }
     }
-    details.find(".badges").empty().append(getHTMLById(firstBadgeId));
-    details.find(".allBadges").empty().append(restHTML);
+
+    details.find(".badges").empty().append(mainHtml);
+    details.find(".allBadges").empty().append(restHtml);
   }
 
   details.find(".name").text(profile.name);
