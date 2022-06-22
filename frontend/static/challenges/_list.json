@@ -178,7 +178,6 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -200,7 +199,6 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -222,7 +220,6 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
