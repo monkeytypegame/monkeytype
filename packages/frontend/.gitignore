@@ -11,4 +11,7 @@ firebase-debug.log*
 # it commented so all members can deploy to the same project(s) in .firebaserc.
 # .firebaserc
 
+src/ts/constants/firebase-config.ts
+src/ts/constants/firebase-config-live.ts
 public/
+static/adtest.html
