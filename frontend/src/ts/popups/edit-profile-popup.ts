@@ -76,7 +76,7 @@ function hydrateInputs(): void {
   currentSelectedBadgeIndex = badgeIndexToSelect;
 
   badges?.forEach((badge: MonkeyTypes.Badge, i: number) => {
-    const badgeOption = getHTMLById(badge.id);
+    const badgeOption = getHTMLById(badge.id, false, true);
     const badgeWrapper = `<div class="badge-selection-item ${
       i === badgeIndexToSelect ? "selected" : ""
     }" selection-index=${i}>${badgeOption}</div>`;
@@ -87,7 +87,7 @@ function hydrateInputs(): void {
     `<div class="badge-selection-item ${
       badgeIndexToSelect === -1 ? "selected" : ""
     }" selection-index=${-1}>
-      <div class="badge" aria-label="No badge" data-balloon-pos="right">
+      <div class="badge">
         <i class="fas fa-frown-open"></i>
         <div class="text">none</div>
       </div>
