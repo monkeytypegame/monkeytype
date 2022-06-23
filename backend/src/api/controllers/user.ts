@@ -437,16 +437,29 @@ export async function updateProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { bio, keyboard, socialProfiles, selectedBadgeIndex } = req.body;
+  const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
+
+  const user = await UserDAL.getUser(uid, "update user profile");
+
+  if (user.banned) {
+    throw new MonkeyError(403, "Banned users cannot update their profile");
+  }
+
+  user.inventory?.badges.forEach((badge) => {
+    if (badge.id === selectedBadgeId) {
+      badge.selected = true;
+    } else {
+      delete badge.selected;
+    }
+  });
 
   const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
-    selectedBadgeIndex,
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
     socialProfiles: _.mapValues(socialProfiles, sanitizeString),
   };
 
-  await UserDAL.updateProfile(uid, profileDetailsUpdates);
+  await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
 
   return new MonkeyResponse("Profile updated");
 }

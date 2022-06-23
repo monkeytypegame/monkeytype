@@ -474,7 +474,6 @@ declare namespace MonkeyTypes {
   interface UserDetails {
     bio?: string;
     keyboard?: string;
-    selectedBadgeIndex?: number;
     socialProfiles: {
       twitter?: string;
       github?: string;

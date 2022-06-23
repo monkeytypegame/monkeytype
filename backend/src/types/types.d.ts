@@ -79,7 +79,6 @@ declare namespace MonkeyTypes {
   interface UserProfileDetails {
     bio?: string;
     keyboard?: string;
-    selectedBadgeIndex?: number;
     socialProfiles: {
       twitter?: string;
       github?: string;
