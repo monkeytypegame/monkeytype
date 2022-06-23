@@ -77,8 +77,8 @@ declare namespace MonkeyTypes {
   // Data Model
 
   interface UserProfileDetails {
-    bio: string;
-    keyboard: string;
+    bio?: string;
+    keyboard?: string;
     socialProfiles: {
       twitter?: string;
       github?: string;
