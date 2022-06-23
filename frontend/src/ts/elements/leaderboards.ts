@@ -323,7 +323,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     <td>
     <div class="avatarNameBadge">${avatar}
       <span class="entryName" uid=${entry.uid}>${entry.name}</span>
-      ${entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""}
+      ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
     <td class="alignRight">${(Config.alwaysShowCPM
