@@ -46,7 +46,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     name: "Supporter",
     description: "Donated money",
     icon: "fa-heart",
-    color: "var(--bg-color)",
+    color: "var(--text-color)",
     background: "var(--sub-color)",
   },
   7: {
@@ -78,12 +78,16 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     name: "Bug Hunter",
     description: "Reported bugs on the site",
     icon: "fa-bug",
-    color: "var(--bg-color)",
-    background: "var(--main-color)",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
   },
 };
 
-export function getHTMLById(id: number, noText = false): string {
+export function getHTMLById(
+  id: number,
+  noText = false,
+  noBalloon = false
+): string {
   const badge = badges[id];
   if (!badge) {
     return "";
@@ -98,9 +102,15 @@ export function getHTMLById(id: number, noText = false): string {
   if (badge.customStyle) {
     style += badge.customStyle;
   }
-  return `<div class="badge" aria-label="${
-    (noText ? badge.name + ": " : "") + badge.description
-  }" data-balloon-pos="right" style="${style}">${
+
+  const balloonText = (noText ? badge.name + ": " : "") + badge.description;
+
+  let balloon = "";
+  if (!noBalloon) {
+    balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
+  }
+
+  return `<div class="badge" ${balloon} style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
   }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
 }

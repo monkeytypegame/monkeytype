@@ -423,14 +423,12 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const dailyLeaderboardQuery = getDailyLeaderboardQuery();
-
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
       mode2,
-      ...dailyLeaderboardQuery,
+      ...getDailyLeaderboardQuery(),
     });
   });
 
@@ -441,7 +439,7 @@ async function update(): Promise<void> {
           language: currentLanguage,
           mode: "time",
           mode2,
-          ...dailyLeaderboardQuery,
+          ...getDailyLeaderboardQuery(),
         });
       })
     );
