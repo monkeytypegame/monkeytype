@@ -222,6 +222,11 @@ declare namespace MonkeyTypes {
     badgeId?: number;
   }
 
+  interface Badge {
+    id: number;
+    selected?: boolean;
+  }
+
   interface CustomTheme {
     _id: ObjectId;
     name: string;
