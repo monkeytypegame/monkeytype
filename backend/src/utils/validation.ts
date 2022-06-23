@@ -38,8 +38,6 @@ export function containsProfanity(text: string): boolean {
       return sanitizeString(str) ?? "";
     });
 
-  console.log(normalizedText);
-
   const hasProfanity = profanities.some((profanity) => {
     const normalizedProfanity = _.escapeRegExp(profanity.toLowerCase());
     const prefixedProfanity = `${normalizedProfanity}.*`;
