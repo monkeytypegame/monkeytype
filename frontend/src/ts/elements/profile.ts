@@ -38,15 +38,20 @@ export async function update(
     }
   }
 
-  if (profile.badgeIds && !banned) {
-    const firstBadgeId = profile.badgeIds[0];
-    const restOfBadges = profile.badgeIds.filter((bid) => bid !== firstBadgeId);
-    const miniBadges = restOfBadges
-      .map((bid) => getHTMLById(bid, true))
-      .join("");
+  if (profile.inventory?.badges && !banned) {
+    let mainHtml = "";
+    let restHtml = "";
 
-    details.find(".badges").empty().append(getHTMLById(firstBadgeId));
-    details.find(".allBadges").empty().append(miniBadges);
+    for (const badge of profile.inventory.badges) {
+      if (badge.selected === true) {
+        mainHtml = getHTMLById(badge.id);
+      } else {
+        restHtml += getHTMLById(badge.id, true);
+      }
+    }
+
+    details.find(".badges").empty().append(mainHtml);
+    details.find(".allBadges").empty().append(restHtml);
   }
 
   details.find(".name").text(profile.name);
