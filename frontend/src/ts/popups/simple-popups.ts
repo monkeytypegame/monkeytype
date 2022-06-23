@@ -719,13 +719,41 @@ list["resetAccount"] = new SimplePopup(
       Notifications.add("Reseting account and stats...", 0);
       const usersResponse = await Ape.users.reset();
 
-      if (DB.getSnapshot().discordId !== undefined) {
-        const response = await Ape.users.unlinkDiscord();
+      if (usersResponse.status !== 200) {
+        Loader.hide();
+        return Notifications.add(
+          "Failed to reset user stats: " + usersResponse.message,
+          -1
+        );
+      }
 
-        if (response.status !== 200) {
+      const presetResponse = await Ape.presets.reset();
+
+      if (presetResponse.status !== 200) {
+        Loader.hide();
+        return Notifications.add(
+          "Failed to reset presets: " + presetResponse.message,
+          -1
+        );
+      }
+
+      const apeResponse = await Ape.apeKeys.reset();
+
+      if (apeResponse.status !== 200) {
+        Loader.hide();
+        return Notifications.add(
+          "Faild to reset ape keys: " + apeResponse.message,
+          -1
+        );
+      }
+
+      if (DB.getSnapshot().discordId !== undefined) {
+        const discordResponse = await Ape.users.unlinkDiscord();
+
+        if (discordResponse.status !== 200) {
           Loader.hide();
           return Notifications.add(
-            "Failed to unlink Discord: " + response.message,
+            "Failed to unlink Discord: " + discordResponse.message,
             -1
           );
         }
@@ -740,13 +768,6 @@ list["resetAccount"] = new SimplePopup(
       }
 
       Loader.hide();
-
-      if (usersResponse.status !== 200) {
-        return Notifications.add(
-          "Failed to reset user stats: " + usersResponse.message,
-          -1
-        );
-      }
 
       Loader.show();
       Notifications.add("Reseting results...", 0);

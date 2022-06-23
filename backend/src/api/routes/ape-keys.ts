@@ -60,6 +60,14 @@ router.post(
   asyncHandler(ApeKeyController.generateApeKey)
 );
 
+router.delete(
+  "/",
+  RateLimit.apeKeysDelete,
+  authenticateRequest(),
+  checkIfUserCanManageApeKeys,
+  asyncHandler(ApeKeyController.resetApeKeys)
+);
+
 router.patch(
   "/:apeKeyId",
   RateLimit.apeKeysUpdate,

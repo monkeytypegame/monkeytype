@@ -72,6 +72,9 @@ export async function resetUser(uid: string): Promise<UpdateResult> {
           keyboard: "",
           socialProfiles: {},
         },
+        favoriteQuotes: {},
+        customThemes: [],
+        tags: [],
       },
     }
   );
