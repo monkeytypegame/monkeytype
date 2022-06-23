@@ -78,6 +78,7 @@ export async function update(
               $exists: true,
             },
             banned: { $exists: false },
+            needsToChangeName: { $exists: false },
             timeTyping: {
               $gt: process.env.MODE === "dev" ? 0 : 7200,
             },
