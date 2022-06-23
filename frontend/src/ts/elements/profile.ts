@@ -44,9 +44,9 @@ export async function update(
 
     for (const badge of profile.inventory.badges) {
       if (badge.selected === true) {
-        mainHtml = await getHTMLById(badge.id);
+        mainHtml = getHTMLById(badge.id);
       } else {
-        restHtml += await getHTMLById(badge.id, true);
+        restHtml += getHTMLById(badge.id, true);
       }
     }
 
