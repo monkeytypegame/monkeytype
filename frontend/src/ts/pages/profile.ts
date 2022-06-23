@@ -19,6 +19,7 @@ function reset(): void {
           <div>
             <div class="name">-</div>
             <div class="badges"></div>
+            <div class="allBadges"></div>
             <div class="joined" data-balloon-pos="up">-</div>
           </div>
         </div>
