@@ -214,6 +214,13 @@ export const userDelete = rateLimit({
   handler: customHandler,
 });
 
+export const userReset = rateLimit({
+  windowMs: 24 * ONE_HOUR, // 1 day
+  max: 3 * REQUEST_MULTIPLIER,
+  keyGenerator: getAddress,
+  handler: customHandler,
+});
+
 export const userCheckName = rateLimit({
   windowMs: 60 * 1000,
   max: 60 * REQUEST_MULTIPLIER,

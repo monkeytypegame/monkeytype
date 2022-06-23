@@ -27,6 +27,10 @@ export default class Users {
     return await this.httpClient.delete(BASE_PATH);
   }
 
+  async reset(): Ape.EndpointData {
+    return await this.httpClient.patch(`${BASE_PATH}/reset`);
+  }
+
   async updateName(name: string): Ape.EndpointData {
     return await this.httpClient.patch(`${BASE_PATH}/name`, {
       payload: { name },

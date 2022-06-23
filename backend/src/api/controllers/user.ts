@@ -37,6 +37,18 @@ export async function deleteUser(
   return new MonkeyResponse("User deleted");
 }
 
+export async function resetUser(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const userInfo = await UserDAL.getUser(uid, "reset user");
+  await UserDAL.resetUser(uid);
+  Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+
+  return new MonkeyResponse("User reset");
+}
+
 export async function updateName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {

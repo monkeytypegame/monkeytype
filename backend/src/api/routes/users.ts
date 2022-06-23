@@ -120,6 +120,13 @@ router.delete(
 );
 
 router.patch(
+  "/reset",
+  RateLimit.userReset,
+  authenticateRequest(),
+  asyncHandler(UserController.resetUser)
+);
+
+router.patch(
   "/name",
   RateLimit.userUpdateName,
   authenticateRequest(),

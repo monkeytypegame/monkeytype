@@ -688,6 +688,111 @@ list["deleteAccount"] = new SimplePopup(
   }
 );
 
+list["resetAccount"] = new SimplePopup(
+  "resetAccount",
+  "text",
+  "Reset Account",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "This is the last time you can change your mind. After pressing the button everything is gone.",
+  "Reset",
+  async (_thisPopup, password: string) => {
+    //
+    try {
+      const user = Auth.currentUser;
+      if (user === null) return;
+      if (user.providerData.find((p) => p?.providerId === "password")) {
+        const credential = EmailAuthProvider.credential(
+          user.email as string,
+          password
+        );
+        await reauthenticateWithCredential(user, credential);
+      } else {
+        await reauthenticateWithPopup(user, AccountController.gmailProvider);
+      }
+      Loader.show();
+      Notifications.add("Reseting account and stats...", 0);
+      const usersResponse = await Ape.users.reset();
+
+      if (DB.getSnapshot().discordId !== undefined) {
+        const response = await Ape.users.unlinkDiscord();
+
+        if (response.status !== 200) {
+          Loader.hide();
+          return Notifications.add(
+            "Failed to unlink Discord: " + response.message,
+            -1
+          );
+        }
+
+        Notifications.add("Accounts unlinked", 1);
+        const snap = DB.getSnapshot();
+        snap.discordAvatar = undefined;
+        snap.discordId = undefined;
+        AccountButton.update();
+        DB.setSnapshot(snap);
+        Settings.updateDiscordSection();
+      }
+
+      Loader.hide();
+
+      if (usersResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to reset user stats: " + usersResponse.message,
+          -1
+        );
+      }
+
+      Loader.show();
+      Notifications.add("Reseting results...", 0);
+      const resultsResponse = await Ape.results.deleteAll();
+      Loader.hide();
+
+      if (resultsResponse.status !== 200) {
+        return Notifications.add(
+          "Failed to reseting user results: " + resultsResponse.message,
+          -1
+        );
+      }
+
+      Loader.show();
+      Notifications.add("Resting settings...", 0);
+      UpdateConfig.reset();
+      Loader.hide();
+
+      Notifications.add("Reset complete", 0);
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } catch (e) {
+      const typedError = e as FirebaseError;
+      Loader.hide();
+      if (typedError.code === "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  (thisPopup) => {
+    const user = Auth.currentUser;
+    if (user === null) return;
+
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
+    }
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
 list["clearTagPb"] = new SimplePopup(
   "clearTagPb",
   "text",
@@ -1175,6 +1280,10 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
 
 $(".pageSettings #deleteAccount").on("click", () => {
   list["deleteAccount"].show();
+});
+
+$(".pageSettings #resetAccount").on("click", () => {
+  list["resetAccount"].show();
 });
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
