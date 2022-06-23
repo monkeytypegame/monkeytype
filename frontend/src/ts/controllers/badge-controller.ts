@@ -81,7 +81,11 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   },
 };
 
-export function getHTMLById(id: number, noText = false): string {
+export function getHTMLById(
+  id: number,
+  noText = false,
+  noBalloon = false
+): string {
   const badge = badges[id];
   if (!badge) {
     return "";
@@ -96,9 +100,15 @@ export function getHTMLById(id: number, noText = false): string {
   if (badge.customStyle) {
     style += badge.customStyle;
   }
-  return `<div class="badge" aria-label="${
-    (noText ? badge.name + ": " : "") + badge.description
-  }" data-balloon-pos="right" style="${style}">${
+
+  const balloonText = (noText ? badge.name + ": " : "") + badge.description;
+
+  let balloon = "";
+  if (!noBalloon) {
+    balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
+  }
+
+  return `<div class="badge" ${balloon} style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
   }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
 }
