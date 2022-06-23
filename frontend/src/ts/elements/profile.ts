@@ -41,12 +41,12 @@ export async function update(
   if (profile.badgeIds && !banned) {
     const firstBadgeId = profile.badgeIds[0];
     const restOfBadges = profile.badgeIds.filter((bid) => bid !== firstBadgeId);
-    let restHTML = "";
-    for (const bid of restOfBadges) {
-      restHTML += await getHTMLById(bid, true);
-    }
+    const miniBadges = restOfBadges
+      .map((bid) => getHTMLById(bid, true))
+      .join("");
+
     details.find(".badges").empty().append(getHTMLById(firstBadgeId));
-    details.find(".allBadges").empty().append(restHTML);
+    details.find(".allBadges").empty().append(miniBadges);
   }
 
   details.find(".name").text(profile.name);
