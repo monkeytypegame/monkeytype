@@ -54,44 +54,21 @@ node_modules_bak/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 #vs code
 .vscode
 *.code-workspace
-
 .idea
-
-#firebase
-.firebaserc
-.firebaserc_copy
-serviceAccountKey*.json
 
 #generated files
 dist/
-backend/globalConfig.json
-backend/server.version
 
 #cloudflare y
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 purgeCfCache.sh
 
-backend/lastId.txt
-backend/log_success.txt
-backend/credentials/*.json
-backend/.env
-
-static/adtest.html
-backend/migrationStats.txt
-
 # Madge
 dep-graph.png
-
-# TypeScript
-build/
-backend/worker.*
 
 #scripts
 updateContributors.js
