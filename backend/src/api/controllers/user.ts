@@ -385,7 +385,7 @@ export async function getProfile(
   const {
     name,
     banned,
-    badgeIds,
+    inventory,
     profileDetails,
     personalBests,
     completedTests,
@@ -426,7 +426,7 @@ export async function getProfile(
 
   const profileData = {
     ...baseProfile,
-    badgeIds,
+    inventory,
     details: {
       bio: "",
       keyboard: "",
