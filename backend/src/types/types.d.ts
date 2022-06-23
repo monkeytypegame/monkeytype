@@ -209,6 +209,13 @@ declare namespace MonkeyTypes {
     uid: string;
     name: string;
     rank: number;
+    badges?: Badge[];
+    badgeId?: number;
+  }
+
+  interface Badge {
+    id: number;
+    selected?: boolean;
   }
 
   interface CustomTheme {

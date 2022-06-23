@@ -433,7 +433,7 @@ declare namespace MonkeyTypes {
     name: string;
     discordId?: string;
     discordAvatar?: string;
-    badgeIds?: number[];
+    badgeId?: number;
     rank: number;
     count?: number;
     hidden?: boolean;
