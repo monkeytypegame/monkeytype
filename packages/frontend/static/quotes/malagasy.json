@@ -1,0 +1,29 @@
+{
+  "language": "malagasy",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Aleo very tsikalakalam-bola toy izay very tsikalakalam-pihavanana.",
+      "source": "Ohabolana",
+      "length": 66,
+      "id": 1
+    },
+    {
+      "text": "Ady amin' adala, ka ny handry no miala.",
+      "source": "Ohabolana, Houlder J.A., 1985",
+      "length": 39,
+      "id": 2
+    },
+    {
+      "text": "Mahagaga. F'eto an-tanindrazako aho nefa, tenin'olon-kafa, no takiana mba ho haiko vao mahazo anjara asa. Hamelomako ankohonana.",
+      "source": "Mahagaga by Georges Ramananatena, aka RADO",
+      "length": 128,
+      "id": 3
+    }
+  ]
+}

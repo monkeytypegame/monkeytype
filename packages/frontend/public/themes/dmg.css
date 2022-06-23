@@ -1,0 +1,33 @@
+:root {
+  --bg-color: #dadbdc;
+  --main-color: #ae185e;
+  --caret-color: #384693;
+  --sub-color: #3846b1;
+  --text-color: #414141;
+  --error-color: #ae185e;
+  --error-extra-color: #93335c;
+  --colorful-error-color: #80a053;
+  --colorful-error-extra-color: #306230;
+}
+
+#menu {
+  gap: 0.5rem;
+}
+
+#top.focus #menu .icon-button {
+  background: var(--bg-color);
+  size: 1rem;
+}
+#top.focus #menu .icon-button:nth-child(1) {
+  background: #e34c6c;
+}
+#top.focus #menu:before,
+#top.focus #menu:after {
+  background: var(--sub-color);
+}
+
+#menu .icon-button {
+  border-radius: 10rem !important;
+  color: var(--bg-color);
+  background: var(--main-color);
+}

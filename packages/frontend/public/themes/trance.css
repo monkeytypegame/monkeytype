@@ -1,0 +1,66 @@
+:root {
+  --bg-color: #00021b;
+  --main-color: #e51376;
+  --caret-color: #e51376;
+  --sub-color: #3c4c79;
+  --text-color: #fff;
+  --error-color: #02d3b0;
+  --error-extra-color: #3f887c;
+  --colorful-error-color: #02d3b0;
+  --colorful-error-extra-color: #3f887c;
+}
+
+@keyframes rgb {
+  0% {
+    color: #e51376;
+  }
+  50% {
+    color: #0e77ee;
+  }
+  100% {
+    color: #e51376;
+  }
+}
+
+@keyframes rgb-bg {
+  0% {
+    background: #e51376;
+  }
+  50% {
+    background: #0e77ee;
+  }
+  100% {
+    background: #e51376;
+  }
+}
+
+.button.discord::after,
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active {
+  animation: rgb-bg 5s linear infinite;
+}
+
+#top.focus .button.discord::after,
+#top .button.discord.dotHidden::after {
+  animation-name: none !important;
+}
+
+.logo .bottom,
+#top .config .group .buttons .text-button.active,
+#result .stats .group .bottom,
+#menu .icon-button:hover,
+#top .config .group .buttons .text-button:hover,
+a:hover,
+#words.flipped .word {
+  animation: rgb 5s linear infinite;
+}
+
+#words.flipped .word letter.correct {
+  color: var(--sub-color);
+}
+
+#words:not(.flipped) .word letter.correct {
+  animation: rgb 5s linear infinite;
+}

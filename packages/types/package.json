@@ -1,0 +1,17 @@
+{
+  "name": "@monkeytype/types",
+  "version": "1.14.3",
+  "main": "src/index.d.ts",
+  "license": "GPL-3.0",
+  "scripts": {
+    "pretty": "prettier --check \"./src/**/*.d.ts\"",
+    "pretty-code": "prettier --check \"./src/**/*.d.ts\"",
+    "pretty-fix": "prettier --write \"./src/**/*.d.ts\"",
+    "lint": "eslint \"./src/**/*.d.ts\"",
+    "lint-fix": "eslint --fix \"./src/**/*.d.ts\""
+  },
+  "dependencies": {
+    "@types/express": "4.17.13",
+    "mongodb": "4.7.0"
+  }
+}

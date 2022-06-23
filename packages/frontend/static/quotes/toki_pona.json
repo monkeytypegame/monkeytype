@@ -1,0 +1,23 @@
+{
+  "language": "toki_pona",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "tenpo la, kulupu Kalasasi li lon ma kasi. kulupu la, jan wan li lon. ona pi linja loje li toki. ona pi linja jelo li pilin. ona pi linja pimeja li lawa. ona pi linja kapesi li tawa. nasin ni li pona tawa jan mute ni. lon tomo la, toki en pilin en lawa en tawa li kama li weka. taso lon ona li awen. ni li nasin lon.",
+      "source": "tu lukin lon",
+      "length": 315,
+      "id": 1
+    },
+    {
+      "text": "tenpo sin la, nasa suli pi tawa noka li kama lon ma kasi. ona li lukin tawa kulupu Kalasasi la, nasa li open akesi. uta wan pi walo kipisi pi nasa suli akesi li kama lupa mun lon sinpin kulupu. mun ni li moku e kulupu tawa ni: kulupu li kama telo. kalama moku li sama pakala kiwen. taso kulupu li kama telo la, kulupu li moli ala. li awen. ni kin li nasin lon.",
+      "source": "tu lukin lon",
+      "length": 360,
+      "id": 2
+    }
+  ]
+}
