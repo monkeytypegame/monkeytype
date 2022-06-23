@@ -1,0 +1,8 @@
+layouts.ts
+public
+static/sound
+static/quotes
+static/css/balloon.css
+static/**/_list.json
+static/**/*.min.js
+static/**/*.min.css

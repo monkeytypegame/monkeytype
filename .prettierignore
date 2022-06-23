@@ -1,14 +1,1 @@
-*.min.js
-*.min.css
-layouts.ts
-quotes/*
-chartjs-plugin-*.js
-sound/*
 node_modules
-css/balloon.css
-_list.json
-packages/backend/build
-packages/backend/logs
-packages/backend/coverage
-packages/backend/globalConfig.json
-packages/frontend/public
