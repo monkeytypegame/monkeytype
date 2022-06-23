@@ -426,7 +426,7 @@ export async function getProfile(
 
   const profileData = {
     ...baseProfile,
-    badgeIds,
+    inventory,
     details: profileDetails,
   };
 

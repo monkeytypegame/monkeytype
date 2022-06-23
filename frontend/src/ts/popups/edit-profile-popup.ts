@@ -49,9 +49,8 @@ let currentSelectedBadgeIndex = -1;
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
-  const { badgeIds } = snapshot;
-  const { bio, keyboard, socialProfiles, selectedBadgeIndex } =
-    snapshot.details ?? {};
+  const badges = snapshot.inventory?.badges ?? [];
+  const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
 
   bioInput.val(bio ?? "");
   keyboardInput.val(keyboard ?? "");
@@ -60,7 +59,11 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  const badgeIdsLength = badgeIds?.length ?? 0;
+  const badgeIdsLength = badges?.length ?? 0;
+
+  const selectedBadgeIndex: number | undefined = badges.find(
+    (b) => b.selected === true
+  )?.id;
 
   let badgeIndexToSelect = -1;
 
@@ -72,8 +75,8 @@ function hydrateInputs(): void {
 
   currentSelectedBadgeIndex = badgeIndexToSelect;
 
-  badgeIds?.forEach((badgeId: number, i: number) => {
-    const badgeOption = getHTMLById(badgeId);
+  badges?.forEach((badge: MonkeyTypes.Badge, i: number) => {
+    const badgeOption = getHTMLById(badge.id);
     const badgeWrapper = `<div class="badge-selection-item ${
       i === badgeIndexToSelect ? "selected" : ""
     }" selection-index=${i}>${badgeOption}</div>`;
