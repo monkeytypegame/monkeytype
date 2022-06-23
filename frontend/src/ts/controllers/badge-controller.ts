@@ -44,7 +44,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     name: "Supporter",
     description: "Donated money",
     icon: "fa-heart",
-    color: "var(--bg-color)",
+    color: "var(--text-color)",
     background: "var(--sub-color)",
   },
   7: {
