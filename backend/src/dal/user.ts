@@ -65,10 +65,13 @@ export async function resetUser(uid: string): Promise<UpdateResult> {
         completedTests: 0,
         startedTests: 0,
         timeTyping: 0,
-        lbMemory: {
-          time: {},
-        },
+        lbMemory: {},
         bananas: 0,
+        profileDetails: {
+          bio: "",
+          keyboard: "",
+          socialProfiles: {},
+        },
       },
     }
   );
