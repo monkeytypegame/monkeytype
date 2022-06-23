@@ -1240,6 +1240,25 @@
     min-height: 5rem;
     max-height: 10rem;
   }
+
+  .badge-selection-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .badge-selection-item {
+    margin-bottom: 0.5rem;
+    width: max-content;
+    opacity: 25%;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .badge-selection-item.selected,
+  .badge-selection-item:hover {
+    opacity: 100%;
+  }
 }
 
 #customThemesWrapper {

@@ -701,26 +701,24 @@ export async function recordAutoBanEvent(
 
 export async function updateProfile(
   uid: string,
-  updates: Partial<MonkeyTypes.UserProfileDetails>
+  profileDetailUpdates: Partial<MonkeyTypes.UserProfileDetails>,
+  inventory?: MonkeyTypes.UserInventory
 ): Promise<void> {
-  const profileUpdates = _.pickBy(
-    flattenObjectDeep(updates, "profileDetails"),
-    (value) => value !== undefined
+  const profileUpdates = _.omitBy(
+    flattenObjectDeep(profileDetailUpdates, "profileDetails"),
+    (value) =>
+      value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
   );
 
-  const updateResult = await getUsersCollection().updateOne(
+  await getUsersCollection().updateOne(
     {
       uid,
-      banned: {
-        $ne: true,
-      },
     },
     {
-      $set: profileUpdates,
+      $set: {
+        ...profileUpdates,
+        inventory,
+      },
     }
   );
-
-  if (updateResult.matchedCount === 0) {
-    throw new MonkeyError(403, "User is banned");
-  }
 }
