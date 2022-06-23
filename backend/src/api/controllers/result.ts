@@ -331,10 +331,7 @@ export async function addResult(
 
   if (dailyLeaderboard && validResultCriteria) {
     //get the selected badge id
-    let badgeId: number | undefined;
-    if (user.inventory?.badges) {
-      badgeId = user.inventory.badges.find((b) => b.selected === true)?.id;
-    }
+    const badgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
 
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
