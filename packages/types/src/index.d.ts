@@ -485,13 +485,13 @@ declare namespace MonkeyTypes {
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
-    details?: UserDetails;
+    details?: UserProfileDetails;
     inventory?: UserInventory;
     addedAt: number;
     filterPresets: ResultFilters[];
   }
 
-  interface UserDetails {
+  interface UserProfileDetails {
     bio?: string;
     keyboard?: string;
     socialProfiles: {
@@ -835,16 +835,6 @@ declare namespace MonkeyTypes {
   }
 
   // Data Model
-
-  interface UserProfileDetails {
-    bio: string;
-    keyboard: string;
-    socialProfiles: {
-      twitter?: string;
-      github?: string;
-      website?: string;
-    };
-  }
 
   interface User {
     autoBanTimestamps?: number[];
