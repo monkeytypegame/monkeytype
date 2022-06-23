@@ -4,21 +4,15 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import {
-  Collection,
-  DeleteResult,
-  ObjectId,
-  UpdateResult,
-  WithId,
-} from "mongodb";
+import { Collection, DeleteResult, ObjectId, UpdateResult } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 
 const SECONDS_PER_HOUR = 3600;
 
 // Export for use in tests
-export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
+export const getUsersCollection = (): Collection<Id<MonkeyTypes.User>> =>
   db.collection<MonkeyTypes.User>("users");
 
 export async function addUser(
@@ -205,7 +199,7 @@ export async function removeResultFilterPreset(
 export async function addTag(
   uid: string,
   name: string
-): Promise<MonkeyTypes.UserTag> {
+): Promise<Id<MonkeyTypes.UserTag>> {
   const _id = new ObjectId();
   await getUsersCollection().updateOne(
     { uid },
@@ -217,7 +211,7 @@ export async function addTag(
   };
 }
 
-export async function getTags(uid: string): Promise<MonkeyTypes.UserTag[]> {
+export async function getTags(uid: string): Promise<Id<MonkeyTypes.UserTag>[]> {
   const user = await getUser(uid, "get tags");
 
   return user.tags ?? [];
@@ -371,7 +365,7 @@ export async function checkIfTagPb(
     return [];
   }
 
-  const tagsToCheck: MonkeyTypes.UserTag[] = [];
+  const tagsToCheck: Id<MonkeyTypes.UserTag>[] = [];
   user.tags.forEach((userTag) => {
     resultTags.forEach((resultTag) => {
       if (resultTag === userTag._id.toString()) {

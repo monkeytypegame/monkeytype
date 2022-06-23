@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 import _ from "lodash";
 import { Filter, MatchKeysAndValues, ObjectId } from "mongodb";
 import * as db from "../init/db";
@@ -36,11 +36,13 @@ export async function countApeKeysForUser(uid: string): Promise<number> {
   return _.size(apeKeys);
 }
 
-export async function addApeKey(apeKey: MonkeyTypes.ApeKey): Promise<string> {
+export async function addApeKey(
+  apeKey: Id<MonkeyTypes.ApeKey>
+): Promise<string> {
   const insertionResult = await db
     .collection<MonkeyTypes.ApeKey>(COLLECTION_NAME)
     .insertOne(apeKey);
-  return insertionResult.insertedId.toHexString();
+  return insertionResult.insertedId.toString();
 }
 
 async function updateApeKey(

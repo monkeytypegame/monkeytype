@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { StringId } from "@monkeytype/types";
 import Ape from "./ape";
 import DefaultConfig from "./constants/default-config";
 import { defaultSnap } from "./constants/default-snapshot";
@@ -202,7 +202,7 @@ export async function getUserResults(): Promise<boolean> {
       return false;
     }
 
-    const results = response.data as MonkeyTypes.GenericResult[];
+    const results = response.data as StringId<MonkeyTypes.GenericResult>[];
     results.forEach((result) => {
       if (result.bailedOut === undefined) result.bailedOut = false;
       if (result.blindMode === undefined) result.blindMode = false;
@@ -234,7 +234,7 @@ export function getCustomThemeById(
 }
 
 export async function addCustomTheme(
-  theme: MonkeyTypes.RawCustomTheme
+  theme: MonkeyTypes.CustomTheme
 ): Promise<boolean> {
   if (dbSnapshot === null) return false;
 
@@ -249,7 +249,7 @@ export async function addCustomTheme(
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: StringId<MonkeyTypes.CustomTheme> = {
     ...theme,
     _id: response.data.theme._id as string,
   };
@@ -260,7 +260,7 @@ export async function addCustomTheme(
 
 export async function editCustomTheme(
   themeId: string,
-  newTheme: MonkeyTypes.RawCustomTheme
+  newTheme: MonkeyTypes.CustomTheme
 ): Promise<boolean> {
   const user = Auth.currentUser;
   if (user === null) return false;
@@ -281,7 +281,7 @@ export async function editCustomTheme(
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: StringId<MonkeyTypes.CustomTheme> = {
     ...newTheme,
     _id: themeId,
   };
@@ -490,19 +490,17 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
       dbSnapshot.personalBests = {
         time: {},
         words: {},
-        zen: {  },
-        quote: {  },
-        custom: {  },
+        zen: {},
+        quote: {},
+        custom: {},
       };
     }
 
     if (dbSnapshot.personalBests[mode] === undefined) {
       if (mode === "zen") {
-        dbSnapshot.personalBests["zen"] = {  };
+        dbSnapshot.personalBests["zen"] = {};
       } else {
-        dbSnapshot.personalBests[mode as Exclude<typeof mode, "zen">] = {
-          
-        };
+        dbSnapshot.personalBests[mode as Exclude<typeof mode, "zen">] = {};
       }
     }
 
@@ -579,9 +577,9 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
       filteredtag.personalBests = {
         time: {},
         words: {},
-        zen: {  },
-        quote: {  },
-        custom: {  },
+        zen: {},
+        quote: {},
+        custom: {},
       };
     }
 
@@ -634,9 +632,9 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
       filteredtag.personalBests = {
         time: {},
         words: {},
-        zen: {  },
-        quote: {  },
-        custom: {  },
+        zen: {},
+        quote: {},
+        custom: {},
       };
     }
 
@@ -690,16 +688,14 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
       filteredtag.personalBests = {
         time: {},
         words: {},
-        zen: {  },
-        quote: {  },
-        custom: {  },
+        zen: {},
+        quote: {},
+        custom: {},
       };
       if (mode === "zen") {
-        filteredtag.personalBests["zen"] = {  };
+        filteredtag.personalBests["zen"] = {};
       } else {
-        filteredtag.personalBests[mode as Exclude<typeof mode, "zen">] = {
-          ,
-        };
+        filteredtag.personalBests[mode as Exclude<typeof mode, "zen">] = {};
       }
       filteredtag.personalBests[mode][mode2] = [
         {
@@ -773,7 +769,7 @@ export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
 }
 
 export function saveLocalResult(
-  result: MonkeyTypes.GenericResult
+  result: StringId<MonkeyTypes.GenericResult>
 ): void {
   const snapshot = getSnapshot();
 

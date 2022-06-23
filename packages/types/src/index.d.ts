@@ -3,6 +3,13 @@ import type { Request as ExpressRequest } from "express";
 
 export default MonkeyTypes;
 
+// Important Typings for MongoDB and Frontend Interaction
+export type Id<Obj, T = ObjectId> = Obj & {
+  _id: T;
+};
+
+export type StringId<Obj> = Id<Obj, string>;
+
 declare namespace MonkeyTypes {
   type Difficulty = "normal" | "expert" | "master";
 
@@ -188,7 +195,6 @@ declare namespace MonkeyTypes {
   }
 
   interface Preset {
-    _id: ObjectId;
     name: string;
     display: string;
     config: ConfigChanges;
@@ -221,20 +227,15 @@ declare namespace MonkeyTypes {
   }
 
   interface Tag {
-    _id: ObjectId;
     name: string;
     display: string;
     personalBests?: PersonalBests;
     active?: boolean;
   }
 
-  interface RawCustomTheme {
+  interface CustomTheme {
     name: string;
     colors: string[];
-  }
-
-  interface CustomTheme extends RawCustomTheme {
-    _id: ObjectId;
   }
 
   interface TypingStats {
@@ -256,7 +257,6 @@ declare namespace MonkeyTypes {
   }
 
   interface Result<M extends Mode> {
-    _id: ObjectId;
     wpm: number;
     rawWpm: number;
     charStats: number[];
@@ -293,7 +293,6 @@ declare namespace MonkeyTypes {
   type GenericResult = Result<Mode>;
 
   interface ApeKey {
-    _id: ObjectId;
     uid: string;
     name: string;
     hash: string;
@@ -451,7 +450,6 @@ declare namespace MonkeyTypes {
   }
 
   interface QuoteRating {
-    _id: ObjectId;
     average: number;
     language: string;
     quoteId: number;
@@ -469,13 +467,13 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     emailVerified?: boolean;
     quoteRatings?: QuoteRatings;
-    results?: Result<Mode>[];
+    results?: StringId<GenericResult>[];
     verified?: boolean;
     personalBests?: PersonalBests;
     name: string;
-    customThemes: CustomTheme[];
-    presets?: Preset[];
-    tags: Tag[];
+    customThemes: StringId<CustomTheme>[];
+    presets?: StringId<Preset>[];
+    tags: StringId<Tag>[];
     favouriteThemes?: string[];
     lbMemory?: LeaderboardMemory;
     typingStats?: TypingStats;
@@ -488,7 +486,7 @@ declare namespace MonkeyTypes {
     details?: UserProfileDetails;
     inventory?: UserInventory;
     addedAt: number;
-    filterPresets: ResultFilters[];
+    filterPresets: StringId<ResultFilters>[];
   }
 
   interface UserProfileDetails {
@@ -528,7 +526,6 @@ declare namespace MonkeyTypes {
   };
 
   interface ResultFilters {
-    _id: ObjectId;
     name: string;
     difficulty: {
       normal: boolean;
@@ -589,9 +586,11 @@ declare namespace MonkeyTypes {
     };
   }
 
-  type Group = keyof ResultFilters;
+  type Group = keyof StringId<ResultFilters>;
 
-  type Filter<G extends Group> = keyof ResultFilters[G];
+  type Filter<G extends Group> = keyof StringId<ResultFilters>[G];
+
+  type TypeOfFilter<G extends Group> = StringId<ResultFilters>[G][Filter<G>];
 
   interface TimerStats {
     dateNow: number;
@@ -623,9 +622,9 @@ declare namespace MonkeyTypes {
     author: {
       login: string;
       id: number;
-      node_id: ObjectId;
+      node_id: string;
       avatar_url: string;
-      gravatar_id: ObjectId;
+      gravatar_id: string;
       url: string;
       html_url: string;
       followers_url: string;
@@ -640,7 +639,7 @@ declare namespace MonkeyTypes {
       type: string;
       site_admin: boolean;
     };
-    node_id: ObjectId;
+    node_id: string;
     tag_name: string;
     target_commitish: string;
     name: string;
@@ -699,7 +698,7 @@ declare namespace MonkeyTypes {
   interface PSA {
     sticky?: boolean;
     message: string;
-    _id: ObjectId;
+
     level?: number;
     date?: number;
   }
@@ -848,11 +847,11 @@ declare namespace MonkeyTypes {
     lbMemory?: object;
     lbPersonalBests?: LbPersonalBests;
     name: string;
-    customThemes?: CustomTheme[];
+    customThemes?: Id<CustomTheme>[];
     personalBests?: PersonalBests;
     quoteRatings?: UserQuoteRatings;
     startedTests?: number;
-    tags?: UserTag[];
+    tags?: Id<UserTag>[];
     timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
@@ -862,7 +861,7 @@ declare namespace MonkeyTypes {
     favoriteQuotes?: Record<string, string[]>;
     needsToChangeName?: boolean;
     discordAvatar?: string;
-    resultFilterPresets?: ResultFilters[];
+    resultFilterPresets?: Id<ResultFilters>[];
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
   }
@@ -878,13 +877,11 @@ declare namespace MonkeyTypes {
   }
 
   interface UserTag {
-    _id: ObjectId;
     name: string;
     personalBests?: PersonalBests;
   }
 
   interface NewQuote {
-    _id: ObjectId;
     text: string;
     source: string;
     language: string;
@@ -906,7 +903,6 @@ declare namespace MonkeyTypes {
   type ReportTypes = "quote";
 
   interface Report {
-    _id: ObjectId;
     id: string;
     type: ReportTypes;
     timestamp: number;
@@ -917,7 +913,6 @@ declare namespace MonkeyTypes {
   }
 
   interface PublicStats {
-    _id: ObjectId;
     testsCompleted: number;
     testsStarted: number;
     timeTyping: number;

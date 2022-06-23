@@ -1,11 +1,11 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 
 const COLLECTION_NAME = "reports";
 
 export async function createReport(
-  report: MonkeyTypes.Report,
+  report: Id<MonkeyTypes.Report>,
   maxReports: number,
   contentReportLimit: number
 ): Promise<void> {

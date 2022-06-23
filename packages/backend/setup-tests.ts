@@ -1,12 +1,13 @@
-import { Collection, Db, MongoClient, WithId } from "mongodb";
+import { Collection, Db, MongoClient } from "mongodb";
+import { Id } from "@monkeytype/types";
 
 process.env.MODE = "dev";
 
 jest.mock("./src/init/db", () => ({
   __esModule: true,
   getDb: (): Db => db,
-  collection: <T>(name: string): Collection<WithId<T>> =>
-    db.collection<WithId<T>>(name),
+  collection: <T>(name: string): Collection<Id<T>> =>
+    db.collection<Id<T>>(name),
 }));
 
 jest.mock("./src/utils/logger", () => ({

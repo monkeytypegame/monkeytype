@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id, StringId } from "@monkeytype/types";
 import objectHash from "object-hash";
 import Ape from "../ape";
 import Config, * as UpdateConfig from "../config";
@@ -1147,7 +1147,7 @@ type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
 };
 
 interface RetrySaving {
-  completedEvent: CompletedEvent | null;
+  completedEvent: Id<CompletedEvent, string | undefined> | null;
   canRetry: boolean;
 }
 
@@ -1196,7 +1196,7 @@ export async function retrySavingResult(): Promise<void> {
     completedEvent.isPb = true;
   }
 
-  DB.saveLocalResult(completedEvent);
+  DB.saveLocalResult(completedEvent as StringId<CompletedEvent>);
   DB.updateLocalStats(
     TestStats.restartCount + 1,
     completedEvent.testDuration +
@@ -1422,7 +1422,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.removeAfkData();
   }
 
-  const completedEvent = buildCompletedEvent(difficultyFailed);
+  const completedEvent = buildCompletedEvent(difficultyFailed) as Id<
+    CompletedEvent,
+    string | undefined
+  >;
 
   function countUndefined(input: unknown): number {
     if (typeof input === "undefined") {
@@ -1598,7 +1601,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.isPb = true;
   }
 
-  DB.saveLocalResult(completedEvent);
+  DB.saveLocalResult(completedEvent as StringId<CompletedEvent>);
   DB.updateLocalStats(
     TestStats.restartCount + 1,
     completedEvent.testDuration +

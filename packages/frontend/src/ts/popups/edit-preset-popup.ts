@@ -80,8 +80,8 @@ async function apply(): Promise<void> {
     const tags = DB.getSnapshot().tags || [];
 
     const activeTagIds: string[] = tags
-      .filter((tag: MonkeyTypes.Tag) => tag.active)
-      .map((tag: MonkeyTypes.Tag) => tag._id);
+      .filter((tag) => tag.active)
+      .map((tag) => tag._id);
     configChanges.tags = activeTagIds;
   }
 
@@ -121,7 +121,7 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset updated", 1);
       const preset: MonkeyTypes.Preset = snapshotPresets.filter(
-        (preset: MonkeyTypes.Preset) => preset._id === presetId
+        (preset) => preset._id === presetId
       )[0];
       preset.name = presetName;
       if (updateConfig) {
@@ -135,7 +135,7 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove preset: " + response.message, -1);
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach((preset: MonkeyTypes.Preset, index: number) => {
+      snapshotPresets.forEach((preset, index) => {
         if (preset._id === presetId) {
           snapshotPresets.splice(index, 1);
         }

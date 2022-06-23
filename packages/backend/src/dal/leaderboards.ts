@@ -1,5 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
-import type { WithId } from "mongodb";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 import { performance } from "perf_hooks";
 import * as db from "../init/db";
 import Logger from "../utils/logger";
@@ -66,7 +65,7 @@ export async function update(
   const start1 = performance.now();
   const lb = await db
     .collection<MonkeyTypes.LeaderboardEntry>("users")
-    .aggregate<WithId<MonkeyTypes.LeaderboardEntry>>(
+    .aggregate<Id<MonkeyTypes.LeaderboardEntry>>(
       [
         {
           $match: {

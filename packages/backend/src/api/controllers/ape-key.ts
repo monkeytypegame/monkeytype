@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 import { hash } from "bcrypt";
 import { randomBytes } from "crypto";
 import _ from "lodash";
@@ -40,7 +40,7 @@ export async function generateApeKey(
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
-  const apeKey: MonkeyTypes.ApeKey = {
+  const apeKey: Id<MonkeyTypes.ApeKey> = {
     _id: new ObjectId(),
     name,
     enabled,

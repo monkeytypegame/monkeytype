@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { StringId } from "@monkeytype/types";
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import { Chart } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -364,7 +364,7 @@ export async function updateCrown(): Promise<void> {
 }
 
 function updateTags(dontSave: boolean): void {
-  const activeTags: MonkeyTypes.Tag[] = [];
+  const activeTags: StringId<MonkeyTypes.Tag>[] = [];
   try {
     DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {

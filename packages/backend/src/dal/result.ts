@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 import _ from "lodash";
 import { DeleteResult, ObjectId, UpdateResult } from "mongodb";
 import * as db from "../init/db";
@@ -7,7 +7,7 @@ import { getTags, getUser } from "./user";
 
 export async function addResult(
   uid: string,
-  result: MonkeyTypes.GenericResult
+  result: Id<MonkeyTypes.GenericResult>
 ): Promise<{ insertedId: ObjectId }> {
   let user;
   try {

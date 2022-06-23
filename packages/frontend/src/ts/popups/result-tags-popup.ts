@@ -1,4 +1,3 @@
-import MonkeyTypes from "@monkeytype/types";
 import Ape from "../ape";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
@@ -41,7 +40,7 @@ export function updateButtons(): void {
 }
 
 function updateActiveButtons(active: string[]): void {
-  if (active === []) return;
+  if (active.length === 0) return;
   $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {
@@ -98,7 +97,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
   }
 
   Notifications.add("Tags updated", 1, 2);
-  DB.getSnapshot().results?.forEach((result: MonkeyTypes.GenericResult) => {
+  DB.getSnapshot().results?.forEach((result) => {
     if (result._id === resultId) {
       result.tags = newTags;
     }

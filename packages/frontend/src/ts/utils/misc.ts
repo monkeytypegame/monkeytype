@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { StringId } from "@monkeytype/types";
 import format from "date-fns/format";
 import * as Loader from "../elements/loader";
 import { Auth } from "../firebase";
@@ -1018,7 +1018,7 @@ export function getMode2(
 }
 
 export async function downloadResultsCSV(
-  array: MonkeyTypes.GenericResult[]
+  array: StringId<MonkeyTypes.GenericResult>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1048,7 +1048,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.GenericResult) => [
+    ...array.map((item) => [
       item._id,
       item.isPb,
       item.wpm,

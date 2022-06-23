@@ -9,7 +9,7 @@ import { verify } from "../../utils/captcha";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { ObjectId } from "mongodb";
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { Id } from "@monkeytype/types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -139,7 +139,7 @@ export async function reportQuote(
 
   await verifyCaptcha(captcha);
 
-  const newReport: MonkeyTypes.Report = {
+  const newReport: Id<MonkeyTypes.Report> = {
     _id: new ObjectId(),
     id: uuidv4(),
     type: "quote",

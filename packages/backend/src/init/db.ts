@@ -1,10 +1,10 @@
+import { Id } from "@monkeytype/types";
 import {
   AuthMechanism,
   Collection,
   Db,
   MongoClient,
   MongoClientOptions,
-  WithId,
 } from "mongodb";
 import MonkeyError from "../utils/error";
 import Logger from "../utils/logger";
@@ -57,10 +57,10 @@ export async function connect(): Promise<void> {
 
 export const getDb = (): Db | undefined => db;
 
-export function collection<T>(collectionName: string): Collection<WithId<T>> {
+export function collection<T>(collectionName: string): Collection<Id<T>> {
   if (!db) {
     throw new MonkeyError(500, "Database is not initialized.");
   }
 
-  return db.collection<WithId<T>>(collectionName);
+  return db.collection<Id<T>>(collectionName);
 }

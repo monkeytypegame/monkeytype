@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { StringId } from "@monkeytype/types";
 import Ape from "../ape/index";
 import Config from "../config";
 import * as DB from "../db";
@@ -7,7 +7,7 @@ import * as Notifications from "../elements/notifications";
 import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 import * as Misc from "../utils/misc";
 
-export const defaultResultFilters: MonkeyTypes.ResultFilters = {
+export const defaultResultFilters: StringId<MonkeyTypes.ResultFilters> = {
   _id: "default-result-filters-id",
   name: "default result filters",
   difficulty: {
@@ -167,12 +167,14 @@ export async function setFilterPreset(id: string): Promise<void> {
 }
 
 function deepCopyFilter(
-  filter: MonkeyTypes.ResultFilters
-): MonkeyTypes.ResultFilters {
+  filter: StringId<MonkeyTypes.ResultFilters>
+): StringId<MonkeyTypes.ResultFilters> {
   return JSON.parse(JSON.stringify(filter));
 }
 
-function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
+function addFilterPresetToSnapshot(
+  filter: StringId<MonkeyTypes.ResultFilters>
+): void {
   const snapshot = DB.getSnapshot();
   DB.setSnapshot({
     ...snapshot,
@@ -243,7 +245,7 @@ export function getFilters(): MonkeyTypes.ResultFilters {
 
 export function getGroup<G extends MonkeyTypes.Group>(
   group: G
-): MonkeyTypes.ResultFilters[G] {
+): StringId<MonkeyTypes.ResultFilters>[G] {
   return filters[group];
 }
 
@@ -254,7 +256,7 @@ export function getGroup<G extends MonkeyTypes.Group>(
 export function getFilter<G extends MonkeyTypes.Group>(
   group: G,
   filter: MonkeyTypes.Filter<G>
-): MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
+): MonkeyTypes.TypeOfFilter<G> {
   return filters[group][filter];
 }
 
@@ -262,7 +264,7 @@ export function getFilter<G extends MonkeyTypes.Group>(
 //   filters[group][filter] = !filters[group][filter];
 // }
 
-export function loadTags(tags: MonkeyTypes.Tag[]): void {
+export function loadTags(tags: StringId<MonkeyTypes.Tag>[]): void {
   console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
@@ -446,7 +448,7 @@ export function toggle<G extends MonkeyTypes.Group>(
     }
     filters[group][filter] = !filters[group][
       filter
-    ] as unknown as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
+    ] as MonkeyTypes.TypeOfFilter<G>;
     save();
   } catch (e) {
     Notifications.add(

@@ -17,7 +17,7 @@ import * as Misc from "../utils/misc";
 import * as LoadingPage from "./loading";
 import Page from "./page";
 
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { StringId } from "@monkeytype/types";
 import type { ScaleChartOptions } from "chart.js";
 import { Auth } from "../firebase";
 
@@ -30,7 +30,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: MonkeyTypes.GenericResult[] = [];
+let filteredResults: StringId<MonkeyTypes.GenericResult>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -293,7 +293,7 @@ export function update(): void {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    DB.getSnapshot().results?.forEach((result: MonkeyTypes.GenericResult) => {
+    DB.getSnapshot().results?.forEach((result) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -711,7 +711,7 @@ export function update(): void {
       accountHistoryScaleOptions["wpm"].min = 0;
     }
 
-    if (chartData == [] || chartData.length == 0) {
+    if (chartData.length == 0) {
       $(".pageAccount .group.noDataError").removeClass("hidden");
       $(".pageAccount .group.chart").addClass("hidden");
       $(".pageAccount .group.dailyActivityChart").addClass("hidden");

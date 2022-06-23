@@ -1,4 +1,4 @@
-import MonkeyTypes from "@monkeytype/types";
+import MonkeyTypes, { StringId } from "@monkeytype/types";
 import format from "date-fns/format";
 import Ape from "../ape";
 import { secondsToString } from "../utils/misc";
@@ -18,7 +18,7 @@ function setMemory(id: string): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
 }
 
-async function getLatest(): Promise<MonkeyTypes.PSA[]> {
+async function getLatest(): Promise<StringId<MonkeyTypes.PSA>[]> {
   const response = await Ape.psas.get();
   if (response.status === 500) {
     if (window.location.hostname === "localhost") {
@@ -49,7 +49,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[]> {
     );
     return [];
   }
-  return response.data as MonkeyTypes.PSA[];
+  return response.data;
 }
 
 export async function show(): Promise<void> {

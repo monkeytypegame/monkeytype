@@ -40,7 +40,7 @@ export async function addPreset(
     .collection(COLLECTION_NAME)
     .insertOne({ uid, name, config } as any);
   return {
-    presetId: preset.insertedId.toHexString(),
+    presetId: preset.insertedId.toString(),
   };
 }
 
