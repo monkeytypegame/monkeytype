@@ -7,8 +7,8 @@ sound/*
 node_modules
 css/balloon.css
 _list.json
-backend/build
-backend/logs
-backend/coverage
-backend/globalConfig.json
-frontend/public
+packages/backend/build
+packages/backend/logs
+packages/backend/coverage
+packages/backend/globalConfig.json
+packages/frontend/public

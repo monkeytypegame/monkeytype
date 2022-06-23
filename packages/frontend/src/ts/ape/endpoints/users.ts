@@ -180,7 +180,7 @@ export default class Users {
   }
 
   async updateProfile(
-    profileUpdates: Partial<MonkeyTypes.UserDetails>,
+    profileUpdates: Partial<MonkeyTypes.UserProfileDetails>,
     selectedBadgeId?: number
   ): Promise<Ape.EndpointData> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {

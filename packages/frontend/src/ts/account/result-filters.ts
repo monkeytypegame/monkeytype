@@ -448,7 +448,7 @@ export function toggle<G extends MonkeyTypes.Group>(
     }
     filters[group][filter] = !filters[group][
       filter
-    ] as MonkeyTypes.TypeOfFilter<G>;
+    ] as unknown as MonkeyTypes.TypeOfFilter<G>;
     save();
   } catch (e) {
     Notifications.add(

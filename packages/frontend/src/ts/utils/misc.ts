@@ -1178,3 +1178,7 @@ export async function getDiscordAvatarUrl(
 
   return null;
 }
+
+export function hasId<T>(obj: Partial<StringId<T>>): obj is StringId<T> {
+  return obj._id !== undefined;
+}

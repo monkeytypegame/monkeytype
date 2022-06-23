@@ -2,6 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import * as Misc from "../utils/misc";
 
 function show(): void {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
@@ -98,7 +99,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
 
   Notifications.add("Tags updated", 1, 2);
   DB.getSnapshot().results?.forEach((result) => {
-    if (result._id === resultId) {
+    if (Misc.hasId(result) && result._id === resultId) {
       result.tags = newTags;
     }
   });

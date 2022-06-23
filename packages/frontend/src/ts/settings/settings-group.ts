@@ -56,13 +56,16 @@ export default class SettingsGroup {
           if (!value && !params) return;
           if (value === "true") value = true;
           if (value === "false") value = false;
-          this.setValue(value, params as unknown as ConfigValues[]);
+          this.setValue(value, params as unknown as MonkeyTypes.ConfigValues[]);
         }
       );
     }
   }
 
-  setValue(value: ConfigValues, params?: ConfigValues[]): void {
+  setValue(
+    value: MonkeyTypes.ConfigValues,
+    params?: MonkeyTypes.ConfigValues[]
+  ): void {
     if (params === undefined) {
       this.configFunction(value);
     } else {

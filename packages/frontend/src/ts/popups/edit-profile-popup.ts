@@ -93,14 +93,14 @@ function hydrateInputs(): void {
   });
 }
 
-function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
+function buildUpdatesFromInputs(): MonkeyTypes.UserProfileDetails {
   const bio = (bioInput.val() ?? "") as string;
   const keyboard = (keyboardInput.val() ?? "") as string;
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
 
-  const profileUpdates: MonkeyTypes.UserDetails = {
+  const profileUpdates: MonkeyTypes.UserProfileDetails = {
     bio,
     keyboard,
     socialProfiles: {

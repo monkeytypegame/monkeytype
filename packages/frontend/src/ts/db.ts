@@ -769,7 +769,7 @@ export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
 }
 
 export function saveLocalResult(
-  result: StringId<MonkeyTypes.GenericResult>
+  result: StringId<MonkeyTypes.GenericResult> | MonkeyTypes.GenericResult
 ): void {
   const snapshot = getSnapshot();
 

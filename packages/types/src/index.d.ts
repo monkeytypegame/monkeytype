@@ -467,7 +467,7 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     emailVerified?: boolean;
     quoteRatings?: QuoteRatings;
-    results?: StringId<GenericResult>[];
+    results?: (StringId<GenericResult> | GenericResult)[];
     verified?: boolean;
     personalBests?: PersonalBests;
     name: string;

@@ -296,6 +296,12 @@ export function update(): void {
     DB.getSnapshot().results?.forEach((result) => {
       // totalSeconds += tt;
 
+      if (!Misc.hasId(result)) {
+        Notifications.add("Result is missing _id", -1);
+
+        return;
+      }
+
       //apply filters
       try {
         let resdiff = result.difficulty;
