@@ -115,7 +115,6 @@ const profanities = [
   "kunt",
   "kunts",
   "kuntz",
-  "lesbian",
   "lezzian",
   "lipshits",
   "lipshitz",
