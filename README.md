@@ -1,4 +1,4 @@
-[![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
+[![](https://github.com/monkeytypegame/monkeytype/blob/master/packages/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
 <img align="left" alt="TypeScript" width="26px" src="https://iconape.com/wp-content/png_logo_vector/typescript.png" />

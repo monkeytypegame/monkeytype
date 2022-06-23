@@ -41,7 +41,7 @@ try {
     );
   } else {
     Logger.error(
-      "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
+      "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the packages/backend directory"
     );
     process.exit(1);
   }

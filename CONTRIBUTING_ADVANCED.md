@@ -38,7 +38,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
    - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
-1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Within the `packages/frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -52,7 +52,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - Run `firebase projects:list` to find your firebase project id.
 
-1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
+1. Within the `packages/frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
 
    - To find it, go to the Firebase console
    - Navigate to `Project Settings > General > Your apps`
@@ -70,14 +70,14 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
+   - Save as `serviceAccountKey.json` inside the `packages/backend/src/credentials/` directory.
 
 #### Docker (Recommended but Optional)
 
 You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
 
 ```bash
-cd frontend && docker-compose up
+npm run docker-fe
 ```
 
 Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
@@ -86,13 +86,13 @@ Once wepback has compiled, the frontend will be served on [port 3000](http://loc
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
-1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
+1. Inside the `packages/backend` folder, copy `example.env` to `.env` in the same directory.
 
 2. Setup the database server
 
-| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory</li></ol> |
+| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-be` from the root directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown after the server is started.
@@ -103,7 +103,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 1. Run `npm run install-all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install-windows`.
-   - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
+   - If neither works, you will have to run `npm install` in root, packages/frontend, and packages/backend directories.
 2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 ## Standards and Guidelines

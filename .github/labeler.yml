@@ -1,18 +1,18 @@
 api:
-  - any: ["frontend/src/ts/ape/**/*", "backend/src/api/**/*"]
+  - any: ["packages/frontend/src/ts/ape/**/*", "packages/backend/src/api/**/*"]
 
 assets:
-  - any: ["frontend/static/**/*"]
-    all: ["!frontend/static/**/*.html"]
+  - any: ["packages/frontend/static/**/*"]
+    all: ["!packages/frontend/static/**/*.html"]
 
 backend:
-  - any: ["backend/**/*"]
+  - any: ["packages/backend/**/*"]
 
 docs:
   - any: ["**/*.md"]
 
 frontend:
-  - any: ["frontend/**/*"]
+  - any: ["packages/frontend/**/*"]
 
 local dev:
   - any: ["**/gulpfile.js", "**/tsconfig.json"]

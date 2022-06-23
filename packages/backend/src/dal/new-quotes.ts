@@ -41,7 +41,7 @@ export async function add(
   //check for duplicate first
   const fileDir = path.join(
     __dirname,
-    `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
+    `${PATH_TO_REPO}/packages/frontend/static/quotes/${language}.json`
   );
   let duplicateId = -1;
   let similarityScore = -1;
@@ -127,7 +127,7 @@ export async function approve(
   let message = "";
   const fileDir = path.join(
     __dirname,
-    `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
+    `${PATH_TO_REPO}/packages/frontend/static/quotes/${language}.json`
   );
   await git.pull("upstream", "master");
   if (fs.existsSync(fileDir)) {
@@ -166,7 +166,7 @@ export async function approve(
     );
     message = `Created file ${language}.json and added quote.`;
   }
-  await git.add([`frontend/static/quotes/${language}.json`]);
+  await git.add([`packages/frontend/static/quotes/${language}.json`]);
   await git.commit(`Added quote to ${language}.json`);
   await git.push("origin", "master");
   await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });

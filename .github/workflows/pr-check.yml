@@ -17,35 +17,35 @@ jobs:
         with:
           filters: |
             any-json:
-              - 'frontend/**/*.json'
+              - 'packages/frontend/**/*.json'
             language-json:
-              - 'frontend/static/languages/*.json'
+              - 'packages/frontend/static/languages/*.json'
             quotes-json:
-              - 'frontend/static/quotes/*.json'
+              - 'packages/frontend/static/quotes/*.json'
             other-json:
-              - 'frontend/static/funbox/*.json'
-              - 'frontend/static/fonts/*.json'
-              - 'frontend/static/themes/*.json'
-              - 'frontend/static/challenges/*.json'
-              - 'frontend/static/layouts/*.json'
+              - 'packages/frontend/static/funbox/*.json'
+              - 'packages/frontend/static/fonts/*.json'
+              - 'packages/frontend/static/themes/*.json'
+              - 'packages/frontend/static/challenges/*.json'
+              - 'packages/frontend/static/layouts/*.json'
             any-tsscss:
-              - 'frontend/**/*.scss'
-              - 'frontend/**/*.ts'
-              - 'backend/**/*.ts'
+              - 'packages/frontend/**/*.scss'
+              - 'packages/frontend/**/*.ts'
+              - 'packages/backend/**/*.ts'
             ts-scss-fe:
-              - 'frontend/**/*.ts'
-              - 'frontend/**/*.scss'
+              - 'packages/frontend/**/*.ts'
+              - 'packages/frontend/**/*.scss'
             ts-be:
-              - 'backend/**/*.ts'
+              - 'packages/backend/**/*.ts'
             anti-cheat:
-              - 'backend/**/anticheat/**'
+              - 'packages/backend/**/anticheat/**'
             any-src:
-              - 'backend/**/*.{ts,js,json}'
-              - 'frontend/**/*.{ts,js}'
-              - 'frontend/src/**/*.scss'
+              - 'packages/backend/**/*.{ts,js,json}'
+              - 'packages/frontend/**/*.{ts,js}'
+              - 'packages/frontend/src/**/*.scss'
 
       - name: Create stub firebase config
-        working-directory: ./frontend/src/ts/constants
+        working-directory: ./packages/frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
 
       - name: Check Anti-cheat

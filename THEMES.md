@@ -13,7 +13,7 @@ First you will have to make a personal copy of the Monkeytype repository, also k
 
 ## Creating Themes
 
-After you have forked the repository you can now add your theme. Create a CSS file in `./frontend/static/themes/`. Call it whatever you want but make sure that it is all lowercase and replace spaces with underscores. It should look something like this:
+After you have forked the repository you can now add your theme. Create a CSS file in `packages/frontend/static/themes`. Call it whatever you want but make sure that it is all lowercase and replace spaces with underscores. It should look something like this:
 `theme_name.css`.
 
 Then add this code to your file:
@@ -36,7 +36,7 @@ Then add this code to your file:
 Here is an image showing what all the properties correspond to:
 <img width="1552" alt="Screenshot showing the page elements controlled by each color property" src="https://user-images.githubusercontent.com/83455454/149196967-abb69795-0d38-466b-a867-5aaa46452976.png">
 
-Change the corresponding hex codes to create your theme. Then, go to `./frontend/static/themes/_list.json` and add the following code to the very end of the file (inside the square brackets):
+Change the corresponding hex codes to create your theme. Then, go to `packages/frontend/static/themes/_list.json` and add the following code to the very end of the file (inside the square brackets):
 
 ```
 ,{

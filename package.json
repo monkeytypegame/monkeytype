@@ -7,7 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "docker": "npm run docker-compose up -w @monkeytype/backend",
+    "docker": "npm run docker-fe && npm run docker-be",
+    "docker-fe": "npm run docker -w @monkeytype/frontend",
+    "docker-be": "npm run docker -w @monkeytype/backend",
     "test-backend": "npm run test -w @monkeytype/backend",
     "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
     "dev-be": "npm run dev -w @monkeytype/backend",

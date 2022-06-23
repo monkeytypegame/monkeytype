@@ -4,6 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "docker": "docker-compose up",
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
