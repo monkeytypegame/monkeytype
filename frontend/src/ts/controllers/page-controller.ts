@@ -12,7 +12,11 @@ import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
 // import { Auth } from "../firebase";
 
-export async function change(page: Page, force = false): Promise<boolean> {
+export async function change(
+  page: Page,
+  force = false,
+  params?: { [key: string]: string }
+): Promise<boolean> {
   return new Promise((resolve) => {
     if (PageTransition.get()) {
       console.log(`change page ${page.name} stopped`);
@@ -92,7 +96,7 @@ export async function change(page: Page, force = false): Promise<boolean> {
         nextPage?.afterShow();
       },
       async () => {
-        await nextPage?.beforeShow();
+        await nextPage?.beforeShow(params);
       }
     );
   });

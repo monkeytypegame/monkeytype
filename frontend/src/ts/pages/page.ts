@@ -4,7 +4,7 @@ export default class Page {
   public pathname: string;
   public beforeHide: () => Promise<void>;
   public afterHide: () => Promise<void>;
-  public beforeShow: () => Promise<void>;
+  public beforeShow: (params?: { [key: string]: string }) => Promise<void>;
   public afterShow: () => Promise<void>;
   constructor(
     name: string,
@@ -12,7 +12,7 @@ export default class Page {
     pathname: string,
     beforeHide: () => Promise<void>,
     afterHide: () => Promise<void>,
-    beforeShow: () => Promise<void>,
+    beforeShow: (params?: { [key: string]: string }) => Promise<void>,
     afterShow: () => Promise<void>
   ) {
     this.name = name;
