@@ -63,7 +63,7 @@ export async function update(
   const str = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const start1 = performance.now();
   const lb = await db
-    .collection<MonkeyTypes.LeaderboardEntry>("users")
+    .collection<MonkeyTypes.User>("users")
     .aggregate<MonkeyTypes.LeaderboardEntry>(
       [
         {
@@ -120,7 +120,7 @@ export async function update(
     }
 
     // extract selected badge
-    if (lbEntry.badges) {
+    if (lbEntry.badges?.length) {
       lbEntry.badgeId = lbEntry.badges.filter(
         (badge) => badge.selected === true
       )[0].id;
