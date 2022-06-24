@@ -61,7 +61,7 @@ router.post(
 );
 
 router.delete(
-  "/",
+  "/deleteAll",
   RateLimit.apeKeysDelete,
   authenticateRequest(),
   checkIfUserCanManageApeKeys,
