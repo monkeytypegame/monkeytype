@@ -6,6 +6,7 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
+import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
 
 let isPreviewingTheme = false;
@@ -70,16 +71,27 @@ function clearCustomTheme(): void {
   });
 }
 
-const loadStyle = async function (name: string): Promise<void> {
+let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
+
+async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
+    loadStyleLoaderTimeouts.push(
+      setTimeout(() => {
+        Loader.show();
+      }, 100)
+    );
+    $("#nextTheme").remove();
     const headScript = document.querySelector("#currentTheme") as Element;
     const link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
     link.id = "nextTheme";
     link.onload = (): void => {
+      Loader.hide();
       $("#currentTheme").remove();
       $("#nextTheme").attr("id", "currentTheme");
+      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
+      loadStyleLoaderTimeouts = [];
       resolve();
     };
     if (name === "custom") {
@@ -88,9 +100,13 @@ const loadStyle = async function (name: string): Promise<void> {
       link.href = `/./themes/${name}.css`;
     }
 
-    headScript.after(link);
+    if (!headScript) {
+      document.head.appendChild(link);
+    } else {
+      headScript.after(link);
+    }
   });
-};
+}
 
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
