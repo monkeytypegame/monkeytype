@@ -21,7 +21,7 @@ async function fill(): Promise<void> {
   });
 }
 
-export default new Page(
+export const page = new Page(
   "about",
   $(".page.pageAbout"),
   "/about",

@@ -8,7 +8,7 @@ import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 // import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { navigate } from "../controllers/route-controller";
+import { navigate, updateState } from "../controllers/route-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -381,6 +381,7 @@ export function hide(): void {
         stopTimer();
         showYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
+        updateState();
       }
     );
 }

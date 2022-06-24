@@ -1,10 +1,11 @@
 // import * as Funbox from "../test/funbox";
 import * as PageController from "./page-controller";
-import PageTest from "../pages/test";
-import PageAbout from "../pages/about";
+import * as PageTest from "../pages/test";
+import * as PageAbout from "../pages/about";
+import * as PageSettings from "../pages/settings";
 import * as Leaderboards from "../elements/leaderboards";
 // import Config from "../config";
-// import * as ActivePage from "../states/active-page";
+import * as ActivePage from "../states/active-page";
 // import { Auth } from "../firebase";
 
 // const mappedRoutes = {
@@ -87,19 +88,28 @@ const routes: Route[] = [
   {
     path: "/",
     load: (): void => {
-      PageController.change(PageTest);
+      PageController.change(PageTest.page);
     },
   },
   {
     path: "/leaderboards",
     load: (): void => {
+      if (ActivePage.get() === "loading") {
+        PageController.change(PageTest.page);
+      }
       Leaderboards.show();
     },
   },
   {
     path: "/about",
     load: (): void => {
-      PageController.change(PageAbout);
+      PageController.change(PageAbout.page);
+    },
+  },
+  {
+    path: "/settings",
+    load: (): void => {
+      PageController.change(PageSettings.page);
     },
   },
   {
@@ -113,6 +123,11 @@ const routes: Route[] = [
 export function navigate(url = window.location.pathname): void {
   history.pushState(null, "", url);
   router();
+}
+
+export function updateState(): void {
+  const activePage = ActivePage.get();
+  history.pushState(null, "", activePage === "test" ? "/" : activePage);
 }
 
 async function router(): Promise<void> {
