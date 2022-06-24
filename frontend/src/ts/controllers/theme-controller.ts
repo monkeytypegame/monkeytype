@@ -72,7 +72,6 @@ function clearCustomTheme(): void {
 
 const loadStyle = async function (name: string): Promise<void> {
   return new Promise((resolve) => {
-    console.log("loading theme", name);
     const headScript = document.querySelector("#currentTheme") as Element;
     const link = document.createElement("link");
     link.type = "text/css";
