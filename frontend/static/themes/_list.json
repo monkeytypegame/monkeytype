@@ -769,4 +769,9 @@
     "bgColor": "#386641",
     "mainColor": "#6a994e"
   }
+  ,{
+    "name": "tokyonight",
+    "bgColor": "#1a1b26",
+    "mainColor": "#9ece6a"
+  }
 ]
