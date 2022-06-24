@@ -174,7 +174,11 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     Notifications.add(
       "Settings applied from URL:<br><br>" + appliedString,
       1,
-      10
+      10,
+      undefined,
+      undefined,
+      undefined,
+      true
     );
   }
 }
