@@ -717,11 +717,12 @@ list["resetAccount"] = new SimplePopup(
       }
       Loader.show();
       Notifications.add("Resetting account and stats...", 0);
-      const responses = [Ape.users.reset()];
-
-      responses.push(Ape.presets.reset());
-
-      responses.push(Ape.apeKeys.reset());
+      const responses = [
+        Ape.users.reset(),
+        Ape.presets.reset(),
+        Ape.apeKeys.reset(),
+        Ape.results.deleteAll(),
+      ];
 
       if (DB.getSnapshot().discordId !== undefined) {
         responses.push(Ape.users.unlinkDiscord());
@@ -734,7 +735,6 @@ list["resetAccount"] = new SimplePopup(
         DB.setSnapshot(snap);
         Settings.updateDiscordSection();
       }
-      responses.push(Ape.results.deleteAll());
 
       const results = await Promise.all(responses);
 
