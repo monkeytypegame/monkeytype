@@ -738,7 +738,7 @@ list["resetAccount"] = new SimplePopup(
 
       const results = await Promise.all(responses);
 
-      const failedResponse = (await results).find(
+      const failedResponse = results.find(
         (response) => response.status !== 200
       );
       if (failedResponse) {
@@ -752,7 +752,7 @@ list["resetAccount"] = new SimplePopup(
       Loader.hide();
 
       Loader.show();
-      Notifications.add("Resting settings...", 0);
+      Notifications.add("Reseting settings...", 0);
       UpdateConfig.reset();
       Loader.hide();
 
