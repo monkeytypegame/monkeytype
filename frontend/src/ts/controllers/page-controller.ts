@@ -24,44 +24,6 @@ export async function change(
     }
     console.log(`change page ${page.name}`);
 
-    // if (page == undefined) {
-    //   const pages: {
-    //     [key: string]: MonkeyTypes.Page;
-    //   } = {
-    //     "/": "test",
-    //     "/login": "login",
-    //     "/settings": "settings",
-    //     "/about": "about",
-    //     "/account": "account",
-    //     "/profile": "profile",
-    //   };
-    //   let path = pages[window.location.pathname as keyof typeof pages];
-    //   if (!path) {
-    //     path = "test";
-    //   }
-    //   page = path;
-
-    //   if (Auth.currentUser && page === "login") {
-    //     page = "account";
-    //   }
-
-    //   if (
-    //     !Auth.currentUser &&
-    //     window.location.search === "" &&
-    //     page === "profile"
-    //   ) {
-    //     page = "login";
-    //   }
-    // }
-
-    // if (
-    //   Auth.currentUser &&
-    //   window.location.pathname === "/profile" &&
-    //   window.location.search === ""
-    // ) {
-    //   page = "account";
-    // }
-
     if (!force && ActivePage.get() === page.name) {
       console.log(`page ${page.name} already active`);
       return resolve(false);
