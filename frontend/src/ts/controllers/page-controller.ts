@@ -7,6 +7,7 @@ import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
+import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
 
@@ -35,6 +36,7 @@ export async function change(
       account: Account.page,
       login: PageLogin.page,
       profile: PageProfile.page,
+      404: Page404.page,
     };
 
     const previousPage = pages[ActivePage.get()];
