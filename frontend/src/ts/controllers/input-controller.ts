@@ -620,7 +620,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      // PageController.change("test");
       navigate("/");
       return;
     }
@@ -703,7 +702,6 @@ $(document).keydown(async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      // PageController.change("test");
       navigate("/");
       return;
     }
