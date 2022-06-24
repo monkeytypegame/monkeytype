@@ -72,17 +72,12 @@ export async function updateName(
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
 
-  await getUsersCollection().updateOne(
-    { uid },
-    {
-      $push: { nameHistory: oldName },
-    }
-  );
   return await getUsersCollection().updateOne(
     { uid },
     {
       $set: { name, lastNameChange: Date.now() },
       $unset: { needsToChangeName: "" },
+      $push: { nameHistory: oldName },
     }
   );
 }
