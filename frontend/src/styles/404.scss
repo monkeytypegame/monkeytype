@@ -1,0 +1,20 @@
+.page404 {
+  display: grid;
+  justify-content: center;
+  .content {
+    justify-items: center;
+    display: grid;
+    gap: 2rem;
+    width: min-content;
+    text-align: center;
+    .big {
+      font-size: 10rem;
+      line-height: 10rem;
+      color: var(--sub-color);
+    }
+    .button {
+      padding: 1rem 2rem;
+      width: max-content;
+    }
+  }
+}
