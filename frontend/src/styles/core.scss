@@ -59,10 +59,7 @@ a {
   }
 }
 
-a[data-link] .icon,
-a[data-link] .fas,
-a[data-link] .far,
-a[data-link] .fab {
+a[data-link] * {
   pointer-events: none;
 }
 
