@@ -65,7 +65,7 @@ router.delete(
   RateLimit.apeKeysDelete,
   authenticateRequest(),
   checkIfUserCanManageApeKeys,
-  asyncHandler(ApeKeyController.resetApeKeys)
+  asyncHandler(ApeKeyController.deleteAllApeKeys)
 );
 
 router.patch(

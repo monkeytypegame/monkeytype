@@ -83,12 +83,12 @@ export async function deleteApeKey(
   return new MonkeyResponse("ApeKey deleted");
 }
 
-export async function resetApeKeys(
+export async function deleteAllApeKeys(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  await ApeKeysDAL.resetApeKeys(uid);
+  await ApeKeysDAL.deleteAllApeKeys(uid);
 
   return new MonkeyResponse("ApeKey deleted");
 }
