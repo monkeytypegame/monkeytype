@@ -16,7 +16,7 @@ export async function change(page: Page, force = false): Promise<boolean> {
   return new Promise((resolve) => {
     if (PageTransition.get()) {
       console.log(`change page ${page} stopped`);
-      return false;
+      return resolve(false);
     }
     console.log(`change page ${page}`);
 
@@ -60,7 +60,7 @@ export async function change(page: Page, force = false): Promise<boolean> {
 
     if (!force && ActivePage.get() === page.name) {
       console.log(`page ${page} already active`);
-      return false;
+      return resolve(false);
     }
 
     const pages: Record<string, Page> = {
