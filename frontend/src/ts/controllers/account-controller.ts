@@ -8,7 +8,6 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as PageController from "./page-controller";
 import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
@@ -49,6 +48,7 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
+import { navigate } from "./route-controller";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -215,9 +215,10 @@ export async function getDataAndInit(): Promise<boolean> {
   } else {
     Focus.set(false);
   }
-  await PageController.change(undefined, true);
-  PageTransition.set(false);
-  console.log("account loading finished");
+  // await PageController.change(undefined, true);
+  navigate();
+  // PageTransition.set(false);
+  // console.log("account loading finished");
   return true;
 }
 
@@ -281,7 +282,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     PageTransition.set(false);
   }
   if (!user) {
-    PageController.change();
+    navigate();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
@@ -470,7 +471,7 @@ export function signOut(): void {
       AllTimeStats.clear();
       Settings.hideAccountSection();
       AccountButton.update();
-      PageController.change("login");
+      navigate("/login");
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);

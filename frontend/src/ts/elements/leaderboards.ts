@@ -6,8 +6,9 @@ import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
-import { change } from "../controllers/page-controller";
+// import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
+import { navigate } from "../controllers/route-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -354,7 +355,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     const uid = $(e.target).attr("uid");
     if (uid) {
       window.history.replaceState(null, "", "/profile?uid=" + uid);
-      change("profile", true);
+      navigate(`/profile/${uid}`);
       hide();
     }
   });
