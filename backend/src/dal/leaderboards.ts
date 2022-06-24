@@ -120,10 +120,11 @@ export async function update(
     }
 
     // extract selected badge
-    if (lbEntry.badges?.length) {
-      lbEntry.badgeId = lbEntry.badges.filter(
-        (badge) => badge.selected === true
-      )[0].id;
+    if (lbEntry.badges) {
+      const selectedBadge = lbEntry.badges.find((badge) => badge.selected);
+      if (selectedBadge) {
+        lbEntry.badgeId = selectedBadge.id;
+      }
       delete lbEntry.badges;
     }
   });
