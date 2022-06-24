@@ -214,14 +214,11 @@ export async function getDataAndInit(): Promise<boolean> {
   } else {
     Focus.set(false);
   }
-  // await PageController.change(undefined, true);
   if (window.location.pathname === "/login") {
     navigate("/account");
   } else {
     navigate();
   }
-  // PageTransition.set(false);
-  // console.log("account loading finished");
   return true;
 }
 
