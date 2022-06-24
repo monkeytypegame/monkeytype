@@ -3,6 +3,9 @@ import * as PageController from "./page-controller";
 import * as PageTest from "../pages/test";
 import * as PageAbout from "../pages/about";
 import * as PageSettings from "../pages/settings";
+import * as PageAccount from "../pages/account";
+import * as PageLogin from "../pages/login";
+
 import * as Leaderboards from "../elements/leaderboards";
 // import Config from "../config";
 import * as ActivePage from "../states/active-page";
@@ -110,6 +113,18 @@ const routes: Route[] = [
     path: "/settings",
     load: (): void => {
       PageController.change(PageSettings.page);
+    },
+  },
+  {
+    path: "/login",
+    load: (): void => {
+      PageController.change(PageLogin.page);
+    },
+  },
+  {
+    path: "/account",
+    load: (): void => {
+      PageController.change(PageAccount.page);
     },
   },
   {
