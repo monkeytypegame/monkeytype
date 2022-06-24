@@ -72,7 +72,7 @@ export function sendVerificationEmail(): void {
 export async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    if (ActivePage.get() === "loading") {
+    if (window.location.pathname !== "/account") {
       LoadingPage.updateBar(90);
     } else {
       LoadingPage.updateBar(45);
@@ -210,13 +210,17 @@ export async function getDataAndInit(): Promise<boolean> {
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
-  if (ActivePage.get() === "account") {
-    Account.update();
+  if (window.location.pathname === "/account") {
+    await Account.downloadResults();
   } else {
     Focus.set(false);
   }
   // await PageController.change(undefined, true);
-  navigate();
+  if (window.location.pathname === "/login") {
+    navigate("/account");
+  } else {
+    navigate();
+  }
   // PageTransition.set(false);
   // console.log("account loading finished");
   return true;
