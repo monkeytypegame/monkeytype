@@ -2,18 +2,18 @@ export default class Page {
   public name: string;
   public element: JQuery;
   public pathname: string;
-  public beforeHide: () => void;
-  public afterHide: () => void;
-  public beforeShow: () => void;
-  public afterShow: () => void;
+  public beforeHide: () => Promise<void>;
+  public afterHide: () => Promise<void>;
+  public beforeShow: () => Promise<void>;
+  public afterShow: () => Promise<void>;
   constructor(
     name: string,
     element: JQuery,
     pathname: string,
-    beforeHide: () => void,
-    afterHide: () => void,
-    beforeShow: () => void,
-    afterShow: () => void
+    beforeHide: () => Promise<void>,
+    afterHide: () => Promise<void>,
+    beforeShow: () => Promise<void>,
+    afterShow: () => Promise<void>
   ) {
     this.name = name;
     this.element = element;

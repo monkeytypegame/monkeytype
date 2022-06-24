@@ -25,16 +25,16 @@ export const page = new Page(
   "about",
   $(".page.pageAbout"),
   "/about",
-  () => {
+  async () => {
     //
   },
   async () => {
     reset();
   },
-  () => {
+  async () => {
     fill();
   },
-  () => {
+  async () => {
     //
   }
 );

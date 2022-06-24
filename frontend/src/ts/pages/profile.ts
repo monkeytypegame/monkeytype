@@ -138,17 +138,17 @@ export const page = new Page(
   "profile",
   $(".page.pageProfile"),
   "/profile",
-  () => {
+  async () => {
     //
   },
-  () => {
+  async () => {
     reset();
   },
-  () => {
+  async () => {
     reset();
     update();
   },
-  () => {
+  async () => {
     //
   }
 );
