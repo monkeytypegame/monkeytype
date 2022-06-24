@@ -1,6 +1,8 @@
 {
   "name": "english",
   "leftToRight": true,
+  "ligatures": true,
+  "bcp47": "ko-KR",
   "noLazyMode": true,
   "words": [
   "사과",
