@@ -7,7 +7,7 @@ import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
 import Page from "./page";
 
-export const page = new Page(
+export default new Page(
   "test",
   $(".page.pageTest"),
   "/",
