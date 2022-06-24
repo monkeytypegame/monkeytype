@@ -927,25 +927,25 @@ export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
-export function swapElements(
+export async function swapElements(
   el1: JQuery,
   el2: JQuery,
   totalDuration: number,
-  callback = function (): void {
-    return;
+  callback = function (): Promise<void> {
+    return Promise.resolve();
   },
-  middleCallback = function (): void {
-    return;
+  middleCallback = function (): Promise<void> {
+    return Promise.resolve();
   }
-): boolean | undefined {
+): Promise<boolean | undefined> {
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
   ) {
     //one of them is hidden and the other is visible
     if (el1.hasClass("hidden")) {
-      middleCallback();
-      callback();
+      await middleCallback();
+      await callback();
       return false;
     }
     $(el1)
@@ -956,8 +956,8 @@ export function swapElements(
           opacity: 0,
         },
         totalDuration / 2,
-        () => {
-          middleCallback();
+        async () => {
+          await middleCallback();
           $(el1).addClass("hidden");
           $(el2)
             .removeClass("hidden")
@@ -975,7 +975,7 @@ export function swapElements(
       );
   } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
-    middleCallback();
+    await middleCallback();
     $(el2)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -984,13 +984,13 @@ export function swapElements(
           opacity: 1,
         },
         totalDuration,
-        () => {
-          callback();
+        async () => {
+          await callback();
         }
       );
   } else {
-    middleCallback();
-    callback();
+    await middleCallback();
+    await callback();
   }
 
   return;
