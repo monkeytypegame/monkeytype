@@ -794,13 +794,6 @@ $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
   update();
 });
 
-$(document).on("click", "#top #menu .text-button", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    show();
-  }
-  return false;
-});
-
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
