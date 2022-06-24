@@ -8,7 +8,7 @@ import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 // import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { navigate, updateState } from "../controllers/route-controller";
+import { navigate } from "../controllers/route-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -354,7 +354,6 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   $(".entryName").on("click", (e) => {
     const uid = $(e.target).attr("uid");
     if (uid) {
-      window.history.replaceState(null, "", "/profile?uid=" + uid);
       navigate(`/profile/${uid}`);
       hide();
     }
@@ -381,7 +380,7 @@ export function hide(): void {
         stopTimer();
         showYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
-        updateState();
+        // updateState();
       }
     );
 }
