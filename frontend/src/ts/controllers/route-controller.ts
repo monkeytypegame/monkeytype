@@ -199,3 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   // router();
 });
+
+$("#top .logo").click(() => {
+  navigate("/");
+});
