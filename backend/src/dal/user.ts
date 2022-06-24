@@ -50,10 +50,7 @@ export async function deleteUser(uid: string): Promise<DeleteResult> {
 const DAY_IN_SECONDS = 24 * 60 * 60;
 const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
 
-export async function updateName(
-  uid: string,
-  name: string
-): Promise<UpdateResult> {
+export async function updateName(uid: string, name: string): Promise<void> {
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
@@ -72,7 +69,7 @@ export async function updateName(
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
 
-  return await getUsersCollection().updateOne(
+  await getUsersCollection().updateOne(
     { uid },
     {
       $set: { name, lastNameChange: Date.now() },
@@ -221,7 +218,7 @@ export async function editTag(
   uid: string,
   _id: string,
   name: string
-): Promise<UpdateResult> {
+): Promise<void> {
   const user = await getUser(uid, "edit tag");
   if (
     user.tags === undefined ||
@@ -229,7 +226,7 @@ export async function editTag(
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  return await getUsersCollection().updateOne(
+  await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -238,10 +235,7 @@ export async function editTag(
   );
 }
 
-export async function removeTag(
-  uid: string,
-  _id: string
-): Promise<UpdateResult> {
+export async function removeTag(uid: string, _id: string): Promise<void> {
   const user = await getUser(uid, "remove tag");
   if (
     user.tags === undefined ||
@@ -249,7 +243,7 @@ export async function removeTag(
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  return await getUsersCollection().updateOne(
+  await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -258,10 +252,7 @@ export async function removeTag(
   );
 }
 
-export async function removeTagPb(
-  uid: string,
-  _id: string
-): Promise<UpdateResult> {
+export async function removeTagPb(uid: string, _id: string): Promise<void> {
   const user = await getUser(uid, "remove tag pb");
   if (
     user.tags === undefined ||
@@ -269,7 +260,7 @@ export async function removeTagPb(
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  return await getUsersCollection().updateOne(
+  await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -284,7 +275,7 @@ export async function updateLbMemory(
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>,
   language: string,
   rank: number
-): Promise<UpdateResult> {
+): Promise<void> {
   const user = await getUser(uid, "update lb memory");
   if (user.lbMemory === undefined) user.lbMemory = {};
   if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
@@ -292,7 +283,7 @@ export async function updateLbMemory(
     user.lbMemory[mode][mode2] = {};
   }
   user.lbMemory[mode][mode2][language] = rank;
-  return await getUsersCollection().updateOne(
+  await getUsersCollection().updateOne(
     { uid },
     {
       $set: { lbMemory: user.lbMemory },
