@@ -13,7 +13,6 @@ import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
-import * as PageController from "./page-controller";
 import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
@@ -27,6 +26,7 @@ import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
+import { navigate } from "./route-controller";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -620,7 +620,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      PageController.change("test");
+      navigate("/");
       return;
     }
 
@@ -702,7 +702,7 @@ $(document).keydown(async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      PageController.change("test");
+      navigate("/");
       return;
     }
 

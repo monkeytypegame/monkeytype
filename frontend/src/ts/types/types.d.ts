@@ -687,17 +687,6 @@ declare namespace MonkeyTypes {
     colorfulErrorExtra: string;
   }
 
-  type Page =
-    | "loading"
-    | "test"
-    | "about"
-    | "settings"
-    | "account"
-    | "login"
-    | "profile";
-
-  //  type ActivePage = `page${Page}` | undefined;
-
   interface Layout {
     keymapShowTopRow: boolean;
     type: "iso" | "ansi" | "ortho" | "matrix";
