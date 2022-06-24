@@ -1,5 +1,5 @@
 export default class Page {
-  public name: MonkeyTypes.Page;
+  public name: string;
   public element: JQuery;
   public pathname: string;
   public beforeHide: () => void;
@@ -7,7 +7,7 @@ export default class Page {
   public beforeShow: () => void;
   public afterShow: () => void;
   constructor(
-    name: MonkeyTypes.Page,
+    name: string,
     element: JQuery,
     pathname: string,
     beforeHide: () => void,
