@@ -96,5 +96,5 @@ export async function deleteApeKey(uid: string, keyId: string): Promise<void> {
 }
 
 export async function resetApeKeys(uid: string): Promise<void> {
-  await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).deleteOne({ uid });
+  await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).deleteMany({ uid });
 }
