@@ -1,4 +1,3 @@
-// import * as Funbox from "../test/funbox";
 import * as PageController from "./page-controller";
 import * as PageTest from "../pages/test";
 import * as PageAbout from "../pages/about";
@@ -98,12 +97,6 @@ const routes: Route[] = [
       PageController.change(PageProfile.page, undefined, params);
     },
   },
-  // {
-  //   path: "/404",
-  //   load: (): void => {
-  //     PageController.change(Page404.page);
-  //   },
-  // },
 ];
 
 export function navigate(url = window.location.pathname): void {
@@ -125,7 +118,6 @@ async function router(): Promise<void> {
   };
 
   if (!match) {
-    // return navigate("/404");
     PageController.change(Page404.page);
     return;
   }
@@ -143,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
       navigate(target.href);
     }
   });
-  // router();
 });
 
 $("#top .logo").click(() => {
