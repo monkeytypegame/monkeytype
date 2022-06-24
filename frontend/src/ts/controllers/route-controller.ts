@@ -5,10 +5,13 @@ import * as PageAbout from "../pages/about";
 import * as PageSettings from "../pages/settings";
 import * as PageAccount from "../pages/account";
 import * as PageLogin from "../pages/login";
+import * as Page404 from "../pages/404";
+import * as PageProfile from "../pages/profile";
 
 import * as Leaderboards from "../elements/leaderboards";
 // import Config from "../config";
 import * as ActivePage from "../states/active-page";
+import { Auth } from "../firebase";
 // import { Auth } from "../firebase";
 
 // const mappedRoutes = {
@@ -128,11 +131,27 @@ const routes: Route[] = [
     },
   },
   {
-    path: "/404",
+    path: "/profile",
     load: (): void => {
-      alert("404");
+      if (Auth.currentUser) {
+        navigate("/account");
+      } else {
+        navigate("/");
+      }
     },
   },
+  {
+    path: "/profile/:uid",
+    load: (params): void => {
+      PageController.change(PageProfile.page, undefined, params);
+    },
+  },
+  // {
+  //   path: "/404",
+  //   load: (): void => {
+  //     PageController.change(Page404.page);
+  //   },
+  // },
 ];
 
 export function navigate(url = window.location.pathname): void {
@@ -159,7 +178,9 @@ async function router(): Promise<void> {
   };
 
   if (!match) {
-    return navigate("/404");
+    // return navigate("/404");
+    PageController.change(Page404.page);
+    return;
   }
 
   match.route.load(getParams(match));
