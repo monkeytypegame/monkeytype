@@ -5,8 +5,6 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 
-const CAPTCHA_ID = 1;
-
 interface State {
   previousPopupShowCallback?: () => void;
   quoteToReport?: MonkeyTypes.Quote;
@@ -56,6 +54,12 @@ export async function show(options = defaultOptions): Promise<void> {
       .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
         $("#quoteReportPopup textarea").trigger("focus").select();
       });
+
+    // prettier-ignore
+    var widgetId = grecaptcha.render($("#quoteReportPopup .g-recaptcha"), {
+      "sitekey": "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj",
+    });
+    console.log(widgetId);
   }
 }
 
@@ -72,7 +76,7 @@ export async function hide(): Promise<void> {
         },
         noAnim ? 0 : 100,
         () => {
-          grecaptcha.reset(CAPTCHA_ID);
+          grecaptcha.reset(widgetId);
           $("#quoteReportPopupWrapper").addClass("hidden");
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
@@ -83,7 +87,7 @@ export async function hide(): Promise<void> {
 }
 
 async function submitReport(): Promise<void> {
-  const captchaResponse = grecaptcha.getResponse(CAPTCHA_ID);
+  const captchaResponse = grecaptcha.getResponse(widgetId);
   if (!captchaResponse) {
     return Notifications.add("Please complete the captcha.");
   }
@@ -155,3 +159,6 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     noAnim: false,
   });
 });
+function widgetId(widgetId: any) {
+  throw new Error("Function not implemented.");
+}
