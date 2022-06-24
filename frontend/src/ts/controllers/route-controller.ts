@@ -159,7 +159,7 @@ async function router(): Promise<void> {
   };
 
   if (!match) {
-    return navigate("404");
+    return navigate("/404");
   }
 
   match.route.load(getParams(match));
