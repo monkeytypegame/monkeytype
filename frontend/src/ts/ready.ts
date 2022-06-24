@@ -1,9 +1,9 @@
 import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./utils/misc";
-import * as VerificationController from "./controllers/verification-controller";
-import * as RouteController from "./controllers/route-controller";
-import * as PageController from "./controllers/page-controller";
+// import * as VerificationController from "./controllers/verification-controller";
+// import * as RouteController from "./controllers/route-controller";
+// import * as PageController from "./controllers/page-controller";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
@@ -41,11 +41,7 @@ $("#nocss .requestedStylesheets").html(
 );
 
 Focus.set(true, true);
-RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
-  if (window.location.pathname === "/") {
-    // $("#top .config").removeClass("hidden");
-  }
   CookiePopup.check();
   $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
@@ -79,32 +75,28 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
-      if (window.location.pathname === "/verify") {
-        const fragment = new URLSearchParams(window.location.hash.slice(1));
-        if (fragment.has("access_token")) {
-          const accessToken = fragment.get("access_token") as string;
-          const tokenType = fragment.get("token_type") as string;
-          VerificationController.set({
-            accessToken: accessToken,
-            tokenType: tokenType,
-          });
-          history.replaceState("/", "", "/");
-        }
-        const page = window.location.pathname.replace(
-          "/",
-          ""
-        ) as MonkeyTypes.Page;
-        PageController.change(page);
-      } else if (window.location.pathname === "/account") {
-        // history.replaceState("/", null, "/");
-      } else if (/challenge_.+/g.test(window.location.pathname)) {
-        //do nothing
-        // }
-      } else if (window.location.pathname !== "/") {
-        // let page = window.location.pathname.replace("/", "");
-        // PageController.change(page);
-      }
+      //todo rewrite
+      // if (window.location.pathname === "/verify") {
+      //   const fragment = new URLSearchParams(window.location.hash.slice(1));
+      //   if (fragment.has("access_token")) {
+      //     const accessToken = fragment.get("access_token") as string;
+      //     const tokenType = fragment.get("token_type") as string;
+      //     VerificationController.set({
+      //       accessToken: accessToken,
+      //       tokenType: tokenType,
+      //     });
+      //     history.replaceState("/", "", "/");
+      //   }
+      //   const page = window.location.pathname.replace(
+      //     "/",
+      //     ""
+      //   );
+      //   PageController.change(page);
+      // } else if (window.location.pathname === "/account") {
+      // } else if (/challenge_.+/g.test(window.location.pathname)) {
+      // } else if (window.location.pathname !== "/") {
+      // }
     });
-  // Settings.settingsFillPromise.then(Settings.update);
+
   MonkeyPower.init();
 });
