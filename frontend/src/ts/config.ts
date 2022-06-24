@@ -1291,6 +1291,7 @@ function setThemes(
   theme: string,
   customState: boolean,
   customThemeColors: string[],
+  autoSwitchTheme: boolean,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("themes", theme, ["string"])) return false;
@@ -1310,6 +1311,7 @@ function setThemes(
   config.customThemeColors = customThemeColors;
   config.theme = theme;
   config.customTheme = customState;
+  config.autoSwitchTheme = autoSwitchTheme;
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("setThemes", customState);
 
@@ -1731,11 +1733,11 @@ export function apply(
   if (configObj !== undefined && configObj !== null) {
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
-    setAutoSwitchTheme(configObj.autoSwitchTheme, true);
     setThemes(
       configObj.theme,
       configObj.customTheme,
       configObj.customThemeColors,
+      configObj.autoSwitchTheme,
       true
     );
     setCustomLayoutfluid(configObj.customLayoutfluid, true);
