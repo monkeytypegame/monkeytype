@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
-import * as VerificationController from "./verification-controller";
 import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
@@ -252,10 +251,6 @@ export async function loadUser(user: UserType): Promise<void> {
 
   // showFavouriteThemesAtTheTop();
 
-  if (VerificationController.data !== null) {
-    VerificationController.verify();
-  }
-
   if (TestLogic.notSignedInLastResult !== null) {
     TestLogic.setNotSignedInUid(user.uid);
 
@@ -276,6 +271,7 @@ export async function loadUser(user: UserType): Promise<void> {
 const authListener = Auth.onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   const search = window.location.search;
+  const hash = window.location.hash;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);
@@ -294,6 +290,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
 
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
+  URLHandler.linkDiscord(hash);
 
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(

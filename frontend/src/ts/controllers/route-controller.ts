@@ -98,6 +98,12 @@ const routes: Route[] = [
     },
   },
   {
+    path: "/verify",
+    load: (): void => {
+      PageController.change(PageTest.page);
+    },
+  },
+  {
     path: "/leaderboards",
     load: (): void => {
       if (ActivePage.get() === "loading") {
