@@ -441,6 +441,7 @@ router.patch(
     body: {
       bio: profileDetailsBase.max(150),
       keyboard: profileDetailsBase.max(75),
+      selectedBadgeId: joi.number(),
       socialProfiles: joi.object({
         twitter: profileDetailsBase.max(20),
         github: profileDetailsBase.max(39),

@@ -78,6 +78,7 @@ export async function update(
               $exists: true,
             },
             banned: { $exists: false },
+            needsToChangeName: { $exists: false },
             timeTyping: {
               $gt: process.env.MODE === "dev" ? 0 : 7200,
             },
@@ -89,7 +90,7 @@ export async function update(
             [str + ".name"]: "$name",
             [str + ".discordId"]: "$discordId",
             [str + ".discordAvatar"]: "$discordAvatar",
-            [str + ".badgeIds"]: "$badgeIds",
+            [str + ".badges"]: "$inventory.badges",
           },
         },
         {
@@ -116,6 +117,14 @@ export async function update(
     lbEntry.rank = index + 1;
     if (uid && lbEntry.uid === uid) {
       retval = index + 1;
+    }
+
+    // extract selected badge
+    if (lbEntry.badges) {
+      lbEntry.badgeId = lbEntry.badges.filter(
+        (badge) => badge.selected === true
+      )[0].id;
+      delete lbEntry.badges;
     }
   });
   const end2 = performance.now();

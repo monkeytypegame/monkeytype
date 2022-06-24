@@ -71,6 +71,35 @@ describe("Misc Utils", () => {
     });
   });
 
+  it("identity", () => {
+    const testCases = [
+      {
+        input: "",
+        expected: "string",
+      },
+      {
+        input: {},
+        expected: "object",
+      },
+      {
+        input: 0,
+        expected: "number",
+      },
+      {
+        input: null,
+        expected: "null",
+      },
+      {
+        input: undefined,
+        expected: "undefined",
+      },
+    ];
+
+    _.each(testCases, ({ input, expected }) => {
+      expect(misc.identity(input)).toEqual(expected);
+    });
+  });
+
   it("flattenObjectDeep", () => {
     const testCases = [
       {

@@ -130,6 +130,8 @@ export async function getDataAndInit(): Promise<boolean> {
       "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
       -1,
       undefined,
+      true,
+      undefined,
       true
     );
   }
