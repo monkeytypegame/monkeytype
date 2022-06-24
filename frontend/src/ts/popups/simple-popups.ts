@@ -717,46 +717,14 @@ list["resetAccount"] = new SimplePopup(
       }
       Loader.show();
       Notifications.add("Reseting account and stats...", 0);
-      const usersResponse = await Ape.users.reset();
+      const responses = [await Ape.users.reset()];
 
-      if (usersResponse.status !== 200) {
-        Loader.hide();
-        return Notifications.add(
-          "Failed to reset user stats: " + usersResponse.message,
-          -1
-        );
-      }
+      responses.push(await Ape.presets.reset());
 
-      const presetResponse = await Ape.presets.reset();
-
-      if (presetResponse.status !== 200) {
-        Loader.hide();
-        return Notifications.add(
-          "Failed to reset presets: " + presetResponse.message,
-          -1
-        );
-      }
-
-      const apeResponse = await Ape.apeKeys.reset();
-
-      if (apeResponse.status !== 200) {
-        Loader.hide();
-        return Notifications.add(
-          "Faild to reset ape keys: " + apeResponse.message,
-          -1
-        );
-      }
+      responses.push(await Ape.apeKeys.reset());
 
       if (DB.getSnapshot().discordId !== undefined) {
-        const discordResponse = await Ape.users.unlinkDiscord();
-
-        if (discordResponse.status !== 200) {
-          Loader.hide();
-          return Notifications.add(
-            "Failed to unlink Discord: " + discordResponse.message,
-            -1
-          );
-        }
+        responses.push(await Ape.users.unlinkDiscord());
 
         Notifications.add("Accounts unlinked", 1);
         const snap = DB.getSnapshot();
@@ -766,20 +734,22 @@ list["resetAccount"] = new SimplePopup(
         DB.setSnapshot(snap);
         Settings.updateDiscordSection();
       }
+      responses.push(await Ape.results.deleteAll());
 
-      Loader.hide();
+      const results = Promise.all(responses);
 
-      Loader.show();
-      Notifications.add("Reseting results...", 0);
-      const resultsResponse = await Ape.results.deleteAll();
-      Loader.hide();
-
-      if (resultsResponse.status !== 200) {
+      const failedResponse = (await results).find(
+        (response) => response.status !== 200
+      );
+      if (failedResponse) {
+        Loader.hide();
         return Notifications.add(
-          "Failed to reseting user results: " + resultsResponse.message,
+          "There was a error reseting your account. Try retrying.",
           -1
         );
       }
+
+      Loader.hide();
 
       Loader.show();
       Notifications.add("Resting settings...", 0);
@@ -787,9 +757,9 @@ list["resetAccount"] = new SimplePopup(
       Loader.hide();
 
       Notifications.add("Reset complete", 0);
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
+      //      setTimeout(() => {
+      //        location.reload();
+      //      }, 3000);
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
