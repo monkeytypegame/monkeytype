@@ -72,11 +72,15 @@ function clearCustomTheme(): void {
 
 const loadStyle = async function (name: string): Promise<void> {
   return new Promise((resolve) => {
+    console.log("loading theme", name);
+    const headScript = document.querySelector("#currentTheme") as Element;
     const link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
-    link.id = "currentTheme";
+    link.id = "nextTheme";
     link.onload = (): void => {
+      $("#currentTheme").remove();
+      $("#nextTheme").attr("id", "currentTheme");
       resolve();
     };
     if (name === "custom") {
@@ -85,8 +89,7 @@ const loadStyle = async function (name: string): Promise<void> {
       link.href = `/./themes/${name}.css`;
     }
 
-    const headScript = document.querySelector("#currentTheme") as Element;
-    headScript.replaceWith(link);
+    headScript.after(link);
   });
 };
 
