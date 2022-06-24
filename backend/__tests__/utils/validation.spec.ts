@@ -27,6 +27,12 @@ describe("Validation", () => {
         max: 100,
         expected: true,
       },
+      {
+        value: 153,
+        min: -100,
+        max: 100,
+        expected: false,
+      },
     ];
 
     testCases.forEach((testCase) => {
@@ -75,7 +81,7 @@ describe("Validation", () => {
         expected: false,
       },
       {
-        name: "a_fucking_profanity",
+        name: "fucking_profane",
         expected: false,
       },
     ];
@@ -104,7 +110,7 @@ describe("Validation", () => {
         expected: false,
       },
       {
-        text: ".fuck!",
+        text: "\n.fuck!",
         expected: true,
       },
     ];
