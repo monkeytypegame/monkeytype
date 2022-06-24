@@ -1,12 +1,12 @@
 import * as Misc from "../utils/misc";
 import Page from "./page";
 
-export function reset(): void {
+function reset(): void {
   $(".pageAbout .contributors").empty();
   $(".pageAbout .supporters").empty();
 }
 
-export async function fill(): Promise<void> {
+async function fill(): Promise<void> {
   const supporters = await Misc.getSupportersList();
   const contributors = await Misc.getContributorsList();
   supporters.forEach((supporter) => {
@@ -21,7 +21,7 @@ export async function fill(): Promise<void> {
   });
 }
 
-export const page = new Page(
+export default new Page(
   "about",
   $(".page.pageAbout"),
   "/about",

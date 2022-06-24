@@ -1,6 +1,7 @@
 // import * as Funbox from "../test/funbox";
 import * as PageController from "./page-controller";
 import PageTest from "../pages/test";
+import PageAbout from "../pages/about";
 import * as Leaderboards from "../elements/leaderboards";
 // import Config from "../config";
 // import * as ActivePage from "../states/active-page";
@@ -93,6 +94,12 @@ const routes: Route[] = [
     path: "/leaderboards",
     load: (): void => {
       Leaderboards.show();
+    },
+  },
+  {
+    path: "/about",
+    load: (): void => {
+      PageController.change(PageAbout);
     },
   },
   {

@@ -4,7 +4,7 @@ import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 // import * as ManualRestart from "../test/manual-restart-tracker";
 import PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
+import PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
@@ -67,7 +67,7 @@ export async function change(page: Page, force = false): Promise<boolean> {
       loading: PageLoading.page,
       test: PageTest,
       settings: Settings.page,
-      about: PageAbout.page,
+      about: PageAbout,
       account: Account.page,
       login: PageLogin.page,
       profile: PageProfile.page,
