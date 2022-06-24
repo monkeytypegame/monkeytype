@@ -3,8 +3,8 @@ import * as ActivePage from "../states/active-page";
 import * as Settings from "../pages/settings";
 import * as Account from "../pages/account";
 // import * as ManualRestart from "../test/manual-restart-tracker";
-import PageTest from "../pages/test";
-import PageAbout from "../pages/about";
+import * as PageTest from "../pages/test";
+import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
@@ -15,10 +15,10 @@ import type Page from "../pages/page";
 export async function change(page: Page, force = false): Promise<boolean> {
   return new Promise((resolve) => {
     if (PageTransition.get()) {
-      console.log(`change page ${page} stopped`);
+      console.log(`change page ${page.name} stopped`);
       return resolve(false);
     }
-    console.log(`change page ${page}`);
+    console.log(`change page ${page.name}`);
 
     // if (page == undefined) {
     //   const pages: {
@@ -59,15 +59,15 @@ export async function change(page: Page, force = false): Promise<boolean> {
     // }
 
     if (!force && ActivePage.get() === page.name) {
-      console.log(`page ${page} already active`);
+      console.log(`page ${page.name} already active`);
       return resolve(false);
     }
 
     const pages: Record<string, Page> = {
       loading: PageLoading.page,
-      test: PageTest,
+      test: PageTest.page,
       settings: Settings.page,
-      about: PageAbout,
+      about: PageAbout.page,
       account: Account.page,
       login: PageLogin.page,
       profile: PageProfile.page,
@@ -83,7 +83,7 @@ export async function change(page: Page, force = false): Promise<boolean> {
       previousPage.element,
       nextPage.element,
       250,
-      () => {
+      async () => {
         PageTransition.set(false);
         ActivePage.set(nextPage.name);
         previousPage?.afterHide();
