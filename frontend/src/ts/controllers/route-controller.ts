@@ -1,6 +1,7 @@
 // import * as Funbox from "../test/funbox";
 import * as PageController from "./page-controller";
 import PageTest from "../pages/test";
+import * as Leaderboards from "../elements/leaderboards";
 // import Config from "../config";
 // import * as ActivePage from "../states/active-page";
 // import { Auth } from "../firebase";
@@ -88,6 +89,18 @@ const routes: Route[] = [
       PageController.change(PageTest);
     },
   },
+  {
+    path: "/leaderboards",
+    load: (): void => {
+      Leaderboards.show();
+    },
+  },
+  {
+    path: "/404",
+    load: (): void => {
+      alert("404");
+    },
+  },
 ];
 
 export function navigate(url = window.location.pathname): void {
@@ -103,21 +116,13 @@ async function router(): Promise<void> {
     };
   });
 
-  let match = matches.find((m) => m.result !== null) as {
+  const match = matches.find((m) => m.result !== null) as {
     route: Route;
     result: RegExpMatchArray;
   };
 
   if (!match) {
-    match = {
-      route: {
-        path: "/404",
-        load: (_params): void => {
-          alert("404");
-        },
-      },
-      result: [location.pathname] as RegExpMatchArray,
-    };
+    return navigate("404");
   }
 
   match.route.load(getParams(match));
