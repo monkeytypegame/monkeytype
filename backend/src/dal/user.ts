@@ -4,7 +4,7 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, DeleteResult, ObjectId, WithId } from "mongodb";
+import { Collection, ObjectId, WithId } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
 
@@ -37,8 +37,8 @@ export async function addUser(
   }
 }
 
-export async function deleteUser(uid: string): Promise<DeleteResult> {
-  return await getUsersCollection().deleteOne({ uid });
+export async function deleteUser(uid: string): Promise<void> {
+  await getUsersCollection().deleteOne({ uid });
 }
 
 const DAY_IN_SECONDS = 24 * 60 * 60;
