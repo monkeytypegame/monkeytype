@@ -59,6 +59,13 @@ a {
   }
 }
 
+a[data-link] .icon,
+a[data-link] .fas,
+a[data-link] .far,
+a[data-link] .fab {
+  pointer-events: none;
+}
+
 body {
   margin: 0;
   padding: 0;
