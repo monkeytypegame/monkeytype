@@ -27,6 +27,6 @@ export default class ApeKeys {
   }
 
   async reset(): Ape.EndpointData {
-    return await this.httpClient.delete(`${BASE_PATH}/deleteAll`);
+    return await this.httpClient.delete(BASE_PATH);
   }
 }

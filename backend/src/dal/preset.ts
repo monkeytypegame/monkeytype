@@ -71,5 +71,5 @@ export async function removePreset(
 }
 
 export async function reset(uid: string): Promise<void> {
-  await db.collection(COLLECTION_NAME).deleteOne({ uid });
+  await db.collection(COLLECTION_NAME).deleteMany({ uid });
 }

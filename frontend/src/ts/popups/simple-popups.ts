@@ -717,14 +717,14 @@ list["resetAccount"] = new SimplePopup(
       }
       Loader.show();
       Notifications.add("Reseting account and stats...", 0);
-      const responses = [await Ape.users.reset()];
+      const responses = [Ape.users.reset()];
 
-      responses.push(await Ape.presets.reset());
+      responses.push(Ape.presets.reset());
 
-      responses.push(await Ape.apeKeys.reset());
+      responses.push(Ape.apeKeys.reset());
 
       if (DB.getSnapshot().discordId !== undefined) {
-        responses.push(await Ape.users.unlinkDiscord());
+        responses.push(Ape.users.unlinkDiscord());
 
         Notifications.add("Accounts unlinked", 1);
         const snap = DB.getSnapshot();
@@ -734,9 +734,9 @@ list["resetAccount"] = new SimplePopup(
         DB.setSnapshot(snap);
         Settings.updateDiscordSection();
       }
-      responses.push(await Ape.results.deleteAll());
+      responses.push(Ape.results.deleteAll());
 
-      const results = Promise.all(responses);
+      const results = await Promise.all(responses);
 
       const failedResponse = (await results).find(
         (response) => response.status !== 200
