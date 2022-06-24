@@ -1,7 +1,3 @@
-// import Config, * as UpdateConfig from "./config";
-// import * as Notifications from "./notifications";
-// import * as ThemePicker from "./theme-picker";
-
 export function show(value: string): void {
   if ($("#customThemeShareWrapper").hasClass("hidden")) {
     // let save = [];
