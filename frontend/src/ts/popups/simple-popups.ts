@@ -757,9 +757,9 @@ list["resetAccount"] = new SimplePopup(
       Loader.hide();
 
       Notifications.add("Reset complete", 0);
-      //      setTimeout(() => {
-      //        location.reload();
-      //      }, 3000);
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
