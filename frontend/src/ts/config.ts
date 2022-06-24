@@ -1260,7 +1260,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  setCustomTheme(false);
+  if (config.customTheme === true) setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
