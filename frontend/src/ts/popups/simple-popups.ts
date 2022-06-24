@@ -716,7 +716,7 @@ list["resetAccount"] = new SimplePopup(
         await reauthenticateWithPopup(user, AccountController.gmailProvider);
       }
       Loader.show();
-      Notifications.add("Reseting account and stats...", 0);
+      Notifications.add("Resetting account and stats...", 0);
       const responses = [Ape.users.reset()];
 
       responses.push(Ape.presets.reset());
@@ -744,7 +744,7 @@ list["resetAccount"] = new SimplePopup(
       if (failedResponse) {
         Loader.hide();
         return Notifications.add(
-          "There was a error reseting your account. Try retrying.",
+          "There was a error Resetting your account. Try retrying.",
           -1
         );
       }
@@ -752,7 +752,7 @@ list["resetAccount"] = new SimplePopup(
       Loader.hide();
 
       Loader.show();
-      Notifications.add("Reseting settings...", 0);
+      Notifications.add("Resetting settings...", 0);
       UpdateConfig.reset();
       Loader.hide();
 
