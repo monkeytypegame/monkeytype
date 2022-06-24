@@ -165,11 +165,6 @@ export function navigate(url = window.location.pathname): void {
   router();
 }
 
-export function updateState(): void {
-  const activePage = ActivePage.get();
-  history.pushState(null, "", activePage === "test" ? "/" : activePage);
-}
-
 async function router(): Promise<void> {
   const matches = routes.map((r) => {
     return {

@@ -380,7 +380,6 @@ export function hide(): void {
         stopTimer();
         showYesterdayButton.removeClass("active");
         $("#leaderboardsWrapper").addClass("hidden");
-        // updateState();
       }
     );
 }
