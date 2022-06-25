@@ -59,6 +59,14 @@ a {
   }
 }
 
+a[data-link] * {
+  pointer-events: none;
+}
+
+a.button {
+  text-decoration: none;
+}
+
 body {
   margin: 0;
   padding: 0;

@@ -833,6 +833,18 @@
   .pageLogin .side input {
     width: 90vw;
   }
+  .page404 {
+    .content {
+      width: 100%;
+      .image {
+        width: 100%;
+      }
+      .big {
+        font-size: 7rem;
+        line-height: 7rem;
+      }
+    }
+  }
 }
 
 @media (hover: none) and (pointer: coarse) {

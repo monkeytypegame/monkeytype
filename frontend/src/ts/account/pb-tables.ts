@@ -138,16 +138,16 @@ function buildPbHtml(
       <div class="test">${modeString}</div>
       <div class="wpm">${Math.round(pbData.wpm * multiplier)}</div>
       <div class="acc">${
-        pbData.acc === undefined ? "-" : Math.round(pbData.acc) + "%"
+        pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
       }</div>
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
       <div>${Math.round(pbData.wpm * multiplier)} wpm</div>
       <div>${Math.round(pbData.raw * multiplier)} raw</div>
-      <div>${pbData.acc === undefined ? "-" : Math.round(pbData.acc)} acc</div>
+      <div>${pbData.acc === undefined ? "-" : Math.floor(pbData.acc)} acc</div>
       <div>${
-        pbData.consistency === undefined ? "-" : Math.round(pbData.consistency)
+        pbData.consistency === undefined ? "-" : Math.floor(pbData.consistency)
       } con</div>
       <div>${dateText}</div>
     </div>`;

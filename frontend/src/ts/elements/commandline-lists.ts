@@ -21,9 +21,9 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
-import * as PageController from "../controllers/page-controller";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as EditTagPopup from "../popups/edit-tags-popup";
+import { navigate } from "../controllers/route-controller";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -2516,7 +2516,7 @@ Misc.getChallengeList().then((challenges) => {
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
-        PageController.change("test");
+        navigate("/");
         ChallengeController.setup(challenge.name);
         TestLogic.restart(false, true);
       },
