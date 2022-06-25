@@ -4,6 +4,7 @@ import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
+import * as CaptchaController from "../controllers/captcha-controller";
 
 interface State {
   previousPopupShowCallback?: () => void;
@@ -29,15 +30,10 @@ const defaultOptions: Options = {
   noAnim: false,
 };
 
-let widgetId = "";
-
 export async function show(options = defaultOptions): Promise<void> {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
     // prettier-ignore
-    widgetId = grecaptcha.render(document.querySelector("#quoteReportPopup .g-recaptcha"),
-    {
-      "sitekey": "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj",
-    });
+    CaptchaController.render(document.querySelector("#quoteReportPopup .g-recaptcha")as HTMLElement, "quoteReportPopup");
 
     const { quoteId, previousPopupShowCallback, noAnim } = options;
 
@@ -78,7 +74,7 @@ export async function hide(): Promise<void> {
         },
         noAnim ? 0 : 100,
         () => {
-          grecaptcha.reset(widgetId);
+          CaptchaController.reset("quoteReportPopup");
           $("#quoteReportPopupWrapper").addClass("hidden");
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
@@ -89,7 +85,7 @@ export async function hide(): Promise<void> {
 }
 
 async function submitReport(): Promise<void> {
-  const captchaResponse = grecaptcha.getResponse(widgetId);
+  const captchaResponse = CaptchaController.getResponse("quoteReportPopup");
   if (!captchaResponse) {
     return Notifications.add("Please complete the captcha.");
   }
