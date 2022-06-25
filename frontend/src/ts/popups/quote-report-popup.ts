@@ -31,6 +31,12 @@ const defaultOptions: Options = {
 
 export async function show(options = defaultOptions): Promise<void> {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
+    // prettier-ignore
+    const widgetId = grecaptcha.render(document.querySelector("#quoteReportPopup .g-recaptcha"),
+    {
+      "sitekey": "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj",
+    });
+
     const { quoteId, previousPopupShowCallback, noAnim } = options;
 
     state.previousPopupShowCallback = previousPopupShowCallback;
@@ -54,12 +60,6 @@ export async function show(options = defaultOptions): Promise<void> {
       .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
         $("#quoteReportPopup textarea").trigger("focus").select();
       });
-
-    // prettier-ignore
-    const widgetId = grecaptcha.render(document.querySelector("#quoteReportPopup .g-recaptcha"),
-    {
-      "sitekey": "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj",
-    });
   }
 }
 
