@@ -7,7 +7,6 @@ import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { navigate } from "../controllers/route-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -349,14 +348,6 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   } else {
     $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
   }
-
-  $(".entryName").on("click", (e) => {
-    const uid = $(e.target).attr("uid");
-    if (uid) {
-      navigate(`/profile/${uid}`);
-      hide();
-    }
-  });
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
