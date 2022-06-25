@@ -10,6 +10,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
+export let randomThemeIndex = 0;
 
 export const colorVars = [
   "--bg-color",
@@ -196,7 +197,6 @@ export function randomizeTheme(): void {
 
     //! setting randomThemeIndex to 0 everytime randomizeTheme is called
 
-    let randomThemeIndex = 0;
     const randomTheme = randomList[randomThemeIndex];
     randomThemeIndex++;
 
