@@ -94,7 +94,7 @@ const routes: Route[] = [
   {
     path: "/profile/:uid",
     load: (params): void => {
-      PageController.change(PageProfile.page, undefined, params);
+      PageController.change(PageProfile.page, true, params);
     },
   },
 ];
