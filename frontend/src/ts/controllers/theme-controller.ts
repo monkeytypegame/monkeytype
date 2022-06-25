@@ -192,50 +192,53 @@ export function clearPreview(): void {
   }
 }
 
+let themesList: string[] = [];
+
+async function changeThemeList(): Promise<void> {
+  const themes = await Misc.getThemesList();
+  if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
+    themesList = Config.favThemes;
+  } else if (Config.randomTheme === "light") {
+    themesList = themes
+      .filter((t) => Misc.isColorLight(t.bgColor))
+      .map((t) => t.name);
+  } else if (Config.randomTheme === "dark") {
+    themesList = themes
+      .filter((t) => Misc.isColorDark(t.bgColor))
+      .map((t) => t.name);
+  } else if (Config.randomTheme === "on") {
+    themesList = themes.map((t) => {
+      return t.name;
+    });
+  } else {
+    themesList = DB.getSnapshot().customThemes.map((ct) => ct._id);
+  }
+  Misc.shuffle(themesList);
+}
+
 export function randomizeTheme(): void {
-  let randomList: string[] | MonkeyTypes.CustomTheme[];
-  Misc.getThemesList().then((themes) => {
-    if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
-      randomList = Config.favThemes;
-    } else if (Config.randomTheme === "light") {
-      randomList = themes
-        .filter((t) => Misc.isColorLight(t.bgColor))
-        .map((t) => t.name);
-    } else if (Config.randomTheme === "dark") {
-      randomList = themes
-        .filter((t) => Misc.isColorDark(t.bgColor))
-        .map((t) => t.name);
-    } else if (Config.randomTheme === "on") {
-      randomList = themes.map((t) => {
-        return t.name;
-      });
-    } else {
-      randomList = DB.getSnapshot().customThemes.map((ct) => ct._id);
+  //! setting randomThemeIndex to 0 everytime randomizeTheme is called
+
+  const randomTheme = themesList[randomThemeIndex];
+  randomThemeIndex++;
+
+  if (randomThemeIndex >= themesList.length) {
+    Misc.shuffle(themesList);
+    randomThemeIndex = 0;
+  }
+
+  preview(randomTheme, Config.randomTheme === "custom");
+
+  if (randomThemeIndex >= themesList.length) {
+    let name = randomTheme.replace(/_/g, " ");
+    if (Config.randomTheme === "custom") {
+      name = (
+        DB.getSnapshot().customThemes.find((ct) => ct._id === randomTheme)
+          ?.name ?? "custom"
+      ).replace(/_/g, " ");
     }
-
-    //! setting randomThemeIndex to 0 everytime randomizeTheme is called
-
-    const randomTheme = randomList[randomThemeIndex];
-    randomThemeIndex++;
-
-    if (randomThemeIndex >= randomList.length) {
-      Misc.shuffle(randomList);
-      randomThemeIndex = 0;
-    }
-
-    preview(randomTheme, Config.randomTheme === "custom");
-
-    if (randomThemeIndex >= randomList.length) {
-      let name = randomTheme.replace(/_/g, " ");
-      if (Config.randomTheme === "custom") {
-        name = (
-          DB.getSnapshot().customThemes.find((ct) => ct._id === randomTheme)
-            ?.name ?? "custom"
-        ).replace(/_/g, " ");
-      }
-      Notifications.add(name, 0);
-    }
-  });
+    Notifications.add(name, 0);
+  }
 }
 
 export function clearRandom(): void {
@@ -292,6 +295,9 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "randomTheme") {
+    changeThemeList();
+  }
   if (eventKey === "customTheme") {
     eventValue ? set("custom", true) : set(Config.theme, false);
   }
