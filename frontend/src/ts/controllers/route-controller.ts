@@ -7,7 +7,7 @@ import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
 import * as Leaderboards from "../elements/leaderboards";
-import * as ActivePage from "../states/active-page";
+// import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
@@ -48,15 +48,15 @@ const routes: Route[] = [
       PageController.change(PageTest.page);
     },
   },
-  {
-    path: "/leaderboards",
-    load: (): void => {
-      if (ActivePage.get() === "loading") {
-        PageController.change(PageTest.page);
-      }
-      Leaderboards.show();
-    },
-  },
+  // {
+  //   path: "/leaderboards",
+  //   load: (): void => {
+  //     if (ActivePage.get() === "loading") {
+  //       PageController.change(PageTest.page);
+  //     }
+  //     Leaderboards.show();
+  //   },
+  // },
   {
     path: "/about",
     load: (): void => {

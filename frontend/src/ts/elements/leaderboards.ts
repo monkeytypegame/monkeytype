@@ -789,3 +789,10 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+$(document).on("click", "#top #menu .text-button", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    show();
+  }
+  return false;
+});
