@@ -3133,12 +3133,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "start begin type test",
       icon: "fa-keyboard",
       exec: (): void => {
-        $("#top #menu .text-button.view-start").trigger("click");
+        navigate("/");
       },
     },
     {
       id: "viewLeaderboards",
-      display: "View Leaderboards Page",
+      display: "View Leaderboards",
       icon: "fa-crown",
       exec: (): void => {
         $("#top #menu .text-button.view-leaderboards").trigger("click");
@@ -3149,7 +3149,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View About Page",
       icon: "fa-info",
       exec: (): void => {
-        $("#top #menu .text-button.view-about").trigger("click");
+        navigate("/about");
       },
     },
     {
@@ -3157,7 +3157,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Settings Page",
       icon: "fa-cog",
       exec: (): void => {
-        $("#top #menu .text-button.view-settings").trigger("click");
+        navigate("/settings");
       },
     },
     {
