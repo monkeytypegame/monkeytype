@@ -17,9 +17,6 @@ const DEV_CONFIG = {
       overlay: false,
     },
   },
-  output: {
-    publicPath: "/",
-  },
   plugins: [
     new ExtraWatchWebpackPlugin({
       dirs: [resolve(__dirname, "../static/html")],
