@@ -880,10 +880,9 @@ export async function init(): Promise<void> {
       Config.mode != "custom"
     ) {
       let wordCount = 0;
-
       // If mode is words, get as many sections as you need until the wordCount is fullfilled
       while (
-        (Config.mode == "words" && Config.words >= wordCount) ||
+        (Config.mode === "words" && Config.words >= wordCount) ||
         (Config.mode === "time" && wordCount < 100)
       ) {
         let section;
@@ -895,7 +894,7 @@ export async function init(): Promise<void> {
             section = await Poetry.getPoem();
             break;
           case "github":
-            section = await GitHub.getSection(Config.language);
+            section = await GitHub.getSection();
             break;
           default:
             console.log(`Unknown funbox type ${Config.funbox}`);
@@ -904,11 +903,10 @@ export async function init(): Promise<void> {
         if (section === undefined) continue;
 
         for (const word of section.words) {
+          wordCount++;
           if (wordCount >= Config.words && Config.mode == "words") {
-            wordCount++;
             break;
           }
-          wordCount++;
           TestWords.words.push(word);
         }
       }
