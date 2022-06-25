@@ -1,8 +1,6 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-// import Config from "../config";
-// import * as Misc from "../misc";
 
 // let dropdownReady = false;
 // async function initDropdown(): Promise<void> {

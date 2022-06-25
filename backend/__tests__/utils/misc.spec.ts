@@ -168,4 +168,41 @@ describe("Misc Utils", () => {
       expect(misc.flattenObjectDeep(obj)).toEqual(expected);
     });
   });
+
+  it("sanitizeString", () => {
+    const testCases = [
+      {
+        input: "h̶̼͔̭͈̏́̀́͋͜ͅe̵̺̞̦̫̫͔̋́̅̅̃̀͝͝ļ̶̬̯͚͇̺͍̞̫̟͖͋̓͛̆̒̓͜ĺ̴̗̘͇̬̆͂͌̈͊͝͝ỡ̴̡̦̩̠̞̐̃͆̚͠͝",
+        expected: "hello",
+      },
+      {
+        input: "hello",
+        expected: "hello",
+      },
+      {
+        input: "hel   lo",
+        expected: "hel  lo",
+      },
+      {
+        input: "   hel   lo   ",
+        expected: "hel  lo",
+      },
+      {
+        input: "",
+        expected: "",
+      },
+      {
+        input: "   \n\n\n",
+        expected: "",
+      },
+      {
+        input: undefined,
+        expected: undefined,
+      },
+    ];
+
+    testCases.forEach(({ input, expected }) => {
+      expect(misc.sanitizeString(input)).toEqual(expected);
+    });
+  });
 });

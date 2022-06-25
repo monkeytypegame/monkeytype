@@ -1,5 +1,4 @@
 import * as Notifications from "./notifications";
-// import * as VersionPopup from "./version-popup";
 
 function setMemory(v: string): void {
   window.localStorage.setItem("lastSeenVersion", v);

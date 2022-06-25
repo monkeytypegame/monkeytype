@@ -1,6 +1,5 @@
 import Ape from "../ape";
 import Page from "./page";
-import * as Misc from "../utils/misc";
 import * as Profile from "../elements/profile";
 import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
@@ -119,9 +118,7 @@ function reset(): void {
       </div>`);
 }
 
-async function update(): Promise<void> {
-  const userId = Misc.findGetParameter("uid");
-
+async function update(userId: string): Promise<void> {
   const response = await Ape.users.getProfile(userId ?? "");
   $(".page.pageProfile .preloader").addClass("hidden");
 
@@ -138,17 +135,17 @@ export const page = new Page(
   "profile",
   $(".page.pageProfile"),
   "/profile",
-  () => {
+  async () => {
     //
   },
-  () => {
+  async () => {
     reset();
   },
-  () => {
+  async (params) => {
     reset();
-    update();
+    update(params?.["uid"] ?? "");
   },
-  () => {
+  async () => {
     //
   }
 );

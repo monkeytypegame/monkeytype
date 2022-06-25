@@ -83,7 +83,7 @@ interface Theme {
 let themesList: Theme[] = [];
 export async function getThemesList(): Promise<Theme[]> {
   if (themesList.length == 0) {
-    return $.getJSON("themes/_list.json", function (data) {
+    return $.getJSON("/./themes/_list.json", function (data) {
       const list = data.sort(function (a: Theme, b: Theme) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
@@ -121,7 +121,7 @@ export async function getSortedThemesList(): Promise<Theme[]> {
 let funboxList: MonkeyTypes.FunboxObject[] = [];
 export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
   if (funboxList.length === 0) {
-    return $.getJSON("funbox/_list.json", function (data) {
+    return $.getJSON("/./funbox/_list.json", function (data) {
       funboxList = data.sort(function (
         a: MonkeyTypes.FunboxObject,
         b: MonkeyTypes.FunboxObject
@@ -151,7 +151,7 @@ export async function getFunbox(
 let layoutsList: MonkeyTypes.Layouts = {};
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   if (Object.keys(layoutsList).length === 0) {
-    return $.getJSON("layouts/_list.json", function (data) {
+    return $.getJSON("/./layouts/_list.json", function (data) {
       layoutsList = data;
       return layoutsList;
     });
@@ -177,7 +177,7 @@ interface Font {
 let fontsList: Font[] = [];
 export async function getFontsList(): Promise<Font[]> {
   if (fontsList.length === 0) {
-    return $.getJSON("fonts/_list.json", function (data) {
+    return $.getJSON("/./fonts/_list.json", function (data) {
       fontsList = data.sort(function (a: Font, b: Font) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
@@ -219,7 +219,7 @@ export async function getContributorsList(): Promise<string[]> {
 let languageList: string[] = [];
 export async function getLanguageList(): Promise<string[]> {
   if (languageList.length === 0) {
-    return $.getJSON("languages/_list.json", function (data) {
+    return $.getJSON("/./languages/_list.json", function (data) {
       languageList = data;
       return languageList;
     });
@@ -288,7 +288,7 @@ export async function findCurrentGroup(
 let challengeList: MonkeyTypes.Challenge[] = [];
 export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   if (challengeList.length === 0) {
-    return $.getJSON("challenges/_list.json", function (data) {
+    return $.getJSON("/./challenges/_list.json", function (data) {
       challengeList = data;
       return challengeList;
     });
@@ -927,25 +927,25 @@ export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
-export function swapElements(
+export async function swapElements(
   el1: JQuery,
   el2: JQuery,
   totalDuration: number,
-  callback = function (): void {
-    return;
+  callback = function (): Promise<void> {
+    return Promise.resolve();
   },
-  middleCallback = function (): void {
-    return;
+  middleCallback = function (): Promise<void> {
+    return Promise.resolve();
   }
-): boolean | undefined {
+): Promise<boolean | undefined> {
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
   ) {
     //one of them is hidden and the other is visible
     if (el1.hasClass("hidden")) {
-      middleCallback();
-      callback();
+      await middleCallback();
+      await callback();
       return false;
     }
     $(el1)
@@ -956,8 +956,8 @@ export function swapElements(
           opacity: 0,
         },
         totalDuration / 2,
-        () => {
-          middleCallback();
+        async () => {
+          await middleCallback();
           $(el1).addClass("hidden");
           $(el2)
             .removeClass("hidden")
@@ -975,7 +975,7 @@ export function swapElements(
       );
   } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
-    middleCallback();
+    await middleCallback();
     $(el2)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -984,13 +984,13 @@ export function swapElements(
           opacity: 1,
         },
         totalDuration,
-        () => {
-          callback();
+        async () => {
+          await callback();
         }
       );
   } else {
-    middleCallback();
-    callback();
+    await middleCallback();
+    await callback();
   }
 
   return;
