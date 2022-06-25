@@ -1073,13 +1073,12 @@
     padding: 2rem;
     display: grid;
     grid-template-rows: auto auto auto;
-    gap: 2rem;
+    gap: 1rem;
     @extend .ffscroll;
 
     .title {
-      font-size: 2rem;
-      line-height: 2rem;
-      color: var(--main-color);
+      font-size: 1.5rem;
+      color: var(--sub-color);
     }
 
     .text {
