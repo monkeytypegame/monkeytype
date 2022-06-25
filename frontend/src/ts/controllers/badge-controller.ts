@@ -83,7 +83,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     id: 11,
     name: "Content Creator",
     description: "Verified content creator",
-    icon: "fa-check",
+    icon: "fa-video",
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
