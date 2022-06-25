@@ -1,8 +1,12 @@
 const siteKey = "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj";
 
-const captchas: Record<string, string> = {};
+const captchas: Record<string, number> = {};
 
 export function render(element: HTMLElement, id: string): void {
+  if (captchas[id] !== undefined && captchas[id] !== null) {
+    return;
+  }
+
   const widgetId = grecaptcha.render(element, {
     sitekey: siteKey,
   });
@@ -11,17 +15,15 @@ export function render(element: HTMLElement, id: string): void {
 }
 
 export function reset(id: string): void {
-  if (!captchas[id]) {
+  if (captchas[id] === undefined || captchas[id] === null) {
     return;
   }
 
   grecaptcha.reset(captchas[id]);
-
-  delete captchas[id];
 }
 
 export function getResponse(id: string): string {
-  if (!captchas[id]) {
+  if (captchas[id] === undefined || captchas[id] === null) {
     return "";
   }
 
