@@ -141,7 +141,7 @@ $("#top .logo").on("click", () => {
   navigate("/");
 });
 
-$(".entryName").on("click", (e) => {
+$("#leaderboards .entryName").on("click", (e) => {
   const uid = $(e.target).attr("uid");
   if (uid) {
     navigate(`/profile/${uid}`);
