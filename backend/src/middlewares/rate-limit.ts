@@ -51,7 +51,7 @@ export async function badAuthRateLimiterHandler(
     const key = getKey(req, res);
     const rateLimitStatus = await badAuthRateLimiter.get(key);
 
-    if (rateLimitStatus?.remainingPoints === 0) {
+    if (rateLimitStatus !== null && rateLimitStatus?.remainingPoints <= 0) {
       throw new MonkeyError(
         429,
         "Too many bad authentication attempts, please try again later."
