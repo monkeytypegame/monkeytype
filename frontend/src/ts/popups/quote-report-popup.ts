@@ -56,10 +56,10 @@ export async function show(options = defaultOptions): Promise<void> {
       });
 
     // prettier-ignore
-    var widgetId = grecaptcha.render($("#quoteReportPopup .g-recaptcha"), {
+    const widgetId = grecaptcha.render(document.querySelector("#quoteReportPopup .g-recaptcha"),
+    {
       "sitekey": "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj",
     });
-    console.log(widgetId);
   }
 }
 
@@ -159,6 +159,7 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     noAnim: false,
   });
 });
+
 function widgetId(widgetId: any) {
   throw new Error("Function not implemented.");
 }
