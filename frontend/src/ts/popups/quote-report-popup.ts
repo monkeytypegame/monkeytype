@@ -29,10 +29,12 @@ const defaultOptions: Options = {
   noAnim: false,
 };
 
+let widgetId = "";
+
 export async function show(options = defaultOptions): Promise<void> {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
     // prettier-ignore
-    const widgetId = grecaptcha.render(document.querySelector("#quoteReportPopup .g-recaptcha"),
+    widgetId = grecaptcha.render(document.querySelector("#quoteReportPopup .g-recaptcha"),
     {
       "sitekey": "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj",
     });
@@ -159,7 +161,3 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     noAnim: false,
   });
 });
-
-function widgetId(widgetId: any) {
-  throw new Error("Function not implemented.");
-}
