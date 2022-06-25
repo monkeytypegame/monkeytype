@@ -1073,13 +1073,12 @@
     padding: 2rem;
     display: grid;
     grid-template-rows: auto auto auto;
-    gap: 2rem;
+    gap: 1rem;
     @extend .ffscroll;
 
     .title {
-      font-size: 2rem;
-      line-height: 2rem;
-      color: var(--main-color);
+      font-size: 1.5rem;
+      color: var(--sub-color);
     }
 
     .text {
@@ -1129,15 +1128,15 @@
     padding: 2rem;
     display: grid;
     grid-template-rows: auto auto auto;
-    gap: 2rem;
+    gap: 1rem;
     @extend .ffscroll;
     margin: 0 2rem;
     max-width: 900px;
 
     .title {
-      font-size: 2rem;
+      font-size: 1.5rem;
       line-height: 2rem;
-      color: var(--main-color);
+      color: var(--sub-color);
     }
 
     .text {
@@ -1194,6 +1193,10 @@
 
 #presetWrapper {
   #presetEdit {
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
