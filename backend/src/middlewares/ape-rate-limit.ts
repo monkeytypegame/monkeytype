@@ -20,11 +20,11 @@ const apeRateLimiter = rateLimit({
 export function withApeRateLimiter(
   defaultRateLimiter: RateLimitRequestHandler
 ): RequestHandler {
-  return (req: MonkeyTypes.Request, _res: Response, next: NextFunction) => {
+  return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
     if (req.ctx.decodedToken.type === "ApeKey") {
-      return apeRateLimiter(req, _res, next);
+      return apeRateLimiter(req, res, next);
     }
 
-    return defaultRateLimiter(req, _res, next);
+    return defaultRateLimiter(req, res, next);
   };
 }

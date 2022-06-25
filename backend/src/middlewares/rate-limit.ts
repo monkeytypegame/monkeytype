@@ -44,11 +44,11 @@ const badAuthRateLimiter = new RateLimiterMemory({
 
 export async function badAuthRateLimiterHandler(
   req: MonkeyTypes.Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const key = getKey(req, _res);
+    const key = getKey(req, res);
     const rateLimitStatus = await badAuthRateLimiter.get(key);
 
     if (rateLimitStatus?.remainingPoints === 0) {
