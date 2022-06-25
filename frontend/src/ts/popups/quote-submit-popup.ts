@@ -1,6 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import * as CaptchaController from "../controllers/captcha-controller";
 
 // let dropdownReady = false;
 // async function initDropdown(): Promise<void> {
@@ -26,7 +27,7 @@ async function submitQuote(): Promise<void> {
   const text = $("#quoteSubmitPopup #submitQuoteText").val() as string;
   const source = $("#quoteSubmitPopup #submitQuoteSource").val() as string;
   const language = $("#quoteSubmitPopup #submitQuoteLanguage").val() as string;
-  const captcha = $("#quoteSubmitPopup #g-recaptcha-response").val() as string;
+  const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
     return Notifications.add("Please fill in all fields", 0);
@@ -45,7 +46,7 @@ async function submitQuote(): Promise<void> {
   $("#quoteSubmitPopup #submitQuoteSource").val("");
   $("#quoteSubmitPopup .characterCount").removeClass("red");
   $("#quoteSubmitPopup .characterCount").text("-");
-  grecaptcha.reset();
+  CaptchaController.reset("submitQuote");
 }
 
 // @ts-ignore
@@ -58,6 +59,7 @@ export async function show(noAnim = false): Promise<void> {
   );
   return;
   // if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+  //  CaptchaController.render("#quoteSubmitPopup .g-recaptcha", "submitQuote");
   //   await initDropdown();
   //   $("#quoteSubmitPopup #submitQuoteLanguage").val(
   //     Config.language.replace(/_\d*k$/g, "")
@@ -86,6 +88,7 @@ export function hide(): void {
         100,
         () => {
           $("#quoteSubmitPopupWrapper").addClass("hidden");
+          CaptchaController.reset("submitQuote");
         }
       );
   }
