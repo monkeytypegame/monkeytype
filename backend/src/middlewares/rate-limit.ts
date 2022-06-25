@@ -6,7 +6,10 @@ import rateLimit, { Options } from "express-rate-limit";
 const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
-  return (req.ctx.decodedToken?.uid ||
+  const uid = req?.ctx?.decodedToken?.uid;
+  const useUid = uid.length > 0 && uid;
+
+  return (useUid ||
     req.headers["cf-connecting-ip"] ||
     req.headers["x-forwarded-for"] ||
     req.ip ||
@@ -22,11 +25,12 @@ export const customHandler = (
   throw new MonkeyError(429, "Too many attempts, please try again later.");
 };
 
-const ONE_HOUR = 1000 * 60 * 60;
+const ONE_HOUR_SECONDS = 60 * 60;
+const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
 
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 2000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -35,7 +39,7 @@ export const rootRateLimiter = rateLimit({
 // Bad Authentication Rate Limiter
 const badAuthRateLimiter = new RateLimiterMemory({
   points: 30 * REQUEST_MULTIPLIER,
-  duration: 60,
+  duration: ONE_HOUR_SECONDS,
 });
 
 export async function badAuthRateLimiterHandler(
@@ -72,14 +76,14 @@ export async function incrementBadAuth(
 
 // Config Routing
 export const configUpdate = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const configGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 120 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -87,7 +91,7 @@ export const configGet = rateLimit({
 
 // Leaderboards Routing
 export const leaderboardsGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -95,21 +99,21 @@ export const leaderboardsGet = rateLimit({
 
 // New Quotes Routing
 export const newQuotesGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const newQuotesAdd = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const newQuotesAction = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -117,14 +121,14 @@ export const newQuotesAction = rateLimit({
 
 // Quote Ratings Routing
 export const quoteRatingsGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const quoteRatingsSubmit = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -162,28 +166,28 @@ export const quoteFavoriteDelete = rateLimit({
 
 // Presets Routing
 export const presetsGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const presetsAdd = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const presetsRemove = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const presetsEdit = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -199,42 +203,42 @@ export const psaGet = rateLimit({
 
 // Results Routing
 export const resultsGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const resultsAdd = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const resultsTagsUpdate = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 100 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const resultsDeleteAll = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 10 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const resultsLeaderboardGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const resultsLeaderboardQualificationGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -242,21 +246,21 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 
 // Users Routing
 export const userGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userSignup = rateLimit({
-  windowMs: 24 * ONE_HOUR, // 1 day
+  windowMs: 24 * ONE_HOUR_MS, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userDelete = rateLimit({
-  windowMs: 24 * ONE_HOUR, // 1 day
+  windowMs: 24 * ONE_HOUR_MS, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -270,7 +274,7 @@ export const userCheckName = rateLimit({
 });
 
 export const userUpdateName = rateLimit({
-  windowMs: 24 * ONE_HOUR, // 1 day
+  windowMs: 24 * ONE_HOUR_MS, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -284,98 +288,98 @@ export const userUpdateLBMemory = rateLimit({
 });
 
 export const userUpdateEmail = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userClearPB = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userCustomFilterAdd = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userCustomFilterRemove = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userTagsGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userTagsRemove = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userTagsClearPB = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userTagsEdit = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userTagsAdd = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userCustomThemeGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userCustomThemeAdd = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userCustomThemeRemove = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userCustomThemeEdit = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userDiscordLink = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -384,21 +388,21 @@ export const userDiscordLink = rateLimit({
 export const usersTagsEdit = userDiscordLink;
 
 export const userDiscordUnlink = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userProfileGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 100 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const userProfileUpdate = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -406,14 +410,14 @@ export const userProfileUpdate = rateLimit({
 
 // ApeKeys Routing
 export const apeKeysGet = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 120 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
 
 export const apeKeysGenerate = rateLimit({
-  windowMs: ONE_HOUR,
+  windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
