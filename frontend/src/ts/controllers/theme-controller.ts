@@ -179,14 +179,16 @@ export function set(themeIdentifier: string, isCustom: boolean): void {
   apply(themeIdentifier, isCustom);
 }
 
-export function clearPreview(): void {
+export function clearPreview(applyTheme = true): void {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
-    if (Config.customTheme) {
-      apply("custom", true);
-    } else {
-      apply(Config.theme, false);
+    if (applyTheme) {
+      if (Config.customTheme) {
+        apply("custom", true);
+      } else {
+        apply(Config.theme, false);
+      }
     }
   }
 }
@@ -295,11 +297,11 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     nosave ? preview("custom", true) : set("custom", true);
   }
   if (eventKey === "theme") {
-    clearPreview();
+    clearPreview(false);
     set(eventValue as string, false);
   }
   if (eventKey === "setThemes") {
-    clearPreview();
+    clearPreview(false);
     if (eventValue) {
       set("custom", true);
     } else {
