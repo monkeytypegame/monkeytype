@@ -36,7 +36,12 @@ export const rootRateLimiter = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 2000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
-  handler: customHandler,
+  handler: (_req, _res, _next, _options): void => {
+    throw new MonkeyError(
+      429,
+      "Maximum API request limit reached. Please try again later."
+    );
+  },
 });
 
 // Bad Authentication Rate Limiter
