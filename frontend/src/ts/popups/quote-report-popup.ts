@@ -32,8 +32,10 @@ const defaultOptions: Options = {
 
 export async function show(options = defaultOptions): Promise<void> {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
-    // prettier-ignore
-    CaptchaController.render(document.querySelector("#quoteReportPopup .g-recaptcha")as HTMLElement, "quoteReportPopup");
+    CaptchaController.render(
+      document.querySelector("#quoteReportPopup .g-recaptcha") as HTMLElement,
+      "quoteReportPopup"
+    );
 
     const { quoteId, previousPopupShowCallback, noAnim } = options;
 
