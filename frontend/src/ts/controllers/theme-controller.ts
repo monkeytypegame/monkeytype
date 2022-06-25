@@ -214,6 +214,7 @@ async function changeThemeList(): Promise<void> {
     themesList = DB.getSnapshot().customThemes.map((ct) => ct._id);
   }
   Misc.shuffle(themesList);
+  randomThemeIndex = 0;
 }
 
 export function randomizeTheme(): void {
