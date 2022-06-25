@@ -137,6 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-$("#top .logo").click(() => {
+$("#top .logo").on("click", () => {
   navigate("/");
+});
+
+$("#leaderboards .entryName").on("click", (e) => {
+  const uid = $(e.target).attr("uid");
+  if (uid) {
+    navigate(`/profile/${uid}`);
+    Leaderboards.hide();
+  }
 });
