@@ -77,8 +77,8 @@ declare namespace MonkeyTypes {
   // Data Model
 
   interface UserProfileDetails {
-    bio: string;
-    keyboard: string;
+    bio?: string;
+    keyboard?: string;
     socialProfiles: {
       twitter?: string;
       github?: string;
@@ -112,9 +112,18 @@ declare namespace MonkeyTypes {
     favoriteQuotes?: Record<string, string[]>;
     needsToChangeName?: boolean;
     discordAvatar?: string;
-    badgeIds?: number[];
     resultFilterPresets?: ResultFilters[];
     profileDetails?: UserProfileDetails;
+    inventory?: UserInventory;
+  }
+
+  interface UserInventory {
+    badges: Badge[];
+  }
+
+  interface Badge {
+    id: number;
+    selected?: boolean;
   }
 
   interface ResultFilters {
@@ -209,6 +218,8 @@ declare namespace MonkeyTypes {
     uid: string;
     name: string;
     rank: number;
+    badges?: Badge[];
+    badgeId?: number;
   }
 
   interface CustomTheme {

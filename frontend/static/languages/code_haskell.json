@@ -174,7 +174,7 @@
     "break",
     "splitAt",
     "notElem",
-    "loopup",
+    "lookup",
     "zip",
     "zipWith",
     "unzip",

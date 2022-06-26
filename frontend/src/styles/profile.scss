@@ -235,7 +235,7 @@
 
     .avatarAndName {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 5rem 1fr;
       gap: 1rem;
       align-items: center;
       .avatars {
@@ -276,9 +276,18 @@
         width: max-content;
         font-size: 0.7em;
       }
+      .allBadges {
+        display: flex;
+        flex-wrap: wrap;
+        // font-size: 0.7em;
+        .badge {
+          margin-right: 0.35rem;
+        }
+      }
       .joined {
         color: var(--sub-color);
         font-size: 0.7em;
+        line-height: 0.7rem;
       }
       .badge,
       .joined {
@@ -311,6 +320,7 @@
       align-content: space-around;
       align-self: stretch;
       grid-auto-flow: column;
+      width: 100%;
     }
     .bioAndKeyboard {
       display: grid;

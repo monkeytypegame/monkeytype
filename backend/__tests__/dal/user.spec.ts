@@ -75,10 +75,6 @@ const mockResultFilter = {
   },
 };
 
-async function setBanned(uid: string, banned: boolean): Promise<void> {
-  await UserDAL.getUsersCollection().updateOne({ uid }, { $set: { banned } });
-}
-
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
@@ -357,21 +353,41 @@ describe("UserDal", () => {
   it("updateProfile should appropriately handle multiple profile updates", async () => {
     await UserDAL.addUser("test name", "test email", "TestID");
 
-    await UserDAL.updateProfile("TestID", {
-      bio: "test bio",
-    });
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        bio: "test bio",
+      },
+      {
+        badges: [],
+      }
+    );
 
     const user = await UserDAL.getUser("TestID", "test add result filters");
     expect(user.profileDetails).toStrictEqual({
       bio: "test bio",
     });
-
-    await UserDAL.updateProfile("TestID", {
-      keyboard: "test keyboard",
-      socialProfiles: {
-        twitter: "test twitter",
-      },
+    expect(user.inventory).toStrictEqual({
+      badges: [],
     });
+
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        keyboard: "test keyboard",
+        socialProfiles: {
+          twitter: "test twitter",
+        },
+      },
+      {
+        badges: [
+          {
+            id: 1,
+            selected: true,
+          },
+        ],
+      }
+    );
 
     const updatedUser = await UserDAL.getUser(
       "TestID",
@@ -384,14 +400,32 @@ describe("UserDal", () => {
         twitter: "test twitter",
       },
     });
-
-    await UserDAL.updateProfile("TestID", {
-      bio: "test bio 2",
-      socialProfiles: {
-        github: "test github",
-        website: "test website",
-      },
+    expect(updatedUser.inventory).toStrictEqual({
+      badges: [
+        {
+          id: 1,
+          selected: true,
+        },
+      ],
     });
+
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        bio: "test bio 2",
+        socialProfiles: {
+          github: "test github",
+          website: "test website",
+        },
+      },
+      {
+        badges: [
+          {
+            id: 1,
+          },
+        ],
+      }
+    );
 
     const updatedUser2 = await UserDAL.getUser(
       "TestID",
@@ -406,16 +440,12 @@ describe("UserDal", () => {
         website: "test website",
       },
     });
-  });
-
-  it("updateProfile should handle banned users properly", async () => {
-    await UserDAL.addUser("test name", "test email", "TestID");
-    await setBanned("TestID", true);
-
-    await expect(
-      UserDAL.updateProfile("TestID", {
-        bio: "test bio",
-      })
-    ).rejects.toThrow("User is banned");
+    expect(updatedUser2.inventory).toStrictEqual({
+      badges: [
+        {
+          id: 1,
+        },
+      ],
+    });
   });
 });

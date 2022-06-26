@@ -63,13 +63,6 @@ export function showNewResultFilterPresetPopup(
   show();
 }
 
-$(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  const wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
-    show();
-  }
-});
-
 $(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&

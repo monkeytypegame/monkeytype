@@ -71,6 +71,35 @@ describe("Misc Utils", () => {
     });
   });
 
+  it("identity", () => {
+    const testCases = [
+      {
+        input: "",
+        expected: "string",
+      },
+      {
+        input: {},
+        expected: "object",
+      },
+      {
+        input: 0,
+        expected: "number",
+      },
+      {
+        input: null,
+        expected: "null",
+      },
+      {
+        input: undefined,
+        expected: "undefined",
+      },
+    ];
+
+    _.each(testCases, ({ input, expected }) => {
+      expect(misc.identity(input)).toEqual(expected);
+    });
+  });
+
   it("flattenObjectDeep", () => {
     const testCases = [
       {
@@ -137,6 +166,43 @@ describe("Misc Utils", () => {
 
     _.each(testCases, ({ obj, expected }) => {
       expect(misc.flattenObjectDeep(obj)).toEqual(expected);
+    });
+  });
+
+  it("sanitizeString", () => {
+    const testCases = [
+      {
+        input: "h̶̼͔̭͈̏́̀́͋͜ͅe̵̺̞̦̫̫͔̋́̅̅̃̀͝͝ļ̶̬̯͚͇̺͍̞̫̟͖͋̓͛̆̒̓͜ĺ̴̗̘͇̬̆͂͌̈͊͝͝ỡ̴̡̦̩̠̞̐̃͆̚͠͝",
+        expected: "hello",
+      },
+      {
+        input: "hello",
+        expected: "hello",
+      },
+      {
+        input: "hel   lo",
+        expected: "hel  lo",
+      },
+      {
+        input: "   hel   lo   ",
+        expected: "hel  lo",
+      },
+      {
+        input: "",
+        expected: "",
+      },
+      {
+        input: "   \n\n\n",
+        expected: "",
+      },
+      {
+        input: undefined,
+        expected: undefined,
+      },
+    ];
+
+    testCases.forEach(({ input, expected }) => {
+      expect(misc.sanitizeString(input)).toEqual(expected);
     });
   });
 });
