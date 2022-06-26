@@ -173,6 +173,7 @@
   ,"code_javascript"
   ,"code_javascript_1k"
   ,"code_julia"
+  ,"code_haskell"
   ,"code_html"
   ,"code_pascal"
   ,"code_java"
@@ -191,6 +192,8 @@
   ,"code_perl"
   ,"code_php"
   ,"code_vim"
+  ,"code_opencl"
+  ,"code_visual_basic"
   ,"hindi"
   ,"hindi_1k"
   ,"macedonian"
@@ -203,4 +206,6 @@
   ,"oromo"
   ,"oromo_1k"
   ,"oromo_5k"
+  ,"wordle"
+  ,"wordle_1k"
 ]

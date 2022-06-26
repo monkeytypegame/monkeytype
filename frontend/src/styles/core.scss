@@ -59,6 +59,14 @@ a {
   }
 }
 
+a[data-link] * {
+  pointer-events: none;
+}
+
+a.button {
+  text-decoration: none;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -443,6 +451,7 @@ key {
   grid-auto-flow: column;
   gap: 0.5rem;
   text-decoration: none;
+  z-index: 999999999;
 }
 
 .avatar {

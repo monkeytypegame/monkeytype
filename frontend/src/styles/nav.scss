@@ -31,16 +31,6 @@
         grid-column: 1/2;
         grid-row: 1/2;
       }
-
-      .avatar {
-        filter: saturate(0);
-        -webkit-filter: saturate(0);
-      }
-    }
-
-    &:hover.account .avatar {
-      filter: saturate(1);
-      -webkit-filter: saturate(1);
     }
   }
 

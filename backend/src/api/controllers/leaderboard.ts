@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { getCurrentDayTimestamp, MILLISECONDS_IN_DAY } from "../../utils/misc";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
@@ -72,13 +73,21 @@ export async function getRankFromLeaderboard(
 function getDailyLeaderboardWithError(
   req: MonkeyTypes.Request
 ): DailyLeaderboards.DailyLeaderboard {
-  const { language, mode, mode2 } = req.query;
+  const { language, mode, mode2, daysBefore } = req.query;
+
+  const normalizedDayBefore = parseInt(daysBefore as string, 10);
+  const currentDayTimestamp = getCurrentDayTimestamp();
+  const dayBeforeTimestamp =
+    currentDayTimestamp - normalizedDayBefore * MILLISECONDS_IN_DAY;
+
+  const customTimestamp = _.isNil(daysBefore) ? -1 : dayBeforeTimestamp;
 
   const dailyLeaderboard = DailyLeaderboards.getDailyLeaderboard(
     language as string,
     mode as string,
     mode2 as string,
-    req.ctx.configuration.dailyLeaderboards
+    req.ctx.configuration.dailyLeaderboards,
+    customTimestamp
   );
   if (!dailyLeaderboard) {
     throw new MonkeyError(404, "There is no daily leaderboard for this mode");

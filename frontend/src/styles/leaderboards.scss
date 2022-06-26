@@ -20,15 +20,18 @@
       min-width: 100%;
       display: grid;
       align-items: center;
-      justify-content: space-between;
+      grid-template-columns: auto 1fr 20rem;
       grid-template-areas:
-        "title buttons"
-        "subtitle buttons";
+        "title title buttons"
+        "subtitle yesterday buttons";
 
       .buttons {
         grid-area: buttons;
-        .buttonGroup .button {
-          padding: 0.4rem 2.18rem;
+        .timeRange {
+          grid-template-columns: 1fr 1fr;
+          .select2 {
+            grid-column: span 2;
+          }
         }
       }
     }
@@ -36,6 +39,14 @@
     .mainTitle {
       font-size: 2.5rem;
       grid-area: title;
+    }
+
+    .showYesterdayButton {
+      grid-area: "yesterday";
+      margin-left: 1rem;
+      .fas {
+        margin-right: 0.3rem;
+      }
     }
 
     .subTitle {
@@ -102,7 +113,7 @@
 
       .leftTableWrapper,
       .rightTableWrapper {
-        height: calc(100vh - 12rem);
+        height: calc(100vh - 14rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
@@ -133,6 +144,17 @@
             // display: grid;
             // place-content: center center;
             border-radius: 100%;
+            margin-top: -0.25rem;
+          }
+          .entryName {
+            text-decoration: none;
+            color: var(--text-color);
+            cursor: pointer;
+          }
+          .avatarPlaceholder,
+          .avatar {
+            grid-row: 1/2;
+            grid-column: 1/2;
           }
           .badge {
             font-size: 0.6rem;
@@ -174,6 +196,14 @@
           tr:nth-child(odd) td {
             background: var(--sub-alt-color);
           }
+          td:nth-child(1) {
+            border-radius: calc(var(--roundness) / 2) 0 0
+              calc(var(--roundness) / 2);
+          }
+          td:last-child {
+            border-radius: 0 calc(var(--roundness) / 2)
+              calc(var(--roundness) / 2) 0;
+          }
         }
 
         tfoot {
@@ -202,9 +232,9 @@
     .buttons {
       .buttonGroup {
         display: grid;
-        grid-auto-flow: column;
+        grid-auto-flow: row;
+        gap: 0.5rem;
         grid-auto-columns: 1fr;
-        gap: 1rem;
         grid-area: buttons;
       }
     }

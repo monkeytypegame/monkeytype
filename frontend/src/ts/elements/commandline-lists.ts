@@ -21,9 +21,9 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
-import * as PageController from "../controllers/page-controller";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as EditTagPopup from "../popups/edit-tags-popup";
+import { navigate } from "../controllers/route-controller";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -908,29 +908,6 @@ const commandsLazyMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsSwapEscAndTab: MonkeyTypes.CommandsGroup = {
-  title: "Swap esc and tab...",
-  configKey: "swapEscAndTab",
-  list: [
-    {
-      id: "setSwapEscAndTabOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setSwapEscAndTab(false);
-      },
-    },
-    {
-      id: "setSwapEscAndTabOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setSwapEscAndTab(true);
-      },
-    },
-  ],
-};
-
 const commandsShowAllLines: MonkeyTypes.CommandsGroup = {
   title: "Show all lines...",
   configKey: "showAllLines",
@@ -1489,6 +1466,15 @@ const commandsPaceCaret: MonkeyTypes.CommandsGroup = {
       configValue: "pb",
       exec: (): void => {
         UpdateConfig.setPaceCaret("pb");
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setPaceCaretLast",
+      display: "last",
+      configValue: "last",
+      exec: (): void => {
+        UpdateConfig.setPaceCaret("last");
         TestLogic.restart();
       },
     },
@@ -2149,24 +2135,32 @@ const commandsSmoothCaret: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsQuickTab: MonkeyTypes.CommandsGroup = {
-  title: "Quick tab...",
-  configKey: "quickTab",
+const commandsQuickRestart: MonkeyTypes.CommandsGroup = {
+  title: "Quick restart...",
+  configKey: "quickRestart",
   list: [
     {
-      id: "changeQuickTabOn",
-      display: "on",
-      configValue: true,
+      id: "changeQuickRestartTab",
+      display: "tab",
+      configValue: "tab",
       exec: (): void => {
-        UpdateConfig.setQuickTabMode(true);
+        UpdateConfig.setQuickRestartMode("tab");
       },
     },
     {
-      id: "changeQuickTabOff",
-      display: "off",
-      configValue: false,
+      id: "changeQuickRestartEsc",
+      display: "esc",
+      configValue: "esc",
       exec: (): void => {
-        UpdateConfig.setQuickTabMode(false);
+        UpdateConfig.setQuickRestartMode("esc");
+      },
+    },
+    {
+      id: "changeQuickRestartOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setQuickRestartMode("off");
       },
     },
   ],
@@ -2522,7 +2516,7 @@ Misc.getChallengeList().then((challenges) => {
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
-        PageController.change("test");
+        navigate("/");
         ChallengeController.setup(challenge.name);
         TestLogic.restart(false, true);
       },
@@ -2725,10 +2719,10 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsSmoothCaret,
     },
     {
-      id: "changeQuickTab",
-      display: "Quick tab...",
+      id: "changeQuickRestart",
+      display: "Quick restart...",
       icon: "fa-redo-alt",
-      subgroup: commandsQuickTab,
+      subgroup: commandsQuickRestart,
     },
     {
       id: "changeRepeatQuotes",
@@ -2893,12 +2887,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Start graphs at zero...",
       icon: "fa-chart-line",
       subgroup: commandsStartGraphsAtZero,
-    },
-    {
-      id: "changeSwapEscAndTab",
-      display: "Swap esc and tab...",
-      icon: "fa-exchange-alt",
-      subgroup: commandsSwapEscAndTab,
     },
     {
       id: "changeLazyMode",
@@ -3145,12 +3133,12 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "start begin type test",
       icon: "fa-keyboard",
       exec: (): void => {
-        $("#top #menu .text-button.view-start").trigger("click");
+        navigate("/");
       },
     },
     {
       id: "viewLeaderboards",
-      display: "View Leaderboards Page",
+      display: "View Leaderboards",
       icon: "fa-crown",
       exec: (): void => {
         $("#top #menu .text-button.view-leaderboards").trigger("click");
@@ -3161,7 +3149,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View About Page",
       icon: "fa-info",
       exec: (): void => {
-        $("#top #menu .text-button.view-about").trigger("click");
+        navigate("/about");
       },
     },
     {
@@ -3169,7 +3157,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Settings Page",
       icon: "fa-cog",
       exec: (): void => {
-        $("#top #menu .text-button.view-settings").trigger("click");
+        navigate("/settings");
       },
     },
     {
@@ -3189,8 +3177,8 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "stats",
       exec: (): void => {
         $("#top #menu .text-button.view-account").hasClass("hidden")
-          ? $("#top #menu .text-button.view-login").trigger("click")
-          : $("#top #menu .text-button.view-account").trigger("click");
+          ? navigate("/login")
+          : navigate("/account");
       },
     },
     {

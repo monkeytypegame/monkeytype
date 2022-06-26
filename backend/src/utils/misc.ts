@@ -28,7 +28,7 @@ export function kogasa(cov: number): number {
   );
 }
 
-export function identity(value: string): string {
+export function identity(value: any): string {
   return Object.prototype.toString
     .call(value)
     .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
@@ -81,17 +81,17 @@ export function padNumbers(
   );
 }
 
+export const MILLISECONDS_IN_DAY = 86400000;
+
 export function getCurrentDayTimestamp(): number {
   const currentTime = Date.now();
-  return currentTime - (currentTime % 86400000);
+  return currentTime - (currentTime % MILLISECONDS_IN_DAY);
 }
 
 export function matchesAPattern(text: string, pattern: string): boolean {
   const regex = new RegExp(`^${pattern}$`);
   return regex.test(text);
 }
-
-export const MILLISECONDS_IN_DAY = 86400000;
 
 export function kogascore(wpm: number, acc: number, timestamp: number): number {
   const normalizedWpm = Math.floor(wpm * 100);
@@ -108,4 +108,46 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
   return (
     secondPart + Math.floor((MILLISECONDS_IN_DAY - todayMilliseconds) / 1000)
   );
+}
+
+export function flattenObjectDeep(
+  obj: Record<string, any>,
+  prefix = ""
+): Record<string, any> {
+  const result: Record<string, any> = {};
+  const keys = Object.keys(obj);
+
+  keys.forEach((key) => {
+    const value = obj[key];
+
+    const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
+
+    if (_.isPlainObject(value)) {
+      const flattened = flattenObjectDeep(value);
+      const flattenedKeys = Object.keys(flattened);
+
+      if (flattenedKeys.length === 0) {
+        result[newPrefix] = value;
+      }
+
+      flattenedKeys.forEach((flattenedKey) => {
+        result[`${newPrefix}.${flattenedKey}`] = flattened[flattenedKey];
+      });
+    } else {
+      result[newPrefix] = value;
+    }
+  });
+
+  return result;
+}
+
+export function sanitizeString(str: string | undefined): string | undefined {
+  if (!str) {
+    return str;
+  }
+
+  return str
+    .replace(/[\u0300-\u036F]/g, "")
+    .trim()
+    .replace(/\s{3,}/g, "  ");
 }

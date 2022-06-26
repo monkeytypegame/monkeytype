@@ -13,7 +13,6 @@ import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
-import * as PageController from "./page-controller";
 import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
@@ -27,6 +26,7 @@ import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
+import { navigate } from "./route-controller";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -611,16 +611,16 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
-  if (Config.quickTab) {
+  if (Config.quickRestart === "tab") {
     // dont do anything special
     if (modalVisible) return;
 
-    // dont do anything on login so we can tab betweeen inputs
+    // dont do anything on login so we can tab/esc betweeen inputs
     if (ActivePage.get() === "login") return;
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      PageController.change("test");
+      navigate("/");
       return;
     }
 
@@ -689,11 +689,32 @@ $(document).keydown(async (event) => {
   }
 
   //tab
-  if (
-    (event.key == "Tab" && !Config.swapEscAndTab) ||
-    (event.key == "Escape" && Config.swapEscAndTab)
-  ) {
+  if (event.key == "Tab") {
     handleTab(event, popupVisible);
+  }
+
+  //esc
+  if (event.key === "Escape" && Config.quickRestart === "esc") {
+    const modalVisible =
+      !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+
+    if (modalVisible) return;
+
+    // change page if not on test page
+    if (ActivePage.get() !== "test") {
+      navigate("/");
+      return;
+    }
+
+    // in case we are in a long test, setting manual restart
+    if (event.shiftKey) {
+      ManualRestart.set();
+    } else {
+      ManualRestart.reset();
+    }
+
+    //otherwise restart
+    TestLogic.restart(false, false, event);
   }
 
   if (!allowTyping) return;

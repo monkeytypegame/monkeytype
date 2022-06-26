@@ -565,10 +565,7 @@
     <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
     <label>Language</label>
     <select name="language" id="submitQuoteLanguage"></select>
-    <div
-      class="g-recaptcha"
-      data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
-    ></div>
+    <div class="g-recaptcha"></div>
     <div id="submitQuoteButton" class="button">Submit</div>
   </div>
 </div>
@@ -600,8 +597,8 @@
   <div id="quoteReportPopup" mode="">
     <div class="title">Report a Quote</div>
     <div class="text">
-      Please report quotes responsibly. Misuse may result in you losing access
-      to this feature.
+      Please report quotes responsibly. Please add comments in English only.
+      Misuse may result in you losing access to this feature.
     </div>
     <label>quote</label>
     <div class="quote"></div>
@@ -676,10 +673,15 @@
     <div class="leaderboardsTop">
       <div class="mainTitle">All-Time English Leaderboards</div>
       <div class="subTitle">Next update in: --:--</div>
+      <div class="text-button showYesterdayButton hidden">
+        <i class="fas fa-calendar-day"></i>
+        Show Yesterday
+      </div>
       <div class="buttons">
         <div class="buttonGroup timeRange">
           <div class="button allTime">all-time</div>
           <div class="button daily">daily</div>
+          <select class="languageSelect" disabled></select>
         </div>
       </div>
     </div>
@@ -949,5 +951,50 @@
   </div>
   <div id="commandInput" class="hidden">
     <input type="text" class="input" placeholder="input" />
+  </div>
+</div>
+<div id="newResultFilterPresetPopupWrapper" class="popupWrapper hidden">
+  <div id="newResultFilterPresetPopup">
+    <div class="title">Add new filter preset</div>
+    <input type="text" value="new preset" />
+    <div class="button">add</div>
+  </div>
+</div>
+
+<div id="editProfilePopupWrapper" class="popupWrapper hidden">
+  <div id="editProfilePopup">
+    <div class="title">Edit Profile</div>
+    <div>
+      <label>avatar</label>
+      <div>
+        To update your avatar make sure your Discord account is linked, then go
+        to Settings > Account > Discord Integration and click "Update Avatar"
+      </div>
+    </div>
+    <div>
+      <label>bio</label>
+      <textarea class="bio" type="text" autocomplete="off"></textarea>
+    </div>
+    <div>
+      <label>keyboard</label>
+      <textarea class="keyboard" type="text" autocomplete="off"></textarea>
+    </div>
+    <div>
+      <label>twitter</label>
+      <input class="twitter" type="text" value="" />
+    </div>
+    <div>
+      <label>github</label>
+      <input class="github" type="text" value="" />
+    </div>
+    <div>
+      <label>website</label>
+      <input class="website" type="text" value="" />
+    </div>
+    <div>
+      <label>badge</label>
+      <div class="badge-selection-container"></div>
+    </div>
+    <div class="button edit-profile-submit">save</div>
   </div>
 </div>

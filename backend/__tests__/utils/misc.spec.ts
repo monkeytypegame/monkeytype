@@ -70,4 +70,139 @@ describe("Misc Utils", () => {
       expect(misc.kogascore(wpm, acc, timestamp)).toBe(expectedScore);
     });
   });
+
+  it("identity", () => {
+    const testCases = [
+      {
+        input: "",
+        expected: "string",
+      },
+      {
+        input: {},
+        expected: "object",
+      },
+      {
+        input: 0,
+        expected: "number",
+      },
+      {
+        input: null,
+        expected: "null",
+      },
+      {
+        input: undefined,
+        expected: "undefined",
+      },
+    ];
+
+    _.each(testCases, ({ input, expected }) => {
+      expect(misc.identity(input)).toEqual(expected);
+    });
+  });
+
+  it("flattenObjectDeep", () => {
+    const testCases = [
+      {
+        obj: {
+          a: {
+            b: {
+              c: 1,
+            },
+          },
+          d: 2,
+          e: [],
+        },
+        expected: {
+          "a.b.c": 1,
+          d: 2,
+          e: [],
+        },
+      },
+      {
+        obj: {
+          a: {
+            b: {
+              c: 1,
+            },
+          },
+          d: {
+            e: {
+              f: 2,
+              g: 3,
+            },
+          },
+        },
+        expected: {
+          "a.b.c": 1,
+          "d.e.f": 2,
+          "d.e.g": 3,
+        },
+      },
+      {
+        obj: {
+          a: {
+            b: {
+              c: 1,
+              d: {
+                e: 2,
+                f: 3,
+                g: {},
+              },
+            },
+          },
+        },
+        expected: {
+          "a.b.c": 1,
+          "a.b.d.e": 2,
+          "a.b.d.f": 3,
+          "a.b.d.g": {},
+        },
+      },
+      {
+        obj: {},
+        expected: {},
+      },
+    ];
+
+    _.each(testCases, ({ obj, expected }) => {
+      expect(misc.flattenObjectDeep(obj)).toEqual(expected);
+    });
+  });
+
+  it("sanitizeString", () => {
+    const testCases = [
+      {
+        input: "h̶̼͔̭͈̏́̀́͋͜ͅe̵̺̞̦̫̫͔̋́̅̅̃̀͝͝ļ̶̬̯͚͇̺͍̞̫̟͖͋̓͛̆̒̓͜ĺ̴̗̘͇̬̆͂͌̈͊͝͝ỡ̴̡̦̩̠̞̐̃͆̚͠͝",
+        expected: "hello",
+      },
+      {
+        input: "hello",
+        expected: "hello",
+      },
+      {
+        input: "hel   lo",
+        expected: "hel  lo",
+      },
+      {
+        input: "   hel   lo   ",
+        expected: "hel  lo",
+      },
+      {
+        input: "",
+        expected: "",
+      },
+      {
+        input: "   \n\n\n",
+        expected: "",
+      },
+      {
+        input: undefined,
+        expected: undefined,
+      },
+    ];
+
+    testCases.forEach(({ input, expected }) => {
+      expect(misc.sanitizeString(input)).toEqual(expected);
+    });
+  });
 });

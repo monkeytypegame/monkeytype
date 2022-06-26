@@ -1,12 +1,6 @@
 import _ from "lodash";
-import {
-  addUser,
-  clearPb,
-  getUser,
-  getUsersCollection,
-  recordAutoBanEvent,
-  updateName,
-} from "../../src/dal/user";
+import { ObjectId } from "mongodb";
+import * as UserDAL from "../../src/dal/user";
 
 const mockPersonalBest = {
   acc: 1,
@@ -20,6 +14,67 @@ const mockPersonalBest = {
   timestamp: 13123123,
 };
 
+const mockResultFilter = {
+  _id: new ObjectId(),
+  name: "sfdkjhgdf",
+  difficulty: {
+    normal: true,
+    expert: false,
+    master: false,
+  },
+  mode: {
+    words: false,
+    time: true,
+    quote: false,
+    zen: false,
+    custom: false,
+  },
+  words: {
+    "10": false,
+    "25": false,
+    "50": false,
+    "100": false,
+    custom: false,
+  },
+  time: {
+    "15": false,
+    "30": true,
+    "60": false,
+    "120": false,
+    custom: false,
+  },
+  quoteLength: {
+    short: false,
+    medium: false,
+    long: false,
+    thicc: false,
+  },
+  punctuation: {
+    on: false,
+    off: true,
+  },
+  numbers: {
+    on: false,
+    off: true,
+  },
+  date: {
+    last_day: false,
+    last_week: false,
+    last_month: false,
+    last_3months: false,
+    all: true,
+  },
+  tags: {
+    none: true,
+  },
+  language: {
+    english: true,
+  },
+  funbox: {
+    none: true,
+  },
+};
+
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
@@ -30,8 +85,8 @@ describe("UserDal", () => {
     };
 
     // when
-    await addUser(newUser.name, newUser.email, newUser.uid);
-    const insertedUser = await getUser("userId", "test");
+    await UserDAL.addUser(newUser.name, newUser.email, newUser.uid);
+    const insertedUser = await UserDAL.getUser("userId", "test");
 
     // then
     expect(insertedUser.email).toBe(newUser.email);
@@ -48,12 +103,12 @@ describe("UserDal", () => {
     };
 
     // when
-    await addUser(newUser.name, newUser.email, newUser.uid);
+    await UserDAL.addUser(newUser.name, newUser.email, newUser.uid);
 
     // then
     // should error because user already exists
     await expect(
-      addUser(newUser.name, newUser.email, newUser.uid)
+      UserDAL.addUser(newUser.name, newUser.email, newUser.uid)
     ).rejects.toThrow("User document already exists");
   });
 
@@ -65,15 +120,15 @@ describe("UserDal", () => {
         email: `mockemail@email.com${id}`,
         uid: `userId${id}`,
       }))
-      .map(({ name, email, uid }) => addUser(name, email, uid));
+      .map(({ name, email, uid }) => UserDAL.addUser(name, email, uid));
     await Promise.all(mockUsers);
 
-    const userToUpdateNameFor = await getUser("userId0", "test");
-    const userWithNameTaken = await getUser("userId1", "test");
+    const userToUpdateNameFor = await UserDAL.getUser("userId0", "test");
+    const userWithNameTaken = await UserDAL.getUser("userId1", "test");
 
     // when, then
     await expect(
-      updateName(userToUpdateNameFor.uid, userWithNameTaken.name)
+      UserDAL.updateName(userToUpdateNameFor.uid, userWithNameTaken.name)
     ).rejects.toThrow("Username already taken");
   });
 
@@ -85,7 +140,7 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    await addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     const invalidNames = [
       null, // falsy
@@ -101,12 +156,12 @@ describe("UserDal", () => {
     invalidNames.forEach(
       async (invalidName) =>
         await expect(
-          updateName(testUser.uid, invalidName as unknown as string)
+          UserDAL.updateName(testUser.uid, invalidName as unknown as string)
         ).rejects.toThrow("Invalid username")
     );
   });
 
-  it("updateName should fail if user has changed name recently", async () => {
+  it("UserDAL.updateName should fail if user has changed name recently", async () => {
     // given
     const testUser = {
       name: "Test",
@@ -114,22 +169,22 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    await addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    await updateName(testUser.uid, "renamedTestUser");
+    await UserDAL.updateName(testUser.uid, "renamedTestUser");
 
-    const updatedUser = await getUser(testUser.uid, "test");
+    const updatedUser = await UserDAL.getUser(testUser.uid, "test");
 
     // then
     expect(updatedUser.name).toBe("renamedTestUser");
 
-    await expect(updateName(updatedUser.uid, "NewValidName")).rejects.toThrow(
-      "You can change your name once every 30 days"
-    );
+    await expect(
+      UserDAL.updateName(updatedUser.uid, "NewValidName")
+    ).rejects.toThrow("You can change your name once every 30 days");
   });
 
-  it("updateName should change the name of a user", async () => {
+  it("UserDAL.updateName should change the name of a user", async () => {
     // given
     const testUser = {
       name: "Test",
@@ -137,13 +192,13 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    await addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    await updateName(testUser.uid, "renamedTestUser");
+    await UserDAL.updateName(testUser.uid, "renamedTestUser");
 
     // then
-    const updatedUser = await getUser(testUser.uid, "test");
+    const updatedUser = await UserDAL.getUser(testUser.uid, "test");
     expect(updatedUser.name).toBe("renamedTestUser");
   });
 
@@ -154,8 +209,8 @@ describe("UserDal", () => {
       email: "mockemail@email.com",
       uid: "userId",
     };
-    await addUser(testUser.name, testUser.email, testUser.uid);
-    await getUsersCollection().updateOne(
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.getUsersCollection().updateOne(
       { uid: testUser.uid },
       {
         $set: {
@@ -170,7 +225,8 @@ describe("UserDal", () => {
       }
     );
 
-    const { personalBests } = (await getUser(testUser.uid, "test")) ?? {};
+    const { personalBests } =
+      (await UserDAL.getUser(testUser.uid, "test")) ?? {};
     expect(personalBests).toStrictEqual({
       time: { 20: [mockPersonalBest] },
       words: {},
@@ -179,10 +235,10 @@ describe("UserDal", () => {
       zen: {},
     });
     // when
-    await clearPb(testUser.uid);
+    await UserDAL.clearPb(testUser.uid);
 
     // then
-    const updatedUser = (await getUser(testUser.uid, "test")) ?? {};
+    const updatedUser = (await UserDAL.getUser(testUser.uid, "test")) ?? {};
     expect(_.values(updatedUser.personalBests).filter(_.isEmpty)).toHaveLength(
       5
     );
@@ -196,16 +252,16 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    await addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
     Date.now = jest.fn(() => 0);
-    await recordAutoBanEvent(testUser.uid, 2, 1);
-    await recordAutoBanEvent(testUser.uid, 2, 1);
-    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
-    const updatedUser = await getUser(testUser.uid, "test");
+    const updatedUser = await UserDAL.getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(true);
     expect(updatedUser.autoBanTimestamps).toEqual([0, 0, 0]);
   });
@@ -218,14 +274,14 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    await addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
     Date.now = jest.fn(() => 0);
-    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
-    const updatedUser = await getUser(testUser.uid, "test");
+    const updatedUser = await UserDAL.getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(undefined);
     expect(updatedUser.autoBanTimestamps).toEqual([0]);
   });
@@ -238,20 +294,158 @@ describe("UserDal", () => {
       uid: "userId",
     };
 
-    await addUser(testUser.name, testUser.email, testUser.uid);
+    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
     Date.now = jest.fn(() => 0);
-    await recordAutoBanEvent(testUser.uid, 2, 1);
-    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     Date.now = jest.fn(() => 36000000);
 
-    await recordAutoBanEvent(testUser.uid, 2, 1);
+    await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
-    const updatedUser = await getUser(testUser.uid, "test");
+    const updatedUser = await UserDAL.getUser(testUser.uid, "test");
     expect(updatedUser.banned).toBe(undefined);
     expect(updatedUser.autoBanTimestamps).toEqual([36000000]);
+  });
+
+  it("addResultFilterPreset should return error if uuid not found", async () => {
+    // given
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    // when, then
+    await expect(
+      UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
+    ).rejects.toThrow("User not found");
+  });
+
+  it("UserDAL.addResultFilterPreset should return error if user has reached maximum", async () => {
+    // given
+    await UserDAL.addUser("test name", "test email", "TestID");
+    await UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1);
+
+    // when, then
+    await expect(
+      UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1)
+    ).rejects.toThrow("Maximum number of custom filters reached for user.");
+  });
+
+  it("addResultFilterPreset success", async () => {
+    // given
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    // when
+    const result = await UserDAL.addResultFilterPreset(
+      "TestID",
+      mockResultFilter,
+      1
+    );
+
+    // then
+    const user = await UserDAL.getUser("TestID", "test add result filters");
+    const createdFilter = user.resultFilterPresets ?? [];
+
+    expect(result).toStrictEqual(createdFilter[0]._id);
+  });
+
+  it("updateProfile should appropriately handle multiple profile updates", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        bio: "test bio",
+      },
+      {
+        badges: [],
+      }
+    );
+
+    const user = await UserDAL.getUser("TestID", "test add result filters");
+    expect(user.profileDetails).toStrictEqual({
+      bio: "test bio",
+    });
+    expect(user.inventory).toStrictEqual({
+      badges: [],
+    });
+
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        keyboard: "test keyboard",
+        socialProfiles: {
+          twitter: "test twitter",
+        },
+      },
+      {
+        badges: [
+          {
+            id: 1,
+            selected: true,
+          },
+        ],
+      }
+    );
+
+    const updatedUser = await UserDAL.getUser(
+      "TestID",
+      "test add result filters"
+    );
+    expect(updatedUser.profileDetails).toStrictEqual({
+      bio: "test bio",
+      keyboard: "test keyboard",
+      socialProfiles: {
+        twitter: "test twitter",
+      },
+    });
+    expect(updatedUser.inventory).toStrictEqual({
+      badges: [
+        {
+          id: 1,
+          selected: true,
+        },
+      ],
+    });
+
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        bio: "test bio 2",
+        socialProfiles: {
+          github: "test github",
+          website: "test website",
+        },
+      },
+      {
+        badges: [
+          {
+            id: 1,
+          },
+        ],
+      }
+    );
+
+    const updatedUser2 = await UserDAL.getUser(
+      "TestID",
+      "test add result filters"
+    );
+    expect(updatedUser2.profileDetails).toStrictEqual({
+      bio: "test bio 2",
+      keyboard: "test keyboard",
+      socialProfiles: {
+        twitter: "test twitter",
+        github: "test github",
+        website: "test website",
+      },
+    });
+    expect(updatedUser2.inventory).toStrictEqual({
+      badges: [
+        {
+          id: 1,
+        },
+      ],
+    });
   });
 });
