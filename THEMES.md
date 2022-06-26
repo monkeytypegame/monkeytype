@@ -58,7 +58,7 @@ Update branch:
 Create a pull request:
 <img width="1552" alt="Screenshot showing how to create a pull request to the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186637-66dae488-05ae-45c4-9217-65bc36c4927b.png">
 
-Add some screenshots of your theme to the pull request. Click "create pull request" and if it gets approved then your new theme is availabe on Monkeytype for everyone to enjoy.
+Add some screenshots of your theme to the pull request. Click "create pull request" and if it gets approved then your new theme is available on Monkeytype for everyone to enjoy.
 
 ## Theme Guidelines
 
