@@ -1088,12 +1088,13 @@ list["updateCustomTheme"] = new SimplePopup(
     }
 
     const newTheme = {
-      name: name,
+      name: name.replaceAll(" ", "_"),
       colors: newColors,
     };
     Loader.show();
-    await DB.editCustomTheme(customTheme._id, newTheme);
+    const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     Loader.hide();
+    if (!validation) return;
     UpdateConfig.setCustomThemeColors(newColors);
     Notifications.add("Custom theme updated", 1);
     ThemePicker.refreshButtons();
