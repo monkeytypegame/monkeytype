@@ -250,6 +250,8 @@ export async function screenshot(): Promise<void> {
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
+    $("noscript").removeClass("hidden");
+    $("#nocss").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (Auth.currentUser == null) {
@@ -288,6 +290,8 @@ export async function screenshot(): Promise<void> {
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
+  $("noscript").addClass("hidden");
+  $("#nocss").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
     const paddingX = 50;
