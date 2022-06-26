@@ -669,12 +669,12 @@ $(document).on("click", "#commandLineMobileButton", () => {
   show();
 });
 
-$(document).on("click", "#keymap .r5 .key-space", () => {
+$(document).on("click", "#keymap .r5 .keySpace", () => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   show();
 });
 
-$(document).on("click", "#testModesNotice .text-button", (event) => {
+$(document).on("click", "#testModesNotice .textButton", (event) => {
   const commands = CommandlineLists.getList(
     $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
   );

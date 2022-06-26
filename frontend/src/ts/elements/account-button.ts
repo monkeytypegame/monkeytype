@@ -47,14 +47,14 @@ export async function update(
       $("#top #menu .account .avatar").addClass("hidden");
     }
     Misc.swapElements(
-      $("#menu .text-button.login"),
-      $("#menu .text-button.account"),
+      $("#menu .textButton.login"),
+      $("#menu .textButton.account"),
       250
     );
   } else {
     Misc.swapElements(
-      $("#menu .text-button.account"),
-      $("#menu .text-button.login"),
+      $("#menu .textButton.account"),
+      $("#menu .textButton.login"),
       250
     );
   }

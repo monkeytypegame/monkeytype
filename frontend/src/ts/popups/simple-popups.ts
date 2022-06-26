@@ -455,7 +455,7 @@ list["updateName"] = new SimplePopup(
 
       Notifications.add("Name updated", 1);
       DB.getSnapshot().name = newName;
-      $("#menu .text-button.account .text").text(newName);
+      $("#menu .textButton.account .text").text(newName);
       if (DB.getSnapshot().needsToChangeName) {
         setTimeout(() => {
           location.reload();
