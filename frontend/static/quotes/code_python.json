@@ -173,7 +173,7 @@
       "text": "def addEnd(self, data):\\n\\tif (self.last == None):\\n\\t\\treturn self.addToEmpty(data)\\n\\ttemp = Node(data)\\n\\ttemp.next = self.last.next\\n\\tself.last.next = temp\\n\\tself.last = temp\\n\\treturn self.last",
       "source": "geeksforgeeks - Circular Singly Linked List",
       "id": 28,
-      "length": 199
+      "length": 200
     }
   ]
 }
