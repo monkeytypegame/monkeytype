@@ -3177,8 +3177,8 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "stats",
       exec: (): void => {
         $("#top #menu .text-button.view-account").hasClass("hidden")
-          ? $("#top #menu .text-button.view-login").trigger("click")
-          : $("#top #menu .text-button.view-account").trigger("click");
+          ? navigate("/login")
+          : navigate("/account");
       },
     },
     {
