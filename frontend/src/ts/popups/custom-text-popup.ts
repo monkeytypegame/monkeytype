@@ -214,5 +214,6 @@ $(document).on("keydown", (event) => {
   ) {
     hide();
     event.preventDefault();
+    console.log("first");
   }
 });
