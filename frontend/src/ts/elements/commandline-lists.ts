@@ -3141,7 +3141,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Leaderboards",
       icon: "fa-crown",
       exec: (): void => {
-        $("#top #menu .text-button.view-leaderboards").trigger("click");
+        $("#top #menu .textButton.view-leaderboards").trigger("click");
       },
     },
     {
@@ -3176,7 +3176,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-user",
       alias: "stats",
       exec: (): void => {
-        $("#top #menu .text-button.view-account").hasClass("hidden")
+        $("#top #menu .textButton.view-account").hasClass("hidden")
           ? navigate("/login")
           : navigate("/account");
       },

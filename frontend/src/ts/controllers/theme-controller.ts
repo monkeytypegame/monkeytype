@@ -128,7 +128,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
 
   ThemeColors.reset();
 
-  $(".keymap-key").attr("style", "");
+  $(".keymapKey").attr("style", "");
   // $("#currentTheme").attr("href", `themes/${name}.css`);
   loadStyle(name).then(() => {
     ThemeColors.update();
@@ -155,7 +155,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     AnalyticsController.log("changedTheme", { theme: themeName });
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
-        $(".keymap-key").attr("style", "");
+        $(".keymapKey").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
         $("#metaThemeColor").attr("content", colors.bg);

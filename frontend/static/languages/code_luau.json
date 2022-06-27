@@ -53,6 +53,21 @@
     "tostring",
     "type",
     "unpack",
-    "xpcall"
+    "xpcall",
+    
+    "wait",
+    "delay",
+    "elapsedime",
+    "debuggermanager",
+    "pluginmanager",
+    "printidentity",
+    "settings",
+    "spawn",
+    "stats",
+    "tick",
+    "time",
+    "usersettings",
+    "version",
+    "warn"
   ]
 }

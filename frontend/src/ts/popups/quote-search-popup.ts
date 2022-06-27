@@ -135,13 +135,13 @@ function buildQuoteSearchResult(
       ${highlightMatches(quote.source, matchedSearchTerms)}
     </div>
 
-    <div class="text-button report ${
+    <div class="textButton report ${
       loggedOut && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>
     </div>
 
-    <div class="text-button favorite ${
+    <div class="textButton favorite ${
       loggedOut && "hidden"
     }" aria-label="Favorite quote" data-balloon-pos="left">
       <i class="${isFav ? "fas" : "far"} fa-heart favorite"></i>
@@ -335,59 +335,54 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
   });
 });
 
-$(document).on(
-  "click",
-  "#quoteSearchPopup .text-button.favorite",
-  async (e) => {
-    const quoteLang = Config.language;
-    const quoteId = e.target.closest(".searchResult").id as string;
+$(document).on("click", "#quoteSearchPopup .textButton.favorite", async (e) => {
+  const quoteLang = Config.language;
+  const quoteId = e.target.closest(".searchResult").id as string;
 
-    if (quoteLang === "" || quoteId === "") {
-      Notifications.add("Could not get quote stats!", -1);
-      return;
-    }
-
-    const $button = $(
-      `#quoteSearchPopup .searchResult[id=${quoteId}] .text-button.favorite i`
-    );
-    const dbSnapshot = DB.getSnapshot();
-
-    if ($button.hasClass("fas")) {
-      // Remove from favorites
-      Loader.show();
-      const response = await Ape.users.removeQuoteFromFavorites(
-        quoteLang,
-        quoteId
-      );
-      Loader.hide();
-
-      Notifications.add(response.message, response.status === 200 ? 1 : -1);
-
-      if (response.status === 200) {
-        $button.removeClass("fas").addClass("far");
-        const quoteIndex =
-          dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
-        dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
-      }
-    } else {
-      // Add to favorites
-      Loader.show();
-      const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
-      Loader.hide();
-
-      Notifications.add(response.message, response.status === 200 ? 1 : -1);
-
-      if (response.status === 200) {
-        $button.removeClass("far").addClass("fas");
-        if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-          dbSnapshot.favoriteQuotes[quoteLang] = [];
-        }
-        dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
-      }
-    }
-    e.preventDefault();
+  if (quoteLang === "" || quoteId === "") {
+    Notifications.add("Could not get quote stats!", -1);
+    return;
   }
-);
+
+  const $button = $(
+    `#quoteSearchPopup .searchResult[id=${quoteId}] .textButton.favorite i`
+  );
+  const dbSnapshot = DB.getSnapshot();
+
+  if ($button.hasClass("fas")) {
+    // Remove from favorites
+    Loader.show();
+    const response = await Ape.users.removeQuoteFromFavorites(
+      quoteLang,
+      quoteId
+    );
+    Loader.hide();
+
+    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+    if (response.status === 200) {
+      $button.removeClass("fas").addClass("far");
+      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+      dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
+    }
+  } else {
+    // Add to favorites
+    Loader.show();
+    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+    Loader.hide();
+
+    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+    if (response.status === 200) {
+      $button.removeClass("far").addClass("fas");
+      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
+        dbSnapshot.favoriteQuotes[quoteLang] = [];
+      }
+      dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
+    }
+  }
+  e.preventDefault();
+});
 
 $(document).on("click", "#toggleShowFavorites", (e) => {
   if (!Auth.currentUser) {
@@ -399,7 +394,7 @@ $(document).on("click", "#toggleShowFavorites", (e) => {
   searchForQuotes();
 });
 
-$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
   if (len == -2) {
     show();

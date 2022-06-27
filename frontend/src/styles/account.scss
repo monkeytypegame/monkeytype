@@ -313,8 +313,8 @@
 
 .pageAccount {
   .group.presetFilterButtons {
-    .buttons.filter-btns {
-      .filter-presets {
+    .buttons.filterBtns {
+      .filterPresets {
         display: grid;
         grid-auto-columns: 1fr;
         grid-auto-flow: column;
@@ -367,7 +367,7 @@
   }
 }
 
-.header-sorted {
+.headerSorted {
   font-weight: bold;
 }
 

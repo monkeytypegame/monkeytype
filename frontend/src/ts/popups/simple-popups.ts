@@ -455,7 +455,7 @@ list["updateName"] = new SimplePopup(
 
       Notifications.add("Name updated", 1);
       DB.getSnapshot().name = newName;
-      $("#menu .text-button.account .text").text(newName);
+      $("#menu .textButton.account .text").text(newName);
       if (DB.getSnapshot().needsToChangeName) {
         setTimeout(() => {
           location.reload();
@@ -739,7 +739,7 @@ list["applyCustomFont"] = new SimplePopup(
   "text",
   "Custom font",
   [{ placeholder: "Font name", initVal: "" }],
-  "Make sure you have the font installed on your computer before applying.",
+  "Make sure you have the font installed on your computer before applying",
   "Apply",
   (_thisPopup, fontName: string) => {
     if (fontName === "") return;
@@ -1071,7 +1071,7 @@ list["updateCustomTheme"] = new SimplePopup(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
-      Notifications.add("Custom theme does not exist!", -1);
+      Notifications.add("Custom theme does not exist", -1);
       return;
     }
 
@@ -1088,12 +1088,13 @@ list["updateCustomTheme"] = new SimplePopup(
     }
 
     const newTheme = {
-      name: name,
+      name: name.replaceAll(" ", "_"),
       colors: newColors,
     };
     Loader.show();
-    await DB.editCustomTheme(customTheme._id, newTheme);
+    const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     Loader.hide();
+    if (!validation) return;
     UpdateConfig.setCustomThemeColors(newColors);
     Notifications.add("Custom theme updated", 1);
     ThemePicker.refreshButtons();

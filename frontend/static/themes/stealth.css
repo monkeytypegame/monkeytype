@@ -10,7 +10,7 @@
   --colorful-error-color: #e25303;
   --colorful-error-extra-color: #73280c;
 }
-#menu .text-button:nth-child(4) {
+#menu .textButton:nth-child(4) {
   color: #e25303;
 }
 #timerNumber {
