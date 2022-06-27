@@ -310,6 +310,10 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
+    "name": "korean",
+    "languages": ["korean"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
