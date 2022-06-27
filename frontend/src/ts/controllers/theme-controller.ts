@@ -225,7 +225,7 @@ export async function randomizeTheme(): Promise<void> {
     await changeThemeList();
     if (themesList.length === 0) return;
   }
-  const randomTheme = themesList[randomThemeIndex];
+  randomTheme = themesList[randomThemeIndex];
   randomThemeIndex++;
 
   if (randomThemeIndex >= themesList.length) {
