@@ -11,11 +11,11 @@
   --colorful-error-extra-color: #000000;
 }
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   color: #ff0000;
 }
 
-#menu .text-button:nth-child(5) {
+#menu .textButton:nth-child(5) {
   color: #ff0000;
 }
 

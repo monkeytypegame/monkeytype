@@ -15,23 +15,23 @@
   color: #8fadc9;
 }
 
-#top .config .group .buttons .text-button.active {
+#top .config .group .buttons .textButton.active {
   color: #daa99b;
 }
 
-/* #menu .text-button:nth-child(1){
+/* #menu .textButton:nth-child(1){
     color: #daa99b;
 }
 
-#menu .text-button:nth-child(2){
+#menu .textButton:nth-child(2){
     color: #daa99b;
 }
 
-#menu .text-button:nth-child(3){
+#menu .textButton:nth-child(3){
     color: #8fadc9;
 }
 
-#menu .text-button:nth-child(4),
-#menu .text-button:nth-child(5){
+#menu .textButton:nth-child(4),
+#menu .textButton:nth-child(5){
     color: #8fadc9;
 } */

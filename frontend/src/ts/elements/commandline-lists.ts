@@ -21,9 +21,9 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as ConfigEvent from "../observables/config-event";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import { Auth } from "../firebase";
-import * as PageController from "../controllers/page-controller";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as EditTagPopup from "../popups/edit-tags-popup";
+import { navigate } from "../controllers/route-controller";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -167,6 +167,7 @@ Misc.getFunboxList().then((funboxes) => {
     commandsFunbox.list.push({
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
+      alias: funbox.alias,
       configValue: funbox.name,
       exec: (): void => {
         if (Funbox.setFunbox(funbox.name, funbox.type)) {
@@ -2516,7 +2517,7 @@ Misc.getChallengeList().then((challenges) => {
       noIcon: true,
       display: challenge.display,
       exec: (): void => {
-        PageController.change("test");
+        navigate("/");
         ChallengeController.setup(challenge.name);
         TestLogic.restart(false, true);
       },
@@ -2950,7 +2951,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "randomizeTheme",
       display: "Next random theme",
       icon: "fa-random",
-      exec: (): void => ThemeController.randomizeTheme(),
+      exec: (): Promise<void> => ThemeController.randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
       },
@@ -3133,15 +3134,15 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "start begin type test",
       icon: "fa-keyboard",
       exec: (): void => {
-        $("#top #menu .text-button.view-start").trigger("click");
+        navigate("/");
       },
     },
     {
       id: "viewLeaderboards",
-      display: "View Leaderboards Page",
+      display: "View Leaderboards",
       icon: "fa-crown",
       exec: (): void => {
-        $("#top #menu .text-button.view-leaderboards").trigger("click");
+        $("#top #menu .textButton.view-leaderboards").trigger("click");
       },
     },
     {
@@ -3149,7 +3150,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View About Page",
       icon: "fa-info",
       exec: (): void => {
-        $("#top #menu .text-button.view-about").trigger("click");
+        navigate("/about");
       },
     },
     {
@@ -3157,7 +3158,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Settings Page",
       icon: "fa-cog",
       exec: (): void => {
-        $("#top #menu .text-button.view-settings").trigger("click");
+        navigate("/settings");
       },
     },
     {
@@ -3176,9 +3177,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-user",
       alias: "stats",
       exec: (): void => {
-        $("#top #menu .text-button.view-account").hasClass("hidden")
-          ? $("#top #menu .text-button.view-login").trigger("click")
-          : $("#top #menu .text-button.view-account").trigger("click");
+        $("#top #menu .textButton.view-account").hasClass("hidden")
+          ? navigate("/login")
+          : navigate("/account");
       },
     },
     {

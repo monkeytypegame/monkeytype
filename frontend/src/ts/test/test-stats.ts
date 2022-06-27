@@ -310,9 +310,9 @@ export function calculateAccuracy(): number {
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
   TestInput.keypressPerSecond.splice(testSeconds);
-  (TestInput.keypressTimings.duration.array as number[]).splice(testSeconds);
-  (TestInput.keypressTimings.spacing.array as number[]).splice(testSeconds);
   TestInput.wpmHistory.splice(testSeconds);
+  TestInput.burstHistory.splice(testSeconds);
+  TestInput.rawHistory.splice(testSeconds);
 }
 
 function countChars(): CharCount {

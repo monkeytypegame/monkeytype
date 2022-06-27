@@ -69,6 +69,7 @@
   {
     "name": "58008",
     "type": "script",
+    "alias": "numbers",
     "affectsWordGeneration": true,
     "info": "A special mode for accountants."
   },

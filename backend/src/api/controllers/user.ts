@@ -1,9 +1,10 @@
+import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { getDiscordUser } from "../../utils/discord";
-import { buildAgentLog } from "../../utils/misc";
+import { buildAgentLog, sanitizeString } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 
@@ -374,4 +375,91 @@ export async function removeFavoriteQuote(
   await UserDAL.removeFavoriteQuote(uid, language, quoteId);
 
   return new MonkeyResponse("Quote removed from favorites");
+}
+
+export async function getProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.params;
+
+  const {
+    name,
+    banned,
+    inventory,
+    profileDetails,
+    personalBests,
+    completedTests,
+    startedTests,
+    timeTyping,
+    addedAt,
+    discordId,
+    discordAvatar,
+  } = await UserDAL.getUser(uid, "get user profile");
+
+  const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
+  const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
+
+  const typingStats = {
+    completedTests,
+    startedTests,
+    timeTyping,
+  };
+
+  const relevantPersonalBests = {
+    time: validTimePbs,
+    words: validWordsPbs,
+  };
+
+  const baseProfile = {
+    name,
+    banned,
+    addedAt,
+    typingStats,
+    personalBests: relevantPersonalBests,
+    discordId,
+    discordAvatar,
+  };
+
+  if (banned) {
+    return new MonkeyResponse("Profile retrived: banned user", baseProfile);
+  }
+
+  const profileData = {
+    ...baseProfile,
+    inventory,
+    details: profileDetails,
+  };
+
+  return new MonkeyResponse("Profile retrieved", profileData);
+}
+
+export async function updateProfile(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
+
+  const user = await UserDAL.getUser(uid, "update user profile");
+
+  if (user.banned) {
+    throw new MonkeyError(403, "Banned users cannot update their profile");
+  }
+
+  user.inventory?.badges.forEach((badge) => {
+    if (badge.id === selectedBadgeId) {
+      badge.selected = true;
+    } else {
+      delete badge.selected;
+    }
+  });
+
+  const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
+    bio: sanitizeString(bio),
+    keyboard: sanitizeString(keyboard),
+    socialProfiles: _.mapValues(socialProfiles, sanitizeString),
+  };
+
+  await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
+
+  return new MonkeyResponse("Profile updated");
 }

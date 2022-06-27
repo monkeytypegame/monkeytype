@@ -172,4 +172,20 @@ export default class Users {
       payload,
     });
   }
+
+  async getProfile(uid: string): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/${uid}/profile`);
+  }
+
+  async updateProfile(
+    profileUpdates: Partial<MonkeyTypes.UserDetails>,
+    selectedBadgeId?: number
+  ): Promise<Ape.EndpointData> {
+    return await this.httpClient.patch(`${BASE_PATH}/profile`, {
+      payload: {
+        ...profileUpdates,
+        selectedBadgeId,
+      },
+    });
+  }
 }

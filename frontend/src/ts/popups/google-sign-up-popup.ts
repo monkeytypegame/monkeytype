@@ -86,7 +86,7 @@ async function apply(): Promise<void> {
       await sendEmailVerification(signedInUser.user);
       AllTimeStats.clear();
       Notifications.add("Account created", 1, 3);
-      $("#menu .text-button.account .text").text(name);
+      $("#menu .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
@@ -100,13 +100,12 @@ async function apply(): Promise<void> {
         if (resultsSaveResponse.status === 200) {
           const result = TestLogic.notSignedInLastResult;
           DB.saveLocalResult(result);
-          DB.updateLocalStats({
-            time:
-              result.testDuration +
+          DB.updateLocalStats(
+            1,
+            result.testDuration +
               result.incompleteTestSeconds -
-              result.afkDuration,
-            started: 1,
-          });
+              result.afkDuration
+          );
         }
       }
       signedInUser = undefined;

@@ -135,7 +135,7 @@ function updateFooter(lb: LbKey): void {
 
   if (
     window.location.hostname !== "localhost" &&
-    (DB.getSnapshot().globalStats?.time ?? 0) < 7200
+    (DB.getSnapshot().typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
@@ -232,7 +232,7 @@ function checkLbMemory(lb: LbKey): void {
   }
 }
 
-function fillTable(lb: LbKey, prepend?: number): void {
+async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   if (!currentData[lb]) {
     return;
   }
@@ -251,6 +251,37 @@ function fillTable(lb: LbKey, prepend?: number): void {
   }
 
   const loggedInUserName = DB.getSnapshot()?.name;
+
+  const snap = DB.getSnapshot();
+
+  const avatarUrlPromises = currentData[lb].map((entry) => {
+    const isCurrentUser =
+      Auth.currentUser &&
+      entry.uid === Auth.currentUser.uid &&
+      snap.discordAvatar &&
+      snap.discordId;
+
+    const entryHasAvatar = entry.discordAvatar && entry.discordId;
+
+    const avatarSource: Partial<
+      MonkeyTypes.Snapshot | MonkeyTypes.LeaderboardEntry
+    > = (isCurrentUser && snap) || (entryHasAvatar && entry) || {};
+
+    return Misc.getDiscordAvatarUrl(
+      avatarSource.discordId,
+      avatarSource.discordAvatar
+    );
+  });
+
+  const avatarUrls = (await Promise.allSettled(avatarUrlPromises)).map(
+    (promise) => {
+      if (promise.status === "fulfilled") {
+        return promise.value;
+      }
+
+      return null;
+    }
+  );
 
   let a = currentData[lb].length - leaderboardSingleLimit;
   let b = currentData[lb].length;
@@ -278,21 +309,9 @@ function fillTable(lb: LbKey, prepend?: number): void {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    const snap = DB.getSnapshot();
-
-    const isCurrentUser =
-      Auth.currentUser &&
-      entry.uid === Auth.currentUser.uid &&
-      snap.discordAvatar &&
-      snap.discordId;
-
-    const entryHasAvatar = entry.discordAvatar && entry.discordId;
-
-    const avatarSource = (isCurrentUser && snap) || (entryHasAvatar && entry);
-
-    if (avatarSource) {
-      const avatarUrl = `https://cdn.discordapp.com/avatars/${avatarSource.discordId}/${avatarSource.discordAvatar}.png?size=32`;
-      avatar += `<div class="avatar" style="background-image:url(${avatarUrl})"></div>`;
+    const currentEntryAvatarUrl = avatarUrls[i];
+    if (currentEntryAvatarUrl !== null) {
+      avatar = `<div class="avatar" style="background-image:url(${currentEntryAvatarUrl})"></div>`;
     }
 
     html += `
@@ -300,9 +319,12 @@ function fillTable(lb: LbKey, prepend?: number): void {
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td><div class="avatarNameBadge">${avatar}${entry.name}${
-      entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""
-    }</div></td>
+    <td>
+    <div class="avatarNameBadge">${avatar}
+      <span class="entryName" uid=${entry.uid}>${entry.name}</span>
+      ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+    </div>
+    </td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -320,6 +342,7 @@ function fillTable(lb: LbKey, prepend?: number): void {
   </tr>
   `;
   }
+
   if (!prepend) {
     $(`#leaderboardsWrapper table.${side} tbody`).append(html);
   } else {
@@ -368,6 +391,18 @@ function updateYesterdayButton(): void {
   }
 }
 
+function getDailyLeaderboardQuery(): { isDaily: boolean; daysBefore: number } {
+  const isDaily = currentTimeRange === "daily";
+  const isViewingDailyAndButtonIsActive =
+    isDaily && showYesterdayButton.hasClass("active");
+  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
+
+  return {
+    isDaily,
+    daysBefore,
+  };
+}
+
 async function update(): Promise<void> {
   leftScrollEnabled = false;
   rightScrollEnabled = false;
@@ -377,17 +412,12 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const isViewingDailyAndButtonIsActive =
-    currentTimeRange === "daily" && showYesterdayButton.hasClass("active");
-  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
-
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
       mode2,
-      isDaily: currentTimeRange === "daily",
-      daysBefore,
+      ...getDailyLeaderboardQuery(),
     });
   });
 
@@ -398,8 +428,7 @@ async function update(): Promise<void> {
           language: currentLanguage,
           mode: "time",
           mode2,
-          isDaily: currentTimeRange === "daily",
-          daysBefore,
+          ...getDailyLeaderboardQuery(),
         });
       })
     );
@@ -471,9 +500,9 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
-    isDaily: currentTimeRange === "daily",
     skip: skipVal,
     limit: limitVal,
+    ...getDailyLeaderboardQuery(),
   });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
@@ -489,7 +518,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (prepend && !limitVal) {
     limitVal = leaderboardSingleLimit - 1;
   }
-  fillTable(lb, limitVal);
+  await fillTable(lb, limitVal);
   hideLoader(lb);
   requesting[lb] = false;
 }
@@ -501,8 +530,8 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
-    isDaily: currentTimeRange === "daily",
     skip,
+    ...getDailyLeaderboardQuery(),
   });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
@@ -521,7 +550,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     return;
   }
   currentData[lb] = data;
-  fillTable(lb);
+  await fillTable(lb);
   hideLoader(lb);
 }
 
@@ -754,16 +783,16 @@ $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
   update();
 });
 
-$(document).on("click", "#top #menu .text-button", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    show();
-  }
-  return false;
-});
-
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();
   }
+});
+
+$(document).on("click", "#top #menu .textButton", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    show();
+  }
+  return false;
 });

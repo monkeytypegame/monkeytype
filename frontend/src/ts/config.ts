@@ -87,9 +87,9 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   }
   config.numbers = numb;
   if (!config.numbers) {
-    $("#top .config .numbersMode .text-button").removeClass("active");
+    $("#top .config .numbersMode .textButton").removeClass("active");
   } else {
-    $("#top .config .numbersMode .text-button").addClass("active");
+    $("#top .config .numbersMode .textButton").addClass("active");
   }
   saveToLocalStorage("numbers", nosave);
   ConfigEvent.dispatch("numbers", config.numbers);
@@ -106,9 +106,9 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   }
   config.punctuation = punc;
   if (!config.punctuation) {
-    $("#top .config .punctuationMode .text-button").removeClass("active");
+    $("#top .config .punctuationMode .textButton").removeClass("active");
   } else {
-    $("#top .config .punctuationMode .text-button").addClass("active");
+    $("#top .config .punctuationMode .textButton").addClass("active");
   }
   saveToLocalStorage("punctuation", nosave);
   ConfigEvent.dispatch("punctuation", config.punctuation);
@@ -976,15 +976,15 @@ export function setTimeConfig(
 
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
-  $("#top .config .time .text-button").removeClass("active");
+  $("#top .config .time .textButton").removeClass("active");
 
   const timeCustom = ![15, 30, 60, 120].includes(newTime) ? "custom" : newTime;
 
   config.time = newTime;
 
-  $(
-    "#top .config .time .text-button[timeConfig='" + timeCustom + "']"
-  ).addClass("active");
+  $("#top .config .time .textButton[timeConfig='" + timeCustom + "']").addClass(
+    "active"
+  );
   saveToLocalStorage("time", nosave);
   ConfigEvent.dispatch("time", config.time);
 
@@ -1029,10 +1029,10 @@ export function setQuoteLength(
     }
   }
   // if (!nosave) setMode("quote", nosave);
-  $("#top .config .quoteLength .text-button").removeClass("active");
+  $("#top .config .quoteLength .textButton").removeClass("active");
   config.quoteLength.forEach((ql) => {
     $(
-      "#top .config .quoteLength .text-button[quoteLength='" + ql + "']"
+      "#top .config .quoteLength .textButton[quoteLength='" + ql + "']"
     ).addClass("active");
   });
   saveToLocalStorage("quoteLength", nosave);
@@ -1050,7 +1050,7 @@ export function setWordCount(
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
 
-  $("#top .config .wordCount .text-button").removeClass("active");
+  $("#top .config .wordCount .textButton").removeClass("active");
 
   const wordCustom = ![10, 25, 50, 100, 200].includes(newWordCount)
     ? "custom"
@@ -1059,7 +1059,7 @@ export function setWordCount(
   config.words = newWordCount;
 
   $(
-    "#top .config .wordCount .text-button[wordCount='" + wordCustom + "']"
+    "#top .config .wordCount .textButton[wordCount='" + wordCustom + "']"
   ).addClass("active");
   saveToLocalStorage("words", nosave);
   ConfigEvent.dispatch("words", config.words);
@@ -1260,7 +1260,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  setCustomTheme(false);
+  if (config.customTheme === true) setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
@@ -1291,6 +1291,7 @@ function setThemes(
   theme: string,
   customState: boolean,
   customThemeColors: string[],
+  autoSwitchTheme: boolean,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("themes", theme, ["string"])) return false;
@@ -1310,6 +1311,7 @@ function setThemes(
   config.customThemeColors = customThemeColors;
   config.theme = theme;
   config.customTheme = customState;
+  config.autoSwitchTheme = autoSwitchTheme;
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("setThemes", customState);
 
@@ -1436,8 +1438,8 @@ export function setKeymapMode(
     return false;
   }
 
-  $(".active-key").removeClass("active-key");
-  $(".keymap-key").attr("style", "");
+  $(".activeKey").removeClass("activeKey");
+  $(".keymapKey").attr("style", "");
   config.keymapMode = mode;
   saveToLocalStorage("keymapMode", nosave);
   ConfigEvent.dispatch("keymapMode", config.keymapMode, nosave);
@@ -1467,15 +1469,15 @@ export function setKeymapLegendStyle(
 
   // Mutate the keymap in the DOM, if it exists.
   // 1. Remove everything
-  $(".keymap-key > .letter").css("display", "");
-  $(".keymap-key > .letter").css("text-transform", "");
+  $(".keymapKey > .letter").css("display", "");
+  $(".keymapKey > .letter").css("text-transform", "");
 
   // 2. Append special styles onto the DOM elements
   if (style === "uppercase") {
-    $(".keymap-key > .letter").css("text-transform", "capitalize");
+    $(".keymapKey > .letter").css("text-transform", "capitalize");
   }
   if (style === "blank") {
-    $(".keymap-key > .letter").css("display", "none");
+    $(".keymapKey > .letter").css("display", "none");
   }
 
   // Update and save to cookie for persistence
@@ -1731,11 +1733,11 @@ export function apply(
   if (configObj !== undefined && configObj !== null) {
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
-    setAutoSwitchTheme(configObj.autoSwitchTheme, true);
     setThemes(
       configObj.theme,
       configObj.customTheme,
       configObj.customThemeColors,
+      configObj.autoSwitchTheme,
       true
     );
     setCustomLayoutfluid(configObj.customLayoutfluid, true);

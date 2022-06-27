@@ -1,5 +1,6 @@
 const { resolve } = require("path");
 const { merge } = require("webpack-merge");
+const RemovePlugin = require("remove-files-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
@@ -64,6 +65,13 @@ const PRODUCTION_CONFIG = {
       new CssMinimizerPlugin(),
     ],
   },
+  plugins: [
+    new RemovePlugin({
+      after: {
+        include: [resolve(__dirname, "../public/html")],
+      },
+    }),
+  ],
 };
 
 module.exports = merge(BASE_CONFIG, PRODUCTION_CONFIG);

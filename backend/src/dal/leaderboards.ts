@@ -63,7 +63,7 @@ export async function update(
   const str = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const start1 = performance.now();
   const lb = await db
-    .collection<MonkeyTypes.LeaderboardEntry>("users")
+    .collection<MonkeyTypes.User>("users")
     .aggregate<MonkeyTypes.LeaderboardEntry>(
       [
         {
@@ -78,6 +78,7 @@ export async function update(
               $exists: true,
             },
             banned: { $exists: false },
+            needsToChangeName: { $exists: false },
             timeTyping: {
               $gt: process.env.MODE === "dev" ? 0 : 7200,
             },
@@ -89,7 +90,7 @@ export async function update(
             [str + ".name"]: "$name",
             [str + ".discordId"]: "$discordId",
             [str + ".discordAvatar"]: "$discordAvatar",
-            [str + ".badgeIds"]: "$badgeIds",
+            [str + ".badges"]: "$inventory.badges",
           },
         },
         {
@@ -116,6 +117,15 @@ export async function update(
     lbEntry.rank = index + 1;
     if (uid && lbEntry.uid === uid) {
       retval = index + 1;
+    }
+
+    // extract selected badge
+    if (lbEntry.badges) {
+      const selectedBadge = lbEntry.badges.find((badge) => badge.selected);
+      if (selectedBadge) {
+        lbEntry.badgeId = selectedBadge.id;
+      }
+      delete lbEntry.badges;
     }
   });
   const end2 = performance.now();

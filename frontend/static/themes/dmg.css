@@ -15,11 +15,11 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .text-button {
+#top.focus #menu .textButton {
   background: var(--bg-color);
   size: 1rem;
 }
-#top.focus #menu .text-button:nth-child(1) {
+#top.focus #menu .textButton:nth-child(1) {
   background: #e34c6c;
 }
 #top.focus #menu:before,
@@ -27,7 +27,7 @@
   background: var(--sub-color);
 }
 
-#menu .text-button {
+#menu .textButton {
   border-radius: 10rem !important;
   color: var(--bg-color);
   background: var(--main-color);
