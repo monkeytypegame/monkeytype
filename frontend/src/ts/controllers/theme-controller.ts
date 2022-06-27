@@ -6,10 +6,12 @@ import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
+import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
+export let randomThemeIndex = 0;
 
 export const colorVars = [
   "--bg-color",
@@ -70,25 +72,42 @@ function clearCustomTheme(): void {
   });
 }
 
-const loadStyle = async function (name: string): Promise<void> {
+let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
+
+async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
+    loadStyleLoaderTimeouts.push(
+      setTimeout(() => {
+        Loader.show();
+      }, 100)
+    );
+    $("#nextTheme").remove();
+    const headScript = document.querySelector("#currentTheme") as Element;
     const link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
-    link.id = "currentTheme";
+    link.id = "nextTheme";
     link.onload = (): void => {
+      Loader.hide();
+      $("#currentTheme").remove();
+      $("#nextTheme").attr("id", "currentTheme");
+      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
+      loadStyleLoaderTimeouts = [];
       resolve();
     };
     if (name === "custom") {
-      link.href = `themes/serika_dark.css`;
+      link.href = `/./themes/serika_dark.css`;
     } else {
-      link.href = `themes/${name}.css`;
+      link.href = `/./themes/${name}.css`;
     }
 
-    const headScript = document.querySelector("#currentTheme") as Element;
-    headScript.replaceWith(link);
+    if (!headScript) {
+      document.head.appendChild(link);
+    } else {
+      headScript.after(link);
+    }
   });
-};
+}
 
 // export function changeCustomTheme(themeId: string, nosave = false): void {
 //   const customThemes = DB.getSnapshot().customThemes;
@@ -161,59 +180,68 @@ export function set(themeIdentifier: string, isCustom: boolean): void {
   apply(themeIdentifier, isCustom);
 }
 
-export function clearPreview(): void {
+export function clearPreview(applyTheme = true): void {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
-    if (Config.customTheme) {
-      apply("custom", true);
-    } else {
-      apply(Config.theme, false);
+    if (applyTheme) {
+      if (Config.customTheme) {
+        apply("custom", true);
+      } else {
+        apply(Config.theme, false);
+      }
     }
   }
 }
 
+let themesList: string[] = [];
+
+async function changeThemeList(): Promise<void> {
+  const themes = await Misc.getThemesList();
+  if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
+    themesList = Config.favThemes;
+  } else if (Config.randomTheme === "light") {
+    themesList = themes
+      .filter((t) => Misc.isColorLight(t.bgColor))
+      .map((t) => t.name);
+  } else if (Config.randomTheme === "dark") {
+    themesList = themes
+      .filter((t) => Misc.isColorDark(t.bgColor))
+      .map((t) => t.name);
+  } else if (Config.randomTheme === "on") {
+    themesList = themes.map((t) => {
+      return t.name;
+    });
+  } else {
+    themesList = DB.getSnapshot().customThemes.map((ct) => ct._id);
+  }
+  Misc.shuffle(themesList);
+  randomThemeIndex = 0;
+}
+
 export function randomizeTheme(): void {
-  let randomList: string[] | MonkeyTypes.CustomTheme[];
-  Misc.getThemesList().then((themes) => {
-    if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
-      randomList = Config.favThemes;
-    } else if (Config.randomTheme === "light") {
-      randomList = themes
-        .filter((t) => Misc.isColorLight(t.bgColor))
-        .map((t) => t.name);
-    } else if (Config.randomTheme === "dark") {
-      randomList = themes
-        .filter((t) => Misc.isColorDark(t.bgColor))
-        .map((t) => t.name);
-    } else if (Config.randomTheme === "on") {
-      randomList = themes.map((t) => {
-        return t.name;
-      });
-    } else {
-      randomList = DB.getSnapshot().customThemes.map((ct) => ct._id);
+  //! setting randomThemeIndex to 0 everytime randomizeTheme is called
+
+  const randomTheme = themesList[randomThemeIndex];
+  randomThemeIndex++;
+
+  if (randomThemeIndex >= themesList.length) {
+    Misc.shuffle(themesList);
+    randomThemeIndex = 0;
+  }
+
+  preview(randomTheme, Config.randomTheme === "custom");
+
+  if (randomThemeIndex >= themesList.length) {
+    let name = randomTheme.replace(/_/g, " ");
+    if (Config.randomTheme === "custom") {
+      name = (
+        DB.getSnapshot().customThemes.find((ct) => ct._id === randomTheme)
+          ?.name ?? "custom"
+      ).replace(/_/g, " ");
     }
-
-    const previousTheme = randomTheme;
-    randomTheme = Misc.randomElementFromArray(randomList);
-
-    // if (Config.randomTheme === "custom") {
-    // changeCustomTheme(randomTheme, true);
-    // } else {
-    preview(randomTheme, Config.randomTheme === "custom");
-    // }
-
-    if (previousTheme != randomTheme) {
-      let name = randomTheme.replace(/_/g, " ");
-      if (Config.randomTheme === "custom") {
-        name = (
-          DB.getSnapshot().customThemes.find((ct) => ct._id === randomTheme)
-            ?.name ?? "custom"
-        ).replace(/_/g, " ");
-      }
-      Notifications.add(name, 0);
-    }
-  });
+    Notifications.add(name, 0);
+  }
 }
 
 export function clearRandom(): void {
@@ -270,6 +298,9 @@ window
   });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+  if (eventKey === "randomTheme") {
+    changeThemeList();
+  }
   if (eventKey === "customTheme") {
     eventValue ? set("custom", true) : set(Config.theme, false);
   }
@@ -277,11 +308,11 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     nosave ? preview("custom", true) : set("custom", true);
   }
   if (eventKey === "theme") {
-    clearPreview();
+    clearPreview(false);
     set(eventValue as string, false);
   }
   if (eventKey === "setThemes") {
-    clearPreview();
+    clearPreview(false);
     if (eventValue) {
       set("custom", true);
     } else {

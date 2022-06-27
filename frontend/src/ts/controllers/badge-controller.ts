@@ -79,6 +79,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
+  11: {
+    id: 11,
+    name: "Content Creator",
+    description: "Verified content creator",
+    icon: "fa-video",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
+  },
 };
 
 export function getHTMLById(

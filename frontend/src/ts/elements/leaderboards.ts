@@ -6,7 +6,6 @@ import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
-import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
@@ -349,15 +348,6 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   } else {
     $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
   }
-
-  $(".entryName").on("click", (e) => {
-    const uid = $(e.target).attr("uid");
-    if (uid) {
-      window.history.replaceState(null, "", "/profile?uid=" + uid);
-      change("profile", true);
-      hide();
-    }
-  });
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
@@ -793,16 +783,16 @@ $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
   update();
 });
 
-$(document).on("click", "#top #menu .text-button", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    show();
-  }
-  return false;
-});
-
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();
   }
+});
+
+$(document).on("click", "#top #menu .text-button", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    show();
+  }
+  return false;
 });

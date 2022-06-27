@@ -27,6 +27,7 @@ const BASE_CONFIG = {
   },
   resolve: { extensions: [".ts", ".js"] },
   output: {
+    publicPath: "/",
     filename: "./js/[name].[chunkhash:8].js",
     path: resolve(__dirname, "../public/"),
     clean: true,
