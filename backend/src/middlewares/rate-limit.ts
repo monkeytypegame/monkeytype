@@ -81,10 +81,10 @@ export async function incrementBadAuth(
   res: Response,
   status: number
 ): Promise<void> {
-  const { penalty, flaggedStatusCodes } =
+  const { enabled, penalty, flaggedStatusCodes } =
     req.ctx.configuration.rateLimiting.badAuthentication;
 
-  if (!flaggedStatusCodes.includes(status)) {
+  if (!flaggedStatusCodes.includes(status) || !enabled) {
     return;
   }
 
