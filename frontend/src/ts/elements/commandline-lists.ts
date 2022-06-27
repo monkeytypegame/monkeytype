@@ -167,6 +167,7 @@ Misc.getFunboxList().then((funboxes) => {
     commandsFunbox.list.push({
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
+      alias: funbox.alias,
       configValue: funbox.name,
       exec: (): void => {
         if (Funbox.setFunbox(funbox.name, funbox.type)) {
