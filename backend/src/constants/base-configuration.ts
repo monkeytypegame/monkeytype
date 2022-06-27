@@ -46,6 +46,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     badAuthentication: {
       enabled: false,
       penalty: 0,
+      flaggedStatusCodes: [],
     },
   },
   dailyLeaderboards: {
@@ -59,7 +60,42 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
 };
 
-export const CONFIGURATION_FORM_SCHEMA = {
+interface BaseSchema {
+  type: string;
+  label?: string;
+}
+
+interface NumberSchema extends BaseSchema {
+  type: "number";
+  min?: number;
+}
+
+interface BooleanSchema extends BaseSchema {
+  type: "boolean";
+}
+
+interface StringSchema extends BaseSchema {
+  type: "string";
+}
+
+interface ArraySchema extends BaseSchema {
+  type: "array";
+  items: Schema;
+}
+
+interface ObjectSchema extends BaseSchema {
+  type: "object";
+  fields: Record<string, Schema>;
+}
+
+type Schema =
+  | ObjectSchema
+  | ArraySchema
+  | StringSchema
+  | NumberSchema
+  | BooleanSchema;
+
+export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
   type: "object",
   label: "Server Configuration",
   fields: {
@@ -219,6 +255,15 @@ export const CONFIGURATION_FORM_SCHEMA = {
               type: "number",
               label: "Penalty",
               min: 0,
+            },
+            flaggedStatusCodes: {
+              type: "array",
+              label: "Flagged Status Codes",
+              items: {
+                label: "Status Code",
+                type: "number",
+                min: 0,
+              },
             },
           },
         },

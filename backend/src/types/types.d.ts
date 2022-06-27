@@ -52,6 +52,7 @@ declare namespace MonkeyTypes {
       badAuthentication: {
         enabled: boolean;
         penalty: number;
+        flaggedStatusCodes: number[];
       };
     };
     dailyLeaderboards: {
