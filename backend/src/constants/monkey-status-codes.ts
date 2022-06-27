@@ -16,6 +16,7 @@ interface Statuses {
   APE_KEY_INVALID: Status;
   APE_KEY_INACTIVE: Status;
   APE_KEY_MALFORMED: Status;
+  APE_KEY_RATE_LIMIT_EXCEEDED: Status;
 }
 
 const statuses: Statuses = {
@@ -58,6 +59,10 @@ const statuses: Statuses = {
   APE_KEY_MALFORMED: {
     code: 472,
     message: "ApeKey is malformed",
+  },
+  APE_KEY_RATE_LIMIT_EXCEEDED: {
+    code: 479,
+    message: "ApeKey rate limit exceeded",
   },
 };
 
