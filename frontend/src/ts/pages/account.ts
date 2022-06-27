@@ -892,9 +892,9 @@ function sortAndRefreshHistory(
   forceDescending: null | boolean = null
 ): void {
   // Removes styling from previous sorting requests:
-  $("td").removeClass("header-sorted");
+  $("td").removeClass("headerSorted");
   $("td").children("i").remove();
-  $(headerClass).addClass("header-sorted");
+  $(headerClass).addClass("headerSorted");
 
   if (filteredResults.length < 2) return;
 
@@ -1058,7 +1058,7 @@ $(document).on(
 
 $(document).on(
   "click",
-  ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset",
+  ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset",
   (e) => {
     ResultFilters.setFilterPreset($(e.target).data("id"));
     update();

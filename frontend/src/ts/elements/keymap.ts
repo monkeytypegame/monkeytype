@@ -8,22 +8,22 @@ export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
-    if ($(".active-key") != undefined) {
-      $(".active-key").removeClass("active-key");
+    if ($(".activeKey") != undefined) {
+      $(".activeKey").removeClass("activeKey");
     }
 
     let highlightKey;
     if (currentKey == " ") {
-      highlightKey = "#keymap .key-space, #keymap .key-split-space";
+      highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
     } else if (currentKey == '"') {
-      highlightKey = `#keymap .keymap-key[data-key*='${currentKey}']`;
+      highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
-      highlightKey = `#keymap .keymap-key[data-key*="${currentKey}"]`;
+      highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
     }
 
     // console.log("highlighting", highlightKey);
 
-    $(highlightKey).addClass("active-key");
+    $(highlightKey).addClass("activeKey");
   } catch (e) {
     if (e instanceof Error) {
       console.log("could not update highlighted keymap key: " + e.message);
@@ -35,11 +35,11 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == undefined) return;
 
   if (key == " ") {
-    key = "#keymap .key-space, #keymap .key-split-space";
+    key = "#keymap .keySpace, #keymap .keySplitSpace";
   } else if (key == '"') {
-    key = `#keymap .keymap-key[data-key*='${key}']`;
+    key = `#keymap .keymapKey[data-key*='${key}']`;
   } else {
-    key = `#keymap .keymap-key[data-key*="${key}"]`;
+    key = `#keymap .keymapKey[data-key*="${key}"]`;
   }
 
   const themecolors = await ThemeColors.getAll();
@@ -142,11 +142,11 @@ export async function refresh(
             letterStyle = `style="display: none;"`;
           }
           rowElement += "<div></div>";
-          rowElement += `<div class="keymap-key key-space">
+          rowElement += `<div class="keymapKey keySpace">
           <div class="letter" ${letterStyle}>${layoutDisplay}</div>
         </div>`;
-          rowElement += `<div class="keymap-split-spacer"></div>`;
-          rowElement += `<div class="keymap-key key-split-space">
+          rowElement += `<div class="keymapSplitSpacer"></div>`;
+          rowElement += `<div class="keymapKey keySplitSpace">
           <div class="letter"></div>
         </div>`;
         } else {
@@ -168,7 +168,7 @@ export async function refresh(
             } else if (Config.keymapLegendStyle === "uppercase") {
               keyDisplay = keyDisplay.toUpperCase();
             }
-            const keyElement = `<div class="keymap-key" data-key="${key.replace(
+            const keyElement = `<div class="keymapKey" data-key="${key.replace(
               '"',
               "&quot;"
             )}">
@@ -189,11 +189,11 @@ export async function refresh(
                 lts.type === "iso"
               ) {
                 if (i === 6) {
-                  splitSpacer += `<div class="keymap-split-spacer"></div>`;
+                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               } else {
                 if (i === 5) {
-                  splitSpacer += `<div class="keymap-split-spacer"></div>`;
+                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               }
             }
@@ -203,7 +203,7 @@ export async function refresh(
                 (lts.type === "iso" && i === 6) ||
                 (lts.type !== "iso" && i === 5)
               ) {
-                splitSpacer += `<div class="extra-key"><span class="letter"></span></div>`;
+                splitSpacer += `<div class="extraKey"><span class="letter"></span></div>`;
               }
             }
 
