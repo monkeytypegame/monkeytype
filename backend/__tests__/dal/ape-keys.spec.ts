@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { addApeKey, deleteAllApeKeys } from "../../src/dal/ape-keys";
+import { addApeKey, deleteAll, getApeKeys } from "../../src/dal/ape-keys";
 
 describe("ApeKeysDal", () => {
   it("should be able to add a new ape key", async () => {
@@ -18,7 +18,8 @@ describe("ApeKeysDal", () => {
     const apeKeyId = await addApeKey(apeKey);
 
     expect(apeKeyId).toBe(apeKey._id.toHexString());
-
+  });
+  it("should be able to delete all ape keys", async () => {
     const apeKeys = [
       {
         _id: new ObjectId(),
@@ -44,12 +45,12 @@ describe("ApeKeysDal", () => {
       },
     ];
 
-    const apeKeyId0 = await addApeKey(apeKeys[0]);
-    const apeKeyId1 = await addApeKey(apeKeys[1]);
+    await addApeKey(apeKeys[0]);
+    await addApeKey(apeKeys[2]);
 
-    await deleteAllApeKeys("123");
+    await deleteAll("123");
 
-    expect(apeKeyId0).toBe(undefined);
-    expect(apeKeyId1).toBe(undefined);
+    expect(getApeKeys("11111")).toBe(undefined);
+    expect(getApeKeys("11113")).toBe(undefined);
   });
 });
