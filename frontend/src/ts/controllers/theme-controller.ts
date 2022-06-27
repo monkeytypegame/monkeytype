@@ -197,6 +197,7 @@ export function clearPreview(applyTheme = true): void {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
+  if (!DB.getSnapshot()) return;
   const themes = await Misc.getThemesList();
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
@@ -219,9 +220,11 @@ async function changeThemeList(): Promise<void> {
   randomThemeIndex = 0;
 }
 
-export function randomizeTheme(): void {
-  //! setting randomThemeIndex to 0 everytime randomizeTheme is called
-
+export async function randomizeTheme(): Promise<void> {
+  if (themesList.length === 0) {
+    await changeThemeList();
+    if (themesList.length === 0) return;
+  }
   const randomTheme = themesList[randomThemeIndex];
   randomThemeIndex++;
 
