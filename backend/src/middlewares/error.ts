@@ -34,9 +34,7 @@ async function errorHandlingMiddleware(
     monkeyResponse.message = `Oops! Our monkeys dropped their bananas. Please try again later. - ${monkeyResponse.data.errorId}`;
   }
 
-  if ([401, 403, 470, 472].includes(monkeyResponse.status)) {
-    await incrementBadAuth(req, res);
-  }
+  await incrementBadAuth(req, res, monkeyResponse.status);
 
   if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {
     const { uid, errorId } = monkeyResponse.data;

@@ -55,6 +55,10 @@ export async function badAuthRateLimiterHandler(
   res: Response,
   next: NextFunction
 ): Promise<void> {
+  if (!req.ctx.configuration.rateLimiting.badAuthentication.enabled) {
+    return next();
+  }
+
   try {
     const key = getKey(req, res);
     const rateLimitStatus = await badAuthRateLimiter.get(key);
@@ -72,13 +76,22 @@ export async function badAuthRateLimiterHandler(
   next();
 }
 
+const FLAGGED_STATUS_CODES = [401, 403, 429, 470, 472];
+
 export async function incrementBadAuth(
   req: MonkeyTypes.Request,
-  res: Response
+  res: Response,
+  status: number
 ): Promise<void> {
+  if (!FLAGGED_STATUS_CODES.includes(status)) {
+    return;
+  }
+
+  const { penalty } = req.ctx.configuration.rateLimiting.badAuthentication;
+
   try {
     const key = getKey(req, res);
-    await badAuthRateLimiter.penalty(key, 1);
+    await badAuthRateLimiter.penalty(key, penalty);
   } catch (error) {}
 }
 

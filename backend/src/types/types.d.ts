@@ -48,7 +48,12 @@ declare namespace MonkeyTypes {
       apeKeyBytes: number;
       apeKeySaltRounds: number;
     };
-
+    rateLimiting: {
+      badAuthentication: {
+        enabled: boolean;
+        penalty: number;
+      };
+    };
     dailyLeaderboards: {
       enabled: boolean;
       leaderboardExpirationTimeInDays: number;

@@ -42,7 +42,12 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       enabled: false,
     },
   },
-
+  rateLimiting: {
+    badAuthentication: {
+      enabled: false,
+      penalty: 0,
+    },
+  },
   dailyLeaderboards: {
     enabled: false,
     maxResults: 0,
@@ -198,7 +203,27 @@ export const CONFIGURATION_FORM_SCHEMA = {
         },
       },
     },
-
+    rateLimiting: {
+      type: "object",
+      label: "Rate Limiting",
+      fields: {
+        badAuthentication: {
+          type: "object",
+          label: "Bad Authentication Rate Limiter",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            penalty: {
+              type: "number",
+              label: "Penalty",
+              min: 0,
+            },
+          },
+        },
+      },
+    },
     dailyLeaderboards: {
       type: "object",
       label: "Daily Leaderboards",
