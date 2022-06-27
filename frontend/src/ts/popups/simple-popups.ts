@@ -739,7 +739,7 @@ list["applyCustomFont"] = new SimplePopup(
   "text",
   "Custom font",
   [{ placeholder: "Font name", initVal: "" }],
-  "Make sure you have the font installed on your computer before applying.",
+  "Make sure you have the font installed on your computer before applying",
   "Apply",
   (_thisPopup, fontName: string) => {
     if (fontName === "") return;
@@ -1071,7 +1071,7 @@ list["updateCustomTheme"] = new SimplePopup(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
-      Notifications.add("Custom theme does not exist!", -1);
+      Notifications.add("Custom theme does not exist", -1);
       return;
     }
 
