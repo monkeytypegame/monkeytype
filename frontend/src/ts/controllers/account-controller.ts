@@ -107,7 +107,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
-  $("#menu .text-button.account .text").text(snapshot.name);
+  $("#menu .textButton.account .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -576,7 +576,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendEmailVerification(createdAuthUser.user);
     AllTimeStats.clear();
-    $("#menu .text-button.account .text").text(nname);
+    $("#menu .textButton.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     LoginPage.hidePreloader();

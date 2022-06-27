@@ -16,12 +16,12 @@
   border-bottom: dotted 2px var(--text-color);
 }
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   background: var(--caret-color);
   border-radius: 50%;
 }
 
-#menu .text-button:nth-child(2) {
+#menu .textButton:nth-child(2) {
   background: var(--error-color);
   border-radius: 50%;
 }

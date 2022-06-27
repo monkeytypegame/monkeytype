@@ -47,8 +47,8 @@ export function update(
   current: MonkeyTypes.Mode
 ): void {
   if (previous === current) return;
-  $("#top .config .mode .text-button").removeClass("active");
-  $("#top .config .mode .text-button[mode='" + current + "']").addClass(
+  $("#top .config .mode .textButton").removeClass("active");
+  $("#top .config .mode .textButton[mode='" + current + "']").addClass(
     "active"
   );
 

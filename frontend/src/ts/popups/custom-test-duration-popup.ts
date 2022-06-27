@@ -139,7 +139,7 @@ $("#customTestDurationPopup .button").on("click", () => {
   apply();
 });
 
-$(document).on("click", "#top .config .time .text-button", (e) => {
+$(document).on("click", "#top .config .time .textButton", (e) => {
   const mode = $(e.currentTarget).attr("timeConfig");
   if (mode == "custom") {
     show();

@@ -113,7 +113,7 @@ export async function load(): Promise<void> {
 
 export async function updateFilterPresets(): Promise<void> {
   // remove all previous filter preset buttons
-  $(".pageAccount .presetFilterButtons .filter-btns").html("");
+  $(".pageAccount .presetFilterButtons .filterBtns").html("");
 
   const filterPresets = DB.getSnapshot().filterPresets.map((filter) => {
     filter.name = filter.name.replace(/_/g, " ");
@@ -127,8 +127,8 @@ export async function updateFilterPresets(): Promise<void> {
 
     // add button for each filter
     DB.getSnapshot().filterPresets.forEach((filter) => {
-      $(".pageAccount .group.presetFilterButtons .filter-btns").append(
-        `<div class="filter-presets">
+      $(".pageAccount .group.presetFilterButtons .filterBtns").append(
+        `<div class="filterPresets">
           <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
           <div class="button delete-filter-preset" data-id="${filter._id}">
             <i class="fas fa-fw fa-trash"></i>
@@ -156,12 +156,12 @@ export async function setFilterPreset(id: string): Promise<void> {
 
   // make all filter preset butons inactive
   $(
-    `.pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset`
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset`
   ).removeClass("active");
 
   // make current filter presest button active
   $(
-    `.pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset[data-id=${id}]`
+    `.pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset[data-id=${id}]`
   ).addClass("active");
 }
 
@@ -232,7 +232,7 @@ export async function deleteFilterPreset(id: string): Promise<void> {
 function deSelectFilterPreset(): void {
   // make all filter preset buttons inactive
   $(
-    ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .select-filter-preset"
+    ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset"
   ).removeClass("active");
 }
 
@@ -708,7 +708,7 @@ $(".pageAccount .topFilters .button.createFilterPresetBtn").on("click", () => {
 
 $(document).on(
   "click",
-  ".pageAccount .group.presetFilterButtons .filter-btns .filter-presets .delete-filter-preset",
+  ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .delete-filter-preset",
   (e) => {
     deleteFilterPreset($(e.currentTarget).data("id"));
   }
