@@ -39,7 +39,7 @@ export default class Presets {
     return await this.httpClient.delete(`${BASE_PATH}/${presetId}`);
   }
 
-  async reset(): Ape.EndpointData {
+  async deleteAll(): Ape.EndpointData {
     return await this.httpClient.delete(BASE_PATH);
   }
 }

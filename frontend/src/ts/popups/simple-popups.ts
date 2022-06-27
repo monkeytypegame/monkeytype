@@ -719,8 +719,8 @@ list["resetAccount"] = new SimplePopup(
       Notifications.add("Resetting account and stats...", 0);
       const responses = [
         Ape.users.reset(),
-        Ape.presets.reset(),
-        Ape.apeKeys.reset(),
+        Ape.presets.deleteAll(),
+        Ape.apeKeys.deleteAll(),
         Ape.results.deleteAll(),
       ];
 

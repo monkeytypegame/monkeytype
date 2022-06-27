@@ -70,6 +70,6 @@ export async function removePreset(
   }
 }
 
-export async function reset(uid: string): Promise<void> {
+export async function deleteAll(uid: string): Promise<void> {
   await db.collection(COLLECTION_NAME).deleteMany({ uid });
 }

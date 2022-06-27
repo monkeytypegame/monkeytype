@@ -62,7 +62,7 @@ router.delete(
   "/",
   RateLimit.presetsRemove,
   authenticateRequest(),
-  asyncHandler(PresetController.reset)
+  asyncHandler(PresetController.deleteAll)
 );
 
 router.delete(
