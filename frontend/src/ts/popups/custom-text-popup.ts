@@ -157,7 +157,7 @@ function apply(): void {
     !CustomText.isWordRandom
   ) {
     Notifications.add(
-      "You need to specify word count or time in seconds to start a random custom test.",
+      "You need to specify word count or time in seconds to start a random custom test",
       0,
       5
     );
@@ -170,7 +170,7 @@ function apply(): void {
     CustomText.isWordRandom
   ) {
     Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test.",
+      "You need to pick between word count or time in seconds to start a random custom test",
       0,
       5
     );
