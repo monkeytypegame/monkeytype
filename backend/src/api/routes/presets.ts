@@ -60,8 +60,8 @@ router.patch(
 
 router.delete(
   "/",
-  RateLimit.presetsRemove,
   authenticateRequest(),
+  RateLimit.presetsRemove,
   asyncHandler(PresetController.deleteAll)
 );
 

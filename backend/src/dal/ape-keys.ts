@@ -1,9 +1,19 @@
 import _ from "lodash";
 import * as db from "../init/db";
-import { Filter, ObjectId, MatchKeysAndValues } from "mongodb";
+import {
+  Filter,
+  ObjectId,
+  MatchKeysAndValues,
+  WithId,
+  Collection,
+} from "mongodb";
 import MonkeyError from "../utils/error";
 
 const COLLECTION_NAME = "ape-keys";
+
+export const getApeKeysCollection = (): Collection<
+  WithId<MonkeyTypes.ApeKey>
+> => db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME);
 
 function getApeKeyFilter(
   uid: string,

@@ -62,8 +62,8 @@ router.post(
 
 router.delete(
   "/",
-  RateLimit.apeKeysDelete,
   authenticateRequest(),
+  RateLimit.apeKeysDelete,
   checkIfUserCanManageApeKeys,
   asyncHandler(ApeKeyController.deleteAll)
 );

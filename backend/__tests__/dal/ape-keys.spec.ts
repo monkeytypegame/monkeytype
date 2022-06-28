@@ -1,8 +1,9 @@
 import { ObjectId } from "mongodb";
-import { addApeKey, deleteAll } from "../../src/dal/ape-keys";
-import * as db from "../../src/init/db";
-
-const COLLECTION_NAME = "ape-keys";
+import {
+  addApeKey,
+  deleteAll,
+  getApeKeysCollection,
+} from "../../src/dal/ape-keys";
 
 describe("ApeKeysDal", () => {
   it("should be able to add a new ape key", async () => {
@@ -55,7 +56,7 @@ describe("ApeKeysDal", () => {
     await deleteAll("123");
 
     const exists =
-      (await db.collection(COLLECTION_NAME).countDocuments({ uid: "123" })) > 0;
+      (await getApeKeysCollection().countDocuments({ uid: "123" })) > 0;
 
     expect(exists).toBe(false);
   });

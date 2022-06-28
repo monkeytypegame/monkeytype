@@ -121,8 +121,8 @@ router.delete(
 
 router.patch(
   "/reset",
-  RateLimit.userReset,
   authenticateRequest(),
+  RateLimit.userReset,
   asyncHandler(UserController.resetUser)
 );
 

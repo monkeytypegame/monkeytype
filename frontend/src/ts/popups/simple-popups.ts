@@ -744,7 +744,7 @@ list["resetAccount"] = new SimplePopup(
       if (failedResponse) {
         Loader.hide();
         return Notifications.add(
-          "There was a error Resetting your account. Try retrying.",
+          "There was an error resetting your account. Please try again.",
           -1
         );
       }
