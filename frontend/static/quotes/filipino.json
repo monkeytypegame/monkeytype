@@ -2,9 +2,9 @@
   "language": "filipino",
   "groups": [
     [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [101,300],
+    [301,600],
+    [601,9999]
   ],
   "quotes": [
     {
@@ -180,6 +180,12 @@
       "source": "Ang Sandali ng mga Mata, Alvin B. Yapan",
       "length": 739,
       "id": 29
+    },
+    {
+      "text": "Lagi nalang umuulan. Parang walang katapusan Tulad ng paghihirap ko ngayon. Parang walang humpay. Sa kabila ng lahat ng aking pagsisikap. Na limutin ka ay di pa rin magawa. Hindi naman ako tanga. Alam ko nang wala ka na. Pero mahirap lang na tanggapin. Di na kita kapiling. Iniwan mo akong nag-iisa. Sa gitna ng dilim at basang-basa pa sa ulan. Pero wag mag-alala di na kita gagambalain. Alam ko namang ngayon may kapiling ka nang iba",
+      "source": "Cueshe", 
+      "length": 434,
+      "id": 30
     }
   ]
 }
