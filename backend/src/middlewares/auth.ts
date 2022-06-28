@@ -150,7 +150,7 @@ async function authenticateWithApeKey(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {
-    throw new MonkeyError(403, "ApeKeys are not being accepted at this time");
+    throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
   }
 
   if (!options.acceptApeKeys) {
