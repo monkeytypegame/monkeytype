@@ -9,7 +9,7 @@
   width: fit-content;
   width: -moz-fit-content;
 
-  .text-button {
+  .textButton {
     .text {
       font-size: 0.65rem;
       line-height: 1rem;
@@ -41,7 +41,7 @@
   }
 }
 
-#top.focus #menu .text-button.discord::after {
+#top.focus #menu .textButton.discord::after {
   background: transparent;
 }
 
@@ -49,11 +49,11 @@
   color: transparent !important;
 }
 
-#top.focus #menu .text-button {
+#top.focus #menu .textButton {
   color: transparent !important;
 }
 
-#top.focus #menu .text-button.account .avatar {
+#top.focus #menu .textButton.account .avatar {
   opacity: 0 !important;
 }
 
@@ -122,7 +122,7 @@
     transition: 0.125s;
     .mobileConfig {
       display: none;
-      .text-button {
+      .textButton {
         margin-right: -1rem;
         padding: 0.5rem 1rem;
         font-size: 2rem;
@@ -153,7 +153,7 @@
 
         .buttons {
           display: flex;
-          .text-button {
+          .textButton {
             font-size: 0.7rem;
             line-height: 0.7rem;
             padding: 0px 0.15rem;

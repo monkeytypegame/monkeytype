@@ -11,12 +11,12 @@
   --colorful-error-extra-color: #7e2a33;
 }
 
-#menu .text-button {
+#menu .textButton {
   border-radius: 10rem !important;
   background: #2f2a41;
   color: #e4e3e9;
 }
 
-#menu .text-button:hover {
+#menu .textButton:hover {
   color: #ada6c2;
 }

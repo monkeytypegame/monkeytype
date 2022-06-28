@@ -56,24 +56,24 @@
   align-content: right;
 }
 
-.config .mode .text-button {
+.config .mode .textButton {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
   align-content: right;
 }
 
-.config .wordCount .text-button,
-.config .time .text-button,
-.config .quoteLength .text-button,
-.config .customText .text-button {
+.config .wordCount .textButton,
+.config .time .textButton,
+.config .quoteLength .textButton,
+.config .customText .textButton {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
   align-content: right;
 }
 
-#top.focus #menu .text-button,
+#top.focus #menu .textButton,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: var(--sub-color);
@@ -102,32 +102,32 @@
   gap: 0.5rem;
 }
 
-#menu .text-button {
+#menu .textButton {
   border-radius: 10rem i !important;
   color: var(--bg-color);
   transition: 0.5s;
 }
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   background: #ab92e1;
 }
 
-#menu .text-button:nth-child(2) {
+#menu .textButton:nth-child(2) {
   background: #f3ea5d;
 }
 
-#menu .text-button:nth-child(3) {
+#menu .textButton:nth-child(3) {
   background: #7ae1bf;
 }
 
-#menu .text-button:nth-child(4) {
+#menu .textButton:nth-child(4) {
   background: #ff5869;
 }
 
-#menu .text-button:nth-child(5) {
+#menu .textButton:nth-child(5) {
   background: #fc76d9;
 }
 
-#menu .text-button:nth-child(6) {
+#menu .textButton:nth-child(6) {
   background: #fc76d9;
 }

@@ -15,37 +15,37 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .text-button,
+#top.focus #menu .textButton,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: #99989f;
 }
 
-#menu .text-button {
+#menu .textButton {
   border-radius: 10rem !important;
   color: var(--bg-color);
 }
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   background: #553d94;
 }
-#menu .text-button:nth-child(2) {
+#menu .textButton:nth-child(2) {
   background: #6851a4;
 }
-#menu .text-button:nth-child(3) {
+#menu .textButton:nth-child(3) {
   background: #7962b3;
 }
-#menu .text-button:nth-child(4) {
+#menu .textButton:nth-child(4) {
   background: #8c76c3;
 }
-#menu .text-button:nth-child(5) {
+#menu .textButton:nth-child(5) {
   background: #9f8ad4;
 }
-#menu .text-button:nth-child(6),
-#menu .text-button:nth-child(7) {
+#menu .textButton:nth-child(6),
+#menu .textButton:nth-child(7) {
   background: #9f8ad4;
 }
 
-#top.focus #menu .text-button.discord::after {
+#top.focus #menu .textButton.discord::after {
   border-color: transparent;
 }

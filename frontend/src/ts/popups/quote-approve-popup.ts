@@ -23,10 +23,10 @@ function updateList(): void {
           quote.source
         }">
         <div class="buttons">
-          <div class="text-button disabled undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></div>
-          <div class="text-button refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></div>
-          <div class="text-button approve" aria-label="Approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-check"></i></div>
-          <div class="text-button edit hidden" aria-label="Edit and approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-pen"></i></div>
+          <div class="textButton disabled undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></div>
+          <div class="textButton refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></div>
+          <div class="textButton approve" aria-label="Approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-check"></i></div>
+          <div class="textButton edit hidden" aria-label="Edit and approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-pen"></i></div>
         </div>
         <div class="bottom">
           <div class="length ${
@@ -105,7 +105,7 @@ export function hide(): void {
 }
 
 function resetButtons(target: string): void {
-  $(target).closest(".quote").find(".text-button").removeClass("disabled");
+  $(target).closest(".quote").find(".textButton").removeClass("disabled");
   if ($(target).closest(".quote").find(".edit").hasClass("hidden")) {
     $(target).closest(".quote").find(".undo").addClass("disabled");
   }
@@ -137,7 +137,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
   const target = e.target;
-  $(target).closest(".quote").find(".text-button").addClass("disabled");
+  $(target).closest(".quote").find(".textButton").addClass("disabled");
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
 
   Loader.show();
@@ -163,7 +163,7 @@ $(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
   const target = e.target;
-  $(target).closest(".quote").find(".text-button").addClass("disabled");
+  $(target).closest(".quote").find(".textButton").addClass("disabled");
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
 
   Loader.show();
@@ -192,7 +192,7 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
     `#quoteApprovePopup .quote[id=${index}] .source`
   ).val() as string;
   const target = e.target;
-  $(target).closest(".quote").find(".text-button").addClass("disabled");
+  $(target).closest(".quote").find(".textButton").addClass("disabled");
   $(target).closest(".quote").find("textarea, input").prop("disabled", true);
 
   Loader.show();
