@@ -100,7 +100,7 @@ $(`${popup} .inputs .checkbox input`).change(() => {
 
 $(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $(`${popup} .button.apply`).click();
+    $(`${popup} .button.apply`).trigger("click");
   }
 });
 
@@ -203,7 +203,7 @@ $(document).on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
-$(document).on("click", "#top .config .customText .textButton", () => {
+$(document).on("click", "#top .config .customText .text-button", () => {
   show();
 });
 
