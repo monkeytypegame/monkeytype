@@ -40,16 +40,16 @@ router.use(
 
 router.get(
   "/",
-  RateLimit.apeKeysGet,
   authenticateRequest(),
+  RateLimit.apeKeysGet,
   checkIfUserCanManageApeKeys,
   asyncHandler(ApeKeyController.getApeKeys)
 );
 
 router.post(
   "/",
-  RateLimit.apeKeysGenerate,
   authenticateRequest(),
+  RateLimit.apeKeysGenerate,
   checkIfUserCanManageApeKeys,
   validateRequest({
     body: {
@@ -62,8 +62,8 @@ router.post(
 
 router.patch(
   "/:apeKeyId",
-  RateLimit.apeKeysUpdate,
   authenticateRequest(),
+  RateLimit.apeKeysUpdate,
   checkIfUserCanManageApeKeys,
   validateRequest({
     params: {
@@ -79,8 +79,8 @@ router.patch(
 
 router.delete(
   "/:apeKeyId",
-  RateLimit.apeKeysDelete,
   authenticateRequest(),
+  RateLimit.apeKeysDelete,
   checkIfUserCanManageApeKeys,
   validateRequest({
     params: {

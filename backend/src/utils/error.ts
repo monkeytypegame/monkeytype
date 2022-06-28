@@ -5,7 +5,7 @@ class MonkeyError extends Error {
   errorId: string;
   uid?: string;
 
-  constructor(status: number, message: string, stack?: string, uid?: string) {
+  constructor(status: number, message?: string, stack?: string, uid?: string) {
     super();
     this.status = status ?? 500;
     this.errorId = uuidv4();

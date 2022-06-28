@@ -89,7 +89,7 @@ export async function hide(): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("quoteReportPopup");
   if (!captchaResponse) {
-    return Notifications.add("Please complete the captcha.");
+    return Notifications.add("Please complete the captcha");
   }
 
   const quoteId = state.quoteToReport?.id.toString();
@@ -99,17 +99,17 @@ async function submitReport(): Promise<void> {
   const captcha = captchaResponse as string;
 
   if (!quoteId) {
-    return Notifications.add("Please select a quote.");
+    return Notifications.add("Please select a quote");
   }
 
   if (!reason) {
-    return Notifications.add("Please select a valid report reason.");
+    return Notifications.add("Please select a valid report reason");
   }
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
     return Notifications.add(
-      `Report comment is ${characterDifference} character(s) too long.`
+      `Report comment is ${characterDifference} character(s) too long`
     );
   }
 

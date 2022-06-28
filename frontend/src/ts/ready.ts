@@ -6,6 +6,7 @@ import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 import * as CookiePopup from "./popups/cookie-popup";
+import * as PSA from "./elements/psa";
 import { CLIENT_VERSION } from "./version";
 
 ManualRestart.set();
@@ -61,6 +62,6 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250);
-
+  PSA.show();
   MonkeyPower.init();
 });

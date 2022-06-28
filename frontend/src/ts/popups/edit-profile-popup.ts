@@ -43,7 +43,7 @@ const keyboardInput = $("#editProfilePopup .keyboard");
 const twitterInput = $("#editProfilePopup .twitter");
 const githubInput = $("#editProfilePopup .github");
 const websiteInput = $("#editProfilePopup .website");
-const badgeIdsSelect = $("#editProfilePopup .badge-selection-container");
+const badgeIdsSelect = $("#editProfilePopup .badgeSelectionContainer");
 
 let currentSelectedBadgeId = -1;
 
@@ -66,14 +66,14 @@ function hydrateInputs(): void {
     }
 
     const badgeOption = getHTMLById(badge.id, false, true);
-    const badgeWrapper = `<div class="badge-selection-item ${
+    const badgeWrapper = `<div class="badgeSelectionItem ${
       badge.selected ? "selected" : ""
     }" selection-id=${badge.id}>${badgeOption}</div>`;
     badgeIdsSelect.append(badgeWrapper);
   });
 
   badgeIdsSelect.prepend(
-    `<div class="badge-selection-item ${
+    `<div class="badgeSelectionItem ${
       currentSelectedBadgeId === -1 ? "selected" : ""
     }" selection-id=${-1}>
       <div class="badge">
@@ -83,11 +83,11 @@ function hydrateInputs(): void {
     </div>`
   );
 
-  $(".badge-selection-item").on("click", ({ currentTarget }) => {
+  $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
     const selectionId = $(currentTarget).attr("selection-id") as string;
     currentSelectedBadgeId = parseInt(selectionId, 10);
 
-    badgeIdsSelect.find(".badge-selection-item").removeClass("selected");
+    badgeIdsSelect.find(".badgeSelectionItem").removeClass("selected");
     $(currentTarget).addClass("selected");
   });
 }

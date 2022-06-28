@@ -128,7 +128,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
 
   ThemeColors.reset();
 
-  $(".keymap-key").attr("style", "");
+  $(".keymapKey").attr("style", "");
   // $("#currentTheme").attr("href", `themes/${name}.css`);
   loadStyle(name).then(() => {
     ThemeColors.update();
@@ -155,7 +155,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     AnalyticsController.log("changedTheme", { theme: themeName });
     if (!isPreview) {
       ThemeColors.getAll().then((colors) => {
-        $(".keymap-key").attr("style", "");
+        $(".keymapKey").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
         $("#metaThemeColor").attr("content", colors.bg);
@@ -197,6 +197,7 @@ export function clearPreview(applyTheme = true): void {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
+  if (!DB.getSnapshot()) return;
   const themes = await Misc.getThemesList();
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
@@ -219,10 +220,12 @@ async function changeThemeList(): Promise<void> {
   randomThemeIndex = 0;
 }
 
-export function randomizeTheme(): void {
-  //! setting randomThemeIndex to 0 everytime randomizeTheme is called
-
-  const randomTheme = themesList[randomThemeIndex];
+export async function randomizeTheme(): Promise<void> {
+  if (themesList.length === 0) {
+    await changeThemeList();
+    if (themesList.length === 0) return;
+  }
+  randomTheme = themesList[randomThemeIndex];
   randomThemeIndex++;
 
   if (randomThemeIndex >= themesList.length) {

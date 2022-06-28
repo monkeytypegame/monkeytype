@@ -195,7 +195,7 @@ export async function getFontsList(): Promise<Font[]> {
 let supportersList: string[] = [];
 export async function getSupportersList(): Promise<string[]> {
   if (supportersList.length === 0) {
-    return $.getJSON("about/supporters.json", function (data) {
+    return $.getJSON("/./about/supporters.json", function (data) {
       supportersList = data;
       return supportersList;
     });
@@ -207,7 +207,7 @@ export async function getSupportersList(): Promise<string[]> {
 let contributorsList: string[] = [];
 export async function getContributorsList(): Promise<string[]> {
   if (contributorsList.length === 0) {
-    return $.getJSON("about/contributors.json", function (data) {
+    return $.getJSON("/./about/contributors.json", function (data) {
       contributorsList = data;
       return contributorsList;
     });
@@ -233,7 +233,7 @@ export async function getLanguageGroups(): Promise<
   MonkeyTypes.LanguageGroup[]
 > {
   if (languageGroupList.length === 0) {
-    return $.getJSON("languages/_groups.json", function (data) {
+    return $.getJSON("/./languages/_groups.json", function (data) {
       languageGroupList = data;
       return languageGroupList;
     });
@@ -249,7 +249,7 @@ export async function getLanguage(
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
       console.log("getting language json");
-      await $.getJSON(`languages/${lang}.json`, function (data) {
+      await $.getJSON(`/./languages/${lang}.json`, function (data) {
         currentLanguage = data;
       });
     }
@@ -257,7 +257,7 @@ export async function getLanguage(
   } catch (e) {
     console.error(`error getting language`);
     console.error(e);
-    await $.getJSON(`languages/english.json`, function (data) {
+    await $.getJSON(`/./languages/english.json`, function (data) {
       currentLanguage = data;
     });
     return currentLanguage;

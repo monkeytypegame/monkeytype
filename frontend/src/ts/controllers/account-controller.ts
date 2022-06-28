@@ -7,7 +7,6 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
@@ -107,7 +106,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
-  $("#menu .text-button.account .text").text(snapshot.name);
+  $("#menu .textButton.account .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -302,7 +301,6 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     //   ChallengeController.setup(challengeName);
     // }, 1000);
   }
-  PSA.show();
 });
 
 export function signIn(): void {
@@ -576,7 +574,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendEmailVerification(createdAuthUser.user);
     AllTimeStats.clear();
-    $("#menu .text-button.account .text").text(nname);
+    $("#menu .textButton.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     LoginPage.hidePreloader();

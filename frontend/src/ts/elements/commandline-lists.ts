@@ -167,6 +167,7 @@ Misc.getFunboxList().then((funboxes) => {
     commandsFunbox.list.push({
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
+      alias: funbox.alias,
       configValue: funbox.name,
       exec: (): void => {
         if (Funbox.setFunbox(funbox.name, funbox.type)) {
@@ -1280,7 +1281,7 @@ export function updateCustomThemeListCommands(): void {
 
   if (!snapshot) return;
 
-  if (DB.getSnapshot().customThemes.length < 0) {
+  if (DB.getSnapshot().customThemes.length === 0) {
     Notifications.add("You need to create a custom theme first", 0);
     return;
   }
@@ -2950,7 +2951,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "randomizeTheme",
       display: "Next random theme",
       icon: "fa-random",
-      exec: (): void => ThemeController.randomizeTheme(),
+      exec: (): Promise<void> => ThemeController.randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
       },
@@ -3141,7 +3142,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "View Leaderboards",
       icon: "fa-crown",
       exec: (): void => {
-        $("#top #menu .text-button.view-leaderboards").trigger("click");
+        $("#top #menu .textButton.view-leaderboards").trigger("click");
       },
     },
     {
@@ -3176,7 +3177,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-user",
       alias: "stats",
       exec: (): void => {
-        $("#top #menu .text-button.view-account").hasClass("hidden")
+        $("#top #menu .textButton.view-account").hasClass("hidden")
           ? navigate("/login")
           : navigate("/account");
       },
