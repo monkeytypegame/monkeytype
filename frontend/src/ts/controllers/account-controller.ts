@@ -7,7 +7,6 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
@@ -302,7 +301,6 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     //   ChallengeController.setup(challengeName);
     // }, 1000);
   }
-  PSA.show();
 });
 
 export function signIn(): void {
