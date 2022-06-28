@@ -84,7 +84,7 @@ export async function incrementBadAuth(
   const { enabled, penalty, flaggedStatusCodes } =
     req.ctx.configuration.rateLimiting.badAuthentication;
 
-  if (!flaggedStatusCodes.includes(status) || !enabled) {
+  if (!enabled || !flaggedStatusCodes.includes(status)) {
     return;
   }
 
