@@ -165,6 +165,7 @@ declare namespace MonkeyTypes {
     name: string;
     type: FunboxObjectType;
     info: string;
+    alias?: string;
     affectsWordGeneration?: boolean;
   }
 

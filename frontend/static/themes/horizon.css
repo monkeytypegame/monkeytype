@@ -11,23 +11,23 @@
   --colorful-error-extra-color: #d55170;
 }
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   color: #d55170;
 }
 
-#menu .text-button:nth-child(2) {
+#menu .textButton:nth-child(2) {
   color: #e4a88a;
 }
 
-#menu .text-button:nth-child(3) {
+#menu .textButton:nth-child(3) {
   color: #db886f;
 }
 
-#menu .text-button:nth-child(4) {
+#menu .textButton:nth-child(4) {
   color: #db887a;
 }
 
-#menu .text-button:nth-child(5),
-#menu .text-button:nth-child(6) {
+#menu .textButton:nth-child(5),
+#menu .textButton:nth-child(6) {
   color: #ffc819;
 }

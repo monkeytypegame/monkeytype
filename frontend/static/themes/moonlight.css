@@ -14,39 +14,39 @@
 #menu {
   gap: 0.5rem;
 }
-#top.focus #menu .text-button,
+#top.focus #menu .textButton,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: var(--bg-color);
 }
-#menu .text-button {
+#menu .textButton {
   border-radius: rem !important;
   color: #191f28 !important;
 }
-#menu .text-button :hover {
+#menu .textButton :hover {
   border-radius: rem !important;
   color: #4b5975 !important;
   transition: 0.25s;
 }
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   background: #c69f68;
 }
-#menu .text-button:nth-child(2) {
+#menu .textButton:nth-child(2) {
   background: #c69f68;
 }
-#menu .text-button:nth-child(3) {
+#menu .textButton:nth-child(3) {
   background: #c69f68;
 }
-#menu .text-button:nth-child(4) {
+#menu .textButton:nth-child(4) {
   background: #c69f68;
 }
-#menu .text-button:nth-child(5) {
+#menu .textButton:nth-child(5) {
   background: #c69f68;
 }
-#menu .text-button:nth-child(6),
-#menu .text-button:nth-child(7) {
+#menu .textButton:nth-child(6),
+#menu .textButton:nth-child(7) {
   background: #c69f68;
 }
-#top.focus #menu .text-button.discord::after {
+#top.focus #menu .textButton.discord::after {
   border-color: transparent;
 }

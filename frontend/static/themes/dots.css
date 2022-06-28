@@ -15,13 +15,13 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .text-button,
+#top.focus #menu .textButton,
 #top.focus #menu:before,
 #top.focus #menu:after {
   background: var(--sub-color);
 }
 
-#menu .text-button {
+#menu .textButton {
   border-radius: 10rem !important;
   color: #121520;
 }
@@ -35,28 +35,28 @@
     border-radius: 10rem;
 } */
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   background: #f94348;
 }
 
-#menu .text-button:nth-child(2) {
+#menu .textButton:nth-child(2) {
   background: #9261ff;
 }
 
-#menu .text-button:nth-child(3) {
+#menu .textButton:nth-child(3) {
   background: #3cc5f8;
 }
 
-#menu .text-button:nth-child(4) {
+#menu .textButton:nth-child(4) {
   background: #4acb8a;
 }
 
-#menu .text-button:nth-child(5) {
+#menu .textButton:nth-child(5) {
   background: #ffd543;
 }
 
-#menu .text-button:nth-child(6),
-#menu .text-button:nth-child(7) {
+#menu .textButton:nth-child(6),
+#menu .textButton:nth-child(7) {
   background: #ff9349;
 }
 
@@ -69,6 +69,6 @@
     border-radius: 10rem;
 } */
 
-#top.focus #menu .text-button.discord::after {
+#top.focus #menu .textButton.discord::after {
   border-color: transparent;
 }

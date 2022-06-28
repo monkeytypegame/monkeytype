@@ -100,6 +100,8 @@ const routes: Route[] = [
 ];
 
 export function navigate(url = window.location.pathname): void {
+  url = url.replace(/\/$/, "");
+  if (url === "") url = "/";
   history.pushState(null, "", url);
   router();
 }
