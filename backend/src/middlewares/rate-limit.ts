@@ -287,9 +287,9 @@ export const userDelete = rateLimit({
 });
 
 export const userReset = rateLimit({
-  windowMs: 24 * ONE_HOUR, // 1 day
+  windowMs: 24 * ONE_HOUR_MS, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
-  keyGenerator: getAddress,
+  keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
 

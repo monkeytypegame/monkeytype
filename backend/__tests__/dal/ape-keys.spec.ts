@@ -49,7 +49,7 @@ describe("ApeKeysDal", () => {
       },
     ];
 
-    const results = [addApeKey(apeKeys[0]), addApeKey(apeKeys[1])];
+    const results = apeKeys.map(addApeKey);
 
     await Promise.all(results);
 

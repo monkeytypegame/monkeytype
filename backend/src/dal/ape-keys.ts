@@ -106,5 +106,5 @@ export async function deleteApeKey(uid: string, keyId: string): Promise<void> {
 }
 
 export async function deleteAll(uid: string): Promise<void> {
-  await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).deleteMany({ uid });
+  await getApeKeysCollection().deleteMany({ uid });
 }
