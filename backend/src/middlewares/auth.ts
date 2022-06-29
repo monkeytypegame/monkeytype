@@ -121,7 +121,7 @@ async function authenticateWithBearerToken(
   try {
     const decodedToken = await verifyIdToken(token);
 
-    if (options.requireFreshToken === true && decodedToken.iat) {
+    if (options.requireFreshToken === true) {
       const now = Date.now();
       const tokenIssuedAt = new Date(decodedToken.iat * 1000).getTime();
 
