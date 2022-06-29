@@ -57,24 +57,6 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
         );
       }
 
-      if (
-        options.requireFreshToken === true &&
-        token.type === "Bearer" &&
-        token.issuedAt
-      ) {
-        const now = Date.now();
-        const tokenIssuedAt = new Date(token.issuedAt * 1000).getTime();
-
-        //check if token was issued more than 60 seconds ago
-        if (now - tokenIssuedAt > 60 * 1000) {
-          throw new MonkeyError(
-            401,
-            "Unauthorized",
-            `endpoint: ${req.baseUrl} requires a fresh token`
-          );
-        }
-      }
-
       incrementAuth(token.type);
 
       req.ctx = {
@@ -120,7 +102,7 @@ async function authenticateWithAuthHeader(
 
   switch (authScheme) {
     case "Bearer":
-      return await authenticateWithBearerToken(credentials);
+      return await authenticateWithBearerToken(credentials, options);
     case "ApeKey":
       return await authenticateWithApeKey(credentials, configuration, options);
   }
@@ -133,16 +115,29 @@ async function authenticateWithAuthHeader(
 }
 
 async function authenticateWithBearerToken(
-  token: string
+  token: string,
+  options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   try {
     const decodedToken = await verifyIdToken(token);
+
+    if (options.requireFreshToken === true && decodedToken.iat) {
+      const now = Date.now();
+      const tokenIssuedAt = new Date(decodedToken.iat * 1000).getTime();
+
+      if (now - tokenIssuedAt > 60 * 1000) {
+        throw new MonkeyError(
+          401,
+          "Unauthorized",
+          `This endpoint requires a fresh token`
+        );
+      }
+    }
 
     return {
       type: "Bearer",
       uid: decodedToken.uid,
       email: decodedToken.email ?? "",
-      issuedAt: decodedToken.iat,
     };
   } catch (error) {
     Logger.error(`Firebase auth error code ${error.errorInfo.code.toString()}`);
