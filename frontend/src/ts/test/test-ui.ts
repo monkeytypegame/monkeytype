@@ -255,6 +255,8 @@ export async function screenshot(): Promise<void> {
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
+    $("noscript").removeClass("hidden");
+    $("#nocss").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (Auth.currentUser == null) {
@@ -297,6 +299,8 @@ export async function screenshot(): Promise<void> {
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   $(".pageTest #result .inviteLink").addClass("hidden");
+  $("noscript").addClass("hidden");
+  $("#nocss").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
     const paddingX = 50;
@@ -871,23 +875,23 @@ export function applyBurstHeatmap(): void {
     const steps = [
       {
         val: 0,
-        class: "heatmap-0",
+        class: "heatmap0",
       },
       {
         val: median - step * 1.5,
-        class: "heatmap-1",
+        class: "heatmap1",
       },
       {
         val: median - step * 0.5,
-        class: "heatmap-2",
+        class: "heatmap2",
       },
       {
         val: median + step * 0.5,
-        class: "heatmap-3",
+        class: "heatmap3",
       },
       {
         val: median + step * 1.5,
-        class: "heatmap-4",
+        class: "heatmap4",
       },
     ];
     $("#resultWordsHistory .words .word").each((_, word) => {
@@ -900,11 +904,11 @@ export function applyBurstHeatmap(): void {
     });
   } else {
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
-    $("#resultWordsHistory .words .word").removeClass("heatmap-0");
-    $("#resultWordsHistory .words .word").removeClass("heatmap-1");
-    $("#resultWordsHistory .words .word").removeClass("heatmap-2");
-    $("#resultWordsHistory .words .word").removeClass("heatmap-3");
-    $("#resultWordsHistory .words .word").removeClass("heatmap-4");
+    $("#resultWordsHistory .words .word").removeClass("heatmap0");
+    $("#resultWordsHistory .words .word").removeClass("heatmap1");
+    $("#resultWordsHistory .words .word").removeClass("heatmap2");
+    $("#resultWordsHistory .words .word").removeClass("heatmap3");
+    $("#resultWordsHistory .words .word").removeClass("heatmap4");
   }
 }
 
@@ -917,7 +921,7 @@ $(document.body).on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
-$(document).on("click", "#testModesNotice .text-button.blind", () => {
+$(document).on("click", "#testModesNotice .textButton.blind", () => {
   UpdateConfig.setBlindMode(!Config.blindMode);
 });
 

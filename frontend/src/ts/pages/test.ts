@@ -20,14 +20,14 @@ export const page = new Page(
   async () => {
     //
   },
-  () => {
+  async () => {
     TestConfig.show();
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart(undefined, undefined, undefined, undefined, true);
     Funbox.activate(Config.funbox);
   },
-  () => {
+  async () => {
     TestUI.focusWords();
   }
 );

@@ -1052,7 +1052,7 @@ export const page = new Page(
   "settings",
   $(".page.pageSettings"),
   "/settings",
-  () => {
+  async () => {
     //
   },
   async () => {
@@ -1062,7 +1062,7 @@ export const page = new Page(
     await fillSettingsPage();
     update();
   },
-  () => {
+  async () => {
     //
   }
 );

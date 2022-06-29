@@ -111,3 +111,5 @@ backend/worker.*
 #scripts
 updateContributors.js
 removeDupes.js
+
+ads.txt

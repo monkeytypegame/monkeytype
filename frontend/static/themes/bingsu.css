@@ -16,6 +16,6 @@
   border-bottom: double 4px var(--error-color);
 } */
 
-#menu .text-button:nth-child(1) {
+#menu .textButton:nth-child(1) {
   color: var(--caret-color);
 }

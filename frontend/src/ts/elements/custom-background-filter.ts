@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../config";
-import * as Notifications from "./notifications";
 import * as ConfigEvent from "../observables/config-event";
+import { debounce } from "throttle-debounce";
 
 const filters = {
   blur: {
@@ -116,12 +116,15 @@ $(".section.customBackgroundFilter .opacity input").on("input", () => {
   apply();
 });
 
-$(".section.customBackgroundFilter  .save.button").on("click", () => {
+$(".section.customBackgroundFilter input").on("input", () => {
+  debouncedSave();
+});
+
+const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
   ) as MonkeyTypes.CustomBackgroundFilter;
   UpdateConfig.setCustomBackgroundFilter(arr, false);
-  Notifications.add("Custom background filters saved", 1);
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

@@ -7,6 +7,7 @@ export function loading(truefalse: boolean): void {
   if (truefalse) {
     if (usingAvatar) {
       $("#top #menu .account .avatar").addClass("hidden");
+      $("#top #menu .account .icon").removeClass("hidden");
     }
     $("#top #menu .account .icon").html(
       '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
@@ -15,6 +16,7 @@ export function loading(truefalse: boolean): void {
   } else {
     if (usingAvatar) {
       $("#top #menu .account .avatar").removeClass("hidden");
+      $("#top #menu .account .icon").addClass("hidden");
     }
     $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
     $("#top #menu .account").css("opacity", 1).css("pointer-events", "auto");
@@ -45,14 +47,14 @@ export async function update(
       $("#top #menu .account .avatar").addClass("hidden");
     }
     Misc.swapElements(
-      $("#menu .text-button.login"),
-      $("#menu .text-button.account"),
+      $("#menu .textButton.login"),
+      $("#menu .textButton.account"),
       250
     );
   } else {
     Misc.swapElements(
-      $("#menu .text-button.account"),
-      $("#menu .text-button.login"),
+      $("#menu .textButton.account"),
+      $("#menu .textButton.login"),
       250
     );
   }
