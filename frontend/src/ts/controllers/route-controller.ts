@@ -6,6 +6,7 @@ import * as PageAccount from "../pages/account";
 import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
+import * as PageTribe from "../pages/tribe";
 import * as Leaderboards from "../elements/leaderboards";
 // import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
@@ -95,6 +96,12 @@ const routes: Route[] = [
     path: "/profile/:uid",
     load: (params): void => {
       PageController.change(PageProfile.page, true, params);
+    },
+  },
+  {
+    path: "/tribe",
+    load: (params): void => {
+      PageController.change(PageTribe.page, true, params);
     },
   },
 ];
