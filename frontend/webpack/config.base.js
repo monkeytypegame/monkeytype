@@ -12,7 +12,6 @@ const htmlWebpackPlugins = [
   "privacy-policy",
   "email-handler",
   "das",
-  "adtest",
 ].map((name) => {
   return new HtmlWebpackPlugin({
     filename: `${name}.html`,
