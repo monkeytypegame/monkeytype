@@ -8,7 +8,7 @@
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
-    "test": "jest --verbose --collect-coverage",
+    "test": "jest --verbose --collect-coverage --runInBand",
     "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
   },
   "engines": {
