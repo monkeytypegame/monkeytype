@@ -28,7 +28,7 @@ export function kogasa(cov: number): number {
   );
 }
 
-export function identity(value: any): string {
+export function identity(value: string): string {
   return Object.prototype.toString
     .call(value)
     .replace(/^\[object\s+([a-z]+)\]$/i, "$1")

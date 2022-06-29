@@ -20,15 +20,15 @@ const presetNameSchema = joi
 
 router.get(
   "/",
-  authenticateRequest(),
   RateLimit.presetsGet,
+  authenticateRequest(),
   asyncHandler(PresetController.getPresets)
 );
 
 router.post(
   "/",
-  authenticateRequest(),
   RateLimit.presetsAdd,
+  authenticateRequest(),
   validateRequest({
     body: {
       name: presetNameSchema,
@@ -42,8 +42,8 @@ router.post(
 
 router.patch(
   "/",
-  authenticateRequest(),
   RateLimit.presetsEdit,
+  authenticateRequest(),
   validateRequest({
     body: {
       _id: joi.string().required(),
@@ -60,8 +60,8 @@ router.patch(
 
 router.delete(
   "/:presetId",
-  authenticateRequest(),
   RateLimit.presetsRemove,
+  authenticateRequest(),
   validateRequest({
     params: {
       presetId: joi.string().required(),

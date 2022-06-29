@@ -2,11 +2,14 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
+import * as VerificationController from "./verification-controller";
 import * as Misc from "../utils/misc";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
+import * as PageController from "./page-controller";
+import * as PSA from "../elements/psa";
 import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
@@ -46,7 +49,6 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "./route-controller";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -70,7 +72,7 @@ export function sendVerificationEmail(): void {
 export async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
-    if (window.location.pathname !== "/account") {
+    if (ActivePage.get() === "loading") {
       LoadingPage.updateBar(90);
     } else {
       LoadingPage.updateBar(45);
@@ -106,7 +108,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
-  $("#menu .textButton.account .text").text(snapshot.name);
+  $("#menu .text-button.account .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -127,8 +129,6 @@ export async function getDataAndInit(): Promise<boolean> {
     Notifications.addBanner(
       "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
       -1,
-      undefined,
-      true,
       undefined,
       true
     );
@@ -208,16 +208,14 @@ export async function getDataAndInit(): Promise<boolean> {
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
-  if (window.location.pathname === "/account") {
-    await Account.downloadResults();
+  if (ActivePage.get() === "account") {
+    Account.update();
   } else {
     Focus.set(false);
   }
-  if (window.location.pathname === "/login") {
-    navigate("/account");
-  } else {
-    navigate();
-  }
+  await PageController.change(undefined, true);
+  PageTransition.set(false);
+  console.log("account loading finished");
   return true;
 }
 
@@ -247,6 +245,10 @@ export async function loadUser(user: UserType): Promise<void> {
 
   // showFavouriteThemesAtTheTop();
 
+  if (VerificationController.data !== null) {
+    VerificationController.verify();
+  }
+
   if (TestLogic.notSignedInLastResult !== null) {
     TestLogic.setNotSignedInUid(user.uid);
 
@@ -267,7 +269,6 @@ export async function loadUser(user: UserType): Promise<void> {
 const authListener = Auth.onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
   const search = window.location.search;
-  const hash = window.location.hash;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);
@@ -278,7 +279,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     PageTransition.set(false);
   }
   if (!user) {
-    navigate();
+    PageController.change();
     setTimeout(() => {
       Focus.set(false);
     }, 125 / 2);
@@ -287,7 +288,6 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
   URLHandler.loadTribeAutoJoinFromUrl(search);
-  URLHandler.linkDiscord(hash);
 
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add(
@@ -302,6 +302,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
     //   ChallengeController.setup(challengeName);
     // }, 1000);
   }
+  PSA.show();
 });
 
 export function signIn(): void {
@@ -468,7 +469,7 @@ export function signOut(): void {
       AllTimeStats.clear();
       Settings.hideAccountSection();
       AccountButton.update();
-      navigate("/login");
+      PageController.change("login");
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
@@ -575,7 +576,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendEmailVerification(createdAuthUser.user);
     AllTimeStats.clear();
-    $("#menu .textButton.account .text").text(nname);
+    $("#menu .text-button.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
     $(".pageLogin input").prop("disabled", false);
     LoginPage.hidePreloader();

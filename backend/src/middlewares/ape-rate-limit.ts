@@ -1,47 +1,31 @@
+import { Response, NextFunction } from "express";
+import rateLimit, { Options } from "express-rate-limit";
 import MonkeyError from "../utils/error";
-import { Response, NextFunction, RequestHandler } from "express";
-import statuses from "../constants/monkey-status-codes";
-import rateLimit, {
-  RateLimitRequestHandler,
-  Options,
-} from "express-rate-limit";
 
-const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 1 : 1;
+const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
   return req?.ctx?.decodedToken?.uid;
 };
 
-const ONE_MINUTE = 1000 * 60;
-
-const {
-  APE_KEY_RATE_LIMIT_EXCEEDED: { message, code },
-} = statuses;
-
-export const customHandler = (
+const customHandler = (
   _req: MonkeyTypes.Request,
   _res: Response,
   _next: NextFunction,
   _options: Options
 ): void => {
-  throw new MonkeyError(code, message);
+  throw new MonkeyError(429, "Too many attempts, please try again later.");
 };
 
-const apeRateLimiter = rateLimit({
+const ONE_MINUTE = 1000 * 60;
+
+export default rateLimit({
   windowMs: ONE_MINUTE,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
+  skip: (req: MonkeyTypes.Request, _res) => {
+    const decodedToken = req?.ctx?.decodedToken;
+    return decodedToken?.type !== "ApeKey";
+  },
 });
-
-export function withApeRateLimiter(
-  defaultRateLimiter: RateLimitRequestHandler
-): RequestHandler {
-  return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
-    if (req.ctx.decodedToken.type === "ApeKey") {
-      return apeRateLimiter(req, res, next);
-    }
-
-    return defaultRateLimiter(req, res, next);
-  };
-}

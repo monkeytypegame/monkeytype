@@ -8,7 +8,7 @@ import {
   validateConfiguration,
 } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
-import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
 
@@ -82,15 +82,15 @@ const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
 
 router.get(
   "/",
-  authenticateRequest(),
   RateLimit.userGet,
+  authenticateRequest(),
   asyncHandler(UserController.getUser)
 );
 
 router.post(
   "/signup",
-  authenticateRequest(),
   RateLimit.userSignup,
+  authenticateRequest(),
   validateRequest({
     body: {
       email: joi.string().email(),
@@ -114,15 +114,15 @@ router.get(
 
 router.delete(
   "/",
-  authenticateRequest(),
   RateLimit.userDelete,
+  authenticateRequest(),
   asyncHandler(UserController.deleteUser)
 );
 
 router.patch(
   "/name",
-  authenticateRequest(),
   RateLimit.userUpdateName,
+  authenticateRequest(),
   validateRequest({
     body: {
       name: usernameValidation,
@@ -133,8 +133,8 @@ router.patch(
 
 router.patch(
   "/leaderboardMemory",
-  authenticateRequest(),
   RateLimit.userUpdateLBMemory,
+  authenticateRequest(),
   validateRequest({
     body: {
       mode: joi
@@ -151,8 +151,8 @@ router.patch(
 
 router.patch(
   "/email",
-  authenticateRequest(),
   RateLimit.userUpdateEmail,
+  authenticateRequest(),
   validateRequest({
     body: {
       newEmail: joi.string().email().required(),
@@ -164,8 +164,8 @@ router.patch(
 
 router.delete(
   "/personalBests",
-  authenticateRequest(),
   RateLimit.userClearPB,
+  authenticateRequest(),
   asyncHandler(UserController.clearPb)
 );
 
@@ -178,9 +178,9 @@ const requireFilterPresetsEnabled = validateConfiguration({
 
 router.post(
   "/resultFilterPresets",
+  RateLimit.userCustomFilterAdd,
   requireFilterPresetsEnabled,
   authenticateRequest(),
-  RateLimit.userCustomFilterAdd,
   validateRequest({
     body: filterSchema,
   }),
@@ -189,9 +189,9 @@ router.post(
 
 router.delete(
   "/resultFilterPresets/:presetId",
+  RateLimit.userCustomFilterRemove,
   requireFilterPresetsEnabled,
   authenticateRequest(),
-  RateLimit.userCustomFilterRemove,
   validateRequest({
     params: {
       presetId: joi.string().required(),
@@ -202,15 +202,15 @@ router.delete(
 
 router.get(
   "/tags",
-  authenticateRequest(),
   RateLimit.userTagsGet,
+  authenticateRequest(),
   asyncHandler(UserController.getTags)
 );
 
 router.post(
   "/tags",
-  authenticateRequest(),
   RateLimit.userTagsAdd,
+  authenticateRequest(),
   validateRequest({
     body: {
       tagName: tagNameValidation,
@@ -221,8 +221,8 @@ router.post(
 
 router.patch(
   "/tags",
-  authenticateRequest(),
   RateLimit.userTagsEdit,
+  authenticateRequest(),
   validateRequest({
     body: {
       tagId: joi.string().required(),
@@ -234,8 +234,8 @@ router.patch(
 
 router.delete(
   "/tags/:tagId",
-  authenticateRequest(),
   RateLimit.userTagsRemove,
+  authenticateRequest(),
   validateRequest({
     params: {
       tagId: joi.string().required(),
@@ -246,8 +246,8 @@ router.delete(
 
 router.delete(
   "/tags/:tagId/personalBest",
-  authenticateRequest(),
   RateLimit.userTagsClearPB,
+  authenticateRequest(),
   validateRequest({
     params: {
       tagId: joi.string().required(),
@@ -258,15 +258,15 @@ router.delete(
 
 router.get(
   "/customThemes",
-  authenticateRequest(),
   RateLimit.userCustomThemeGet,
+  authenticateRequest(),
   asyncHandler(UserController.getCustomThemes)
 );
 
 router.post(
   "/customThemes",
-  authenticateRequest(),
   RateLimit.userCustomThemeAdd,
+  authenticateRequest(),
   validateRequest({
     body: {
       name: customThemeNameValidation,
@@ -278,8 +278,8 @@ router.post(
 
 router.delete(
   "/customThemes",
-  authenticateRequest(),
   RateLimit.userCustomThemeRemove,
+  authenticateRequest(),
   validateRequest({
     body: {
       themeId: customThemeIdValidation,
@@ -290,8 +290,8 @@ router.delete(
 
 router.patch(
   "/customThemes",
-  authenticateRequest(),
   RateLimit.userCustomThemeEdit,
+  authenticateRequest(),
   validateRequest({
     body: {
       themeId: customThemeIdValidation,
@@ -313,9 +313,9 @@ const requireDiscordIntegrationEnabled = validateConfiguration({
 
 router.post(
   "/discord/link",
+  RateLimit.userDiscordLink,
   requireDiscordIntegrationEnabled,
   authenticateRequest(),
-  RateLimit.userDiscordLink,
   validateRequest({
     body: {
       tokenType: joi.string().required(),
@@ -327,17 +327,18 @@ router.post(
 
 router.post(
   "/discord/unlink",
-  authenticateRequest(),
   RateLimit.userDiscordUnlink,
+  authenticateRequest(),
   asyncHandler(UserController.unlinkDiscord)
 );
 
 router.get(
   "/personalBests",
+  RateLimit.userGet,
   authenticateRequest({
     acceptApeKeys: true,
   }),
-  withApeRateLimiter(RateLimit.userGet),
+  apeRateLimit,
   validateRequest({
     query: {
       mode: joi.string().required(),
@@ -349,24 +350,25 @@ router.get(
 
 router.get(
   "/stats",
+  RateLimit.userGet,
   authenticateRequest({
     acceptApeKeys: true,
   }),
-  withApeRateLimiter(RateLimit.userGet),
+  apeRateLimit,
   asyncHandler(UserController.getStats)
 );
 
 router.get(
   "/favoriteQuotes",
-  authenticateRequest(),
   RateLimit.quoteFavoriteGet,
+  authenticateRequest(),
   asyncHandler(UserController.getFavoriteQuotes)
 );
 
 router.post(
   "/favoriteQuotes",
-  authenticateRequest(),
   RateLimit.quoteFavoritePost,
+  authenticateRequest(),
   validateRequest({
     body: {
       language: languageSchema,
@@ -378,8 +380,8 @@ router.post(
 
 router.delete(
   "/favoriteQuotes",
-  authenticateRequest(),
   RateLimit.quoteFavoriteDelete,
+  authenticateRequest(),
   validateRequest({
     body: {
       language: languageSchema,
@@ -398,11 +400,11 @@ const requireProfilesEnabled = validateConfiguration({
 
 router.get(
   "/:uid/profile",
+  RateLimit.userProfileGet,
   requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
   }),
-  RateLimit.userProfileGet,
   validateRequest({
     params: {
       uid: joi.string().required(),
@@ -425,14 +427,13 @@ const profileDetailsBase = joi
 
 router.patch(
   "/profile",
+  RateLimit.userProfileUpdate,
   requireProfilesEnabled,
   authenticateRequest(),
-  RateLimit.userProfileUpdate,
   validateRequest({
     body: {
       bio: profileDetailsBase.max(150),
       keyboard: profileDetailsBase.max(75),
-      selectedBadgeId: joi.number(),
       socialProfiles: joi.object({
         twitter: profileDetailsBase.max(20),
         github: profileDetailsBase.max(39),

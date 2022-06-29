@@ -1,19 +1,19 @@
 export default class Page {
-  public name: string;
+  public name: MonkeyTypes.Page;
   public element: JQuery;
   public pathname: string;
-  public beforeHide: () => Promise<void>;
-  public afterHide: () => Promise<void>;
-  public beforeShow: (params?: { [key: string]: string }) => Promise<void>;
-  public afterShow: () => Promise<void>;
+  public beforeHide: () => void;
+  public afterHide: () => void;
+  public beforeShow: () => void;
+  public afterShow: () => void;
   constructor(
-    name: string,
+    name: MonkeyTypes.Page,
     element: JQuery,
     pathname: string,
-    beforeHide: () => Promise<void>,
-    afterHide: () => Promise<void>,
-    beforeShow: (params?: { [key: string]: string }) => Promise<void>,
-    afterShow: () => Promise<void>
+    beforeHide: () => void,
+    afterHide: () => void,
+    beforeShow: () => void,
+    afterShow: () => void
   ) {
     this.name = name;
     this.element = element;

@@ -42,13 +42,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       enabled: false,
     },
   },
-  rateLimiting: {
-    badAuthentication: {
-      enabled: false,
-      penalty: 0,
-      flaggedStatusCodes: [],
-    },
-  },
+
   dailyLeaderboards: {
     enabled: false,
     maxResults: 0,
@@ -60,42 +54,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
 };
 
-interface BaseSchema {
-  type: string;
-  label?: string;
-}
-
-interface NumberSchema extends BaseSchema {
-  type: "number";
-  min?: number;
-}
-
-interface BooleanSchema extends BaseSchema {
-  type: "boolean";
-}
-
-interface StringSchema extends BaseSchema {
-  type: "string";
-}
-
-interface ArraySchema extends BaseSchema {
-  type: "array";
-  items: Schema;
-}
-
-interface ObjectSchema extends BaseSchema {
-  type: "object";
-  fields: Record<string, Schema>;
-}
-
-type Schema =
-  | ObjectSchema
-  | ArraySchema
-  | StringSchema
-  | NumberSchema
-  | BooleanSchema;
-
-export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
+export const CONFIGURATION_FORM_SCHEMA = {
   type: "object",
   label: "Server Configuration",
   fields: {
@@ -239,36 +198,7 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
         },
       },
     },
-    rateLimiting: {
-      type: "object",
-      label: "Rate Limiting",
-      fields: {
-        badAuthentication: {
-          type: "object",
-          label: "Bad Authentication Rate Limiter",
-          fields: {
-            enabled: {
-              type: "boolean",
-              label: "Enabled",
-            },
-            penalty: {
-              type: "number",
-              label: "Penalty",
-              min: 0,
-            },
-            flaggedStatusCodes: {
-              type: "array",
-              label: "Flagged Status Codes",
-              items: {
-                label: "Status Code",
-                type: "number",
-                min: 0,
-              },
-            },
-          },
-        },
-      },
-    },
+
     dailyLeaderboards: {
       type: "object",
       label: "Daily Leaderboards",

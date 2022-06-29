@@ -13,6 +13,7 @@ import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
+import * as PageController from "./page-controller";
 import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
@@ -27,7 +28,6 @@ import * as TestActive from "../states/test-active";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Tribe from "../tribe/tribe";
-import { navigate } from "./route-controller";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -612,21 +612,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
-  if (Config.quickRestart === "esc") {
-    // dont do anything special
-    if (modalVisible) return;
-
-    // dont do anything on login so we can tab/esc betweeen inputs
-    if (ActivePage.get() === "login") return;
-
-    event.preventDefault();
-    // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      handleChar("\t", TestInput.input.current.length);
-      setWordsInput(" " + TestInput.input.current);
-      return;
-    }
-  } else if (Config.quickRestart === "tab") {
+  if (Config.quickRestart === "tab") {
     // dont do anything special
     if (modalVisible) return;
 
@@ -648,18 +634,17 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
           Tribe.socket.emit(`room_ready_update`);
         }
       } else {
-        navigate("/");
+        PageController.change("test");
       }
     }
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
       if (Tribe.state >= 5) {
-        navigate("/tribe");
+        PageController.change("tribe");
       } else {
-        navigate("/");
+        PageController.change("test");
       }
-      navigate("/");
       return;
     }
 
@@ -771,7 +756,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      PageController.change("test");
       return;
     }
 

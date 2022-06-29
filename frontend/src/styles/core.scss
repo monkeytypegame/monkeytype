@@ -59,14 +59,6 @@ a {
   }
 }
 
-a[data-link] * {
-  pointer-events: none;
-}
-
-a.button {
-  text-decoration: none;
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -322,7 +314,7 @@ key {
   }
 }
 
-.textButton {
+.text-button {
   color: var(--sub-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;

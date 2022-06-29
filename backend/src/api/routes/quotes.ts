@@ -20,8 +20,8 @@ const checkIfUserIsQuoteMod = checkUserPermissions({
 
 router.get(
   "/",
-  authenticateRequest(),
   RateLimit.newQuotesGet,
+  authenticateRequest(),
   checkIfUserIsQuoteMod,
   asyncHandler(QuoteController.getQuotes)
 );
@@ -35,8 +35,8 @@ router.post(
     invalidMessage:
       "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
   }),
-  authenticateRequest(),
   RateLimit.newQuotesAdd,
+  authenticateRequest(),
   validateRequest({
     body: {
       text: joi.string().min(60).required(),
@@ -51,8 +51,8 @@ router.post(
 
 router.post(
   "/approve",
-  authenticateRequest(),
   RateLimit.newQuotesAction,
+  authenticateRequest(),
   validateRequest({
     body: {
       quoteId: joi.string().required(),
@@ -67,8 +67,8 @@ router.post(
 
 router.post(
   "/reject",
-  authenticateRequest(),
   RateLimit.newQuotesAction,
+  authenticateRequest(),
   validateRequest({
     body: {
       quoteId: joi.string().required(),
@@ -80,8 +80,8 @@ router.post(
 
 router.get(
   "/rating",
-  authenticateRequest(),
   RateLimit.quoteRatingsGet,
+  authenticateRequest(),
   validateRequest({
     query: {
       quoteId: joi.string().regex(/^\d+$/).required(),
@@ -93,8 +93,8 @@ router.get(
 
 router.post(
   "/rating",
-  authenticateRequest(),
   RateLimit.quoteRatingsSubmit,
+  authenticateRequest(),
   validateRequest({
     body: {
       quoteId: joi.number().required(),
@@ -113,8 +113,8 @@ router.post(
     },
     invalidMessage: "Quote reporting is unavailable.",
   }),
-  authenticateRequest(),
   RateLimit.quoteReportSubmit,
+  authenticateRequest(),
   validateRequest({
     body: {
       quoteId: joi.string().required(),

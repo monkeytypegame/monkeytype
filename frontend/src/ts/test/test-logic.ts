@@ -328,12 +328,8 @@ export function restart(
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
-      if (
-        TestWords.hasTab &&
-        !event?.shiftKey &&
-        Config.quickRestart !== "esc"
-      ) {
-        return;
+      if (TestWords.hasTab) {
+        if (!event?.shiftKey) return;
       }
       if (Config.mode !== "zen") event?.preventDefault();
       if (
@@ -1745,7 +1741,7 @@ export function fail(reason: string): void {
   TestStats.incrementRestartCount();
 }
 
-$(document).on("click", "#testModesNotice .textButton.restart", () => {
+$(document).on("click", "#testModesNotice .text-button.restart", () => {
   restart();
 });
 
@@ -1801,7 +1797,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#top .config .wordCount .textButton", (e) => {
+$(document).on("click", "#top .config .wordCount .text-button", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1811,7 +1807,7 @@ $(document).on("click", "#top .config .wordCount .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .time .textButton", (e) => {
+$(document).on("click", "#top .config .time .text-button", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
@@ -1821,7 +1817,7 @@ $(document).on("click", "#top .config .time .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
+$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
@@ -1836,21 +1832,21 @@ $(document).on("click", "#top .config .quoteLength .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .punctuationMode .textButton", () => {
+$(document).on("click", "#top .config .punctuationMode .text-button", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#top .config .numbersMode .textButton", () => {
+$(document).on("click", "#top .config .numbersMode .text-button", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#top .config .mode .textButton", (e) => {
+$(document).on("click", "#top .config .mode .text-button", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;

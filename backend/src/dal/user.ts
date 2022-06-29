@@ -4,7 +4,13 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, WithId } from "mongodb";
+import {
+  Collection,
+  DeleteResult,
+  ObjectId,
+  UpdateResult,
+  WithId,
+} from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
 
@@ -37,14 +43,17 @@ export async function addUser(
   }
 }
 
-export async function deleteUser(uid: string): Promise<void> {
-  await getUsersCollection().deleteOne({ uid });
+export async function deleteUser(uid: string): Promise<DeleteResult> {
+  return await getUsersCollection().deleteOne({ uid });
 }
 
 const DAY_IN_SECONDS = 24 * 60 * 60;
 const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
 
-export async function updateName(uid: string, name: string): Promise<void> {
+export async function updateName(
+  uid: string,
+  name: string
+): Promise<UpdateResult> {
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
@@ -66,15 +75,20 @@ export async function updateName(uid: string, name: string): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
     {
+      $push: { nameHistory: oldName },
+    }
+  );
+  return await getUsersCollection().updateOne(
+    { uid },
+    {
       $set: { name, lastNameChange: Date.now() },
       $unset: { needsToChangeName: "" },
-      $push: { nameHistory: oldName },
     }
   );
 }
 
-export async function clearPb(uid: string): Promise<void> {
-  await getUsersCollection().updateOne(
+export async function clearPb(uid: string): Promise<UpdateResult> {
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $set: {
@@ -212,7 +226,7 @@ export async function editTag(
   uid: string,
   _id: string,
   name: string
-): Promise<void> {
+): Promise<UpdateResult> {
   const user = await getUser(uid, "edit tag");
   if (
     user.tags === undefined ||
@@ -220,7 +234,7 @@ export async function editTag(
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -229,7 +243,10 @@ export async function editTag(
   );
 }
 
-export async function removeTag(uid: string, _id: string): Promise<void> {
+export async function removeTag(
+  uid: string,
+  _id: string
+): Promise<UpdateResult> {
   const user = await getUser(uid, "remove tag");
   if (
     user.tags === undefined ||
@@ -237,7 +254,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -246,7 +263,10 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   );
 }
 
-export async function removeTagPb(uid: string, _id: string): Promise<void> {
+export async function removeTagPb(
+  uid: string,
+  _id: string
+): Promise<UpdateResult> {
   const user = await getUser(uid, "remove tag pb");
   if (
     user.tags === undefined ||
@@ -254,7 +274,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "tags._id": new ObjectId(_id),
@@ -269,7 +289,7 @@ export async function updateLbMemory(
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>,
   language: string,
   rank: number
-): Promise<void> {
+): Promise<UpdateResult> {
   const user = await getUser(uid, "update lb memory");
   if (user.lbMemory === undefined) user.lbMemory = {};
   if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
@@ -277,7 +297,7 @@ export async function updateLbMemory(
     user.lbMemory[mode][mode2] = {};
   }
   user.lbMemory[mode][mode2][language] = rank;
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $set: { lbMemory: user.lbMemory },
@@ -383,9 +403,9 @@ export async function checkIfTagPb(
   return ret;
 }
 
-export async function resetPb(uid: string): Promise<void> {
+export async function resetPb(uid: string): Promise<UpdateResult> {
   await getUser(uid, "reset pb");
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $set: {
@@ -405,8 +425,8 @@ export async function updateTypingStats(
   uid: string,
   restartCount: number,
   timeTyping: number
-): Promise<void> {
-  await getUsersCollection().updateOne(
+): Promise<UpdateResult> {
+  return await getUsersCollection().updateOne(
     { uid },
     {
       $inc: {
@@ -434,16 +454,19 @@ export async function linkDiscord(
   }
 }
 
-export async function unlinkDiscord(uid: string): Promise<void> {
+export async function unlinkDiscord(uid: string): Promise<UpdateResult> {
   await getUser(uid, "unlink discord");
 
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     { uid },
     { $unset: { discordId: "", discordAvatar: "" } }
   );
 }
 
-export async function incrementBananas(uid: string, wpm): Promise<void> {
+export async function incrementBananas(
+  uid: string,
+  wpm
+): Promise<UpdateResult | null> {
   const user = await getUser(uid, "increment bananas");
 
   let best60: number | undefined;
@@ -455,8 +478,13 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 
   if (best60 === undefined || wpm >= best60 - best60 * 0.25) {
     //increment when no record found or wpm is within 25% of the record
-    await getUsersCollection().updateOne({ uid }, { $inc: { bananas: 1 } });
+    return await getUsersCollection().updateOne(
+      { uid },
+      { $inc: { bananas: 1 } }
+    );
   }
+
+  return null;
 }
 
 export function themeDoesNotExist(customThemes, id): boolean {
@@ -495,14 +523,14 @@ export async function addTheme(
   };
 }
 
-export async function removeTheme(uid: string, _id): Promise<void> {
+export async function removeTheme(uid: string, _id): Promise<UpdateResult> {
   const user = await getUser(uid, "remove theme");
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom theme not found");
   }
 
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "customThemes._id": new ObjectId(_id),
@@ -511,14 +539,18 @@ export async function removeTheme(uid: string, _id): Promise<void> {
   );
 }
 
-export async function editTheme(uid: string, _id, theme): Promise<void> {
+export async function editTheme(
+  uid: string,
+  _id,
+  theme
+): Promise<UpdateResult> {
   const user = await getUser(uid, "edit theme");
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom Theme not found");
   }
 
-  await getUsersCollection().updateOne(
+  return await getUsersCollection().updateOne(
     {
       uid: uid,
       "customThemes._id": new ObjectId(_id),
@@ -669,24 +701,26 @@ export async function recordAutoBanEvent(
 
 export async function updateProfile(
   uid: string,
-  profileDetailUpdates: Partial<MonkeyTypes.UserProfileDetails>,
-  inventory?: MonkeyTypes.UserInventory
+  updates: Partial<MonkeyTypes.UserProfileDetails>
 ): Promise<void> {
-  const profileUpdates = _.omitBy(
-    flattenObjectDeep(profileDetailUpdates, "profileDetails"),
-    (value) =>
-      value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
+  const profileUpdates = _.pickBy(
+    flattenObjectDeep(updates, "profileDetails"),
+    (value) => value !== undefined
   );
 
-  await getUsersCollection().updateOne(
+  const updateResult = await getUsersCollection().updateOne(
     {
       uid,
+      banned: {
+        $ne: true,
+      },
     },
     {
-      $set: {
-        ...profileUpdates,
-        inventory,
-      },
+      $set: profileUpdates,
     }
   );
+
+  if (updateResult.matchedCount === 0) {
+    throw new MonkeyError(403, "User is banned");
+  }
 }

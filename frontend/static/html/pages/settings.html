@@ -16,15 +16,15 @@
   <!-- <div class="sectionGroupTitle">quick navigation</div> -->
   <div class="settingsGroup quickNav">
     <div class="links">
-      <a class="textButton" href="#group_account">account</a>
-      <a class="textButton" href="#group_behavior">behavior</a>
-      <a class="textButton" href="#group_input">input</a>
-      <a class="textButton" href="#group_sound">sound</a>
-      <a class="textButton" href="#group_caret">caret</a>
-      <a class="textButton" href="#group_appearance">appearance</a>
-      <a class="textButton" href="#group_theme">theme</a>
-      <a class="textButton" href="#group_hideElements">hide elements</a>
-      <a class="textButton" href="#group_dangerZone">danger zone</a>
+      <a class="text-button" href="#group_account">account</a>
+      <a class="text-button" href="#group_behavior">behavior</a>
+      <a class="text-button" href="#group_input">input</a>
+      <a class="text-button" href="#group_sound">sound</a>
+      <a class="text-button" href="#group_caret">caret</a>
+      <a class="text-button" href="#group_appearance">appearance</a>
+      <a class="text-button" href="#group_theme">theme</a>
+      <a class="text-button" href="#group_hideElements">hide elements</a>
+      <a class="text-button" href="#group_dangerZone">danger zone</a>
     </div>
   </div>
   <div id="ad_settings0" class="hidden"></div>
@@ -61,12 +61,12 @@
           <a
             id="updateDiscordAvatarButton"
             href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-            class="textButton"
+            class="text-button"
           >
             <i class="fas fa-sync-alt" aria-hidden="true"></i>
             Update avatar
           </a>
-          <div id="unlinkDiscordButton" class="textButton">
+          <div id="unlinkDiscordButton" class="text-button">
             <i class="fas fa-unlink" aria-hidden="true"></i>
             Unlink
           </div>
@@ -168,11 +168,11 @@
         <key>tab</key>
         or
         <key>esc</key>
-        to quickly restart the test, or to quickly jump to the test page. Both
-        options disable tab navigation on most parts of the website. Using the
-        "esc" option will move opening the commandline to the
-        <key>tab</key>
-        key.
+        to quickly restart the test, or to quickly jump to the test page. The
+        "tab" setting disables tab navigation on the website, while the "esc"
+        disables opening the command line with
+        <key>esc</key>
+        .
       </div>
       <div class="buttons">
         <div
@@ -743,8 +743,7 @@
     <div class="section lazyMode">
       <h1>lazy mode</h1>
       <div class="text">
-        Replaces accents / diacritics / special characters with their normal
-        letter equivalents.
+        Replaces accented letters with their normal equivalents.
       </div>
       <div class="buttons">
         <div
@@ -1734,6 +1733,12 @@
           <div class="title">opacity</div>
           <div class="value"></div>
           <input type="range" min="0" max="1" value="1" step="0.1" />
+        </div>
+        <div class="saveContainer">
+          <div class="save button" style="grid-column: 3">
+            <!-- <i class="fas fa-save fa-fw"></i> -->
+            save
+          </div>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
+import { change } from "../controllers/page-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
@@ -322,7 +323,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     <td>
     <div class="avatarNameBadge">${avatar}
       <span class="entryName" uid=${entry.uid}>${entry.name}</span>
-      ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+      ${entry.badgeIds ? getBadgeHTMLbyId(entry.badgeIds[0]) : ""}
     </div>
     </td>
     <td class="alignRight">${(Config.alwaysShowCPM
@@ -348,6 +349,15 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   } else {
     $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
   }
+
+  $(".entryName").on("click", (e) => {
+    const uid = $(e.target).attr("uid");
+    if (uid) {
+      window.history.replaceState(null, "", "/profile?uid=" + uid);
+      change("profile", true);
+      hide();
+    }
+  });
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
@@ -391,18 +401,6 @@ function updateYesterdayButton(): void {
   }
 }
 
-function getDailyLeaderboardQuery(): { isDaily: boolean; daysBefore: number } {
-  const isDaily = currentTimeRange === "daily";
-  const isViewingDailyAndButtonIsActive =
-    isDaily && showYesterdayButton.hasClass("active");
-  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
-
-  return {
-    isDaily,
-    daysBefore,
-  };
-}
-
 async function update(): Promise<void> {
   leftScrollEnabled = false;
   rightScrollEnabled = false;
@@ -412,12 +410,17 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
+  const isViewingDailyAndButtonIsActive =
+    currentTimeRange === "daily" && showYesterdayButton.hasClass("active");
+  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
+
   const leaderboardRequests = timeModes.map((mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
       mode2,
-      ...getDailyLeaderboardQuery(),
+      isDaily: currentTimeRange === "daily",
+      daysBefore,
     });
   });
 
@@ -428,7 +431,8 @@ async function update(): Promise<void> {
           language: currentLanguage,
           mode: "time",
           mode2,
-          ...getDailyLeaderboardQuery(),
+          isDaily: currentTimeRange === "daily",
+          daysBefore,
         });
       })
     );
@@ -500,9 +504,9 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
+    isDaily: currentTimeRange === "daily",
     skip: skipVal,
     limit: limitVal,
-    ...getDailyLeaderboardQuery(),
   });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
@@ -530,8 +534,8 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     language: currentLanguage,
     mode: "time",
     mode2: lb.toString(),
+    isDaily: currentTimeRange === "daily",
     skip,
-    ...getDailyLeaderboardQuery(),
   });
   const data: MonkeyTypes.LeaderboardEntry[] = response.data;
 
@@ -783,16 +787,16 @@ $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
   update();
 });
 
+$(document).on("click", "#top #menu .text-button", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    show();
+  }
+  return false;
+});
+
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
     hide();
     event.preventDefault();
   }
-});
-
-$(document).on("click", "#top #menu .textButton", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    show();
-  }
-  return false;
 });

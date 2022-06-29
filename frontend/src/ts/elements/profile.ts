@@ -5,7 +5,6 @@ import * as Misc from "../utils/misc";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
-import * as ActivePage from "../states/active-page";
 
 type ProfileViewPaths = "profile" | "account";
 
@@ -38,20 +37,8 @@ export async function update(
     }
   }
 
-  if (profile.inventory?.badges && !banned) {
-    let mainHtml = "";
-    let restHtml = "";
-
-    for (const badge of profile.inventory.badges) {
-      if (badge.selected === true) {
-        mainHtml = getHTMLById(badge.id);
-      } else {
-        restHtml += getHTMLById(badge.id, true);
-      }
-    }
-
-    details.find(".badges").empty().append(mainHtml);
-    details.find(".allBadges").empty().append(restHtml);
+  if (profile.badgeIds && !banned) {
+    details.find(".badges").empty().append(getHTMLById(profile.badgeIds[0]));
   }
 
   details.find(".name").text(profile.name);
@@ -124,14 +111,9 @@ export async function update(
       }
 
       const website = profile.details?.socialProfiles.website;
-
-      //regular expression to get website name from url
-      const regex = /^https?:\/\/(?:www\.)?([^/]+)/;
-      const websiteName = website?.match(regex)?.[1] ?? website;
-
       if (website) {
         socialsEl.append(
-          `<a href='${website}' aria-label="${websiteName}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          `<a href='${website}' aria-label="${website}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
@@ -187,8 +169,6 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   let details;
   if (where === "account") {
     details = $(".pageAccount .profile .details");
-  } else if (where === "profile") {
-    details = $(".pageProfile .profile .details");
   }
   if (!details) return;
   const nameField = details.find(".name");
@@ -213,10 +193,7 @@ $(".details .editProfileButton").on("click", () => {
 });
 
 const throttledEvent = throttle(250, () => {
-  const activePage = ActivePage.get();
-  if (activePage && ["account", "profile"].includes(activePage)) {
-    updateNameFontSize(activePage as ProfileViewPaths);
-  }
+  updateNameFontSize("account");
 });
 
 $(window).on("resize", () => {

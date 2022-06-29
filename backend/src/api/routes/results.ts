@@ -9,14 +9,14 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
 import joi from "joi";
-import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
+import apeRateLimit from "../../middlewares/ape-rate-limit";
 
 const router = Router();
 
 router.get(
   "/",
-  authenticateRequest(),
   RateLimit.resultsGet,
+  authenticateRequest(),
   asyncHandler(ResultController.getResults)
 );
 
@@ -28,8 +28,8 @@ router.post(
     },
     invalidMessage: "Results are not being saved at this time.",
   }),
-  authenticateRequest(),
   RateLimit.resultsAdd,
+  authenticateRequest(),
   validateRequest({
     body: {
       result: resultSchema,
@@ -40,8 +40,8 @@ router.post(
 
 router.patch(
   "/tags",
-  authenticateRequest(),
   RateLimit.resultsTagsUpdate,
+  authenticateRequest(),
   validateRequest({
     body: {
       tagIds: joi.array().items(joi.string()).required(),
@@ -53,17 +53,18 @@ router.patch(
 
 router.delete(
   "/",
-  authenticateRequest(),
   RateLimit.resultsDeleteAll,
+  authenticateRequest(),
   asyncHandler(ResultController.deleteAll)
 );
 
 router.get(
   "/last",
+  RateLimit.resultsGet,
   authenticateRequest({
     acceptApeKeys: true,
   }),
-  withApeRateLimiter(RateLimit.resultsGet),
+  apeRateLimit,
   asyncHandler(ResultController.getLastResult)
 );
 

@@ -20,10 +20,6 @@
         "destination": "/security-policy.html"
       },
       {
-        "source": "/adtest",
-        "destination": "/adtest.html"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

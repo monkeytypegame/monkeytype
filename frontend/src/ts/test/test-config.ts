@@ -11,7 +11,6 @@ import * as Misc from "../utils/misc";
 
 export function show(): void {
   $("#top .config")
-    .css("transition", "unset")
     .stop(true, true)
     .removeClass("hidden")
     .css("opacity", 0)
@@ -19,16 +18,12 @@ export function show(): void {
       {
         opacity: 1,
       },
-      125,
-      () => {
-        $("#top .config").css("transition", "0.125s");
-      }
+      125
     );
 }
 
 export function hide(): void {
   $("#top .config")
-    .css("transition", "unset")
     .stop(true, true)
     .css("opacity", 1)
     .animate(
@@ -37,7 +32,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#top .config").addClass("hidden").css("transition", "0.125s");
+        $("#top .config").addClass("hidden");
       }
     );
 }
@@ -47,8 +42,8 @@ export function update(
   current: MonkeyTypes.Mode
 ): void {
   if (previous === current) return;
-  $("#top .config .mode .textButton").removeClass("active");
-  $("#top .config .mode .textButton[mode='" + current + "']").addClass(
+  $("#top .config .mode .text-button").removeClass("active");
+  $("#top .config .mode .text-button[mode='" + current + "']").addClass(
     "active"
   );
 

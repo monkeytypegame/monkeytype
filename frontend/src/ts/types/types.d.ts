@@ -165,7 +165,6 @@ declare namespace MonkeyTypes {
     name: string;
     type: FunboxObjectType;
     info: string;
-    alias?: string;
     affectsWordGeneration?: boolean;
   }
 
@@ -434,7 +433,7 @@ declare namespace MonkeyTypes {
     name: string;
     discordId?: string;
     discordAvatar?: string;
-    badgeId?: number;
+    badgeIds?: number[];
     rank: number;
     count?: number;
     hidden?: boolean;
@@ -467,7 +466,7 @@ declare namespace MonkeyTypes {
     needsToChangeName?: boolean;
     discordAvatar?: string;
     details?: UserDetails;
-    inventory?: UserInventory;
+    badgeIds?: number[];
     addedAt: number;
     filterPresets: ResultFilters[];
   }
@@ -480,15 +479,6 @@ declare namespace MonkeyTypes {
       github?: string;
       website?: string;
     };
-  }
-
-  interface UserInventory {
-    badges: Badge[];
-  }
-
-  interface Badge {
-    id: number;
-    selected?: boolean;
   }
 
   type FavoriteQuotes = Record<string, string[]>;
@@ -687,6 +677,18 @@ declare namespace MonkeyTypes {
     colorfulError: string;
     colorfulErrorExtra: string;
   }
+
+  type Page =
+    | "loading"
+    | "test"
+    | "about"
+    | "settings"
+    | "account"
+    | "login"
+    | "tribe"
+    | "profile";
+
+  //  type ActivePage = `page${Page}` | undefined;
 
   interface Layout {
     keymapShowTopRow: boolean;

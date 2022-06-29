@@ -4,7 +4,8 @@ import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
-import * as CaptchaController from "../controllers/captcha-controller";
+
+const CAPTCHA_ID = 1;
 
 interface State {
   previousPopupShowCallback?: () => void;
@@ -32,11 +33,6 @@ const defaultOptions: Options = {
 
 export async function show(options = defaultOptions): Promise<void> {
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
-    CaptchaController.render(
-      document.querySelector("#quoteReportPopup .g-recaptcha") as HTMLElement,
-      "quoteReportPopup"
-    );
-
     const { quoteId, previousPopupShowCallback, noAnim } = options;
 
     state.previousPopupShowCallback = previousPopupShowCallback;
@@ -76,7 +72,7 @@ export async function hide(): Promise<void> {
         },
         noAnim ? 0 : 100,
         () => {
-          CaptchaController.reset("quoteReportPopup");
+          grecaptcha.reset(CAPTCHA_ID);
           $("#quoteReportPopupWrapper").addClass("hidden");
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
@@ -87,9 +83,9 @@ export async function hide(): Promise<void> {
 }
 
 async function submitReport(): Promise<void> {
-  const captchaResponse = CaptchaController.getResponse("quoteReportPopup");
+  const captchaResponse = grecaptcha.getResponse(CAPTCHA_ID);
   if (!captchaResponse) {
-    return Notifications.add("Please complete the captcha");
+    return Notifications.add("Please complete the captcha.");
   }
 
   const quoteId = state.quoteToReport?.id.toString();
@@ -99,17 +95,17 @@ async function submitReport(): Promise<void> {
   const captcha = captchaResponse as string;
 
   if (!quoteId) {
-    return Notifications.add("Please select a quote");
+    return Notifications.add("Please select a quote.");
   }
 
   if (!reason) {
-    return Notifications.add("Please select a valid report reason");
+    return Notifications.add("Please select a valid report reason.");
   }
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
     return Notifications.add(
-      `Report comment is ${characterDifference} character(s) too long`
+      `Report comment is ${characterDifference} character(s) too long.`
     );
   }
 

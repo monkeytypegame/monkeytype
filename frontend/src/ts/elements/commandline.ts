@@ -7,8 +7,6 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
-import * as TestWords from "../test/test-words";
-import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import { isAnyPopupVisible } from "../utils/misc";
 
@@ -391,8 +389,7 @@ $(document).ready(() => {
     if (PageTransition.get()) return event.preventDefault();
     // opens command line if escape or ctrl/cmd + shift + p
     if (
-      ((event.key === "Escape" && Config.quickRestart !== "esc") ||
-        (event.key === "Tab" && Config.quickRestart === "esc")) &&
+      event.key === "Escape" &&
       !$("#commandLineWrapper").hasClass("hidden")
     ) {
       if (CommandlineLists.current.length > 1) {
@@ -407,25 +404,16 @@ $(document).ready(() => {
     }
     if (
       (event.key === "Escape" && Config.quickRestart !== "esc") ||
-      (event.key === "Tab" &&
-        Config.quickRestart === "esc" &&
-        !TestWords.hasTab &&
-        !event.shiftKey) ||
-      (event.key === "Tab" &&
-        Config.quickRestart === "esc" &&
-        TestWords.hasTab &&
-        event.shiftKey) ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
         event.shiftKey)
     ) {
+      event.preventDefault();
+
       const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
-
-      if (Config.quickRestart === "esc" && ActivePage.get() === "login") return;
-      event.preventDefault();
 
       if (Config.singleListCommandLine == "on") {
         useSingleListCommandLine(false);
@@ -681,12 +669,12 @@ $(document).on("click", "#commandLineMobileButton", () => {
   show();
 });
 
-$(document).on("click", "#keymap .r5 .keySpace", () => {
+$(document).on("click", "#keymap .r5 .key-space", () => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   show();
 });
 
-$(document).on("click", "#testModesNotice .textButton", (event) => {
+$(document).on("click", "#testModesNotice .text-button", (event) => {
   const commands = CommandlineLists.getList(
     $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
   );
