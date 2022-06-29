@@ -612,6 +612,12 @@
       "source": "Robert Louis Stevenson",
       "length": 133,
       "id": 101
+    },
+    {
+      "text": "Mira ese punto. Eso es aquí. Eso es nuestro hogar. Eso somos nosotros.",
+      "source": "Carl Sagan",
+      "length": 70,
+      "id": 101 
     }
   ]
 }
