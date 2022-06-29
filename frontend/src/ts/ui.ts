@@ -22,7 +22,7 @@ export function updateKeytips(): void {
   if (Config.quickRestart === "esc") {
     $("#bottom .keyTips").html(`
     <key>esc</key> - restart test<br>
-    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
+    <key>tab</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
   } else if (Config.quickRestart === "tab") {
     $("#bottom .keyTips").html(`
     <key>tab</key> - restart test<br>

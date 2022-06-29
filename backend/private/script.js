@@ -14,11 +14,13 @@ const buildNumberInput = (schema, parentState, key) => {
   input.classList.add("base-input");
   input.type = "number";
   input.value = parentState[key];
-  input.min = schema.min || 0;
+
+  const min = schema.min || 0;
+  input.min = min;
 
   input.addEventListener("change", () => {
     const normalizedValue = parseFloat(input.value, 10);
-    parentState[key] = normalizedValue;
+    parentState[key] = Math.max(normalizedValue, min);
   });
 
   return input;
@@ -164,7 +166,7 @@ const render = (state, schema) => {
             items,
             element,
             state,
-            `${currentKey}[${index}]`,
+            index,
             `${path}[${index}]`
           );
 

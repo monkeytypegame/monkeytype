@@ -7,6 +7,8 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
+import * as TestWords from "../test/test-words";
+import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import { isAnyPopupVisible } from "../utils/misc";
 
@@ -389,7 +391,8 @@ $(document).ready(() => {
     if (PageTransition.get()) return event.preventDefault();
     // opens command line if escape or ctrl/cmd + shift + p
     if (
-      event.key === "Escape" &&
+      ((event.key === "Escape" && Config.quickRestart !== "esc") ||
+        (event.key === "Tab" && Config.quickRestart === "esc")) &&
       !$("#commandLineWrapper").hasClass("hidden")
     ) {
       if (CommandlineLists.current.length > 1) {
@@ -404,16 +407,25 @@ $(document).ready(() => {
     }
     if (
       (event.key === "Escape" && Config.quickRestart !== "esc") ||
+      (event.key === "Tab" &&
+        Config.quickRestart === "esc" &&
+        !TestWords.hasTab &&
+        !event.shiftKey) ||
+      (event.key === "Tab" &&
+        Config.quickRestart === "esc" &&
+        TestWords.hasTab &&
+        event.shiftKey) ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
         event.shiftKey)
     ) {
-      event.preventDefault();
-
       const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
+
+      if (Config.quickRestart === "esc" && ActivePage.get() === "login") return;
+      event.preventDefault();
 
       if (Config.singleListCommandLine == "on") {
         useSingleListCommandLine(false);
