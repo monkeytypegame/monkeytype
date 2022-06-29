@@ -40,9 +40,15 @@ export async function update(): Promise<void> {
   }
 
   if (TestWords.hasTab) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="textButton"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
-    );
+    if (Config.quickRestart === "esc") {
+      $(".pageTest #testModesNotice").append(
+        `<div class="textButton"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
+      );
+    } else {
+      $(".pageTest #testModesNotice").append(
+        `<div class="textButton"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+      );
+    }
   }
 
   if (TestState.activeChallenge) {

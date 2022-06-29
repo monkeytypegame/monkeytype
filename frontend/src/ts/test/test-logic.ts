@@ -322,8 +322,12 @@ export function restart(
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
-      if (TestWords.hasTab) {
-        if (!event?.shiftKey) return;
+      if (
+        TestWords.hasTab &&
+        !event?.shiftKey &&
+        Config.quickRestart !== "esc"
+      ) {
+        return;
       }
       if (Config.mode !== "zen") event?.preventDefault();
       if (

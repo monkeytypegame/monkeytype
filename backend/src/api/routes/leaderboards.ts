@@ -1,7 +1,7 @@
 import joi from "joi";
 import { Router } from "express";
 import * as RateLimit from "../../middlewares/rate-limit";
-import apeRateLimit from "../../middlewares/ape-rate-limit";
+import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { authenticateRequest } from "../../middlewares/auth";
 import * as LeaderboardController from "../controllers/leaderboard";
 import {
@@ -38,8 +38,8 @@ const requireDailyLeaderboardsEnabled = validateConfiguration({
 
 router.get(
   "/",
-  RateLimit.leaderboardsGet,
   authenticateRequest({ isPublic: true, acceptApeKeys: true }),
+  withApeRateLimiter(RateLimit.leaderboardsGet),
   validateRequest({
     query: LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT,
   }),
@@ -48,9 +48,8 @@ router.get(
 
 router.get(
   "/rank",
-  RateLimit.leaderboardsGet,
   authenticateRequest({ acceptApeKeys: true }),
-  apeRateLimit,
+  withApeRateLimiter(RateLimit.leaderboardsGet),
   validateRequest({
     query: BASE_LEADERBOARD_VALIDATION_SCHEMA,
   }),
@@ -60,8 +59,8 @@ router.get(
 router.get(
   "/daily",
   requireDailyLeaderboardsEnabled,
-  RateLimit.leaderboardsGet,
   authenticateRequest({ isPublic: true }),
+  RateLimit.leaderboardsGet,
   validateRequest({
     query: DAILY_LEADERBOARD_VALIDATION_SCHEMA,
   }),
@@ -71,8 +70,8 @@ router.get(
 router.get(
   "/daily/rank",
   requireDailyLeaderboardsEnabled,
-  RateLimit.leaderboardsGet,
   authenticateRequest(),
+  RateLimit.leaderboardsGet,
   validateRequest({
     query: DAILY_LEADERBOARD_VALIDATION_SCHEMA,
   }),
