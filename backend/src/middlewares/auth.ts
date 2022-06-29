@@ -140,8 +140,6 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    Logger.error(`Firebase auth error code ${error.errorInfo.code.toString()}`);
-
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
