@@ -9,15 +9,15 @@ const router = Router();
 
 router.get(
   "/",
-  RateLimit.configGet,
   authenticateRequest(),
+  RateLimit.configGet,
   asyncHandler(ConfigController.getConfig)
 );
 
 router.patch(
   "/",
-  RateLimit.configUpdate,
   authenticateRequest(),
+  RateLimit.configUpdate,
   validateRequest({
     body: {
       config: configSchema.required(),

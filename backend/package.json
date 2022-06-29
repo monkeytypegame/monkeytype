@@ -36,6 +36,7 @@
     "object-hash": "3.0.0",
     "path": "0.12.7",
     "prom-client": "14.0.1",
+    "rate-limiter-flexible": "2.3.7",
     "simple-git": "2.45.1",
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.2",

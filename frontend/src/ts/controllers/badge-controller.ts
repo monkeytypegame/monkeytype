@@ -44,7 +44,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     name: "Supporter",
     description: "Donated money",
     icon: "fa-heart",
-    color: "var(--bg-color)",
+    color: "var(--text-color)",
     background: "var(--sub-color)",
   },
   7: {
@@ -55,9 +55,45 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
+  8: {
+    id: 8,
+    name: "Monkey Supporter",
+    description: "Donated more money",
+    icon: "fa-heart",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
+  },
+  9: {
+    id: 9,
+    name: "White Hat",
+    description: "Reported critical vulnerabilities on the site",
+    icon: "fa-user-secret",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
+  },
+  10: {
+    id: 10,
+    name: "Bug Hunter",
+    description: "Reported bugs on the site",
+    icon: "fa-bug",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
+  },
+  11: {
+    id: 11,
+    name: "Content Creator",
+    description: "Verified content creator",
+    icon: "fa-video",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
+  },
 };
 
-export function getHTMLById(id: number): string {
+export function getHTMLById(
+  id: number,
+  noText = false,
+  noBalloon = false
+): string {
   const badge = badges[id];
   if (!badge) {
     return "";
@@ -72,9 +108,15 @@ export function getHTMLById(id: number): string {
   if (badge.customStyle) {
     style += badge.customStyle;
   }
-  return `<div class="badge" aria-label="${
-    badge.description
-  }" data-balloon-pos="right" style="${style}">${
+
+  const balloonText = (noText ? badge.name + ": " : "") + badge.description;
+
+  let balloon = "";
+  if (!noBalloon) {
+    balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
+  }
+
+  return `<div class="badge" ${balloon} style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
-  }<div class="text">${badge.name}</div></div>`;
+  }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
 }

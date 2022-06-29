@@ -332,6 +332,9 @@ export async function addResult(
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   if (dailyLeaderboard && validResultCriteria) {
+    //get the selected badge id
+    const badgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
+
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
       {
@@ -344,7 +347,7 @@ export async function addResult(
         uid,
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
-        badgeIds: user.badgeIds,
+        badgeId,
       },
       dailyLeaderboardsConfig
     );
