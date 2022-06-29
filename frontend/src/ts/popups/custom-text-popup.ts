@@ -40,28 +40,29 @@ export function show(): void {
   }, 150);
 }
 
-$(`${popup} .delimiterCheck input`).change(() => {
-  let delimiter;
-  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
-    delimiter = "|";
-  } else {
-    delimiter = " ";
-  }
-  if (
-    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
-  ) {
-    const currentText = $(`${popup} textarea`).val() as string;
-    const currentTextSplit = currentText.split(CustomText.delimiter);
-    let newtext = currentTextSplit.join(delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-  } else {
-    let newtext = CustomText.text.join(delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-  }
-  CustomText.setDelimiter(delimiter);
-});
+$(`${popup} .delimiterCheck input`).trigger("change"),
+  () => {
+    let delimiter;
+    if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+      delimiter = "|";
+    } else {
+      delimiter = " ";
+    }
+    if (
+      $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+    ) {
+      const currentText = $(`${popup} textarea`).val() as string;
+      const currentTextSplit = currentText.split(CustomText.delimiter);
+      let newtext = currentTextSplit.join(delimiter);
+      newtext = newtext.replace(/\n /g, "\n");
+      $(`${popup} textarea`).val(newtext);
+    } else {
+      let newtext = CustomText.text.join(delimiter);
+      newtext = newtext.replace(/\n /g, "\n");
+      $(`${popup} textarea`).val(newtext);
+    }
+    CustomText.setDelimiter(delimiter);
+  };
 
 export function hide(): void {
   if (!$(wrapper).hasClass("hidden")) {
@@ -90,13 +91,14 @@ $(wrapper).on("mousedown", (e) => {
   }
 });
 
-$(`${popup} .inputs .checkbox input`).change(() => {
-  if ($(`${popup} .checkbox input`).prop("checked")) {
-    $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
-  } else {
-    $(`${popup} .inputs .randomInputFields`).addClass("hidden");
-  }
-});
+$(`${popup} .inputs .checkbox input`).trigger("change"),
+  () => {
+    if ($(`${popup} .checkbox input`).prop("checked")) {
+      $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
+    } else {
+      $(`${popup} .inputs .randomInputFields`).addClass("hidden");
+    }
+  };
 
 $(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
