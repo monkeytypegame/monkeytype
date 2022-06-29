@@ -69,6 +69,7 @@ declare namespace MonkeyTypes {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
     email: string;
+    issuedAt?: number;
   }
 
   interface Context {

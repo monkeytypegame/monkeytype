@@ -11,11 +11,13 @@ import Logger from "../utils/logger";
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
   acceptApeKeys?: boolean;
+  requireFreshToken?: boolean;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
   acceptApeKeys: false,
+  requireFreshToken: false,
 };
 
 function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
@@ -53,6 +55,24 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           "Unauthorized",
           `endpoint: ${req.baseUrl} no authorization header found`
         );
+      }
+
+      if (
+        options.requireFreshToken === true &&
+        token.type === "Bearer" &&
+        token.issuedAt
+      ) {
+        const now = Date.now();
+        const tokenIssuedAt = new Date(token.issuedAt * 1000).getTime();
+
+        //check if token was issued more than 60 seconds ago
+        if (now - tokenIssuedAt > 60 * 1000) {
+          throw new MonkeyError(
+            401,
+            "Unauthorized",
+            `endpoint: ${req.baseUrl} requires a fresh token`
+          );
+        }
       }
 
       incrementAuth(token.type);
@@ -122,6 +142,7 @@ async function authenticateWithBearerToken(
       type: "Bearer",
       uid: decodedToken.uid,
       email: decodedToken.email ?? "",
+      issuedAt: decodedToken.iat,
     };
   } catch (error) {
     Logger.error(`Firebase auth error code ${error.errorInfo.code.toString()}`);
