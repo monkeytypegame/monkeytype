@@ -34875,19 +34875,19 @@
     },
     {
       "text": "\"How Soon Is Now\" in an 80s sedan: you slept inside of it because your dad lived in a campground in the back of a van. You said that song'll creep you out until you're dead.",
-      "source": "Smoke Signals",
+      "source": "Phoebe Bridgers - Smoke Signals",
       "length": 173,
       "id": 6107
     },
     {
       "text": "So I gotta go. I know, I know, I know. When the sirens sound you'll hide under the floor, but I'm not gonna go down with my hometown in a tornado. I'm gonna chase it. I know, I know, I know.",
-      "source": "I Know The End",
+      "source": "Phoebe Bridgers - I Know The End",
       "length": 190,
       "id": 6108
     },
     {
       "text": "These eyes, these arms, this heart, has loved almost everything. But not you, but not you. But I want to.",
-      "source": "It's Not Like",
+      "source": "Sharon van Etten - It's Not Like",
       "length": 105,
       "id": 6109
     },
@@ -34923,49 +34923,49 @@
     },
     {
       "text": "\"Wild women don't get the blues\", but I find that lately I've been crying like a tall child.",
-      "source": "First Love / Late Spring",
+      "source": "Mitski - First Love / Late Spring",
       "length": 92,
       "id": 6115
     },
     {
       "text": "I drive when it rains; at night when it rains, I drive. And the headlight spirits, they lead me down the Styx - so black it shines.",
-      "source": "Carry Me Out",
+      "source": "Mitski - Carry Me Out",
       "length": 131,
       "id": 6116
     },
     {
       "text": "I never said I'd be alright, just thought I could hold myself together. But I couldn't breathe, I went outside - don't know why I thought it'd be any better.",
-      "source": "Me & My Dog",
+      "source": "Boygenius - Me & My Dog",
       "length": 157,
       "id": 6117
     },
     {
-      "source": "Shades of Cool",
       "text": "'Cause you are unfixable, I can't break through your world. 'Cause you live in shades of cool, your heart is unbreakable.",
+      "source": "Lana Del Rey - Shades of Cool",
       "length": 121,
       "id": 6118
     },
     {
       "text": "Suzanne takes you down to her place near the river. You can hear the boats go by, you can spend the night beside her. And you know that she's half-crazy, but that's why you wanna be there. And she feeds you tea and oranges that come all the way from China.",
-      "source": "Suzanne",
+      "source": "Leonard Cohen - Suzanne",
       "length": 256,
       "id": 6119
     },
     {
       "text": "They say I'm too young to love you. I don't know what I need. They think I don't understand the freedom land of the seventies.",
-      "source": "Brooklyn Baby",
+      "source": "Lana Del Rey - Brooklyn Baby",
       "length": 126,
       "id": 6120
     },
     {
       "text": "John met me down on the boulevard. Cry on his shoulder 'cause life is hard, the waves came in over my head. What you been up to my baby? Haven't seen you 'round here lately. All the other guys tell me lies, but you don't. You just crack another beer and pretend that you're still here.",
-      "source": "How To Disappear",
+      "source": "Lana Del Rey - How To Disappear",
       "length": 285,
       "id": 6121
     },
     {
       "text": "Thinking outrageously, I write in cursive. I hide in my bed with the lights on the floor. Wearing three layers of coats and leg-warmers, I see my own breath on the face of the door.",
-      "source": "The Predatory Wasp of the Palisades Is Out to Get Us!",
+      "source": "Sufjan Stevens - The Predatory Wasp of the Palisades Is Out to Get Us!",
       "length": 181,
       "id": 6122
     },
@@ -34998,6 +34998,126 @@
       "source": "Red Rising - Pierce Brown",
       "length": 71,
       "id": 6127
+    },
+    {
+      "text": "But it's just that I fell in love with a war, and nobody told me it ended. And it left a pearl in my head, and I roll it around every night just to watch it glow.",
+      "source": "Mitski - A Pearl",
+      "length": 162,
+      "id": 6128
+    },
+    {
+      "text": "The last time I saw Richard was Detroit in '68, and he told me, \"All romantics meet the same fate someday: cynical and drunk, and boring someone in some dark cafe.\"",
+      "source": "Joni Mitchell - The Last Time I Saw Richard",
+      "length": 164,
+      "id": 6129
+    },
+    {
+      "text": "The hours pass, and she still counts the minutes that I am not there. I swear I didn't mean for it to feel like this, like every inch of me is bruised, bruised.",
+      "source": "Jack's Mannequin - Bruised",
+      "length": 160,
+      "id": 6130
+    },
+    {
+      "text": "Can't keep hangin' on to what is dead and gone. If you built yourself a myth, you'd know just what to give. Materialize, or let the ashes fly?",
+      "source": "Beach House - Myth",
+      "length": 142,
+      "id": 6131
+    },
+    {
+      "text": "\"More.\" You want more, you tell me \"more.\" Only time can run me.",
+      "source": "Beach House - Walk In The Park",
+      "length": 64,
+      "id": 6132
+    },
+    {
+      "text": "Yet I'm tracing figure eights on ice in skates, so well. And if this ice should break, it would be my mistake.",
+      "source": "Beach House - PPP",
+      "length": 110,
+      "id": 6133
+    },
+    {
+      "text": "Don't you ever cross that bridge in your mind again. It's like a movie screen.",
+      "source": "Chelsea Wolfe - Movie Screen",
+      "length": 78,
+      "id": 6134
+    },
+    {
+      "text": "I want flatlands - soft and steady breeze bringing scents of lined-up orchard trees, dripping heavy with pears and dancing leaves. I want flatlands, will you go there with me?",
+      "source": "Chelsea Wolfe - Flatlands",
+      "length": 175,
+      "id": 6135
+    },
+    {
+      "text": "Answer, you'd only answer in questions. You knew me well. After, did we care for one-another or ourselves at all?",
+      "source": "Chelsea Wolfe - Our Work Was Good",
+      "length": 113,
+      "id": 6136
+    },
+    {
+      "text": "I covered you in royal jelly, I made you queen and you forgave me.",
+      "source": "Chelsea Wolfe - The Waves Have Come",
+      "length": 66,
+      "id": 6137
+    },
+    {
+      "text": "Everyone is here, but you're nowhere near. No, you're nowhere near.",
+      "source": "Yo La Tengo - Nowhere Near",
+      "length": 67,
+      "id": 6138
+    },
+    {
+      "text": "Well, I used to have the notion that I could swim the ocean, if I knew you were waiting for me.",
+      "source": "Yo La Tengo - The Whole of the Law",
+      "length": 95,
+      "id": 6139
+    },
+    {
+      "text": "If it's not supposed to be, then I'll just let it be. And out of everyone - be honest with me - who do you change for? Who's top of your world? And out of everyone, who's your type of girl?",
+      "source": "Snail Mail - Pristine",
+      "length": 189,
+      "id": 6140
+    },
+    {
+      "text": "And sometimes when he looks at me, I know he needs you, you're all that he sees.",
+      "source": "Phoebe Bridgers - Georgia",
+      "length": 80,
+      "id": 6141
+    },
+    {
+      "text": "And I have this dream where I'm screaming underwater, while my friends are waving from the shore. And I don't need you to tell me what that means, I don't believe in that stuff anymore.",
+      "source": "Phoebe Bridgers - Funeral",
+      "length": 185,
+      "id": 6142
+    },
+    {
+      "text": "I'm on the outside looking through: you're throwing rocks around your room. And while you're bleeding on your back in the glass, I'll be glad that I made it out, and sorry that it all went down like it did.",
+      "source": "Phoebe Bridgers - Motion Sickness",
+      "length": 206,
+      "id": 6143
+    },
+    {
+      "text": "If you're a work of art, I'm standing too close. I can see the brushstrokes.",
+      "source": "Phoebe Bridgers - ICU",
+      "length": 76,
+      "id": 6144
+    },
+    {
+      "text": "Baby, you're a vampire. You want blood, and I promised - I'm a bad liar, with a savior complex.",
+      "source": "Phoebe Bridgers - Savior Complex",
+      "length": 95,
+      "id": 6145
+    },
+    {
+      "text": "I buried a hatchet, it's coming up lavender. The future's unwritten, the past is a corridor: I'm at the exit, looking back through the hall; you are anonymous, I am a concrete wall.",
+      "source": "Phoebe Bridgers - Smoke Signals",
+      "length": 181,
+      "id": 6146
+    },
+    {
+      "text": "Just tell me about the boulevards. Tell me about your life in art.",
+      "source": "Mojave 3 - My Life in Art",
+      "length": 66,
+      "id": 6147
     }
   ]
 }
