@@ -10,7 +10,6 @@ import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
 import seedrandom from "seedrandom";
-import * as PageController from "../controllers/page-controller";
 import * as TribeCountdown from "./tribe-countdown";
 import * as TestLogic from "../test/test-logic";
 import * as TribeBars from "./tribe-bars";
@@ -21,6 +20,7 @@ import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 import * as TestActive from "../states/test-active";
+import { navigate } from "../controllers/route-controller";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -315,7 +315,7 @@ socket.on("room_left", () => {
   updateState(1);
   TribePageMenu.enableButtons();
   if (!$(".pageTribe").hasClass("active")) {
-    PageController.change("tribe");
+    navigate("/tribe");
   }
   TribeSound.play("leave");
   TribePages.change("menu").then(() => {
@@ -445,14 +445,14 @@ socket.on("room_init_race", (e) => {
     TribeBars.init("tribe");
     TribeBars.show("tribe");
     if (!$(".pageTest").hasClass("hidden")) {
-      PageController.change("tribe");
+      navigate("/tribe");
     }
     return;
   }
   seedrandom(e.seed, { global: true });
   console.log(`seed: ${e.seed}`);
   console.log(`random: ${Math.random()}`);
-  PageController.change("test", true);
+  navigate("/");
   TribeCountdown.show();
   TribeSound.play("start");
 });
@@ -578,7 +578,7 @@ socket.on("room_readyTimer_over", (_e) => {
 });
 
 socket.on("room_back_to_lobby", (_e) => {
-  PageController.change("tribe");
+  navigate("/tribe");
 });
 
 type RoomFinalPositions = {
