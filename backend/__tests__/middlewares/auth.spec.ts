@@ -6,12 +6,14 @@ import { NextFunction, Request, Response } from "express";
 import { getCachedConfiguration } from "../../src/init/configuration";
 // import { rejects } from "assert";
 
+const mockDecodedToken: DecodedIdToken = {
+  uid: "123456789",
+  email: "newuser@mail.com",
+  iat: 0,
+} as DecodedIdToken;
+
 jest.spyOn(AuthUtils, "verifyIdToken").mockImplementation(async (_token) => {
-  return {
-    uid: "123456789",
-    email: "newuser@mail.com",
-    iat: 0,
-  } as DecodedIdToken;
+  return mockDecodedToken;
 });
 
 describe("middlewares/auth", () => {
@@ -66,29 +68,24 @@ describe("middlewares/auth", () => {
         "Unauthorized\nStack: This endpoint requires a fresh token"
       );
     });
-    // it("should allow the request if token is fresh", async () => {
-    //   Date.now = jest.fn(() => 5);
-    //   const newUser = {
-    //     name: "NewUser2asdfad",
-    //     uid: "123456789",
-    //     email: "newuser@mail.com",
-    //   };
+    it("should allow the request if token is fresh", async () => {
+      Date.now = jest.fn(() => 10000);
 
-    //   await mockApp
-    //     .post("/users/signup")
-    //     .send(newUser)
-    //     .set({
-    //       Accept: "application/json",
-    //     })
-    //     .expect(200);
+      const authenticateRequest = Auth.authenticateRequest({
+        requireFreshToken: true,
+      });
 
-    //   await mockApp
-    //     .delete("/users")
-    //     .set({
-    //       Accept: "application/json",
-    //       Authorization: "Bearer 123456789",
-    //     })
-    //     .expect(200);
-    // });
+      await authenticateRequest(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      const decodedToken = mockRequest?.ctx?.decodedToken;
+
+      expect(decodedToken?.type).toBe("Bearer");
+      expect(decodedToken?.email).toBe(mockDecodedToken.email);
+      expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+    });
   });
 });
