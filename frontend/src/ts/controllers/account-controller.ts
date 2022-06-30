@@ -286,7 +286,7 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
 
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
-  URLHandler.loadTribeAutoJoinFromUrl(search);
+  // URLHandler.loadTribeAutoJoinFromUrl(search);
   URLHandler.linkDiscord(hash);
 
   if (/challenge_.+/g.test(window.location.pathname)) {

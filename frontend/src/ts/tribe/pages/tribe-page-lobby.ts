@@ -263,7 +263,7 @@ export function updateRoomConfig(): void {
 export function init(): void {
   if (!Tribe.room) return;
   reset();
-  const link = location.origin + "/tribe_" + Tribe.room.id;
+  const link = location.origin + "/tribe/" + Tribe.room.id;
   $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
   $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text(

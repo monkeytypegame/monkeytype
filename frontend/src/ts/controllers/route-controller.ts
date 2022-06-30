@@ -10,6 +10,7 @@ import * as PageTribe from "../pages/tribe";
 import * as Leaderboards from "../elements/leaderboards";
 // import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
+import { setAutoJoin } from "../tribe/tribe";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -101,6 +102,13 @@ const routes: Route[] = [
   {
     path: "/tribe",
     load: (params): void => {
+      PageController.change(PageTribe.page, true, params);
+    },
+  },
+  {
+    path: "/tribe/:roomId",
+    load: (params): void => {
+      setAutoJoin(params["  roomId"]);
       PageController.change(PageTribe.page, true, params);
     },
   },
