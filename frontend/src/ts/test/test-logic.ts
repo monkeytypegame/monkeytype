@@ -1771,17 +1771,6 @@ $(document.body).on("click", "#restartTestButton", () => {
 
 $(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
 
-$(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.key === "Enter") {
-    restart();
-  }
-});
-
-$(document.body).on("click", "#nextTestButton", () => {
-  ManualRestart.set();
-  restart();
-});
-
 $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode == "zen") {
     Notifications.add("Repeat test disabled in zen mode");
