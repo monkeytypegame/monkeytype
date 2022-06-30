@@ -39,6 +39,23 @@ export function init(page: string): void {
       `);
     }
   }
+  if (el) {
+    const tribeSelf = Tribe.getSelf();
+    el.append(`
+      <tr class="player me" id="${tribeSelf?.id}">
+        <td class="name">${tribeSelf?.name}</td>
+        <td class="progress">
+          <div class="barBg">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
+        </td>
+        <td class="stats">
+          <div class="wpm">-</div>
+          <div class="acc">-</div>
+        </td>
+      </tr>
+      `);
+  }
 }
 
 export function show(page: string): void {
