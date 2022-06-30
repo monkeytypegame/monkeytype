@@ -148,7 +148,7 @@
     "name": "github",
     "type": "script",
     "affectsWordGeneration": true,
-    "info": "Practice typing real source code from GitHub."
+    "info": "Practice typing real source code from GitHub, based on the current language."
   }
 ]
 
