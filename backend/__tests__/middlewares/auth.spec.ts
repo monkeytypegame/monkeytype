@@ -4,7 +4,6 @@ import * as Auth from "../../src/middlewares/auth";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { NextFunction, Request, Response } from "express";
 import { getCachedConfiguration } from "../../src/init/configuration";
-// import { rejects } from "assert";
 
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
@@ -19,11 +18,7 @@ jest.spyOn(AuthUtils, "verifyIdToken").mockImplementation(async (_token) => {
 describe("middlewares/auth", () => {
   let mockRequest: Partial<MonkeyTypes.Request>;
   let mockResponse: Partial<Response>;
-  const nextFunction: NextFunction = jest.fn((error) => {
-    if (error) {
-      throw error;
-    }
-  }) as unknown as NextFunction;
+  let nextFunction: NextFunction;
 
   beforeEach(async () => {
     mockRequest = {
@@ -42,6 +37,12 @@ describe("middlewares/auth", () => {
     mockResponse = {
       json: jest.fn(),
     };
+    nextFunction = jest.fn((error) => {
+      if (error) {
+        throw error;
+      }
+      return "Next function called";
+    }) as unknown as NextFunction;
   });
 
   describe("authenticateRequest", () => {
@@ -67,6 +68,7 @@ describe("middlewares/auth", () => {
       expect(result.message).toBe(
         "Unauthorized\nStack: This endpoint requires a fresh token"
       );
+      expect(nextFunction).toHaveBeenCalledTimes(1);
     });
     it("should allow the request if token is fresh", async () => {
       Date.now = jest.fn(() => 10000);
@@ -86,6 +88,7 @@ describe("middlewares/auth", () => {
       expect(decodedToken?.type).toBe("Bearer");
       expect(decodedToken?.email).toBe(mockDecodedToken.email);
       expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+      expect(nextFunction).toHaveBeenCalledTimes(1);
     });
   });
 });
