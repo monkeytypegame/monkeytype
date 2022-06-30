@@ -1,4 +1,3 @@
-// eslint-disable-line
 import * as AuthUtils from "../../src/utils/auth";
 import * as Auth from "../../src/middlewares/auth";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
