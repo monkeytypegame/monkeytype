@@ -6,16 +6,17 @@ import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import { incrementAuth } from "../utils/prometheus";
-import Logger from "../utils/logger";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
   acceptApeKeys?: boolean;
+  requireFreshToken?: boolean;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
   acceptApeKeys: false,
+  requireFreshToken: false,
 };
 
 function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
@@ -100,7 +101,7 @@ async function authenticateWithAuthHeader(
 
   switch (authScheme) {
     case "Bearer":
-      return await authenticateWithBearerToken(credentials);
+      return await authenticateWithBearerToken(credentials, options);
     case "ApeKey":
       return await authenticateWithApeKey(credentials, configuration, options);
   }
@@ -113,10 +114,24 @@ async function authenticateWithAuthHeader(
 }
 
 async function authenticateWithBearerToken(
-  token: string
+  token: string,
+  options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   try {
     const decodedToken = await verifyIdToken(token);
+
+    if (options.requireFreshToken === true) {
+      const now = Date.now();
+      const tokenIssuedAt = new Date(decodedToken.iat * 1000).getTime();
+
+      if (now - tokenIssuedAt > 60 * 1000) {
+        throw new MonkeyError(
+          401,
+          "Unauthorized",
+          `This endpoint requires a fresh token`
+        );
+      }
+    }
 
     return {
       type: "Bearer",
@@ -124,8 +139,6 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    Logger.error(`Firebase auth error code ${error.errorInfo.code.toString()}`);
-
     if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,

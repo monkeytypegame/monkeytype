@@ -633,6 +633,20 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // dont do anything on login so we can tab/esc betweeen inputs
     if (ActivePage.get() === "login") return;
 
+    event.preventDefault();
+    // insert tab character if needed (only during the test)
+    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
+      handleChar("\t", TestInput.input.current.length);
+      setWordsInput(" " + TestInput.input.current);
+      return;
+    }
+  } else if (Config.quickRestart === "tab") {
+    // dont do anything special
+    if (modalVisible) return;
+
+    // dont do anything on login so we can tab/esc betweeen inputs
+    if (ActivePage.get() === "login") return;
+
     // tribe handling
     if (ActivePage.get() === "tribe") {
       if (Tribe.state >= 5) {
@@ -659,7 +673,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       } else {
         navigate("/");
       }
-      navigate("/");
       return;
     }
 
