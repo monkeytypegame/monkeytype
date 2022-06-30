@@ -50,13 +50,21 @@ describe("middlewares/auth", () => {
         requireFreshToken: true,
       });
 
-      await expect(
-        await authenticateRequest(
+      let result;
+
+      try {
+        result = await authenticateRequest(
           mockRequest as Request,
           mockResponse as Response,
           nextFunction
-        )
-      ).rejects.toThrow("This endpoint requires a fresh token");
+        );
+      } catch (e) {
+        result = e;
+      }
+
+      expect(result.message).toBe(
+        "Unauthorized\nStack: This endpoint requires a fresh token"
+      );
     });
     // it("should allow the request if token is fresh", async () => {
     //   Date.now = jest.fn(() => 5);
