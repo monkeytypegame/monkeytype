@@ -32,30 +32,30 @@ export function enableConfigButtons(): void {
 
 export function disableNameVisibilityButtons(): void {
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
   ).addClass("disabled");
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
   ).addClass("disabled");
 }
 
 export function enableNameVisibilityButtons(): void {
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+    ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
   ).removeClass("disabled");
   $(
-    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+    ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
   ).removeClass("disabled");
 }
 
 export function updateVisibility(): void {
   if (Tribe.getSelf()?.isLeader) {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
     ).removeClass("hidden");
   } else {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
     ).addClass("hidden");
   }
   if (Tribe.room?.isPrivate) {
@@ -63,14 +63,14 @@ export function updateVisibility(): void {
       "private"
     );
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
     ).html(`<i class="fa fa-fw fa-lock"></i>`);
   } else {
     $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .text").text(
       "public"
     );
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button"
+      ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
     ).html(`<i class="fa fa-fw fa-lock-open"></i>`);
   }
 }
@@ -78,11 +78,11 @@ export function updateVisibility(): void {
 export function updateRoomName(): void {
   if (Tribe.getSelf()?.isLeader) {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
     ).removeClass("hidden");
   } else {
     $(
-      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button"
+      ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
     ).addClass("hidden");
   }
   $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .text").text(
@@ -330,14 +330,14 @@ $(
   }
 });
 
-$(".pageTribe .tribePage.lobby .visibilityAndName .visibility .icon-button").on(
+$(".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton").on(
   "",
   () => {
     Tribe.socket.emit("room_toggle_visibility");
   }
 );
 
-$(".pageTribe .tribePage.lobby .visibilityAndName .roomName .icon-button").on(
+$(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
   "click",
   () => {
     //TODO proper popup

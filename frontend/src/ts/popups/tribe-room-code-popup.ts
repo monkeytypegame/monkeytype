@@ -57,7 +57,7 @@ $("#tribeRoomCodePopup .button").on("click", () => {
   hide();
 });
 
-$("#tribeRoomCodePopup .icon-button").on("click", async () => {
+$("#tribeRoomCodePopup .textButton").on("click", async () => {
   try {
     const text = await navigator.clipboard.readText();
     Tribe.joinRoom(text);
