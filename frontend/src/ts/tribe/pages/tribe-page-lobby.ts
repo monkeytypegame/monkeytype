@@ -331,7 +331,7 @@ $(
 });
 
 $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton").on(
-  "",
+  "click",
   () => {
     Tribe.socket.emit("room_toggle_visibility");
   }
