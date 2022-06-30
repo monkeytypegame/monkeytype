@@ -67,7 +67,9 @@ export async function getSection(language: string): Promise<Section> {
   const repoListResponse = (await apiRequest(
     repoListRequestEndpoint
   )) as RepoListResponse;
-  const repoName = getRandomItem(repoListResponse.items).full_name;
+  const repoName = getRandomItem(repoListResponse.items, {
+    maxIndex: 25, // maxIndex because we want some randomness, but still want a popular repository
+  }).full_name;
 
   const fileListEndpoint = `https://api.github.com/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
   const fileListResponse = (await apiRequest(
@@ -101,7 +103,10 @@ async function apiRequest(url: string): Promise<unknown> {
   return await fileRequest.json();
 }
 
-function getRandomItem<T>(list: T[]): T {
-  const randomIndex = Math.floor(Math.random() * list.length);
+function getRandomItem<T>(list: T[], options?: { maxIndex?: number }): T {
+  const maxIndex = options?.maxIndex
+    ? Math.min(list.length, options.maxIndex)
+    : list.length;
+  const randomIndex = Math.floor(Math.random() * maxIndex);
   return list[randomIndex];
 }
