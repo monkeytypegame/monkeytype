@@ -123,7 +123,9 @@ router.delete(
 
 router.patch(
   "/reset",
-  authenticateRequest(),
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
   RateLimit.userReset,
   asyncHandler(UserController.resetUser)
 );
