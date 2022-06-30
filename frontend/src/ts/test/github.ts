@@ -1,5 +1,35 @@
 import * as Loader from "../elements/loader";
 
+const languageToGithubLanguageMap: Record<string, string> = {
+  code_python: "python",
+  code_c: "c",
+  code_csharp: "csharp",
+  "code_c++": "c++",
+  code_dart: "dart",
+  code_brainfck: "brainfuck",
+  code_fsharp: "fsharp",
+  code_javascript: "javascript",
+  code_javascript_1k: "javascript",
+  code_julia: "julia",
+  code_html: "html",
+  code_pascal: "pascal",
+  code_java: "java",
+  code_kotlin: "kotlin",
+  code_go: "go",
+  code_rust: "rust",
+  code_ruby: "ruby",
+  code_r: "r",
+  code_swift: "swift",
+  code_scala: "scala",
+  code_bash: "bash",
+  code_lua: "lua",
+  code_matlab: "matlab",
+  code_sql: "sql",
+  code_perl: "perl",
+  code_php: "php",
+  code_vim: "vim",
+};
+
 interface Section {
   words: string[];
 }
@@ -21,19 +51,25 @@ interface FileResponse {
   content: string;
 }
 
-export async function getSection(): Promise<Section> {
+export async function getSection(language: string): Promise<Section> {
   Loader.show();
 
-  const language = "javascript";
+  const languageIsMapped = Object.prototype.hasOwnProperty.call(
+    languageToGithubLanguageMap,
+    language
+  );
+  const codeLanguage = languageIsMapped
+    ? languageToGithubLanguageMap[language]
+    : "javascript";
 
-  const repoListRequestEndpoint = `https://api.github.com/search/repositories?q=language:${language}&sort=stars&order=desc`;
+  const repoListRequestEndpoint = `https://api.github.com/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
   console.log(repoListRequestEndpoint);
   const repoListResponse = (await apiRequest(
     repoListRequestEndpoint
   )) as RepoListResponse;
   const repoName = getRandomItem(repoListResponse.items).full_name;
 
-  const fileListEndpoint = `https://api.github.com/search/code?q=%20+language:${language}+repo:${repoName}`;
+  const fileListEndpoint = `https://api.github.com/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
   const fileListResponse = (await apiRequest(
     fileListEndpoint
   )) as FileListResponse;

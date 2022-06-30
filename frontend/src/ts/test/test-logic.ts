@@ -894,7 +894,7 @@ export async function init(): Promise<void> {
             section = await Poetry.getPoem();
             break;
           case "github":
-            section = await GitHub.getSection();
+            section = await GitHub.getSection(Config.language);
             break;
           default:
             console.log(`Unknown funbox type ${Config.funbox}`);
