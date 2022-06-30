@@ -759,7 +759,9 @@ async function getNextWord(
 
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
-  console.log(`test random: ${Math.random()}`);
+  if (Tribe.state > 5 && Tribe.room) {
+    Tribe.applyRandomSeed();
+  }
   TestActive.set(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();

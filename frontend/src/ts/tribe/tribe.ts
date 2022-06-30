@@ -50,6 +50,10 @@ export function getSelf(): TribeTypes.User | undefined {
   return room?.users?.[socket?.id];
 }
 
+export function applyRandomSeed(): void {
+  seedrandom(room?.seed.toString(), { global: true });
+}
+
 export function getStateString(state: number): string {
   if (state === -1) return "error";
   if (state === 1) return "connected";
@@ -449,7 +453,8 @@ socket.on("room_init_race", (e) => {
     }
     return;
   }
-  seedrandom(e.seed, { global: true });
+  if (room) room.seed = e.seed;
+  applyRandomSeed();
   console.log(`seed: ${e.seed}`);
   console.log(`random: ${Math.random()}`);
   navigate("/");
