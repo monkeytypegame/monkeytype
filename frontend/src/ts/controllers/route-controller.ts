@@ -108,7 +108,7 @@ const routes: Route[] = [
   {
     path: "/tribe/:roomId",
     load: (params): void => {
-      setAutoJoin(params["  roomId"]);
+      setAutoJoin(params["roomId"]);
       PageController.change(PageTribe.page, true, params);
     },
   },
