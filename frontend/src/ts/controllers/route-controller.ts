@@ -41,13 +41,13 @@ const routes: Route[] = [
   {
     path: "/",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change(PageTest.page, true);
     },
   },
   {
     path: "/verify",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change(PageTest.page, true);
     },
   },
   // {
@@ -62,25 +62,25 @@ const routes: Route[] = [
   {
     path: "/about",
     load: (): void => {
-      PageController.change(PageAbout.page);
+      PageController.change(PageAbout.page, true);
     },
   },
   {
     path: "/settings",
     load: (): void => {
-      PageController.change(PageSettings.page);
+      PageController.change(PageSettings.page, true);
     },
   },
   {
     path: "/login",
     load: (): void => {
-      PageController.change(PageLogin.page);
+      PageController.change(PageLogin.page, true);
     },
   },
   {
     path: "/account",
     load: (): void => {
-      PageController.change(PageAccount.page);
+      PageController.change(PageAccount.page, true);
     },
   },
   {
