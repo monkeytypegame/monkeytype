@@ -53,7 +53,9 @@ router.patch(
 
 router.delete(
   "/",
-  authenticateRequest(),
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
   RateLimit.resultsDeleteAll,
   asyncHandler(ResultController.deleteAll)
 );

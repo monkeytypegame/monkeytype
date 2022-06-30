@@ -114,7 +114,9 @@ router.get(
 
 router.delete(
   "/",
-  authenticateRequest(),
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
   RateLimit.userDelete,
   asyncHandler(UserController.deleteUser)
 );
@@ -128,7 +130,9 @@ router.patch(
 
 router.patch(
   "/name",
-  authenticateRequest(),
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
   RateLimit.userUpdateName,
   validateRequest({
     body: {
@@ -158,7 +162,9 @@ router.patch(
 
 router.patch(
   "/email",
-  authenticateRequest(),
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
   RateLimit.userUpdateEmail,
   validateRequest({
     body: {
@@ -171,7 +177,9 @@ router.patch(
 
 router.delete(
   "/personalBests",
-  authenticateRequest(),
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
   RateLimit.userClearPB,
   asyncHandler(UserController.clearPb)
 );
