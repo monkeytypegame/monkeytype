@@ -52,45 +52,6 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
   }
 }
 
-export async function linkDiscord(hashOverride: string): Promise<void> {
-  if (!hashOverride) return;
-  const fragment = new URLSearchParams(hashOverride.slice(1));
-  if (fragment.has("access_token")) {
-    history.replaceState(null, "", "/");
-    const accessToken = fragment.get("access_token") as string;
-    const tokenType = fragment.get("token_type") as string;
-
-    Loader.show();
-
-    const response = await Ape.users.linkDiscord(tokenType, accessToken);
-    Loader.hide();
-
-    if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to link Discord: " + response.message,
-        -1
-      );
-    }
-
-    Notifications.add(response.message, 1);
-
-    const snapshot = DB.getSnapshot();
-
-    const { discordId, discordAvatar } = response.data;
-    if (discordId) {
-      snapshot.discordId = discordId;
-    } else {
-      snapshot.discordAvatar = discordAvatar;
-    }
-
-    DB.setSnapshot(snapshot);
-
-    AccountButton.update(discordId, discordAvatar);
-
-    Settings.updateDiscordSection();
-  }
-}
-
 export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;

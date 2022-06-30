@@ -21,6 +21,7 @@ import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 import * as TestActive from "../states/test-active";
+import * as PageTribe from "../pages/tribe";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -315,7 +316,7 @@ socket.on("room_left", () => {
   updateState(1);
   TribePageMenu.enableButtons();
   if (!$(".pageTribe").hasClass("active")) {
-    PageController.change("tribe");
+    PageController.change(PageTribe.page);
   }
   TribeSound.play("leave");
   TribePages.change("menu").then(() => {
@@ -445,14 +446,14 @@ socket.on("room_init_race", (e) => {
     TribeBars.init("tribe");
     TribeBars.show("tribe");
     if (!$(".pageTest").hasClass("hidden")) {
-      PageController.change("tribe");
+      PageController.change(PageTribe.page);
     }
     return;
   }
   seedrandom(e.seed, { global: true });
   console.log(`seed: ${e.seed}`);
   console.log(`random: ${Math.random()}`);
-  PageController.change("test", true);
+  PageController.change(PageTribe.page, true);
   TribeCountdown.show();
   TribeSound.play("start");
 });
@@ -578,7 +579,7 @@ socket.on("room_readyTimer_over", (_e) => {
 });
 
 socket.on("room_back_to_lobby", (_e) => {
-  PageController.change("tribe");
+  PageController.change(PageTribe.page);
 });
 
 type RoomFinalPositions = {

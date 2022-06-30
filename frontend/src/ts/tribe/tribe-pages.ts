@@ -30,7 +30,7 @@ export async function change(
         }
         resolve();
       },
-      () => {
+      async () => {
         // middleCallback();
       }
     );
