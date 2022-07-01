@@ -25,8 +25,4 @@ export default class ApeKeys {
   async delete(apeKeyId: string): Ape.EndpointData {
     return await this.httpClient.delete(`${BASE_PATH}/${apeKeyId}`);
   }
-
-  async deleteAll(): Ape.EndpointData {
-    return await this.httpClient.delete(BASE_PATH);
-  }
 }

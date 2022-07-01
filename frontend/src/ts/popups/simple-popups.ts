@@ -717,12 +717,7 @@ list["resetAccount"] = new SimplePopup(
       }
       Loader.show();
       Notifications.add("Resetting account and stats...", 0);
-      const responses = [
-        Ape.users.reset(),
-        Ape.presets.deleteAll(),
-        Ape.apeKeys.deleteAll(),
-        Ape.results.deleteAll(),
-      ];
+      const responses = [Ape.users.reset()];
 
       if (DB.getSnapshot().discordId !== undefined) {
         responses.push(Ape.users.unlinkDiscord());

@@ -42,13 +42,3 @@ export async function removePreset(
 
   return new MonkeyResponse("Preset deleted");
 }
-
-export async function deleteAll(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  const { uid } = req.ctx.decodedToken;
-
-  await PresetDAL.deleteAll(uid);
-
-  return new MonkeyResponse("Presets deleted");
-}

@@ -1,9 +1,13 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-import { ObjectId, Filter } from "mongodb";
+import { ObjectId, Filter, Collection, WithId } from "mongodb";
 
 const MAX_PRESETS = 10;
 const COLLECTION_NAME = "presets";
+
+export const getPresetsCollection = (): Collection<
+  WithId<MonkeyTypes.ApeKey>
+> => db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME);
 
 function getPresetKeyFilter(uid: string, keyId: string): Filter<any> {
   return {
@@ -68,8 +72,4 @@ export async function removePreset(
   if (deleteResult.deletedCount === 0) {
     throw new MonkeyError(404, "Preset not found");
   }
-}
-
-export async function deleteAll(uid: string): Promise<void> {
-  await db.collection(COLLECTION_NAME).deleteMany({ uid });
 }

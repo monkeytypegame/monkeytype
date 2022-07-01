@@ -7,8 +7,11 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
+import { getApeKeysCollection } from "./ape-keys";
+import { getPresetsCollection } from "./preset";
 
 const SECONDS_PER_HOUR = 3600;
+type MonkeyTypesResult = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
@@ -72,6 +75,10 @@ export async function resetUser(uid: string): Promise<void> {
       },
     }
   );
+
+  await getApeKeysCollection().deleteMany({ uid });
+  await getPresetsCollection().deleteMany({ uid });
+  await db.collection<MonkeyTypesResult>("results").deleteMany({ uid });
 }
 
 const DAY_IN_SECONDS = 24 * 60 * 60;
