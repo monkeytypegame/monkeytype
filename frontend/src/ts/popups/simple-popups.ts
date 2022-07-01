@@ -239,7 +239,7 @@ export function hide(): void {
     });
 }
 
-$("#simplePopupWrapper").mousedown((e) => {
+$("#simplePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     if (activePopup) return activePopup.hide();
     $("#simplePopupWrapper")

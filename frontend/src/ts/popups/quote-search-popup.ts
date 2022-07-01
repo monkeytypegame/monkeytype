@@ -242,7 +242,7 @@ export async function show(clearText = true): Promise<void> {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         if (clearText) {
-          $("#quoteSearchPopup input").trigger("focus").select();
+          $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
         updateResults(quoteSearchInputValue);
       });

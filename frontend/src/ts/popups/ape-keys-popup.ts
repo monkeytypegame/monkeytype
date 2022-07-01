@@ -98,7 +98,7 @@ export async function show(): Promise<void> {
         },
         100,
         () => {
-          $("#apeKeysPopup textarea").trigger("focus").select();
+          $("#apeKeysPopup textarea").trigger("focus").trigger("select");
         }
       );
   }

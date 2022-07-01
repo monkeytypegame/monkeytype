@@ -40,7 +40,7 @@ export function show(): void {
   }, 150);
 }
 
-$(`${popup} .delimiterCheck input`).change(() => {
+$(`${popup} .delimiterCheck input`).trigger("change", () => {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked")) {
     delimiter = "|";
@@ -84,13 +84,13 @@ export function isVisible(): boolean {
   return !$(wrapper).hasClass("hidden");
 }
 
-$(wrapper).mousedown((e) => {
+$(wrapper).on("mousedown", (e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
     hide();
   }
 });
 
-$(`${popup} .inputs .checkbox input`).change(() => {
+$(`${popup} .inputs .checkbox input`).trigger("change", () => {
   if ($(`${popup} .checkbox input`).prop("checked")) {
     $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
   } else {
@@ -100,7 +100,7 @@ $(`${popup} .inputs .checkbox input`).change(() => {
 
 $(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $(`${popup} .button.apply`).trigger("change");
+    $(`${popup} .button.apply`).trigger("click");
   }
 });
 
@@ -203,7 +203,7 @@ $(document).on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
-$(document).on("click", "#top .config .customText .textButton", () => {
+$(document).on("click", "#top .config .customText .text-button", () => {
   show();
 });
 

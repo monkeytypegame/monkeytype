@@ -18,7 +18,7 @@ export function show(mode: string, config?: string): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         $("#settingsImportWrapper input").trigger("focus");
-        $("#settingsImportWrapper input").select();
+        $("#settingsImportWrapper input").trigger("select");
         $("#settingsImportWrapper input").trigger("focus");
       });
   }
