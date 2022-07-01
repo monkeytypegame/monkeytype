@@ -769,4 +769,9 @@
     "bgColor": "#386641",
     "mainColor": "#6a994e"
   }
+  ,{
+    "name": "its_mavi_dev",
+    "bgColor": "#000000",
+    "mainColor": "#ff1818"
+ }
 ]
