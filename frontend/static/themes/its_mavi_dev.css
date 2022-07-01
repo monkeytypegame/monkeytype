@@ -1,0 +1,51 @@
+:root {
+  --bg-color: #000000;
+  --main-color: #ff1818;
+  --caret-color: #3ab0ff;
+  --sub-color: #ffffff;
+  --sub-alt-color: #383838;
+  --text-color: #ffffff;
+  --error-color: #a85cf9;
+  --error-extra-color: #a85cf9;
+  --colorful-error-color: #f10086;
+  --colorful-error-extra-color: #f10086;
+}
+
+#menu .textButton:first-child {
+  color: #40dfef;
+}
+#menu .textButton:nth-child(2) {
+  color: #764af1;
+}
+#menu .textButton:nth-child(3) {
+  color: #ff1818;
+}
+#menu .textButton:nth-child(4) {
+  color: #06ff00;
+}
+#menu .textButton:nth-child(5) {
+  color: #dbf1f2;
+}
+
+@media (min-width: 800px) {
+  #menu .textButton {
+    color: var(--bg-color) !important;
+    border-radius: 20px !important;
+  }
+
+  #menu .textButton:first-child {
+    background: #40dfef;
+  }
+  #menu .textButton:nth-child(2) {
+    background: #764af1;
+  }
+  #menu .textButton:nth-child(3) {
+    background: #ff1818;
+  }
+  #menu .textButton:nth-child(4) {
+    background: #06ff00;
+  }
+  #menu .textButton:nth-child(5) {
+    background: #dbf1f2;
+  }
+}
