@@ -3,6 +3,7 @@
   "leftToRight": true,
   "noLazyMode": true,
   "bcp47": "ta-IN",
+  "ligatures": true,
   "words": [
     "என",
     "நான்",
@@ -203,6 +204,6 @@
     "நகரம்",
     "மரத்தில்",
     "கடந்து",
-    "பண்ணை"  
+    "பண்ணை"
   ]
 }
