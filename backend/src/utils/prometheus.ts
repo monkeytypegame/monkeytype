@@ -194,6 +194,6 @@ export function recordAuthTime(
   path: string,
   time: number
 ): void {
-  const pathNoGet = path.replace(/\?.*/, "");
+  const pathNoGet = path?.replace(/\?.*/, "");
   authTime.observe({ type, status, path: pathNoGet }, time);
 }
