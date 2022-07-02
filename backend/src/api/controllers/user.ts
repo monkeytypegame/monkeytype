@@ -46,10 +46,12 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
-  await UserDAL.resetUser(uid);
-  await deleteAllApeKeys(uid);
-  await deleteAllPresets(uid);
-  await deleteAllResults(uid);
+  await Promise.all([
+    UserDAL.resetUser(uid),
+    deleteAllApeKeys(uid),
+    deleteAllPresets(uid),
+    deleteAllResults(uid),
+  ]);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
