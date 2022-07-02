@@ -203,7 +203,5 @@ export function recordAuthTime(
 
   const pathNoGet = normalizedPath.replace(/\?.*/, "");
 
-  console.log(pathNoGet);
-
   authTime.observe({ type, status, path: pathNoGet }, time);
 }
