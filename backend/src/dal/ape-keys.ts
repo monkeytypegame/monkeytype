@@ -1,19 +1,9 @@
 import _ from "lodash";
 import * as db from "../init/db";
-import {
-  Filter,
-  ObjectId,
-  MatchKeysAndValues,
-  WithId,
-  Collection,
-} from "mongodb";
+import { Filter, ObjectId, MatchKeysAndValues } from "mongodb";
 import MonkeyError from "../utils/error";
 
 const COLLECTION_NAME = "ape-keys";
-
-export const getApeKeysCollection = (): Collection<
-  WithId<MonkeyTypes.ApeKey>
-> => db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME);
 
 function getApeKeyFilter(
   uid: string,
@@ -103,4 +93,8 @@ export async function deleteApeKey(uid: string, keyId: string): Promise<void> {
   if (deletionResult.deletedCount === 0) {
     throw new MonkeyError(404, "ApeKey not found");
   }
+}
+
+export async function deleteAllApeKeys(uid: string): Promise<void> {
+  await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).deleteMany({ uid });
 }
