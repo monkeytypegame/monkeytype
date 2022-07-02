@@ -74,7 +74,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customTestDurationPopup input").trigger("focus").select();
+        $("#customTestDurationPopup input").trigger("focus").trigger("select");
       });
   }
 
