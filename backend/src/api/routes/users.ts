@@ -14,6 +14,8 @@ import filterSchema from "../schemas/filter-schema";
 
 const router = Router();
 
+console.log("TEST!");
+
 const tagNameValidation = joi
   .string()
   .required()
