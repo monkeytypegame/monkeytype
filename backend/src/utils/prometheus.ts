@@ -178,3 +178,21 @@ const serverVersionCounter = new Counter({
 export function recordServerVersion(serverVersion: string): void {
   serverVersionCounter.inc({ version: serverVersion });
 }
+
+const authTime = new Histogram({
+  name: "api_request_auth_time",
+  help: "Time spent authenticating",
+  labelNames: ["type", "status", "path"],
+  buckets: [
+    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000,
+  ],
+});
+
+export function recordAuthTime(
+  type: string,
+  status: "success" | "failure",
+  path: string,
+  time: number
+): void {
+  authTime.observe({ type, status, path }, time);
+}

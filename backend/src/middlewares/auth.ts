@@ -5,7 +5,7 @@ import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
-import { incrementAuth } from "../utils/prometheus";
+import { incrementAuth, recordAuthTime } from "../utils/prometheus";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -30,24 +30,30 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
+    const startTime = performance.now();
+    let authType = "None";
     try {
       const { authorization: authHeader } = req.headers;
       let token: MonkeyTypes.DecodedToken;
 
       if (authHeader) {
-        token = await authenticateWithAuthHeader(
+        const result = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options
         );
+        authType = result.type;
+        token = result.token;
       } else if (options.isPublic) {
         token = {
           type: "None",
           uid: "",
           email: "",
         };
+        authType = "None";
       } else if (process.env.MODE === "dev") {
         token = authenticateWithBody(req.body);
+        authType = "Body";
       } else {
         throw new MonkeyError(
           401,
@@ -63,9 +69,21 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
         decodedToken: token,
       };
     } catch (error) {
+      recordAuthTime(
+        authType,
+        "failure",
+        req.originalUrl,
+        Math.round(performance.now() - startTime)
+      );
       return next(error);
     }
-
+    console.log(Math.round(performance.now() - startTime));
+    recordAuthTime(
+      authType,
+      "success",
+      req.originalUrl,
+      Math.round(performance.now() - startTime)
+    );
     next();
   };
 }
@@ -93,7 +111,7 @@ async function authenticateWithAuthHeader(
   authHeader: string,
   configuration: MonkeyTypes.Configuration,
   options: RequestAuthenticationOptions
-): Promise<MonkeyTypes.DecodedToken> {
+): Promise<{ type: string; token: MonkeyTypes.DecodedToken }> {
   const token = authHeader.split(" ");
 
   const authScheme = token[0].trim();
@@ -101,9 +119,19 @@ async function authenticateWithAuthHeader(
 
   switch (authScheme) {
     case "Bearer":
-      return await authenticateWithBearerToken(credentials, options);
+      return {
+        type: "Bearer",
+        token: await authenticateWithBearerToken(credentials, options),
+      };
     case "ApeKey":
-      return await authenticateWithApeKey(credentials, configuration, options);
+      return {
+        type: "ApeKey",
+        token: await authenticateWithApeKey(
+          credentials,
+          configuration,
+          options
+        ),
+      };
   }
 
   throw new MonkeyError(
