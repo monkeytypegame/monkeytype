@@ -43,6 +43,10 @@ jobs:
               - 'backend/**/*.{ts,js,json}'
               - 'frontend/**/*.{ts,js}'
               - 'frontend/src/**/*.scss'
+            backend-src:
+              - 'backend/**/*'
+            frontend-src:
+              - 'frontend/**/*'
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
@@ -83,9 +87,16 @@ jobs:
         with:
           node-version: "16.13.2"
 
-      - name: Install dependencies
-        if: steps.filter.outputs.changes != '[]'
-        run: npm run install-all
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        if: steps.filter.outputs.backend-src == 'true'
+        run: npm run install-be
+
+      - name: Install frontend dependencies
+        if: steps.filter.outputs.frontend-src == 'true'
+        run: npm run install-fe
 
       - name: Pretty Check
         if: steps.filter.outputs.any-src == 'true'
