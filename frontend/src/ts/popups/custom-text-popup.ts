@@ -40,7 +40,7 @@ export function show(): void {
   }, 150);
 }
 
-$(`${popup} .delimiterCheck input`).change(() => {
+$(`${popup} .delimiterCheck input`).on("change", () => {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked")) {
     delimiter = "|";
@@ -90,7 +90,7 @@ $(wrapper).on("mousedown", (e) => {
   }
 });
 
-$(`${popup} .inputs .checkbox input`).change(() => {
+$(`${popup} .inputs .checkbox input`).on("change", () => {
   if ($(`${popup} .checkbox input`).prop("checked")) {
     $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
   } else {
