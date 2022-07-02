@@ -71,18 +71,17 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
       recordAuthTime(
         authType,
         "failure",
-        req.originalUrl,
-        Math.round(performance.now() - startTime)
+        Math.round(performance.now() - startTime),
+        req
       );
 
       return next(error);
     }
-
     recordAuthTime(
       token.type,
       "success",
-      req.originalUrl,
-      Math.round(performance.now() - startTime)
+      Math.round(performance.now() - startTime),
+      req
     );
 
     next();

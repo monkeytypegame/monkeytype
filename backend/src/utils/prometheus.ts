@@ -191,9 +191,19 @@ const authTime = new Histogram({
 export function recordAuthTime(
   type: string,
   status: "success" | "failure",
-  path: string,
-  time: number
+  time: number,
+  req: MonkeyTypes.Request
 ): void {
-  const pathNoGet = path?.replace(/\?.*/, "");
+  const reqPath = req.baseUrl + req.route.path;
+
+  let normalizedPath = "/";
+  if (reqPath !== "/") {
+    normalizedPath = reqPath.endsWith("/") ? reqPath.slice(0, -1) : reqPath;
+  }
+
+  const pathNoGet = normalizedPath.replace(/\?.*/, "");
+
+  console.log(pathNoGet);
+
   authTime.observe({ type, status, path: pathNoGet }, time);
 }

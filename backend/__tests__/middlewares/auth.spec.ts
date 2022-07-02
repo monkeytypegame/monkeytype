@@ -21,6 +21,10 @@ describe("middlewares/auth", () => {
 
   beforeEach(async () => {
     mockRequest = {
+      baseUrl: "/api/v1",
+      route: {
+        path: "/",
+      },
       headers: {
         authorization: "Bearer 123456789",
       },
