@@ -31,29 +31,26 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     next: NextFunction
   ): Promise<void> => {
     const startTime = performance.now();
+    let token: MonkeyTypes.DecodedToken;
     let authType = "None";
-    try {
-      const { authorization: authHeader } = req.headers;
-      let token: MonkeyTypes.DecodedToken;
 
+    const { authorization: authHeader } = req.headers;
+
+    try {
       if (authHeader) {
-        const result = await authenticateWithAuthHeader(
+        token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options
         );
-        authType = result.type;
-        token = result.token;
       } else if (options.isPublic) {
         token = {
           type: "None",
           uid: "",
           email: "",
         };
-        authType = "None";
       } else if (process.env.MODE === "dev") {
         token = authenticateWithBody(req.body);
-        authType = "Body";
       } else {
         throw new MonkeyError(
           401,
@@ -69,21 +66,25 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
         decodedToken: token,
       };
     } catch (error) {
+      authType = authHeader?.split(" ")[0] ?? "None";
+
       recordAuthTime(
         authType,
         "failure",
         req.originalUrl,
         Math.round(performance.now() - startTime)
       );
+
       return next(error);
     }
-    console.log(Math.round(performance.now() - startTime));
+
     recordAuthTime(
-      authType,
+      token.type,
       "success",
       req.originalUrl,
       Math.round(performance.now() - startTime)
     );
+
     next();
   };
 }
@@ -111,27 +112,15 @@ async function authenticateWithAuthHeader(
   authHeader: string,
   configuration: MonkeyTypes.Configuration,
   options: RequestAuthenticationOptions
-): Promise<{ type: string; token: MonkeyTypes.DecodedToken }> {
-  const token = authHeader.split(" ");
+): Promise<MonkeyTypes.DecodedToken> {
+  const [authScheme, token] = authHeader.split(" ");
+  const normalizedAuthScheme = authScheme.trim();
 
-  const authScheme = token[0].trim();
-  const credentials = token[1];
-
-  switch (authScheme) {
+  switch (normalizedAuthScheme) {
     case "Bearer":
-      return {
-        type: "Bearer",
-        token: await authenticateWithBearerToken(credentials, options),
-      };
+      return await authenticateWithBearerToken(token, options);
     case "ApeKey":
-      return {
-        type: "ApeKey",
-        token: await authenticateWithApeKey(
-          credentials,
-          configuration,
-          options
-        ),
-      };
+      return await authenticateWithApeKey(token, configuration, options);
   }
 
   throw new MonkeyError(
@@ -148,7 +137,7 @@ async function authenticateWithBearerToken(
   try {
     const decodedToken = await verifyIdToken(token);
 
-    if (options.requireFreshToken === true) {
+    if (options.requireFreshToken) {
       const now = Date.now();
       const tokenIssuedAt = new Date(decodedToken.iat * 1000).getTime();
 
@@ -167,13 +156,15 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    if (error?.errorInfo?.code?.includes("auth/id-token-expired")) {
+    const errorCode = error?.errorInfo?.code;
+
+    if (errorCode?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
         "Token expired. Please login again.",
         "authenticateWithBearerToken"
       );
-    } else if (error?.errorInfo?.code?.includes("auth/id-token-revoked")) {
+    } else if (errorCode?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
         "Token revoked. Please login again.",
