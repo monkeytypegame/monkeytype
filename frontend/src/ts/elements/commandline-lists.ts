@@ -1282,7 +1282,6 @@ export function updateCustomThemeListCommands(): void {
   if (!snapshot) return;
 
   if (DB.getSnapshot().customThemes.length === 0) {
-    Notifications.add("You need to create a custom theme first", 0);
     return;
   }
   DB.getSnapshot().customThemes.forEach((theme) => {
