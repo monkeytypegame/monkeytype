@@ -6,6 +6,7 @@ import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import { incrementAuth, recordAuthTime } from "../utils/prometheus";
+import { performance } from "perf_hooks";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
