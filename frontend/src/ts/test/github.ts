@@ -1,5 +1,7 @@
 import * as Loader from "../elements/loader";
 
+const fallbackCodeLanguage = "javascript";
+
 const languageToGithubLanguageMap: Record<string, string> = {
   code_python: "python",
   code_c: "c",
@@ -30,6 +32,10 @@ const languageToGithubLanguageMap: Record<string, string> = {
   code_vim: "vim",
 };
 
+const cacheDuration = 60000;
+let cacheTimestamp = Date.now();
+let cachedFileUrls: string[] | null = null;
+
 interface Section {
   words: string[];
 }
@@ -54,45 +60,69 @@ interface FileResponse {
 export async function getSection(language: string): Promise<Section> {
   Loader.show();
 
-  const languageIsMapped = Object.prototype.hasOwnProperty.call(
-    languageToGithubLanguageMap,
-    language
-  );
-  const codeLanguage = languageIsMapped
-    ? languageToGithubLanguageMap[language]
-    : "javascript";
+  const codeLanguage = getCodeLanguage(language);
 
-  const repoListRequestEndpoint = `https://api.github.com/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
-  console.log(repoListRequestEndpoint);
-  const repoListResponse = (await apiRequest(
-    repoListRequestEndpoint
-  )) as RepoListResponse;
-  const repoName = getRandomItem(repoListResponse.items, {
-    maxIndex: 25, // maxIndex because we want some randomness, but still want a popular repository
-  }).full_name;
+  if (Date.now() > cacheTimestamp + cacheDuration) {
+    cachedFileUrls = null;
+  }
 
-  const fileListEndpoint = `https://api.github.com/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
-  const fileListResponse = (await apiRequest(
-    fileListEndpoint
-  )) as FileListResponse;
-  const fileContentEndpoint = getRandomItem(fileListResponse.items).url;
+  if (cachedFileUrls === null) {
+    const repoNames = await getTopRepos(codeLanguage);
+    const repoName = getRandomItem(repoNames);
+    const fileUrls = await getFileUrls(codeLanguage, repoName);
 
-  const fileContentResponse = (await apiRequest(
-    fileContentEndpoint
-  )) as FileResponse;
+    cachedFileUrls = fileUrls;
+    cacheTimestamp = Date.now();
+  }
 
-  const decodedContent = window.atob(fileContentResponse.content);
-  const words = decodedContent
-    .replace(/[\u200B-\u200D\uFEFF]/g, "") // Remove invisible characters
-    .replace(/\s+/g, " ") // Convert all whitespace to space
-    .trim() // Removing whitespace before and after text
-    .split(" ");
-
+  const fileUrl = getRandomItem(cachedFileUrls);
+  const fileContent = await getFileContent(fileUrl);
+  const words = extractWords(fileContent);
   const section = { words };
 
   Loader.hide();
 
   return section;
+}
+
+function getCodeLanguage(language: string): string {
+  const languageIsMapped = Object.prototype.hasOwnProperty.call(
+    languageToGithubLanguageMap,
+    language
+  );
+  return languageIsMapped
+    ? languageToGithubLanguageMap[language]
+    : fallbackCodeLanguage;
+}
+
+async function getTopRepos(codeLanguage: string): Promise<string[]> {
+  const endpoint = `https://api.github.com/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
+  const response = (await apiRequest(endpoint)) as RepoListResponse;
+  const topRepos = response.items.slice(0, 25);
+  return topRepos.map((repo) => repo.full_name);
+}
+
+async function getFileUrls(
+  codeLanguage: string,
+  repoName: string
+): Promise<string[]> {
+  const endpoint = `https://api.github.com/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
+  const response = (await apiRequest(endpoint)) as FileListResponse;
+  return response.items.map((item) => item.url);
+}
+
+async function getFileContent(url: string): Promise<string> {
+  const response = (await apiRequest(url)) as FileResponse;
+  const content = window.atob(response.content);
+  return content;
+}
+
+function extractWords(fileContent: string): string[] {
+  return fileContent
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // Remove invisible characters
+    .replace(/\s+/g, " ") // Convert all whitespace to space
+    .trim() // Removing whitespace before and after text
+    .split(" ");
 }
 
 async function apiRequest(url: string): Promise<unknown> {
@@ -103,10 +133,7 @@ async function apiRequest(url: string): Promise<unknown> {
   return await fileRequest.json();
 }
 
-function getRandomItem<T>(list: T[], options?: { maxIndex?: number }): T {
-  const maxIndex = options?.maxIndex
-    ? Math.min(list.length, options.maxIndex)
-    : list.length;
-  const randomIndex = Math.floor(Math.random() * maxIndex);
+function getRandomItem<T>(list: T[]): T {
+  const randomIndex = Math.floor(Math.random() * list.length);
   return list[randomIndex];
 }
