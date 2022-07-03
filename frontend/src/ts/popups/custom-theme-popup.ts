@@ -15,7 +15,7 @@ export function show(value: string): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         $("#customThemeShare input").trigger("focus");
-        $("#customThemeShare input").select();
+        $("#customThemeShare input").trigger("select");
         $("#customThemeShare input").trigger("focus");
       });
   }
