@@ -603,6 +603,10 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
   }
 }
 
+if (Config.mode == "time") {
+  $("#result .stats .time").addClass("hidden");
+}
+
 export async function update(
   res: MonkeyTypes.Result<MonkeyTypes.Mode>,
   difficultyFailed: boolean,
