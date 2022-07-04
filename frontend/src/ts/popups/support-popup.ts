@@ -33,3 +33,13 @@ $(document.body).on("click", "#supportMeWrapper a.button", () => {
       $("#supportMeWrapper").addClass("hidden");
     });
 });
+
+$(document.body).on(
+  "keypress",
+  "#supportMeButton, #supportMeAboutButton",
+  (e) => {
+    if (e.key === "Enter") {
+      $(e.currentTarget).trigger("click");
+    }
+  }
+);
