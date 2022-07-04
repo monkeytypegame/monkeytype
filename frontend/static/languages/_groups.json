@@ -314,6 +314,10 @@
     "languages": ["latvian", "latvian_1k"]
   },
   {
+    "name": "maltese",
+    "languages": ["maltese", "maltese_1k"]
+  },
+  {
     "name": "toki_pona",
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
@@ -374,9 +378,5 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
-  },
-  {
-    "name": "maltese",
-    "languages": ["maltese", "maltese_1k"]
   }
 ]

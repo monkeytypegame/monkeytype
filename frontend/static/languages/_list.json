@@ -163,6 +163,8 @@
   ,"sinhala"
   ,"latvian"
   ,"latvian_1k"
+  ,"maltese"
+  ,"maltese_1k"
   ,"twitch_emotes"
   ,"git"
   ,"pig_latin"
@@ -212,6 +214,4 @@
   ,"oromo_5k"
   ,"wordle"
   ,"wordle_1k"
-  ,"maltese"
-  ,"maltese_1k"
 ]
