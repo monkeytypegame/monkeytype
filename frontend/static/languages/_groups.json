@@ -374,5 +374,9 @@
   {
     "name": "latvian",
     "languages": ["latvian", "latvian_1k"]
+  },
+  {
+    "name": "maltese",
+    "languages": ["maltese", "maltese_1k"]
   }
 ]
