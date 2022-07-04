@@ -796,3 +796,9 @@ $(document).on("click", "#top #menu .textButton", (e) => {
   }
   return false;
 });
+
+$(document).on("keypress", "#top #menu .textButton", (e) => {
+  if (e.key === "Enter") {
+    $(e.currentTarget).trigger("click");
+  }
+});
