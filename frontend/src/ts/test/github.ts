@@ -32,21 +32,17 @@ const languageToGithubLanguageMap: Record<string, string> = {
   code_vim: "vim",
 };
 
-const cacheDuration = 60000;
-let cacheTimestamp = Date.now();
-let cachedFileUrls: string[] | null = null;
-
 interface Section {
   words: string[];
 }
 
-interface RepoListResponse {
+interface RepoSearchResponse {
   items: {
     full_name: string;
   }[];
 }
 
-interface FileListResponse {
+interface FileSearchResponse {
   items: {
     name: string;
     url: string;
@@ -61,22 +57,9 @@ export async function getSection(language: string): Promise<Section> {
   Loader.show();
 
   const codeLanguage = getCodeLanguage(language);
-
-  if (Date.now() > cacheTimestamp + cacheDuration) {
-    cachedFileUrls = null;
-  }
-
-  if (cachedFileUrls === null) {
-    const repoNames = await getTopRepos(codeLanguage);
-    const repoName = getRandomItem(repoNames);
-    const fileUrls = await getFileUrls(codeLanguage, repoName);
-
-    cachedFileUrls = fileUrls;
-    cacheTimestamp = Date.now();
-  }
-
-  const fileUrl = getRandomItem(cachedFileUrls);
-  const fileContent = await getFileContent(fileUrl);
+  const fileUrls = await getFileUrlsWithCache(codeLanguage);
+  const fileUrl = getRandomItem(fileUrls);
+  const fileContent = await fetchFileContent(fileUrl);
   const words = extractWords(fileContent);
   const section = { words };
 
@@ -95,24 +78,36 @@ function getCodeLanguage(language: string): string {
     : fallbackCodeLanguage;
 }
 
-async function getTopRepos(codeLanguage: string): Promise<string[]> {
-  const endpoint = `https://api.github.com/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
-  const response = (await apiRequest(endpoint)) as RepoListResponse;
-  const topRepos = response.items.slice(0, 25);
-  return topRepos.map((repo) => repo.full_name);
+async function getFileUrls(codeLanguage: string): Promise<string[]> {
+  const repoSearchResponse = await searchRepos(codeLanguage);
+  const topRepos = repoSearchResponse.items.slice(0, 25);
+  const topRepoNames = topRepos.map((item) => item.full_name);
+  const selectedRepoName = getRandomItem(topRepoNames);
+
+  const fileSearchResponse = await searchFiles(codeLanguage, selectedRepoName);
+  const fileUrls = fileSearchResponse.items.map((item) => item.url);
+  return fileUrls;
 }
 
-async function getFileUrls(
+const getFileUrlsWithCache = cache(getFileUrls);
+
+async function searchRepos(codeLanguage: string): Promise<RepoSearchResponse> {
+  const endpoint = `https://api.github.com/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
+  const response = await sendGithubApiRequest(endpoint);
+  return response as RepoSearchResponse;
+}
+
+async function searchFiles(
   codeLanguage: string,
   repoName: string
-): Promise<string[]> {
+): Promise<FileSearchResponse> {
   const endpoint = `https://api.github.com/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
-  const response = (await apiRequest(endpoint)) as FileListResponse;
-  return response.items.map((item) => item.url);
+  const response = (await sendGithubApiRequest(endpoint)) as FileSearchResponse;
+  return response as FileSearchResponse;
 }
 
-async function getFileContent(url: string): Promise<string> {
-  const response = (await apiRequest(url)) as FileResponse;
+async function fetchFileContent(url: string): Promise<string> {
+  const response = (await sendGithubApiRequest(url)) as FileResponse;
   const content = window.atob(response.content);
   return content;
 }
@@ -125,7 +120,7 @@ function extractWords(fileContent: string): string[] {
     .split(" ");
 }
 
-async function apiRequest(url: string): Promise<unknown> {
+async function sendGithubApiRequest(url: string): Promise<unknown> {
   const fileRequest = await fetch(url);
   if (!fileRequest.ok) {
     throw Error(fileRequest.statusText);
@@ -136,4 +131,47 @@ async function apiRequest(url: string): Promise<unknown> {
 function getRandomItem<T>(list: T[]): T {
   const randomIndex = Math.floor(Math.random() * list.length);
   return list[randomIndex];
+}
+
+function cache<T extends unknown[], U>(
+  fn: (...args: T) => U,
+  options = {
+    cacheDurationMilliseconds: 30000,
+  }
+): (...args: T) => U {
+  let cacheTimestamp = Date.now();
+  const cache = new Map();
+
+  const isCacheExpired = (): boolean => {
+    if (cacheTimestamp === null) {
+      return true;
+    }
+
+    if (Date.now() > cacheTimestamp + options.cacheDurationMilliseconds) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const cachedFn = (...args: T): U => {
+    if (isCacheExpired()) {
+      cache.clear();
+    }
+
+    const cacheKey = JSON.stringify(args);
+
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey);
+    }
+
+    const result = fn(...args);
+
+    cache.set(cacheKey, result);
+    cacheTimestamp = Date.now();
+
+    return result;
+  };
+
+  return cachedFn;
 }
