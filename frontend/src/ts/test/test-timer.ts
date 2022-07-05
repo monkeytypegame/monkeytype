@@ -133,8 +133,7 @@ function checkIfFailed(
   }
   if (
     Config.minAcc === "custom" &&
-    acc < Config.minAccCustom &&
-    TestWords.words.currentIndex > 3
+    acc < Config.minAccCustom
   ) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
