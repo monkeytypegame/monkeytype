@@ -102,7 +102,11 @@
   },
   {
     "name": "kurdish_central",
-    "languages": ["kurdish_central", "kurdish_central_2k", "kurdish_central_45k"]
+    "languages": [
+      "kurdish_central",
+      "kurdish_central_2k",
+      "kurdish_central_45k"
+    ]
   },
   {
     "name": "greek",
@@ -304,6 +308,14 @@
   {
     "name": "sinhala",
     "languages": ["sinhala"]
+  },
+  {
+    "name": "latvian",
+    "languages": ["latvian", "latvian_1k"]
+  },
+  {
+    "name": "maltese",
+    "languages": ["maltese", "maltese_1k"]
   },
   {
     "name": "toki_pona",
