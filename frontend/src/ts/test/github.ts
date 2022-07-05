@@ -94,7 +94,7 @@ async function getFileUrls(codeLanguage: string): Promise<string[]> {
 const getFileUrlsWithCache = cache(getFileUrls);
 
 async function searchRepos(codeLanguage: string): Promise<RepoSearchResponse> {
-  const endpoint = `https://api.github.com/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
+  const endpoint = `/search/repositories?q=language:${codeLanguage}&sort=stars&order=desc`;
   const response = await sendGithubApiRequest(endpoint);
   return response as RepoSearchResponse;
 }
@@ -103,7 +103,7 @@ async function searchFiles(
   codeLanguage: string,
   repoName: string
 ): Promise<FileSearchResponse> {
-  const endpoint = `https://api.github.com/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
+  const endpoint = `/search/code?q=%20+language:${codeLanguage}+repo:${repoName}`;
   const response = (await sendGithubApiRequest(endpoint)) as FileSearchResponse;
   return response as FileSearchResponse;
 }
@@ -122,7 +122,8 @@ function extractWords(fileContent: string): string[] {
     .split(" ");
 }
 
-async function sendGithubApiRequest(url: string): Promise<unknown> {
+async function sendGithubApiRequest(endpoint: string): Promise<unknown> {
+  const url = origin + endpoint;
   const fileRequest = await fetch(url);
   if (!fileRequest.ok) {
     throw Error(fileRequest.statusText);
