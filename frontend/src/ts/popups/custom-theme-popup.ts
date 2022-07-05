@@ -1,7 +1,3 @@
-// import Config, * as UpdateConfig from "./config";
-// import * as Notifications from "./notifications";
-// import * as ThemePicker from "./theme-picker";
-
 export function show(value: string): void {
   if ($("#customThemeShareWrapper").hasClass("hidden")) {
     // let save = [];
@@ -19,7 +15,7 @@ export function show(value: string): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         $("#customThemeShare input").trigger("focus");
-        $("#customThemeShare input").select();
+        $("#customThemeShare input").trigger("select");
         $("#customThemeShare input").trigger("focus");
       });
   }

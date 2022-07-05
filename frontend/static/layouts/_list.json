@@ -142,6 +142,17 @@
       "row5": [" "]
     }
   },
+  "prog_workman": {
+    "keymapShowTopRow": true,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "!1", "@2", "#3", "$4", "%5", "^6", "&7", "*8", "(9", ")0", "-_", "=+"],
+      "row2": ["qQ", "dD", "rR", "wW", "bB", "jJ", "fF", "uU", "pP", ";:", "{[", "}]", "\\|"],
+      "row3": ["aA", "sS", "hH", "tT", "gG", "yY", "nN", "eE", "oO", "iI", "'\""],
+      "row4": ["zZ", "xX", "mM", "cC", "vV", "kK", "lL", ",<", ".>", "/?"],
+      "row5": [" "]
+    }
+  },
   "turkish_q": {
     "keymapShowTopRow": false,
     "type": "ansi",
@@ -590,6 +601,28 @@
       "row2": ["fF",  "lL", "hH", "vV", "zZ", "'\"", "wW", "uU", "oO",  "yY", "[{", "]}", "\\|"],
       "row3": ["sS",  "rR", "nN", "tT", "kK", "cC", "dD", "eE", "aA",  "iI",  ";:"],
       "row4": ["xX", "jJ", "bB", "mM", "qQ", "pP", "gG", ",<",  ".>", "/?"],
+      "row5": [" "]
+    }
+  },
+  "canary": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["wW", "lL", "yY", "pP", "kK", "zZ", "xX", "oO", "uU", ";:", "[{", "]}", "\\|"],
+      "row3": ["cC", "rR", "sS", "tT", "bB", "fF", "nN", "eE", "iI", "aA", "'\""],
+      "row4": ["jJ", "vV", "dD", "gG", "qQ", "mM", "hH", "/?", ",<", ".>"],
+      "row5": [" "]
+    }
+  },
+    "canary_matrix": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~",  "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(",  "0)", "-_", "=+"],
+      "row2": ["wW",  "lL", "yY", "pP", "bB", "zZ", "fF", "oO", "uU",  "'\"", "[{", "]}", "\\|"],
+      "row3": ["cC",  "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI",  "aA",  ";:"],
+      "row4": ["qQ", "jJ", "vV", "dD", "kK", "xX", "hH", "/?",  ",<", ".>"],
       "row5": [" "]
     }
   },

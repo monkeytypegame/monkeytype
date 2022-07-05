@@ -2,8 +2,9 @@ import * as db from "../init/db";
 import { v4 as uuidv4 } from "uuid";
 import Logger from "../utils/logger";
 import MonkeyError from "../utils/error";
-import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
+import { incrementBadAuth } from "./rate-limit";
 import { NextFunction, Response } from "express";
+import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -32,6 +33,8 @@ async function errorHandlingMiddleware(
   } else {
     monkeyResponse.message = `Oops! Our monkeys dropped their bananas. Please try again later. - ${monkeyResponse.data.errorId}`;
   }
+
+  await incrementBadAuth(req, res, monkeyResponse.status);
 
   if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {
     const { uid, errorId } = monkeyResponse.data;

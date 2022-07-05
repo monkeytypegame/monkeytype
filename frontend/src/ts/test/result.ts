@@ -709,7 +709,7 @@ export async function update(
     $("#typingTest"),
     $("#result"),
     250,
-    () => {
+    async () => {
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
@@ -721,7 +721,7 @@ export async function update(
       window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
     },
-    () => {
+    async () => {
       $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
         {
           opacity: 1,

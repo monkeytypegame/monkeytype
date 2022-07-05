@@ -113,6 +113,10 @@ export async function punctuateWord(
 
       word = Misc.capitalizeFirstLetterOfEachWord(word);
 
+      if (currentLanguage == "turkish") {
+        word = word.replace(/I/g, "İ");
+      }
+
       if (currentLanguage == "spanish" || currentLanguage == "catalan") {
         const rand = Math.random();
         if (rand > 0.9) {
@@ -318,8 +322,12 @@ export function restart(
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
-      if (TestWords.hasTab) {
-        if (!event?.shiftKey) return;
+      if (
+        TestWords.hasTab &&
+        !event?.shiftKey &&
+        Config.quickRestart !== "esc"
+      ) {
+        return;
       }
       if (Config.mode !== "zen") event?.preventDefault();
       if (
@@ -331,8 +339,10 @@ export function restart(
         )
       ) {
         let message = "Use your mouse to confirm.";
-        if (Config.quickTab) {
+        if (Config.quickRestart === "tab") {
           message = "Press shift + tab or use your mouse to confirm.";
+        } else if (Config.quickRestart === "esc") {
+          message = "Press shift + escape or use your mouse to confirm.";
         }
         Notifications.add("Quick restart disabled. " + message, 0, 3);
         return;
@@ -343,6 +353,14 @@ export function restart(
     }
   }
   if (TestActive.get()) {
+    if (
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote" &&
+      Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
+    ) {
+      withSameWordset = true;
+    }
+
     TestInput.pushKeypressesToHistory();
     const testSeconds = TestStats.calculateTestSeconds(performance.now());
     const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -693,7 +711,12 @@ async function getNextWord(
       regenarationCount < 100 &&
       (previousWord == randomWord ||
         previousWord2 == randomWord ||
-        (!Config.punctuation && randomWord == "I"))
+        (Config.mode !== "custom" &&
+          !Config.punctuation &&
+          randomWord == "I") ||
+        (Config.mode !== "custom" &&
+          !Config.punctuation &&
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -1178,13 +1201,12 @@ export async function retrySavingResult(): Promise<void> {
   }
 
   DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats({
-    time:
-      completedEvent.testDuration +
+  DB.updateLocalStats(
+    TestStats.restartCount + 1,
+    completedEvent.testDuration +
       completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration,
-    started: TestStats.restartCount + 1,
-  });
+      completedEvent.afkDuration
+  );
 
   AnalyticsController.log("testCompleted");
 
@@ -1406,7 +1428,27 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const completedEvent = buildCompletedEvent(difficultyFailed);
 
-  //todo check if any fields are undefined
+  function countUndefined(input: unknown): number {
+    if (typeof input === "undefined") {
+      return 1;
+    } else if (typeof input === "object" && input !== null) {
+      return Object.values(input).reduce(
+        (a, b) => a + countUndefined(b),
+        0
+      ) as number;
+    } else {
+      return 0;
+    }
+  }
+
+  if (countUndefined(completedEvent) > 0) {
+    console.log(completedEvent);
+    Notifications.add(
+      "Failed to save result: One of the result fields is undefined. Please report this",
+      -1
+    );
+    return;
+  }
 
   ///////// completed event ready
 
@@ -1561,13 +1603,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats({
-    time:
-      completedEvent.testDuration +
+  DB.updateLocalStats(
+    TestStats.restartCount + 1,
+    completedEvent.testDuration +
       completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration,
-    started: TestStats.restartCount + 1,
-  });
+      completedEvent.afkDuration
+  );
 
   AnalyticsController.log("testCompleted");
 
@@ -1589,6 +1630,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
   }
 
+  if (response.data.dailyLeaderboardRank) {
+    Notifications.add(
+      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+        Misc.getPositionString(response.data.dailyLeaderboardRank),
+      1,
+      10,
+      "Daily Leaderboard",
+      "list-ol"
+    );
+  }
+
   $("#retrySavingResultButton").addClass("hidden");
 }
 
@@ -1606,22 +1658,13 @@ export function fail(reason: string): void {
   TestStats.incrementRestartCount();
 }
 
-$(document).on("click", "#testModesNotice .text-button.restart", () => {
+$(document).on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key === "Enter") {
-    ManualRestart.reset();
-    if (
-      TestActive.get() &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      restart(true);
-    } else {
-      restart();
-    }
+    restart();
   }
 });
 
@@ -1671,7 +1714,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#top .config .wordCount .text-button", (e) => {
+$(document).on("click", "#top .config .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1681,7 +1724,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .time .text-button", (e) => {
+$(document).on("click", "#top .config .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
@@ -1691,7 +1734,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
@@ -1706,21 +1749,21 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .punctuationMode .text-button", () => {
+$(document).on("click", "#top .config .punctuationMode .textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#top .config .numbersMode .text-button", () => {
+$(document).on("click", "#top .config .numbersMode .textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#top .config .mode .text-button", (e) => {
+$(document).on("click", "#top .config .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;

@@ -14,7 +14,7 @@ export function updateBar(percentage: number, fast?: boolean): void {
 }
 
 export function updateText(text: string): void {
-  $(".pageLoading .text, .pageAccount .text").text(text);
+  $(".pageLoading .text, .pageAccount .preloader .text").text(text);
 }
 
 export function showBar(): Promise<void> {
@@ -23,7 +23,7 @@ export function showBar(): Promise<void> {
       $(".pageLoading .icon"),
       $(".pageLoading .barWrapper"),
       125,
-      () => {
+      async () => {
         resolve();
       }
     );
@@ -31,7 +31,7 @@ export function showBar(): Promise<void> {
       $(".pageAccount .icon"),
       $(".pageAccount .barWrapper"),
       125,
-      () => {
+      async () => {
         resolve();
       }
     );
@@ -48,10 +48,10 @@ export const page = new Page(
   async () => {
     //
   },
-  () => {
+  async () => {
     //
   },
-  () => {
+  async () => {
     //
   }
 );

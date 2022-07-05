@@ -1,10 +1,12 @@
 import { activateAnalytics } from "../controllers/analytics-controller";
 import { focusWords } from "../test/test-ui";
 
-type Accepted = {
+let visible = false;
+
+interface Accepted {
   security: boolean;
   analytics: boolean;
-};
+}
 
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies");
@@ -27,13 +29,26 @@ export function check(): void {
 }
 
 export function show(): void {
+  if ($("#cookiePopupWrapper")[0] === undefined) {
+    //removed by cookie popup blocking extension
+    visible = false;
+    return;
+  }
   if ($("#cookiePopupWrapper").hasClass("hidden")) {
-    $("#wordsInput").blur();
     $("#cookiePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 100, () => {
+        if (
+          $("#cookiePopupWrapper").is(":visible") === false ||
+          $("#cookiePopupWrapper").outerHeight(true) === 0
+        ) {
+          visible = false;
+        } else {
+          visible = true;
+        }
+      });
   }
 }
 
@@ -50,6 +65,7 @@ export async function hide(): Promise<void> {
         100,
         () => {
           $("#cookiePopupWrapper").addClass("hidden");
+          visible = false;
         }
       );
   }
@@ -86,4 +102,10 @@ $("#cookiePopup .acceptSelected").on("click", () => {
 
 $("#cookiePopup .openSettings").on("click", () => {
   showSettings();
+});
+
+$(document).on("keypress", (e) => {
+  if (visible) {
+    e.preventDefault();
+  }
 });

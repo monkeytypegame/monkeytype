@@ -20,7 +20,7 @@ const keymapStrings: KeymapStrings = {
 
 function dynamicKeymapLegendStyle(uppercase: boolean): void {
   const keymapKeys = <HTMLElement[]>[
-    ...document.getElementsByClassName("keymap-key"),
+    ...document.getElementsByClassName("keymapKey"),
   ];
 
   const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);

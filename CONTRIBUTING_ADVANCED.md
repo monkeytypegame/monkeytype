@@ -6,6 +6,7 @@
   - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
   - [Firebase](#firebase)
+  - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
   - [Backend (optional)](#backend-optional)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
@@ -13,7 +14,7 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Mongo and Docker for the backend. Read the below sections to understand how to setup each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 #### Git
 
@@ -69,7 +70,17 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory.
+   - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
+
+#### Docker (Recommended but Optional)
+
+You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
+
+```bash
+cd frontend && docker-compose up
+```
+
+Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
 
 #### Backend (optional)
 
@@ -79,8 +90,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Local Server                                                                                                                            | Docker (recommended)                                                                                                                                                    |
-| --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
@@ -90,12 +101,10 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
-1. Run `npm run install:all` in the project root to install all dependencies.
+1. Run `npm run install-all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install-windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
-
-**Mac Users:** If you get 403 Forbidden errors while trying to access the local server, go into System Preferences > Sharing and disable AirPlay Receiver - it also runs on port 5000 and takes priority, causing 403 errors.
+2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 ## Standards and Guidelines
 

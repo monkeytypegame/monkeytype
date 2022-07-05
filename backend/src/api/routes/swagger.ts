@@ -6,7 +6,7 @@ import publicSwaggerSpec from "../../documentation/public-swagger.json";
 import internalSwaggerSpec from "../../documentation/internal-swagger.json";
 
 const SWAGGER_UI_OPTIONS = {
-  customCss: ".swagger-ui .topbar { display: none }",
+  customCss: ".swagger-ui .topbar { display: none } .try-out { display: none }",
   customSiteTitle: "Monkeytype API Documentation",
 };
 

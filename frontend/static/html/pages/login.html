@@ -5,55 +5,39 @@
   <div class="register side">
     <div class="title">register</div>
     <form action="" autocomplete="nope">
-      <div class="inputAndIndicator">
-        <input
-          type="text"
-          class="usernameInput"
-          placeholder="username"
-          autocomplete="new-username"
-        />
-        <div class="checkStatus">
-          <div
-            class="checking hidden"
-            data-balloon-length="large"
-            data-balloon-pos="up"
-          >
-            <i class="fas fa-fw fa-circle-notch fa-spin"></i>
-          </div>
-          <div class="available hidden" data-balloon-pos="up">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-          <div
-            class="unavailable hidden"
-            data-balloon-length="large"
-            data-balloon-pos="up"
-          >
-            <i class="fas fa-fw fa-times"></i>
-          </div>
-          <div class="taken hidden" data-balloon-pos="up">
-            <i class="fas fa-fw fa-user-friends"></i>
-          </div>
-        </div>
-      </div>
-      <input type="email" placeholder="email" autocomplete="new-email" />
+      <input
+        type="text"
+        class="usernameInput"
+        placeholder="username"
+        autocomplete="new-username"
+      />
       <input
         type="email"
+        class="emailInput"
+        placeholder="email"
+        autocomplete="new-email"
+      />
+      <input
+        type="email"
+        class="verifyEmailInput"
         placeholder="verify email"
         autocomplete="verify-email"
       />
       <input
         type="password"
+        class="passwordInput"
         placeholder="password"
         autocomplete="new-password"
         name="new-password"
       />
       <input
         type="password"
+        class="verifyPasswordInput"
         placeholder="verify password"
         autocomplete="verify-password"
         name="verify-password"
       />
-      <div class="button">
+      <div class="button disabled">
         <i class="fas fa-user-plus"></i>
         Sign Up
       </div>
@@ -61,7 +45,7 @@
   </div>
   <div class="login side">
     <div class="title">login</div>
-    <div class="text-button" id="forgotPasswordButton">Forgot password?</div>
+    <div class="textButton" id="forgotPasswordButton">Forgot password?</div>
     <form action="">
       <input
         name="current-email"

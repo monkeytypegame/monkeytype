@@ -74,7 +74,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customTestDurationPopup input").trigger("focus").select();
+        $("#customTestDurationPopup input").trigger("focus").trigger("select");
       });
   }
 
@@ -139,7 +139,7 @@ $("#customTestDurationPopup .button").on("click", () => {
   apply();
 });
 
-$(document).on("click", "#top .config .time .text-button", (e) => {
+$(document).on("click", "#top .config .time .textButton", (e) => {
   const mode = $(e.currentTarget).attr("timeConfig");
   if (mode == "custom") {
     show();

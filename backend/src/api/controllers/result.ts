@@ -5,6 +5,7 @@ import {
   checkIfTagPb,
   incrementBananas,
   updateTypingStats,
+  recordAutoBanEvent,
 } from "../../dal/user";
 import * as PublicStatsDAL from "../../dal/public-stats";
 import { roundTo2, stdDev } from "../../utils/misc";
@@ -20,8 +21,13 @@ import {
   validateKeys,
 } from "../../anticheat/index";
 import MonkeyStatusCodes from "../../constants/monkey-status-codes";
-import { incrementResult } from "../../utils/prometheus";
+import {
+  incrementResult,
+  incrementDailyLeaderboard,
+} from "../../utils/prometheus";
 import * as George from "../../tasks/george";
+import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
+import AutoRoleList from "../../constants/auto-roles";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -75,6 +81,13 @@ export async function updateTags(
   return new MonkeyResponse("Result tags updated");
 }
 
+interface AddResultData {
+  isPb: boolean;
+  tagPbs: any[];
+  insertedId: ObjectId;
+  dailyLeaderboardRank?: number;
+}
+
 export async function addResult(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -100,7 +113,7 @@ export async function addResult(
   delete result.hash;
   delete result.stringified;
   if (
-    req.ctx.configuration.resultObjectHashCheck.enabled &&
+    req.ctx.configuration.results.objectHashCheckEnabled &&
     resulthash.length === 40
   ) {
     //if its not 64 that means client is still using old hashing package
@@ -119,6 +132,8 @@ export async function addResult(
       throw new MonkeyError(status.code, "Incorrect result hash");
     }
   }
+
+  result.name = user.name;
 
   if (anticheatImplemented()) {
     if (!validateResult(result)) {
@@ -221,6 +236,15 @@ export async function addResult(
     }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
+        //autoban
+        const autoBanConfig = req.ctx.configuration.users.autoBan;
+        if (autoBanConfig.enabled) {
+          await recordAutoBanEvent(
+            uid,
+            autoBanConfig.maxCount,
+            autoBanConfig.maxHours
+          );
+        }
         const status = MonkeyStatusCodes.BOT_DETECTED;
         throw new MonkeyError(status.code, "Possible bot detected");
       }
@@ -269,7 +293,11 @@ export async function addResult(
     }
   }
 
-  if (result.challenge && user.discordId) {
+  if (
+    result.challenge &&
+    AutoRoleList.includes(result.challenge) &&
+    user.discordId
+  ) {
     George.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
@@ -283,6 +311,45 @@ export async function addResult(
   tt = result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, tt);
   PublicStatsDAL.updateStats(result.restartCount, tt);
+
+  const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
+  const dailyLeaderboard = getDailyLeaderboard(
+    result.language,
+    result.mode,
+    result.mode2,
+    dailyLeaderboardsConfig
+  );
+
+  let dailyLeaderboardRank = -1;
+
+  const { funbox, bailedOut } = result;
+  const validResultCriteria =
+    (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
+    !bailedOut &&
+    !user.banned &&
+    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
+
+  if (dailyLeaderboard && validResultCriteria) {
+    //get the selected badge id
+    const badgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
+
+    incrementDailyLeaderboard(result.mode, result.mode2, result.language);
+    dailyLeaderboardRank = await dailyLeaderboard.addResult(
+      {
+        name: user.name,
+        wpm: result.wpm,
+        raw: result.rawWpm,
+        acc: result.acc,
+        consistency: result.consistency,
+        timestamp: result.timestamp,
+        uid,
+        discordAvatar: user.discordAvatar,
+        discordId: user.discordId,
+        badgeId,
+      },
+      dailyLeaderboardsConfig
+    );
+  }
 
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
@@ -310,12 +377,15 @@ export async function addResult(
     );
   }
 
-  const data = {
+  const data: AddResultData = {
     isPb,
-    name: result.name,
     tagPbs,
     insertedId: addedResult.insertedId,
   };
+
+  if (dailyLeaderboardRank !== -1) {
+    data.dailyLeaderboardRank = dailyLeaderboardRank;
+  }
 
   incrementResult(result);
 

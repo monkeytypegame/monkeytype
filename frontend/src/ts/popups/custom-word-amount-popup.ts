@@ -10,7 +10,7 @@ export function show(): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customWordAmountPopup input").trigger("focus").select();
+        $("#customWordAmountPopup input").trigger("focus").trigger("select");
       });
   }
 }
@@ -71,7 +71,7 @@ $("#customWordAmountPopup .button").on("click", () => {
   apply();
 });
 
-$(document).on("click", "#top .config .wordCount .text-button", (e) => {
+$(document).on("click", "#top .config .wordCount .textButton", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {
     show();

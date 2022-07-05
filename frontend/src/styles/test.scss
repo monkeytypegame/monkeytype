@@ -485,9 +485,14 @@
   padding: 1rem;
   border-radius: var(--roundness);
   /* margin-top: 1rem; */
-  transition: 0.25s;
+  transition: 0.125s;
   z-index: 999;
   pointer-events: none;
+  top: -2.5rem;
+
+  &.focus {
+    top: 0rem;
+  }
 
   i {
     margin-right: 0.5rem;
@@ -534,7 +539,7 @@
     color: var(--sub-color);
     // grid-column: 1/3;
     margin-bottom: 1rem;
-    .text-button {
+    .textButton {
       padding: 0;
       margin-left: 0.5rem;
     }
@@ -594,21 +599,21 @@
         letter.incorrect.extra {
           color: var(--error-extra-color);
         }
-        &.heatmap-0 letter {
+        &.heatmap0 letter {
           color: var(--colorful-error-color);
         }
-        &.heatmap-1 letter {
+        &.heatmap1 letter {
           color: var(--colorful-error-color);
           filter: opacity(0.6);
         }
-        &.heatmap-2 letter {
+        &.heatmap2 letter {
           color: var(--sub-color);
         }
-        &.heatmap-3 letter {
+        &.heatmap3 letter {
           color: var(--main-color);
           filter: opacity(0.6);
         }
-        &.heatmap-4 letter {
+        &.heatmap4 letter {
           color: var(--main-color);
         }
       }
@@ -1004,7 +1009,7 @@
     justify-content: center;
     user-select: none;
 
-    .text-button {
+    .textButton {
       margin: 0 0.5rem;
     }
 

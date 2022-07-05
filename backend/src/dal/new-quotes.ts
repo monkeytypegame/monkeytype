@@ -15,11 +15,11 @@ try {
   git = undefined;
 }
 
-type AddQuoteReturn = {
+interface AddQuoteReturn {
   languageError?: number;
   duplicateId?: number;
   similarityScore?: number;
-};
+}
 
 export async function add(
   text: string,
@@ -86,18 +86,18 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
     .toArray();
 }
 
-type Quote = {
+interface Quote {
   id?: number;
   text: string;
   source: string;
   length: number;
-  name: string;
-};
+  approvedBy: string;
+}
 
-type ApproveReturn = {
+interface ApproveReturn {
   quote: Quote;
   message: string;
-};
+}
 
 export async function approve(
   quoteId: string,
@@ -111,14 +111,17 @@ export async function approve(
     .collection<MonkeyTypes.NewQuote>("new-quotes")
     .findOne({ _id: new ObjectId(quoteId) });
   if (!targetQuote) {
-    throw new MonkeyError(404, "Quote not found");
+    throw new MonkeyError(
+      404,
+      "Quote not found. It might have already been reviewed. Please refresh the list."
+    );
   }
   const language = targetQuote.language;
   const quote: Quote = {
     text: editQuote ? editQuote : targetQuote.text,
     source: editSource ? editSource : targetQuote.source,
     length: targetQuote.text.length,
-    name,
+    approvedBy: name,
   };
   let message = "";
   const fileDir = path.join(

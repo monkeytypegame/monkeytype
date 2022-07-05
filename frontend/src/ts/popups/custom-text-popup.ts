@@ -40,7 +40,7 @@ export function show(): void {
   }, 150);
 }
 
-$(`${popup} .delimiterCheck input`).change(() => {
+$(`${popup} .delimiterCheck input`).on("change", () => {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked")) {
     delimiter = "|";
@@ -84,13 +84,13 @@ export function isVisible(): boolean {
   return !$(wrapper).hasClass("hidden");
 }
 
-$(wrapper).mousedown((e) => {
+$(wrapper).on("mousedown", (e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
     hide();
   }
 });
 
-$(`${popup} .inputs .checkbox input`).change(() => {
+$(`${popup} .inputs .checkbox input`).on("change", () => {
   if ($(`${popup} .checkbox input`).prop("checked")) {
     $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
   } else {
@@ -100,7 +100,7 @@ $(`${popup} .inputs .checkbox input`).change(() => {
 
 $(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $(`${popup} .button.apply`).click();
+    $(`${popup} .button.apply`).trigger("click");
   }
 });
 
@@ -157,7 +157,7 @@ function apply(): void {
     !CustomText.isWordRandom
   ) {
     Notifications.add(
-      "You need to specify word count or time in seconds to start a random custom test.",
+      "You need to specify word count or time in seconds to start a random custom test",
       0,
       5
     );
@@ -170,7 +170,7 @@ function apply(): void {
     CustomText.isWordRandom
   ) {
     Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test.",
+      "You need to pick between word count or time in seconds to start a random custom test",
       0,
       5
     );
@@ -203,7 +203,7 @@ $(document).on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
-$(document).on("click", "#top .config .customText .text-button", () => {
+$(document).on("click", "#top .config .customText .textButton", () => {
   show();
 });
 

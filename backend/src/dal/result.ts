@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { DeleteResult, ObjectId, UpdateResult } from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
@@ -65,7 +66,9 @@ export async function getResult(
   return result;
 }
 
-export async function getLastResult(uid: string): Promise<MonkeyTypesResult> {
+export async function getLastResult(
+  uid: string
+): Promise<Partial<MonkeyTypesResult>> {
   const [lastResult] = await db
     .collection<MonkeyTypesResult>("results")
     .find({ uid })
@@ -73,7 +76,7 @@ export async function getLastResult(uid: string): Promise<MonkeyTypesResult> {
     .limit(1)
     .toArray();
   if (!lastResult) throw new MonkeyError(404, "No results found");
-  return lastResult;
+  return _.omit(lastResult, "uid");
 }
 
 export async function getResultByTimestamp(

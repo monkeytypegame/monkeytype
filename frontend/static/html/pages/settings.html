@@ -16,15 +16,15 @@
   <!-- <div class="sectionGroupTitle">quick navigation</div> -->
   <div class="settingsGroup quickNav">
     <div class="links">
-      <a class="text-button" href="#group_account">account</a>
-      <a class="text-button" href="#group_behavior">behavior</a>
-      <a class="text-button" href="#group_input">input</a>
-      <a class="text-button" href="#group_sound">sound</a>
-      <a class="text-button" href="#group_caret">caret</a>
-      <a class="text-button" href="#group_appearance">appearance</a>
-      <a class="text-button" href="#group_theme">theme</a>
-      <a class="text-button" href="#group_hideElements">hide elements</a>
-      <a class="text-button" href="#group_dangerZone">danger zone</a>
+      <a class="textButton" href="#group_account">account</a>
+      <a class="textButton" href="#group_behavior">behavior</a>
+      <a class="textButton" href="#group_input">input</a>
+      <a class="textButton" href="#group_sound">sound</a>
+      <a class="textButton" href="#group_caret">caret</a>
+      <a class="textButton" href="#group_appearance">appearance</a>
+      <a class="textButton" href="#group_theme">theme</a>
+      <a class="textButton" href="#group_hideElements">hide elements</a>
+      <a class="textButton" href="#group_dangerZone">danger zone</a>
     </div>
   </div>
   <div id="ad_settings0" class="hidden"></div>
@@ -57,9 +57,19 @@
           <i class="fas fa-check"></i>
           Your accounts are linked!
         </div>
-        <div id="unlinkDiscordButton" class="text-button">
-          <i class="fas fa-unlink" aria-hidden="true"></i>
-          Unlink
+        <div id="discordButtonGroup">
+          <a
+            id="updateDiscordAvatarButton"
+            href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+            class="textButton"
+          >
+            <i class="fas fa-sync-alt" aria-hidden="true"></i>
+            Update avatar
+          </a>
+          <div id="unlinkDiscordButton" class="textButton">
+            <i class="fas fa-unlink" aria-hidden="true"></i>
+            Unlink
+          </div>
         </div>
       </div>
     </div>
@@ -151,25 +161,43 @@
         </div>
       </div>
     </div>
-    <div class="section quickTab" id="quickTab">
-      <h1>quick tab mode</h1>
+    <div class="section quickRestart" id="quickRestart">
+      <h1>quick restart</h1>
       <div class="text">
         Press
         <key>tab</key>
-        to quickly restart the test, or to quickly jump to the test page. This
-        function disables tab navigation on the website.
+        or
+        <key>esc</key>
+        to quickly restart the test, or to quickly jump to the test page. Both
+        options disable tab navigation on most parts of the website. Using the
+        "esc" option will move opening the commandline to the
+        <key>tab</key>
+        key.
       </div>
       <div class="buttons">
         <div
           class="button"
-          quickTab="false"
+          quickRestart="off"
           tabindex="0"
           onclick="this.blur();"
         >
           off
         </div>
-        <div class="button" quickTab="true" tabindex="0" onclick="this.blur();">
-          on
+        <div
+          class="button"
+          quickRestart="tab"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          tab
+        </div>
+        <div
+          class="button"
+          quickRestart="esc"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          esc
         </div>
       </div>
     </div>
@@ -712,32 +740,11 @@
         </div>
       </div>
     </div>
-    <div class="section swapEscAndTab" section="">
-      <h1>swap esc and tab</h1>
-      <div class="text">Swap the behavior of tab and escape keys.</div>
-      <div class="buttons">
-        <div
-          class="button"
-          swapEscAndTab="false"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          off
-        </div>
-        <div
-          class="button"
-          swapEscAndTab="true"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          on
-        </div>
-      </div>
-    </div>
     <div class="section lazyMode">
       <h1>lazy mode</h1>
       <div class="text">
-        Replaces accented letters with their normal equivalents.
+        Replaces accents / diacritics / special characters with their normal
+        letter equivalents.
       </div>
       <div class="buttons">
         <div
@@ -1012,7 +1019,7 @@
             tabindex="0"
             onclick="this.blur();"
           >
-            average
+            avg
           </div>
           <div
             class="button"
@@ -1021,6 +1028,14 @@
             onclick="this.blur();"
           >
             pb
+          </div>
+          <div
+            class="button"
+            paceCaret="last"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            last
           </div>
           <div
             class="button"
@@ -1719,12 +1734,6 @@
           <div class="title">opacity</div>
           <div class="value"></div>
           <input type="range" min="0" max="1" value="1" step="0.1" />
-        </div>
-        <div class="saveContainer">
-          <div class="save button" style="grid-column: 3">
-            <!-- <i class="fas fa-save fa-fw"></i> -->
-            save
-          </div>
         </div>
       </div>
     </div>

@@ -257,7 +257,7 @@
     "LeaderboardEntry": {
       "type": "object",
       "properties": {
-        "_id": {
+        "uid": {
           "type": "string",
           "example": "6226b17aebc27a4a8d1ce04b"
         },
@@ -300,6 +300,21 @@
         "timestamp": {
           "type": "integer",
           "example": 1644438189583
+        },
+        "discordId": {
+          "type": "string",
+          "example": "974761412044437307"
+        },
+        "discordAvatar": {
+          "type": "string",
+          "example": "6226b17aebc27a4a8d1ce04b"
+        },
+        "badgeIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "example": 1
+          }
         }
       }
     },

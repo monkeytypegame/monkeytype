@@ -337,7 +337,7 @@
       data-balloon-pos="up"
       style="display: grid"
     >
-      <div class="text-button submitButton">
+      <div class="textButton submitButton">
         <i class="fas fa-chevron-right"></i>
       </div>
     </span>
@@ -474,31 +474,7 @@
   <div id="googleSignUpPopup">
     <div class="title">Account name</div>
     <div class="text">You need to choose a username before continuing</div>
-    <div class="inputAndIndicator">
-      <input type="text" placeholder="username" />
-      <div class="checkStatus">
-        <div
-          class="checking hidden"
-          data-balloon-length="large"
-          data-balloon-pos="up"
-        >
-          <i class="fas fa-fw fa-circle-notch fa-spin"></i>
-        </div>
-        <div class="available hidden" data-balloon-pos="up">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-        <div
-          class="unavailable hidden"
-          data-balloon-length="large"
-          data-balloon-pos="up"
-        >
-          <i class="fas fa-fw fa-times"></i>
-        </div>
-        <div class="taken hidden" data-balloon-pos="up">
-          <i class="fas fa-fw fa-user-friends"></i>
-        </div>
-      </div>
-    </div>
+    <input type="text" placeholder="username" />
     <div class="button disabled">Sign up</div>
   </div>
 </div>
@@ -589,10 +565,7 @@
     <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
     <label>Language</label>
     <select name="language" id="submitQuoteLanguage"></select>
-    <div
-      class="g-recaptcha"
-      data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
-    ></div>
+    <div class="g-recaptcha"></div>
     <div id="submitQuoteButton" class="button">Submit</div>
   </div>
 </div>
@@ -624,8 +597,8 @@
   <div id="quoteReportPopup" mode="">
     <div class="title">Report a Quote</div>
     <div class="text">
-      Please report quotes responsibly. Misuse may result in you losing access
-      to this feature.
+      Please report quotes responsibly. Please add comments in English only.
+      Misuse may result in you losing access to this feature.
     </div>
     <label>quote</label>
     <div class="quote"></div>
@@ -698,20 +671,25 @@
 <div id="leaderboardsWrapper" class="popupWrapper hidden">
   <div id="leaderboards">
     <div class="leaderboardsTop">
-      <div class="mainTitle">Leaderboards</div>
+      <div class="mainTitle">All-Time English Leaderboards</div>
       <div class="subTitle">Next update in: --:--</div>
-      <!-- <div class="buttons">
-            <div class="buttonGroup">
-              <div class="button active" board="time_15">time 15</div>
-              <div class="button" board="time_60">time 60</div>
-            </div>
-          </div> -->
+      <div class="textButton showYesterdayButton hidden">
+        <i class="fas fa-calendar-day"></i>
+        Show Yesterday
+      </div>
+      <div class="buttons">
+        <div class="buttonGroup timeRange">
+          <div class="button allTime">all-time</div>
+          <div class="button daily">daily</div>
+          <select class="languageSelect" disabled></select>
+        </div>
+      </div>
     </div>
     <div class="tables">
       <div class="titleAndTable">
         <div class="titleAndButtons">
           <div class="title">
-            English Time 15
+            Time 15
             <i
               class="hidden leftTableLoader fas fa-fw fa-spin fa-circle-notch"
             ></i>
@@ -743,7 +721,6 @@
                   <br />
                   <div class="sub">consistency</div>
                 </td>
-                <td class="alignRight" width="13%">test</td>
                 <td class="alignRight" width="22%">date</td>
               </tr>
             </thead>
@@ -755,7 +732,7 @@
       <div class="titleAndTable">
         <div class="titleAndButtons">
           <div class="title">
-            English Time 60
+            Time 60
             <i
               class="hidden rightTableLoader fas fa-fw fa-spin fa-circle-notch"
             ></i>
@@ -777,18 +754,17 @@
               <tr>
                 <td width="1%">#</td>
                 <td>name</td>
-                <td class="alignRight" width="15%">
+                <td class="alignRight" width="1%">
                   wpm
                   <br />
                   <div class="sub">accuracy</div>
                 </td>
-                <td class="alignRight" width="15%">
+                <td class="alignRight" width="1%">
                   raw
                   <br />
                   <div class="sub">consistency</div>
                 </td>
-                <td class="alignRight" width="13%">test</td>
-                <td class="alignRight" width="22%">date</td>
+                <td class="alignRight" width="110px">date</td>
               </tr>
             </thead>
             <tbody></tbody>
@@ -975,5 +951,50 @@
   </div>
   <div id="commandInput" class="hidden">
     <input type="text" class="input" placeholder="input" />
+  </div>
+</div>
+<div id="newResultFilterPresetPopupWrapper" class="popupWrapper hidden">
+  <div id="newResultFilterPresetPopup">
+    <div class="title">Add new filter preset</div>
+    <input type="text" value="new preset" />
+    <div class="button">add</div>
+  </div>
+</div>
+
+<div id="editProfilePopupWrapper" class="popupWrapper hidden">
+  <div id="editProfilePopup">
+    <div class="title">Edit Profile</div>
+    <div>
+      <label>avatar</label>
+      <div>
+        To update your avatar make sure your Discord account is linked, then go
+        to Settings > Account > Discord Integration and click "Update Avatar"
+      </div>
+    </div>
+    <div>
+      <label>bio</label>
+      <textarea class="bio" type="text" autocomplete="off"></textarea>
+    </div>
+    <div>
+      <label>keyboard</label>
+      <textarea class="keyboard" type="text" autocomplete="off"></textarea>
+    </div>
+    <div>
+      <label>twitter</label>
+      <input class="twitter" type="text" value="" />
+    </div>
+    <div>
+      <label>github</label>
+      <input class="github" type="text" value="" />
+    </div>
+    <div>
+      <label>website</label>
+      <input class="website" type="text" value="" />
+    </div>
+    <div>
+      <label>badge</label>
+      <div class="badgeSelectionContainer"></div>
+    </div>
+    <div class="button edit-profile-submit">save</div>
   </div>
 </div>

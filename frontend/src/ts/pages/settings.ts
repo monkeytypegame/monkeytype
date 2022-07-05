@@ -16,9 +16,9 @@ import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
 
-type SettingsGroups = {
+interface SettingsGroups {
   [key: string]: SettingsGroup;
-};
+}
 
 export const groups: SettingsGroups = {};
 
@@ -34,9 +34,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setDifficulty,
     "button"
   );
-  groups["quickTab"] = new SettingsGroup(
-    "quickTab",
-    UpdateConfig.setQuickTabMode,
+  groups["quickRestart"] = new SettingsGroup(
+    "quickRestart",
+    UpdateConfig.setQuickRestartMode,
     "button"
   );
   groups["showLiveWpm"] = new SettingsGroup(
@@ -194,11 +194,6 @@ async function initGroups(): Promise<void> {
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
-    "button"
-  );
-  groups["swapEscAndTab"] = new SettingsGroup(
-    "swapEscAndTab",
-    UpdateConfig.setSwapEscAndTab,
     "button"
   );
   groups["showOutOfFocusWarning"] = new SettingsGroup(
@@ -1057,7 +1052,7 @@ export const page = new Page(
   "settings",
   $(".page.pageSettings"),
   "/settings",
-  () => {
+  async () => {
     //
   },
   async () => {
@@ -1067,7 +1062,7 @@ export const page = new Page(
     await fillSettingsPage();
     update();
   },
-  () => {
+  async () => {
     //
   }
 );

@@ -2,34 +2,29 @@ import { CLIENT_VERSION } from "../../version";
 
 const BASE_PATH = "/results";
 
-export default function getResultsEndpoints(
-  apeClient: Ape.Client
-): Ape.Endpoints["results"] {
-  async function get(): Ape.EndpointData {
-    return await apeClient.get(BASE_PATH);
+export default class Results {
+  constructor(private httpClient: Ape.HttpClient) {
+    this.httpClient = httpClient;
   }
 
-  async function save(
-    result: MonkeyTypes.Result<MonkeyTypes.Mode>
-  ): Ape.EndpointData {
-    return await apeClient.post(BASE_PATH, {
+  async get(): Ape.EndpointData {
+    return await this.httpClient.get(BASE_PATH);
+  }
+
+  async save(result: MonkeyTypes.Result<MonkeyTypes.Mode>): Ape.EndpointData {
+    return await this.httpClient.post(BASE_PATH, {
       payload: { result },
       headers: { "Client-Version": CLIENT_VERSION },
     });
   }
 
-  async function updateTags(
-    resultId: string,
-    tagIds: string[]
-  ): Ape.EndpointData {
-    return await apeClient.patch(`${BASE_PATH}/tags`, {
+  async updateTags(resultId: string, tagIds: string[]): Ape.EndpointData {
+    return await this.httpClient.patch(`${BASE_PATH}/tags`, {
       payload: { resultId, tagIds },
     });
   }
 
-  async function deleteAll(): Ape.EndpointData {
-    return await apeClient.delete(BASE_PATH);
+  async deleteAll(): Ape.EndpointData {
+    return await this.httpClient.delete(BASE_PATH);
   }
-
-  return { get, save, updateTags, deleteAll };
 }

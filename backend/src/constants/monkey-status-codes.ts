@@ -1,11 +1,11 @@
 import _ from "lodash";
 
-type Status = {
+interface Status {
   code: number;
   message: string;
-};
+}
 
-type Statuses = {
+interface Statuses {
   TEST_TOO_SHORT: Status;
   RESULT_HASH_INVALID: Status;
   RESULT_DATA_INVALID: Status;
@@ -16,7 +16,8 @@ type Statuses = {
   APE_KEY_INVALID: Status;
   APE_KEY_INACTIVE: Status;
   APE_KEY_MALFORMED: Status;
-};
+  APE_KEY_RATE_LIMIT_EXCEEDED: Status;
+}
 
 const statuses: Statuses = {
   TEST_TOO_SHORT: {
@@ -58,6 +59,10 @@ const statuses: Statuses = {
   APE_KEY_MALFORMED: {
     code: 472,
     message: "ApeKey is malformed",
+  },
+  APE_KEY_RATE_LIMIT_EXCEEDED: {
+    code: 479,
+    message: "ApeKey rate limit exceeded",
   },
 };
 

@@ -67,7 +67,14 @@
   },
   {
     "name": "russian",
-    "languages": ["russian", "russian_1k", "russian_10k"]
+    "languages": [
+      "russian",
+      "russian_1k",
+      "russian_10k",
+      "russian_25k",
+      "russian_50k",
+      "russian_375k"
+    ]
   },
   {
     "name": "polish",
@@ -95,7 +102,11 @@
   },
   {
     "name": "kurdish_central",
-    "languages": ["kurdish_central"]
+    "languages": [
+      "kurdish_central",
+      "kurdish_central_2k",
+      "kurdish_central_45k"
+    ]
   },
   {
     "name": "greek",
@@ -115,7 +126,7 @@
   },
   {
     "name": "tamil",
-    "languages": ["tamil"]
+    "languages": ["tamil", "tamil_1k"]
   },
   {
     "name": "slovenian",
@@ -147,7 +158,7 @@
   },
   {
     "name": "hebrew",
-    "languages": ["hebrew"]
+    "languages": ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"]
   },
   {
     "name": "icelandic",
@@ -299,6 +310,14 @@
     "languages": ["sinhala"]
   },
   {
+    "name": "latvian",
+    "languages": ["latvian", "latvian_1k"]
+  },
+  {
+    "name": "maltese",
+    "languages": ["maltese", "maltese_1k"]
+  },
+  {
     "name": "toki_pona",
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
@@ -310,8 +329,12 @@
       "code_csharp",
       "code_c++",
       "code_dart",
+      "code_brainfck",
+      "code_fsharp",
       "code_javascript",
       "code_javascript_1k",
+      "code_julia",
+      "code_haskell",
       "code_html",
       "code_pascal",
       "code_java",
@@ -326,7 +349,12 @@
       "code_lua",
       "code_luau",
       "code_matlab",
-      "code_sql"
+      "code_sql",
+      "code_perl",
+      "code_php",
+      "code_vim",
+      "code_opencl",
+      "code_visual_basic"
     ]
   },
   {
@@ -340,7 +368,15 @@
     ]
   },
   {
-    "name":"amharic",
-    "languages":["amharic"]
+    "name": "amharic",
+    "languages": ["amharic"]
+  },
+  {
+    "name": "oromo",
+    "languages": ["oromo", "oromo_1k", "oromo_5k"]
+  },
+  {
+    "name": "wordle",
+    "languages": ["wordle", "wordle_1k"]
   }
 ]

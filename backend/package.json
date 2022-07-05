@@ -8,7 +8,7 @@
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
-    "test": "jest --verbose --collect-coverage",
+    "test": "jest --verbose --collect-coverage --runInBand",
     "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
   },
   "engines": {
@@ -29,12 +29,14 @@
     "ioredis": "4.28.5",
     "joi": "17.6.0",
     "lodash": "4.17.21",
+    "lru-cache": "7.10.1",
     "mongodb": "4.4.0",
     "node-fetch": "2.6.7",
     "nodemon": "2.0.7",
     "object-hash": "3.0.0",
     "path": "0.12.7",
     "prom-client": "14.0.1",
+    "rate-limiter-flexible": "2.3.7",
     "simple-git": "2.45.1",
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.2",

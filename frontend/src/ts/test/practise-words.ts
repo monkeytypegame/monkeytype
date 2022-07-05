@@ -151,7 +151,7 @@ $("#practiseWordsPopupWrapper").on("click", (e) => {
 
 $("#practiseWordsPopup .button").on("keypress", (e) => {
   if (e.key === "Enter") {
-    $(e.currentTarget).click();
+    $(e.currentTarget).trigger("click");
   }
 });
 

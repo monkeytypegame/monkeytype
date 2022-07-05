@@ -77,7 +77,10 @@ async function apply(): Promise<void> {
     const response = await Ape.users.createTag(tagName);
 
     if (response.status !== 200) {
-      Notifications.add("Failed to add tag: " + response.message, -1);
+      Notifications.add(
+        "Failed to add tag: " + response.message.replace(tagName, propTagName),
+        -1
+      );
     } else {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags?.push({

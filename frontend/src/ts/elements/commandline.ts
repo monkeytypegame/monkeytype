@@ -7,10 +7,13 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
+import * as TestWords from "../test/test-words";
+import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
+let themeChosen = false;
 
 function showInput(
   command: string,
@@ -26,7 +29,7 @@ function showInput(
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
   if (defaultValue != "") {
-    $("#commandInput input").select();
+    $("#commandInput input").trigger("select");
   }
 }
 
@@ -164,6 +167,7 @@ function updateSuggested(): void {
 }
 
 export let show = (): void => {
+  themeChosen = false;
   if (!$(".page.pageLoading").hasClass("hidden")) return;
   Focus.set(false);
   $("#commandLine").removeClass("hidden");
@@ -385,38 +389,50 @@ $("#commandLine input").keyup((e) => {
 $(document).ready(() => {
   $(document).on("keydown", (event) => {
     if (PageTransition.get()) return event.preventDefault();
-    // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
+    // opens command line if escape or ctrl/cmd + shift + p
     if (
-      event.key === "Escape" ||
+      ((event.key === "Escape" && Config.quickRestart !== "esc") ||
+        (event.key === "Tab" && Config.quickRestart === "esc")) &&
+      !$("#commandLineWrapper").hasClass("hidden")
+    ) {
+      if (CommandlineLists.current.length > 1) {
+        CommandlineLists.current.pop();
+        $("#commandLine").removeClass("allCommands");
+        show();
+      } else {
+        hide();
+      }
+      UpdateConfig.setFontFamily(Config.fontFamily, true);
+      return;
+    }
+    if (
+      (event.key === "Escape" && Config.quickRestart !== "esc") ||
+      (event.key === "Tab" &&
+        Config.quickRestart === "esc" &&
+        !TestWords.hasTab &&
+        !event.shiftKey) ||
+      (event.key === "Tab" &&
+        Config.quickRestart === "esc" &&
+        TestWords.hasTab &&
+        event.shiftKey) ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
-        event.shiftKey) ||
-      (event.key === "Tab" && Config.swapEscAndTab)
+        event.shiftKey)
     ) {
-      event.preventDefault();
-
       const popupVisible = isAnyPopupVisible();
 
       if (popupVisible) return;
 
-      if (!$("#commandLineWrapper").hasClass("hidden")) {
-        if (CommandlineLists.current.length > 1) {
-          CommandlineLists.current.pop();
-          $("#commandLine").removeClass("allCommands");
-          show();
-        } else {
-          hide();
-        }
-        UpdateConfig.setFontFamily(Config.fontFamily, true);
-      } else if (event.key === "Tab" || !Config.swapEscAndTab) {
-        if (Config.singleListCommandLine == "on") {
-          useSingleListCommandLine(false);
-        } else {
-          CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
-        }
-        show();
+      if (Config.quickRestart === "esc" && ActivePage.get() === "login") return;
+      event.preventDefault();
+
+      if (Config.singleListCommandLine == "on") {
+        useSingleListCommandLine(false);
+      } else {
+        CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
       }
+      show();
     }
   });
 });
@@ -481,7 +497,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
         }
-        if (obj.hover) obj.hover();
+        if (obj.hover && !themeChosen) obj.hover();
       }
     });
   } catch (e) {}
@@ -491,6 +507,7 @@ $(document).on(
   "click",
   "#commandLineWrapper #commandLine .suggestions .entry",
   (e) => {
+    themeChosen = true;
     $(".suggestions .entry").removeClass("activeKeyboard");
     trigger($(e.currentTarget).attr("command") as string);
   }
@@ -664,12 +681,12 @@ $(document).on("click", "#commandLineMobileButton", () => {
   show();
 });
 
-$(document).on("click", "#keymap .r5 .key-space", () => {
+$(document).on("click", "#keymap .r5 .keySpace", () => {
   CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   show();
 });
 
-$(document).on("click", "#testModesNotice .text-button", (event) => {
+$(document).on("click", "#testModesNotice .textButton", (event) => {
   const commands = CommandlineLists.getList(
     $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
   );
@@ -702,11 +719,11 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     } else UpdateConfig.setCustomTheme(false);
   } else {
     if (Config.customTheme) CommandlineLists.updateCustomThemeListCommands();
-    CommandlineLists.pushCurrent(
+    CommandlineLists.setCurrent([
       Config.customTheme
         ? CommandlineLists.customThemeListCommands
-        : CommandlineLists.themeCommands
-    );
+        : CommandlineLists.themeCommands,
+    ]);
     show();
   }
 });

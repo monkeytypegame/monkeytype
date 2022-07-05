@@ -9,7 +9,7 @@
     padding: 1rem;
     display: grid;
     gap: 1rem 0;
-    grid-template-rows: 2rem auto;
+    grid-template-rows: auto auto;
     grid-template-areas:
       "title buttons"
       "tables tables";
@@ -18,23 +18,40 @@
     .leaderboardsTop {
       width: 200%;
       min-width: 100%;
-      display: flex;
+      display: grid;
       align-items: center;
-      justify-content: space-between;
+      grid-template-columns: auto 1fr 20rem;
+      grid-template-areas:
+        "title title buttons"
+        "subtitle yesterday buttons";
 
-      .buttonGroup .button {
-        padding: 0.4rem 2.18rem;
+      .buttons {
+        grid-area: buttons;
+        .timeRange {
+          grid-template-columns: 1fr 1fr;
+          .select2 {
+            grid-column: span 2;
+          }
+        }
       }
     }
 
     .mainTitle {
       font-size: 2.5rem;
-      line-height: 2.5rem;
       grid-area: title;
+    }
+
+    .showYesterdayButton {
+      grid-area: "yesterday";
+      margin-left: 1rem;
+      .fas {
+        margin-right: 0.3rem;
+      }
     }
 
     .subTitle {
       color: var(--sub-color);
+      grid-area: subtitle;
     }
 
     .title {
@@ -96,7 +113,7 @@
 
       .leftTableWrapper,
       .rightTableWrapper {
-        height: calc(100vh - 12rem);
+        height: calc(100vh - 14rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
@@ -112,6 +129,37 @@
         width: 100%;
         border-spacing: 0;
         border-collapse: collapse;
+
+        .avatarNameBadge {
+          display: grid;
+          grid-template-columns: 1.25rem max-content auto;
+          gap: 0.5rem;
+          place-items: center left;
+          .avatarPlaceholder {
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 1.25rem;
+            // background: var(--sub-color);
+            color: var(--sub-color);
+            // display: grid;
+            // place-content: center center;
+            border-radius: 100%;
+            margin-top: -0.25rem;
+          }
+          .entryName {
+            text-decoration: none;
+            color: var(--text-color);
+            cursor: pointer;
+          }
+          .avatarPlaceholder,
+          .avatar {
+            grid-row: 1/2;
+            grid-column: 1/2;
+          }
+          .badge {
+            font-size: 0.6rem;
+          }
+        }
 
         tr td:first-child {
           text-align: center;
@@ -148,6 +196,14 @@
           tr:nth-child(odd) td {
             background: var(--sub-alt-color);
           }
+          td:nth-child(1) {
+            border-radius: calc(var(--roundness) / 2) 0 0
+              calc(var(--roundness) / 2);
+          }
+          td:last-child {
+            border-radius: 0 calc(var(--roundness) / 2)
+              calc(var(--roundness) / 2) 0;
+          }
         }
 
         tfoot {
@@ -176,9 +232,10 @@
     .buttons {
       .buttonGroup {
         display: grid;
-        grid-auto-flow: column;
-        gap: 1rem;
-        grid-area: 1/2;
+        grid-auto-flow: row;
+        gap: 0.5rem;
+        grid-auto-columns: 1fr;
+        grid-area: buttons;
       }
     }
   }
