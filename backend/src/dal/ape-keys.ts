@@ -94,3 +94,7 @@ export async function deleteApeKey(uid: string, keyId: string): Promise<void> {
     throw new MonkeyError(404, "ApeKey not found");
   }
 }
+
+export async function deleteAllApeKeys(uid: string): Promise<void> {
+  await db.collection<MonkeyTypes.ApeKey>(COLLECTION_NAME).deleteMany({ uid });
+}

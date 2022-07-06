@@ -688,6 +688,75 @@ list["deleteAccount"] = new SimplePopup(
   }
 );
 
+list["resetAccount"] = new SimplePopup(
+  "resetAccount",
+  "text",
+  "Reset Account",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "This is the last time you can change your mind. After pressing the button everything is gone.",
+  "Reset",
+  async (_thisPopup, password: string) => {
+    //
+    try {
+      const user = Auth.currentUser;
+      if (user === null) return;
+      if (user.providerData.find((p) => p?.providerId === "password")) {
+        const credential = EmailAuthProvider.credential(
+          user.email as string,
+          password
+        );
+        await reauthenticateWithCredential(user, credential);
+      } else {
+        await reauthenticateWithPopup(user, AccountController.gmailProvider);
+      }
+      Notifications.add("Resetting settings...", 0);
+      UpdateConfig.reset();
+      Loader.show();
+      Notifications.add("Resetting account and stats...", 0);
+      const response = await Ape.users.reset();
+
+      if (response.status !== 200) {
+        Loader.hide();
+        return Notifications.add(
+          "There was an error resetting your account. Please try again.",
+          -1
+        );
+      }
+      Loader.hide();
+      Notifications.add("Reset complete", 1);
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } catch (e) {
+      const typedError = e as FirebaseError;
+      Loader.hide();
+      if (typedError.code === "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  (thisPopup) => {
+    const user = Auth.currentUser;
+    if (user === null) return;
+
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
+    }
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
 list["clearTagPb"] = new SimplePopup(
   "clearTagPb",
   "text",
@@ -1176,6 +1245,10 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
 
 $(".pageSettings #deleteAccount").on("click", () => {
   list["deleteAccount"].show();
+});
+
+$(".pageSettings #resetAccount").on("click", () => {
+  list["resetAccount"].show();
 });
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
