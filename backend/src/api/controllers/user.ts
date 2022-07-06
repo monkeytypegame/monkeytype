@@ -10,6 +10,7 @@ import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
+import { deleteConfig } from "../../dal/config";
 
 export async function createNewUser(
   req: MonkeyTypes.Request
@@ -51,6 +52,7 @@ export async function resetUser(
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteAllResults(uid),
+    deleteConfig(uid),
   ]);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
