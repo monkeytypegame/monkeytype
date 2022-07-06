@@ -1,10 +1,22 @@
 {
   "language": "french",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -608,9 +620,9 @@
       "id": 100
     },
     {
-      "text": "J'oubliai les fumées d'amour, car rien ne rend si tranquille comme de suer sous la pioche, du lever au coucher du soleil ; et quand vient la nuit, ceux qui ont eu affaire à la terre grasse et lourde de chez nous, qui est la plus rude maîtresse qu'il y ait, ne s'amusent pas tant à penser qu'à dormir pour recommencer le lendemain.",
+      "text": "J'oubliai les fumées d'amour, car rien ne rend si tranquille comme de suer sous la pioche, du lever au coucher du soleil; et quand vient la nuit, ceux qui ont eu affaire à la terre grasse et lourde de chez nous, qui est la plus rude maîtresse qu'il y ait, ne s'amusent pas tant à penser qu'à dormir pour recommencer le lendemain.",
       "source": "George Sand - Les Maîtres sonneurs",
-      "length": 330,
+      "length": 329,
       "id": 101
     },
     {
