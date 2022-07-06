@@ -43,3 +43,13 @@ $(document.body).on(
     }
   }
 );
+
+$(document).on("keydown", (e) => {
+  if (e.key === "Escape" && !$("#supportMeWrapper").hasClass("hidden")) {
+    $("#supportMeWrapper")
+      .css("opacity", 1)
+      .animate({ opacity: 0 }, 125, () => {
+        $("#supportMeWrapper").addClass("hidden");
+      });
+  }
+});

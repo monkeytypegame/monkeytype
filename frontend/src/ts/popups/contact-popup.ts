@@ -28,3 +28,13 @@ $(document.body).on(
     }
   }
 );
+
+$(document).on("keydown", (e) => {
+  if (e.key === "Escape" && !$("#contactPopupWrapper").hasClass("hidden")) {
+    $("#contactPopupWrapper")
+      .css("opacity", 1)
+      .animate({ opacity: 0 }, 125, () => {
+        $("#contactPopupWrapper").addClass("hidden");
+      });
+  }
+});
