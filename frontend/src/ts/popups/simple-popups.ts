@@ -729,7 +729,7 @@ list["resetAccount"] = new SimplePopup(
         );
       }
       Loader.hide();
-      Notifications.add("Reset complete", 0);
+      Notifications.add("Reset complete", 1);
       setTimeout(() => {
         location.reload();
       }, 3000);
