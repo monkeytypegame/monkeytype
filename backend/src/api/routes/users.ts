@@ -443,7 +443,9 @@ const profileDetailsBase = joi
 router.patch(
   "/profile",
   requireProfilesEnabled,
-  authenticateRequest(),
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
   RateLimit.userProfileUpdate,
   validateRequest({
     body: {
