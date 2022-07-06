@@ -715,42 +715,20 @@ list["resetAccount"] = new SimplePopup(
       } else {
         await reauthenticateWithPopup(user, AccountController.gmailProvider);
       }
+      Notifications.add("Resetting settings...", 0);
+      UpdateConfig.reset();
       Loader.show();
       Notifications.add("Resetting account and stats...", 0);
-      const responses = [Ape.users.reset()];
+      const response = await Ape.users.reset();
 
-      if (DB.getSnapshot().discordId !== undefined) {
-        responses.push(Ape.users.unlinkDiscord());
-
-        Notifications.add("Accounts unlinked", 1);
-        const snap = DB.getSnapshot();
-        snap.discordAvatar = undefined;
-        snap.discordId = undefined;
-        AccountButton.update();
-        DB.setSnapshot(snap);
-        Settings.updateDiscordSection();
-      }
-
-      const results = await Promise.all(responses);
-
-      const failedResponse = results.find(
-        (response) => response.status !== 200
-      );
-      if (failedResponse) {
+      if (response.status !== 200) {
         Loader.hide();
         return Notifications.add(
           "There was an error resetting your account. Please try again.",
           -1
         );
       }
-
       Loader.hide();
-
-      Loader.show();
-      Notifications.add("Resetting settings...", 0);
-      UpdateConfig.reset();
-      Loader.hide();
-
       Notifications.add("Reset complete", 0);
       setTimeout(() => {
         location.reload();

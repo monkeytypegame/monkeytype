@@ -61,6 +61,8 @@ export async function resetUser(uid: string): Promise<void> {
         timeTyping: 0,
         lbMemory: {},
         bananas: 0,
+        discordId: undefined,
+        discordAvatar: undefined,
         profileDetails: {
           bio: "",
           keyboard: "",
