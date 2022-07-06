@@ -131,10 +131,7 @@ function checkIfFailed(
     TimerEvent.dispatch("fail", "min wpm");
     return;
   }
-  if (
-    Config.minAcc === "custom" &&
-    acc < Config.minAccCustom
-  ) {
+  if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
