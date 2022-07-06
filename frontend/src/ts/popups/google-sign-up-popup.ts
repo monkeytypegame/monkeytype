@@ -29,7 +29,7 @@ export function show(credential: UserCredential): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#googleSignUpPopup input").trigger("focus").select();
+        $("#googleSignUpPopup input").trigger("focus").trigger("select");
       });
   }
 }

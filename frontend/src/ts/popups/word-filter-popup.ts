@@ -83,7 +83,7 @@ async function apply(set: boolean): Promise<void> {
   hide();
 }
 
-$("#wordFilterPopupWrapper").mousedown((e) => {
+$("#wordFilterPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
     hide();
   }
@@ -93,7 +93,7 @@ $("#wordFilterPopup .languageInput").one("select2:open", function () {
   $("input.select2-search__field").prop("placeholder", "search");
 });
 
-$("#wordFilterPopupWrapper .button").mousedown((e) => {
+$("#wordFilterPopupWrapper .button").on("mousedown", (e) => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
   setTimeout(() => {
