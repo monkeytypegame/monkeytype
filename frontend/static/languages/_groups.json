@@ -205,6 +205,10 @@
     "languages": ["pinyin", "pinyin_1k", "pinyin_10k"]
   },
   {
+    "name": "hausa",
+    "languages": ["hausa", "hausa_1k"]
+  },
+  {
     "name": "swedish",
     "languages": ["swedish", "swedish_1k"]
   },
@@ -267,6 +271,10 @@
   {
     "name": "albanian",
     "languages": ["albanian", "albanian_1k"]
+  },
+  {
+    "name": "shona",
+    "languages": ["shona", "shona_1k"]
   },
   {
     "name": "armenian",
