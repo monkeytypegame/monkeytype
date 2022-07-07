@@ -69,3 +69,7 @@ export async function removePreset(
     throw new MonkeyError(404, "Preset not found");
   }
 }
+
+export async function deleteAllPresets(uid: string): Promise<void> {
+  await db.collection(COLLECTION_NAME).deleteMany({ uid });
+}

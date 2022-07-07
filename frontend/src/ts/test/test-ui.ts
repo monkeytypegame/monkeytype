@@ -912,6 +912,12 @@ $(document.body).on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
+$("#saveScreenshotButton").on("keypress", (e) => {
+  if (e.key === "Enter") {
+    screenshot();
+  }
+});
+
 $(document).on("click", "#testModesNotice .textButton.blind", () => {
   UpdateConfig.setBlindMode(!Config.blindMode);
 });

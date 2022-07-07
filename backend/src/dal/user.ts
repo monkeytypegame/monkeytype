@@ -41,6 +41,43 @@ export async function deleteUser(uid: string): Promise<void> {
   await getUsersCollection().deleteOne({ uid });
 }
 
+export async function resetUser(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        personalBests: {
+          custom: {},
+          quote: {},
+          time: {},
+          words: {},
+          zen: {},
+        },
+        lbPersonalBests: {
+          time: {},
+        },
+        completedTests: 0,
+        startedTests: 0,
+        timeTyping: 0,
+        lbMemory: {},
+        bananas: 0,
+        profileDetails: {
+          bio: "",
+          keyboard: "",
+          socialProfiles: {},
+        },
+        favoriteQuotes: {},
+        customThemes: [],
+        tags: [],
+      },
+      $unset: {
+        discordAvatar: "",
+        discordId: "",
+      },
+    }
+  );
+}
+
 const DAY_IN_SECONDS = 24 * 60 * 60;
 const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
 
