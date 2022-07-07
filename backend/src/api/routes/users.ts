@@ -420,7 +420,7 @@ router.get(
     isPublic: true,
     acceptApeKeys: true,
   }),
-  withApeRateLimiter(RateLimit.userGet),
+  withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
       uid: joi.string().required(),

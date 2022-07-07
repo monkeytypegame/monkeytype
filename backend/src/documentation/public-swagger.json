@@ -72,11 +72,11 @@
         }
       }
     },
-    "/users/:uid/results"  : {
+    "/users/:uid/results": {
       "get": {
         "tags": ["users"],
         "summary": "Gets a user's profile",
-        "parameters" : [
+        "parameters": [
           {
             "name": "uid",
             "in": "params",
@@ -259,73 +259,83 @@
         }
       }
     },
-    "Profile" : {
+    "Profile": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
           "example": "example_name"
         },
-        "banned" : {
-          "type": "bool",
+        "banned": {
+          "type": "boolean",
           "example": "true"
         },
-        "addedAt" : {
+        "addedAt": {
           "type": "integer",
           "example": 1644438189583
         },
-        "startedTests": {
-          "type": "integer",
-          "example": 578
-        },
-        "completedTests": {
-          "type": "integer",
-          "example": 451
-        },
-        "timeTyping": {
-          "type": "number",
-          "format": "double",
-          "example": 3941.6
-        },
-        "time": {
+        "typingStats": {
           "type": "object",
           "properties": {
-            "15": {
+            "startedTests": {
               "type": "integer",
-              "example": "120"
+              "example": 578
             },
-            "30": {
+            "completedTests": {
               "type": "integer",
-              "example": "120"
+              "example": 451
             },
-            "60": {
-             "type": "integer",
-             "example": "120"
-            },
-            "120": {
-             "type": "integer",
-             "example": "120"
+            "timeTyping": {
+              "type": "number",
+              "format": "double",
+              "example": 3941.6
             }
           }
         },
-        "words": {
+        "personalBests": {
           "type": "object",
           "properties": {
-            "10": {
-              "type": "integer",
-              "example": "120"
+            "time": {
+              "type": "object",
+              "properties": {
+                "15": {
+                  "type": "integer",
+                  "example": "120"
+                },
+                "30": {
+                  "type": "integer",
+                  "example": "120"
+                },
+                "60": {
+                  "type": "integer",
+                  "example": "120"
+                },
+                "120": {
+                  "type": "integer",
+                  "example": "120"
+                }
+              }
             },
-            "25": {
-              "type": "integer",
-              "example": "120"
-            },
-            "50": {
-              "type": "integer",
-              "example": "120"
-            },
-            "100": {
-              "type": "integer",
-              "example": "120"
+            "words": {
+              "type": "object",
+              "properties": {
+                "10": {
+                  "type": "integer",
+                  "example": "120"
+                },
+                "25": {
+                  "type": "integer",
+                  "example": "120"
+                },
+                "50": {
+                  "type": "integer",
+                  "example": "120"
+                },
+                "100": {
+                  "type": "integer",
+                  "example": "120"
+                }
+              }
             }
           }
         },
@@ -341,22 +351,22 @@
           "type": "object",
           "badges": {
             "type": "array",
-            "items" : {
+            "items": {
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "string",
+                  "type": "integer",
                   "example": "1"
                 },
                 "selected": {
-                  "type": "bool",
+                  "type": "boolean",
                   "example": "true"
                 }
               }
             }
           }
         },
-        "details" : {
+        "details": {
           "type": "object",
           "properties": {
             "bio": {
@@ -372,15 +382,15 @@
               "properties": {
                 "twitter": {
                   "type": "string",
-                  "example": "twitter.com/monkeytype"
+                  "example": "monkeytype"
                 },
                 "github": {
                   "type": "string",
-                  "example": "github.com/monkeytype"
+                  "example": "monkeytype"
                 },
-                "website" :{
+                "website": {
                   "type": "string",
-                  "example": "monkeytype.com"
+                  "example": "https://monkeytype.com/"
                 }
               }
             }
