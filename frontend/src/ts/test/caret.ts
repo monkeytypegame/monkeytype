@@ -44,10 +44,8 @@ export async function updatePosition(): Promise<void> {
     caretWidth /= 3;
   }
 
-  let inputLen = TestInput.input.current.length;
-  inputLen = Misc.trailingComposeChars.test(TestInput.input.current)
-    ? TestInput.input.current.search(Misc.trailingComposeChars) + 1
-    : inputLen;
+  const inputLen = TestInput.input.current.length;
+
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;
