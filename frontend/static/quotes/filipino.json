@@ -1,22 +1,10 @@
 {
   "language": "filipino",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -232,7 +220,7 @@
     {
       "text": "Umandar ang mabagal na oras. Lumakad ang mahahabang araw. Dumating at lumipas ang anim na linggo. Hindi na muling nakita ni Mario Lim sa pier si Carmen. Naging tag-init ang taglamig. Naging tag-ulan ang tag-init. Naging taglamig ang tag-ulan. Tumakbo ang panahon. Walang pakundangang gumalaw ang mga bituin at planeta. Kumupas ang mga sumpaan at alaala. Ilang ulit mang binalikan ang lugar, hindi na muling natagpuan ni Mario Lim ang buhay niya.",
       "source": "Si, Bob Ong",
-      "length": 446,
+      "length": 445,
       "id": 36
     }
   ]
