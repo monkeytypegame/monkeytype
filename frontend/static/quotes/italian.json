@@ -618,6 +618,12 @@
       "source": "Gustave Flaubert",
       "length": 138,
       "id": 100
+    },
+    {
+      "text": "M'inganneranno, forse, la vecchiezza e il timore, ma sospetto che la specie umana - l'unica - stia per estinguersi, e che la Biblioteca perdurerà: illuminata, solitaria, infinita, perfettamente immobile, armata di volumi preziosi, inutile, incorruttibile, segreta.",
+      "source": "Jorge Luis Borges, The Library of Babel",
+      "length": 264,
+      "id": 101
     }
   ]
 }
