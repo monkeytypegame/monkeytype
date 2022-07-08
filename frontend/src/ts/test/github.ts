@@ -123,6 +123,7 @@ function extractWords(fileContent: string): string[] {
 }
 
 async function sendGithubApiRequest(endpoint: string): Promise<unknown> {
+  const origin = "https://api.github.com";
   const url = origin + endpoint;
   const fileRequest = await fetch(url);
   if (!fileRequest.ok) {
