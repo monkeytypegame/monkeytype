@@ -765,7 +765,7 @@ export async function init(): Promise<void> {
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
 
-  if (ActivePage.get() == "test") {
+  if (!PageTransition.get() && ActivePage.get() == "test") {
     await Funbox.activate();
   }
 
