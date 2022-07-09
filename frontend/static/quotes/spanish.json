@@ -1,22 +1,10 @@
 {
   "language": "spanish",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -632,7 +620,7 @@
       "id": 102
     },
     {
-      "text": "Mira ese punto. Eso es aquí. Eso es nuestro hogar. Eso somos nosotros. En él, todos los que amas, todos los que conoces, todos de los que alguna vez escuchaste, cada ser humano que ha existido, vivió su vida. La suma de todas nuestras alegrías y sufrimientos, miles de religiones seguras de sí mismas, ideologías y doctrinas económicas, cada cazador y recolector, cada héroe y cobarde, cada creador y destructor de civilizaciones, cada rey y campesino, cada joven pareja enamorada, cada madre y padre, niño esperanzado, inventor y explorador, cada maestro de la moral, cada político corrupto, cada “superestrella”, cada “líder supremo”, cada santo y pecador en la historia de nuestra especie, vivió ahí – en una mota de polvo suspendida en un rayo de sol.",
+      "text": "Mira ese punto. Eso es aquí. Eso es nuestro hogar. Eso somos nosotros. En él, todos los que amas, todos los que conoces, todos de los que alguna vez escuchaste, cada ser humano que ha existido, vivió su vida. La suma de todas nuestras alegrías y sufrimientos, miles de religiones seguras de sí mismas, ideologías y doctrinas económicas, cada cazador y recolector, cada héroe y cobarde, cada creador y destructor de civilizaciones, cada rey y campesino, cada joven pareja enamorada, cada madre y padre, niño esperanzado, inventor y explorador, cada maestro de la moral, cada político corrupto, cada “superestrella”, cada “líder supremo”, cada santo y pecador en la historia de nuestra especie, vivió ahí - en una mota de polvo suspendida en un rayo de sol.",
       "source": "Carl Sagan",
       "length": 755,
       "id": 103
