@@ -29,7 +29,7 @@ The steps for basic contributions are showcased splendidly in [this youtube vide
 
 ### Forking Monkeytype
 
-First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Go to the [Monkeytype repo](https://github.com/monkeytypegame/monkeytype/) and then click the "fork" button.
+First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Click [here](https://github.com/monkeytypegame/monkeytype/fork) to open the fork wizard or go to the [Monkeytype repo](https://github.com/monkeytypegame/monkeytype/) and then click the `fork` button near the top right of your screen.
 
 <img width="1552" alt="Screenshot showing location of the fork button on GitHub." src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
