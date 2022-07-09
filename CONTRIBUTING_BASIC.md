@@ -39,7 +39,7 @@ This will create a clone of the repository under your own account. Navigate to y
 
 There are two methods to making a change in the code.
 
-#### Option 1 - VS Code Web Editor (Recommended)
+#### Option 1 - Visual Studio Code Web Editor (Recommended)
 
 If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. To make complex edits without installing anything, we recommend using GitHub's VS Code web editor. In your fork of Monkeytype (fork it first), go to the `Code` tab of the repo and press <kbd>.</kbd>(the period/dot key). This will open up the repo in an online VS Code instance you can use to edit files in the browser. Once you are done making your changes, go to the Source Control tab in the activity bar with <kbd>Ctrl/Cmd + Shift + G</kbd>, click the `+` next to the files you've changed to stage them, type a brief message summarizing the changes made in the commit, and press <kbd>Ctrl/Cmd + Enter</kbd> to commit your changes to your fork.
 
