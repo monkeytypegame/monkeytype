@@ -1,10 +1,22 @@
 {
   "language": "portuguese",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -290,9 +302,9 @@
       "id": 47
     },
     {
-      "text": "Nos esquecemos completamente das manias de assassinato e suicídio de Tyler enquanto assitimos a outro arquivo deslizar pela lateral do prédio e cair, as gavetas se abrirem no ar e pilhas de papéis branos serem apanhados por uma corrente de ar e se espalharem no vento.",
+      "text": "Nos esquecemos completamente das manias de assassinato e suicídio de Tyler enquanto assistimos a outro arquivo deslizar pela lateral do prédio e cair, as gavetas se abrirem no ar e pilhas de papéis brancos serem apanhados por uma corrente de ar e se espalharem no vento.",
       "source": "Chuck Palahniuk, Clube da luta",
-      "length": 268,
+      "length": 270,
       "id": 48
     },
     {
@@ -308,7 +320,7 @@
       "id": 50
     },
     {
-      "text": "O visto para os Estados Unidos deve ter ficado pronto. Meus pais estavam tentando conseguir vistos antes de me levarem para o orfanato. Por isso eles venderam a livraria para poderem abrir outra nos Estados Unidos. Uma vez meu pai me contou uma história sobre um judeu que era livreiro nos Estados Unidos. lá as estantes são feitas de ouro maciço.",
+      "text": "O visto para os Estados Unidos deve ter ficado pronto. Meus pais estavam tentando conseguir vistos antes de me levarem para o orfanato. Por isso eles venderam a livraria para poderem abrir outra nos Estados Unidos. Uma vez meu pai me contou uma história sobre um judeu que era livreiro nos Estados Unidos, lá as estantes são feitas de ouro maciço.",
       "source": "Morris Gleitzman, Uma vez",
       "length": 347,
       "id": 51
@@ -354,6 +366,36 @@
       "source": "Charles Duhigg, O poder do hábito",
       "length": 385,
       "id": 58
+    },
+    {
+      "text": "Dizem por aí, mas não tenho certeza, que meu sorriso fica mais feliz quando te vejo, dizem também que meus olhos brilham, dizem também que é amor, mas isso sim é certeza.",
+      "source": "Dom Casmurro, Machado de Assis",
+      "length": 170,
+      "id": 59
+    },
+    {
+      "text": "Desinteressado de dinheiro, de glória e posição, vivendo numa reserva de sonho, adquirira a candura e a pureza d'alma que vão habitar esses homens de uma ideia fixa, os grandes estudiosos, os sábios, e os inventores, gente que fica mais terna, mais ingênua, mais inocente que as donzelas das poesias de outra época.",
+      "source": "Triste Fim de Policarpo Quaresma, Lima Barreto",
+      "length": 315,
+      "id": 60
+    },
+    {
+      "text": "A primeira coisa que nos diz uma obra de arte é que o mundo da liberdade é possível, e isso nos dá força para lutar contra o mundo da opressão.",
+      "source": "Vidas Secas, Graciliano Ramos",
+      "length": 143,
+      "id": 61
+    },
+    {
+      "text": "O correr da vida embrulha tudo, a vida é assim: esquenta e esfria, aperta e daí afrouxa, sossega e depois desinquieta. O que ela quer da gente é coragem.",
+      "source": "Grande Sertão: Veredas, Guimarães Rosa",
+      "length": 153,
+      "id": 62
+    },
+    {
+      "text": "Renda-se, como eu me rendi. Mergulhe no que você não conhece como eu mergulhei. Não se preocupe em entender, viver ultrapassa qualquer entendimento.",
+      "source": "A Hora da Estrela, Clarice Lispector",
+      "length": 148,
+      "id": 63
     }
   ]
 }

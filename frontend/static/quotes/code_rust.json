@@ -1,10 +1,22 @@
 {
   "language": "code_rust",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -210,12 +222,6 @@
       "length": 28,
       "source": "Convert real number to string with 2 decimal places - programming-idioms.org",
       "text": "let s = format!(\"{:.2}\", x);"
-    },
-    {
-      "id": 35,
-      "length": 13,
-      "source": "Assign to string the japanese word \u30cd\u30b3 - programming-idioms.org",
-      "text": "let s = \"\u30cd\u30b3\";"
     },
     {
       "id": 36,

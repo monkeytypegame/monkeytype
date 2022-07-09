@@ -54,13 +54,13 @@
 
 @keyframes shake {
   0% {
-    transform: translate(4px, 0) rotate(0deg);
+    transform: translate(2px, 0) rotate(0deg);
   }
   50% {
-    transform: translate(-4px, 0) rotate(0deg);
+    transform: translate(-2px, 0) rotate(0deg);
   }
   100% {
-    transform: translate(4px, 0) rotate(0deg);
+    transform: translate(2px, 0) rotate(0deg);
   }
 }
 
@@ -76,5 +76,26 @@
   }
   100% {
     background-color: var(--bg-color);
+  }
+}
+
+@keyframes rgb-bg {
+  0% {
+    background: hsl(120, 39%, 49%);
+  }
+  20% {
+    background: hsl(192, 48%, 48%);
+  }
+  40% {
+    background: hsl(264, 90%, 58%);
+  }
+  60% {
+    background: hsl(357, 89%, 50%);
+  }
+  80% {
+    background: hsl(46, 100%, 51%);
+  }
+  100% {
+    background: hsl(120, 39%, 49%);
   }
 }

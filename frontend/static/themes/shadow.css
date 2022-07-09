@@ -3,6 +3,7 @@
   --main-color: #eee;
   --caret-color: #eee;
   --sub-color: #444;
+  --sub-alt-color: #171717;
   --text-color: #eee;
   --error-color: #fff;
   --error-extra-color: #d8d8d8;
@@ -38,10 +39,10 @@
   color: white;
 }
 
-#top .config .group .buttons .text-button.active,
+#top .config .group .buttons .textButton.active,
 #result .stats .group,
-#menu .icon-button:hover,
-#top .config .group .buttons .text-button:hover,
+#menu .textButton:hover,
+#top .config .group .buttons .textButton:hover,
 a:hover {
   animation: shadow-repeat 3s linear infinite forwards;
 }

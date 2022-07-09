@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -68,7 +80,7 @@
       "id": 10
     },
     {
-      "text": "Man kann einen Menschen nichts lehren, man kann ihm nur helfen, es in sich selbst zu entdecken.",
+      "text": "Man kann einem Menschen nichts lehren, man kann ihm nur helfen, es in sich selbst zu entdecken.",
       "source": "Galileo Galilei",
       "length": 95,
       "id": 11
@@ -578,7 +590,7 @@
       "id": 96
     },
     {
-      "text": "Für Versammlungen unter freien Himmel kann dieses Recht durch Gesetz oder auf Grund eines Gesetzes beschränkt werden.",
+      "text": "Für Versammlungen unter freiem Himmel kann dieses Recht durch Gesetz oder auf Grund eines Gesetzes beschränkt werden.",
       "source": "Grundgesetz Artikel 8.2",
       "length": 117,
       "id": 97
@@ -764,9 +776,9 @@
       "id": 127
     },
     {
-      "text": "Die Macht ist keine Fähigkeit, die man besitzt. Es geht nicht darum, Steine hochzuheben. Es ist ein Energiefeld zwischen allen Dingen - eine Spannung, oder ein Gleichgewicht, dass die Galaxis zusammenhält.",
+      "text": "Die Macht ist keine Fähigkeit, die man besitzt. Es geht nicht darum, Steine hochzuheben. Es ist ein Energiefeld zwischen allen Dingen - eine Spannung, oder ein Gleichgewicht, das die Galaxis zusammenhält.",
       "source": "Star Wars Episode 8 – Die letzten Jedi",
-      "length": 205,
+      "length": 204,
       "id": 128
     },
     {
@@ -872,9 +884,9 @@
       "id": 146
     },
     {
-      "text": "Du magst sein, wer du willst, magst machen, was du willst, aber wenn du dir etwas unbedingt wünscht, dann weil dieser Wunsch in der Seele des Universums geboren wurde. Er ist dein Auftrag auf der Erde.",
+      "text": "Du magst sein, wer du willst, magst machen, was du willst, aber wenn du dir etwas unbedingt wünschst, dann weil dieser Wunsch in der Seele des Universums geboren wurde. Er ist dein Auftrag auf der Erde.",
       "source": "Der Alchimist",
-      "length": 201,
+      "length": 202,
       "id": 147
     },
     {
@@ -1022,7 +1034,7 @@
       "id": 171
     },
     {
-      "text": "\"Warum sagst du immer wieder Dingsbums?\" ,wandte sich Rincewind an den Vogel. \"Begrenzter Dingsbums\", krächzte der Papagei. \"Dingsda. Soundso. Du weißt schon. Enthält Wörter.\"",
+      "text": "\"Warum sagst du immer wieder Dingsbums?\", wandte sich Rincewind an den Vogel. \"Begrenzter Dingsbums\", krächzte der Papagei. \"Dingsda. Soundso. Du weißt schon. Enthält Wörter.\"",
       "source": "Terry Pratchett - Eric",
       "length": 175,
       "id": 172
@@ -1502,7 +1514,7 @@
       "id": 252
     },
     {
-      "text": "Bruce, du magst im Inneren noch immer der großartige Junge von früher sein, Aber was man im Inneren ist, zählt nicht. Das, was wir tun, zeigt, wer wir sind.",
+      "text": "Bruce, du magst im Inneren noch immer der großartige Junge von früher sein, aber was man im Inneren ist, zählt nicht. Das, was wir tun, zeigt, wer wir sind.",
       "source": "Batman Begins",
       "length": 156,
       "id": 253
@@ -1760,9 +1772,9 @@
       "id": 295
     },
     {
-      "text": "Wenn man 600 Dollar klaut, kann man einfach verschwinden, aber bei 600 Million, musst du ihnen verkaufen, dass es dich erwischt hat.",
+      "text": "Wenn man 600 Dollar klaut, kann man einfach verschwinden, aber bei 600 Millionen, musst du ihnen verkaufen, dass es dich erwischt hat.",
       "source": "Stirb langsam",
-      "length": 132,
+      "length": 134,
       "id": 296
     },
     {
@@ -2108,9 +2120,9 @@
       "id": 353
     },
     {
-      "text": "Wenn ich seinen Namen flüstere, spüre ich Scherben im Mund. Wenn ich sein Bild vor mich befehlen, legt sich Eis auf meine Gedanken. Wenn ich mir vorstelle, ihn zu streicheln, öffnen Skalpelle mir Finger und Hände.",
+      "text": "Wenn ich seinen Namen flüstere, spüre ich Scherben im Mund. Wenn ich sein Bild vor mich befehle, legt sich Eis auf meine Gedanken. Wenn ich mir vorstelle, ihn zu streicheln, öffnen Skalpelle mir Finger und Hände.",
       "source": "Die Mitte der Welt",
-      "length": 213,
+      "length": 212,
       "id": 354
     },
     {
@@ -2144,7 +2156,7 @@
       "id": 359
     },
     {
-      "text": "Und das musst du verstehen: in jedem Krieg gibt es Gruppierungen – die einen, die Frieden wollen, die anderen, die aus einer Myriade von Gründen weiterhin Krieg wollen und jene, deren Wünsche beides übertreffen.",
+      "text": "Und das musst du verstehen: In jedem Krieg gibt es Gruppierungen – die einen, die Frieden wollen, die anderen, die aus einer Myriade von Gründen weiterhin Krieg wollen und jene, deren Wünsche beides übertreffen.",
       "source": "Die große Stille – Zerrissene Erde",
       "length": 211,
       "id": 360
@@ -2396,9 +2408,9 @@
       "id": 402
     },
     {
-      "text": "Wie soll man auf wenigen Seiten ein Leben in seiner ganzen Wahrhaftigkeit schildern? Vor allem jenes andere Leben, das wir jenseits dessen führten, was ich in diesem Tagebuch niederzuschreiben vermochte? Wie soll ich Bilanz ziehen? Die ganzen Jahre über sah ich ihn in diesen Momenten, wenn ich am Ende einer Schlacht dastand und inständig hoffte, dass er nicht gefallen war. Dann die Freude, ihn wiederzusehen, wenn er im Feld über den verstümmelten, dampfenden Körpern seiner Gegner stand und das Schwert triumphierend in meine Richtung reckte, ein Gruß, den ich erwiderte. Ich erinnerte mich auch noch daran, wie wir Seite an Seite dastanden, als die Horde bei Tharos auf uns zustürmte. All meine Kameraden und der, den ich am meisten liebte, waren bereit, sich ihnen zu stellen. An die Ruhe, die in diesem Moment von ihm ausging, als beobachte er einen Sonnenuntergang und nicht das Ende der Welt. Seine Ruhe gab mir den Glauben, das wir es schaffen würden. Es fällt mir schwer, mich an eine Zeit zu erinnern, in der er nicht bei mir war. Ich kann all diese Empfindungen nicht richtig zu Papier bringen. Ich wünschte nur, er wäre jetzt hier, das ist alles. Wünschte, er würde, nun da ich sterbe, ein letztes Mal meine Hand halten.",
+      "text": "Wie soll man auf wenigen Seiten ein Leben in seiner ganzen Wahrhaftigkeit schildern? Vor allem jenes andere Leben, das wir jenseits dessen führten, was ich in diesem Tagebuch niederzuschreiben vermochte? Wie soll ich Bilanz ziehen? Die ganzen Jahre über sah ich ihn in diesen Momenten, wenn ich am Ende einer Schlacht dastand und inständig hoffte, dass er nicht gefallen war. Dann die Freude, ihn wiederzusehen, wenn er im Feld über den verstümmelten, dampfenden Körpern seiner Gegner stand und das Schwert triumphierend in meine Richtung reckte, ein Gruß, den ich erwiderte. Ich erinnerte mich auch noch daran, wie wir Seite an Seite dastanden, als die Horde bei Tharos auf uns zustürmte. All meine Kameraden und der, den ich am meisten liebte, waren bereit, sich ihnen zu stellen. An die Ruhe, die in diesem Moment von ihm ausging, als beobachte er einen Sonnenuntergang und nicht das Ende der Welt. Seine Ruhe gab mir den Glauben, dass wir es schaffen würden. Es fällt mir schwer, mich an eine Zeit zu erinnern, in der er nicht bei mir war. Ich kann all diese Empfindungen nicht richtig zu Papier bringen. Ich wünschte nur, er wäre jetzt hier, das ist alles. Wünschte, er würde, nun da ich sterbe, ein letztes Mal meine Hand halten.",
       "source": "Schwarzer Sold",
-      "length": 1234,
+      "length": 1235,
       "id": 403
     },
     {
@@ -2696,12 +2708,6 @@
       "id": 453
     },
     {
-      "text": "Du kennst doch bestimmt den Spruch, dass Gott die Menschen nach seinem Ebenbild erschaffen hat. Guck dich mal um! Wenn man davon ausgeht, dass Gott ein Arschloch ist, ergibt das plötzlich mächtig viel Sinn.",
-      "source": "Die Känguru Chroniken – Ansichten eines Vorlauten",
-      "length": 206,
-      "id": 454
-    },
-    {
       "text": "Hoffnung ist ein Fehler. Wenn du nicht reparieren kannst, was kaputt ist, wirst du verrückt.",
       "source": "Mad Max – Fury Road",
       "length": 92,
@@ -2912,7 +2918,7 @@
       "id": 489
     },
     {
-      "text": "Das Fernsehen, mein lieber Daniel, ist der Antichrist und ich sage Ihnen, es werden drei oder vier Generationen genügen, bis die Leute nicht einmal mehr selbstständig furzen können und der Mensch in die Höhle, in die mittelalterliche Barbarei und in einen Schwachsinn zurückfällt, den schon die Nachtschnecke im Pleistozän überwunden hat.",
+      "text": "Das Fernsehen, mein lieber Daniel, ist der Antichrist und ich sage Ihnen, es werden drei oder vier Generationen genügen, bis die Leute nicht einmal mehr selbstständig furzen können und der Mensch in die Höhle, in die mittelalterliche Barbarei und in einen Schwachsinn zurückfällt, den schon die Nacktschnecke im Pleistozän überwunden hat.",
       "source": "Der Schatten des Windes",
       "length": 338,
       "id": 490
@@ -3036,6 +3042,90 @@
       "source": "Bertolt Brecht",
       "length": 122,
       "id": 510
+    },
+    {
+      "text": "Da sprach die Fee zum Hexer: \"Solchen Rat geb ich dir: Zieh eiserne Stiefel an, nimm einen eisernen Wanderstab. Geh in den eisernen Stiefeln bis ans Ende der Welt, den Weg vor dir aber sollst du mit dem Stab ertasten und mit deinen Tränen netzen. Geh durch Feuer und Wasser, halte nicht inne, schau nicht zurück. Wenn aber die Sohlen durchgelaufen sind, wenn der eiserne Stab verschlissen ist, wenn deine Augen von Wind und Hitze so trocken geworden sind, dass keine Träne mehr hervorquillt, dann wirst du am Ende der Welt das finden, was du suchst, und das, was du liebst. Vielleicht.\" Und der Hexer ging durch Feuer und Wasser, schaute niemals zurück. Doch er nahm weder eiserne Stiefel mit noch einen Wanderstab. Nur sein Hexerschwert nahm er mit. Er hörte nicht auf die Worte der Fee. Und er tat gut daran, denn es war eine böse Fee.",
+      "source": "Geralt-Saga – Feuertaufe",
+      "length": 837,
+      "id": 511
+    },
+    {
+      "text": "Ich habe in meinem Leben viele Militärs kennengelernt. Ich kannte Marschälle, Generäle, Heergrafen und Hetmane, die Triumphatoren zahlreicher Feldzüge und Schlachten. Ich habe mir ihre Erzählungen und Erinnerungen angehört. Ich habe sie über Karten gebeugt gesehen, wie sie darauf verschiedenfarbige Striche zeichneten, Pläne machten, die Strategie bedachten. In diesem Krieg auf dem Papier passte alles, alles funktionierte, alles war klar und in vorbildlicher Ordnung. So muss es sein, erklärten die Militärs. Eine Armee heißt ja vor allem Ordnung und Disziplin. Umso erstaunlicher ist es, dass der wirkliche Krieg - und ein paar wirkliche Kriege habe ich gesehen – im Hinblick auf Ordnung und Disziplin einem in Flammen stehenden Bordell zum Verwechseln ähnlich sieht.",
+      "source": "Geralt-Saga - Feuertaufe",
+      "length": 771,
+      "id": 512
+    },
+    {
+      "text": "Ich danke dir für die anerkennenden Worte über die Dichter und die Dichtkunst. Und für die Belehrung in Sachen Bogenschießen. Eine gute Waffe ist das, der Bogen. Wisst ihr was? Ich glaube, dass sich die Kriegskunst genau in diese Richtung entwickeln wird. In den künftigen Kriegen wird man auf Distanz kämpfen. Man wird eine Waffe mit so großer Reichweite erfinden, dass die Gegner einander umbringen können, ohne sich auch nur zu sehen.",
+      "source": "Geralt-Saga - Feuertaufe",
+      "length": 437,
+      "id": 513
+    },
+    {
+      "text": "Vampir, auch Wurdulak, heißet ein toter Mensch, so vom Chaos wieder zum Leben erweckt ward. Wiewohl er das erste Leben verloren hat, gewinnet er das zweite des Nachts. Er verlässt den Sarg beim Lichte des Mondes, und kann allein dahin gehen, wohin des Mondes Strahlen ihn führen; er kommet über schlafende Jungfern oder junge Bauernknechte und sauget, sonder sie zu wecken, ihr süßes Blut.",
+      "source": "Geralt-Saga - Feuertaufe",
+      "length": 389,
+      "id": 514
+    },
+    {
+      "text": "Wer Blut vergossen hat und Blut getrunken hat wird mit Blut bezahlen. Keine drei Tage vergehen, dann wird eins im anderen sterben, und dann stirbt etwas in jedem. Langsam werden sie sterben, Stück um Stück… Und wenn am Ende die eisernen Stiefel durchgelaufen sind und die Tränen trocken, dann stirbt das wenige, was bleibt. Es stirbt sogar das, was niemals stirbt.",
+      "source": "Geralt-Saga - Feuertaufe - Weissagung",
+      "length": 364,
+      "id": 515
+    },
+    {
+      "text": "Geralt löste den Geldbeutel vom Gürtel, hielt ihn bei den Riemen und wog ihn in der Hand. \"Du kannst mich nicht bestechen\", erklärte der Zerberus stolz. \"Das habe ich nicht vor.\" Der Türhüter war zu massig, als dass seine Reflexe ihm erlaubt hätten, sich gegen den raschen Schlag eines gewöhnlichen Menschen zu decken. Vor dem Schlag eines Hexers bekam er nicht einmal die Augen zu. Mit metallischem Klang donnerte ihm der Beutel an die Schläfe. Er stürzte gegen die Tür und hielt sich mit beiden Händen am Rahmen. Geralt riss ihn davon mit einem Tritt ins Knie los, stieß mit der Schulter zu und benutzte nochmals den Geldbeutel. Die Augen des Türstehers trübten sich und liefen zu einem urkomischen Schielen auseinander, die Beine klappten unter ihm wie zwei Federmesser zusammen. Der Hexer sah, dass der Koloss, obwohl schon fast bewusstlos, noch immer mit den Armen herumfuchtelte, und versetzte ihm noch einen dritten Schlag, mitten auf den Scheitel. \"Geld\", murmelte er, \"öffnet alle Türen.\"",
+      "source": "Geralt-Saga - Der letzte Wunsch",
+      "length": 997,
+      "id": 516
+    },
+    {
+      "text": "Von der Liebe wissen wir nicht viel. Mit der Liebe ist es wie mit einer Birne. Die Birne ist süß und hat eine Form. Versucht einmal, die Form einer Birne zu definieren.",
+      "source": "Geralt-Saga - Die Zeit der Verachtung",
+      "length": 168,
+      "id": 517
+    },
+    {
+      "text": "Zu sagen, ich hätte sie gekannt, wäre eine Übertreibung. Ich glaube, außer dem Hexer und der Zauberin kannte sie niemand wirklich. Als ich sie zum ersten Mal sah, machte sie überhaupt keinen großen Eindruck auf mich, selbst unter den ziemlich unheimlichen Begleitumständen. Ich habe Leute gekannt, die behaupteten, sofort, bei der ersten Begegnung den Hauch des Todes gespürt zu haben, der dieses Mädchen umgab. Mir jedoch kam sie ganz gewöhnlich vor, aber ich wusste ja, dass sie nicht gewöhnlich war – daher habe ich mich besonders bemüht, sie eingehend zu betrachten, in ihr das Ungewöhnliche zu entdecken, zu erfühlen. Doch ich beobachtete nichts und fühlte nichts. Nichts, was die späteren tragischen Ereignisse hätte signalisieren, ankündigen, ahnen lassen können. Die Ereignisse, deren Ursache sie war. Und die Ereignisse, die sie selbst herbeiführte.",
+      "source": "Geralt-Saga - Die Zeit der Verachtung",
+      "length": 858,
+      "id": 518
+    },
+    {
+      "text": "Wenn sich nach Einbruch der Dunkelheit noch jemand zu der Hütte mit dem eingesackten und moosbewachsenen Strohdach geschlichen hätte, wenn er hineingeschaut hätte, hätte er im Licht der Flammen und der Glut in der Feuerstelle einen graubärtigen Greis erblickt, über einen Haufen Felle gebeugt. Er hätte auch ein aschblondes Mädchen mit einer hässlichen Narbe auf der Wange erblickt, einer Narbe, die so gar nicht zu den grünen Augen passte, die groß waren wie bei einem Kind. Doch niemand konnte das sehen. Die Hütte stand mitten im Röhrich, in einem Sumpfland, in das sich niemand wagte.",
+      "source": "Geralt-Saga - Der Schwalbenturm",
+      "length": 588,
+      "id": 519
+    },
+    {
+      "text": "Die Welt ist voller offensichtlicher Dinge, die offensichtlich niemand sieht.",
+      "source": "Sherlock Holmes – der Hund von Baskerville",
+      "length": 77,
+      "id": 520
+    },
+    {
+      "text": "Sterben, das hatte ich gelernt, war kein Mannschaftssport. Es war ein einsames Unterfangen. Alle, die ich liebte, standen am trockenen Ufer, während ich allein in einem Boot saß, das sich langsam von der Küste entfernte, und niemand konnte etwas tun. Sie konnten nur dabei zusehen.",
+      "source": "Full Tilt",
+      "length": 281,
+      "id": 521
+    },
+    {
+      "text": "In der Sowjetunion ist jeder Arbeiter ein Staatsangestellter, und es gibt ein Sprichwort: So lange die Bosse vorgeben, uns zu bezahlen, werden wir vorgeben zu arbeiten.",
+      "source": "Jagd auf Roter Oktober (frei übersetzt)",
+      "length": 168,
+      "id": 522
+    },
+    {
+      "text": "Es ist keine Schande, etwas nicht zu wissen, aber es ist eine, nichts lernen zu wollen.",
+      "source": "City of Fallen Magic – Mit Feuer und Zinn",
+      "length": 87,
+      "id": 523
+    },
+    {
+      "text": "Birka war einst ein reiches Dorf gewesen, bezaubert und außergewöhnlich malerisch gelegen – seine gelben Stroh- und roten Ziegeldächer füllten dicht an dicht einen Talkessel mit steilen, bewaldeten Hängen, die je nach Jahreszeit ihre Farbe änderten. Vor allem im Herbst erfreute der Anblick von Birka das ästhetische Auge und das empfindsame Herz. So war es bis zu dem Zeitpunkt, da die Siedlung ihren Namen änderte.",
+      "source": "Geralt-Saga - Der Schwalbenturm",
+      "length": 416,
+      "id": 524
     }
   ]
 }

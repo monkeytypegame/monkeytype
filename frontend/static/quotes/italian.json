@@ -1,10 +1,22 @@
 {
   "language": "italian",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -38,7 +50,7 @@
       "id": 5
     },
     {
-      "text": "E' molto semplice: non vedo bene che col cuore. L'essenziale è invisibile agli occhi.",
+      "text": "È' molto semplice: non vedo bene che col cuore. L'essenziale è invisibile agli occhi.",
       "source": "Antoine De Saint-Exupéry - Little Prince",
       "length": 85,
       "id": 6
@@ -606,6 +618,12 @@
       "source": "Gustave Flaubert",
       "length": 138,
       "id": 100
+    },
+    {
+      "text": "M'inganneranno, forse, la vecchiezza e il timore, ma sospetto che la specie umana - l'unica - stia per estinguersi, e che la Biblioteca perdurerà: illuminata, solitaria, infinita, perfettamente immobile, armata di volumi preziosi, inutile, incorruttibile, segreta.",
+      "source": "Jorge Luis Borges, The Library of Babel",
+      "length": 264,
+      "id": 101
     }
   ]
 }

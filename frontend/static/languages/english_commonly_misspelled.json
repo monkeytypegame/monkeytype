@@ -1428,7 +1428,6 @@
     "required",
     "provided",
     "dream",
-    "license",
     "excel",
     "upon",
     "transcription",
@@ -1539,7 +1538,6 @@
     "implemented",
     "especially",
     "proprietary",
-    "license",
     "instruction",
     "philosophy",
     "universities",
@@ -1740,6 +1738,7 @@
     "assume",
     "align",
     "arbitrary",
-    "provision"
+    "provision",
+    "license"
   ]
 }

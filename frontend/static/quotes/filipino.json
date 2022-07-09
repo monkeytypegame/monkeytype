@@ -1,10 +1,22 @@
 {
   "language": "filipino",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -14,9 +26,9 @@
       "id": 1
     },
     {
-      "text": "Tama na 'yan inuman na hoy pare koy tumagay ka nananabik na lalamunan naghihintay nag-aabang.",
+      "text": "Tama na 'yan inuman na hoy pare ko'y tumagay ka nananabik na lalamunan naghihintay nag-aabang.",
       "source": "Inuman Na, Parokya Ni Edgar",
-      "length": 93,
+      "length": 94,
       "id": 2
     },
     {
@@ -32,9 +44,9 @@
       "id": 4
     },
     {
-      "text": "Bahay namin maliit lamang, pero pero pero malinis 'to pati sa kusina. Kumain man kami laging sama-sama. Pen-pen-pen de sarapen de kutsilyo de almasen. Haw-haw-haw de karabaw de karabaw de batuten. Pengeng singko pambilbi ng puto sa mga tindera ng bitsu-bitsu. Skyflakes, coke 500 pahingi ng kiss. Pambayad mo sa jeepney kulang pa ng diyes.",
+      "text": "Bahay namin maliit lamang, pero pero pero malinis 'to pati sa kusina. Kumain man kami laging sama-sama. Pen-pen-pen de sarapen de kutsilyo de almasen. Haw-haw-haw de karabaw de karabaw de batuten. Pengeng singko pambili ng puto sa mga tindera ng bitsu-bitsu. Skyflakes, coke 500 pahingi ng kiss. Pambayad mo sa jeepney kulang pa ng diyes.",
       "source": "Toyang, Eraserheads",
-      "length": 339,
+      "length": 338,
       "id": 5
     },
     {
@@ -68,7 +80,7 @@
       "id": 10
     },
     {
-      "text": "Bahay kubo, kahit munto. Ang halaman doon ay sari-sari. Singkamas at talong, sigarilyas at mani. Sitaw, bataw, patani. Kundol, patola, upo't kalabase, at saka mayroon pang labanos, mustasa, sibuyas, kamatis, bawang at luya. Sa paligid-ligid ay puno ng linga.",
+      "text": "Bahay kubo, kahit munti. Ang halaman doon ay sari-sari. Singkamas at talong, sigarilyas at mani. Sitaw, bataw, patani. Kundol, patola, upo't kalabasa, at saka mayroon pang labanos, mustasa, sibuyas, kamatis, bawang at luya. Sa paligid-ligid ay puno ng linga.",
       "source": "Bahay Kubo",
       "length": 258,
       "id": 11
@@ -180,6 +192,12 @@
       "source": "Ang Sandali ng mga Mata, Alvin B. Yapan",
       "length": 739,
       "id": 29
+    },
+    {
+      "text": "Lagi nalang umuulan. Parang walang katapusan Tulad ng paghihirap ko ngayon. Parang walang humpay. Sa kabila ng lahat ng aking pagsisikap. Na limutin ka ay di pa rin magawa. Hindi naman ako tanga. Alam ko nang wala ka na. Pero mahirap lang na tanggapin. Di na kita kapiling. Iniwan mo akong nag-iisa. Sa gitna ng dilim at basang-basa pa sa ulan. Pero wag mag-alala di na kita gagambalain. Alam ko namang ngayon may kapiling ka nang iba",
+      "source": "Cueshe",
+      "length": 434,
+      "id": 30
     }
   ]
 }

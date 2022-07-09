@@ -2684,8 +2684,6 @@
     "hartomleiding",
     "hartseer",
     "hawe",
-    "hawens",
-    "hawens",
     "hê",
     "hedendaags",
     "hedendaagse",
@@ -4143,8 +4141,6 @@
     "ministers",
     "minste",
     "minstens",
-    "minute",
-    "minute",
     "minuut",
     "mis",
     "misbruik",
@@ -5069,8 +5065,6 @@
     "ouetehuis",
     "oulik",
     "oulike",
-    "ouma",
-    "ouma",
     "oupa",
     "outentiek",
     "outentieke",
@@ -5584,8 +5578,6 @@
     "religieuse",
     "rem",
     "remme",
-    "rente",
-    "rente",
     "rentekoers",
     "reorganisasie",
     "repertoire",
@@ -8175,6 +8167,10 @@
     "yster",
     "Zimbabwe",
     "Zoeloe",
-    "Zoeloes"
+    "Zoeloes",
+    "hawens",
+    "minute",
+    "ouma",
+    "rente"
   ]
 }

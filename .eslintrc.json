@@ -5,9 +5,7 @@
     "node": true
   },
   "globals": {
-    "firebase": "readonly",
     "$": "readonly",
-    "moment": "readonly",
     "jQuery": "readonly",
     "html2canvas": "readonly",
     "ClipboardItem": "readonly",
@@ -25,11 +23,11 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  // "parser": "@typescript-eslint/parser",
   "rules": {
     "json/*": ["error"],
     "indent": ["off"],
     "linebreak-style": ["error", "unix"],
+    "curly": ["error", "multi-line"],
     "quotes": [
       "error",
       "double",
@@ -37,7 +35,6 @@
     ],
     "semi": ["error", "always"],
     "no-empty": ["error", { "allowEmptyCatch": true }],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^(_|e|event)" }],
     "no-var": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
@@ -70,11 +67,13 @@
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
+        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
           "error",
-          { "argsIgnorePattern": "^(_|e|event)" }
+          { "argsIgnorePattern": "^(_|e|event)", "varsIgnorePattern": "^_" }
         ],
-        "@typescript-eslint/no-var-requires": "error"
+        "@typescript-eslint/no-var-requires": "error",
+        "@typescript-eslint/no-this-alias": "off"
       }
       // "parserOptions": {
       //   "project": "./tsconfig.json"

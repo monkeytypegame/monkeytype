@@ -175,9 +175,18 @@
   ,{
     "name": "accuracy",
     "display": "Accuracy",
+    "autoRole": false,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required."
+    "message": "Minimum 60wpm and 100% accuracy required.",
+    "requirements" : {
+      "wpm": {
+        "min": 60
+      },
+      "accuracy": {
+        "min": 100
+      }
+    }
   }
   ,{
     "name": "accuracyExpert",
@@ -185,6 +194,7 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -206,6 +216,7 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -227,6 +238,7 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -246,19 +258,34 @@
     "name": "inAGalaxyFarFarAway",
     "display": "In a galaxy far far away",
     "type": "script",
-    "parameters": ["episode4.txt",null,"space_balls"]
+    "parameters": ["episode4.txt",null,"space_balls"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "whosYourDaddy",
     "display": "Who's your daddy?",
     "type": "script",
-    "parameters": ["episode5.txt",null,"space_balls"]
+    "parameters": ["episode5.txt",null,"space_balls"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "itsATrap",
     "display": "It's a trap!",
     "type": "script",
-    "parameters": ["episode6.txt",null,"space_balls"]
+    "parameters": ["episode6.txt",null,"space_balls"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "jolly",
@@ -344,6 +371,13 @@
     "parameters": ["shrek.txt",null,null]
   }
   ,{
+    "name": "lookAtMeIAmTheDeveloperNow",
+    "display": "Look at me. I am the developer now.",
+    "autoRole": true,
+    "type": "script",
+    "parameters": ["sourcecde.txt",null,null]
+  }
+  ,{
     "name": "beLikeWater",
     "display": "Be like water",
     "type": "funbox",
@@ -399,7 +433,12 @@
     "name": "mnemonist",
     "display": "Mnemonist",
     "type": "funbox",
-    "parameters": ["memory","words",25,"master"]
+    "parameters": ["memory","words",25,"master"],
+    "requirements": {
+      "config": {
+        "tapeMode": "off"
+      }
+    }
   }
   ,{
     "name": "earfquake",
@@ -461,6 +500,9 @@
       },
       "funbox": {
         "exact": "read_ahead"
+      },
+      "config": {
+        "tapeMode": "off"
       }
     }
   }
@@ -479,6 +521,9 @@
       },
       "funbox": {
         "exact": "read_ahead_hard"
+      },
+      "config": {
+        "tapeMode": "off"
       }
     }
   }

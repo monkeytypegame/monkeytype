@@ -11,10 +11,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Noto+Naskh+Arabic&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap");
+
+@font-face {
+  font-family: "Boon";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Boon-400.ttf") format("truetype"),
+    url("../webfonts/Boon-400.otf") format("opentype");
+}
 
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono";
+  --font: "Roboto Mono", "Vazirmatn";
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
 }
@@ -47,6 +57,14 @@ a {
   &:hover {
     color: var(--text-color);
   }
+}
+
+a[data-link] * {
+  pointer-events: none;
+}
+
+a.button {
+  text-decoration: none;
 }
 
 body {
@@ -97,20 +115,26 @@ label.checkbox {
     width: 0;
     height: 0;
     display: none;
+    user-select: none;
 
     & ~ .customTextCheckbox {
-      width: 12px;
-      height: 12px;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 2px;
-      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-      display: inline-block;
-      margin: 0 0.5rem 0 0.25rem;
-      transition: 0.25s;
+      width: 1.25rem;
+      height: 1.25rem;
+      background: var(--sub-alt-color);
+      border-radius: calc(var(--roundness) / 2);
+      display: inline-grid;
+      margin: 0 0.5rem 0 0;
+      user-select: none;
+      cursor: pointer;
+      & .check {
+        opacity: 0;
+        color: var(--main-color);
+        transition: 0.125s;
+      }
     }
 
-    &:checked ~ .customTextCheckbox {
-      background: var(--main-color);
+    &:checked ~ .customTextCheckbox .check {
+      opacity: 1;
     }
   }
 }
@@ -131,6 +155,7 @@ label.checkbox {
   z-index: 999;
   grid-template-rows: auto 1fr auto;
   width: 100%;
+  transition: padding-top 0.125s;
   &.wide125 {
     max-width: 1250px;
   }
@@ -150,7 +175,7 @@ key {
   background-color: var(--sub-color);
   /* font-weight: bold; */
   padding: 0.1rem 0.3rem;
-  margin: 3px 0;
+  margin: 0rem 0.5rem;
   border-radius: 0.1rem;
   display: inline-block;
   font-size: 0.7rem;
@@ -176,7 +201,7 @@ key {
       .bar {
         width: 20rem;
         height: 0.5rem;
-        background: rgba(0, 0, 0, 0.1);
+        background: var(--sub-alt-color);
         border-radius: var(--roundness);
         .fill {
           height: 100%;
@@ -241,18 +266,47 @@ key {
 .button {
   color: var(--text-color);
   cursor: pointer;
-  transition: 0.25s;
-  padding: 0.4rem;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.5rem;
   border-radius: var(--roundness);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--sub-alt-color);
   text-align: center;
   user-select: none;
   -webkit-user-select: none;
-  // display: grid;
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1rem;
+  line-height: 1.25rem;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+
+  &.active {
+    background: var(--main-color);
+    color: var(--bg-color);
+    &:hover {
+      background: var(--text-color);
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.33;
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
 
   &:hover {
     color: var(--bg-color);
@@ -260,89 +314,77 @@ key {
     outline: none;
   }
   &:focus {
-    color: var(--main-color);
+    outline: 2px solid var(--text-color);
+  }
+  &:active {
     background: var(--sub-color);
-    outline: none;
+    color: var(--bg-color);
+  }
+}
+
+.textButton {
+  color: var(--sub-color);
+  cursor: pointer;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.5rem;
+  border-radius: var(--roundness);
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  align-content: center;
+  height: min-content;
+  height: -moz-min-content;
+  line-height: 1.25rem;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  width: max-content;
+  width: -moz-max-content;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.25rem;
+  text-decoration: none;
+
+  .fas,
+  .far {
+    display: grid;
+    place-content: center center;
   }
 
   &.active {
-    background: var(--main-color);
-    color: var(--bg-color);
+    color: var(--main-color);
     &:hover {
-      // color: var(--text-color);
-      background: var(--text-color);
-      outline: none;
+      color: var(--text-color);
     }
-    &:focus {
-      color: var(--bg-color);
-      background: var(--main-color);
-      outline: none;
+    &:active {
+      color: var(--sub-color);
     }
   }
 
   &.disabled {
-    opacity: 0.5;
+    opacity: 0.33;
     cursor: default;
     pointer-events: none;
     &:hover {
-      color: var(--text-color);
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--text-color);
       outline: none;
     }
-  }
-
-  &.disabled.active {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
-    &:hover {
+    &:active {
+      background: var(--sub-color);
       color: var(--bg-color);
-      background: var(--main-color);
-      outline: none;
     }
   }
-}
-
-.text-button {
-  transition: 0.25s;
-  color: var(--sub-color);
-  cursor: pointer;
-  margin-right: 0.25rem;
-  cursor: pointer;
-  outline: none;
-
-  &.active {
-    color: var(--main-color);
-  }
-
-  &:hover,
-  &:focus {
-    color: var(--text-color);
-  }
-}
-
-.icon-button {
-  display: grid;
-  grid-auto-flow: column;
-  align-content: center;
-  transition: 0.25s;
-  padding: 0.5rem;
-  border-radius: var(--roundness);
-  cursor: pointer;
 
   &:hover {
     color: var(--text-color);
   }
   &:focus {
-    // background: var(--sub-color);
-    color: var(--sub-color);
-    border: none;
+    color: var(--text-color);
     outline: none;
   }
-  &.disabled {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
+  &:active {
+    color: var(--sub-color);
   }
 }
 
@@ -355,13 +397,93 @@ key {
   height: 4rem;
   text-align: center;
   line-height: 4rem;
-  background: var(--bg-color);
+  background: var(--sub-alt-color);
   border-radius: 99rem;
   z-index: 99;
   cursor: pointer;
   color: var(--sub-color);
   transition: 0.25s;
   &:hover {
-    color: var(--text-color);
+    background: var(--text-color);
+    color: var(--bg-color);
+  }
+}
+
+.inputAndIndicator {
+  input {
+    width: 100%;
+  }
+  position: relative;
+  .statusIndicator {
+    width: 2.25rem;
+    height: 2.25rem;
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* background: red; */
+    display: grid;
+    grid-template-columns: 2.25rem;
+    grid-template-rows: 2.25rem;
+    place-items: center center;
+    cursor: pointer;
+
+    .indicator {
+      grid-column: 1/2;
+      grid-row: 1/2;
+      &.level-1 {
+        color: var(--error-color);
+      }
+      &.level0 {
+        color: var(--sub-color);
+      }
+      &.level1 {
+        color: var(--main-color);
+      }
+    }
+  }
+}
+
+.configureAPI.button {
+  position: fixed;
+  left: 2rem;
+  bottom: 2rem;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.5rem;
+  text-decoration: none;
+  z-index: 999999999;
+}
+
+.avatar {
+  transition: opacity 0.125s, filter 0.125s, webkit-filter 0.125s;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 100%;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.badge {
+  background: var(--sub-color);
+  color: var(--text-color);
+  border-radius: calc(var(--roundness) / 2);
+  // padding: 0.15em 0.5em;
+  user-select: none;
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: baseline;
+  .fas,
+  .far {
+    margin-right: 0.3rem;
+    margin-left: 0.3rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+    font-size: 0.9em;
+  }
+  .text {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+    margin-right: 0.3rem;
   }
 }

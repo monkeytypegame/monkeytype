@@ -3,6 +3,7 @@
   --main-color: #00e980;
   --caret-color: #00e980;
   --sub-color: #245c69;
+  --sub-alt-color: #000c13;
   --text-color: #fff;
   --error-color: #b94da1;
   --error-extra-color: #9b3a76;
@@ -60,10 +61,10 @@
 }
 
 .logo .bottom,
-#top .config .group .buttons .text-button.active,
+#top .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
-#menu .icon-button:hover,
-#top .config .group .buttons .text-button:hover,
+#menu .textButton:hover,
+#top .config .group .buttons .textButton:hover,
 a:hover,
 #words.flipped .word {
   animation: rgb 5s linear infinite;

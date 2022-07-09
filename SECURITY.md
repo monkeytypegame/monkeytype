@@ -4,7 +4,7 @@ We take the security and integrity of Monkeytype very seriously. If you have fou
 
 ### Reporting a Vulnerability
 
-For vulnerabilities that impact the confidentiality, integrity, and availability of Monkeytype services, please send your disclosure via (1) [email](jack@monkeytype.com), or (2) private Discord chat to Miodec(Miodec#1512). For non-security related platform bugs, follow the bug submission [guidelines](https://github.com/Miodec/monkeytype#bug-report-or-feature-request). Include as much detail as possible to ensure reproducibility. At a minimum, vulnerability disclosures should include:
+For vulnerabilities that impact the confidentiality, integrity, and availability of Monkeytype services, please send your disclosure via (1) [email](jack@monkeytype.com), or (2) private Discord chat to Miodec (Miodec#1512). For non-security related platform bugs, follow the bug submission [guidelines](https://github.com/Miodec/monkeytype#bug-report-or-feature-request). Include as much detail as possible to ensure reproducibility. At a minimum, vulnerability disclosures should include:
 
 - Vulnerability Description
 - Proof of Concept
