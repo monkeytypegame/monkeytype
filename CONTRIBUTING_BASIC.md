@@ -21,7 +21,7 @@ For all other changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING
 
 ### Prerequisites
 
-You must have a browser that can access GitHub, and possess an account. Once you have those two things, you're ready to move on to making your contribution!
+You must have a browser that can access GitHub, and possess a GitHub account. Once you have those two things, you're ready to move on to making your contribution(s)!
 
 The steps for basic contributions are showcased splendidly in [this youtube video](https://www.youtube.com/watch?v=nT8KGYVurIU), so I highly recommend giving it a watch.
 
@@ -29,7 +29,7 @@ The steps for basic contributions are showcased splendidly in [this youtube vide
 
 ### Forking Monkeytype
 
-First you will have to make a personal copy of the Monkeytype repository, also known as "forking". Click [here](https://github.com/monkeytypegame/monkeytype/fork) to open the fork wizard or go to the [Monkeytype repo](https://github.com/monkeytypegame/monkeytype/) and then click the `fork` button near the top right of your screen.
+First you will have to obtain your own copy of the Monkeytype repository, also known as "forking". Click [here](https://github.com/monkeytypegame/monkeytype/fork) to open the fork wizard or go to the top right of your screen and then click the `fork` button.
 
 <img width="1552" alt="Screenshot showing location of the fork button on GitHub." src="https://user-images.githubusercontent.com/83455454/149194972-23343642-7a1f-4c0c-b5f2-36f4b39a2639.png">
 
