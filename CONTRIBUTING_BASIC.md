@@ -23,7 +23,7 @@ For all other changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING
 
 You must have a browser that can access GitHub, and possess a GitHub account. Once you have those two things, you're ready to move on to making your contribution(s)!
 
-The steps for basic contributions are showcased splendidly in [this youtube video](https://www.youtube.com/watch?v=nT8KGYVurIU), so I highly recommend giving it a watch.
+The steps for basic contributions are showcased splendidly in [this youtube video](https://www.youtube.com/watch?v=nT8KGYVurIU), so it is recommended you watch it.
 
 ## Contributing
 
@@ -55,7 +55,7 @@ Upon clicking this, you'll have the ability to edit the document itself.
 
 _Note however that some files that are too large might not have this option. In these cases you will need to download the code and create edits outside of the GitHub web UI. Refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md)_
 
-At this point, I would also like to point you to [CONTRIBUTING.md](./CONTRIBUTING.md) to view guidelines for theme, language, and quote contributions.
+At this point, you should take a look at [CONTRIBUTING.md](./CONTRIBUTING.md) to view guidelines for theme, language, and quote contributions.
 
 Once you've completed your change, you're ready to commit them. At the bottom of the edit file screen, you will find the commit UI. In the first box, you want to put in a title that describes the change you made. Then in the description field, you can put in any additional detail to supplement your title further.
 
