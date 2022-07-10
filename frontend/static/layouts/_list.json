@@ -604,7 +604,7 @@
       "row5": [" "]
     }
   },
-  "canary": {
+  "canary (hotdog)": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -615,7 +615,7 @@
       "row5": [" "]
     }
   },
-    "canary_matrix": {
+    "canary_matrix (hotdog_matrix)": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
