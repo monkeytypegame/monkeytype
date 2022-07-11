@@ -146,14 +146,19 @@ export async function punctuateWord(
       } else {
         const rand = Math.random();
         if (rand <= 0.8) {
-          word += ".";
+          if (currentLanguage == "kurdish") {
+            word += ".";
+          } else {
+            word += ".";
+          }
         } else if (rand > 0.8 && rand < 0.9) {
           if (currentLanguage == "french") {
             word = "?";
           } else if (
             currentLanguage == "arabic" ||
             currentLanguage == "persian" ||
-            currentLanguage == "urdu"
+            currentLanguage == "urdu" ||
+            currentLanguage == "kurdish"
           ) {
             word += "؟";
           } else if (currentLanguage == "greek") {
@@ -233,7 +238,7 @@ export async function punctuateWord(
         word = ";";
       } else if (currentLanguage == "greek") {
         word = "·";
-      } else if (currentLanguage == "arabic") {
+      } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
         word += "؛";
       } else {
         word += ";";
@@ -242,7 +247,8 @@ export async function punctuateWord(
       if (
         currentLanguage == "arabic" ||
         currentLanguage == "urdu" ||
-        currentLanguage == "persian"
+        currentLanguage == "persian" ||
+        currentLanguage == "kurdish"
       ) {
         word += "،";
       } else {
