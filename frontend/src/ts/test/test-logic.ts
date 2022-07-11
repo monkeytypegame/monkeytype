@@ -70,6 +70,10 @@ export function setNotSignedInUid(uid: string): void {
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
+function shouldCapitalize(lastChar: string): boolean {
+  return /[?!.؟]/.test(lastChar);
+}
+
 let spanishSentenceTracker = "";
 export async function punctuateWord(
   previousWord: string,
@@ -106,8 +110,8 @@ export async function punctuateWord(
     }
   } else {
     if (
-      (index == 0 || lastChar == "." || lastChar == "?" || lastChar == "!") &&
-      currentLanguage != "code"
+      currentLanguage != "code" &&
+      (index == 0 || shouldCapitalize(lastChar))
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
 
