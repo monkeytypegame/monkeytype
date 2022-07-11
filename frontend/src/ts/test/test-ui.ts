@@ -372,7 +372,21 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
   } else {
-    let wordHighlightClassString = "incorrect";
+    let correctSoFar = false;
+
+    // slice earlier if input has trailing compose characters
+    const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
+      ? input.search(Misc.trailingComposeChars)
+      : input.length;
+    if (
+      input.search(Misc.trailingComposeChars) < currentWord.length &&
+      currentWord.slice(0, inputWithoutComposeLength) ===
+        input.slice(0, inputWithoutComposeLength)
+    ) {
+      correctSoFar = true;
+    }
+
+    let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
