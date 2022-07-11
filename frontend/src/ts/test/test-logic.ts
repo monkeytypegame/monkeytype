@@ -360,6 +360,9 @@ export function restart(
     ) {
       withSameWordset = true;
     }
+    if (TestState.isRepeated) {
+      withSameWordset = true;
+    }
 
     TestInput.pushKeypressesToHistory();
     const testSeconds = TestStats.calculateTestSeconds(performance.now());
