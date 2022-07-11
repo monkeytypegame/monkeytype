@@ -597,6 +597,16 @@ export function getNumbers(len: number): string {
   return ret;
 }
 
+//convert numbers to arabic-indic
+export function convertNumberToArabicIndic(numString: string): string {
+  const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
+  let ret = "";
+  for (let i = 0; i < numString.length; i++) {
+    ret += arabicIndic[parseInt(numString[i])];
+  }
+  return ret;
+}
+
 export function getSpecials(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";

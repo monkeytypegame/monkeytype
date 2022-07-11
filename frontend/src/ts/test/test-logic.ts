@@ -668,6 +668,9 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
     word = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
+    if (Config.language.split("_")[0] === "kurdish") {
+      word = Misc.convertNumberToArabicIndic(word);
+    }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
@@ -757,6 +760,10 @@ async function getNextWord(
   if (Config.numbers) {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
+
+      if (Config.language.split("_")[0] === "kurdish") {
+        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+      }
     }
   }
 
