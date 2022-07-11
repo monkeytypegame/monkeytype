@@ -935,10 +935,21 @@ $("#wordsInput").on("input", (event) => {
     TestUI.scrollTape();
   }
 
-  // force caret at end of input
-  // doing it on next cycle because Chromium on Android won't let me edit
-  // the selection inside the input event
+  const statebefore = CompositionState.getComposing();
   setTimeout(() => {
+    // checking composition state during the input event and on the next loop
+    // this is done because some browsers (e.g. Chrome) will fire the input
+    // event before the compositionend event.
+    // this ensures the UI is correct
+
+    const stateafter = CompositionState.getComposing();
+    if (statebefore !== stateafter) {
+      TestUI.updateWordElement();
+    }
+
+    // force caret at end of input
+    // doing it on next cycle because Chromium on Android won't let me edit
+    // the selection inside the input event
     if (
       (event.target as HTMLInputElement).selectionStart !==
         (event.target as HTMLInputElement).value.length &&
