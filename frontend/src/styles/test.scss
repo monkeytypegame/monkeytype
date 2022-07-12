@@ -511,6 +511,7 @@
     "tribeResults tribeResults"
     "stats chart"
     "morestats morestats"
+    "loginTip loginTip"
     "bottom bottom"
     "tribeBottom tribeBottom";
   // "wordsHistory wordsHistory"
@@ -714,11 +715,10 @@
   }
 
   .loginTip {
-    // grid-column: 1/6;
-    text-align: center;
+    grid-area: loginTip;
     color: var(--sub-color);
-    // grid-row: 2/3;
-    margin-top: 1rem;
+    grid-column: 1/3;
+    text-align: center;
     .link {
       text-decoration: underline;
       display: inline-block;
