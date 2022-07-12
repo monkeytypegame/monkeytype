@@ -1212,30 +1212,38 @@ const commandsDifficulty: MonkeyTypes.CommandsGroup = {
 
 export const commandsEnableAds: MonkeyTypes.CommandsGroup = {
   title: "Set enable ads...",
-  configKey: "enableAds",
+  configKey: "ads",
   list: [
     {
       id: "setEnableAdsOff",
       display: "off",
       configValue: "off",
       exec: (): void => {
-        UpdateConfig.setEnableAds("off");
+        UpdateConfig.setAds("off");
       },
     },
     {
       id: "setEnableAdsOn",
-      display: "on",
-      configValue: "on",
+      display: "result",
+      configValue: "result",
       exec: (): void => {
-        UpdateConfig.setEnableAds("on");
+        UpdateConfig.setAds("result");
       },
     },
     {
-      id: "setEnableMax",
-      display: "sellout",
-      configValue: "max",
+      id: "setEnableOn",
+      display: "on",
+      configValue: "on",
       exec: (): void => {
-        UpdateConfig.setEnableAds("max");
+        UpdateConfig.setAds("on");
+      },
+    },
+    {
+      id: "setEnableSellout",
+      display: "sellout",
+      configValue: "sellout",
+      exec: (): void => {
+        UpdateConfig.setAds("sellout");
       },
     },
   ],

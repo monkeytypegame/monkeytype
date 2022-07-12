@@ -5,7 +5,6 @@
   <body>
     <%= compilation.assets["html/warnings.html"].source() %>
 
-    <div id="ad_rich_media" class="hidden"></div>
     <div class="customBackground"></div>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="bannerCenter" class="focus"></div>
@@ -30,8 +29,14 @@
     </div>
 
     <%= compilation.assets["html/popups.html"].source() %>
-
-    <div style="display: flex; justify-content: space-around">
+    <!-- <div id="div-gpt-ad-mkt-0" style="height: 100vh"></div> -->
+    <div id="app" class="focus">
+      <div>
+        <div id="ad-vertical-left-wrapper" class="ad advertisement ad-v">
+          <div class="icon"><i class="fas fa-ad"></i></div>
+          <div id="ad-vertical-left"></div>
+        </div>
+      </div>
       <div id="centerContent" class="hidden">
         <%= compilation.assets["html/top.html"].source() %>
         <div id="middle">
@@ -47,16 +52,19 @@
 
         <%= compilation.assets["html/bottom.html"].source() %>
 
-        <div class="footerads hidden">
-          <div
-            id="ad_footer"
-            style="display: flex; justify-content: center; justify-self: center"
-          ></div>
-          <div
-            id="ad_footer2"
-            class="hidden"
-            style="display: flex; justify-content: center; justify-self: center"
-          ></div>
+        <div id="ad-footer-wrapper" class="ad advertisement ad-h">
+          <div class="icon"><i class="fas fa-ad"></i></div>
+          <div id="ad-footer"></div>
+        </div>
+        <div id="ad-footer-small-wrapper" class="ad advertisement ad-h-s">
+          <div class="icon small"><i class="fas fa-ad"></i></div>
+          <div id="ad-footer-small"></div>
+        </div>
+      </div>
+      <div>
+        <div id="ad-vertical-right-wrapper" class="ad advertisement ad-v">
+          <div class="icon"><i class="fas fa-ad"></i></div>
+          <div id="ad-vertical-right"></div>
         </div>
       </div>
     </div>

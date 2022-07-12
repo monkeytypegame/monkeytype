@@ -35,6 +35,24 @@
   /* Firefox */
 }
 
+#app {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1000px) auto;
+  justify-items: center;
+  &.wide125 {
+    grid-template-columns: auto minmax(0, 1250px) auto;
+  }
+  &.wide150 {
+    grid-template-columns: auto minmax(0, 1500px) auto;
+  }
+  &.wide200 {
+    grid-template-columns: auto minmax(0, 2000px) auto;
+  }
+  &.widemax {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
 #nocss {
   display: none !important;
   pointer-events: none;

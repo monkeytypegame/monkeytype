@@ -479,7 +479,46 @@
           place-self: center;
           grid-area: check;
         }
+        &.ads {
+          grid-template-columns: 1fr;
+          grid-template-areas:
+            "title"
+            "description";
+          a {
+            margin-top: 0.25rem;
+          }
+        }
       }
+    }
+  }
+}
+
+#videoAdPopupWrapper {
+  display: flex;
+  padding: 2rem;
+  #videoAdPopup {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1000px;
+    aspect-ratio: 16/9;
+    display: grid;
+    grid-template-areas: "middle";
+    .preloader {
+      grid-area: middle;
+      display: grid;
+      place-items: center center;
+      gap: 1rem;
+      font-size: 2rem;
+      color: var(--main-color);
+      height: max-content;
+      align-self: center;
+    }
+    .video {
+      grid-area: middle;
     }
   }
 }

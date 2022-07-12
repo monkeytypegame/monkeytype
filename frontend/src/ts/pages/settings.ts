@@ -166,11 +166,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setRepeatQuotes,
     "button"
   );
-  groups["enableAds"] = new SettingsGroup(
-    "enableAds",
-    UpdateConfig.setEnableAds,
-    "button"
-  );
+  groups["ads"] = new SettingsGroup("ads", UpdateConfig.setAds, "button");
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,

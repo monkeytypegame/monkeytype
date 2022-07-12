@@ -64,14 +64,19 @@
           </div>
         </label>
       </div>
-      <div class="cookie">
+      <div class="cookie ads">
         <label class="checkbox">
           <div class="title">Advertising</div>
           <div class="description">
             Our advertising partner may use cookies to deliver ads that are more
-            relevant to you. If you enable ads you will receive another popup
-            where you can review how they use cookies.
+            relevant to you.
           </div>
+          <a
+            class="text-button"
+            onclick="window.__tcfapi('displayConsentUi', 2, function() {} );"
+          >
+            Click to change your preferences on ad related cookies
+          </a>
         </label>
       </div>
       <div class="button active acceptSelected">Accept selected</div>
@@ -215,6 +220,16 @@
     <div class="group customGroup hidden">
       <div class="button customChange">change</div>
     </div>
+  </div>
+</div>
+
+<div id="videoAdPopupWrapper" class="popupWrapper hidden">
+  <div id="videoAdPopup">
+    <div class="preloader">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+      <div class="button">Click to close</div>
+    </div>
+    <div id="eg-video-player" class="video"></div>
   </div>
 </div>
 

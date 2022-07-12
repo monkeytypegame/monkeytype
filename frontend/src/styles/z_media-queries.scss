@@ -1,3 +1,12 @@
+@media only screen and (max-width: 1330px) {
+  .ad.ad-v {
+    display: none;
+  }
+  #app {
+    grid-template-columns: auto;
+  }
+}
+
 @media only screen and (max-width: 1250px) {
   #leaderboardsWrapper #leaderboards {
     .mainTitle {
@@ -103,6 +112,12 @@
 }
 
 @media only screen and (max-width: 900px) {
+  .ad.ad-h {
+    display: none;
+  }
+  .ad.ad-h-s {
+    display: grid;
+  }
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 1rem;
@@ -827,6 +842,9 @@
 }
 
 @media only screen and (max-width: 350px) {
+  .ad.ad-h-s {
+    display: none;
+  }
   #keymap {
     display: none !important;
   }

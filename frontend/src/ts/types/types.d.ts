@@ -102,7 +102,7 @@ declare namespace MonkeyTypes {
 
   type HighlightMode = "off" | "letter" | "word";
 
-  type EnableAds = "off" | "on" | "max";
+  type Ads = "off" | "result" | "on" | "sellout";
 
   type MinimumAccuracy = "off" | "custom";
 
@@ -363,7 +363,7 @@ declare namespace MonkeyTypes {
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
     alwaysShowCPM: boolean;
-    enableAds: EnableAds;
+    ads: Ads;
     hideExtraLetters: boolean;
     strictSpace: boolean;
     minAcc: MinimumAccuracy;

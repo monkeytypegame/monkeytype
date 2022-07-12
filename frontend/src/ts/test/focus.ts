@@ -23,6 +23,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("#middle").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
     $("#capsWarning").removeClass("focus");
+    $("#app").removeClass("focus");
   }
 }
 

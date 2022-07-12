@@ -10,6 +10,7 @@ import * as PageProfile from "../pages/profile";
 import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
+import * as AdController from "../controllers/ad-controller";
 
 export async function change(
   page: Page,
@@ -58,6 +59,7 @@ export async function change(
         nextPage?.afterShow();
       },
       async () => {
+        AdController.reinstate();
         await nextPage?.beforeShow(params);
       }
     );

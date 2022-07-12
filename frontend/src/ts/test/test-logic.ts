@@ -53,6 +53,7 @@ import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
+import * as AdController from "../controllers/ad-controller";
 
 let failReason = "";
 
@@ -483,6 +484,7 @@ export function restart(
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
+      AdController.destroyResult();
       let shouldQuoteRepeat = false;
       if (
         Config.mode === "quote" &&
