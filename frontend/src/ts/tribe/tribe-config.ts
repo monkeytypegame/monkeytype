@@ -93,7 +93,7 @@ export function apply(config: TribeTypes.RoomConfig): void {
     true
   );
   if (config.minWpm !== "off") {
-    UpdateConfig.setMinWpmCustomSpeed(config.minAcc as number, true, true);
+    UpdateConfig.setMinWpmCustomSpeed(config.minWpm as number, true, true);
     UpdateConfig.setMinWpm("custom", true, true);
   } else {
     UpdateConfig.setMinWpm("off", true, true);
