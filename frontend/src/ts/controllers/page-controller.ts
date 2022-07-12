@@ -57,9 +57,9 @@ export async function change(
         nextPage.element.addClass("active");
         resolve(true);
         nextPage?.afterShow();
+        AdController.reinstate();
       },
       async () => {
-        AdController.reinstate();
         await nextPage?.beforeShow(params);
       }
     );
