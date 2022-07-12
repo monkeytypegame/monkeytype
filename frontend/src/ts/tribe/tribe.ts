@@ -232,6 +232,7 @@ async function connect(): Promise<void> {
 function checkIfEveryoneIsReady(): void {
   if (!room) return;
   if (getSelf()?.isLeader) {
+    if (Object.keys(room.users).length <= 1) return;
     let everyoneReady = true;
     Object.keys(room.users).forEach((userId) => {
       if (room && (room.users[userId].isLeader || room.users[userId].isAfk)) {
