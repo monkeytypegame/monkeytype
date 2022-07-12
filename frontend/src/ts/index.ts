@@ -31,6 +31,7 @@ import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
+import { egVideoListener } from "./popups/video-ad-popup";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -55,3 +56,5 @@ extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
 extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
+
+extendedGlobal.egVideoListener = egVideoListener;

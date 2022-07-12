@@ -583,6 +583,7 @@ declare namespace MonkeyTypes {
     toggleUnsmoothedRaw(): void;
     enableSpacingDebug(): void;
     noGoogleNoMo(): void;
+    egVideoListener(options: Record<string, string>): void;
   }
 
   interface GithubRelease {

@@ -1,3 +1,5 @@
+import * as Notifications from "../elements/notifications";
+
 function show(): void {
   if ($("#videoAdPopupWrapper").hasClass("hidden")) {
     $("#videoAdPopupWrapper")
@@ -28,10 +30,19 @@ function hide(): void {
   }
 }
 
+export function egVideoListener(options: Record<string, string>): void {
+  const event = options["event"];
+
+  if (event === "started") {
+    //
+  } else if (event === "finished") {
+    hide();
+  } else if (event === "empty") {
+    Notifications.add("Failed to load video ad. Please try again later", 0, 3);
+    hide();
+  }
+}
+
 $(".pageTest #watchVideoAdButton").on("click", () => {
   show();
-});
-
-$("#videoAdPopup .button").on("click", () => {
-  hide();
 });
