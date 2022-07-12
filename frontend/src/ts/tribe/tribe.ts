@@ -229,6 +229,25 @@ async function connect(): Promise<void> {
   // changeActiveSubpage("prelobby");
 }
 
+function checkIfEveryoneIsReady(): void {
+  if (!room) return;
+  if (getSelf()?.isLeader) {
+    let everyoneReady = true;
+    Object.keys(room.users).forEach((userId) => {
+      if (room && (room.users[userId].isLeader || room.users[userId].isAfk)) {
+        return;
+      }
+      if (room && !room.users[userId].isReady) {
+        everyoneReady = false;
+      }
+    });
+    if (everyoneReady) {
+      Notifications.add("Everyone is ready", 1, undefined, "Tribe");
+      TribeSound.play("chat_mention");
+    }
+  }
+}
+
 socket.on("connect", () => {
   connect();
 });
@@ -311,6 +330,7 @@ socket.on("room_player_left", (e) => {
     TribeUserList.update();
     TribeSound.play("leave");
     TribeButtons.update();
+    checkIfEveryoneIsReady();
   }
 });
 
@@ -344,21 +364,7 @@ socket.on("room_user_is_ready", (e) => {
   room.users[e.userId].isReady = true;
   TribeUserList.update();
   TribeButtons.update();
-  if (getSelf()?.isLeader) {
-    let everyoneReady = true;
-    Object.keys(room.users).forEach((userId) => {
-      if (room && (room.users[userId].isLeader || room.users[userId].isAfk)) {
-        return;
-      }
-      if (room && !room.users[userId].isReady) {
-        everyoneReady = false;
-      }
-    });
-    if (everyoneReady) {
-      Notifications.add("Everyone is ready", 1, undefined, "Tribe");
-      TribeSound.play("chat_mention");
-    }
-  }
+  checkIfEveryoneIsReady();
 });
 
 socket.on("room_user_afk_update", (e) => {
