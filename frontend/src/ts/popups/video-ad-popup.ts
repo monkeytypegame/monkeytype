@@ -32,6 +32,6 @@ $(".pageTest #watchVideoAdButton").on("click", () => {
   show();
 });
 
-$("#videoAdPopup .button").on("click", (e) => {
+$("#videoAdPopup .button").on("click", () => {
   hide();
 });
