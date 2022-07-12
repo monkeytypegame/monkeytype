@@ -126,7 +126,7 @@
   },
   {
     "name": "tamil",
-    "languages": ["tamil"]
+    "languages": ["tamil", "tamil_1k"]
   },
   {
     "name": "slovenian",
@@ -205,6 +205,10 @@
     "languages": ["pinyin", "pinyin_1k", "pinyin_10k"]
   },
   {
+    "name": "hausa",
+    "languages": ["hausa", "hausa_1k"]
+  },
+  {
     "name": "swedish",
     "languages": ["swedish", "swedish_1k"]
   },
@@ -269,6 +273,10 @@
     "languages": ["albanian", "albanian_1k"]
   },
   {
+    "name": "shona",
+    "languages": ["shona", "shona_1k"]
+  },
+  {
     "name": "armenian",
     "languages": ["armenian_western", "armenian_western_1k"]
   },
@@ -308,6 +316,14 @@
   {
     "name": "sinhala",
     "languages": ["sinhala"]
+  },
+  {
+    "name": "latvian",
+    "languages": ["latvian", "latvian_1k"]
+  },
+  {
+    "name": "maltese",
+    "languages": ["maltese", "maltese_1k"]
   },
   {
     "name": "toki_pona",

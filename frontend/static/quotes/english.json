@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -11858,10 +11870,10 @@
       "length": 378
     },
     {
-      "text": "Therefore you should be desirous of hearing patiently the opinions of others, and consider and reflect carefully whether or no he who censures you has reason for his censure; and correct your work if you find that he is right, but if not, then let it seem that you have not understood him, or - in case he is a man whom you esteem - show him by argument why it is that he is mistaken.",
+      "text": "Therefore you should be desirous of hearing patiently the opinions of others, and consider and reflect carefully whether or not he who censures you has reason for his censure; and correct your work if you find that he is right, but if not, then let it seem that you have not understood him, or - in case he is a man whom you esteem - show him by argument why it is that he is mistaken.",
       "source": "The Notebooks of Leonardo",
       "id": 2016,
-      "length": 384
+      "length": 385
     },
     {
       "text": "I've thought about this a lot. If we're together this is what's going to happen. I'm going to keep pursuing what I'm pursuing, and it's going to take up more and more of my time. You're going to see me less and less. When you do, I'll be distracted, I'll be upset, I'll be playing things in my mind. And you're going to just grow to resent me. At a certain point, you'll tell me to ease up on the drumming, to spend more time with you. And I won't be able to. And I'll start to resent you for even asking me that. I'll feel like you're dragging me down, you'll feel like you don't matter - and before long, we'll hate each other. So I think we should just cut it off now, cleanly, for those reasons.",
@@ -14240,7 +14252,7 @@
       "length": 111
     },
     {
-      "text": "But I had a point here. A lesson, if you will. There are other organisations out there. And, in time, I'm sure they're going to spoon-feed you their own patented form of bull. Ignore the verbage and look at what they're doing. What they're asking you to do. What sort of world they'd have you build and how they're going to pay for it.",
+      "text": "But I had a point here. A lesson, if you will. There are other organizations out there. And, in time, I'm sure they're going to spoon-feed you their own patented form of bull. Ignore the verbage and look at what they're doing. What they're asking you to do. What sort of world they'd have you build and how they're going to pay for it.",
       "source": "Fallout 4",
       "id": 2424,
       "length": 335
@@ -16004,7 +16016,7 @@
       "length": 168
     },
     {
-      "text": "It's a pity that folk as talk about fighting the Enemy can't let others do their bit in their own way without interfering. He'd be mighty pleased, if he could see you now. Think he'd got a new friend, he would.",
+      "text": "It's a pity that folk as talk about fighting the enemy can't let others do their bit in their own way without interfering. He'd be mighty pleased, if he could see you now. Think he'd got a new friend, he would.",
       "source": "The Two Towers",
       "id": 2729,
       "length": 210
@@ -27398,12 +27410,6 @@
       "length": 168
     },
     {
-      "text": "They say in chess you've got to kill the queen and then you made it. Oh, I, do you? A funny thing, a king that gets himself assassinated. Hey now, every time I lose altitude.",
-      "source": "Fortune Faded",
-      "id": 4684,
-      "length": 174
-    },
-    {
       "text": "Honestly, if you could see just what was going on outside your realm of perception, it would blow your minds! That's the main reason I kept it back. If I were to give you an analogy, I'd describe it like this: when a duck swims on the water, you only see it glide, apparently effortlessly across the lake. But underneath, as in beneath the surface, it's a whole different story. Its legs are moving like it's pedaling a bicycle up a mountain! Well, that's me right now. I am that duck!",
       "source": "Call of Duty: Black Ops III",
       "id": 4685,
@@ -28686,12 +28692,6 @@
       "source": "Daredevil",
       "id": 4905,
       "length": 369
-    },
-    {
-      "text": "His neighbor, trying to be helpful but failing, cornered Bill in the parking lot to explain how cryogenic scientists could freeze his brain in ice until a point in the future when microscopic robots could repair it. Bill daydreamed about all the brains in jars he used to see at school. How he used to wonder whether there were still somehow pieces of individuals inside - scattered fragments of partial dreams or lost memories lodged deep within that dead tissue - or whether this entire archive is immediately erased the moment that the body fails. He began to think of people in a new light; how everyone's just little more than that frightened, fragile brain stem surrounded by meat and physics. Too terrified to recognize the sum of their parts, insulated in the shells of their skulls and lower middle class houses: afraid of change, afraid of decisions, afraid of pain, stuck in traffic listening to terrible music.",
-      "source": "It's Such a Beautiful Day",
-      "id": 4906,
-      "length": 922
     },
     {
       "text": "The spirits burned up in its ominous flame lose their way and wander this world forever.",
@@ -30152,9 +30152,9 @@
       "id": 5155
     },
     {
-      "text": "He pictured the boys finding his body next day. Suddenly he found himself with them, coming along the trail and looking for himself. And, still with them, he came around a turn in the trail and found himself lying in the snow. He did not belong with himself any more, for even then he was out of himself, standing with the boys and looking at himself in the snow. It certainly was cold, was his thought. When he got back to the States he could tell the folks what real cold was. He drifted on from this to a vision of the old-timer on Sulphur Creek. He could see him quite clearly, warm and comfortable, and smoking a pipe.",
+      "text": "He pictured the boys finding his body the next day. Suddenly he found himself with them, coming along the trail and looking for himself. And, still with them, he came around a turn in the trail and found himself lying in the snow. He did not belong with himself any more, for even then he was out of himself, standing with the boys and looking at himself in the snow. It certainly was cold, was his thought. When he got back to the States he could tell the folks what real cold was. He drifted on from this to a vision of the old-timer on Sulphur Creek. He could see him quite clearly, warm and comfortable, and smoking a pipe.",
       "source": "Jack London, To Build a Fire",
-      "length": 623,
+      "length": 627,
       "id": 5156
     },
     {
@@ -32936,12 +32936,6 @@
       "id": 5675
     },
     {
-      "text": "'Twas brillig and the slithy toves\\nDid gyre and gimble in the wabe:\\nAll mimsy were the borogoves,\\nAnd the mome raths outgrabe.",
-      "source": "Jabberwocky, Lewis Carroll",
-      "length": 129,
-      "id": 5676
-    },
-    {
       "text": "Simplicity, patience, compassion.\\nThese three are your greatest treasures.\\nSimple in actions and thoughts, you return to the source of being.\\nPatient with both friends and enemies,\\nyou accord with the way things are.\\nCompassionate toward yourself,\\nyou reconcile all beings in the world.",
       "source": "Tao Te Ching",
       "length": 292,
@@ -34694,9 +34688,9 @@
       "id": 6081
     },
     {
-      "text": "I don't think I would be good enough to stand up there and face the world and a group of readers. It must take a lot of courage for them to do what they do, I said, blowing on my coffee before taking a tentative sip. I smiled as the frothy bubbles clung to my lip and licked them off delicately. What if someone laughed at what I wrote?.",
+      "text": "I don't think I would be good enough to stand up there and face the world and a group of readers. It must take a lot of courage for them to do what they do, I said, blowing on my coffee before taking a tentative sip. I smiled as the frothy bubbles clung to my lip and licked them off delicately. What if someone laughed at what I wrote?",
       "source": "Everyone has a story - Savi Sharma",
-      "length": 337,
+      "length": 336,
       "id": 6082
     },
     {
@@ -34866,12 +34860,6 @@
       "source": "Portal 2",
       "length": 162,
       "id": 6110
-    },
-    {
-      "text": "Day before yesterday I saw a rabbit, and yesterday a deer, and today, you.",
-      "source": "The Dandelion Girl - Robert F. Young",
-      "length": 74,
-      "id": 6111
     },
     {
       "text": "Wherever I end up after this... in whatever reality... all those moments between us were real, and they'll always be ours.",

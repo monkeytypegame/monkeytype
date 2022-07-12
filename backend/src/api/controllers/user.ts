@@ -7,6 +7,10 @@ import { getDiscordUser } from "../../utils/discord";
 import { buildAgentLog, sanitizeString } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
+import { deleteAllApeKeys } from "../../dal/ape-keys";
+import { deleteAllPresets } from "../../dal/preset";
+import { deleteAll as deleteAllResults } from "../../dal/result";
+import { deleteConfig } from "../../dal/config";
 
 export async function createNewUser(
   req: MonkeyTypes.Request
@@ -35,6 +39,24 @@ export async function deleteUser(
   Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User deleted");
+}
+
+export async function resetUser(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const userInfo = await UserDAL.getUser(uid, "reset user");
+  await Promise.all([
+    UserDAL.resetUser(uid),
+    deleteAllApeKeys(uid),
+    deleteAllPresets(uid),
+    deleteAllResults(uid),
+    deleteConfig(uid),
+  ]);
+  Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+
+  return new MonkeyResponse("User reset");
 }
 
 export async function updateName(

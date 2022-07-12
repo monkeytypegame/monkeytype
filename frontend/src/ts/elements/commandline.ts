@@ -29,7 +29,7 @@ function showInput(
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
   if (defaultValue != "") {
-    $("#commandInput input").select();
+    $("#commandInput input").trigger("select");
   }
 }
 

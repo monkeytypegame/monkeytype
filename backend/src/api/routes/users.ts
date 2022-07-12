@@ -122,6 +122,15 @@ router.delete(
 );
 
 router.patch(
+  "/reset",
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
+  RateLimit.userReset,
+  asyncHandler(UserController.resetUser)
+);
+
+router.patch(
   "/name",
   authenticateRequest({
     requireFreshToken: true,

@@ -16,3 +16,7 @@ export async function getConfig(uid: string): Promise<any> {
   const config = await db.collection<any>("configs").findOne({ uid });
   return config;
 }
+
+export async function deleteConfig(uid: string): Promise<any> {
+  return await db.collection<any>("configs").deleteOne({ uid });
+}

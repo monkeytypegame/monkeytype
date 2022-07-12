@@ -13,6 +13,8 @@ function pad(numbers, maxLength, fillString) {
   );
 }
 
+const { COMMIT_HASH = "NO_HASH" } = process.env;
+
 /** @type { import('webpack').Configuration } */
 const PRODUCTION_CONFIG = {
   mode: "production",
@@ -38,7 +40,7 @@ const PRODUCTION_CONFIG = {
             ).join(".");
             const version = [versionPrefix, versionSuffix].join("_");
 
-            return `export const CLIENT_VERSION = "${version}";`;
+            return `export const CLIENT_VERSION = "${version}.${COMMIT_HASH}";`;
           },
           flags: "g",
         },

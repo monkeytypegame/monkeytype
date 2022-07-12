@@ -178,3 +178,30 @@ const serverVersionCounter = new Counter({
 export function recordServerVersion(serverVersion: string): void {
   serverVersionCounter.inc({ version: serverVersion });
 }
+
+const authTime = new Histogram({
+  name: "api_request_auth_time",
+  help: "Time spent authenticating",
+  labelNames: ["type", "status", "path"],
+  buckets: [
+    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000,
+  ],
+});
+
+export function recordAuthTime(
+  type: string,
+  status: "success" | "failure",
+  time: number,
+  req: MonkeyTypes.Request
+): void {
+  const reqPath = req.baseUrl + req.route.path;
+
+  let normalizedPath = "/";
+  if (reqPath !== "/") {
+    normalizedPath = reqPath.endsWith("/") ? reqPath.slice(0, -1) : reqPath;
+  }
+
+  const pathNoGet = normalizedPath.replace(/\?.*/, "");
+
+  authTime.observe({ type, status, path: pathNoGet }, time);
+}

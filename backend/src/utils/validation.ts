@@ -1,5 +1,5 @@
 import _ from "lodash";
-import profanities from "../constants/profanities";
+import { profanities, regexProfanities } from "../constants/profanities";
 import { matchesAPattern, sanitizeString } from "./misc";
 
 export function inRange(value: number, min: number, max: number): boolean {
@@ -38,12 +38,9 @@ export function containsProfanity(text: string): boolean {
       return sanitizeString(str) ?? "";
     });
 
-  const hasProfanity = profanities.some((profanity) => {
-    const normalizedProfanity = _.escapeRegExp(profanity.toLowerCase());
-    const prefixedProfanity = `${normalizedProfanity}.*`;
-
+  const hasProfanity = regexProfanities.some((profanity) => {
     return normalizedText.some((word) => {
-      return matchesAPattern(word, prefixedProfanity);
+      return matchesAPattern(word, profanity);
     });
   });
 

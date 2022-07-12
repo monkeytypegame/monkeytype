@@ -49,7 +49,7 @@ $(document).on(
   }
 );
 
-$("#savedTextsPopupWrapper").mousedown((e) => {
+$("#savedTextsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "savedTextsPopupWrapper") {
     hide();
   }

@@ -1,5 +1,7 @@
+import _ from "lodash";
+
 // Sorry for the bad words
-const profanities = [
+export const profanities = [
   "miodec",
   "bitly",
   "niqqa",
@@ -431,4 +433,7 @@ const profanities = [
   "ass",
 ];
 
-export default profanities;
+export const regexProfanities = profanities.map((profanity) => {
+  const normalizedProfanity = _.escapeRegExp(profanity.toLowerCase());
+  return `${normalizedProfanity}.*`;
+});

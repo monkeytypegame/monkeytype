@@ -3,6 +3,7 @@ import { padNumbers } from "./utils/misc";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
 const SERVER_VERSION_FILE_PATH = join(__dirname, "./server.version");
+const { COMMIT_HASH = "NO_HASH" } = process.env;
 
 function getDateVersion(): string {
   const date = new Date();
@@ -28,7 +29,7 @@ function getVersion(): string {
     return readFileSync(SERVER_VERSION_FILE_PATH, "utf-8");
   }
 
-  const serverVersion = getDateVersion();
+  const serverVersion = `${getDateVersion()}.${COMMIT_HASH}`;
   writeFileSync(SERVER_VERSION_FILE_PATH, serverVersion);
 
   return serverVersion;
