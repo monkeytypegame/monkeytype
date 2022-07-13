@@ -24,6 +24,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
 import * as TestActive from "../states/test-active";
+import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import { navigate } from "./route-controller";
@@ -418,7 +419,12 @@ function handleChar(char: string, charIndex: number): void {
     char +
     TestInput.input.current.substring(charIndex + 1);
 
-  if (!thisCharCorrect && Misc.trailingComposeChars.test(resultingWord)) {
+  // If a trailing composed char is used, ignore it when counting accuracy
+  if (
+    !thisCharCorrect &&
+    Misc.trailingComposeChars.test(resultingWord) &&
+    CompositionState.getComposing()
+  ) {
     TestInput.input.current = resultingWord;
     TestUI.updateWordElement();
     Caret.updatePosition();
@@ -801,14 +807,16 @@ $(document).keydown(async (event) => {
   }
 
   //show dead keys
-  if (
-    event.key === "Dead" &&
-    !Misc.trailingComposeChars.test(TestInput.input.current)
-  ) {
+  if (event.key === "Dead" && !CompositionState.getComposing()) {
     Sound.playClick();
     const word = document.querySelector<HTMLElement>("#words .word.active");
     const len = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
-    word?.querySelectorAll("letter")[len].classList.toggle("dead");
+
+    // Check to see if the letter actually exists to toggle it as dead
+    const deadLetter = word?.querySelectorAll("letter")[len];
+    if (deadLetter) {
+      deadLetter.classList.toggle("dead");
+    }
   }
 
   if (Config.oppositeShiftMode !== "off") {
@@ -907,7 +915,7 @@ $("#wordsInput").on("input", (event) => {
     TestInput.input.current = inputValue;
     TestUI.updateWordElement();
     Caret.updatePosition();
-    if (!Misc.trailingComposeChars.test(TestInput.input.current)) {
+    if (!CompositionState.getComposing()) {
       Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
     }
   } else if (inputValue !== TestInput.input.current) {
@@ -927,10 +935,21 @@ $("#wordsInput").on("input", (event) => {
     TestUI.scrollTape();
   }
 
-  // force caret at end of input
-  // doing it on next cycle because Chromium on Android won't let me edit
-  // the selection inside the input event
+  const statebefore = CompositionState.getComposing();
   setTimeout(() => {
+    // checking composition state during the input event and on the next loop
+    // this is done because some browsers (e.g. Chrome) will fire the input
+    // event before the compositionend event.
+    // this ensures the UI is correct
+
+    const stateafter = CompositionState.getComposing();
+    if (statebefore !== stateafter) {
+      TestUI.updateWordElement();
+    }
+
+    // force caret at end of input
+    // doing it on next cycle because Chromium on Android won't let me edit
+    // the selection inside the input event
     if (
       (event.target as HTMLInputElement).selectionStart !==
         (event.target as HTMLInputElement).value.length &&
@@ -957,4 +976,14 @@ $("#wordsInput").on("focus", (event) => {
 
 $("#wordsInput").on("copy paste", (event) => {
   event.preventDefault();
+});
+
+// Composing events
+$("#wordsInput").on("compositionstart", () => {
+  CompositionState.setComposing(true);
+  CompositionState.setStartPos(TestInput.input.current.length);
+});
+
+$("#wordsInput").on("compositionend", () => {
+  CompositionState.setComposing(false);
 });

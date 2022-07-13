@@ -999,7 +999,7 @@
     },
     {
       "text": "Ich weiß, dass Ehrlichkeit und Gerechtigkeitssinn die einzigen zuverlässigen Grundlagen von Wohlstand und Ansehen sind.",
-      "source": " Napoleon Hill - Denke nach und werde reich",
+      "source": "Napoleon Hill - Denke nach und werde reich",
       "length": 119,
       "id": 166
     },
@@ -2271,7 +2271,7 @@
     },
     {
       "text": "Besser jetzt die Möglichkeiten in Betracht ziehen als in zehn Jahren, wenn das Leben die Wahl eventuell begrenzt.",
-      "source": "Hich School Musical",
+      "source": "High School Musical",
       "length": 113,
       "id": 379
     },
@@ -3126,6 +3126,18 @@
       "source": "Geralt-Saga - Der Schwalbenturm",
       "length": 416,
       "id": 524
+    },
+    {
+      "text": "Die Angst tötet den Geist. Die Angst ist der kleine Tod, der die völlige Vernichtung bringt. Ich werde mich meiner Angst stellen. Ich werde sie über mich hinweg und durch mich hindurch ziehen lassen. Und wenn sie vorübergezogen ist, dann richte ich mein inneres Auge auf den Weg, den sie genommen hat. Wo die Angst vorübergezogen ist, wird nichts mehr sein. Nur ich werde noch da sein.",
+      "source": "Frank Herbert - Der Wüstenplanet",
+      "length": 385,
+      "id": 525
+    },
+    {
+      "text": "Jede Straße, der man bis ans Ende folgt, führt genau genommen nirgendwohin. Steige nur ein kleines Stück weit auf den Berg, um festzustellen, dass es sich um einen Berg handelt. Vom Gipfel aus kannst du den Berg nicht sehen.",
+      "source": "Frank Herbert - Der Wüstenplanet",
+      "length": 224,
+      "id": 526
     }
   ]
 }
