@@ -28,7 +28,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return;
     }
     refreshVisible();
-  }, 30000);
+  }, 60000);
 
   initialised = true;
 }
