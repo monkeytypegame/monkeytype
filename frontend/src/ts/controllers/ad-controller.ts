@@ -25,11 +25,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   setInterval(() => {
     if (TestActive.get()) {
-      console.log("test active - stopping ad refresh");
       return;
     }
     refreshVisible();
-    console.log("refreshing visible ads");
   }, 30000);
 
   initialised = true;
@@ -108,7 +106,6 @@ export async function refreshVisible(): Promise<void> {
       visibleAdDivs.push(adDivs[i]);
     }
   }
-  console.log("refreshing", visibleAdDivs);
   //@ts-ignore
   window.egAps.refreshAds(visibleAdDivs);
 }
