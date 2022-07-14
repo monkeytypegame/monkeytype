@@ -8,8 +8,9 @@ import * as TestActive from "../states/test-active";
 const breakpoint = 900;
 let widerThanBreakpoint = true;
 
+let initialised = false;
+
 export function init(): void {
-  if (Config.ads === "off") return;
   $("head").append(`<script>
 !function(e){var s=new XMLHttpRequest;s.open("GET","https://api.enthusiastgaming.net/scripts/cdn.enthusiast.gg/script/eg-aps/release/eg-aps-bootstrap-v2.0.0.bundle.js?site=monkeytype.com",!0),s.onreadystatechange=function(){var t;4==s.readyState&&(200<=s.status&&s.status<300||304==s.status)&&((t=e.createElement("script")).type="text/javascript",t.text=s.responseText,e.head.appendChild(t))},s.send(null)}(document);
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,6 +29,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     refreshVisible();
   }, 30000);
+
+  initialised = true;
 }
 
 export function removeAll(): void {
@@ -109,6 +112,10 @@ export async function refreshVisible(): Promise<void> {
 
 export function reinstate(): boolean {
   if (Config.ads === "off") return false;
+  if (!initialised) {
+    init();
+    return true;
+  }
   try {
     //@ts-ignore
     window.egAps.reinstate();
@@ -121,6 +128,9 @@ export function reinstate(): boolean {
 
 export async function renderResult(): Promise<void> {
   if (Config.ads === "off") return;
+  if (!initialised) {
+    init();
+  }
   if (widerThanBreakpoint) {
     // $("#ad-result-wrapper").html(`
     // <div class="icon"><i class="fas fa-ad"></i></div>
@@ -161,24 +171,18 @@ $(window).on("resize", () => {
   debouncedBreakpointUpdate();
 });
 
-ConfigEvent.subscribe(
-  (event, _newvalue, _nosave, _previousValue, fullConfig) => {
-    if (!fullConfig) return;
-    if (event === "configApplied") {
-      if (fullConfig.ads !== "off") {
-        init();
-      }
-      if (fullConfig.ads === "off") {
-        removeAll();
-      } else if (fullConfig.ads === "result") {
-        removeSellout();
-        removeOn();
-      } else if (fullConfig.ads === "on") {
-        removeSellout();
-      }
+ConfigEvent.subscribe((event, value) => {
+  if (event === "ads") {
+    if (value == "off") {
+      removeAll();
+    } else if (value == "result") {
+      removeSellout();
+      removeOn();
+    } else if (value == "on") {
+      removeSellout();
     }
   }
-);
+});
 
 BannerEvent.subscribe(() => {
   updateVerticalMargin();
