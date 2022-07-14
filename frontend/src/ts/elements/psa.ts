@@ -92,7 +92,8 @@ export async function show(): Promise<void> {
       psa.sticky,
       () => {
         setMemory(psa._id);
-      }
+      },
+      true
     );
   });
 }
