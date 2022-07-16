@@ -874,6 +874,22 @@ export function applyBurstHeatmap(): void {
         class: "heatmap4",
       },
     ];
+
+    steps.forEach((step, index) => {
+      let string = "";
+      if (index === 0) {
+        string = `<${Math.round(steps[index + 1].val)}`;
+      } else if (index === 4) {
+        string = `${Math.round(step.val - 1)}+`;
+      } else {
+        string = `${Math.round(step.val)}-${
+          Math.round(steps[index + 1].val) - 1
+        }`;
+      }
+
+      $("#resultWordsHistory .heatmapLegend .box" + index).text(string);
+    });
+
     $("#resultWordsHistory .words .word").each((_, word) => {
       const wordBurstVal = parseInt(<string>$(word).attr("burst"));
       let cls = "";

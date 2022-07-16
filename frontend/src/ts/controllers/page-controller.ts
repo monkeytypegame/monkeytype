@@ -51,13 +51,13 @@ export async function change(
       250,
       async () => {
         PageTransition.set(false);
-        ActivePage.set(nextPage.name);
-        previousPage?.afterHide();
         nextPage.element.addClass("active");
         resolve(true);
         nextPage?.afterShow();
       },
       async () => {
+        ActivePage.set(nextPage.name);
+        previousPage?.afterHide();
         await nextPage?.beforeShow(params);
       }
     );
