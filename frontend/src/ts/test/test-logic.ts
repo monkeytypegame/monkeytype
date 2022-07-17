@@ -70,6 +70,10 @@ export function setNotSignedInUid(uid: string): void {
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
+function shouldCapitalize(lastChar: string): boolean {
+  return /[?!.؟]/.test(lastChar);
+}
+
 let spanishSentenceTracker = "";
 export async function punctuateWord(
   previousWord: string,
@@ -106,8 +110,8 @@ export async function punctuateWord(
     }
   } else {
     if (
-      (index == 0 || lastChar == "." || lastChar == "?" || lastChar == "!") &&
-      currentLanguage != "code"
+      currentLanguage != "code" &&
+      (index == 0 || shouldCapitalize(lastChar))
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
 
@@ -142,14 +146,19 @@ export async function punctuateWord(
       } else {
         const rand = Math.random();
         if (rand <= 0.8) {
-          word += ".";
+          if (currentLanguage == "kurdish") {
+            word += ".";
+          } else {
+            word += ".";
+          }
         } else if (rand > 0.8 && rand < 0.9) {
           if (currentLanguage == "french") {
             word = "?";
           } else if (
             currentLanguage == "arabic" ||
             currentLanguage == "persian" ||
-            currentLanguage == "urdu"
+            currentLanguage == "urdu" ||
+            currentLanguage == "kurdish"
           ) {
             word += "؟";
           } else if (currentLanguage == "greek") {
@@ -229,7 +238,7 @@ export async function punctuateWord(
         word = ";";
       } else if (currentLanguage == "greek") {
         word = "·";
-      } else if (currentLanguage == "arabic") {
+      } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
         word += "؛";
       } else {
         word += ";";
@@ -238,7 +247,8 @@ export async function punctuateWord(
       if (
         currentLanguage == "arabic" ||
         currentLanguage == "urdu" ||
-        currentLanguage == "persian"
+        currentLanguage == "persian" ||
+        currentLanguage == "kurdish"
       ) {
         word += "،";
       } else {
@@ -358,6 +368,9 @@ export function restart(
       Config.mode === "quote" &&
       Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
     ) {
+      withSameWordset = true;
+    }
+    if (TestState.isRepeated) {
       withSameWordset = true;
     }
 
@@ -655,6 +668,9 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
     word = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
+    if (Config.language.split("_")[0] === "kurdish") {
+      word = Misc.convertNumberToArabicIndic(word);
+    }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
@@ -744,6 +760,10 @@ async function getNextWord(
   if (Config.numbers) {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
+
+      if (Config.language.split("_")[0] === "kurdish") {
+        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+      }
     }
   }
 

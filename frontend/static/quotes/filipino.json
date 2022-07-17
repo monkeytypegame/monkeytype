@@ -1,27 +1,15 @@
 {
   "language": "filipino",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
       "text": "Ang hindi magmahal sa sariling wika ay higit sa hayop at malansang isda; kaya ating pagyamaning kusa, gaya ng inang sa atin ay nagpala.",
-      "source": "José Rizal (disputed)",
+      "source": "Sa Aking mga Kabatà, José Rizal (falsely attributed)",
       "length": 135,
       "id": 1
     },
@@ -74,9 +62,9 @@
       "id": 9
     },
     {
-      "text": "Isang pangitain ang nagmumulto sa Europa -- ang pangitain ng komunismo.",
+      "text": "Isang pangitain ang nagmumulto sa Europa - ang pangitain ng komunismo.",
       "source": "Manipesto ng Partido Komunista",
-      "length": 71,
+      "length": 70,
       "id": 10
     },
     {
@@ -86,9 +74,9 @@
       "id": 11
     },
     {
-      "text": "Bagama't ipinipilit ng mga diyos na ang Pilipinas daw ay isa nang malayang bansa, nananatiling kontrolado ng Estados Unidos ang malaking bahagi ng pang-militar, pangkultural, pangkabuhayan at pampulitikang lakas nito -- bagay na pumatay sa pagkakataon natin tungo sa tunay na pag-unlad. Binansot ng mga US multinational corporations ang pagyabong ng industriyang Pilipino, habang sinisipsip naman ng mga higanteng pataniman na pag-aari pa rin ng mga dayuhan ang salaping kinikita ng agrikultura. Walang habas na kinakamkam pa rin ng mga hasendero ang lupa ng mga magsasaka; at ang papalaking bilang ng mga magsasakang inaagawan ng lupa ay patuloy na dumadagsa sa siyudad, kasabay ng paglilipana rin ng daan-daang libong nagsipagtapos pero walang mapasukan. Lumalawak pa kung gano'n ang hukbo ng mga manggagawa, samantalang ang naghihirap na mga industriyang-Pilipino ay nagsasara imbis na magbigay ng pagkakataon.",
+      "text": "Bagama't ipinipilit ng mga diyos na ang Pilipinas daw ay isa nang malayang bansa, nananatiling kontrolado ng Estados Unidos ang malaking bahagi ng pang-militar, pangkultural, pangkabuhayan at pampulitikang lakas nito - bagay na pumatay sa pagkakataon natin tungo sa tunay na pag-unlad. Binansot ng mga US multinational corporations ang pagyabong ng industriyang Pilipino, habang sinisipsip naman ng mga higanteng pataniman na pag-aari pa rin ng mga dayuhan ang salaping kinikita ng agrikultura. Walang habas na kinakamkam pa rin ng mga hasendero ang lupa ng mga magsasaka; at ang papalaking bilang ng mga magsasakang inaagawan ng lupa ay patuloy na dumadagsa sa siyudad, kasabay ng paglilipana rin ng daan-daang libong nagsipagtapos pero walang mapasukan. Lumalawak pa kung gano'n ang hukbo ng mga manggagawa, samantalang ang naghihirap na mga industriyang-Pilipino ay nagsasara imbis na magbigay ng pagkakataon.",
       "source": "Dekada 70, Lualhati Bautista",
-      "length": 913,
+      "length": 912,
       "id": 12
     },
     {
@@ -198,6 +186,42 @@
       "source": "Cueshe",
       "length": 434,
       "id": 30
+    },
+    {
+      "text": "Hindi sa pag-ibig nasasawi ang marami, kundi sa kawalan ng pag-ibig at kamangmangan ng maling pagmamahal. Wala ngang madali sa ating katayuan, ngunit kailanman ay hindi naging hadlang ang layo sa mga pusong nag-iibigan. Hindi layo, mahal ko. Hindi layo, kundi oras. Aabangan ko ang pagbabalik mo galing sa pinakamalayong bituin kung mahihintay ito ng mga linggo. Ngunit hindi ko kakayaning mabuhay sa kinatatayuan ko kung maraming taon mo akong hindi kakausapin kahit nasa tabi lamang kita. Nararating ang malayong lugar, ngunit hindi laging naghihintay ang mahabang panahon.",
+      "source": "Si, Bob Ong",
+      "length": 575,
+      "id": 31
+    },
+    {
+      "text": "Lungab, hatsing, utot, hikab, kabag, ihi, muta, laway, at maraming, maraming tawa, tingin, at ngiting masarap hulihin at ipunin sa garapon. Juliano Fulgencio Trinidad, isa kang tumatalbog na kagalakan at nakatutuwang kapaguran. Ang iyong mga kamay ay haplos ng hanging amihan. Ang iyong pisngi ay malalambot na ulap. Ang iyong puwit ay bagong lutong mga tinapay. Ang laman ng iyong lampin ay masamang panaginip. At ang iyong buhok ay tulad ng mga pangarap na hindi man nakikita ay alam mong makakamtan rin balang araw. Sa mahabang panahon ay loob ng tiyan ni Victoria ang ginawa mong tirahan. Ngayon ay ibabaw ng tiyan ko ang ginagawa mong higaan. Mahal na mahal ka namin, anak ko, at lagi naming ipagpapasalamat sa Diyos ang kaloob niyang isang magandang regalo.",
+      "source": "Si, Bob Ong",
+      "length": 763,
+      "id": 32
+    },
+    {
+      "text": "Kasabay ng pagtanggap ng puso ni Amelia ang pagbaha ng luha ni Lorenzo. Noon n'ya lang naramdaman ang dagsa ng ganoong uri ng pagmamahal. Patas ngunit walang sukat. Hindi masakit o mapanira. Walang dinudulot na kalungkutan, binabayarang kakulangan, o nambubuyong lakas; kundi tahimik na daloy lamang ng pagpapahalagang wagas. Natutunan ni Lorenzo na umibig dahil kay Olivia. Nakilala n'ya ang tunay na pagmamahal dahil kay Amelia.",
+      "source": "Si, Bob Ong",
+      "length": 430,
+      "id": 33
+    },
+    {
+      "text": "Dinagsa ang opisina ng MOLE sa mga pasabi tungkol sa mga balak na pagwewelga. Umpisa na naman ang mga walk-out, sit-in, boycott, ngayo'y hindi lang ng mga estudyante kundi pati ng mga faculty members. Hindi nagtagal at marami na namang mahahabang picket lines na nakahambalang sa pinto ng mga kompanya't pabrika, eskuwelahan at restoran at hotel - lahat, tatak at sigaw ng kabalisahan ng lipunang Pilipino na siyam na taong napilitang manahimik pero nagkatinig din sa wakas. Ito ay rebirth ng dekada '60. Lantad na naman ang labanan... at simula ng malaking gulo!",
+      "source": "Dekada 70, Lualhati Bautista",
+      "length": 563,
+      "id": 34
+    },
+    {
+      "text": "Ang Pilipinas, bilang maliit na bansang ngayon pa lang nagkakatinig, ay ginagawang tapunan di lamang ng sobrang kotse at tv kundi pati ng pagkaing di makain ng sa bansang puti. Ano ba ang bale sa kanila kung mapanganib man ang sebong ibinalot nila sa mansanas para makarating iyon dito nang sariwa pa rin? O kung ang chocolate candies nila ay tumamis at sumarap sa mga panghalo ng paint remover? O kung ang de lata nila'y may sangkap pampreserba na pag naipon sa utak ay kumakain sa katinuan ng lumalaking batang Asyano? Over-populated naman tayo. Hindi natin iindahin mamatayan man tayo ng isa-dalawa riyan. Ang mahalaga'y mabenta ang produkto. Ang mahalaga'y mabalik ang panginoong dolyar na sinimot ng digmaan sa Vietnam.",
+      "source": "'Gapô, Lualhati Bautista",
+      "length": 724,
+      "id": 35
+    },
+    {
+      "text": "Umandar ang mabagal na oras. Lumakad ang mahahabang araw. Dumating at lumipas ang anim na linggo. Hindi na muling nakita ni Mario Lim sa pier si Carmen. Naging tag-init ang taglamig. Naging tag-ulan ang tag-init. Naging taglamig ang tag-ulan. Tumakbo ang panahon. Walang pakundangang gumalaw ang mga bituin at planeta. Kumupas ang mga sumpaan at alaala. Ilang ulit mang binalikan ang lugar, hindi na muling natagpuan ni Mario Lim ang buhay niya.",
+      "source": "Si, Bob Ong",
+      "length": 445,
+      "id": 36
     }
   ]
 }
