@@ -74,7 +74,7 @@ function clearCustomTheme(): void {
 
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
 
-async function loadStyle(name: string): Promise<void> {
+export async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
