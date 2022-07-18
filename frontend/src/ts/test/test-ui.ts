@@ -246,6 +246,8 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    $("#ad-result-wrapper").removeClass("hidden");
+    $("#ad-result-small-wrapper").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
@@ -293,6 +295,8 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .loginTip").addClass("hidden");
   $("noscript").addClass("hidden");
   $("#nocss").addClass("hidden");
+  $("#ad-result-wrapper").addClass("hidden");
+  $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
     const paddingX = 50;
