@@ -1131,14 +1131,14 @@
 
     .buttons {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
 
       .button {
         display: block;
         width: 100%;
         height: 100%;
-        padding: 2rem 0;
+        padding: 1rem 0;
         display: grid;
         gap: 1rem;
         text-decoration: none;
@@ -1149,8 +1149,8 @@
           color: var(--bg-color);
         }
         .icon {
-          font-size: 5rem;
-          line-height: 5rem;
+          font-size: 3rem;
+          line-height: 3rem;
         }
       }
     }

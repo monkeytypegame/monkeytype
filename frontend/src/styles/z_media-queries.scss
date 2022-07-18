@@ -483,11 +483,12 @@
     .buttons {
       grid-template-columns: none !important;
       .button {
-        grid-template-columns: auto auto;
+        grid-template-columns: auto 1fr;
         align-items: center;
         .icon {
           font-size: 2rem !important;
           line-height: 2rem !important;
+          margin-left: 2rem;
         }
       }
     }
