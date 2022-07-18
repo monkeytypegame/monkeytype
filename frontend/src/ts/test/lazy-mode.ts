@@ -30,6 +30,7 @@ const accents: [string, string][] = [
   ["ٌ", ""],
   ["ٍ", ""],
   ["ّ", ""],
+  ["ё", "е"],
 ];
 
 export function replaceAccents(
