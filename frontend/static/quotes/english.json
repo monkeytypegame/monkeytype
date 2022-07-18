@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -452,10 +440,10 @@
       "length": 137
     },
     {
-      "text": "Sometimes life is like this tunnel. You can't always see the light at the end of the tunnel, but if you keep moving, you will come to a better place.",
+      "text": "Sometimes life is like this dark tunnel. You can't always see the light at the end of the tunnel, but if you keep moving, you will come to a better place.",
       "source": "Avatar: The last Airbender",
       "id": 73,
-      "length": 149
+      "length": 154
     },
     {
       "text": "This is the second most tragic thing to happen in my life...",
@@ -3768,12 +3756,6 @@
       "source": "The Magicians",
       "id": 632,
       "length": 237
-    },
-    {
-      "text": "Mother is the name for God in the lips and hearts of little children.",
-      "source": "Vanity Fair",
-      "id": 633,
-      "length": 69
     },
     {
       "text": "For what it's worth: it's never too late or, in my case, too early to be whoever you want to be. There's no time limit, stop whenever you want. You can change or stay the same, there are no rules to this thing. We can make the best or the worst of it. I hope you make the best of it. And I hope you see things that startle you. I hope you feel things you never felt before. I hope you meet people with a different point of view. I hope you live a life you're proud of. If you find that you're not, I hope you have the strength to start all over again.",
@@ -9228,12 +9210,6 @@
       "source": "Unweaving the Rainbow: Science, Delusion and the Appetite for Wonder",
       "id": 1564,
       "length": 369
-    },
-    {
-      "text": "Power don't come from a badge or a gun. Power comes from lying. Lying big, and gettin' the whole damn world to play along with you. Once you got everybody agreeing with what they know in their hearts ain't true, you've got 'em by the balls.",
-      "source": "Sin City",
-      "id": 1565,
-      "length": 240
     },
     {
       "text": "Recalling the past dredges up regrets that make me want to die, and when I think of the future, the anxiety just makes me depressed. By process of elimination, you could say right now is my happiest time.",
@@ -15234,12 +15210,6 @@
       "source": "The Godfather: Part III",
       "id": 2594,
       "length": 192
-    },
-    {
-      "text": "I hope I cut myself shaving tomorrow. I hope it bleeds all day long. Our friends say it's darkest before the sun rises; we're pretty sure they're all wrong.",
-      "source": "No Children",
-      "id": 2595,
-      "length": 156
     },
     {
       "text": "She didn't know I was in the room, and when I asked her in a quiet, a very quiet voice, with the most restrained manner possible, what she was doing with the paper - she turned around as if she had been caught stealing, and looked quite angry - asked me why I should frighten her so! Then she said that the paper stained everything it touched, that she had found yellow smooches on all my clothes and John's, and she wished we would be more careful!",
@@ -21764,10 +21734,10 @@
       "length": 160
     },
     {
-      "text": "Don't you know what it means to me to be a Marine, Dad? Ever since I was a kid I've wanted this - I've wanted to serve my country - and I want to go. I want to go to Vietnam and I'll die there if I have to.",
+      "text": "Don't you know what it means to me to be a Marine, Dad? Ever since I was a kid, I've wanted this - I've wanted to serve my country - and I want to go. I want to go to Vietnam and I'll die there if I have to.",
       "source": "Born on the Fourth of July",
       "id": 3718,
-      "length": 206
+      "length": 207
     },
     {
       "text": "I was having this awful nightmare that I was 32. And then I woke up and I was 23. So relieved. And then I woke up for real, and I was 32.",
@@ -32271,7 +32241,7 @@
     },
     {
       "text": "You don't want to go for realism, you can go for better than realism. What do you mean better than realism? How about an elephant with blue eyes.",
-      "source": "Terry A. Devis",
+      "source": "Terry A. Davis",
       "length": 145,
       "id": 5547
     },

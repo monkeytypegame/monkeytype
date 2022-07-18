@@ -1,22 +1,10 @@
 {
   "language": "indonesian",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -950,9 +938,9 @@
       "id": 156
     },
     {
-      "text": "Tak perlu tertawa atau menangis. Pada gunung dan laut karena gunung dan laut tak punya rasa. Aku tak pernah melihat gunung menangis. Biarpun matahari membakar tubuhnya. Aku tak pernah melihat laut tertawa. Biarpun kesejukkan bersama tariannya.",
+      "text": "Tak perlu tertawa atau menangis. Pada gunung dan laut karena gunung dan laut tak punya rasa. Aku tak pernah melihat gunung menangis. Biarpun matahari membakar tubuhnya. Aku tak pernah melihat laut tertawa. Biarpun kesejukan bersama tariannya.",
       "source": "Payung Teduh - Cerita Gunung Dan Laut",
-      "length": 243,
+      "length": 242,
       "id": 157
     },
     {
