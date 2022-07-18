@@ -14,7 +14,7 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with the LTS version. There are some additional requirements depending on what you're looking to contribute, such as Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 #### Git
 
@@ -22,7 +22,7 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 #### NodeJS and NPM
 
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `16.13.2 LTS`.
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `LTS`.
 
 Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
 

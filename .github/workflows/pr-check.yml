@@ -81,7 +81,7 @@ jobs:
         if: steps.filter.outputs.changes != '[]'
         uses: actions/setup-node@v1
         with:
-          node-version: "16.13.2"
+          node-version: "lts/gallium"
 
       - name: Install dependencies
         if: steps.filter.outputs.changes != '[]'
