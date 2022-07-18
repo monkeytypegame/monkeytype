@@ -7,6 +7,8 @@ import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
 import * as Leaderboards from "../elements/leaderboards";
+import * as TestUI from "../test/test-ui";
+import * as PageTransition from "../states/page-transition";
 // import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 
@@ -100,6 +102,13 @@ const routes: Route[] = [
 ];
 
 export function navigate(url = window.location.pathname): void {
+  if (
+    TestUI.testRestarting ||
+    TestUI.resultCalculating ||
+    PageTransition.get()
+  ) {
+    return;
+  }
   url = url.replace(/\/$/, "");
   if (url === "") url = "/";
   history.pushState(null, "", url);
