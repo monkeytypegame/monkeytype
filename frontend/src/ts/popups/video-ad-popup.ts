@@ -1,6 +1,6 @@
 import * as Notifications from "../elements/notifications";
 
-function show(): void {
+export function show(): void {
   if ($("#videoAdPopupWrapper").hasClass("hidden")) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
@@ -38,7 +38,7 @@ export function egVideoListener(options: Record<string, string>): void {
   } else if (event === "finished") {
     hide();
   } else if (event === "empty") {
-    Notifications.add("Failed to load video ad. Please try again later", 0, 3);
+    Notifications.add("Failed to load video ad. Please try again later", -1, 3);
     hide();
   }
 }

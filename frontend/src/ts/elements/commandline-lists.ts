@@ -24,6 +24,7 @@ import { Auth } from "../firebase";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as EditTagPopup from "../popups/edit-tags-popup";
 import { navigate } from "../controllers/route-controller";
+import * as VideoAdPopup from "../popups/video-ad-popup";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
@@ -2925,6 +2926,15 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Enable ads...",
       icon: "fa-ad",
       subgroup: commandsEnableAds,
+    },
+    {
+      id: "watchVideoAd",
+      display: "Watch video ad",
+      alias: "support donate",
+      icon: "fa-ad",
+      exec: (): void => {
+        VideoAdPopup.show();
+      },
     },
     {
       id: "changeTheme",
