@@ -129,6 +129,10 @@
     "languages": ["tamil", "tamil_1k"]
   },
   {
+    "name": "telugu",
+    "languages": ["telugu", "telugu_1k"]
+  },
+  {
     "name": "slovenian",
     "languages": ["slovenian"]
   },
