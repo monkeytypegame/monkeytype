@@ -635,6 +635,11 @@ export async function update(
   } else {
     $("#result .loginTip").removeClass("hidden");
   }
+  if (Config.ads === "off" || Config.ads === "result") {
+    $("#result #watchVideoAdButton").addClass("hidden");
+  } else {
+    $("#result #watchVideoAdButton").removeClass("hidden");
+  }
   updateWpmAndAcc();
   updateConsistency();
   updateTime();
