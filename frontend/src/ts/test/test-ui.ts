@@ -1010,6 +1010,7 @@ $("#wordsInput").on("focusout", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key == "Enter") {
+    if (Tribe.state >= 5) return;
     ManualRestart.reset();
     if (
       TestActive.get() &&
@@ -1024,7 +1025,9 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
+  if (Tribe.state >= 5) return;
   ManualRestart.set();
+
   if (resultCalculating) return;
   if (
     TestActive.get() &&
