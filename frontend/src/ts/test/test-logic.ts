@@ -1497,28 +1497,34 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = kps.every((second) => second.afk);
   if (TestInput.bailout) afkDetected = false;
 
+  const resolve: TribeTypes.ResultResolve = {};
+
   let tooShort = false;
   let dontSave = false;
   //fail checks
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
     dontSave = true;
-    resolveTestSavePromise({
-      failed: true,
-      failedReason: failReason,
-    });
+    resolve.failed = true;
+    resolve.failedReason = failReason;
+    // resolveTestSavePromise({
+    //   failed: true,
+    //   failedReason: failReason,
+    // });
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
     dontSave = true;
-    resolveTestSavePromise({
-      afk: true,
-    });
+    resolve.afk = true;
+    // resolveTestSavePromise({
+    //   afk: true,
+    // });
   } else if (TestState.isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
-    resolveTestSavePromise({
-      repeated: true,
-    });
+    resolve.repeated = true;
+    // resolveTestSavePromise({
+    //   repeated: true,
+    // });
   } else if (
     (Config.mode === "time" &&
       completedEvent.mode2 < 15 &&
@@ -1549,23 +1555,26 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-    resolveTestSavePromise({
-      tooShort: true,
-    });
+    resolve.tooShort = true;
+    // resolveTestSavePromise({
+    //   tooShort: true,
+    // });
   } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-    resolveTestSavePromise({
-      valid: false,
-    });
+    resolve.valid = false;
+    // resolveTestSavePromise({
+    //   valid: false,
+    // });
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;
-    resolveTestSavePromise({
-      valid: false,
-    });
+    resolve.valid = false;
+    // resolveTestSavePromise({
+    //   valid: false,
+    // });
   }
 
   // test is valid
@@ -1587,9 +1596,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
-    resolveTestSavePromise({
-      login: false,
-    });
+    // resolveTestSavePromise({
+    //   login: false,
+    // });
+    resolve.login = false;
   } else {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
@@ -1620,6 +1630,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (dontSave) {
     AnalyticsController.log("testCompletedInvalid");
+    resolveTestSavePromise(resolve);
     TribeResults.send({
       wpm: completedEvent.wpm,
       raw: completedEvent.rawWpm,
@@ -1664,17 +1675,21 @@ export async function finish(difficultyFailed = false): Promise<void> {
       retrySaving.completedEvent = completedEvent;
       retrySaving.canRetry = true;
     }
-    resolveTestSavePromise({
-      login: true,
-      saved: false,
-      saveFailedMessage: response.message,
-    });
+    resolve.login = true;
+    resolve.saved = false;
+    resolve.saveFailedMessage = response.message;
+    // resolveTestSavePromise({
+    //   login: true,
+    //   saved: false,
+    //   saveFailedMessage: response.message,
+    // });
     if (response.message === "Incorrect result hash") {
       console.log(completedEvent);
     }
     retrySaving.completedEvent = completedEvent;
     retrySaving.canRetry = true;
 
+    resolveTestSavePromise(resolve);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1724,11 +1739,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
   }
 
-  resolveTestSavePromise({
-    login: true,
-    saved: true,
-    isPb: response.data.isPb,
-  });
+  resolve.login = true;
+  resolve.saved = true;
+  resolve.isPb = response.data.isPb;
+
+  resolveTestSavePromise(resolve);
 
   if (response.data.dailyLeaderboardRank) {
     Notifications.add(
