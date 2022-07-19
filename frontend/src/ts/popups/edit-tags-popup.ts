@@ -14,10 +14,10 @@ export function show(action: string, id?: string, name?: string): void {
     $("#tagsWrapper #tagsEdit input").val("");
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "edit" && id && name) {
-    $("#tagsWrapper #tagsEdit").attr("action", "edit");
+    $("#tagsWrapper #tagsEdit").attr("action", "save");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
-    $("#tagsWrapper #tagsEdit .button").html(`edit`);
+    $("#tagsWrapper #tagsEdit .button").html(`save`);
     $("#tagsWrapper #tagsEdit input").val(name);
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "remove" && id && name) {
