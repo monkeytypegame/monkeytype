@@ -639,30 +639,19 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // dont do anything on login so we can tab/esc betweeen inputs
     if (ActivePage.get() === "login") return;
 
-    event.preventDefault();
-    // insert tab character if needed (only during the test)
-    if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      handleChar("\t", TestInput.input.current.length);
-      setWordsInput(" " + TestInput.input.current);
-      return;
-    }
-
-    // tribe handling
-    if (ActivePage.get() === "tribe") {
-      if (Tribe.state >= 5) {
-        if (Tribe.getSelf()?.isLeader) {
-          if (Tribe.state === 5 || Tribe.state === 22) {
-            Tribe.initRace();
-          }
-        } else if (
-          Tribe.state === 5 ||
-          Tribe.state === 21 ||
-          Tribe.state === 22
-        ) {
-          Tribe.socket.emit(`room_ready_update`);
+    // tribe
+    if (Tribe.state >= 5) {
+      if (Tribe.state > 5 && Tribe.state < 21) return;
+      if (Tribe.getSelf()?.isLeader) {
+        if (Tribe.state === 5 || Tribe.state === 22) {
+          Tribe.initRace();
         }
-      } else {
-        navigate("/");
+      } else if (
+        Tribe.state === 5 ||
+        Tribe.state === 21 ||
+        Tribe.state === 22
+      ) {
+        Tribe.socket.emit(`room_ready_update`);
       }
     }
 
@@ -681,31 +670,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       ManualRestart.set();
     } else {
       ManualRestart.reset();
-    }
-
-    //tribe
-    if (Tribe.state >= 5) {
-      if (Tribe.getSelf()?.isLeader) {
-        if (Tribe.state === 5 || Tribe.state === 22) {
-          Tribe.initRace();
-        }
-      } else if (
-        Tribe.state === 5 ||
-        Tribe.state === 21 ||
-        Tribe.state === 22
-      ) {
-        Tribe.socket.emit(`room_ready_update`);
-      }
-    } else {
-      if (
-        TestActive.get() &&
-        Config.repeatQuotes === "typing" &&
-        Config.mode === "quote"
-      ) {
-        TestLogic.restart(true, false, event);
-      } else {
-        TestLogic.restart(false, false, event);
-      }
     }
 
     // insert tab character if needed (only during the test)
@@ -782,9 +746,29 @@ $(document).on("keydown", async (event) => {
 
     if (modalVisible) return;
 
+    // tribe
+    if (Tribe.state >= 5) {
+      if (Tribe.state > 5 && Tribe.state < 21) return;
+      if (Tribe.getSelf()?.isLeader) {
+        if (Tribe.state === 5 || Tribe.state === 22) {
+          Tribe.initRace();
+        }
+      } else if (
+        Tribe.state === 5 ||
+        Tribe.state === 21 ||
+        Tribe.state === 22
+      ) {
+        Tribe.socket.emit(`room_ready_update`);
+      }
+    }
+
     // change page if not on test page
     if (ActivePage.get() !== "test") {
-      navigate("/");
+      if (Tribe.state >= 5) {
+        navigate("/tribe");
+      } else {
+        navigate("/");
+      }
       return;
     }
 
