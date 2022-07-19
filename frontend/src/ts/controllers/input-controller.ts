@@ -699,6 +699,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     //
     event.preventDefault();
+
+    if (Tribe.state >= 5 && ActivePage.get() === "test") return;
+
     $("#restartTestButton").trigger("focus");
   }
 }
