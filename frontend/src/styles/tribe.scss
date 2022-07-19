@@ -471,6 +471,7 @@
 .pageTest {
   #result {
     #tribeResultBottom {
+      margin-top: 1rem;
       display: grid;
       grid-template-areas:
         "chat buttons"
@@ -479,7 +480,6 @@
       gap: 1rem;
       grid-template-columns: 3fr 1fr;
       grid-template-rows: auto 1fr;
-      grid-area: tribeBottom;
       .chat {
         grid-area: chat;
       }
