@@ -74,7 +74,7 @@ export default <MonkeyTypes.Config>{
   minWpmCustomSpeed: 100,
   highlightMode: "letter",
   alwaysShowCPM: false,
-  enableAds: "off",
+  ads: "result",
   hideExtraLetters: false,
   strictSpace: false,
   minAcc: "off",

@@ -27,7 +27,16 @@
       <a class="textButton" href="#group_dangerZone">danger zone</a>
     </div>
   </div>
-  <div id="ad_settings0" class="hidden"></div>
+
+  <div id="ad-settings-1-wrapper" class="ad advertisement ad-h">
+    <div class="icon"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-1"></div>
+  </div>
+  <div id="ad-settings-1-small-wrapper" class="ad advertisement ad-h-s">
+    <div class="icon small"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-1-small"></div>
+  </div>
+
   <div id="group_account" class="sectionGroupTitle hidden" group="account">
     account
     <i class="fas fa-chevron-down"></i>
@@ -773,7 +782,14 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="ad_settings1" class="hidden"></div>
+  <div id="ad-settings-2-wrapper" class="ad advertisement ad-h">
+    <div class="icon"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-2"></div>
+  </div>
+  <div id="ad-settings-2-small-wrapper" class="ad advertisement ad-h-s">
+    <div class="icon small"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-2-small"></div>
+  </div>
 
   <div id="group_sound" class="sectionGroupTitle" group="sound">
     sound
@@ -1605,7 +1621,14 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="ad_settings2" class="hidden"></div>
+  <div id="ad-settings-3-wrapper" class="ad advertisement ad-h">
+    <div class="icon"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-3"></div>
+  </div>
+  <div id="ad-settings-3-small-wrapper" class="ad advertisement ad-h-s">
+    <div class="icon small"><i class="fas fa-ad"></i></div>
+    <div id="ad-settings-3-small"></div>
+  </div>
 
   <div id="group_theme" class="sectionGroupTitle" group="theme">
     theme
@@ -2308,24 +2331,27 @@
         </div>
       </div>
     </div>
-    <div class="section enableAds">
-      <h1>enable ads</h1>
+    <div class="section ads">
+      <h1>ads</h1>
       <div class="text">
-        If you wish to support me without directly donating you can enable ads
-        that will be visible at the bottom of the screen. Sellout mode also
-        shows ads on both sides of the screen.
+        You can disable or enable ads at any time. "Result" will show one ad on
+        the result page, "on" will add floating vertical banners, and "sellout"
+        will add multiple ads on every page.
         <br />
         <br />
         (changes will take effect after a refresh).
       </div>
       <div class="buttons">
-        <div class="button" enableAds="off" tabindex="0" onclick="this.blur();">
+        <div class="button" ads="off" tabindex="0" onclick="this.blur();">
           off
         </div>
-        <div class="button" enableAds="on" tabindex="0" onclick="this.blur();">
+        <div class="button" ads="result" tabindex="0" onclick="this.blur();">
+          result
+        </div>
+        <div class="button" ads="on" tabindex="0" onclick="this.blur();">
           on
         </div>
-        <div class="button" enableAds="max" tabindex="0" onclick="this.blur();">
+        <div class="button" ads="sellout" tabindex="0" onclick="this.blur();">
           sellout
         </div>
       </div>
@@ -2361,9 +2387,7 @@
         change your preferences here.
       </div>
       <div class="buttons">
-        <div class="button danger" tabindex="0" onclick="this.blur();">
-          open
-        </div>
+        <div class="button" tabindex="0" onclick="this.blur();">open</div>
       </div>
     </div>
     <div class="section updateAccountName needsAccount hidden">

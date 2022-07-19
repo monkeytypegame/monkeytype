@@ -110,14 +110,19 @@
           </div>
         </label>
       </div>
-      <div class="cookie">
+      <div class="cookie ads">
         <label class="checkbox">
           <div class="title">Advertising</div>
           <div class="description">
             Our advertising partner may use cookies to deliver ads that are more
-            relevant to you. If you enable ads you will receive another popup
-            where you can review how they use cookies.
+            relevant to you.
           </div>
+          <a
+            class="text-button"
+            onclick="window.__tcfapi('displayConsentUi', 2, function() {} );"
+          >
+            Click to change your preferences on ad related cookies
+          </a>
         </label>
       </div>
       <div class="button active acceptSelected">Accept selected</div>
@@ -261,6 +266,15 @@
     <div class="group customGroup hidden">
       <div class="button customChange">change</div>
     </div>
+  </div>
+</div>
+
+<div id="videoAdPopupWrapper" class="popupWrapper hidden">
+  <div id="videoAdPopup">
+    <div class="preloader">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div>
+    <div id="eg-video-player" class="video"></div>
   </div>
 </div>
 
@@ -848,8 +862,16 @@
     </div>
     <div class="buttons">
       <div class="button ads">
-        <div class="icon"><i class="fas fa-ad"></i></div>
+        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
         <div class="text">Enable Ads</div>
+      </div>
+      <div class="button watchVideoAd">
+        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
+        <div class="text">
+          Watch
+          <br />
+          a Video Ad
+        </div>
       </div>
       <a
         class="button"
@@ -857,7 +879,7 @@
         target="_blank"
         rel="noreferrer"
       >
-        <div class="icon"><i class="fas fa-donate"></i></div>
+        <div class="icon"><i class="fas fa-fw fa-donate"></i></div>
         <div class="text">Donate</div>
       </a>
       <a
@@ -866,7 +888,7 @@
         target="_blank"
         rel="noreferrer"
       >
-        <div class="icon"><i class="fab fa-patreon"></i></div>
+        <div class="icon"><i class="fab fa-fw fa-patreon"></i></div>
         <div class="text">
           Become
           <br />
@@ -879,7 +901,7 @@
         target="_blank"
         rel="noreferrer"
       >
-        <div class="icon"><i class="fas fa-tshirt"></i></div>
+        <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
         <div class="text">Buy Merch</div>
       </a>
       <a
@@ -888,8 +910,12 @@
         target="_blank"
         rel="noreferrer"
       >
-        <div class="icon"><i class="fas fa-keyboard"></i></div>
-        <div class="text">Buy a DAS Keyboard</div>
+        <div class="icon"><i class="fas fa-fw fa-keyboard"></i></div>
+        <div class="text">
+          Buy
+          <br />
+          a DAS Keyboard
+        </div>
       </a>
     </div>
   </div>

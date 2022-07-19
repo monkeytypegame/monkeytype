@@ -9,7 +9,7 @@
 
   // margin-bottom: 2rem;
   .keyTips {
-    transition: 0.25s;
+    transition: 0.125s;
     margin-bottom: 2rem;
     line-height: 1.25rem;
     key {
@@ -17,8 +17,12 @@
     }
   }
 
+  .left a,
+  .right a {
+    transition: 0.125s;
+  }
+
   #supportMeButton {
-    transition: 0.25s;
     &:hover {
       color: var(--text-color);
       cursor: pointer;

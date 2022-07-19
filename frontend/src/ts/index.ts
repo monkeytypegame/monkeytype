@@ -5,6 +5,7 @@ import "./firebase";
 
 import * as DB from "./db";
 import "./ui";
+import "./controllers/ad-controller";
 import Config from "./config";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
@@ -18,6 +19,7 @@ import "./test/caps-warning";
 import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
+import "./popups/video-ad-popup";
 import "./popups/edit-preset-popup";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
@@ -30,6 +32,7 @@ import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
+import { egVideoListener } from "./popups/video-ad-popup";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -54,6 +57,8 @@ extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
 extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
+
+extendedGlobal.egVideoListener = egVideoListener;
 
 //@ts-ignore
 extendedGlobal.tribe = Tribe;

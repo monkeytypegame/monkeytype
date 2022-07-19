@@ -87,6 +87,7 @@ const CONFIG_SCHEMA = joi.object({
   tapeMode: joi.string().valid("off", "letter", "word"),
   alwaysShowCPM: joi.boolean(),
   enableAds: joi.string().valid("off", "on", "max"),
+  ads: joi.string().valid("off", "result", "on", "sellout"),
   hideExtraLetters: joi.boolean(),
   strictSpace: joi.boolean(),
   minAcc: joi.string().valid("off", "custom"),
