@@ -1015,7 +1015,7 @@ export async function init(): Promise<void> {
 
       rq = randomQuote;
     } else {
-      const randomQuote = QuotesController.getRandomQuote();
+      const randomQuote = QuotesController.getRandomQuote(Tribe.state >= 5);
       if (randomQuote === null) {
         Notifications.add("No quotes found for selected quote length", 0);
         TestUI.setTestRestarting(false);

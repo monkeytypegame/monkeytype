@@ -127,9 +127,13 @@ class QuotesController {
     this.queueIndex = 0;
   }
 
-  getRandomQuote(): MonkeyTypes.Quote | null {
+  getRandomQuote(trulyRandom = false): MonkeyTypes.Quote | null {
     if (this.quoteQueue.length === 0) {
       return null;
+    }
+
+    if (trulyRandom) {
+      return randomElementFromArray(this.quoteCollection.quotes);
     }
 
     if (this.queueIndex >= this.quoteQueue.length) {
