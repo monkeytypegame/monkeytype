@@ -1,5 +1,6 @@
-import { init } from "../tribe/tribe";
 import Page from "./page";
+import * as Tribe from "../tribe/tribe";
+import * as TribeChat from "../tribe/tribe-chat";
 
 export const page = new Page(
   "tribe",
@@ -12,10 +13,15 @@ export const page = new Page(
     // TODO: Fill it up later
   },
   async () => {
-    // TODO: Fill it up later
+    if (Tribe.state == 5) {
+      setTimeout(() => {
+        TribeChat.scrollChat();
+      }, 50);
+    }
   },
   async () => {
-    // TODO: Fill it up later
-    init();
+    if (Tribe.state < 1) {
+      Tribe.init();
+    }
   }
 );
