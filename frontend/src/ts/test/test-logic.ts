@@ -1773,26 +1773,6 @@ $(document).on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
-$(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key === "Enter") {
-    restart();
-  }
-});
-
-$(document.body).on("click", "#restartTestButton", () => {
-  ManualRestart.set();
-  if (TestUI.resultCalculating) return;
-  if (
-    TestActive.get() &&
-    Config.repeatQuotes === "typing" &&
-    Config.mode === "quote"
-  ) {
-    restart(true);
-  } else {
-    restart();
-  }
-});
-
 $(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
