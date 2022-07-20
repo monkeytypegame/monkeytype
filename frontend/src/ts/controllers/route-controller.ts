@@ -12,10 +12,14 @@ import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 // import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
-import { setAutoJoin } from "../tribe/tribe";
+import * as Tribe from "../tribe/tribe";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
+
+interface NavigateOptions {
+  tribeOverride?: boolean;
+}
 
 function pathToRegex(path: string): RegExp {
   return new RegExp(
@@ -36,14 +40,21 @@ function getParams(match: { route: Route; result: RegExpMatchArray }): {
 
 interface Route {
   path: string;
-  load: (params: { [key: string]: string }) => void;
+  load: (
+    params: { [key: string]: string },
+    navigateOptions: NavigateOptions
+  ) => void;
 }
 
 const routes: Route[] = [
   {
     path: "/",
-    load: (): void => {
-      PageController.change(PageTest.page, true);
+    load: (_params, navigateOptions): void => {
+      if (Tribe.state >= 5 && !navigateOptions?.tribeOverride) {
+        navigate("/tribe", navigateOptions);
+      } else {
+        PageController.change(PageTest.page, true);
+      }
     },
   },
   {
@@ -110,13 +121,17 @@ const routes: Route[] = [
   {
     path: "/tribe/:roomId",
     load: (params): void => {
-      setAutoJoin(params["roomId"]);
+      Tribe.setAutoJoin(params["roomId"]);
       PageController.change(PageTribe.page, true, params);
     },
   },
 ];
 
-export function navigate(url = window.location.pathname): void {
+export function navigate(
+  url = window.location.pathname,
+  options = {} as NavigateOptions
+): void {
+  if (Tribe.state > 5 && !options?.tribeOverride) return;
   if (
     TestUI.testRestarting ||
     TestUI.resultCalculating ||
@@ -127,10 +142,10 @@ export function navigate(url = window.location.pathname): void {
   url = url.replace(/\/$/, "");
   if (url === "") url = "/";
   history.pushState(null, "", url);
-  router();
+  router(options);
 }
 
-async function router(): Promise<void> {
+async function router(options = {} as NavigateOptions): Promise<void> {
   const matches = routes.map((r) => {
     return {
       route: r,
@@ -148,10 +163,12 @@ async function router(): Promise<void> {
     return;
   }
 
-  match.route.load(getParams(match));
+  match.route.load(getParams(match), options);
 }
 
-window.addEventListener("popstate", router);
+window.addEventListener("popstate", () => {
+  router();
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("click", (e) => {
