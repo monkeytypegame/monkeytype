@@ -687,7 +687,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     }
 
     //otherwise restart
-    TestLogic.restart(false, false, event);
+    TestLogic.restart({ event });
   } else {
     //quick tab off
 
@@ -796,7 +796,9 @@ $(document).on("keydown", async (event) => {
     }
 
     //otherwise restart
-    TestLogic.restart(false, false, event);
+    TestLogic.restart({
+      event,
+    });
   }
 
   if (!allowTyping) return;

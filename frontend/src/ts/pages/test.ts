@@ -24,7 +24,9 @@ export const page = new Page(
     TestConfig.show();
     TestStats.resetIncomplete();
     ManualRestart.set();
-    TestLogic.restart(undefined, undefined, undefined, undefined, true);
+    TestLogic.restart({
+      noAnim: true,
+    });
     Funbox.activate(Config.funbox);
   },
   async () => {

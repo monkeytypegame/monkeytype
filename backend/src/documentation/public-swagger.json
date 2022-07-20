@@ -72,6 +72,29 @@
         }
       }
     },
+    "/users/:uid/profile": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's profile",
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "query",
+            "description": "The User ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          }
+        }
+      }
+    },
     "/results/last": {
       "get": {
         "tags": ["results"],
@@ -233,6 +256,163 @@
         "timestamp": {
           "type": "integer",
           "example": 1644438189583
+        }
+      }
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "example_name"
+        },
+        "banned": {
+          "type": "boolean",
+          "example": true
+        },
+        "addedAt": {
+          "type": "integer",
+          "example": 1644438189583
+        },
+        "typingStats": {
+          "type": "object",
+          "properties": {
+            "startedTests": {
+              "type": "integer",
+              "example": 578
+            },
+            "completedTests": {
+              "type": "integer",
+              "example": 451
+            },
+            "timeTyping": {
+              "type": "number",
+              "format": "double",
+              "example": 3941.6
+            }
+          }
+        },
+        "personalBests": {
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "object",
+              "properties": {
+                "15": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                },
+                "30": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                },
+                "60": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                },
+                "120": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                }
+              }
+            },
+            "words": {
+              "type": "object",
+              "properties": {
+                "10": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                },
+                "25": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                },
+                "50": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                },
+                "100": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "discordId": {
+          "type": "string",
+          "example": "974761412044437307"
+        },
+        "discordAvatar": {
+          "type": "string",
+          "example": "6226b17aebc27a4a8d1ce04b"
+        },
+        "inventory": {
+          "type": "object",
+          "properties": {
+            "badges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "selected": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "details": {
+          "type": "object",
+          "properties": {
+            "bio": {
+              "type": "string",
+              "example": "I love MonkeyType!"
+            },
+            "keyboard": {
+              "type": "string",
+              "example": "Keychron V4"
+            },
+            "socialProfiles": {
+              "type": "object",
+              "properties": {
+                "twitter": {
+                  "type": "string",
+                  "example": "monkeytype"
+                },
+                "github": {
+                  "type": "string",
+                  "example": "monkeytype"
+                },
+                "website": {
+                  "type": "string",
+                  "example": "https://monkeytype.com/"
+                }
+              }
+            }
+          }
         }
       }
     },

@@ -17,7 +17,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit").attr("action", "edit");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Edit preset");
-    $("#presetWrapper #presetEdit .button").html(`edit`);
+    $("#presetWrapper #presetEdit .button").html(`save`);
     $("#presetWrapper #presetEdit input.text").val(name);
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label input").prop("checked", false);

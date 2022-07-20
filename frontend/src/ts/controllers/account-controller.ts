@@ -141,7 +141,9 @@ export async function getDataAndInit(): Promise<boolean> {
       UpdateConfig.apply(snapshot.config);
       Settings.update();
       UpdateConfig.saveFullConfigToLocalStorage(true);
-      TestLogic.restart(false, true);
+      TestLogic.restart({
+        nosave: true,
+      });
     } else if (snapshot.config !== undefined) {
       //loading db config, keep for now
       let configsDifferent = false;
@@ -187,7 +189,9 @@ export async function getDataAndInit(): Promise<boolean> {
         Settings.update();
         UpdateConfig.saveFullConfigToLocalStorage(true);
         if (ActivePage.get() == "test") {
-          TestLogic.restart(false, true);
+          TestLogic.restart({
+            nosave: true,
+          });
         }
         DB.saveConfig(Config);
       }
