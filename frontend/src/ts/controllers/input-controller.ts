@@ -639,12 +639,15 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // dont do anything on login so we can tab/esc betweeen inputs
     if (ActivePage.get() === "login") return;
 
+    event.preventDefault();
+
     // tribe
     if (Tribe.state >= 5) {
-      if (Tribe.state > 5 && Tribe.state < 21) return;
+      if (Tribe.state > 5 && Tribe.state < 22) return;
       if (Tribe.getSelf()?.isLeader) {
         if (Tribe.state === 5 || Tribe.state === 22) {
           Tribe.initRace();
+          return;
         }
       } else if (
         Tribe.state === 5 ||
@@ -652,6 +655,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
         Tribe.state === 22
       ) {
         Tribe.socket.emit(`room_ready_update`);
+        return;
       }
     }
 
@@ -674,7 +678,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // insert tab character if needed (only during the test)
     if (!TestUI.resultVisible && shouldInsertTabCharacter) {
-      event.preventDefault();
       handleChar("\t", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       return;
@@ -749,12 +752,15 @@ $(document).on("keydown", async (event) => {
 
     if (modalVisible) return;
 
+    event.preventDefault();
+
     // tribe
     if (Tribe.state >= 5) {
-      if (Tribe.state > 5 && Tribe.state < 21) return;
+      if (Tribe.state > 5 && Tribe.state < 22) return;
       if (Tribe.getSelf()?.isLeader) {
         if (Tribe.state === 5 || Tribe.state === 22) {
           Tribe.initRace();
+          return;
         }
       } else if (
         Tribe.state === 5 ||
@@ -762,6 +768,7 @@ $(document).on("keydown", async (event) => {
         Tribe.state === 22
       ) {
         Tribe.socket.emit(`room_ready_update`);
+        return;
       }
     }
 
