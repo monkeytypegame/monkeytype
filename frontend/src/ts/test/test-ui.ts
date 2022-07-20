@@ -1019,7 +1019,9 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote"
     ) {
-      TestLogic.restart(true);
+      TestLogic.restart({
+        withSameWordset: true,
+      });
     } else {
       TestLogic.restart();
     }
@@ -1036,7 +1038,9 @@ $(document.body).on("click", "#restartTestButton", () => {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    TestLogic.restart(true);
+    TestLogic.restart({
+      withSameWordset: true,
+    });
   } else {
     TestLogic.restart();
   }

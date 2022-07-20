@@ -53,14 +53,14 @@ const routes: Route[] = [
       if (Tribe.state >= 5 && !navigateOptions?.tribeOverride) {
         navigate("/tribe", navigateOptions);
       } else {
-        PageController.change(PageTest.page, true);
+        PageController.change(PageTest.page);
       }
     },
   },
   {
     path: "/verify",
     load: (): void => {
-      PageController.change(PageTest.page, true);
+      PageController.change(PageTest.page);
     },
   },
   // {
@@ -75,25 +75,25 @@ const routes: Route[] = [
   {
     path: "/about",
     load: (): void => {
-      PageController.change(PageAbout.page, true);
+      PageController.change(PageAbout.page);
     },
   },
   {
     path: "/settings",
     load: (): void => {
-      PageController.change(PageSettings.page, true);
+      PageController.change(PageSettings.page);
     },
   },
   {
     path: "/login",
     load: (): void => {
-      PageController.change(PageLogin.page, true);
+      PageController.change(PageLogin.page);
     },
   },
   {
     path: "/account",
     load: (): void => {
-      PageController.change(PageAccount.page, true);
+      PageController.change(PageAccount.page);
     },
   },
   {
@@ -118,14 +118,20 @@ const routes: Route[] = [
   {
     path: "/tribe",
     load: (params): void => {
-      PageController.change(PageTribe.page, true, params);
+      PageController.change(PageTribe.page, {
+        force: true,
+        params,
+      });
     },
   },
   {
     path: "/tribe/:roomId",
     load: (params): void => {
       Tribe.setAutoJoin(params["roomId"]);
-      PageController.change(PageTribe.page, true, params);
+      PageController.change(PageTribe.page, {
+        force: true,
+        params,
+      });
     },
   },
 ];
