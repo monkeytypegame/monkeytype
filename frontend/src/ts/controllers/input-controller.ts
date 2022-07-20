@@ -641,6 +641,19 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     event.preventDefault();
 
+    // change page if needed
+    if (Tribe.state >= 5) {
+      if (ActivePage.get() !== "tribe") {
+        navigate("/tribe");
+        return;
+      }
+    } else {
+      if (ActivePage.get() !== "test") {
+        navigate("/");
+        return;
+      }
+    }
+
     // tribe
     if (Tribe.state >= 5) {
       if (Tribe.state > 5 && Tribe.state < 22) return;
@@ -657,16 +670,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
         Tribe.socket.emit(`room_ready_update`);
         return;
       }
-    }
-
-    // change page if not on test page
-    if (ActivePage.get() !== "test") {
-      if (Tribe.state >= 5) {
-        navigate("/tribe");
-      } else {
-        navigate("/");
-      }
-      return;
     }
 
     // in case we are in a long test, setting manual restart
@@ -754,6 +757,19 @@ $(document).on("keydown", async (event) => {
 
     event.preventDefault();
 
+    // change page if needed
+    if (Tribe.state >= 5) {
+      if (ActivePage.get() !== "tribe") {
+        navigate("/tribe");
+        return;
+      }
+    } else {
+      if (ActivePage.get() !== "test") {
+        navigate("/");
+        return;
+      }
+    }
+
     // tribe
     if (Tribe.state >= 5) {
       if (Tribe.state > 5 && Tribe.state < 22) return;
@@ -770,16 +786,6 @@ $(document).on("keydown", async (event) => {
         Tribe.socket.emit(`room_ready_update`);
         return;
       }
-    }
-
-    // change page if not on test page
-    if (ActivePage.get() !== "test") {
-      if (Tribe.state >= 5) {
-        navigate("/tribe");
-      } else {
-        navigate("/");
-      }
-      return;
     }
 
     // in case we are in a long test, setting manual restart
