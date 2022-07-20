@@ -126,8 +126,8 @@ export function setLoadingIndicator(bool: boolean): void {
 
 export function canChange(override: boolean): boolean {
   if (Tribe.state <= 1) return true;
-  if (Tribe.state !== 5) return false;
   if (Tribe.getSelf()?.isLeader) {
+    if (Tribe.state !== 5) return false;
     //is leader, allow
     return true;
   } else {
