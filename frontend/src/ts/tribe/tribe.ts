@@ -308,7 +308,7 @@ socket.on("system_message", (e) => {
 
 socket.on("room_joined", (e) => {
   room = e.room;
-  updateState(5);
+  updateState(e.room.state);
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
