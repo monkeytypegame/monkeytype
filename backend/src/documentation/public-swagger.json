@@ -72,14 +72,14 @@
         }
       }
     },
-    "/users/:uid/results": {
+    "/users/:uid/profile": {
       "get": {
         "tags": ["users"],
         "summary": "Gets a user's profile",
         "parameters": [
           {
             "name": "uid",
-            "in": "params",
+            "in": "query",
             "description": "The User ID",
             "required": true,
             "type": "string"
@@ -268,7 +268,7 @@
         },
         "banned": {
           "type": "boolean",
-          "example": "true"
+          "example": true
         },
         "addedAt": {
           "type": "integer",
@@ -299,20 +299,28 @@
               "type": "object",
               "properties": {
                 "15": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 },
                 "30": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 },
                 "60": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 },
                 "120": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 }
               }
             },
@@ -320,20 +328,28 @@
               "type": "object",
               "properties": {
                 "10": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 },
                 "25": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 },
                 "50": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 },
                 "100": {
-                  "type": "integer",
-                  "example": "120"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/PersonalBest"
+                  }
                 }
               }
             }
@@ -349,18 +365,20 @@
         },
         "inventory": {
           "type": "object",
-          "badges": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer",
-                  "example": "1"
-                },
-                "selected": {
-                  "type": "boolean",
-                  "example": "true"
+          "properties": {
+            "badges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "selected": {
+                    "type": "boolean",
+                    "example": true
+                  }
                 }
               }
             }
