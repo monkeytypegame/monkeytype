@@ -891,7 +891,9 @@ export function applyBurstHeatmap(): void {
         }`;
       }
 
-      $("#resultWordsHistory .heatmapLegend .box" + index).text(string);
+      $("#resultWordsHistory .heatmapLegend .box" + index).html(
+        `<div>${string}</div>`
+      );
     });
 
     $("#resultWordsHistory .words .word").each((_, word) => {
