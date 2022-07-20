@@ -53,7 +53,9 @@ const routes: Route[] = [
       if (Tribe.state >= 5 && !navigateOptions?.tribeOverride) {
         navigate("/tribe", navigateOptions);
       } else {
-        PageController.change(PageTest.page);
+        PageController.change(PageTest.page, {
+          tribeOverride: navigateOptions?.tribeOverride ?? false,
+        });
       }
     },
   },

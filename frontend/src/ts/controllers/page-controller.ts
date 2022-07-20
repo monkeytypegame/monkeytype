@@ -16,6 +16,7 @@ import * as AdController from "../controllers/ad-controller";
 interface ChangeOptions {
   force?: boolean;
   params?: { [key: string]: string };
+  tribeOverride?: boolean;
 }
 
 export async function change(
@@ -24,6 +25,7 @@ export async function change(
 ): Promise<boolean> {
   const defaultOptions = {
     force: false,
+    tribeOverride: false,
   };
 
   options = { ...defaultOptions, ...options };
@@ -55,7 +57,9 @@ export async function change(
     const previousPage = pages[ActivePage.get()];
     const nextPage = page;
 
-    previousPage?.beforeHide();
+    previousPage?.beforeHide({
+      tribeOverride: options.tribeOverride ?? false,
+    });
     PageTransition.set(true);
     $(".page").removeClass("active");
     Misc.swapElements(
@@ -72,7 +76,10 @@ export async function change(
       async () => {
         ActivePage.set(nextPage.name);
         previousPage?.afterHide();
-        await nextPage?.beforeShow(options.params);
+        await nextPage?.beforeShow({
+          params: options.params,
+          tribeOverride: options.tribeOverride ?? false,
+        });
       }
     );
   });

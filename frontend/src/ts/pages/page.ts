@@ -1,18 +1,23 @@
+interface PageFunctionOptions {
+  params?: { [key: string]: string };
+  tribeOverride?: boolean;
+}
+
 export default class Page {
   public name: string;
   public element: JQuery;
   public pathname: string;
-  public beforeHide: () => Promise<void>;
+  public beforeHide: (options: PageFunctionOptions) => Promise<void>;
   public afterHide: () => Promise<void>;
-  public beforeShow: (params?: { [key: string]: string }) => Promise<void>;
+  public beforeShow: (options: PageFunctionOptions) => Promise<void>;
   public afterShow: () => Promise<void>;
   constructor(
     name: string,
     element: JQuery,
     pathname: string,
-    beforeHide: () => Promise<void>,
+    beforeHide: (options: PageFunctionOptions) => Promise<void>,
     afterHide: () => Promise<void>,
-    beforeShow: (params?: { [key: string]: string }) => Promise<void>,
+    beforeShow: (options: PageFunctionOptions) => Promise<void>,
     afterShow: () => Promise<void>
   ) {
     this.name = name;

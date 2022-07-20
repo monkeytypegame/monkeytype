@@ -11,8 +11,10 @@ export const page = new Page(
   "test",
   $(".page.pageTest"),
   "/",
-  async () => {
-    TestLogic.restart();
+  async (options) => {
+    TestLogic.restart({
+      tribeOverride: options.tribeOverride ?? false,
+    });
     Funbox.clear();
     TestConfig.hide();
     $("#wordsInput").focusout();
@@ -20,12 +22,13 @@ export const page = new Page(
   async () => {
     //
   },
-  async () => {
+  async (options) => {
     TestConfig.show();
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart({
       noAnim: true,
+      tribeOverride: options.tribeOverride ?? false,
     });
     Funbox.activate(Config.funbox);
   },

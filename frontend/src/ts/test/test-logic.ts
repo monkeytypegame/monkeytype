@@ -332,6 +332,7 @@ interface RestartOptions {
   event?: JQuery.KeyDownEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
+  tribeOverride?: boolean;
 }
 
 // withSameWordset = false,
@@ -346,11 +347,16 @@ export function restart(options = {} as RestartOptions): void {
     practiseMissed: false,
     noAnim: false,
     nosave: false,
+    tribeOverride: false,
   };
 
   options = { ...defaultOptions, ...options };
 
-  if (TestUI.testRestarting || TestUI.resultCalculating) {
+  if (
+    TestUI.testRestarting ||
+    TestUI.resultCalculating ||
+    (Tribe.state > 5 && !options.tribeOverride)
+  ) {
     event?.preventDefault();
     return;
   }

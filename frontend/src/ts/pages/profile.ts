@@ -141,9 +141,9 @@ export const page = new Page(
   async () => {
     reset();
   },
-  async (params) => {
+  async (options) => {
     reset();
-    update(params?.["uid"] ?? "");
+    update(options.params?.["uid"] ?? "");
   },
   async () => {
     //
