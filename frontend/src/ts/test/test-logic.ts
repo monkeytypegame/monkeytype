@@ -320,13 +320,30 @@ export function startTest(): boolean {
   return true;
 }
 
-export function restart(
-  withSameWordset = false,
-  _?: boolean, // this is nosave and should be renamed to nosave when needed
-  event?: JQuery.KeyDownEvent,
-  practiseMissed = false,
-  noAnim = false
-): void {
+interface RestartOptions {
+  withSameWordset?: boolean;
+  nosave?: boolean;
+  event?: JQuery.KeyDownEvent;
+  practiseMissed?: boolean;
+  noAnim?: boolean;
+}
+
+// withSameWordset = false,
+// _?: boolean, // this is nosave and should be renamed to nosave when needed
+// event?: JQuery.KeyDownEvent,
+// practiseMissed = false,
+// noAnim = false
+
+export function restart(options = {} as RestartOptions): void {
+  const defaultOptions = {
+    withSameWordset: false,
+    practiseMissed: false,
+    noAnim: false,
+    nosave: false,
+  };
+
+  options = { ...defaultOptions, ...options };
+
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
     return;
@@ -335,7 +352,7 @@ export function restart(
     if (!ManualRestart.get()) {
       if (
         TestWords.hasTab &&
-        !event?.shiftKey &&
+        !options.event?.shiftKey &&
         Config.quickRestart !== "esc"
       ) {
         return;
@@ -369,10 +386,10 @@ export function restart(
       Config.mode === "quote" &&
       Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
     ) {
-      withSameWordset = true;
+      options.withSameWordset = true;
     }
     if (TestState.isRepeated) {
-      withSameWordset = true;
+      options.withSameWordset = true;
     }
 
     TestInput.pushKeypressesToHistory();
@@ -403,8 +420,8 @@ export function restart(
 
   if (
     PractiseWords.before.mode !== null &&
-    !withSameWordset &&
-    !practiseMissed
+    !options.withSameWordset &&
+    !options.practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
     if (PractiseWords.before.punctuation !== null) {
@@ -418,7 +435,7 @@ export function restart(
   }
 
   let repeatWithPace = false;
-  if (TestUI.resultVisible && Config.repeatedPace && withSameWordset) {
+  if (TestUI.resultVisible && Config.repeatedPace && options.withSameWordset) {
     repeatWithPace = true;
   }
 
@@ -476,7 +493,7 @@ export function restart(
     {
       opacity: 0,
     },
-    noAnim ? 0 : 125,
+    options.noAnim ? 0 : 125,
     async () => {
       if (ActivePage.get() == "test") Focus.set(false);
       TestUI.focusWords();
@@ -509,7 +526,7 @@ export function restart(
         UpdateConfig.setNumbers(false, true);
       }
       if (
-        withSameWordset &&
+        options.withSameWordset &&
         (Config.funbox === "plus_one" || Config.funbox === "plus_two")
       ) {
         const toPush = [];
@@ -525,7 +542,7 @@ export function restart(
         TestWords.words.reset();
         toPush.forEach((word) => TestWords.words.push(word));
       }
-      if (!withSameWordset && !shouldQuoteRepeat) {
+      if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
@@ -632,7 +649,7 @@ export function restart(
           {
             opacity: 1,
           },
-          noAnim ? 0 : 125,
+          options.noAnim ? 0 : 125,
           () => {
             TestUI.setTestRestarting(false);
             // resetPaceCaret();
@@ -1698,7 +1715,9 @@ $(document.body).on("click", "#restartTestButton", () => {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    restart(true);
+    restart({
+      withSameWordset: true,
+    });
   } else {
     restart();
   }
@@ -1723,7 +1742,9 @@ $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
     return;
   }
   ManualRestart.set();
-  restart(true);
+  restart({
+    withSameWordset: true,
+  });
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
@@ -1732,7 +1753,9 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
     return;
   }
   if (event.key === "Enter") {
-    restart(true);
+    restart({
+      withSameWordset: true,
+    });
   }
 });
 
@@ -1798,19 +1821,25 @@ $(document).on("click", "#top .config .mode .textButton", (e) => {
 $("#practiseWordsPopup .button.missed").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, false);
-  restart(false, false, undefined, true);
+  restart({
+    practiseMissed: true,
+  });
 });
 
 $("#practiseWordsPopup .button.slow").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(false, true);
-  restart(false, false, undefined, true);
+  restart({
+    practiseMissed: true,
+  });
 });
 
 $("#practiseWordsPopup .button.both").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, true);
-  restart(false, false, undefined, true);
+  restart({
+    practiseMissed: true,
+  });
 });
 
 $(document).on(
@@ -1837,10 +1866,10 @@ $(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
-    if (eventKey === "difficulty" && !nosave) restart(false, nosave);
-    if (eventKey === "showAllLines" && !nosave) restart(false, nosave);
-    if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
-    if (eventKey === "tapeMode" && !nosave) restart(false, nosave);
+    if (eventKey === "difficulty" && !nosave) restart();
+    if (eventKey === "showAllLines" && !nosave) restart();
+    if (eventKey === "keymapMode" && !nosave) restart();
+    if (eventKey === "tapeMode" && !nosave) restart();
   }
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;

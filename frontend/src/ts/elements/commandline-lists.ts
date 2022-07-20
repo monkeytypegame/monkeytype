@@ -2465,7 +2465,9 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
-        TestLogic.restart(false, false, undefined, true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
       },
     },
     {
@@ -2474,7 +2476,9 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
-        TestLogic.restart(false, false, undefined, true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
       },
     },
     {
@@ -2483,7 +2487,9 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
       noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
-        TestLogic.restart(false, false, undefined, true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
       },
     },
   ],
@@ -2527,7 +2533,9 @@ Misc.getChallengeList().then((challenges) => {
       exec: (): void => {
         navigate("/");
         ChallengeController.setup(challenge.name);
-        TestLogic.restart(false, true);
+        TestLogic.restart({
+          nosave: true,
+        });
       },
     });
   });
@@ -3258,7 +3266,9 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       display: "Repeat test",
       icon: "fa-sync-alt",
       exec: (): void => {
-        TestLogic.restart(true);
+        TestLogic.restart({
+          withSameWordset: true,
+        });
       },
       available: (): boolean => {
         return TestUI.resultVisible;
