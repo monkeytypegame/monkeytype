@@ -142,7 +142,7 @@ export function navigate(
   url = window.location.pathname,
   options = {} as NavigateOptions
 ): void {
-  if (Tribe.state > 5 && !options?.tribeOverride) return;
+  if (Tribe.state > 5 && Tribe.state < 22 && !options?.tribeOverride) return;
   if (
     TestUI.testRestarting ||
     TestUI.resultCalculating ||
