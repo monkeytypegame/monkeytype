@@ -12,11 +12,21 @@ import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
 import * as AdController from "../controllers/ad-controller";
 
+interface ChangeOptions {
+  force?: boolean;
+  params?: { [key: string]: string };
+}
+
 export async function change(
   page: Page,
-  force = false,
-  params?: { [key: string]: string }
+  options = {} as ChangeOptions
 ): Promise<boolean> {
+  const defaultOptions = {
+    force: false,
+  };
+
+  options = { ...defaultOptions, ...options };
+
   return new Promise((resolve) => {
     if (PageTransition.get()) {
       console.log(`change page ${page.name} stopped`);
@@ -24,7 +34,7 @@ export async function change(
     }
     console.log(`change page ${page.name}`);
 
-    if (!force && ActivePage.get() === page.name) {
+    if (!options.force && ActivePage.get() === page.name) {
       console.log(`page ${page.name} already active`);
       return resolve(false);
     }
@@ -60,7 +70,7 @@ export async function change(
       async () => {
         ActivePage.set(nextPage.name);
         previousPage?.afterHide();
-        await nextPage?.beforeShow(params);
+        await nextPage?.beforeShow(options.params);
       }
     );
   });
