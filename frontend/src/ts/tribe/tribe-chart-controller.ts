@@ -53,6 +53,10 @@ const settings: ChartConfiguration = {
     ],
   },
   options: {
+    interaction: {
+      intersect: false,
+      mode: "index",
+    },
     layout: {
       padding: {
         left: 5,
@@ -268,13 +272,13 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
 
   if (userId == Tribe.socket.id) {
     chart.data.datasets[0].borderColor = await ThemeColors.get("main");
-    chart.data.datasets[0].backgroundColor = await ThemeColors.get("main");
+    // chart.data.datasets[0].backgroundColor = await ThemeColors.get("main");
   } else {
     chart.data.datasets[0].borderColor = await ThemeColors.get("text");
-    chart.data.datasets[0].backgroundColor = await ThemeColors.get("text");
+    // chart.data.datasets[0].backgroundColor = await ThemeColors.get("text");
   }
   chart.data.datasets[1].borderColor = await ThemeColors.get("sub");
-  chart.data.datasets[1].backgroundColor = await ThemeColors.get("sub");
+  // chart.data.datasets[1].backgroundColor = await ThemeColors.get("sub");
 
   chart.update();
 }
@@ -350,6 +354,12 @@ export async function updateChartMaxValues(): Promise<void> {
       if (scales?.["raw"]) {
         scales["raw"].max = Math.round(chartmaxval);
         scales["raw"].min = 0;
+      }
+
+      const result = Tribe.room.users[userId].result;
+      if (result && scales?.["errors"]) {
+        scales["errors"].max = Math.max(...result.chartData.err) + 1;
+        scales["errors"].min = 0;
       }
 
       // charts[userId].options.scales.yAxes[0].ticks.max =
