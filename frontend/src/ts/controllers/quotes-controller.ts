@@ -1,6 +1,7 @@
 import { randomElementFromArray, shuffle } from "../utils/misc";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
+import Config from "../config";
 
 interface Quote {
   text: string;
@@ -133,7 +134,13 @@ class QuotesController {
     }
 
     if (trulyRandom) {
-      return randomElementFromArray(this.quoteCollection.quotes);
+      if (Config.quoteLength.length === 1) {
+        return randomElementFromArray(
+          this.quoteCollection.groups[Config.quoteLength[0]]
+        );
+      } else {
+        return randomElementFromArray(this.quoteCollection.quotes);
+      }
     }
 
     if (this.queueIndex >= this.quoteQueue.length) {
