@@ -28,7 +28,7 @@
   display: grid;
   grid-template-areas: "col";
 
-  div {
+  & > div {
     grid-area: col;
   }
 
@@ -59,5 +59,27 @@
     width: 320px;
     height: 50px;
     display: none;
+  }
+}
+
+#ad-result-wrapper {
+  .iconAndText {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    justify-content: center;
+    justify-self: center;
+    align-items: center;
+    .icon {
+      width: unset;
+      height: unset;
+    }
+    .text {
+      color: var(--sub-color);
+      font-size: 1rem;
+      .smalltext {
+        font-size: 0.7rem;
+      }
+    }
   }
 }
