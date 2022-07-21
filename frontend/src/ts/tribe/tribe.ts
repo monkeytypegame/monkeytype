@@ -331,6 +331,9 @@ socket.on("room_player_left", (e) => {
     TribeUserList.update();
     TribeSound.play("leave");
     TribeButtons.update();
+    TribeBars.fadeUser(undefined, e.userId);
+    TribeResults.fadeUser("result", e.userId);
+    TribeResults.update("result", e.userId);
     checkIfEveryoneIsReady();
   }
 });
