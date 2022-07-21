@@ -23,6 +23,7 @@ import * as TribeResults from "../tribe/tribe-results";
 import * as TribeUserList from "../tribe/tribe-user-list";
 import * as TribeButtons from "../tribe/tribe-buttons";
 import * as TribeChat from "../tribe/tribe-chat";
+import * as TribeChartController from "../tribe/tribe-chart-controller";
 
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -733,6 +734,14 @@ export async function update(
       window.scrollTo({ top: 0 });
       TribeChat.scrollChat();
       $("#testModesNotice").addClass("hidden");
+      if (Tribe.room?.users) {
+        for (const userId of Object.keys(Tribe.room.users)) {
+          if (userId === Tribe.getSelf()?.id) continue;
+          if (Tribe.room.users[userId].isFinished) {
+            TribeChartController.drawChart(userId);
+          }
+        }
+      }
     },
     async () => {
       $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
