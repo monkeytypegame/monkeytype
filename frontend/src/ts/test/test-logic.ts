@@ -1445,7 +1445,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 let resolveTestSavePromise: (value: TribeTypes.ResultResolve) => void;
-const testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
+let testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
   (resolve) => {
     resolveTestSavePromise = resolve;
   }
@@ -1458,6 +1458,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
   }
+
+  testSavePromise = new Promise((resolve) => {
+    resolveTestSavePromise = resolve;
+  });
 
   TestInput.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
 
