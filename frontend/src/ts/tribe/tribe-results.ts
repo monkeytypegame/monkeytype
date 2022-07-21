@@ -187,7 +187,10 @@ function updateUser(page: string, userId: string): void {
       `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
     );
     const user = Tribe.room.users[userId];
-    if (!user) return;
+    if (!user) {
+      userEl.find(`.other .text`).text("left");
+      return;
+    }
     if (user.isFinished) {
       userEl.find(`.wpm .text`).text(user.result.wpm.toFixed(2));
       userEl.find(`.raw .text`).text(user.result.raw.toFixed(2));
