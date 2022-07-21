@@ -19,6 +19,7 @@ import * as Tribe from "../tribe/tribe";
 
 interface NavigateOptions {
   tribeOverride?: boolean;
+  force?: boolean;
 }
 
 function pathToRegex(path: string): RegExp {
@@ -55,6 +56,7 @@ const routes: Route[] = [
       } else {
         PageController.change(PageTest.page, {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
+          force: navigateOptions?.force ?? false,
         });
       }
     },

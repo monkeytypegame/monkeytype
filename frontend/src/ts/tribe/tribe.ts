@@ -466,6 +466,7 @@ socket.on("room_init_race", (e) => {
   console.log(`random: ${Math.random()}`);
   navigate("/", {
     tribeOverride: true,
+    force: true,
   });
   TribeCountdown.show();
   TribeSound.play("start");
