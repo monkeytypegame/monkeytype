@@ -336,12 +336,22 @@ export async function updateChartMaxValues(): Promise<void> {
       maxRaw = maxUserRaw;
     }
   }
-  // const chartmaxval = Math.max(maxWpm, maxRaw);
+  const chartmaxval = Math.max(maxWpm, maxRaw);
 
   const list = Object.keys(Tribe.room.users);
   for (let i = 0; i < list.length; i++) {
     const userId = list[i];
     if (charts[userId]) {
+      const scales = charts[userId].options.scales;
+      if (scales?.["wpm"]) {
+        scales["wpm"].max = Math.round(chartmaxval);
+        scales["wpm"].min = 0;
+      }
+      if (scales?.["raw"]) {
+        scales["raw"].max = Math.round(chartmaxval);
+        scales["raw"].min = 0;
+      }
+
       // charts[userId].options.scales.yAxes[0].ticks.max =
       //   Math.round(chartmaxval);
       // charts[userId].options.scales.yAxes[1].ticks.max =
