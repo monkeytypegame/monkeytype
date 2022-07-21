@@ -9,7 +9,6 @@ import * as TribePageLobby from "./pages/tribe-page-lobby";
 import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
-import seedrandom from "seedrandom";
 import * as TribeCountdown from "./tribe-countdown";
 import * as TestLogic from "../test/test-logic";
 import * as TribeBars from "./tribe-bars";
@@ -21,6 +20,7 @@ import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 import * as TestActive from "../states/test-active";
 import { navigate } from "../controllers/route-controller";
+import * as Random from "../utils/random";
 
 export const socket = io(
   window.location.hostname === "localhost"
@@ -51,7 +51,7 @@ export function getSelf(): TribeTypes.User | undefined {
 }
 
 export function applyRandomSeed(): void {
-  seedrandom(room?.seed.toString(), { global: true });
+  Random.setSeed(room?.seed.toString() ?? "");
 }
 
 export function getStateString(state: number): string {
@@ -462,8 +462,6 @@ socket.on("room_init_race", (e) => {
   }
   if (room) room.seed = e.seed;
   applyRandomSeed();
-  console.log(`seed: ${e.seed}`);
-  console.log(`random: ${Math.random()}`);
   navigate("/", {
     tribeOverride: true,
     force: true,

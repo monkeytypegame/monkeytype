@@ -57,6 +57,7 @@ import * as AdController from "../controllers/ad-controller";
 import * as Tribe from "../tribe/tribe";
 import * as TribeResults from "../tribe/tribe-results";
 import * as TribeDelta from "../tribe/tribe-delta";
+import * as Random from "../utils/random";
 
 export const glarsesMode = false;
 
@@ -95,14 +96,14 @@ export async function punctuateWord(
 
   if (Config.funbox === "58008") {
     if (currentWord.length > 3) {
-      if (Math.random() < 0.5) {
+      if (Random.get() < 0.5) {
         word = Misc.setCharAt(
           word,
           Misc.randomIntFromRange(1, word.length - 2),
           "."
         );
       }
-      if (Math.random() < 0.75) {
+      if (Random.get() < 0.75) {
         const index = Misc.randomIntFromRange(1, word.length - 2);
         if (
           word[index - 1] !== "." &&
@@ -128,7 +129,7 @@ export async function punctuateWord(
       }
 
       if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-        const rand = Math.random();
+        const rand = Random.get();
         if (rand > 0.9) {
           word = "¿" + word;
           spanishSentenceTracker = "?";
@@ -138,7 +139,7 @@ export async function punctuateWord(
         }
       }
     } else if (
-      (Math.random() < 0.1 &&
+      (Random.get() < 0.1 &&
         lastChar != "." &&
         lastChar != "," &&
         index != maxindex - 2) ||
@@ -150,7 +151,7 @@ export async function punctuateWord(
           spanishSentenceTracker = "";
         }
       } else {
-        const rand = Math.random();
+        const rand = Random.get();
         if (rand <= 0.8) {
           if (currentLanguage == "kurdish") {
             word += ".";
@@ -181,23 +182,23 @@ export async function punctuateWord(
         }
       }
     } else if (
-      Math.random() < 0.01 &&
+      Random.get() < 0.01 &&
       lastChar != "," &&
       lastChar != "." &&
       currentLanguage !== "russian"
     ) {
       word = `"${word}"`;
     } else if (
-      Math.random() < 0.011 &&
+      Random.get() < 0.011 &&
       lastChar != "," &&
       lastChar != "." &&
       currentLanguage !== "russian" &&
       currentLanguage !== "ukrainian"
     ) {
       word = `'${word}'`;
-    } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
+    } else if (Random.get() < 0.012 && lastChar != "," && lastChar != ".") {
       if (currentLanguage == "code") {
-        const r = Math.random();
+        const r = Random.get();
         if (r < 0.25) {
           word = `(${word})`;
         } else if (r < 0.5) {
@@ -211,7 +212,7 @@ export async function punctuateWord(
         word = `(${word})`;
       }
     } else if (
-      Math.random() < 0.013 &&
+      Random.get() < 0.013 &&
       lastChar != "," &&
       lastChar != "." &&
       lastChar != ";" &&
@@ -226,14 +227,14 @@ export async function punctuateWord(
         word += ":";
       }
     } else if (
-      Math.random() < 0.014 &&
+      Random.get() < 0.014 &&
       lastChar != "," &&
       lastChar != "." &&
       previousWord != "-"
     ) {
       word = "-";
     } else if (
-      Math.random() < 0.015 &&
+      Random.get() < 0.015 &&
       lastChar != "," &&
       lastChar != "." &&
       lastChar != ";" &&
@@ -249,7 +250,7 @@ export async function punctuateWord(
       } else {
         word += ";";
       }
-    } else if (Math.random() < 0.2 && lastChar != ",") {
+    } else if (Random.get() < 0.2 && lastChar != ",") {
       if (
         currentLanguage == "arabic" ||
         currentLanguage == "urdu" ||
@@ -260,12 +261,12 @@ export async function punctuateWord(
       } else {
         word += ",";
       }
-    } else if (Math.random() < 0.25 && currentLanguage == "code") {
+    } else if (Random.get() < 0.25 && currentLanguage == "code") {
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
       word = Misc.randomElementFromArray(specials);
     } else if (
-      Math.random() < 0.5 &&
+      Random.get() < 0.5 &&
       currentLanguage === "english" &&
       (await EnglishPunctuation.check(word))
     ) {
@@ -790,7 +791,7 @@ async function getNextWord(
     );
   }
   if (Config.numbers) {
-    if (Math.random() < 0.1) {
+    if (Random.get() < 0.1) {
       randomWord = Misc.getNumbers(4);
 
       if (Config.language.split("_")[0] === "kurdish") {

@@ -1,6 +1,7 @@
 import * as Loader from "../elements/loader";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import * as Random from "./random";
 
 export function getuid(): void {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -1109,7 +1110,7 @@ export async function downloadResultsCSV(
 export function randomIntFromRange(min: number, max: number): number {
   const minNorm = Math.ceil(min);
   const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
+  return Math.floor(Random.get() * (maxNorm - minNorm + 1) + minNorm);
 }
 
 /**
