@@ -154,7 +154,7 @@ export function completeBar(page: string, userId: string): void {
     );
 }
 
-export function fadeUser(page: string, userId: string): void {
+export function fadeUser(page: string | undefined, userId: string): void {
   if (page === undefined) {
     fadeUser("test", userId);
     fadeUser("tribe", userId);
