@@ -643,8 +643,11 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // change page if needed
     if (Tribe.state >= 5) {
-      if (ActivePage.get() !== "tribe") {
+      if (Tribe.state === 5 && ActivePage.get() !== "tribe") {
         navigate("/tribe");
+        return;
+      } else if (ActivePage.get() !== "test") {
+        navigate("/");
         return;
       }
     } else {
@@ -759,8 +762,11 @@ $(document).on("keydown", async (event) => {
 
     // change page if needed
     if (Tribe.state >= 5) {
-      if (ActivePage.get() !== "tribe") {
+      if (Tribe.state === 5 && ActivePage.get() !== "tribe") {
         navigate("/tribe");
+        return;
+      } else if (ActivePage.get() !== "test") {
+        navigate("/");
         return;
       }
     } else {
