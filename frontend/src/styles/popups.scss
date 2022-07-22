@@ -479,14 +479,14 @@
           place-self: center;
           grid-area: check;
         }
-        &.ads {
-          grid-template-columns: 1fr;
-          grid-template-areas:
-            "title"
-            "description";
-          a {
-            margin-top: 0.25rem;
-          }
+      }
+      .cookie.ads label {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "title"
+          "description";
+        a {
+          margin-top: 0.25rem;
         }
       }
     }
