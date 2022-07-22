@@ -70,15 +70,32 @@
     justify-content: center;
     justify-self: center;
     align-items: center;
+    grid-template-areas: "mid right";
+    .textLeft {
+      grid-area: left;
+      text-align: right;
+      display: none;
+    }
+    .textRight {
+      grid-area: right;
+    }
     .icon {
       width: unset;
       height: unset;
+      grid-area: mid;
     }
     .text {
       color: var(--sub-color);
       font-size: 1rem;
       .smalltext {
         font-size: 0.7rem;
+      }
+    }
+    &.withLeft {
+      grid-template-columns: 1fr auto 1fr;
+      grid-template-areas: "left mid right";
+      .textLeft {
+        display: block;
       }
     }
   }

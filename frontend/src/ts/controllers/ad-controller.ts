@@ -131,30 +131,36 @@ export async function renderResult(): Promise<void> {
   if (!initialised) {
     init();
   }
-  if (widerThanBreakpoint) {
-    // $("#ad-result-wrapper").html(`
-    // <div class="icon"><i class="fas fa-ad"></i></div>
-    // <div id="ad-result"></div>
-    // `);
-    // if ($("#ad-result-wrapper").is(":empty")) {
-    //@ts-ignore
-    // window.egAps.render(["ad-result"]);
-    // } else {
-    //@ts-ignore
-    window.egAps.refreshAds(["ad-result"]);
-    // }
-  } else {
-    // $("#ad-result-small-wrapper").html(`
-    // <div class="icon small"><i class="fas fa-ad"></i></div>
-    // <div id="ad-result-small"></div>
-    // `);
-    // if ($("#ad-result-small-wrapper").is(":empty")) {
-    //@ts-ignore
-    // window.egAps.render(["ad-result-small"]);
-    // } else {
-    //@ts-ignore
-    window.egAps.refreshAds(["ad-result-small"]);
-    // }
+  //@ts-ignore
+  if (window.egAps === undefined) return;
+  try {
+    if (widerThanBreakpoint) {
+      // $("#ad-result-wrapper").html(`
+      // <div class="icon"><i class="fas fa-ad"></i></div>
+      // <div id="ad-result"></div>
+      // `);
+      // if ($("#ad-result-wrapper").is(":empty")) {
+      //@ts-ignore
+      // window.egAps.render(["ad-result"]);
+      // } else {
+      //@ts-ignore
+      window.egAps.refreshAds(["ad-result"]);
+      // }
+    } else {
+      // $("#ad-result-small-wrapper").html(`
+      // <div class="icon small"><i class="fas fa-ad"></i></div>
+      // <div id="ad-result-small"></div>
+      // `);
+      // if ($("#ad-result-small-wrapper").is(":empty")) {
+      //@ts-ignore
+      // window.egAps.render(["ad-result-small"]);
+      // } else {
+      //@ts-ignore
+      window.egAps.refreshAds(["ad-result-small"]);
+      // }
+    }
+  } catch (e) {
+    $("#ad-result-wrapper .iconAndText").addClass("withLeft");
   }
 }
 
