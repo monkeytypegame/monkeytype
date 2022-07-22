@@ -19,7 +19,9 @@ function sendChattingUpdate(bool: boolean): void {
 
 function limitChatMessages(): void {
   const messages1 = $(".pageTribe .lobby .chat .messages .message");
-  const messages2 = $(".pageTest #result #tribeResultBottom .chat .messages");
+  const messages2 = $(
+    ".pageTest #result #tribeResultBottom .chat .messages .message"
+  );
   const limit = 100;
 
   //they should be in sync so it doesnt matter if i check one length
