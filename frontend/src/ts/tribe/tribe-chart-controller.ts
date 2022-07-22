@@ -285,6 +285,7 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
 
 export async function drawChart(userId: string): Promise<void> {
   try {
+    if (charts[userId]) return;
     const element = $(
       `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`
     )[0] as HTMLCanvasElement;
