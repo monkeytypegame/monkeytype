@@ -1,7 +1,7 @@
 #ad-vertical-left-wrapper,
 #ad-vertical-right-wrapper {
   margin-top: 2rem;
-  transition: margin-top 0.125s;
+  transition: margin-top 0.125s opacity 0.125s;
 }
 
 #ad-footer-wrapper,
@@ -27,9 +27,14 @@
   background: var(--sub-alt-color);
   display: grid;
   grid-template-areas: "col";
+  transition: opacity 0.125s;
 
   & > div {
     grid-area: col;
+  }
+
+  &.focus {
+    opacity: 0;
   }
 
   .icon {
