@@ -401,17 +401,17 @@ socket.on("room_chatting_changed", (e) => {
 socket.on("chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;
-  if (data.isLeader) {
+  if (data.from?.isLeader) {
     nameregex = new RegExp(
-      ` @${name.replace(/[.()]/g, "\\$&")} |^@${name.replace(
+      ` &#64;${name.replace(/[.()]/g, "\\$&")} |^&#64;${name.replace(
         /[.()]/g,
         "\\$&"
-      )}$|ready|@everyone`,
+      )}$|ready|&#64;everyone`,
       "i"
     );
   } else {
     nameregex = new RegExp(
-      ` @${name.replace(/[.()]/g, "\\$&")} |^@${name.replace(
+      ` &#64;${name.replace(/[.()]/g, "\\$&")} |^&#64;${name.replace(
         /[.()]/g,
         "\\$&"
       )}$`,
