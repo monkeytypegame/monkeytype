@@ -82,11 +82,31 @@ export function updateIsTyping(): void {
   );
 }
 
-export function appendMessage(data: {
+async function insertImageEmoji(text: string): Promise<string> {
+  const textSplit = text.trim().split(" ");
+  let big = "";
+  if (textSplit.length === 1) big = " big";
+  for (let i = 0; i < textSplit.length; i++) {
+    if (/&#58;.+&#58;/g.test(textSplit[i])) {
+      const emoji = await Misc.getEmojiList();
+      const result = emoji.filter(
+        (e) => e.from == textSplit[i].replace(/&#58;/g, "")
+      );
+      if (result[0] !== undefined) {
+        textSplit[
+          i
+        ] = `<div class="emoji ${big}" style="background-image: url('${result[0].to}')"></div>`;
+      }
+    }
+  }
+  return textSplit.join(" ");
+}
+
+export async function appendMessage(data: {
   isSystem: boolean;
   from: TribeTypes.User;
   message: string;
-}): void {
+}): Promise<void> {
   let cls = "message";
   let author = "";
   if (data.isSystem) {
@@ -96,7 +116,7 @@ export function appendMessage(data: {
     if (data.from.id == Tribe.socket.id) me = " me";
     author = `<div class="author ${me}">${data.from.name}:</div>`;
   }
-  // data.message = await insertImageEmoji(data.message);
+  data.message = await insertImageEmoji(data.message);
 
   let previousAuthor = $(".pageTribe .lobby .chat .messages .message")
     .last()

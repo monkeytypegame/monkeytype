@@ -734,4 +734,10 @@ declare namespace MonkeyTypes {
     color?: string;
     customStyle?: string;
   }
+
+  interface Emoji {
+    type: "image" | "emoji";
+    from: string;
+    to: string;
+  }
 }

@@ -298,6 +298,17 @@ export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   }
 }
 
+let emojiList: MonkeyTypes.Emoji[] = [];
+export async function getEmojiList(): Promise<MonkeyTypes.Emoji[]> {
+  if (emojiList.length === 0) {
+    return $.getJSON("/./emoji/_list.json", function (data) {
+      emojiList = data;
+      return emojiList;
+    });
+  } else {
+    return emojiList;
+  }
+}
 export function smooth(
   arr: number[],
   windowSize: number,
