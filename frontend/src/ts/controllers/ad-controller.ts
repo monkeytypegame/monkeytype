@@ -10,6 +10,9 @@ let widerThanBreakpoint = true;
 
 let initialised = false;
 
+export let adBlock: boolean;
+export let cookieBlocker: boolean;
+
 export function init(): void {
   $("head").append(`<script>
 !function(e){var s=new XMLHttpRequest;s.open("GET","https://api.enthusiastgaming.net/scripts/cdn.enthusiast.gg/script/eg-aps/release/eg-aps-bootstrap-v2.0.0.bundle.js?site=monkeytype.com",!0),s.onreadystatechange=function(){var t;4==s.readyState&&(200<=s.status&&s.status<300||304==s.status)&&((t=e.createElement("script")).type="text/javascript",t.text=s.responseText,e.head.appendChild(t))},s.send(null)}(document);
@@ -110,12 +113,57 @@ export async function refreshVisible(): Promise<void> {
   window.egAps.refreshAds(visibleAdDivs);
 }
 
-export function reinstate(): boolean {
+export async function checkAdblock(): Promise<void> {
+  return new Promise((resolve) => {
+    if (adBlock === undefined) {
+      //@ts-ignore
+      if (window.egAdPack === undefined) {
+        adBlock = true;
+      } else {
+        adBlock = false;
+      }
+    }
+    resolve();
+  });
+}
+
+export async function checkCookieblocker(): Promise<void> {
+  return new Promise((resolve) => {
+    if (cookieBlocker === undefined) {
+      //@ts-ignore
+      if (window.__tcfapi === undefined) {
+        cookieBlocker = true;
+        resolve();
+      }
+      //@ts-ignore
+      window.__tcfapi("getTCData", 2, (tcData, success) => {
+        if (success) {
+          if (tcData.eventStatus === "cmpuishown") {
+            cookieBlocker = true;
+          } else {
+            cookieBlocker = false;
+          }
+        } else {
+          cookieBlocker = true;
+        }
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
+}
+
+export async function reinstate(): Promise<boolean> {
   if (Config.ads === "off") return false;
   if (!initialised) {
     init();
     return true;
   }
+  await checkAdblock();
+  await checkCookieblocker();
+  if (adBlock || cookieBlocker) return false;
+
   try {
     //@ts-ignore
     window.egAps.reinstate();
@@ -131,8 +179,37 @@ export async function renderResult(): Promise<void> {
   if (!initialised) {
     init();
   }
-  //@ts-ignore
-  if (window.egAps === undefined) return;
+  await checkAdblock();
+  await checkCookieblocker();
+
+  if (adBlock) {
+    $("#ad-result-wrapper .iconAndText .text").html(`
+    Using an ad blocker? No worries
+    <div class="smalltext">
+      We understand ads can be annoying
+      <br />
+      You can
+      <i>disable all ads</i>
+      in the settings
+    </div>
+    `);
+    return;
+  }
+
+  if (cookieBlocker) {
+    $("#ad-result-wrapper .iconAndText .text").html(`
+    Ads not working? Ooops
+    <div class="smalltext">
+      You may have a cookie popup blocker enabled - ads will not show without your consent
+      <br />
+      You can also 
+      <i>disable all ads</i>
+      in the settings if you wish
+    </div>
+    `);
+    return;
+  }
+
   if (widerThanBreakpoint) {
     // $("#ad-result-wrapper").html(`
     // <div class="icon"><i class="fas fa-ad"></i></div>

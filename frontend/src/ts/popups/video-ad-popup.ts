@@ -1,6 +1,27 @@
 import * as Notifications from "../elements/notifications";
+import * as AdController from "../controllers/ad-controller";
 
-export function show(): void {
+export async function show(): Promise<void> {
+  await AdController.checkAdblock();
+  if (AdController.adBlock) {
+    Notifications.add(
+      "Looks like you're using an adblocker. Video ads will not work until you disable it.",
+      0,
+      6
+    );
+    return;
+  }
+
+  await AdController.checkCookieblocker();
+  if (AdController.cookieBlocker) {
+    Notifications.add(
+      "Looks like you're using a cookie popup blocker. Video ads will not work without giving your consent through the popup.",
+      0,
+      7
+    );
+    return;
+  }
+
   if ($("#videoAdPopupWrapper").hasClass("hidden")) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
