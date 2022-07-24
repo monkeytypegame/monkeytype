@@ -136,8 +136,9 @@ export async function init(): Promise<void> {
   TribePagePreloader.hideReconnectButton();
 
   const snapName = DB.getSnapshot()?.name;
-  if (snapName !== undefined) {
+  if (snapName !== undefined && socket.io.opts.query) {
     name = snapName;
+    socket.io.opts.query["name"] = snapName;
   }
 
   setTimeout(() => {
