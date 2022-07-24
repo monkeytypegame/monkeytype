@@ -291,6 +291,8 @@ export async function addResult(
   if (result.mode === "time" && String(result.mode2) === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
+      //todo remove
+      //@ts-ignore
       George.updateDiscordRole(user.discordId, result.wpm);
     }
   }
@@ -300,6 +302,8 @@ export async function addResult(
     AutoRoleList.includes(result.challenge) &&
     user.discordId
   ) {
+    //todo remove
+    //@ts-ignore
     George.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
@@ -336,6 +340,8 @@ export async function addResult(
     const badgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
 
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);
+    //todo remove
+    //@ts-ignore
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
       {
         name: user.name,
