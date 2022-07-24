@@ -171,6 +171,7 @@ export function joinRoom(roomId: string, fromBrowser = false): void {
         TribePageLobby.init();
         TribePages.change("lobby");
         TribeSound.play("join");
+        // history.replaceState(null, "", `/tribe/${roomId}`);
       } else {
         TribePages.change("menu");
         history.replaceState("/tribe", "", "/tribe");
@@ -322,6 +323,7 @@ socket.on("room_joined", (e) => {
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
+  // history.replaceState(null, "", `/tribe/${e.room.id}`);
 });
 
 socket.on("room_player_joined", (e) => {
