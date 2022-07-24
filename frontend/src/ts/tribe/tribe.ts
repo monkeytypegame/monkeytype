@@ -22,6 +22,8 @@ import * as TestActive from "../states/test-active";
 import { navigate } from "../controllers/route-controller";
 import * as Random from "../utils/random";
 
+let name = "Guest";
+
 export const socket = io(
   window.location.hostname === "localhost"
     ? "http://localhost:3005"
@@ -32,13 +34,15 @@ export const socket = io(
     secure: true,
     reconnectionAttempts: 0,
     reconnection: false,
+    query: {
+      name,
+    },
   }
 );
 export let state = -1;
-export const expectedVersion = "0.10.10";
+export const expectedVersion = "0.11.0";
 
 let autoJoin: string | undefined = undefined;
-let name = "";
 
 export let room: TribeTypes.Room | undefined = undefined;
 
@@ -130,6 +134,12 @@ export async function init(): Promise<void> {
   // await AccountController.authPromise;
   TribePagePreloader.updateText("Connecting to Tribe");
   TribePagePreloader.hideReconnectButton();
+
+  const snapName = DB.getSnapshot()?.name;
+  if (snapName !== undefined) {
+    name = snapName;
+  }
+
   setTimeout(() => {
     socket.connect();
   }, 500);
@@ -211,12 +221,12 @@ async function connect(): Promise<void> {
   TribePageMenu.enableButtons();
   updateState(1);
   // Notifications.add("Connected", 1, undefined, "Tribe");
-  name = "Guest";
-  const snapName = DB.getSnapshot()?.name;
-  if (snapName !== undefined) {
-    name = snapName;
-  }
-  socket.emit("user_set_name", { name });
+  // name = "Guest";
+  // const snapName = DB.getSnapshot()?.name;
+  // if (snapName !== undefined) {
+  //   name = snapName;
+  // }
+  // socket.emit("user_set_name", { name });
   if (autoJoin) {
     TribePagePreloader.updateText(`Joining room ${autoJoin}`);
     setTimeout(() => {
