@@ -20,12 +20,6 @@
   margin: 0 auto;
 }
 
-#app.focus {
-  .ad {
-    display: none;
-  }
-}
-
 .ad {
   background: var(--sub-alt-color);
   display: grid;
@@ -66,6 +60,10 @@
   &.ad-h-s {
     width: 320px;
     height: 50px;
+    display: none;
+  }
+
+  &.testPage {
     display: none;
   }
 }

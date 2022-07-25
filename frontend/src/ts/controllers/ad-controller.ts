@@ -237,6 +237,20 @@ export async function renderResult(): Promise<void> {
   }
 }
 
+export function updateTestPageAds(visible: boolean): void {
+  if (visible) {
+    $("#ad-vertical-left-wrapper").removeClass("testPage");
+    $("#ad-vertical-right-wrapper").removeClass("testPage");
+    $("#ad-footer-wrapper").removeClass("testPage");
+    $("#ad-footer-small-wrapper").removeClass("testPage");
+  } else {
+    $("#ad-vertical-left-wrapper").addClass("testPage");
+    $("#ad-vertical-right-wrapper").addClass("testPage");
+    $("#ad-footer-wrapper").addClass("testPage");
+    $("#ad-footer-small-wrapper").addClass("testPage");
+  }
+}
+
 export function destroyResult(): void {
   // $("#ad-result-wrapper").empty();
   // $("#ad-result-small-wrapper").empty();

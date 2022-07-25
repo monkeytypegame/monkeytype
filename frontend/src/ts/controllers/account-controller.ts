@@ -7,7 +7,6 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
@@ -214,8 +213,6 @@ export async function getDataAndInit(): Promise<boolean> {
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     await Account.downloadResults();
-  } else {
-    Focus.set(false);
   }
   if (window.location.pathname === "/login") {
     navigate("/account");
@@ -283,9 +280,6 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
   }
   if (!user) {
     navigate();
-    setTimeout(() => {
-      Focus.set(false);
-    }, 125 / 2);
   }
 
   URLHandler.loadCustomThemeFromUrl(search);

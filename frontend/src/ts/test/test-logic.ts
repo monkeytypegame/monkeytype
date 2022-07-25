@@ -495,7 +495,10 @@ export function restart(options = {} as RestartOptions): void {
     },
     options.noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "test") Focus.set(false);
+      if (ActivePage.get() == "test") {
+        AdController.updateTestPageAds(false);
+        Focus.set(false);
+      }
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });

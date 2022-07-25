@@ -739,6 +739,7 @@ export async function update(
         TestUI.toggleResultWords();
       }
       Keymap.hide();
+      AdController.updateTestPageAds(true);
     }
   );
 }

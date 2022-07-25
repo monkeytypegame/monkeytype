@@ -9,7 +9,6 @@ import * as PageProfile from "../pages/profile";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-// import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
