@@ -112,7 +112,7 @@ export async function refresh(
       layoutString = Config.keymapLayout;
     }
 
-    const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
+    const showTopRow = Config.keymapShowTopRow === "always" || (lts as typeof layouts["qwerty"]).keymapShowTopRow && Config.keymapShowTopRow !== "never" ;
 
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
@@ -237,5 +237,5 @@ ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     refresh(Config.keymapLayout);
   }
-  if (eventKey === "keymapLayout" || eventKey === "keymapStyle") refresh();
+  if (eventKey === "keymapLayout" || eventKey === "keymapStyle" || eventKey === "keymapShowTopRow") refresh();
 });
