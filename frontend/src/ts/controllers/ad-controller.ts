@@ -220,7 +220,12 @@ export async function renderResult(): Promise<void> {
     // window.egAps.render(["ad-result"]);
     // } else {
     //@ts-ignore
-    window.egAps.refreshAds(["ad-result"]);
+    window.egAps.refreshAds([
+      "ad-result",
+      "ad-vertical-left",
+      "ad-vertical-right",
+      "ad-footer",
+    ]);
     // }
   } else {
     // $("#ad-result-small-wrapper").html(`
@@ -232,7 +237,12 @@ export async function renderResult(): Promise<void> {
     // window.egAps.render(["ad-result-small"]);
     // } else {
     //@ts-ignore
-    window.egAps.refreshAds(["ad-result-small"]);
+    window.egAps.refreshAds([
+      "ad-result-small",
+      "ad-vertical-left",
+      "ad-vertical-right",
+      "ad-footer-small",
+    ]);
     // }
   }
 }
