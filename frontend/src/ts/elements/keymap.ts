@@ -191,6 +191,12 @@ export async function refresh(
                 if (i === 6) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
+              } else if (row === "row1" &&
+              (Config.keymapStyle === "split" ||
+                Config.keymapStyle === "alice")){
+                  if (i === 7) {
+                    splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+                  }
               } else {
                 if (i === 5) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
