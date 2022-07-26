@@ -99,6 +99,12 @@ export function setLastResult(
   lastResult = result;
 }
 
+let wpmCalcDebug = false;
+export function wpmCalculationDebug(): void {
+  console.log("wpm calculation debug enabled");
+  wpmCalcDebug = true;
+}
+
 export function getStats(): DebugStats {
   const ret: DebugStats = {
     lastResult,
@@ -408,10 +414,16 @@ function countChars(): CharCount {
 
 export function calculateStats(): Stats {
   let testSeconds = calculateTestSeconds();
-  // console.log((end2 - start2) / 1000);
-  // console.log(testSeconds);
+  if (wpmCalcDebug) {
+    console.log("date based time", (end2 - start2) / 1000);
+    console.log("performance.now based time", testSeconds);
+  }
   if (Config.mode != "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
+    if (wpmCalcDebug) {
+      console.log("mode is not custom - wounding");
+      console.log("new time", testSeconds);
+    }
   }
   const chars = countChars();
   const wpm = Misc.roundTo2(
@@ -425,6 +437,15 @@ export function calculateStats(): Stats {
       (60 / testSeconds)) /
       5
   );
+  if (wpmCalcDebug) {
+    console.log("chars", chars);
+    console.log(
+      "wpm",
+      ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
+    );
+    console.log("wpm rounded to 2", wpm);
+    console.log("wpmraw", wpmraw);
+  }
   const acc = Misc.roundTo2(calculateAccuracy());
   return {
     wpm: isNaN(wpm) ? 0 : wpm,

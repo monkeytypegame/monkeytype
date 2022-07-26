@@ -58,3 +58,5 @@ extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
 
 extendedGlobal.egVideoListener = egVideoListener;
+
+extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;

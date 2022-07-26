@@ -584,6 +584,7 @@ declare namespace MonkeyTypes {
     enableSpacingDebug(): void;
     noGoogleNoMo(): void;
     egVideoListener(options: Record<string, string>): void;
+    wpmCalculationDebug(): void;
   }
 
   interface GithubRelease {
