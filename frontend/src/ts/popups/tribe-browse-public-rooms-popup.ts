@@ -44,7 +44,7 @@ function updateList(list: any): void {
 export function show(): void {
   Loader.show();
   Tribe.socket.emit(
-    "get_public_rooms",
+    "room_get_public_rooms",
     {
       page: 0,
       search: "",

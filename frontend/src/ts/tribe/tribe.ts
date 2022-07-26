@@ -411,7 +411,7 @@ socket.on("room_chatting_changed", (e) => {
   TribeChat.updateIsTyping();
 });
 
-socket.on("chat_message", async (data) => {
+socket.on("room_chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;
   if (data.from?.isLeader) {
