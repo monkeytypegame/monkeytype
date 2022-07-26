@@ -85,7 +85,6 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section.keymapLayout").removeClass("hidden");
         $(".pageSettings .section.keymapLegendStyle").removeClass("hidden");
         $(".pageSettings .section.keymapShowTopRow").removeClass("hidden");
-
       }
     }
   );

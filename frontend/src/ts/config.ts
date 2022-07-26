@@ -1534,7 +1534,6 @@ export function setKeymapShowTopRow(
   return true;
 }
 
-
 export function setLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("layout", layout, ["string"])) return false;
 

@@ -112,7 +112,10 @@ export async function refresh(
       layoutString = Config.keymapLayout;
     }
 
-    const showTopRow = Config.keymapShowTopRow === "always" || (lts as typeof layouts["qwerty"]).keymapShowTopRow && Config.keymapShowTopRow !== "never" ;
+    const showTopRow =
+      Config.keymapShowTopRow === "always" ||
+      ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
+        Config.keymapShowTopRow !== "never");
 
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
@@ -191,12 +194,14 @@ export async function refresh(
                 if (i === 6) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
-              } else if (row === "row1" &&
-              (Config.keymapStyle === "split" ||
-                Config.keymapStyle === "alice")){
-                  if (i === 7) {
-                    splitSpacer += `<div class="keymapSplitSpacer"></div>`;
-                  }
+              } else if (
+                row === "row1" &&
+                (Config.keymapStyle === "split" ||
+                  Config.keymapStyle === "alice")
+              ) {
+                if (i === 7) {
+                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+                }
               } else {
                 if (i === 5) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
@@ -243,5 +248,11 @@ ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     refresh(Config.keymapLayout);
   }
-  if (eventKey === "keymapLayout" || eventKey === "keymapStyle" || eventKey === "keymapShowTopRow") refresh();
+  if (
+    eventKey === "keymapLayout" ||
+    eventKey === "keymapStyle" ||
+    eventKey === "keymapShowTopRow"
+  ) {
+    refresh();
+  }
 });

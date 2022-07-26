@@ -1713,7 +1713,7 @@ const commandsKeymapShowTopRow: MonkeyTypes.CommandsGroup = {
       exec: (): void => {
         UpdateConfig.setKeymapShowTopRow("never");
       },
-    }
+    },
   ],
 };
 
