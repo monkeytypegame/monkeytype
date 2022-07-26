@@ -1283,6 +1283,15 @@
     max-height: 10rem;
   }
 
+  .socialURL {
+    display: flex;
+  }
+
+  .socialURL > p {
+    margin-block: 0.5rem;
+    margin-inline-end: 0.5rem;
+  }
+
   .badgeSelectionContainer {
     display: flex;
     flex-wrap: wrap;
