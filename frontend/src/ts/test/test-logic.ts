@@ -398,20 +398,19 @@ export function restart(options = {} as RestartOptions): void {
     // incompleteTestSeconds += ;
     let tt = testSeconds - afkseconds;
     if (tt < 0) tt = 0;
-    console.log(
-      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
-    );
+    // console.log(
+    //   `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    // );
     TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
-    if (tt > 600) {
-      Notifications.add(
-        `Your time typing just increased by ${Misc.roundTo2(
-          tt / 60
-        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
-        -1
-      );
-    }
-    // restartCount++;
+    // if (tt > 600) {
+    //   Notifications.add(
+    //     `Your time typing just increased by ${Misc.roundTo2(
+    //       tt / 60
+    //     )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+    //     -1
+    //   );
+    // }
   }
 
   if (Config.mode == "zen") {
