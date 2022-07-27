@@ -22,7 +22,7 @@ function disconnect(callback: () => void): void {
   Socket.on("disconnect", callback);
 }
 
-function connectFailed(callback: () => void): void {
+function connectFailed(callback: (err: Error) => void): void {
   Socket.on("connect_failed", callback);
 }
 

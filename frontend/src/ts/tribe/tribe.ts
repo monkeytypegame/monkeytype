@@ -254,7 +254,7 @@ TribeSocket.in.system.disconnect(() => {
   TribePagePreloader.showReconnectButton();
   reset();
 });
-TribeSocket.in.system.connectFailed(() => {
+TribeSocket.in.system.connectFailed((err) => {
   updateState(-1);
   console.error(e);
   if (!$(".pageTribe").hasClass("active")) {
