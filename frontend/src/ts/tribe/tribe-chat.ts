@@ -149,7 +149,7 @@ function sendMessage(msg: string): void {
   if (performance.now() < lastMessageTimestamp + 500) return;
   lastMessageTimestamp = performance.now();
   sendChattingUpdate(false);
-  Tribe.socket.emit("chat_message", {
+  Tribe.socket.emit("room_chat_message", {
     message: msg,
   });
   $(".pageTribe .lobby .chat .input input").val("");
