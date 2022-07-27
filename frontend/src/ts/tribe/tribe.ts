@@ -228,14 +228,14 @@ function checkIfEveryoneIsReady(): void {
   }
 }
 
-socket.on("connect", () => {
+TribeSocket.in.system.connect(() => {
   connect();
 });
 
 $(".tribechangename").on("click", () => {
   const name = prompt("Name");
   if (name) {
-    socket.emit("user_set_name", { name, confirm: true });
+    TribeSocket.out.user.setName(name, true);
   }
 });
 
