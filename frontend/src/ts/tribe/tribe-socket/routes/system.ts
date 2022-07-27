@@ -18,9 +18,24 @@ function connect(callback: () => void): void {
   Socket.on("connect", callback);
 }
 
+function disconnect(callback: () => void): void {
+  Socket.on("disconnect", callback);
+}
+
+function connectFailed(callback: () => void): void {
+  Socket.on("connect_failed", callback);
+}
+
+function connectError(callback: () => void): void {
+  Socket.on("connect_error", callback);
+}
+
 export default {
   in: {
     connect,
+    disconnect,
+    connectFailed,
+    connectError,
   },
   out: {
     versionCheck,

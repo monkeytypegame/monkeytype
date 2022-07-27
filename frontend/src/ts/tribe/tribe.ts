@@ -243,7 +243,7 @@ $(".tribechangename").on("click", () => {
 //   name = e.name;
 // })
 
-socket.on("disconnect", (_e) => {
+TribeSocket.in.system.disconnect(() => {
   updateState(-1);
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Disconnected", -1, undefined, "Tribe");
@@ -254,8 +254,7 @@ socket.on("disconnect", (_e) => {
   TribePagePreloader.showReconnectButton();
   reset();
 });
-
-socket.on("connect_failed", (e) => {
+TribeSocket.in.system.connectFailed(() => {
   updateState(-1);
   console.error(e);
   if (!$(".pageTribe").hasClass("active")) {
@@ -268,7 +267,7 @@ socket.on("connect_failed", (e) => {
   reset();
 });
 
-socket.on("connect_error", (e) => {
+TribeSocket.in.system.connectError(() => {
   updateState(-1);
   console.error(e);
   if (!$(".pageTribe").hasClass("active")) {
