@@ -14,8 +14,14 @@ async function versionCheck(
   });
 }
 
+function connect(callback: () => void): void {
+  Socket.on("connect", callback);
+}
+
 export default {
-  in: {},
+  in: {
+    connect,
+  },
   out: {
     versionCheck,
   },
