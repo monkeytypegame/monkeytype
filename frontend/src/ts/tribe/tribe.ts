@@ -284,18 +284,19 @@ TribeSocket.in.system.notification((data) => {
   Notifications.add(data.message, data.level ?? 0, undefined, "Tribe");
 });
 
-socket.on("room_joined", (e) => {
-  room = e.room;
-  updateState(e.room.state);
-  TribePageLobby.init();
-  TribePages.change("lobby");
-  TribeSound.play("join");
-  // history.replaceState(null, "", `/tribe/${e.room.id}`);
-});
+//todo is this needed?
+// TribeSocket.in.room.joined((data) => {
+//   room = data.room;
+//   updateState(data.room.state);
+//   TribePageLobby.init();
+//   TribePages.change("lobby");
+//   TribeSound.play("join");
+//   // history.replaceState(null, "", `/tribe/${e.room.id}`);
+// });
 
-socket.on("room_player_joined", (e) => {
+TribeSocket.in.room.playerJoined((data) => {
   if (room?.users) {
-    room.users[e.user.id] = e.user;
+    room.users[data.user.id] = data.user;
     room.size = Object.keys(room.users).length;
     TribeUserList.update();
     TribeSound.play("join");
@@ -303,21 +304,21 @@ socket.on("room_player_joined", (e) => {
   }
 });
 
-socket.on("room_player_left", (e) => {
+TribeSocket.in.room.playerLeft((data) => {
   if (room?.users) {
-    delete room.users[e.userId];
+    delete room.users[data.userId];
     room.size = Object.keys(room.users).length;
     TribeUserList.update();
     TribeSound.play("leave");
     TribeButtons.update();
-    TribeBars.fadeUser(undefined, e.userId);
-    TribeResults.fadeUser("result", e.userId);
-    TribeResults.update("result", e.userId);
+    TribeBars.fadeUser(undefined, data.userId);
+    TribeResults.fadeUser("result", data.userId);
+    TribeResults.update("result", data.userId);
     checkIfEveryoneIsReady();
   }
 });
 
-socket.on("room_left", () => {
+TribeSocket.in.room.left(() => {
   room = undefined;
   updateState(1);
   TribePageMenu.enableButtons();
