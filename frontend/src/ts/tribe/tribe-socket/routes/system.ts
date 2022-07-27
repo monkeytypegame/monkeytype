@@ -26,7 +26,7 @@ function connectFailed(callback: () => void): void {
   Socket.on("connect_failed", callback);
 }
 
-function connectError(callback: () => void): void {
+function connectError(callback: (err: Error) => void): void {
   Socket.on("connect_error", callback);
 }
 
