@@ -1,6 +1,7 @@
 import * as Tribe from "../tribe/tribe";
 import * as TribeConfig from "../tribe/tribe-config";
 import * as Loader from "../elements/loader";
+import TribeSocket from "../tribe/tribe-socket";
 
 function updateList(list: any): void {
   // TODO: Confirm type from miodec
@@ -43,20 +44,12 @@ function updateList(list: any): void {
 
 export function show(): void {
   Loader.show();
-  Tribe.socket.emit(
-    "room_get_public_rooms",
-    {
-      page: 0,
-      search: "",
-    },
-    (e: any) => {
-      Loader.hide();
-      if (e.status !== "Error") {
-        // TODO: Confirm type from miodec
-        updateList(e.rooms);
-      }
+  TribeSocket.out.room.getPublicRooms(0, "").then((r) => {
+    Loader.hide();
+    if (r.status !== "Error") {
+      updateList(r.rooms);
     }
-  );
+  });
   if ($("#tribeBrowsePublicRoomsPopupWrapper").hasClass("hidden")) {
     $("#tribeBrowsePublicRoomsPopupWrapper")
       .stop(true, true)

@@ -1,4 +1,3 @@
-import { io } from "socket.io-client";
 import * as Notifications from "../elements/notifications";
 import * as UpdateConfig from "../config";
 import * as DB from "../db";
@@ -21,24 +20,10 @@ import * as TribeDelta from "./tribe-delta";
 import * as TestActive from "../states/test-active";
 import { navigate } from "../controllers/route-controller";
 import * as Random from "../utils/random";
+import TribeSocket from "./tribe-socket";
 
 let name = "Guest";
 
-export const socket = io(
-  window.location.hostname === "localhost"
-    ? "http://localhost:3005"
-    : "https://tribe.monkeytype.com",
-  {
-    // socket: io("http://localhost:3000", {
-    autoConnect: false,
-    secure: true,
-    reconnectionAttempts: 0,
-    reconnection: false,
-    query: {
-      name,
-    },
-  }
-);
 export let state = -1;
 export const expectedVersion = "0.11.1";
 
@@ -51,7 +36,7 @@ export function setAutoJoin(code: string): void {
 }
 
 export function getSelf(): TribeTypes.User | undefined {
-  return room?.users?.[socket?.id];
+  return room?.users?.[TribeSocket.getId()];
 }
 
 export function applyRandomSeed(): void {
@@ -136,13 +121,13 @@ export async function init(): Promise<void> {
   TribePagePreloader.hideReconnectButton();
 
   const snapName = DB.getSnapshot()?.name;
-  if (snapName !== undefined && socket.io.opts.query) {
+  if (snapName !== undefined) {
     name = snapName;
-    socket.io.opts.query["name"] = snapName;
+    TribeSocket.updateName(name);
   }
 
   setTimeout(() => {
-    socket.connect();
+    TribeSocket.connect();
   }, 500);
 }
 
