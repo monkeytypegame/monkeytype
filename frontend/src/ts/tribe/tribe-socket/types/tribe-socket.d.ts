@@ -7,4 +7,8 @@ declare namespace TribeSocket {
     status?: string;
     room?: TribeTypes.Room;
   }
+  interface VersionCheckResponse {
+    status: string;
+    version: string;
+  }
 }

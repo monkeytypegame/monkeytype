@@ -181,36 +181,23 @@ export function initRace(): void {
 }
 
 async function connect(): Promise<void> {
-  const versionCheck = await new Promise((resolve, _reject) => {
-    socket.emit(
-      "system_version_check",
-      { version: expectedVersion },
-      (response: { status: string; version: string }) => {
-        if (response.status !== "ok") {
-          TribeSocket.disconnect();
-          TribePagePreloader.updateIcon("exclamation-triangle");
-          TribePagePreloader.updateText(
-            `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${response.version}`,
-            true
-          );
-          resolve(false);
-        } else {
-          resolve(true);
-        }
-      }
+  const versionCheck = await TribeSocket.out.system.versionCheck(
+    expectedVersion
+  );
+
+  if (versionCheck.status !== "ok") {
+    TribeSocket.disconnect();
+    TribePagePreloader.updateIcon("exclamation-triangle");
+    TribePagePreloader.updateText(
+      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${versionCheck.version}`,
+      true
     );
-  });
-  if (!versionCheck) return;
+    return;
+  }
+
   UpdateConfig.setTimerStyle("mini", true);
   TribePageMenu.enableButtons();
   updateState(1);
-  // Notifications.add("Connected", 1, undefined, "Tribe");
-  // name = "Guest";
-  // const snapName = DB.getSnapshot()?.name;
-  // if (snapName !== undefined) {
-  //   name = snapName;
-  // }
-  // socket.emit("user_set_name", { name });
   if (autoJoin) {
     TribePagePreloader.updateText(`Joining room ${autoJoin}`);
     setTimeout(() => {
@@ -219,8 +206,6 @@ async function connect(): Promise<void> {
   } else {
     TribePages.change("menu");
   }
-  // setName(name);
-  // changeActiveSubpage("prelobby");
 }
 
 function checkIfEveryoneIsReady(): void {

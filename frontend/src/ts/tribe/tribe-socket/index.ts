@@ -1,4 +1,5 @@
 import RoomRoutes from "./routes/room";
+import SystemRoutes from "./routes/system";
 import Socket from "./socket";
 
 function updateName(newName: string): void {
@@ -22,9 +23,11 @@ function getId(): string {
 export default {
   in: {
     room: RoomRoutes.in,
+    system: SystemRoutes.in,
   },
   out: {
     room: RoomRoutes.out,
+    system: SystemRoutes.out,
   },
   updateName,
   connect,
