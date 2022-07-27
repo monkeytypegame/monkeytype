@@ -50,9 +50,11 @@ export function show(): void {
       search: "",
     },
     (e: any) => {
-      // TODO: Confirm type from miodec
       Loader.hide();
-      updateList(e.rooms);
+      if (e.status !== "Error") {
+        // TODO: Confirm type from miodec
+        updateList(e.rooms);
+      }
     }
   );
   if ($("#tribeBrowsePublicRoomsPopupWrapper").hasClass("hidden")) {
