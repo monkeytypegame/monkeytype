@@ -33,10 +33,15 @@ async function join(
   });
 }
 
+function init(): void {
+  Socket.emit("room_init_race");
+}
+
 export default {
   in: {},
   out: {
     getPublicRooms,
     join,
+    init,
   },
 };

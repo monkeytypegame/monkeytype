@@ -1,7 +1,7 @@
 declare namespace TribeSocket {
   interface GetPublicRoomsResponse {
     status?: string;
-    rooms?: any[];
+    rooms?: TribeTypes.Room[];
   }
   interface JoinRoomResponse {
     status?: string;

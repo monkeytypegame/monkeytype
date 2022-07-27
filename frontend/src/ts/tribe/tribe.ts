@@ -174,7 +174,7 @@ export function initRace(): void {
     }
   }
   if (everyoneReady) {
-    socket.emit("room_init_race");
+    TribeSocket.out.room.init();
   } else {
     TribeStartRacePopup.show();
   }
