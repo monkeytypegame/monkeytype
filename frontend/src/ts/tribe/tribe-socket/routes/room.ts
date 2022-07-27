@@ -18,9 +18,25 @@ async function getPublicRooms(
   });
 }
 
+async function join(
+  roomId: string,
+  fromBrowser: boolean
+): Promise<TribeSocket.JoinRoomResponse> {
+  return new Promise((resolve) => {
+    Socket.emit(
+      "room_join",
+      { roomId, fromBrowser },
+      (res: TribeSocket.JoinRoomResponse) => {
+        resolve(res);
+      }
+    );
+  });
+}
+
 export default {
   in: {},
   out: {
     getPublicRooms,
+    join,
   },
 };

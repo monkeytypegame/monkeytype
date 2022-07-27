@@ -147,23 +147,20 @@ export function joinRoom(roomId: string, fromBrowser = false): void {
     Notifications.add("Incorrect room code format", 0);
     return;
   }
-  socket.emit(
-    "room_join",
-    { roomId, fromBrowser },
-    (res: TribeTypes.RoomJoin) => {
-      if (res.room) {
-        room = res.room;
-        updateState(res.room.state);
-        TribePageLobby.init();
-        TribePages.change("lobby");
-        TribeSound.play("join");
-        // history.replaceState(null, "", `/tribe/${roomId}`);
-      } else {
-        TribePages.change("menu");
-        history.replaceState("/tribe", "", "/tribe");
-      }
+
+  TribeSocket.out.room.join(roomId, fromBrowser).then((response) => {
+    if (response.room) {
+      room = response.room;
+      updateState(response.room.state);
+      TribePageLobby.init();
+      TribePages.change("lobby");
+      TribeSound.play("join");
+      // history.replaceState(null, "", `/tribe/${roomId}`);
+    } else {
+      TribePages.change("menu");
+      history.replaceState("/tribe", "", "/tribe");
     }
-  );
+  });
 }
 
 export function initRace(): void {
