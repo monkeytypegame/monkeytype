@@ -280,8 +280,8 @@ TribeSocket.in.system.connectError((err) => {
   reset();
 });
 
-socket.on("system_message", (e) => {
-  Notifications.add(e.message, e.level ?? 0, undefined, "Tribe");
+TribeSocket.in.system.notification((data) => {
+  Notifications.add(data.message, data.level ?? 0, undefined, "Tribe");
 });
 
 socket.on("room_joined", (e) => {

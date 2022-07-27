@@ -30,12 +30,19 @@ function connectError(callback: (err: Error) => void): void {
   Socket.on("connect_error", callback);
 }
 
+function notification(
+  callback: (data: { message: string; level?: number }) => void
+): void {
+  Socket.on("system_notification", callback);
+}
+
 export default {
   in: {
     connect,
     disconnect,
     connectFailed,
     connectError,
+    notification,
   },
   out: {
     versionCheck,
