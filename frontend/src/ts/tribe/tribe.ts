@@ -187,7 +187,7 @@ async function connect(): Promise<void> {
       { version: expectedVersion },
       (response: { status: string; version: string }) => {
         if (response.status !== "ok") {
-          socket.disconnect();
+          TribeSocket.disconnect();
           TribePagePreloader.updateIcon("exclamation-triangle");
           TribePagePreloader.updateText(
             `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${response.version}`,

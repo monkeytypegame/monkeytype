@@ -11,6 +11,10 @@ function connect(): void {
   Socket.connect();
 }
 
+function disconnect(): void {
+  Socket.disconnect();
+}
+
 function getId(): string {
   return Socket.id;
 }
@@ -25,4 +29,5 @@ export default {
   updateName,
   connect,
   getId,
+  disconnect,
 };
