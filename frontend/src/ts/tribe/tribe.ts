@@ -267,9 +267,9 @@ TribeSocket.in.system.connectFailed(() => {
   reset();
 });
 
-TribeSocket.in.system.connectError(() => {
+TribeSocket.in.system.connectError((err) => {
   updateState(-1);
-  console.error(e);
+  console.error(err);
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Connection error", -1, undefined, "Tribe");
   }
