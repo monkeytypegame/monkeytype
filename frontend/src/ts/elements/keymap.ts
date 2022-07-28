@@ -124,7 +124,13 @@ export async function refresh(
 
     (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).forEach(
       (row, index) => {
-        const rowKeys = lts.keys[row];
+        let rowKeys = lts.keys[row];
+        if (
+          row === "row1" &&
+          (isMatrix || Config.keymapStyle === "staggered")
+        ) {
+          rowKeys = rowKeys.slice(1);
+        }
         let rowElement = "";
         if (row === "row1" && !showTopRow) {
           return;
@@ -171,7 +177,17 @@ export async function refresh(
             } else if (Config.keymapLegendStyle === "uppercase") {
               keyDisplay = keyDisplay.toUpperCase();
             }
-            const keyElement = `<div class="keymapKey" data-key="${key.replace(
+            let hide = "";
+            if (
+              row === "row1" &&
+              i === 0 &&
+              !isMatrix &&
+              Config.keymapStyle !== "staggered"
+            ) {
+              hide = ` invisible`;
+            }
+
+            const keyElement = `<div class="keymapKey${hide}" data-key="${key.replace(
               '"',
               "&quot;"
             )}">
