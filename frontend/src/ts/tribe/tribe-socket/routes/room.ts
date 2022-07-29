@@ -75,6 +75,41 @@ function afkUpdate(isAfk: boolean): void {
   Socket.emit("room_afk_update", { isAfk });
 }
 
+function chattingUpdate(isChatting: boolean): void {
+  Socket.emit("room_chatting_update", {
+    isChatting,
+  });
+}
+
+function chatMessageOut(message: string): void {
+  Socket.emit("room_chat_message", {
+    message,
+  });
+}
+
+function updateConfig(config: TribeTypes.RoomConfig): void {
+  Socket.emit("room_update_config", { config });
+}
+
+function result(result: TribeTypes.Result): void {
+  Socket.emit("room_result", { result });
+}
+
+function create(
+  mode: MonkeyTypes.Mode,
+  mode2: string | number | MonkeyTypes.QuoteLength[]
+): void {
+  Socket.emit("room_create", { mode, mode2 });
+}
+
+function toggleVisibility(): void {
+  Socket.emit("room_toggle_visibility");
+}
+
+function updateNameOut(name: string): void {
+  Socket.emit("room_update_name", { name });
+}
+
 function leave(): void {
   Socket.emit(`room_leave`);
 }
@@ -264,5 +299,12 @@ export default {
     afkUpdate,
     leave,
     backToLobby: backToLobbyOut,
+    chattingUpdate,
+    chatMessage: chatMessageOut,
+    updateConfig,
+    result,
+    create,
+    toggleVisibility,
+    updateName: updateNameOut,
   },
 };

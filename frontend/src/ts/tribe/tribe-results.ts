@@ -7,7 +7,7 @@ import tribeSocket from "./tribe-socket";
 const initialised: Record<string, boolean | object> = {};
 
 export async function send(result: TribeTypes.Result): Promise<void> {
-  Tribe.socket.emit("room_result", { result });
+  tribeSocket.out.room.result(result);
 }
 
 export function reset(page?: string): void {

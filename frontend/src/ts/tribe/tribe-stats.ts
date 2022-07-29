@@ -1,4 +1,4 @@
-import * as Tribe from "./tribe";
+import tribeSocket from "./tribe-socket";
 
 export let inQueueNumbers = [0, 0, 0, 0];
 
@@ -52,28 +52,25 @@ export function updateMenuButtons(
 
 let to: NodeJS.Timeout | null = null;
 
-export function refresh(): void {
+export async function refresh(): Promise<void> {
   showLoading();
-  Tribe.socket.emit(
-    "system_stats",
-    { pingStart: performance.now() },
-    (data: TribeTypes.SystemStats) => {
-      const ping = Math.round(performance.now() - data.pingStart);
-      hideLoading();
-      setInQueue(data.stats[2]);
-      updateMenuButtons(data.stats[1]);
-      $(".pageTribe .menu .welcome .stats").empty();
-      $(".pageTribe .menu .welcome .stats").append(
-        `<div>Online <span class="num">${data.stats[0]}</span></div>`
-      );
-      $(".pageTribe .menu .welcome .stats").append(
-        `<div class="small">Version ${data.stats[3]}</div>`
-      );
-      $(".pageTribe .menu .welcome .stats").append(
-        `<div class="small">Ping ${ping}ms</div>`
-      );
-    }
-  );
+
+  tribeSocket.out.system.stats(performance.now()).then((data) => {
+    const ping = Math.round(performance.now() - data.pingStart);
+    hideLoading();
+    setInQueue(data.stats[2]);
+    updateMenuButtons(data.stats[1]);
+    $(".pageTribe .menu .welcome .stats").empty();
+    $(".pageTribe .menu .welcome .stats").append(
+      `<div>Online <span class="num">${data.stats[0]}</span></div>`
+    );
+    $(".pageTribe .menu .welcome .stats").append(
+      `<div class="small">Version ${data.stats[3]}</div>`
+    );
+    $(".pageTribe .menu .welcome .stats").append(
+      `<div class="small">Ping ${ping}ms</div>`
+    );
+  });
   if (
     $(".pageTribe").hasClass("active") &&
     !$(".pageTribe .menu").hasClass("hidden") &&

@@ -57,7 +57,7 @@ declare namespace TribeTypes {
 
   interface RoomConfig {
     mode: string;
-    mode2: number | number[];
+    mode2: string | number | number[];
     difficulty: string;
     language: string;
     punctuation: boolean;

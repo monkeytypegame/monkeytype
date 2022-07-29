@@ -14,6 +14,18 @@ async function versionCheck(
   });
 }
 
+async function stats(pingStart: number): Promise<TribeTypes.SystemStats> {
+  return new Promise((resolve) => {
+    Socket.emit(
+      "system_stats",
+      { pingStart },
+      (response: TribeTypes.SystemStats) => {
+        resolve(response);
+      }
+    );
+  });
+}
+
 function connect(callback: () => void): void {
   Socket.on("connect", callback);
 }
@@ -46,5 +58,6 @@ export default {
   },
   out: {
     versionCheck,
+    stats,
   },
 };

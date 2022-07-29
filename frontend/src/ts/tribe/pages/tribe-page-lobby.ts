@@ -8,6 +8,7 @@ import * as CommandlineLists from "../../elements/commandline-lists";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
 import { ListsObjectKeys } from "../../elements/commandline-lists";
+import tribeSocket from "../tribe-socket";
 
 export function reset(): void {
   $(".pageTribe .tribePage.lobby .userlist .list").empty();
@@ -333,7 +334,7 @@ $(
 $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton").on(
   "click",
   () => {
-    Tribe.socket.emit("room_toggle_visibility");
+    tribeSocket.out.room.toggleVisibility();
   }
 );
 
@@ -341,8 +342,8 @@ $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
   "click",
   () => {
     //TODO proper popup
-    const name = prompt("Enter new room name");
-    Tribe.socket.emit("room_update_name", { name });
+    const name = prompt("Enter new room name") as string;
+    tribeSocket.out.room.updateName(name);
   }
 );
 

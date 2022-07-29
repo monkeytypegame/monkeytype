@@ -5,6 +5,7 @@ import * as CustomText from "../test/custom-text";
 
 import * as TribeButtons from "./tribe-buttons";
 import * as Tribe from "./tribe";
+import tribeSocket from "./tribe-socket";
 
 export function getArray(config: TribeTypes.RoomConfig): string[] {
   const ret: string[] = [];
@@ -157,30 +158,33 @@ export function sync(): void {
     } else if (Config.mode === "words") {
       mode2 = Config.words;
     } else if (Config.mode === "quote") {
-      mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
+      mode2 = Config.quoteLength === undefined ? -1 : Config.quoteLength;
+    } else if (Config.mode === "custom") {
+      mode2 = "custom";
+    } else {
+      mode2 = "zen";
     }
-    Tribe.socket.emit("room_update_config", {
-      config: {
-        mode: Config.mode,
-        mode2: mode2,
-        difficulty: Config.difficulty,
-        language: Config.language,
-        punctuation: Config.punctuation,
-        numbers: Config.numbers,
-        funbox: Config.funbox,
-        lazyMode: Config.lazyMode,
-        stopOnError: Config.stopOnError,
-        minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
-        minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
-        minBurst:
-          Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
-        customText: {
-          text: CustomText.text,
-          isWordRandom: CustomText.isWordRandom,
-          isTimeRandom: CustomText.isTimeRandom,
-          word: CustomText.word,
-          time: CustomText.time,
-        },
+
+    tribeSocket.out.room.updateConfig({
+      mode: Config.mode,
+      mode2: mode2,
+      difficulty: Config.difficulty,
+      language: Config.language,
+      punctuation: Config.punctuation,
+      numbers: Config.numbers,
+      funbox: Config.funbox,
+      lazyMode: Config.lazyMode,
+      stopOnError: Config.stopOnError,
+      minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : "off",
+      minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
+      minBurst:
+        Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
+      customText: {
+        text: CustomText.text,
+        isWordRandom: CustomText.isWordRandom,
+        isTimeRandom: CustomText.isTimeRandom,
+        word: CustomText.word,
+        time: CustomText.time,
       },
     });
     clearTimeout(syncConfigTimeout as NodeJS.Timeout);

@@ -1,8 +1,8 @@
 import * as Notifications from "../../elements/notifications";
-import * as Tribe from "../tribe";
 import * as TribeRoomCodePopup from "../../popups/tribe-room-code-popup";
 import * as TribeBrowsePublicRoomsPopup from "../../popups/tribe-browse-public-rooms-popup";
 import Config from "../../config";
+import tribeSocket from "../tribe-socket";
 
 export const queues = [false, false, false, false];
 
@@ -109,8 +109,12 @@ $(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
     mode2 = Config.words;
   } else if (Config.mode === "quote") {
     mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
+  } else if (Config.mode === "custom") {
+    mode2 = "custom";
+  } else {
+    mode2 = "zen";
   }
-  Tribe.socket.emit("room_create", { mode: Config.mode, mode2 });
+  tribeSocket.out.room.create(Config.mode, mode2);
 });
 
 $(".pageTribe .menu .customRooms #browseCustomRooms").on("click", (e) => {

@@ -13,9 +13,7 @@ export function reset(): void {
 }
 
 function sendChattingUpdate(bool: boolean): void {
-  Tribe.socket.emit("room_chatting_update", {
-    isChatting: bool,
-  });
+  tribeSocket.out.room.chattingUpdate(bool);
 }
 
 function limitChatMessages(): void {
@@ -150,9 +148,7 @@ function sendMessage(msg: string): void {
   if (performance.now() < lastMessageTimestamp + 500) return;
   lastMessageTimestamp = performance.now();
   sendChattingUpdate(false);
-  Tribe.socket.emit("room_chat_message", {
-    message: msg,
-  });
+  tribeSocket.out.room.chatMessage(msg);
   $(".pageTribe .lobby .chat .input input").val("");
   $(".pageTest #result #tribeResultBottom .chat .input input").val("");
 }
