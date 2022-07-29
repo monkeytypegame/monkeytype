@@ -180,12 +180,7 @@ export function sendUpdate(
   acc: number,
   progress: number
 ): void {
-  Tribe.socket.emit("room_progress_update", {
-    wpm: wpm,
-    raw: raw,
-    acc: acc,
-    progress: progress,
-  });
+  tribeSocket.out.room.progressUpdate(wpm, raw, acc, progress);
 }
 
 // function refreshTestUserList() {

@@ -1,5 +1,6 @@
 import * as Tribe from "../tribe/tribe";
 import * as Notifications from "../elements/notifications";
+import tribeSocket from "../tribe/tribe-socket";
 
 export function show(userId: string): void {
   if (!userId) {
@@ -48,16 +49,14 @@ $("#tribeUserSettingsPopupWrapper").on("click", (e) => {
 
 $("#tribeUserSettingsPopup .button.banButton").on("click", () => {
   const userId = $("#tribeUserSettingsPopup").attr("userid");
-  Tribe.socket.emit("room_ban_user", {
-    userId: userId,
-  });
+  if (!userId) return;
+  tribeSocket.out.room.banUser(userId);
   hide();
 });
 
 $("#tribeUserSettingsPopup .button.giveLeaderButton").on("click", () => {
   const userId = $("#tribeUserSettingsPopup").attr("userid");
-  Tribe.socket.emit("room_give_leader", {
-    userId: userId,
-  });
+  if (!userId) return;
+  tribeSocket.out.room.giveLeader(userId);
   hide();
 });

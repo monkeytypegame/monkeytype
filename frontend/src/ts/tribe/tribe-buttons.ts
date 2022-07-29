@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import tribeSocket from "./tribe-socket";
 
 function showStartButton(page: string): void {
   let elString = "";
@@ -233,22 +234,22 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
   .pageTest #tribeResultBottom .buttons .userAfkButton`).on("click", (_e) => {
   const self = Tribe.getSelf();
   if (!self) return;
-  Tribe.socket.emit("room_afk_update", { isAfk: !self.isAfk });
+  tribeSocket.out.room.afkUpdate(!self.isAfk);
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton,
 .pageTest #tribeResultBottom .buttons .leaveRoomButton`).on("click", (_e) => {
-  Tribe.socket.emit(`room_leave`);
+  tribeSocket.out.room.leave();
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
 .pageTest #tribeResultBottom .buttons .userReadyButton,
 .pageTest #result .bottom .buttons #readyButton`).on("click", (_e) => {
-  Tribe.socket.emit(`room_ready_update`);
+  tribeSocket.out.room.readyUpdate();
 });
 
 $(
   `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`
 ).on("click", (_e) => {
-  Tribe.socket.emit("room_back_to_lobby");
+  tribeSocket.out.room.backToLobby();
 });

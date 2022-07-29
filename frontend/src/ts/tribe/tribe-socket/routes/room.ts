@@ -45,6 +45,44 @@ function initRaceOut(): void {
   Socket.emit("room_init_race");
 }
 
+function banUser(userId: string): void {
+  Socket.emit("room_ban_user", {
+    userId,
+  });
+}
+
+function giveLeader(userId: string): void {
+  Socket.emit("room_give_leader", {
+    userId,
+  });
+}
+
+function progressUpdateOut(
+  wpm: number,
+  raw: number,
+  acc: number,
+  progress: number
+): void {
+  Socket.emit("room_progress_update", {
+    wpm: wpm,
+    raw: raw,
+    acc: acc,
+    progress: progress,
+  });
+}
+
+function afkUpdate(isAfk: boolean): void {
+  Socket.emit("room_afk_update", { isAfk });
+}
+
+function leave(): void {
+  Socket.emit(`room_leave`);
+}
+
+function backToLobbyOut(): void {
+  Socket.emit("room_back_to_lobby");
+}
+
 function joined(callback: (data: { room: TribeTypes.Room }) => void): void {
   Socket.on("room_joined", callback);
 }
@@ -220,5 +258,11 @@ export default {
     init,
     readyUpdate,
     initRace: initRaceOut,
+    banUser,
+    giveLeader,
+    progressUpdate: progressUpdateOut,
+    afkUpdate,
+    leave,
+    backToLobby: backToLobbyOut,
   },
 };
