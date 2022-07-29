@@ -77,18 +77,20 @@ declare namespace TribeTypes {
     };
   }
 
+  interface UserProgress {
+    wpmProgress: number;
+    wpm: number;
+    acc: number;
+    progress: number;
+  }
+
   interface User {
     id: string;
     isLeader?: boolean;
     name: string;
     isReady?: boolean;
     result?: MonkeyTypes.Result;
-    progress?: {
-      wpmProgress: number;
-      wpm: number;
-      acc: number;
-      progress: number;
-    };
+    progress?: UserProgress;
     isFinished?: boolean;
     isTyping?: boolean;
     isAfk?: boolean;

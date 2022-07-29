@@ -331,54 +331,54 @@ TribeSocket.in.room.left(() => {
   });
 });
 
-socket.on("room_visibility_changed", (e) => {
+TribeSocket.in.room.visibilityChanged((data) => {
   if (!room) return;
-  room.isPrivate = e.isPrivate;
+  room.isPrivate = data.isPrivate;
   TribePageLobby.updateVisibility();
 });
 
-socket.on("room_name_changed", (e) => {
+TribeSocket.in.room.nameChanged((data) => {
   if (!room) return;
-  room.name = e.name;
+  room.name = data.name;
   TribePageLobby.updateRoomName();
 });
 
-socket.on("room_user_is_ready", (e) => {
+TribeSocket.in.room.userIsReady((data) => {
   if (!room) return;
-  room.users[e.userId].isReady = true;
+  room.users[data.userId].isReady = true;
   TribeUserList.update();
   TribeButtons.update();
   checkIfEveryoneIsReady();
 });
 
-socket.on("room_user_afk_update", (e) => {
+TribeSocket.in.room.userAfkUpdate((data) => {
   if (!room) return;
-  room.users[e.userId].isAfk = e.isAfk;
+  room.users[data.userId].isAfk = data.isAfk;
   TribeUserList.update();
   TribeButtons.update();
 });
 
-socket.on("room_leader_changed", (e) => {
+TribeSocket.in.room.leaderChanged((data) => {
   if (!room) return;
   for (const userId of Object.keys(room.users)) {
     delete room.users[userId].isLeader;
   }
-  room.users[e.userId].isLeader = true;
-  room.users[e.userId].isAfk = false;
-  room.users[e.userId].isReady = false;
+  room.users[data.userId].isLeader = true;
+  room.users[data.userId].isAfk = false;
+  room.users[data.userId].isReady = false;
   TribeUserList.update();
   TribeButtons.update();
   TribePageLobby.updateVisibility();
   TribePageLobby.updateRoomName();
 });
 
-socket.on("room_chatting_changed", (e) => {
+TribeSocket.in.room.chattingChanged((data) => {
   if (!room) return;
-  room.users[e.userId].isChatting = e.isChatting;
+  room.users[data.userId].isChatting = data.isChatting;
   TribeChat.updateIsTyping();
 });
 
-socket.on("room_chat_message", async (data) => {
+TribeSocket.in.room.chatMessage((data) => {
   data.message = data.message.trim();
   let nameregex;
   if (data.from?.isLeader) {
@@ -398,7 +398,7 @@ socket.on("room_chat_message", async (data) => {
       "i"
     );
   }
-  if (!data.isSystem && data.from.id != socket.id) {
+  if (!data.isSystem && data.from.id != TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
       TribeSound.play("chat_mention");
       data.message = data.message.replace(
@@ -413,22 +413,24 @@ socket.on("room_chat_message", async (data) => {
   TribeChat.appendMessage(data);
 });
 
-socket.on("room_config_changed", (e) => {
+// socket.on("room_config_changed", (e) => {
+TribeSocket.in.room.configChanged((data) => {
   if (!room) return;
-  room.config = e.config;
+  room.config = data.config;
   for (const user of Object.values(room.users)) {
     if (user.isReady) {
       user.isReady = false;
     }
   }
-  TribeConfig.apply(e.config);
+  TribeConfig.apply(data.config);
   TribePageLobby.updateRoomConfig();
   TribeButtons.update();
   TribeConfig.setLoadingIndicator(false);
   TribeUserList.update();
 });
 
-socket.on("room_init_race", (e) => {
+// socket.on("room_init_race", (e) => {
+TribeSocket.in.room.initRace((data) => {
   updateState(11);
   if (getSelf()?.isTyping) {
     TribeResults.init("result");
@@ -443,7 +445,7 @@ socket.on("room_init_race", (e) => {
     }
     return;
   }
-  if (room) room.seed = e.seed;
+  if (room) room.seed = data.seed;
   applyRandomSeed();
   navigate("/", {
     tribeOverride: true,
@@ -453,19 +455,19 @@ socket.on("room_init_race", (e) => {
   TribeSound.play("start");
 });
 
-socket.on("room_state_changed", (e) => {
-  updateState(e.state);
+TribeSocket.in.room.stateChanged((data) => {
+  updateState(data.state);
 });
 
-socket.on("room_countdown", (e) => {
-  TribeCountdown.update(e.time);
-  if (e.time <= 3) TribeSound.play("cd");
+TribeSocket.in.room.countdown((data) => {
+  TribeCountdown.update(data.time.toString());
+  if (data.time <= 3) TribeSound.play("cd");
 });
 
-socket.on("room_users_update", (e: Record<string, TribeTypes.User>) => {
+TribeSocket.in.room.usersUpdate((data) => {
   if (!room) return;
 
-  for (const [userId, user] of Object.entries(e)) {
+  for (const [userId, user] of Object.entries(data)) {
     if (user.isTyping !== undefined) {
       room.users[userId].isTyping = user.isTyping;
     }
@@ -477,7 +479,7 @@ socket.on("room_users_update", (e: Record<string, TribeTypes.User>) => {
   TribeButtons.update("lobby");
 });
 
-socket.on("room_race_started", (_e) => {
+TribeSocket.in.room.raceStarted(() => {
   updateState(12);
   if (!getSelf()?.isTyping) return;
   TribeSound.play("cd_go");
@@ -489,26 +491,28 @@ socket.on("room_race_started", (_e) => {
   }, 500);
 });
 
-socket.on("room_progress_update", (e) => {
+// socket.on("room_progress_update", (e) => {
+TribeSocket.in.room.progressUpdate((data) => {
   if (!room) return;
-  room.maxWpm = e.roomMaxWpm;
-  room.maxRaw = e.roomMaxRaw;
-  room.users[e.userId].progress = e.progress;
-  if (e.userId == socket.id) {
+  room.maxWpm = data.roomMaxWpm;
+  room.maxRaw = data.roomMaxRaw;
+  room.users[data.userId].progress = data.progress;
+  if (data.userId == TribeSocket.getId()) {
     TribeDelta.update();
   }
   //todo only update one
-  TribeBars.update("test", e.userId);
-  TribeBars.update("tribe", e.userId);
-  TribeResults.updateBar("result", e.userId);
+  TribeBars.update("test", data.userId);
+  TribeBars.update("tribe", data.userId);
+  TribeResults.updateBar("result", data.userId);
 });
 
-socket.on("room_user_result", (e) => {
+// socket.on("room_user_result", (e) => {
+TribeSocket.in.room.userResult((data) => {
   if (!room) return;
-  room.users[e.userId].result = e.result;
-  room.users[e.userId].isFinished = true;
-  room.users[e.userId].isTyping = false;
-  const resolve = e.result.resolve;
+  room.users[data.userId].result = data.result;
+  room.users[data.userId].isFinished = true;
+  room.users[data.userId].isTyping = false;
+  const resolve = data.result.resolve;
   if (
     resolve?.afk ||
     resolve?.repeated ||
@@ -517,22 +521,22 @@ socket.on("room_user_result", (e) => {
     resolve?.failed === true
   ) {
     //todo only one
-    TribeBars.fadeUser("test", e.userId);
-    TribeBars.fadeUser("tribe", e.userId);
-    TribeResults.fadeUser("result", e.userId);
+    TribeBars.fadeUser("test", data.userId);
+    TribeBars.fadeUser("tribe", data.userId);
+    TribeResults.fadeUser("result", data.userId);
   } else {
-    TribeBars.completeBar("test", e.userId);
-    TribeBars.completeBar("tribe", e.userId);
-    TribeResults.updateBar("result", e.userId, 100);
+    TribeBars.completeBar("test", data.userId);
+    TribeBars.completeBar("tribe", data.userId);
+    TribeResults.updateBar("result", data.userId, 100);
   }
   if (!TestActive.get()) {
-    TribeResults.update("result", e.userId);
+    TribeResults.update("result", data.userId);
     TribeUserList.update("result");
     setTimeout(async () => {
-      if (e.everybodyCompleted) {
+      if (data.everybodyCompleted) {
         await TribeChartController.drawAllCharts();
       } else {
-        await TribeChartController.drawChart(e.userId);
+        await TribeChartController.drawChart(data.userId);
       }
       if (state === 21) {
         TribeChartController.updateChartMaxValues();
@@ -541,15 +545,15 @@ socket.on("room_user_result", (e) => {
   }
 });
 
-socket.on("room_finishTimer_countdown", (e) => {
+TribeSocket.in.room.finishTimerCountdown((data) => {
   if (TestActive.get()) {
-    TribeCountdown.update(e.time);
+    TribeCountdown.update(data.time.toString());
   } else {
-    TribeResults.updateTimer(e.time);
+    TribeResults.updateTimer(data.time.toString());
   }
 });
 
-socket.on("room_finishTimer_over", (_e) => {
+TribeSocket.in.room.finishTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestActive.get()) {
@@ -557,15 +561,15 @@ socket.on("room_finishTimer_over", (_e) => {
   }
 });
 
-socket.on("room_readyTimer_countdown", (e) => {
+TribeSocket.in.room.readyTimerCountdown((data) => {
   if (TestActive.get()) {
-    TribeCountdown.update(e.time);
+    TribeCountdown.update(data.time.toString());
   } else {
-    TribeResults.updateTimer(e.time);
+    TribeResults.updateTimer(data.time.toString());
   }
 });
 
-socket.on("room_readyTimer_over", (_e) => {
+TribeSocket.in.room.readyTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestActive.get()) {
@@ -573,41 +577,33 @@ socket.on("room_readyTimer_over", (_e) => {
   }
 });
 
-socket.on("room_back_to_lobby", (_e) => {
+TribeSocket.in.room.backToLobby(() => {
   navigate("/tribe");
 });
 
-type RoomFinalPositions = {
-  sorted: {
-    newPoints: number;
-    id: string;
-  }[];
-  miniCrowns: TribeTypes.MiniCrowns;
-};
-
-socket.on("room_final_positions", (e: RoomFinalPositions) => {
+TribeSocket.in.room.finalPositions((data) => {
   if (!room) return;
-  TribeResults.updatePositions("result", e.sorted);
-  TribeResults.updateMiniCrowns("result", e.miniCrowns);
-  for (const user of Object.values(e.sorted)) {
+  TribeResults.updatePositions("result", data.sorted);
+  TribeResults.updateMiniCrowns("result", data.miniCrowns);
+  for (const user of Object.values(data.sorted)) {
     room.users[user.id].points = user.newPoints;
   }
   TribeUserList.update();
 
   let isGlowing = false;
   if (
-    e.miniCrowns.wpm === e.miniCrowns.raw &&
-    e.miniCrowns.raw === e.miniCrowns.acc &&
-    e.miniCrowns.acc === e.miniCrowns.consistency
+    data.miniCrowns.wpm === data.miniCrowns.raw &&
+    data.miniCrowns.raw === data.miniCrowns.acc &&
+    data.miniCrowns.acc === data.miniCrowns.consistency
   ) {
     isGlowing = true;
   }
 
-  if (e.sorted[0]?.id) {
-    TribeResults.showCrown("result", e.sorted[0]?.id, isGlowing);
+  if (data.sorted[0]?.id) {
+    TribeResults.showCrown("result", data.sorted[0]?.id, isGlowing);
   }
 
-  if (e?.sorted[0]?.id === socket.id) {
+  if (data?.sorted[0]?.id === TribeSocket.getId()) {
     TribeSound.play("finish_win");
     if (isGlowing) {
       TribeSound.play("glow");
