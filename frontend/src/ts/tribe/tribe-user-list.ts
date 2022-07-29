@@ -1,5 +1,6 @@
 import * as Tribe from "./tribe";
 import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
+import tribeSocket from "./tribe-socket";
 
 export function reset(page?: string): void {
   if (page === undefined) {
@@ -48,7 +49,7 @@ export function update(page?: string): void {
       pointsString = user.points + (user.points == 1 ? "pt" : "pts");
     }
     const appendData = `
-    <div class='user ${user.id === Tribe.socket.id ? "me" : ""} ${
+    <div class='user ${user.id === tribeSocket.getId() ? "me" : ""} ${
       user.isAfk ? "afk" : ""
     }'>
     <div class="nameAndIcons">
@@ -59,7 +60,7 @@ export function update(page?: string): void {
       ${user.name}
       </div>
       ${
-        Tribe.getSelf()?.isLeader && user.id !== Tribe.socket.id
+        Tribe.getSelf()?.isLeader && user.id !== tribeSocket.getId()
           ? `<div class='userSettings' userid='` +
             user.id +
             `' ><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`

@@ -1,6 +1,7 @@
 import * as Tribe from "./tribe";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
+import tribeSocket from "./tribe-socket";
 
 export function init(page: string): void {
   let el: JQuery<HTMLElement> | undefined;
@@ -19,9 +20,9 @@ export function init(page: string): void {
   if (!room) return;
 
   for (const [userId, user] of Object.entries(room.users)) {
-    if (userId === Tribe.socket.id) continue;
+    if (userId === tribeSocket.getId()) continue;
     let me = false;
-    if (userId === Tribe.socket.id) me = true;
+    if (userId === tribeSocket.getId()) me = true;
     if (user.isTyping && el) {
       el.append(`
       <tr class="player ${me ? "me" : ""}" id="${userId}">

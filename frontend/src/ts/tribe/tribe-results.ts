@@ -2,6 +2,7 @@ import * as Tribe from "./tribe";
 import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
+import tribeSocket from "./tribe-socket";
 
 const initialised: Record<string, boolean | object> = {};
 
@@ -31,7 +32,7 @@ export function init(page: string): void {
       if (user.isAfk) continue;
       el.append(`
         <tr class="user ${
-          userId === Tribe.socket.id ? "me" : ""
+          userId === tribeSocket.getId() ? "me" : ""
         }" id="${userId}">
           <td class="name">${user.name}</td>
           <td>

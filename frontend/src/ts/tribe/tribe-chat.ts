@@ -2,6 +2,7 @@ import * as Notifications from "../elements/notifications";
 import * as Tribe from "./tribe";
 import * as Misc from "../utils/misc";
 import * as TestUI from "../test/test-ui";
+import tribeSocket from "./tribe-socket";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
@@ -53,7 +54,7 @@ export function updateIsTyping(): void {
   const names: string[] = [];
 
   for (const userId of Object.keys(Tribe.room.users)) {
-    if (Tribe.room.users[userId].isChatting && userId !== Tribe.socket.id) {
+    if (Tribe.room.users[userId].isChatting && userId !== tribeSocket.getId()) {
       names.push(Tribe.room.users[userId].name);
     }
   }
@@ -113,7 +114,7 @@ export async function appendMessage(data: {
     cls = "systemMessage";
   } else {
     let me = "";
-    if (data.from.id == Tribe.socket.id) me = " me";
+    if (data.from.id == tribeSocket.getId()) me = " me";
     author = `<div class="author ${me}">${data.from.name}:</div>`;
   }
   data.message = await insertImageEmoji(data.message);

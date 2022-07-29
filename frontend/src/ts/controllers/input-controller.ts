@@ -29,6 +29,7 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Tribe from "../tribe/tribe";
 import { navigate } from "./route-controller";
+import tribeSocket from "../tribe/tribe-socket";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -670,7 +671,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
         Tribe.state === 21 ||
         Tribe.state === 22
       ) {
-        Tribe.socket.emit(`room_ready_update`);
+        tribeSocket.out.room.readyUpdate();
         return;
       }
     }
@@ -789,7 +790,7 @@ $(document).on("keydown", async (event) => {
         Tribe.state === 21 ||
         Tribe.state === 22
       ) {
-        Tribe.socket.emit(`room_ready_update`);
+        tribeSocket.out.room.readyUpdate();
         return;
       }
     }

@@ -3,6 +3,7 @@ import * as Tribe from "./tribe";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Notifications from "../elements/notifications";
 import { createErrorMessage } from "../utils/misc";
+import tribeSocket from "./tribe-socket";
 
 const charts: Record<string, Chart> = {};
 
@@ -270,7 +271,7 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   // chart.options.scales["wpm"].ticks.max = Math.round(chartmaxval);
   // chart.options.scales["raw"].ticks.max = Math.round(chartmaxval);
 
-  if (userId == Tribe.socket.id) {
+  if (userId == tribeSocket.getId()) {
     chart.data.datasets[0].borderColor = await ThemeColors.get("main");
     // chart.data.datasets[0].backgroundColor = await ThemeColors.get("main");
   } else {

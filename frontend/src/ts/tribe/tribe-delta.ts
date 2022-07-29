@@ -1,6 +1,7 @@
 import * as Tribe from "./tribe";
 import Config from "../config";
 import * as TestActive from "../states/test-active";
+import tribeSocket from "./tribe-socket";
 
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
 
@@ -10,7 +11,7 @@ export function update(): void {
   let maxWpm = 0;
 
   for (const [userId, user] of Object.entries(Tribe.room.users)) {
-    if (userId === Tribe.socket.id) continue;
+    if (userId === tribeSocket.getId()) continue;
     if (user.result?.resolve.afk || user.result?.resolve.failed) continue;
     if ((user?.progress?.wpm ?? 0) > maxWpm) maxWpm = user?.progress?.wpm ?? 0;
   }

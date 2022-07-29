@@ -1,4 +1,4 @@
-import * as Tribe from "../tribe/tribe";
+import tribeSocket from "../tribe/tribe-socket";
 
 export function show(): void {
   if ($("#tribeStartRacePopupWrapper").hasClass("hidden")) {
@@ -36,7 +36,7 @@ $("#tribeStartRacePopupWrapper").on("click", (e) => {
 });
 
 $("#tribeStartRacePopup .button").on("click", () => {
-  Tribe.socket.emit("room_init_race");
+  tribeSocket.out.room.initRace();
   hide();
 });
 
@@ -45,7 +45,7 @@ $(document).on("keypress", (e) => {
     e.key === "Enter" &&
     !$("#tribeStartRacePopupWrapper").hasClass("hidden")
   ) {
-    Tribe.socket.emit("room_init_race");
+    tribeSocket.out.room.initRace();
     hide();
     e.preventDefault();
   }

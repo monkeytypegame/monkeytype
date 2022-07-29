@@ -37,6 +37,14 @@ function init(): void {
   Socket.emit("room_init_race");
 }
 
+function readyUpdate(): void {
+  Socket.emit("room_ready_update");
+}
+
+function initRaceOut(): void {
+  Socket.emit("room_init_race");
+}
+
 function joined(callback: (data: { room: TribeTypes.Room }) => void): void {
   Socket.on("room_joined", callback);
 }
@@ -210,5 +218,7 @@ export default {
     getPublicRooms,
     join,
     init,
+    readyUpdate,
+    initRace: initRaceOut,
   },
 };
