@@ -112,7 +112,10 @@ export async function refresh(
       layoutString = Config.keymapLayout;
     }
 
-    const showTopRow = (lts as typeof layouts["qwerty"]).keymapShowTopRow;
+    const showTopRow =
+      Config.keymapShowTopRow === "always" ||
+      ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
+        Config.keymapShowTopRow !== "never");
 
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
@@ -121,7 +124,13 @@ export async function refresh(
 
     (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).forEach(
       (row, index) => {
-        const rowKeys = lts.keys[row];
+        let rowKeys = lts.keys[row];
+        if (
+          row === "row1" &&
+          (isMatrix || Config.keymapStyle === "staggered")
+        ) {
+          rowKeys = rowKeys.slice(1);
+        }
         let rowElement = "";
         if (row === "row1" && !showTopRow) {
           return;
@@ -168,7 +177,17 @@ export async function refresh(
             } else if (Config.keymapLegendStyle === "uppercase") {
               keyDisplay = keyDisplay.toUpperCase();
             }
-            const keyElement = `<div class="keymapKey" data-key="${key.replace(
+            let hide = "";
+            if (
+              row === "row1" &&
+              i === 0 &&
+              !isMatrix &&
+              Config.keymapStyle !== "staggered"
+            ) {
+              hide = ` invisible`;
+            }
+
+            const keyElement = `<div class="keymapKey${hide}" data-key="${key.replace(
               '"',
               "&quot;"
             )}">
@@ -189,6 +208,14 @@ export async function refresh(
                 lts.type === "iso"
               ) {
                 if (i === 6) {
+                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+                }
+              } else if (
+                row === "row1" &&
+                (Config.keymapStyle === "split" ||
+                  Config.keymapStyle === "alice")
+              ) {
+                if (i === 7) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               } else {
@@ -237,5 +264,11 @@ ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     refresh(Config.keymapLayout);
   }
-  if (eventKey === "keymapLayout" || eventKey === "keymapStyle") refresh();
+  if (
+    eventKey === "keymapLayout" ||
+    eventKey === "keymapStyle" ||
+    eventKey === "keymapShowTopRow"
+  ) {
+    refresh();
+  }
 });

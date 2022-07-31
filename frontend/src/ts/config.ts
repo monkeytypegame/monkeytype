@@ -1515,6 +1515,25 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
   return true;
 }
 
+export function setKeymapShowTopRow(
+  show: MonkeyTypes.KeymapShowTopRow,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("keymapShowTopRow", show, [
+      ["always", "layout", "never"],
+    ])
+  ) {
+    return false;
+  }
+
+  config.keymapShowTopRow = show;
+  saveToLocalStorage("keymapShowTopRow", nosave);
+  ConfigEvent.dispatch("keymapShowTopRow", config.keymapShowTopRow);
+
+  return true;
+}
+
 export function setLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("layout", layout, ["string"])) return false;
 
@@ -1765,6 +1784,7 @@ export function apply(
     setKeymapStyle(configObj.keymapStyle, true);
     setKeymapLegendStyle(configObj.keymapLegendStyle, true);
     setKeymapLayout(configObj.keymapLayout, true);
+    setKeymapShowTopRow(configObj.keymapShowTopRow, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
