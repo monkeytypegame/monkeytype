@@ -81,6 +81,8 @@ export async function updateXpBar(
 
   $("#menu .xpBar").stop(true, true).css("opacity", 0);
 
+  $("#menu .xpBar .xpGain").text(`+${addedXp}`);
+
   await Misc.promiseAnimation(
     $("#menu .xpBar"),
     {
@@ -169,7 +171,9 @@ export async function updateXpBar(
     $("#menu .xpBar")
       .stop(true, true)
       .css("opacity", 1)
-      .animate({ opacity: 0 }, 250);
+      .animate({ opacity: 0 }, 250, () => {
+        $("#menu .xpBar .xpGain").text(``);
+      });
   }, 1000);
 }
 
