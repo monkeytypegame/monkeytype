@@ -1,5 +1,4 @@
 import Ape from "./ape";
-import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
@@ -761,14 +760,10 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
 
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (Auth.currentUser !== null) {
-    AccountButton.loading(true);
-
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
     }
-
-    AccountButton.loading(false);
   }
 }
 

@@ -10,6 +10,7 @@ import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
+import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 
 export let localStorageConfig: MonkeyTypes.Config;
@@ -37,7 +38,12 @@ let config = {
 let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   delete configToSend.resultFilters;
-  if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
+  if (Object.keys(configToSend).length > 0) {
+    AccountButton.loading(true);
+    DB.saveConfig(configToSend).then(() => {
+      AccountButton.loading(false);
+    });
+  }
   configToSend = {} as MonkeyTypes.Config;
 });
 
@@ -74,7 +80,11 @@ export async function saveFullConfigToLocalStorage(
   delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
-  if (!noDbCheck) await DB.saveConfig(save);
+  if (!noDbCheck) {
+    AccountButton.loading(true);
+    await DB.saveConfig(save);
+    AccountButton.loading(false);
+  }
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 

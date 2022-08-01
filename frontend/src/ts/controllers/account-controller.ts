@@ -192,7 +192,10 @@ export async function getDataAndInit(): Promise<boolean> {
             nosave: true,
           });
         }
-        DB.saveConfig(Config);
+        AccountButton.loading(true);
+        DB.saveConfig(Config).then(() => {
+          AccountButton.loading(false);
+        });
       }
     }
     UpdateConfig.setDbConfigLoaded(true);
