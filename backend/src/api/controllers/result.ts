@@ -429,10 +429,10 @@ function calculateXp(result, configurationMultiplier): number {
   } else {
     //punctuation bonus
     if (result.punctuation === true) {
-      modifier += 0.25;
+      modifier += 0.4;
     }
     if (result.numbers === true) {
-      modifier += 0.25;
+      modifier += 0.1;
     }
   }
 
