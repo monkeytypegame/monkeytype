@@ -235,8 +235,8 @@ export async function loadUser(user: UserType): Promise<void> {
   if ((await getDataAndInit()) === false) {
     signOut();
   }
-  const { discordId, discordAvatar } = DB.getSnapshot();
-  AccountButton.update(discordId, discordAvatar);
+  const { discordId, discordAvatar, xp } = DB.getSnapshot();
+  AccountButton.update(xp, discordId, discordAvatar);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;

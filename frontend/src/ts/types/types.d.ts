@@ -473,6 +473,7 @@ declare namespace MonkeyTypes {
     inventory?: UserInventory;
     addedAt: number;
     filterPresets: ResultFilters[];
+    xp: number;
   }
 
   interface UserDetails {

@@ -26,10 +26,45 @@
     }
 
     &.account {
+      position: relative;
       .icon,
       .avatar {
         grid-column: 1/2;
         grid-row: 1/2;
+      }
+
+      .levelAndBar {
+        transition: 0.125s;
+      }
+
+      .level {
+        font-size: 0.65rem;
+        line-height: 1rem;
+        align-self: center;
+        margin-left: 0.25rem;
+        color: var(--bg-color);
+        background: var(--sub-color);
+        padding: 0.1rem 0.3rem;
+        border-radius: calc(var(--roundness) / 2);
+      }
+
+      .xpBar {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        height: 0.25rem;
+        bottom: -0.25rem;
+        width: 100%;
+        left: 0;
+        background: var(--sub-alt-color);
+        border-radius: var(--roundness);
+        .bar {
+          left: 0;
+          width: 0%;
+          height: 100%;
+          background: var(--main-color);
+          border-radius: var(--roundness);
+        }
       }
     }
   }
@@ -54,6 +89,10 @@
 }
 
 #top.focus #menu .textButton.account .avatar {
+  opacity: 0 !important;
+}
+
+#top.focus #menu .levelAndBar {
   opacity: 0 !important;
 }
 

@@ -28,6 +28,7 @@ import {
 import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
+import * as UserDAL from "../../dal/user";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -86,6 +87,7 @@ interface AddResultData {
   tagPbs: any[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
+  xp: number;
 }
 
 export async function addResult(
@@ -351,6 +353,11 @@ export async function addResult(
     );
   }
 
+  const xpGained = calculateXp(
+    result,
+    req.ctx.configuration.users.xpGainMultiplier
+  );
+
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
   if (result.lazyMode === false) delete result.lazyMode;
@@ -367,6 +374,8 @@ export async function addResult(
 
   const addedResult = await ResultDAL.addResult(uid, result);
 
+  await UserDAL.incrementXp(uid, xpGained);
+
   if (isPb) {
     Logger.logToDb(
       "user_new_pb",
@@ -381,13 +390,66 @@ export async function addResult(
     isPb,
     tagPbs,
     insertedId: addedResult.insertedId,
+    xp: xpGained,
   };
 
   if (dailyLeaderboardRank !== -1) {
     data.dailyLeaderboardRank = dailyLeaderboardRank;
   }
-
   incrementResult(result);
 
   return new MonkeyResponse("Result saved", data);
+}
+
+function calculateXp(result, configurationMultiplier): number {
+  if (result.mode === "zen" || result.mode === "custom") {
+    return 0;
+  }
+
+  const seconds = result.testDuration - result.afkDuration;
+
+  let modifier = 1;
+
+  if (result.acc === 100) {
+    modifier += 0.5;
+  } else {
+    if (
+      result.charStats[1] === 0 &&
+      result.charStats[2] === 0 &&
+      result.charStats[3] === 0
+    ) {
+      //corrected everything bonus
+      modifier += 0.25;
+    }
+  }
+
+  if (result.mode === "quote") {
+    //real sentences bonus
+    modifier += 0.5;
+  } else {
+    //punctuation bonus
+    if (result.punctuation === true) {
+      modifier += 0.25;
+    }
+    if (result.numbers === true) {
+      modifier += 0.25;
+    }
+  }
+
+  const incompleteXp = Math.round(result.incompleteTestSeconds);
+
+  // this could be too easy to abuse
+  // if (result.incompleteTestSeconds === 0) {
+  //   //no restart bonus
+  //   modifier += 0.5;
+  // } else {
+  //   incompleteXp = Math.round(result.incompleteTestSeconds);
+  // }
+
+  const accuracyModifier = (result.acc - 50) / 50;
+
+  return (
+    Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp) *
+    configurationMultiplier
+  );
 }

@@ -136,6 +136,24 @@ export async function update(
       }
     }
   }
+
+  const xp = profile.xp ?? 0;
+  const levelFraction = Misc.getLevel(xp);
+  const level = Math.floor(levelFraction);
+  const xpForLevel = Misc.getXpForLevel(level);
+  const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
+  details.find(".level").text(level);
+  details
+    .find(".xp")
+    .text(
+      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
+        xpForLevel
+      )}`
+    );
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+
   //structure
 
   const bioAndKey = bio || keyboard;

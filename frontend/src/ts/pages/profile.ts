@@ -21,6 +21,13 @@ function reset(): void {
             <div class="allBadges"></div>
             <div class="joined" data-balloon-pos="up">-</div>
           </div>
+          <div class="levelAndBar">
+            <div class="level">-</div>
+            <div class="xpBar">
+              <div class="bar" style="width: 0%;"></div>
+            </div>
+            <div class="xp">-/-</div>
+          </div>
         </div>
         <div class="separator sep1"></div>
         <div class="typingStats vertical">

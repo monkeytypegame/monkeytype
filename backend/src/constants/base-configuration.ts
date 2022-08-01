@@ -41,6 +41,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     profiles: {
       enabled: false,
     },
+    xpGainMultiplier: 1,
   },
   rateLimiting: {
     badAuthentication: {
@@ -197,6 +198,10 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
       type: "object",
       label: "Users",
       fields: {
+        xpGainMultiplier: {
+          type: "number",
+          label: "XP Gain Multiplier",
+        },
         discordIntegration: {
           type: "object",
           label: "Discord Integration",

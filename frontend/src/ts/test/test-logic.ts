@@ -1236,6 +1236,12 @@ export async function retrySavingResult(): Promise<void> {
     return Notifications.add("Result not saved. " + response.message, -1);
   }
 
+  if (response.data.xp) {
+    const snapxp = DB.getSnapshot().xp;
+    AccountButton.updateXpBar(snapxp, response.data.xp);
+    DB.addXp(response.data.xp);
+  }
+
   completedEvent._id = response.data.insertedId;
   if (response.data.isPb) {
     completedEvent.isPb = true;
@@ -1634,6 +1640,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     retrySaving.completedEvent = completedEvent;
     retrySaving.canRetry = true;
     return Notifications.add("Failed to save result: " + response.message, -1);
+  }
+
+  if (response.data.xp) {
+    const snapxp = DB.getSnapshot().xp;
+    AccountButton.updateXpBar(snapxp, response.data.xp);
+    DB.addXp(response.data.xp);
   }
 
   Result.hideCrown();

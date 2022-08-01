@@ -496,6 +496,10 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
   }
 }
 
+export async function incrementXp(uid: string, xp: number): Promise<void> {
+  await getUsersCollection().updateOne({ uid }, { $inc: { xp } });
+}
+
 export function themeDoesNotExist(customThemes, id): boolean {
   return (
     (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0

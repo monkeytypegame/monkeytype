@@ -1186,3 +1186,37 @@ export async function getDiscordAvatarUrl(
 
   return null;
 }
+
+export function getLevel(xp: number): number {
+  return (
+    Math.log(1 - ((1 - 1.02906509415213) * xp) / 100) /
+      Math.log(1.02906509415213) +
+    1
+  );
+}
+
+export function getXpForLevel(level: number): number {
+  return Math.round(100 * Math.pow(1.02906509415213, level - 1));
+}
+
+export async function promiseAnimation(
+  el: JQuery<HTMLElement>,
+  animation: Record<string, string>,
+  duration: number,
+  easing: string
+): Promise<void> {
+  return new Promise((resolve) => {
+    el.animate(animation, duration, easing, resolve);
+  });
+}
+
+//abbreviateNumber
+export function abbreviateNumber(num: number): string {
+  if (num < 1000) {
+    return num.toString();
+  }
+
+  const exp = Math.floor(Math.log(num) / Math.log(1000));
+  const pre = "kmbtqQsSond".charAt(exp - 1);
+  return (num / Math.pow(1000, exp)).toFixed(1) + pre;
+}

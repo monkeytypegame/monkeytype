@@ -40,6 +40,7 @@ declare namespace MonkeyTypes {
       discordIntegration: {
         enabled: boolean;
       };
+      xpGainMultiplier: number;
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -121,6 +122,7 @@ declare namespace MonkeyTypes {
     resultFilterPresets?: ResultFilters[];
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
+    xp?: number;
   }
 
   interface UserInventory {
