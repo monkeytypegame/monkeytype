@@ -153,6 +153,9 @@ export async function update(
   details
     .find(".xpBar .bar")
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xp")
+    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
 
   //structure
 

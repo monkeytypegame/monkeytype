@@ -26,7 +26,7 @@ function reset(): void {
             <div class="xpBar">
               <div class="bar" style="width: 0%;"></div>
             </div>
-            <div class="xp">-/-</div>
+            <div class="xp" data-balloon-pos="up">-/-</div>
           </div>
         </div>
         <div class="separator sep1"></div>
