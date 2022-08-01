@@ -1,3 +1,4 @@
+import { getSnapshot } from "../db";
 import { Auth } from "../firebase";
 import * as Misc from "../utils/misc";
 import { getAll } from "./theme-colors";
@@ -164,6 +165,7 @@ export async function updateXpBar(
     );
   }
   setTimeout(() => {
+    $("#menu .level").text(Math.floor(Misc.getLevel(getSnapshot().xp)));
     $("#menu .xpBar")
       .stop(true, true)
       .css("opacity", 1)
