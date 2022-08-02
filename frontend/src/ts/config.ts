@@ -1632,7 +1632,7 @@ export function setCustomBackground(value: string, nosave?: boolean): boolean {
     (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
       value
     ) &&
-      !/[<>]/.test(value)) ||
+      !/[<> "]/.test(value)||
     value == ""
   ) {
     config.customBackground = value;
