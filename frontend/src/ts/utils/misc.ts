@@ -1188,15 +1188,11 @@ export async function getDiscordAvatarUrl(
 }
 
 export function getLevel(xp: number): number {
-  return (
-    Math.log(1 - ((1 - 1.02906509415213) * xp) / 100) /
-      Math.log(1.02906509415213) +
-    1
-  );
+  return Math.log(1 - ((1 - 1.0545) * xp) / 100) / Math.log(1.0545) + 1;
 }
 
 export function getXpForLevel(level: number): number {
-  return Math.round(100 * Math.pow(1.02906509415213, level - 1));
+  return Math.round(100 * Math.pow(1.0545, level - 1));
 }
 
 export async function promiseAnimation(
