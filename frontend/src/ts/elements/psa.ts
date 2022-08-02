@@ -44,6 +44,8 @@ async function getLatest(): Promise<MonkeyTypes.PSA[]> {
       "Server is currently under maintenance. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> for more info.",
       -1,
       "bullhorn",
+      true,
+      undefined,
       true
     );
     return [];
