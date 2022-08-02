@@ -172,7 +172,7 @@ export async function updateXpBar(
       .animate({ opacity: 0 }, 250, () => {
         $("#menu .xpBar .xpGain").text(``);
       });
-  }, 1000);
+  }, 3000);
 }
 
 async function flashLevel(): Promise<void> {
