@@ -17,7 +17,7 @@ function setMemory(id: string): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
 }
 
-async function getLatest(): Promise<MonkeyTypes.PSA[]> {
+async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   const response = await Ape.psas.get();
   if (response.status === 500) {
     if (window.location.hostname === "localhost") {
@@ -38,7 +38,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[]> {
       );
     }
 
-    return [];
+    return null;
   } else if (response.status === 503) {
     Notifications.addBanner(
       "Server is currently under maintenance. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> for more info.",
@@ -48,14 +48,17 @@ async function getLatest(): Promise<MonkeyTypes.PSA[]> {
       undefined,
       true
     );
-    return [];
+    return null;
+  } else if (response.status !== 200) {
+    return null;
   }
   return response.data as MonkeyTypes.PSA[];
 }
 
 export async function show(): Promise<void> {
   const latest = await getLatest();
-  if (latest == null || latest.length == 0) {
+  if (latest === null) return;
+  if (latest.length == 0) {
     clearMemory();
     return;
   }
