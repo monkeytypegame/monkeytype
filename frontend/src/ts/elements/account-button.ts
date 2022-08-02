@@ -77,8 +77,6 @@ export async function updateXpBar(
   const endingLevel = Misc.getLevel(currentXp + addedXp);
   const difference = endingLevel - startingLevel;
 
-  console.log(startingLevel, endingLevel, difference);
-
   $("#menu .xpBar").stop(true, true).css("opacity", 0);
 
   $("#menu .xpBar .xpGain").text(`+${addedXp}`);
