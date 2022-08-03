@@ -4,7 +4,7 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, WithId } from "mongodb";
+import { Collection, ObjectId, WithId, Long } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
 
@@ -497,7 +497,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 }
 
 export async function incrementXp(uid: string, xp: number): Promise<void> {
-  await getUsersCollection().updateOne({ uid }, { $inc: { xp } });
+  await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
 }
 
 export function themeDoesNotExist(customThemes, id): boolean {
