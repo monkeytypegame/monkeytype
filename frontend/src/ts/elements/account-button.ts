@@ -181,16 +181,32 @@ async function flashLevel(): Promise<void> {
 
   barEl.text(parseInt(barEl.text()) + 1);
 
+  const rand = Math.random() * 2 - 1;
+  const rand2 = Math.random() + 1;
+
   barEl
     .stop(true, true)
     .css({
       backgroundColor: themecolors.main,
+      // transform: "scale(1.5) rotate(10deg)",
+      borderSpacing: 100,
     })
     .animate(
       {
         backgroundColor: themecolors.sub,
+        borderSpacing: 0,
       },
-      1000,
-      "easeOutExpo"
+      {
+        step(step) {
+          barEl.css(
+            "transform",
+            `scale(${1 + (step / 200) * rand2}) rotate(${
+              (step / 10) * rand
+            }deg)`
+          );
+        },
+        duration: 2000,
+        easing: "easeOutCubic",
+      }
     );
 }
