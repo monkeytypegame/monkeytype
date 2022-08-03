@@ -769,4 +769,9 @@
     "bgColor": "#386641",
     "mainColor": "#6a994e"
   }
+  ,{
+    "name": "monochrome",
+    "bgColor": "#ffffff",
+    "mainColor": "#646464"
+}
 ]
