@@ -115,7 +115,6 @@ export async function updateXpBar(
   } else {
     // const quickSpeed = Misc.mapRange(difference, 10, 2000, 200, 1);
     const quickSpeed = Math.min(1000 / difference, 200);
-    console.log(difference, quickSpeed);
     let toAnimate = difference;
 
     let firstOneDone = false;
