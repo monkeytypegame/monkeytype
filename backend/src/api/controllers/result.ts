@@ -461,7 +461,10 @@ async function calculateXp(
   const accuracyModifier = (result.acc - 50) / 50;
 
   let dailyBonus = 0;
-  const lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
+  let lastResultTimestamp;
+  try {
+    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
+  } catch {}
   if (lastResultTimestamp) {
     const lastResultDay = new Date(lastResultTimestamp).getDay();
     const today = new Date().getDay();
