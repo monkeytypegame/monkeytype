@@ -88,6 +88,7 @@ interface AddResultData {
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
   xp: number;
+  dailyXpBonus: boolean;
 }
 
 export async function addResult(
@@ -353,9 +354,10 @@ export async function addResult(
     );
   }
 
-  const xpGained = calculateXp(
+  const xpGained = await calculateXp(
     result,
-    req.ctx.configuration.users.xpGainMultiplier
+    req.ctx.configuration.users.xpGainMultiplier,
+    uid
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -374,7 +376,7 @@ export async function addResult(
 
   const addedResult = await ResultDAL.addResult(uid, result);
 
-  await UserDAL.incrementXp(uid, xpGained);
+  await UserDAL.incrementXp(uid, xpGained.xp);
 
   if (isPb) {
     Logger.logToDb(
@@ -390,7 +392,8 @@ export async function addResult(
     isPb,
     tagPbs,
     insertedId: addedResult.insertedId,
-    xp: xpGained,
+    xp: xpGained.xp,
+    dailyXpBonus: xpGained.dailyBonus ?? false,
   };
 
   if (dailyLeaderboardRank !== -1) {
@@ -401,9 +404,18 @@ export async function addResult(
   return new MonkeyResponse("Result saved", data);
 }
 
-function calculateXp(result, configurationMultiplier): number {
+async function calculateXp(
+  result,
+  configurationMultiplier,
+  uid
+): Promise<{
+  xp: number;
+  dailyBonus?: boolean;
+}> {
   if (result.mode === "zen") {
-    return 0;
+    return {
+      xp: 0,
+    };
   }
 
   const seconds = result.testDuration - result.afkDuration;
@@ -448,8 +460,21 @@ function calculateXp(result, configurationMultiplier): number {
 
   const accuracyModifier = (result.acc - 50) / 50;
 
-  return (
-    Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp) *
-    configurationMultiplier
-  );
+  let dailyBonus = 0;
+  const lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
+  if (lastResultTimestamp) {
+    const lastResultDay = new Date(lastResultTimestamp).getDay();
+    const today = new Date().getDay();
+    if (lastResultDay != today) {
+      dailyBonus = 1000;
+    }
+  }
+
+  return {
+    xp:
+      Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp) *
+        configurationMultiplier +
+      dailyBonus,
+    dailyBonus: true,
+  };
 }

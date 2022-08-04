@@ -71,7 +71,8 @@ export async function update(
 
 export async function updateXpBar(
   currentXp: number,
-  addedXp: number
+  addedXp: number,
+  _withDailyBonus: boolean
 ): Promise<void> {
   const startingLevel = Misc.getLevel(currentXp);
   const endingLevel = Misc.getLevel(currentXp + addedXp);
