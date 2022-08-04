@@ -31,7 +31,7 @@ export async function update(
   discordAvatar?: string
 ): Promise<void> {
   if (Auth.currentUser != null) {
-    if (xp) {
+    if (xp !== undefined) {
       $("#top #menu .level").text(Math.floor(Misc.getLevel(xp)));
       $("#top #menu .bar").css({
         width: (Misc.getLevel(xp) % 1) * 100 + "%",

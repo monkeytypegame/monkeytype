@@ -1181,27 +1181,11 @@ export async function getDiscordAvatarUrl(
 }
 
 export function getLevel(xp: number): number {
-  return (
-    Math.cbrt(
-      2.7891272155157822 * xp +
-        1.7320508075688772 *
-          Math.sqrt(2.5930768747769397 * xp ** 2 + 678618.09453225)
-    ) /
-      1.458938803353093 -
-    86.87173353918234 /
-      Math.cbrt(
-        2.7891272155157822 * xp +
-          1.7320508075688772 *
-            Math.sqrt(2.5930768747769397 * xp ** 2 + 678618.09453225)
-      ) +
-    0.0001
-  );
+  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
 }
 
 export function getXpForLevel(level: number): number {
-  return Math.ceil(
-    0.556689342404 * level ** 3 + 99.4433106576 * level - 0.0001
-  );
+  return 49 * (level - 1) + 100;
 }
 
 export async function promiseAnimation(
