@@ -1195,7 +1195,7 @@ export function getLevel(xp: number): number {
 }
 
 export function getXpForLevel(level: number): number {
-  return Math.ceil(0.556689342404 * (lvl - 1)**3 + 99.4433106576 * (lvl - 1) - .0001);
+  return Math.ceil(0.556689342404 * (level - 1)**3 + 99.4433106576 * (level - 1) - .0001);
 }
 
 export async function promiseAnimation(
