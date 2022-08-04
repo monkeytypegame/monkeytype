@@ -402,7 +402,7 @@ export async function addResult(
 }
 
 function calculateXp(result, configurationMultiplier): number {
-  if (result.mode === "zen" || result.mode === "custom") {
+  if (result.mode === "zen") {
     return 0;
   }
 
