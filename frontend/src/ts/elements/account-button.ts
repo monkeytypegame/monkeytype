@@ -81,7 +81,7 @@ export async function updateXpBar(
   $("#menu .xpBar").stop(true, true).css("opacity", 0);
 
   $("#menu .xpBar .xpGain").text(
-    `+${addedXp} ${withDailyBonus ? "daily bonus" : ""}`
+    `+${addedXp} ${withDailyBonus === true ? "daily bonus" : ""}`
   );
 
   await Misc.promiseAnimation(
