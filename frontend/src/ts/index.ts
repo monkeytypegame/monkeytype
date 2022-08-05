@@ -32,7 +32,6 @@ import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
 import { egVideoListener } from "./popups/video-ad-popup";
-import { updateXpBar } from "./elements/account-button";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -61,6 +60,3 @@ extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
 extendedGlobal.egVideoListener = egVideoListener;
 
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
-
-//@ts-ignore
-extendedGlobal.xp = updateXpBar;
