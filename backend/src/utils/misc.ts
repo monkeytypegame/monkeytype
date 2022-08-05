@@ -83,7 +83,7 @@ export function padNumbers(
 
 export const MILLISECONDS_IN_DAY = 86400000;
 
-export function getStartOfDayTimestamp(timestamp: number) {
+export function getStartOfDayTimestamp(timestamp: number): number {
   return timestamp - (timestamp % MILLISECONDS_IN_DAY);
 }
 

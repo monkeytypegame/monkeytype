@@ -45,7 +45,7 @@ declare namespace MonkeyTypes {
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
-      },
+      };
     };
     apeKeys: {
       endpointsEnabled: boolean;

@@ -8,7 +8,12 @@ import {
   recordAutoBanEvent,
 } from "../../dal/user";
 import * as PublicStatsDAL from "../../dal/public-stats";
-import { getCurrentDayTimestamp, getStartOfDayTimestamp, roundTo2, stdDev } from "../../utils/misc";
+import {
+  getCurrentDayTimestamp,
+  getStartOfDayTimestamp,
+  roundTo2,
+  stdDev,
+} from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
@@ -439,7 +444,9 @@ async function calculateXp(
 
   let modifier = 1;
 
-  const correctedEverything = charStats.slice(2).every((charStat: number) => charStat === 0);
+  const correctedEverything = charStats
+    .slice(2)
+    .every((charStat: number) => charStat === 0);
 
   if (acc === 100) {
     modifier += 0.5;
@@ -464,7 +471,7 @@ async function calculateXp(
   const incompleteXp = Math.round(incompleteTestSeconds);
   const accuracyModifier = (acc - 50) / 50;
 
-  let bonus = 0;
+  let dailyBonus = 0;
   let lastResultTimestamp: number | undefined;
 
   try {
@@ -481,14 +488,14 @@ async function calculateXp(
     const today = new Date().getDay();
     if (lastResultDay !== today) {
       const proportionalXp = Math.round(currentTotalXp * 0.05);
-      bonus = Math.max(Math.min(maxDailyBonus, proportionalXp), 100);
+      dailyBonus = Math.max(Math.min(maxDailyBonus, proportionalXp), 100);
     }
   }
 
   const baseXp = Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp);
-  const totalXp = (baseXp * gainMultiplier) + bonus;
+  const totalXp = (baseXp * gainMultiplier) + dailyBonus;
 
-  const isAwardingDailyBonus = bonus > 0;
+  const isAwardingDailyBonus = dailyBonus > 0;
 
   return {
     xp: totalXp,
