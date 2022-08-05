@@ -478,6 +478,6 @@ async function calculateXp(
       Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp) *
         configurationMultiplier +
       dailyBonus,
-    dailyBonus: true,
+    dailyBonus: dailyBonus > 0 ? true : false,
   };
 }
