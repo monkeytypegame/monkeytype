@@ -357,7 +357,8 @@ export async function addResult(
   const xpGained = await calculateXp(
     result,
     req.ctx.configuration.users.xpGainMultiplier,
-    uid
+    uid,
+    user.xp
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -407,7 +408,8 @@ export async function addResult(
 async function calculateXp(
   result,
   configurationMultiplier,
-  uid
+  uid,
+  currentTotal
 ): Promise<{
   xp: number;
   dailyBonus?: boolean;
@@ -460,18 +462,18 @@ async function calculateXp(
 
   const accuracyModifier = (result.acc - 50) / 50;
 
-  let dailyBonus = 0;
-  let lastResultTimestamp;
-  try {
-    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
-  } catch {}
-  if (lastResultTimestamp) {
-    const lastResultDay = new Date(lastResultTimestamp).getDay();
-    const today = new Date().getDay();
-    if (lastResultDay != today) {
-      dailyBonus = 1000;
-    }
-  }
+  const dailyBonus = 0;
+  // const lastResultTimestamp;
+  // try {
+  //   lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
+  // } catch {}
+  // if (lastResultTimestamp) {
+  //   const lastResultDay = new Date(lastResultTimestamp).getDay();
+  //   const today = new Date().getDay();
+  //   if (lastResultDay != today) {
+  //     dailyBonus = 1000;
+  //   }
+  // }
 
   return {
     xp:
