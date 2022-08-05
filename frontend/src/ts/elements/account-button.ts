@@ -72,7 +72,7 @@ export async function update(
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  _withDailyBonus: boolean
+  withDailyBonus: boolean
 ): Promise<void> {
   const startingLevel = Misc.getLevel(currentXp);
   const endingLevel = Misc.getLevel(currentXp + addedXp);
@@ -80,7 +80,9 @@ export async function updateXpBar(
 
   $("#menu .xpBar").stop(true, true).css("opacity", 0);
 
-  $("#menu .xpBar .xpGain").text(`+${addedXp}`);
+  $("#menu .xpBar .xpGain").text(
+    `+${addedXp} ${withDailyBonus ? "daily bonus" : ""}`
+  );
 
   await Misc.promiseAnimation(
     $("#menu .xpBar"),
