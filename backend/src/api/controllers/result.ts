@@ -462,18 +462,25 @@ async function calculateXp(
 
   const accuracyModifier = (result.acc - 50) / 50;
 
-  const dailyBonus = 0;
-  // const lastResultTimestamp;
-  // try {
-  //   lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
-  // } catch {}
-  // if (lastResultTimestamp) {
-  //   const lastResultDay = new Date(lastResultTimestamp).getDay();
-  //   const today = new Date().getDay();
-  //   if (lastResultDay != today) {
-  //     dailyBonus = 1000;
-  //   }
-  // }
+  let dailyBonus = 0;
+  let lastResultTimestamp;
+  try {
+    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
+  } catch {}
+  if (lastResultTimestamp) {
+    const lastResultDay = new Date(lastResultTimestamp).getDay();
+    const today = new Date().getDay();
+    if (lastResultDay != today) {
+      const threshold = Math.round(currentTotal * 0.05);
+      if (threshold > 1000) {
+        dailyBonus = 1000;
+      } else if (threshold < 100) {
+        dailyBonus = 100;
+      } else {
+        dailyBonus = threshold;
+      }
+    }
+  }
 
   return {
     xp:
