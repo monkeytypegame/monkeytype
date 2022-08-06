@@ -8,7 +8,12 @@ import {
   recordAutoBanEvent,
 } from "../../dal/user";
 import * as PublicStatsDAL from "../../dal/public-stats";
-import { roundTo2, stdDev } from "../../utils/misc";
+import {
+  getCurrentDayTimestamp,
+  getStartOfDayTimestamp,
+  roundTo2,
+  stdDev,
+} from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
@@ -356,9 +361,9 @@ export async function addResult(
 
   const xpGained = await calculateXp(
     result,
-    req.ctx.configuration.users.xpGainMultiplier,
+    req.ctx.configuration.users.xp,
     uid,
-    user.xp
+    user.xp ?? 0
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -405,88 +410,99 @@ export async function addResult(
   return new MonkeyResponse("Result saved", data);
 }
 
-async function calculateXp(
-  result,
-  configurationMultiplier,
-  uid,
-  currentTotal
-): Promise<{
+interface XpResult {
   xp: number;
   dailyBonus?: boolean;
-}> {
-  if (result.mode === "zen") {
+}
+
+async function calculateXp(
+  result,
+  xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
+  uid: string,
+  currentTotalXp: number
+): Promise<XpResult> {
+  const {
+    mode,
+    acc,
+    testDuration,
+    incompleteTestSeconds,
+    afkDuration,
+    charStats,
+    punctuation,
+    numbers,
+  } = result;
+
+  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus } =
+    xpConfiguration;
+
+  if (mode === "zen" || !enabled) {
     return {
       xp: 0,
     };
   }
 
-  const seconds = result.testDuration - result.afkDuration;
+  const seconds = testDuration - afkDuration;
 
   let modifier = 1;
 
-  if (result.acc === 100) {
+  const correctedEverything = charStats
+    .slice(2)
+    .every((charStat: number) => charStat === 0);
+
+  if (acc === 100) {
     modifier += 0.5;
-  } else {
-    if (
-      result.charStats[1] === 0 &&
-      result.charStats[2] === 0 &&
-      result.charStats[3] === 0
-    ) {
-      //corrected everything bonus
-      modifier += 0.25;
-    }
+  } else if (correctedEverything) {
+    // corrected everything bonus
+    modifier += 0.25;
   }
 
-  if (result.mode === "quote") {
-    //real sentences bonus
+  if (mode === "quote") {
+    // real sentences bonus
     modifier += 0.5;
   } else {
-    //punctuation bonus
-    if (result.punctuation === true) {
+    // punctuation bonus
+    if (punctuation) {
       modifier += 0.4;
     }
-    if (result.numbers === true) {
+    if (numbers) {
       modifier += 0.1;
     }
   }
 
-  const incompleteXp = Math.round(result.incompleteTestSeconds);
-
-  // this could be too easy to abuse
-  // if (result.incompleteTestSeconds === 0) {
-  //   //no restart bonus
-  //   modifier += 0.5;
-  // } else {
-  //   incompleteXp = Math.round(result.incompleteTestSeconds);
-  // }
-
-  const accuracyModifier = (result.acc - 50) / 50;
+  const incompleteXp = Math.round(incompleteTestSeconds);
+  const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
-  let lastResultTimestamp;
+  let lastResultTimestamp: number | undefined;
+
   try {
-    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
-  } catch {}
+    const { timestamp } = await ResultDAL.getLastResult(uid);
+    lastResultTimestamp = timestamp;
+  } catch (err) {
+    Logger.error(`Could not fetch last result: ${err}`);
+  }
+
   if (lastResultTimestamp) {
-    const lastResultDay = new Date(lastResultTimestamp).getDay();
-    const today = new Date().getDay();
-    if (lastResultDay != today) {
-      const threshold = Math.round(currentTotal * 0.05);
-      if (threshold > 1000) {
-        dailyBonus = 1000;
-      } else if (threshold < 100) {
-        dailyBonus = 100;
-      } else {
-        dailyBonus = threshold;
-      }
+    const lastResultDay = getStartOfDayTimestamp(lastResultTimestamp);
+    const today = getCurrentDayTimestamp();
+    if (lastResultDay !== today) {
+      const proportionalXp = Math.round(currentTotalXp * 0.05);
+      dailyBonus = Math.max(
+        Math.min(maxDailyBonus, proportionalXp),
+        minDailyBonus
+      );
     }
   }
 
+  const baseXp = Math.round(
+    seconds * 2 * modifier * accuracyModifier + incompleteXp
+  );
+  const totalXp = baseXp * gainMultiplier + dailyBonus;
+
+  const isAwardingDailyBonus = dailyBonus > 0;
+
   return {
-    xp:
-      Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp) *
-        configurationMultiplier +
-      dailyBonus,
-    dailyBonus: dailyBonus > 0 ? true : false,
+    xp: totalXp,
+    dailyBonus: isAwardingDailyBonus,
   };
 }

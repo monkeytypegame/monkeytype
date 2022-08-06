@@ -1648,7 +1648,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   if (response.data.xp) {
     const snapxp = DB.getSnapshot().xp;
-    AccountButton.updateXpBar(snapxp, response.data.xp, response.data.dailyXpBonus);
+    AccountButton.updateXpBar(
+      snapxp,
+      response.data.xp,
+      response.data.dailyXpBonus
+    );
     DB.addXp(response.data.xp);
   }
 

@@ -40,7 +40,12 @@ declare namespace MonkeyTypes {
       discordIntegration: {
         enabled: boolean;
       };
-      xpGainMultiplier: number;
+      xp: {
+        enabled: boolean;
+        gainMultiplier: number;
+        maxDailyBonus: number;
+        minDailyBonus: number;
+      };
     };
     apeKeys: {
       endpointsEnabled: boolean;

@@ -83,9 +83,13 @@ export function padNumbers(
 
 export const MILLISECONDS_IN_DAY = 86400000;
 
+export function getStartOfDayTimestamp(timestamp: number): number {
+  return timestamp - (timestamp % MILLISECONDS_IN_DAY);
+}
+
 export function getCurrentDayTimestamp(): number {
   const currentTime = Date.now();
-  return currentTime - (currentTime % MILLISECONDS_IN_DAY);
+  return getStartOfDayTimestamp(currentTime);
 }
 
 export function matchesAPattern(text: string, pattern: string): boolean {
