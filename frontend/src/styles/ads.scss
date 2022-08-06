@@ -1,7 +1,7 @@
 #ad-vertical-left-wrapper,
 #ad-vertical-right-wrapper {
   margin-top: 2rem;
-  transition: margin-top 0.125s;
+  transition: margin-top 0.125s opacity 0.125s;
 }
 
 #ad-footer-wrapper,
@@ -10,26 +10,28 @@
 }
 
 #ad-result-wrapper,
-#ad-result-small-wrapper,
-.pageSettings .ad,
-.pageAbout .ad,
-.pageAccount .ad {
+#ad-result-small-wrapper {
   margin: 1rem auto 0 auto;
 }
 
-#app.focus {
-  .ad {
-    display: none;
-  }
+.pageSettings .ad,
+.pageAbout .ad,
+.pageAccount .ad {
+  margin: 0 auto;
 }
 
 .ad {
   background: var(--sub-alt-color);
   display: grid;
   grid-template-areas: "col";
+  transition: opacity 0.125s;
 
-  div {
+  & > div {
     grid-area: col;
+  }
+
+  &.focus {
+    opacity: 0;
   }
 
   .icon {
@@ -59,5 +61,48 @@
     width: 320px;
     height: 50px;
     display: none;
+  }
+
+  &.testPage {
+    display: none;
+  }
+}
+
+#ad-result-wrapper {
+  .iconAndText {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    justify-content: center;
+    justify-self: center;
+    align-items: center;
+    grid-template-areas: "mid right";
+    .textLeft {
+      grid-area: left;
+      text-align: right;
+      display: none;
+    }
+    .textRight {
+      grid-area: right;
+    }
+    .icon {
+      width: unset;
+      height: unset;
+      grid-area: mid;
+    }
+    .text {
+      color: var(--sub-color);
+      font-size: 1rem;
+      .smalltext {
+        font-size: 0.7rem;
+      }
+    }
+    &.withLeft {
+      grid-template-columns: 1fr auto 1fr;
+      grid-template-areas: "left mid right";
+      .textLeft {
+        display: block;
+      }
+    }
   }
 }

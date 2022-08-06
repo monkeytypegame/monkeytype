@@ -12,6 +12,7 @@ import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
 import * as AdController from "../controllers/ad-controller";
+import * as Focus from "../test/focus";
 
 interface ChangeOptions {
   force?: boolean;
@@ -74,6 +75,7 @@ export async function change(
         AdController.reinstate();
       },
       async () => {
+        Focus.set(false);
         ActivePage.set(nextPage.name);
         previousPage?.afterHide();
         await nextPage?.beforeShow({

@@ -10,6 +10,7 @@ import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
+import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import * as TribeConfig from "./tribe/tribe-config";
 
@@ -38,7 +39,12 @@ let config = {
 let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   delete configToSend.resultFilters;
-  if (Object.keys(configToSend).length > 0) DB.saveConfig(configToSend);
+  if (Object.keys(configToSend).length > 0) {
+    AccountButton.loading(true);
+    DB.saveConfig(configToSend).then(() => {
+      AccountButton.loading(false);
+    });
+  }
   configToSend = {} as MonkeyTypes.Config;
 });
 
@@ -75,7 +81,11 @@ export async function saveFullConfigToLocalStorage(
   delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
-  if (!noDbCheck) await DB.saveConfig(save);
+  if (!noDbCheck) {
+    AccountButton.loading(true);
+    await DB.saveConfig(save);
+    AccountButton.loading(false);
+  }
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
@@ -1594,6 +1604,25 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
   return true;
 }
 
+export function setKeymapShowTopRow(
+  show: MonkeyTypes.KeymapShowTopRow,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("keymapShowTopRow", show, [
+      ["always", "layout", "never"],
+    ])
+  ) {
+    return false;
+  }
+
+  config.keymapShowTopRow = show;
+  saveToLocalStorage("keymapShowTopRow", nosave);
+  ConfigEvent.dispatch("keymapShowTopRow", config.keymapShowTopRow);
+
+  return true;
+}
+
 export function setLayout(layout: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("layout", layout, ["string"])) return false;
 
@@ -1682,7 +1711,7 @@ export function setCustomBackground(value: string, nosave?: boolean): boolean {
     (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
       value
     ) &&
-      !/[<>]/.test(value)) ||
+      !/[<> "]/.test(value)) ||
     value == ""
   ) {
     config.customBackground = value;
@@ -1844,6 +1873,7 @@ export function apply(
     setKeymapStyle(configObj.keymapStyle, true);
     setKeymapLegendStyle(configObj.keymapLegendStyle, true);
     setKeymapLayout(configObj.keymapLayout, true);
+    setKeymapShowTopRow(configObj.keymapShowTopRow, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);

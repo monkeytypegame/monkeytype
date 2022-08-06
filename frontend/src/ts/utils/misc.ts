@@ -1,13 +1,5 @@
 import * as Loader from "../elements/loader";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
-import * as Random from "./random";
-
-export function getuid(): void {
-  console.error("Only share this uid with Miodec and nobody else!");
-  console.log(Auth.currentUser?.uid);
-  console.error("Only share this uid with Miodec and nobody else!");
-}
 
 function hexToHSL(hex: string): {
   hue: number;
@@ -1197,4 +1189,34 @@ export async function getDiscordAvatarUrl(
   } catch (error) {}
 
   return null;
+}
+
+export function getLevel(xp: number): number {
+  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
+}
+
+export function getXpForLevel(level: number): number {
+  return 49 * (level - 1) + 100;
+}
+
+export async function promiseAnimation(
+  el: JQuery<HTMLElement>,
+  animation: Record<string, string>,
+  duration: number,
+  easing: string
+): Promise<void> {
+  return new Promise((resolve) => {
+    el.animate(animation, duration, easing, resolve);
+  });
+}
+
+//abbreviateNumber
+export function abbreviateNumber(num: number): string {
+  if (num < 1000) {
+    return num.toString();
+  }
+
+  const exp = Math.floor(Math.log(num) / Math.log(1000));
+  const pre = "kmbtqQsSond".charAt(exp - 1);
+  return (num / Math.pow(1000, exp)).toFixed(1) + pre;
 }

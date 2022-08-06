@@ -64,6 +64,7 @@ const CONFIG_SCHEMA = joi.object({
     .string()
     .valid("lowercase", "uppercase", "blank", "dynamic"),
   keymapLayout: joi.string().valid(),
+  keymapShowTopRow: joi.string().valid("always", "layout", "never"),
   fontFamily: joi.string(),
   smoothLineScroll: joi.boolean(),
   alwaysShowDecimalPlaces: joi.boolean(),

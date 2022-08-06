@@ -72,6 +72,8 @@ declare namespace MonkeyTypes {
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
+  type KeymapShowTopRow = "always" | "layout" | "never";
+
   type ShowAverage = "off" | "wpm" | "acc" | "both";
 
   type TapeMode = "off" | "letter" | "word";
@@ -342,6 +344,7 @@ declare namespace MonkeyTypes {
     keymapStyle: KeymapStyle;
     keymapLegendStyle: KeymapLegendStyle;
     keymapLayout: string;
+    keymapShowTopRow: KeymapShowTopRow;
     fontFamily: string;
     smoothLineScroll: boolean;
     alwaysShowDecimalPlaces: boolean;
@@ -470,6 +473,7 @@ declare namespace MonkeyTypes {
     inventory?: UserInventory;
     addedAt: number;
     filterPresets: ResultFilters[];
+    xp: number;
   }
 
   interface UserDetails {
@@ -584,6 +588,7 @@ declare namespace MonkeyTypes {
     enableSpacingDebug(): void;
     noGoogleNoMo(): void;
     egVideoListener(options: Record<string, string>): void;
+    wpmCalculationDebug(): void;
   }
 
   interface GithubRelease {

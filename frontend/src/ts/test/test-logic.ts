@@ -411,20 +411,19 @@ export function restart(options = {} as RestartOptions): void {
     // incompleteTestSeconds += ;
     let tt = testSeconds - afkseconds;
     if (tt < 0) tt = 0;
-    console.log(
-      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
-    );
+    // console.log(
+    //   `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    // );
     TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
-    if (tt > 600) {
-      Notifications.add(
-        `Your time typing just increased by ${Misc.roundTo2(
-          tt / 60
-        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
-        -1
-      );
-    }
-    // restartCount++;
+    // if (tt > 600) {
+    //   Notifications.add(
+    //     `Your time typing just increased by ${Misc.roundTo2(
+    //       tt / 60
+    //     )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+    //     -1
+    //   );
+    // }
   }
 
   if (Config.mode == "zen") {
@@ -509,7 +508,10 @@ export function restart(options = {} as RestartOptions): void {
     },
     options.noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "test") Focus.set(false);
+      if (ActivePage.get() == "test") {
+        AdController.updateTestPageAds(false);
+        Focus.set(false);
+      }
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -1251,6 +1253,16 @@ export async function retrySavingResult(): Promise<void> {
     return Notifications.add("Result not saved. " + response.message, -1);
   }
 
+  if (response.data.xp) {
+    const snapxp = DB.getSnapshot().xp;
+    AccountButton.updateXpBar(
+      snapxp,
+      response.data.xp,
+      response.data.dailyXpBonus
+    );
+    DB.addXp(response.data.xp);
+  }
+
   completedEvent._id = response.data.insertedId;
   if (response.data.isPb) {
     completedEvent.isPb = true;
@@ -1719,6 +1731,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
     resolveTestSavePromise(resolve);
     return Notifications.add("Failed to save result: " + response.message, -1);
+  }
+
+  if (response.data.xp) {
+    const snapxp = DB.getSnapshot().xp;
+    AccountButton.updateXpBar(
+      snapxp,
+      response.data.xp,
+      response.data.dailyXpBonus
+    );
+    DB.addXp(response.data.xp);
   }
 
   Result.hideCrown();

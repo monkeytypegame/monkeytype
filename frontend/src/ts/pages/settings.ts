@@ -79,10 +79,12 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section.keymapStyle").addClass("hidden");
         $(".pageSettings .section.keymapLayout").addClass("hidden");
         $(".pageSettings .section.keymapLegendStyle").addClass("hidden");
+        $(".pageSettings .section.keymapShowTopRow").addClass("hidden");
       } else {
         $(".pageSettings .section.keymapStyle").removeClass("hidden");
         $(".pageSettings .section.keymapLayout").removeClass("hidden");
         $(".pageSettings .section.keymapLegendStyle").removeClass("hidden");
+        $(".pageSettings .section.keymapShowTopRow").removeClass("hidden");
       }
     }
   );
@@ -99,6 +101,11 @@ async function initGroups(): Promise<void> {
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
+    "button"
+  );
+  groups["keymapShowTopRow"] = new SettingsGroup(
+    "keymapShowTopRow",
+    UpdateConfig.setKeymapShowTopRow,
     "button"
   );
   groups["showKeyTips"] = new SettingsGroup(

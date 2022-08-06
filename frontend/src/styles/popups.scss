@@ -652,14 +652,14 @@
           place-self: center;
           grid-area: check;
         }
-        &.ads {
-          grid-template-columns: 1fr;
-          grid-template-areas:
-            "title"
-            "description";
-          a {
-            margin-top: 0.25rem;
-          }
+      }
+      .cookie.ads label {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "title"
+          "description";
+        a {
+          margin-top: 0.25rem;
         }
       }
     }
@@ -1454,6 +1454,15 @@
     line-height: 1.2rem;
     min-height: 5rem;
     max-height: 10rem;
+  }
+
+  .socialURL {
+    display: flex;
+  }
+
+  .socialURL > p {
+    margin-block: 0.5rem;
+    margin-inline-end: 0.5rem;
   }
 
   .badgeSelectionContainer {

@@ -62,3 +62,4 @@ extendedGlobal.egVideoListener = egVideoListener;
 
 //@ts-ignore
 extendedGlobal.tribe = Tribe;
+extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;

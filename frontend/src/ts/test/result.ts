@@ -777,6 +777,8 @@ export async function update(
       }
       $("#result #showWordHistoryButton").removeClass("hidden");
       $("#result #saveScreenshotButton").removeClass("hidden");
+
+      AdController.updateTestPageAds(true);
     }
   );
 }
