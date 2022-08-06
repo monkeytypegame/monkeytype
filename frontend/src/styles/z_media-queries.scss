@@ -184,6 +184,7 @@
     }
   }
   #bannerCenter .banner .container {
+    grid-template-columns: 1fr auto;
     .image {
       display: none;
     }
@@ -192,7 +193,9 @@
       display: none;
     }
     .text {
-      margin-left: 2rem;
+      margin-left: 1.5rem;
+      text-align: left;
+      justify-self: start;
     }
   }
   .merchBanner {

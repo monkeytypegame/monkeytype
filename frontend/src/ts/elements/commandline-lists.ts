@@ -1686,6 +1686,37 @@ const commandsKeymapLegendStyle: MonkeyTypes.CommandsGroup = {
   ],
 };
 
+const commandsKeymapShowTopRow: MonkeyTypes.CommandsGroup = {
+  title: "Keymap show top row...",
+  configKey: "keymapShowTopRow",
+  list: [
+    {
+      id: "keymapShowTopRowAlways",
+      display: "always",
+      configValue: "always",
+      exec: (): void => {
+        UpdateConfig.setKeymapShowTopRow("always");
+      },
+    },
+    {
+      id: "keymapShowTopRowLayout",
+      display: "layout dependent",
+      configValue: "layout",
+      exec: (): void => {
+        UpdateConfig.setKeymapShowTopRow("layout");
+      },
+    },
+    {
+      id: "keymapShowTopRowNever",
+      display: "never",
+      configValue: "never",
+      exec: (): void => {
+        UpdateConfig.setKeymapShowTopRow("never");
+      },
+    },
+  ],
+};
+
 const commandsBritishEnglish: MonkeyTypes.CommandsGroup = {
   title: "British english...",
   configKey: "britishEnglish",
@@ -3110,6 +3141,13 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       alias: "keyboard",
       icon: "fa-keyboard",
       subgroup: commandsKeymapLayouts,
+    },
+    {
+      id: "changeKeymapShowTopRow",
+      display: "Keymap show top row...",
+      alias: "keyboard",
+      icon: "fa-keyboard",
+      subgroup: commandsKeymapShowTopRow,
     },
     {
       id: "changeCustomLayoutfluid",

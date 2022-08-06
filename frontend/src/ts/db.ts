@@ -1,5 +1,4 @@
 import Ape from "./ape";
-import * as AccountButton from "./elements/account-button";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
@@ -96,6 +95,7 @@ export async function initSnapshot(): Promise<
     snap.details = userData.profileDetails;
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
+    snap.xp = userData.xp ?? 0;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format
@@ -760,14 +760,10 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
 
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
   if (Auth.currentUser !== null) {
-    AccountButton.loading(true);
-
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
     }
-
-    AccountButton.loading(false);
   }
 }
 
@@ -806,6 +802,15 @@ export function updateLocalStats(started: number, time: number): void {
     }
   }
 
+  setSnapshot(snapshot);
+}
+
+export function addXp(xp: number): void {
+  const snapshot = getSnapshot();
+  if (snapshot.xp === undefined) {
+    snapshot.xp = 0;
+  }
+  snapshot.xp += xp;
   setSnapshot(snapshot);
 }
 

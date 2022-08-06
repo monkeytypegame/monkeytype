@@ -14,6 +14,10 @@ export function set(foc: boolean, withCursor = false): void {
     $("#middle").addClass("focus");
     $("#bannerCenter").addClass("focus");
     $("#capsWarning").addClass("focus");
+    $("#ad-vertical-right-wrapper").addClass("focus");
+    $("#ad-vertical-left-wrapper").addClass("focus");
+    $("#ad-footer-wrapper").addClass("focus");
+    $("#ad-footer-small-wrapper").addClass("focus");
   } else if (!foc && state) {
     state = false;
     Caret.startAnimation();
@@ -24,6 +28,10 @@ export function set(foc: boolean, withCursor = false): void {
     $("#bannerCenter").removeClass("focus");
     $("#capsWarning").removeClass("focus");
     $("#app").removeClass("focus");
+    $("#ad-vertical-right-wrapper").removeClass("focus");
+    $("#ad-vertical-left-wrapper").removeClass("focus");
+    $("#ad-footer-wrapper").removeClass("focus");
+    $("#ad-footer-small-wrapper").removeClass("focus");
   }
 }
 

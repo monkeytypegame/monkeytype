@@ -234,10 +234,12 @@
     }
 
     .avatarAndName {
+      width: 100%;
       display: grid;
       grid-template-columns: 5rem 1fr;
       gap: 1rem;
       align-items: center;
+      align-self: center;
       .avatars {
         display: grid;
         font-size: 5rem;
@@ -292,6 +294,34 @@
       .badge,
       .joined {
         margin-top: 0.35rem;
+      }
+      .levelAndBar {
+        grid-column: span 2;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1rem;
+        align-items: center;
+        .xpBar {
+          pointer-events: none;
+          height: 0.5rem;
+          bottom: -0.25rem;
+          width: 100%;
+          left: 0;
+          background: var(--bg-color);
+          border-radius: var(--roundness);
+          .bar {
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--main-color);
+            border-radius: var(--roundness);
+          }
+        }
+        .xp {
+          justify-self: end;
+          color: var(--sub-color);
+          font-size: 0.75rem;
+        }
       }
     }
     .socials {

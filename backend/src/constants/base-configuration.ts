@@ -41,6 +41,12 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     profiles: {
       enabled: false,
     },
+    xp: {
+      enabled: false,
+      gainMultiplier: 0,
+      maxDailyBonus: 0,
+      minDailyBonus: 0,
+    },
   },
   rateLimiting: {
     badAuthentication: {
@@ -197,6 +203,28 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
       type: "object",
       label: "Users",
       fields: {
+        xp: {
+          type: "object",
+          label: "XP",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            gainMultiplier: {
+              type: "number",
+              label: "Gain Multiplier",
+            },
+            maxDailyBonus: {
+              type: "number",
+              label: "Max Daily Bonus",
+            },
+            minDailyBonus: {
+              type: "number",
+              label: "Min Daily Bonus",
+            },
+          },
+        },
         discordIntegration: {
           type: "object",
           label: "Discord Integration",
