@@ -363,7 +363,7 @@ export async function addResult(
     result,
     req.ctx.configuration.users.xp,
     uid,
-    user.xp ?? 0,
+    user.xp ?? 0
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -419,7 +419,7 @@ async function calculateXp(
   result,
   xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
   uid: string,
-  currentTotalXp: number,
+  currentTotalXp: number
 ): Promise<XpResult> {
   const {
     mode,
@@ -432,7 +432,8 @@ async function calculateXp(
     numbers,
   } = result;
 
-  const { enabled, gainMultiplier, maxDailyBonus } = xpConfiguration;
+  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus } =
+    xpConfiguration;
 
   if (mode === "zen" || !enabled) {
     return {
@@ -477,23 +478,26 @@ async function calculateXp(
   try {
     const { timestamp } = await ResultDAL.getLastResult(uid);
     lastResultTimestamp = timestamp;
-  } catch(err) {
-    Logger.error(
-      `Could not fetch last result: ${err}`
-    );
+  } catch (err) {
+    Logger.error(`Could not fetch last result: ${err}`);
   }
 
   if (lastResultTimestamp) {
-    const lastResultDay = new Date(lastResultTimestamp).getDay();
-    const today = new Date().getDay();
+    const lastResultDay = getStartOfDayTimestamp(lastResultTimestamp);
+    const today = getCurrentDayTimestamp();
     if (lastResultDay !== today) {
       const proportionalXp = Math.round(currentTotalXp * 0.05);
-      dailyBonus = Math.max(Math.min(maxDailyBonus, proportionalXp), 100);
+      dailyBonus = Math.max(
+        Math.min(maxDailyBonus, proportionalXp),
+        minDailyBonus
+      );
     }
   }
 
-  const baseXp = Math.round(seconds * 2 * modifier * accuracyModifier + incompleteXp);
-  const totalXp = (baseXp * gainMultiplier) + dailyBonus;
+  const baseXp = Math.round(
+    seconds * 2 * modifier * accuracyModifier + incompleteXp
+  );
+  const totalXp = baseXp * gainMultiplier + dailyBonus;
 
   const isAwardingDailyBonus = dailyBonus > 0;
 
