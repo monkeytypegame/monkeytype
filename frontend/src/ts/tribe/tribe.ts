@@ -284,15 +284,14 @@ TribeSocket.in.system.notification((data) => {
   Notifications.add(data.message, data.level ?? 0, undefined, "Tribe");
 });
 
-//todo is this needed?
-// TribeSocket.in.room.joined((data) => {
-//   room = data.room;
-//   updateState(data.room.state);
-//   TribePageLobby.init();
-//   TribePages.change("lobby");
-//   TribeSound.play("join");
-//   // history.replaceState(null, "", `/tribe/${e.room.id}`);
-// });
+TribeSocket.in.room.joined((data) => {
+  room = data.room;
+  updateState(data.room.state);
+  TribePageLobby.init();
+  TribePages.change("lobby");
+  TribeSound.play("join");
+  // history.replaceState(null, "", `/tribe/${e.room.id}`);
+});
 
 TribeSocket.in.room.playerJoined((data) => {
   if (room?.users) {
