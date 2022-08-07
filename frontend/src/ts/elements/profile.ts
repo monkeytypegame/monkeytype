@@ -1,5 +1,6 @@
 import * as DB from "../db";
 import format from "date-fns/format";
+import { summary } from "date-streaks";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import { getHTMLById } from "../controllers/badge-controller";
@@ -71,6 +72,17 @@ export async function update(
   const diffDays = differenceInDays(new Date(), creationDate);
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
+  
+  let streak = 0;
+  if (profile && profile.results) {
+    const dates = profile.results.map(({ timestamp }) => new Date(timestamp));
+    const { currentStreak, todayInStreak } = summary({ dates });
+  
+    if (currentStreak > 0 && todayInStreak) {
+      streak = currentStreak;
+    }
+  }
+  details.find(".streak").text(`Current streak: ${streak} ${streak > 1 ? 'days' : 'day'}`);
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl

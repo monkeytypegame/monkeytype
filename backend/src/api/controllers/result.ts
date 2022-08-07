@@ -34,6 +34,7 @@ import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
+import { summary } from 'date-streaks';
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -467,6 +468,20 @@ async function calculateXp(
     if (numbers) {
       modifier += 0.1;
     }
+  }
+  
+  // Increment modifier according to the user's current streak.
+  // Modifier is incremented with the log10 calculation of the current streak.
+  // That means that streaks greater than 10 days will increase modifier with 1.x,
+  // streaks greater than 100 will increase modifier with 2.x, greater than 1000 with 3.x, etc.
+  const allResults = await ResultDAL.getResults(uid);
+  if (allResults.length > 0) {
+    const dates = allResults.map(({ timestamp }) => new Date(timestamp));
+	const { currentStreak, todayInStreak } = summary({ dates });
+	
+	if (currentStreak > 0 && todayInStreak) {
+	  modifier += Math.log10(currentStreak);
+	}
   }
 
   const incompleteXp = Math.round(incompleteTestSeconds);
