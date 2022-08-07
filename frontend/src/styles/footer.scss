@@ -104,16 +104,6 @@
       text-align: center;
       cursor: pointer;
     }
-    #newVersionHide {
-      height: 1rem;
-      display: none;
-    }
-    #newVersionIndicator:hover #newVersionNormal {
-      display: none;
-    }
-    #newVersionIndicator:hover #newVersionHide {
-      display: block;
-    }
   }
 }
 
