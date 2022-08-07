@@ -52,14 +52,13 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - Run `firebase projects:list` to find your firebase project id.
 
-1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
+1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config object
 
    - To find it, go to the Firebase console
    - Navigate to `Project Settings > General > Your apps`
      - If there are no apps in your project, create a new web app
    - In the `SDK setup and configuration` section, select `npm`
    - The Firebase config will be visible below
-   - After pasting, remove everything above and below the object `firebaseConfig` and add export to the front of the line containing `const firebaseConfig`
 
 1. Enable Firebase Authentication (optional)
 
