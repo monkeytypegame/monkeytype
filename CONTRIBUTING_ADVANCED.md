@@ -59,6 +59,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
      - If there are no apps in your project, create a new web app
    - In the `SDK setup and configuration` section, select `npm`
    - The Firebase config will be visible below
+   - After pasting, remove everything above and below the object `firebaseConfig` and add export to the front of the line containing `const firebaseConfig`
 
 1. Enable Firebase Authentication (optional)
 
