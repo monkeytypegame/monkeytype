@@ -11,6 +11,8 @@ import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
+import * as ResultDAL from "../../dal/result";
+import { summary } from "date-streaks";
 
 export async function createNewUser(
   req: MonkeyTypes.Request
@@ -141,6 +143,8 @@ export async function getUser(
 
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
+
+  userInfo.streak = await calculateStreak(uid);
 
   return new MonkeyResponse("User data retrieved", userInfo);
 }
@@ -486,4 +490,16 @@ export async function updateProfile(
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
 
   return new MonkeyResponse("Profile updated");
+}
+
+export async function calculateStreak(uid): Promise<number> {
+  const results = await ResultDAL.getResults(uid, 0, 0);
+
+  if (results.length === 0) {
+    return 0;
+  }
+  const dates = results.map(({ timestamp }) => new Date(timestamp));
+  const { currentStreak, todayInStreak } = summary({ dates });
+
+  return todayInStreak ? currentStreak : 0;
 }

@@ -128,6 +128,7 @@ declare namespace MonkeyTypes {
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
     xp?: number;
+    streak?: number;
   }
 
   interface UserInventory {
