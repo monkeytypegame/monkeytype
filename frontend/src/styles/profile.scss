@@ -291,8 +291,14 @@
         font-size: 0.7em;
         line-height: 0.7rem;
       }
+      .streak {
+        color: var(--sub-color);
+        font-size: 0.7em;
+        line-height: 0.7rem;
+      }
       .badge,
-      .joined {
+      .joined,
+	  .streak {
         margin-top: 0.35rem;
       }
       .levelAndBar {
