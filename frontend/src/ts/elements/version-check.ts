@@ -14,14 +14,6 @@ export async function show(version: string): Promise<void> {
     setMemory(version);
     return;
   }
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  ) {
-    caches.keys().then(function (names) {
-      for (const name of names) caches.delete(name);
-    });
-  }
   if (memory === version) return;
   caches.keys().then(function (names) {
     for (const name of names) caches.delete(name);
