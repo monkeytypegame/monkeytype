@@ -89,6 +89,12 @@
 
   .version {
     opacity: 0;
+    #newVersionIndicator {
+      background-color: var(--main-color);
+      height: 5px;
+      width: 5px;
+      border-radius: 50%;
+    }
   }
 }
 

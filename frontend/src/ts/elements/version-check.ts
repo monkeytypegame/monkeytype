@@ -1,5 +1,3 @@
-import * as Notifications from "./notifications";
-
 function setMemory(v: string): void {
   window.localStorage.setItem("lastSeenVersion", v);
 }
@@ -18,11 +16,6 @@ export async function show(version: string): Promise<void> {
   caches.keys().then(function (names) {
     for (const name of names) caches.delete(name);
   });
-  Notifications.addBanner(
-    `Version ${version} has been released. Click the version number in the bottom right to view the changelog.`,
-    1,
-    "code-branch",
-    false
-  );
+  $("#newVersionIndicator").removeClass("hidden");
   setMemory(version);
 }
