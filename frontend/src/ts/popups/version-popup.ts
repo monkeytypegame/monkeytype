@@ -6,6 +6,10 @@ export function show(): void {
   $("#newVersionIndicator").addClass("hidden");
 }
 
+$(document.body).on("click", "#newVersionIndicator", () => {
+  $("#newVersionIndicator").addClass("hidden");
+});
+
 $(document.body).on("click", ".version", (e) => {
   if (e.shiftKey) return;
   show();
