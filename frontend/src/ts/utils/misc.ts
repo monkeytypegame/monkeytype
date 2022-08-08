@@ -1,5 +1,6 @@
 import * as Loader from "../elements/loader";
 import format from "date-fns/format";
+import * as Random from "../utils/random";
 
 function hexToHSL(hex: string): {
   hue: number;
