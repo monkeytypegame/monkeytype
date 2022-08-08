@@ -9,7 +9,7 @@ export default {
       // These percentages should never decrease
       statements: 40,
       branches: 40,
-      functions: 23,
+      functions: 24,
       lines: 43,
     },
   },
