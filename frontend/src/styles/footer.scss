@@ -87,8 +87,19 @@
     }
   }
 
-  .version {
-    opacity: 0;
+  #versionGroup {
+    display: flex;
+    .version {
+      opacity: 0;
+    }
+    #newVersionIndicator {
+      background-color: var(--main-color);
+      border-radius: calc(var(--roundness) / 2);
+      color: var(--bg-color);
+      text-align: center;
+      cursor: pointer;
+      transition: 0.125s;
+    }
   }
 }
 
@@ -97,6 +108,9 @@
     opacity: 0 !important;
   }
   a {
+    opacity: 0 !important;
+  }
+  #newVersionIndicator {
     opacity: 0 !important;
   }
   #commandLineMobileButton {

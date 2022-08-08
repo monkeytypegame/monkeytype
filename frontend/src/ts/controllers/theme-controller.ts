@@ -93,6 +93,7 @@ export async function loadStyle(name: string): Promise<void> {
       $("#nextTheme").attr("id", "currentTheme");
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
+      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
     };
     if (name === "custom") {
