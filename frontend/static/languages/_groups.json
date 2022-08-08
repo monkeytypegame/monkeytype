@@ -205,6 +205,10 @@
     "languages": ["vietnamese", "vietnamese_1k", "vietnamese_5k"]
   },
   {
+    "name": "jyutping",
+    "languages": ["jyutping"]
+  },
+  {
     "name": "pinyin",
     "languages": ["pinyin", "pinyin_1k", "pinyin_10k"]
   },
