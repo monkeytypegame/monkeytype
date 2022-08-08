@@ -488,5 +488,9 @@ describe("UserDal", () => {
 
     expect(resetUser.bananas).toStrictEqual(0);
     expect(resetUser.xp).toStrictEqual(0);
+    expect(resetUser.streak).toStrictEqual({
+      value: 0,
+      lastResult: 0,
+    });
   });
 });

@@ -473,7 +473,7 @@ async function calculateXp(
   // Modifier is incremented with the log10 calculation of the current streak.
   // That means that streaks greater than 10 days will increase modifier with 1.x,
   // streaks greater than 100 will increase modifier with 2.x, greater than 1000 with 3.x, etc.
-  modifier += Math.log10(await updateStreak(uid, result));
+  modifier += Math.log10(await updateStreak(uid, result.timestamp));
 
   const incompleteXp = Math.round(incompleteTestSeconds);
   const accuracyModifier = (acc - 50) / 50;

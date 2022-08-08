@@ -1,5 +1,7 @@
 import request from "supertest";
 import app from "../../../src/app";
+import * as UserDAL from "../../../src/dal/user";
+import { updateStreak } from "../../../src/api/controllers/user";
 
 const mockApp = request(app);
 
@@ -51,6 +53,13 @@ describe("user controller test", () => {
           Accept: "application/json",
         })
         .expect(409);
+    });
+
+    it("updateStreak should update streak", async () => {
+      await UserDAL.addUser("test name", "test email", "TestID");
+
+      expect(await updateStreak("TestID", 1659859800000)).toBe(1);
+      expect(await updateStreak("TestID", 1659969721000)).toBe(2);
     });
   });
 });

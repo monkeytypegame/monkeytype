@@ -507,7 +507,7 @@ function isYesterday(someDate): boolean {
   );
 }
 
-export async function updateStreak(uid, result): Promise<number> {
+export async function updateStreak(uid, timestamp): Promise<number> {
   const user = await UserDAL.getUser(uid, "calculate streak");
   const streak: UserStreak = {
     lastResult: user.streak?.lastResult ?? 0,
@@ -515,12 +515,12 @@ export async function updateStreak(uid, result): Promise<number> {
   };
 
   if (isYesterday(new Date(streak.lastResult))) {
-    streak.value++;
+    streak.value += 1;
   } else if (!isToday(new Date(streak.lastResult))) {
     streak.value = 1;
   }
 
-  streak.lastResult = result.timestamp;
+  streak.lastResult = timestamp;
   await UserDAL.getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
   return streak.value;
