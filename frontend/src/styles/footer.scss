@@ -88,21 +88,17 @@
   }
 
   #versionGroup {
-    display: grid;
-    grid-template-columns: auto auto;
-    gap: 5px;
+    display: flex;
     .version {
       opacity: 0;
     }
     #newVersionIndicator {
       background-color: var(--main-color);
-      padding: 3px 0;
-      border-radius: 3px;
-      margin: -3px 0;
-      width: 3em;
+      border-radius: calc(var(--roundness) / 2);
       color: var(--bg-color);
       text-align: center;
       cursor: pointer;
+      transition: 0.125s;
     }
   }
 }
@@ -112,6 +108,9 @@
     opacity: 0 !important;
   }
   a {
+    opacity: 0 !important;
+  }
+  #newVersionIndicator {
     opacity: 0 !important;
   }
   #commandLineMobileButton {
