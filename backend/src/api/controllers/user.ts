@@ -11,8 +11,6 @@ import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
-import * as ResultDAL from "../../dal/result";
-import { summary } from "date-streaks";
 import UserStreak = MonkeyTypes.UserStreak;
 
 export async function createNewUser(
@@ -512,31 +510,14 @@ function isYesterday(someDate): boolean {
 export async function updateStreak(uid, result): Promise<number> {
   const user = await UserDAL.getUser(uid, "calculate streak");
   const streak: UserStreak = {
-    isInitialized: user.streak?.isInitialized ?? false,
     lastResult: user.streak?.lastResult ?? 0,
     value: user.streak?.value ?? 0,
   };
 
-  if (streak.isInitialized) {
-    if (isYesterday(new Date(streak.lastResult))) {
-      streak.value++;
-    } else if (!isToday(new Date(streak.lastResult))) {
-      streak.value = 1;
-    }
-  }
-  // One time "expensive" initialization.
-  else {
-    const results = await ResultDAL.getResults(uid, 0, 0);
-
-    if (results.length > 0) {
-      const dates = results.map(({ timestamp }) =>
-        new Date(timestamp).setHours(0, 0, 0, 0)
-      );
-      const { currentStreak, todayInStreak } = summary({ dates });
-
-      streak.value = todayInStreak ? currentStreak : 0;
-      streak.isInitialized = true;
-    }
+  if (isYesterday(new Date(streak.lastResult))) {
+    streak.value++;
+  } else if (!isToday(new Date(streak.lastResult))) {
+    streak.value = 1;
   }
 
   streak.lastResult = result.timestamp;

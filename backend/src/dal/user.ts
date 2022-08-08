@@ -72,7 +72,6 @@ export async function resetUser(uid: string): Promise<void> {
         xp: 0,
         streak: {
           value: 0,
-          isInitialized: false,
           lastResult: 0,
         },
       },

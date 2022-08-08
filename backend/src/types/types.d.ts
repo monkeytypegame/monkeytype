@@ -132,7 +132,6 @@ declare namespace MonkeyTypes {
   }
 
   interface UserStreak {
-    isInitialized: boolean;
     lastResult: number;
     value: number;
   }
