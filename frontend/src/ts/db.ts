@@ -815,7 +815,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export async function updateStreak(): number {
+export async function updateStreak(): Promise<number> {
   const snapshot = getSnapshot();
   const userResponse = await Ape.users.getData();
 
