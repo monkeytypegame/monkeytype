@@ -75,7 +75,7 @@ export async function update(
   const streak = profile.streak || 0;
   details
     .find(".streak")
-    .text(`Current streak: ${streak} ${streak > 1 ? "days" : "day"}`);
+    .text(`Current streak: ${streak} ${streak === 1 ? "day" : "days"}`);
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl

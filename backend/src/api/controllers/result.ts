@@ -34,7 +34,7 @@ import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
-import { calculateStreak } from "./user";
+import { updateStreak } from "./user";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -473,7 +473,7 @@ async function calculateXp(
   // Modifier is incremented with the log10 calculation of the current streak.
   // That means that streaks greater than 10 days will increase modifier with 1.x,
   // streaks greater than 100 will increase modifier with 2.x, greater than 1000 with 3.x, etc.
-  modifier += Math.log10(await calculateStreak(uid));
+  modifier += Math.log10(await updateStreak(uid, result));
 
   const incompleteXp = Math.round(incompleteTestSeconds);
   const accuracyModifier = (acc - 50) / 50;
