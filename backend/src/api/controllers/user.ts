@@ -493,16 +493,20 @@ export async function updateProfile(
 
 function isToday(someDate): boolean {
   const today = new Date();
-  return someDate.getDate() == today.getDate() &&
+  return (
+    someDate.getDate() == today.getDate() &&
     someDate.getMonth() == today.getMonth() &&
-    someDate.getFullYear() == today.getFullYear();
+    someDate.getFullYear() == today.getFullYear()
+  );
 }
 
 function isYesterday(someDate): boolean {
   const today = new Date();
-  return someDate.getDate() + 1 == today.getDate() &&
+  return (
+    someDate.getDate() + 1 == today.getDate() &&
     someDate.getMonth() == today.getMonth() &&
-    someDate.getFullYear() == today.getFullYear();
+    someDate.getFullYear() == today.getFullYear()
+  );
 }
 
 export async function updateStreak(uid, result): Promise<number> {
@@ -516,8 +520,7 @@ export async function updateStreak(uid, result): Promise<number> {
   if (streak.isInitialized) {
     if (isYesterday(new Date(streak.lastResult))) {
       streak.value++;
-    }
-    else if (!isToday(new Date(streak.lastResult))) {
+    } else if (!isToday(new Date(streak.lastResult))) {
       streak.value = 0;
     }
   }
@@ -526,7 +529,9 @@ export async function updateStreak(uid, result): Promise<number> {
     const results = await ResultDAL.getResults(uid, 0, 0);
 
     if (results.length > 0) {
-      const dates = results.map(({ timestamp }) => new Date(timestamp).setHours(0, 0, 0, 0));
+      const dates = results.map(({ timestamp }) =>
+        new Date(timestamp).setHours(0, 0, 0, 0)
+      );
       const { currentStreak, todayInStreak } = summary({ dates });
 
       streak.value = todayInStreak ? currentStreak : 0;
