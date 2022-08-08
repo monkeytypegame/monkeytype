@@ -94,6 +94,9 @@ export async function loadStyle(name: string): Promise<void> {
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
       resolve();
+      document.querySelectorAll(".keymapKey").forEach((el) => {
+        el.removeAttribute("style");
+      });
     };
     if (name === "custom") {
       link.href = `/./themes/serika_dark.css`;
