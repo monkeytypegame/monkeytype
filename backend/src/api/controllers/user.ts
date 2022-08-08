@@ -521,7 +521,7 @@ export async function updateStreak(uid, result): Promise<number> {
     if (isYesterday(new Date(streak.lastResult))) {
       streak.value++;
     } else if (!isToday(new Date(streak.lastResult))) {
-      streak.value = 0;
+      streak.value = 1;
     }
   }
   // One time "expensive" initialization.
