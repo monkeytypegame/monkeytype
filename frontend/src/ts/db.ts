@@ -815,6 +815,26 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
+export async function updateStreak(): number {
+  const snapshot = getSnapshot();
+  const userResponse = await Ape.users.getData();
+
+  if (userResponse.status !== 200) {
+    throw {
+      message: `${userResponse.message} (user)`,
+      responseCode: userResponse.status,
+    };
+  }
+
+  if (userResponse?.data?.streak) {
+    snapshot.streak = userResponse.data.streak?.value ?? 0;
+    setSnapshot(snapshot);
+    return snapshot.streak;
+  }
+
+  return 0;
+}
+
 // export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;
