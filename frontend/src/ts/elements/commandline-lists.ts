@@ -3085,7 +3085,7 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       defaultValue: "",
       input: true,
       exec: (input): void => {
-        if (!input) return;
+        if (!input) input = "";
         UpdateConfig.setCustomBackground(input);
       },
     },

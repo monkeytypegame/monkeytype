@@ -20,16 +20,16 @@ export function updateText(text: string): void {
 export function showBar(): Promise<void> {
   return new Promise((resolve) => {
     Misc.swapElements(
-      $(".pageLoading .icon"),
-      $(".pageLoading .barWrapper"),
+      $(".pageLoading .preloader .icon"),
+      $(".pageLoading .preloader .barWrapper"),
       125,
       async () => {
         resolve();
       }
     );
     Misc.swapElements(
-      $(".pageAccount .icon"),
-      $(".pageAccount .barWrapper"),
+      $(".pageAccount .preloader .icon"),
+      $(".pageAccount .preloader .barWrapper"),
       125,
       async () => {
         resolve();
