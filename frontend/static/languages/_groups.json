@@ -394,5 +394,13 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
+  },
+  {
+    "name": "korean",
+    "languages": [
+      "korean",
+      "korean_1k",
+      "korean_4k"
+    ]
   }
 ]
