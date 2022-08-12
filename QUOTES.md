@@ -19,7 +19,7 @@ After you forked the Monkeytype repository you can now add your quotes. (If you 
 {
     "text": "[quote]",
     "source": "[source]",
-    "id": [number of the quote]
+    "id": [number of the quote],
     "length": [number of characters in quote]
 }
 ```
