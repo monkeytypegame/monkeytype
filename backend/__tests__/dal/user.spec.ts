@@ -448,4 +448,45 @@ describe("UserDal", () => {
       ],
     });
   });
+
+  it("resetUser should reset user", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    await UserDAL.updateProfile(
+      "TestID",
+      {
+        bio: "test bio",
+        keyboard: "test keyboard",
+        socialProfiles: {
+          twitter: "test twitter",
+          github: "test github",
+        },
+      },
+      {
+        badges: [],
+      }
+    );
+
+    await UserDAL.incrementBananas("TestID", "100");
+    await UserDAL.incrementXp("TestID", 15);
+
+    await UserDAL.resetUser("TestID");
+    const resetUser = await UserDAL.getUser(
+      "TestID",
+      "test add result filters"
+    );
+
+    expect(resetUser.profileDetails).toStrictEqual({
+      bio: "",
+      keyboard: "",
+      socialProfiles: {},
+    });
+
+    expect(resetUser.inventory).toStrictEqual({
+      badges: [],
+    });
+
+    expect(resetUser.bananas).toStrictEqual(0);
+    expect(resetUser.xp).toStrictEqual(0);
+  });
 });

@@ -26,4 +26,5 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
   favoriteQuotes: {},
   addedAt: 0,
   filterPresets: [],
+  xp: 0,
 };
