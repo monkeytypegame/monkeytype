@@ -301,6 +301,10 @@
     "languages": ["sanskrit"]
   },
   {
+	"name": "santali",
+	"languages": ["santali"]
+  },
+  {
     "name": "macedonian",
     "languages": [
       "macedonian",
