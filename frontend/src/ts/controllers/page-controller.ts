@@ -10,12 +10,24 @@ import * as PageProfile from "../pages/profile";
 import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
+import * as AdController from "../controllers/ad-controller";
+import * as Focus from "../test/focus";
+
+interface ChangeOptions {
+  force?: boolean;
+  params?: { [key: string]: string };
+}
 
 export async function change(
   page: Page,
-  force = false,
-  params?: { [key: string]: string }
+  options = {} as ChangeOptions
 ): Promise<boolean> {
+  const defaultOptions = {
+    force: false,
+  };
+
+  options = { ...defaultOptions, ...options };
+
   return new Promise((resolve) => {
     if (PageTransition.get()) {
       console.log(`change page ${page.name} stopped`);
@@ -23,7 +35,7 @@ export async function change(
     }
     console.log(`change page ${page.name}`);
 
-    if (!force && ActivePage.get() === page.name) {
+    if (!options.force && ActivePage.get() === page.name) {
       console.log(`page ${page.name} already active`);
       return resolve(false);
     }
@@ -51,14 +63,16 @@ export async function change(
       250,
       async () => {
         PageTransition.set(false);
-        ActivePage.set(nextPage.name);
-        previousPage?.afterHide();
         nextPage.element.addClass("active");
         resolve(true);
         nextPage?.afterShow();
+        AdController.reinstate();
       },
       async () => {
-        await nextPage?.beforeShow(params);
+        Focus.set(false);
+        ActivePage.set(nextPage.name);
+        previousPage?.afterHide();
+        await nextPage?.beforeShow(options.params);
       }
     );
   });

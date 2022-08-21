@@ -72,6 +72,8 @@ declare namespace MonkeyTypes {
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
+  type KeymapShowTopRow = "always" | "layout" | "never";
+
   type ShowAverage = "off" | "wpm" | "acc" | "both";
 
   type TapeMode = "off" | "letter" | "word";
@@ -102,7 +104,7 @@ declare namespace MonkeyTypes {
 
   type HighlightMode = "off" | "letter" | "word";
 
-  type EnableAds = "off" | "on" | "max";
+  type Ads = "off" | "result" | "on" | "sellout";
 
   type MinimumAccuracy = "off" | "custom";
 
@@ -342,6 +344,7 @@ declare namespace MonkeyTypes {
     keymapStyle: KeymapStyle;
     keymapLegendStyle: KeymapLegendStyle;
     keymapLayout: string;
+    keymapShowTopRow: KeymapShowTopRow;
     fontFamily: string;
     smoothLineScroll: boolean;
     alwaysShowDecimalPlaces: boolean;
@@ -363,7 +366,7 @@ declare namespace MonkeyTypes {
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
     alwaysShowCPM: boolean;
-    enableAds: EnableAds;
+    ads: Ads;
     hideExtraLetters: boolean;
     strictSpace: boolean;
     minAcc: MinimumAccuracy;
@@ -470,6 +473,7 @@ declare namespace MonkeyTypes {
     inventory?: UserInventory;
     addedAt: number;
     filterPresets: ResultFilters[];
+    xp: number;
   }
 
   interface UserDetails {
@@ -583,6 +587,8 @@ declare namespace MonkeyTypes {
     toggleUnsmoothedRaw(): void;
     enableSpacingDebug(): void;
     noGoogleNoMo(): void;
+    egVideoListener(options: Record<string, string>): void;
+    wpmCalculationDebug(): void;
   }
 
   interface GithubRelease {

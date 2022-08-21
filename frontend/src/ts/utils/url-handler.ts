@@ -45,7 +45,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
 
     DB.setSnapshot(snapshot);
 
-    AccountButton.update(discordId, discordAvatar);
+    AccountButton.update(undefined, discordId, discordAvatar);
 
     Settings.updateDiscordSection();
   }

@@ -200,6 +200,8 @@ function randomColor(): string {
 export async function addPower(good = true, extra = false): Promise<void> {
   if (Config.monkeyPowerLevel === "off" || SlowTimer.get()) return;
 
+  if (Config.blindMode) good = true;
+
   // Shake
   if (["3", "4"].includes(Config.monkeyPowerLevel)) {
     $("html").css("overflow", "hidden");

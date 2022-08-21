@@ -3,7 +3,7 @@ import joi from "joi";
 const RESULT_SCHEMA = joi
   .object({
     acc: joi.number().min(75).max(100).required(),
-    afkDuration: joi.number().required(),
+    afkDuration: joi.number().min(0).required(),
     bailedOut: joi.boolean().required(),
     blindMode: joi.boolean().required(),
     challenge: joi.string(),
@@ -54,7 +54,7 @@ const RESULT_SCHEMA = joi
     restartCount: joi.number().required(),
     smoothConsistency: joi.number().required(),
     tags: joi.array().items(joi.string()).required(),
-    testDuration: joi.number().required(),
+    testDuration: joi.number().required().min(1),
     timestamp: joi.date().timestamp().required(),
     uid: joi.string().required(),
     wpm: joi.number().min(0).max(350).required(),

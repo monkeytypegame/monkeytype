@@ -10,6 +10,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
+import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
@@ -245,6 +246,8 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    $("#ad-result-wrapper").removeClass("hidden");
+    $("#ad-result-small-wrapper").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
@@ -292,6 +295,8 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .loginTip").addClass("hidden");
   $("noscript").addClass("hidden");
   $("#nocss").addClass("hidden");
+  $("#ad-result-wrapper").addClass("hidden");
+  $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
     const paddingX = 50;
@@ -422,13 +427,6 @@ export function updateWordElement(showError = !Config.blindMode): void {
         currentLetter = `<i class="fas fa-angle-down"></i>`;
       }
 
-      if (
-        Misc.trailingComposeChars.test(input) &&
-        i > input.search(Misc.trailingComposeChars)
-      ) {
-        continue;
-      }
-
       if (charCorrect) {
         ret += `<letter class="${
           Config.highlightMode == "word"
@@ -437,8 +435,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
         } ${tabChar}${nlChar}">${currentLetter}</letter>`;
       } else if (
         currentLetter !== undefined &&
-        Misc.trailingComposeChars.test(input) &&
-        i === input.search(Misc.trailingComposeChars)
+        CompositionState.getComposing() &&
+        i >= CompositionState.getStartPos()
       ) {
         ret += `<letter class="${
           Config.highlightMode == "word" ? wordHighlightClassString : ""
@@ -480,36 +478,31 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
 
-    const inputWithSingleComposeLength = Misc.trailingComposeChars.test(input)
-      ? input.search(Misc.trailingComposeChars) + 1
-      : input.length;
-    if (inputWithSingleComposeLength < currentWord.length) {
-      for (let i = inputWithSingleComposeLength; i < currentWord.length; i++) {
-        if (Config.funbox === "arrows") {
-          if (currentWord[i] === "↑") {
-            ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
-          }
-          if (currentWord[i] === "↓") {
-            ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
-          }
-          if (currentWord[i] === "←") {
-            ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
-          }
-          if (currentWord[i] === "→") {
-            ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
-          }
-        } else if (currentWord[i] === "\t") {
-          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-        } else if (currentWord[i] === "\n") {
-          ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
-        } else {
-          ret +=
-            `<letter class="${
-              Config.highlightMode == "word" ? wordHighlightClassString : ""
-            }">` +
-            currentWord[i] +
-            "</letter>";
+    for (let i = input.length; i < currentWord.length; i++) {
+      if (Config.funbox === "arrows") {
+        if (currentWord[i] === "↑") {
+          ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
         }
+        if (currentWord[i] === "↓") {
+          ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
+        }
+        if (currentWord[i] === "←") {
+          ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
+        }
+        if (currentWord[i] === "→") {
+          ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
+        }
+      } else if (currentWord[i] === "\t") {
+        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+      } else if (currentWord[i] === "\n") {
+        ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+      } else {
+        ret +=
+          `<letter class="${
+            Config.highlightMode == "word" ? wordHighlightClassString : ""
+          }">` +
+          currentWord[i] +
+          "</letter>";
       }
     }
 
@@ -885,6 +878,24 @@ export function applyBurstHeatmap(): void {
         class: "heatmap4",
       },
     ];
+
+    steps.forEach((step, index) => {
+      let string = "";
+      if (index === 0) {
+        string = `<${Math.round(steps[index + 1].val)}`;
+      } else if (index === 4) {
+        string = `${Math.round(step.val - 1)}+`;
+      } else {
+        string = `${Math.round(step.val)}-${
+          Math.round(steps[index + 1].val) - 1
+        }`;
+      }
+
+      $("#resultWordsHistory .heatmapLegend .box" + index).html(
+        `<div>${string}</div>`
+      );
+    });
+
     $("#resultWordsHistory .words .word").each((_, word) => {
       const wordBurstVal = parseInt(<string>$(word).attr("burst"));
       let cls = "";

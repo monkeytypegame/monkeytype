@@ -362,46 +362,47 @@ $(".pageSettings .section.themes .tabContainer .customTheme input.input")
     }
   });
 
-$(".pageSettings #loadCustomColorsFromPreset").on("click", () => {
+$(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   // previewTheme(Config.theme);
-  $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
+  // $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
+  await ThemeController.loadStyle(Config.theme);
 
   ThemeController.colorVars.forEach((e) => {
     document.documentElement.style.setProperty(e, "");
   });
 
-  setTimeout(async () => {
-    ChartController.updateAllChartColors();
+  // setTimeout(async () => {
+  ChartController.updateAllChartColors();
 
-    const themeColors = await ThemeColors.getAll();
+  const themeColors = await ThemeColors.getAll();
 
-    ThemeController.colorVars.forEach((colorName) => {
-      let color;
-      if (colorName === "--bg-color") {
-        color = themeColors.bg;
-      } else if (colorName === "--main-color") {
-        color = themeColors.main;
-      } else if (colorName === "--sub-color") {
-        color = themeColors.sub;
-      } else if (colorName === "--sub-alt-color") {
-        color = themeColors.subAlt;
-      } else if (colorName === "--caret-color") {
-        color = themeColors.caret;
-      } else if (colorName === "--text-color") {
-        color = themeColors.text;
-      } else if (colorName === "--error-color") {
-        color = themeColors.error;
-      } else if (colorName === "--error-extra-color") {
-        color = themeColors.errorExtra;
-      } else if (colorName === "--colorful-error-color") {
-        color = themeColors.colorfulError;
-      } else if (colorName === "--colorful-error-extra-color") {
-        color = themeColors.colorfulErrorExtra;
-      }
+  ThemeController.colorVars.forEach((colorName) => {
+    let color;
+    if (colorName === "--bg-color") {
+      color = themeColors.bg;
+    } else if (colorName === "--main-color") {
+      color = themeColors.main;
+    } else if (colorName === "--sub-color") {
+      color = themeColors.sub;
+    } else if (colorName === "--sub-alt-color") {
+      color = themeColors.subAlt;
+    } else if (colorName === "--caret-color") {
+      color = themeColors.caret;
+    } else if (colorName === "--text-color") {
+      color = themeColors.text;
+    } else if (colorName === "--error-color") {
+      color = themeColors.error;
+    } else if (colorName === "--error-extra-color") {
+      color = themeColors.errorExtra;
+    } else if (colorName === "--colorful-error-color") {
+      color = themeColors.colorfulError;
+    } else if (colorName === "--colorful-error-extra-color") {
+      color = themeColors.colorfulErrorExtra;
+    }
 
-      updateColors($(".colorPicker #" + colorName).parent(), color as string);
-    });
-  }, 250);
+    updateColors($(".colorPicker #" + colorName).parent(), color as string);
+  });
+  // }, 250);
 });
 
 // Handles click on share custom theme button

@@ -7,7 +7,6 @@ import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
-import * as Focus from "../test/focus";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
@@ -141,7 +140,9 @@ export async function getDataAndInit(): Promise<boolean> {
       UpdateConfig.apply(snapshot.config);
       Settings.update();
       UpdateConfig.saveFullConfigToLocalStorage(true);
-      TestLogic.restart(false, true);
+      TestLogic.restart({
+        nosave: true,
+      });
     } else if (snapshot.config !== undefined) {
       //loading db config, keep for now
       let configsDifferent = false;
@@ -187,9 +188,14 @@ export async function getDataAndInit(): Promise<boolean> {
         Settings.update();
         UpdateConfig.saveFullConfigToLocalStorage(true);
         if (ActivePage.get() == "test") {
-          TestLogic.restart(false, true);
+          TestLogic.restart({
+            nosave: true,
+          });
         }
-        DB.saveConfig(Config);
+        AccountButton.loading(true);
+        DB.saveConfig(Config).then(() => {
+          AccountButton.loading(false);
+        });
       }
     }
     UpdateConfig.setDbConfigLoaded(true);
@@ -210,8 +216,6 @@ export async function getDataAndInit(): Promise<boolean> {
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     await Account.downloadResults();
-  } else {
-    Focus.set(false);
   }
   if (window.location.pathname === "/login") {
     navigate("/account");
@@ -234,8 +238,8 @@ export async function loadUser(user: UserType): Promise<void> {
   if ((await getDataAndInit()) === false) {
     signOut();
   }
-  const { discordId, discordAvatar } = DB.getSnapshot();
-  AccountButton.update(discordId, discordAvatar);
+  const { discordId, discordAvatar, xp } = DB.getSnapshot();
+  AccountButton.update(xp, discordId, discordAvatar);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -279,9 +283,6 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
   }
   if (!user) {
     navigate();
-    setTimeout(() => {
-      Focus.set(false);
-    }, 125 / 2);
   }
 
   URLHandler.loadCustomThemeFromUrl(search);

@@ -544,6 +544,7 @@
       margin-left: 0.5rem;
     }
     .heatmapLegend {
+      margin-left: 0.5rem;
       display: inline-grid;
       grid-template-columns: auto auto auto;
       gap: 1rem;
@@ -551,10 +552,18 @@
       color: var(--sub-color);
       width: min-content;
       .boxes {
-        display: flex;
+        // display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         .box {
-          width: 1rem;
+          // width: 1rem;
           height: 1rem;
+          color: var(--bg-color);
+          padding: 0.1rem 0.5rem;
+          white-space: nowrap;
+          line-height: 0.75rem;
+          display: grid;
+          place-content: center center;
         }
         .box:nth-child(1) {
           background: var(--colorful-error-color);
@@ -685,7 +694,6 @@
     grid-template-areas:
       "wpm"
       "acc";
-    margin-bottom: 1rem;
 
     &.morestats {
       display: grid;
@@ -883,7 +891,8 @@
 #restartTestButtonWithSameWordset,
 #nextTestButton,
 #practiseWordsButton,
-#watchReplayButton {
+#watchReplayButton,
+#watchVideoAdButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;

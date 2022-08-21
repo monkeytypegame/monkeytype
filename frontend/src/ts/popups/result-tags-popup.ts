@@ -59,6 +59,12 @@ $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
     $("#resultEditTagsPanel").attr("tags", tags);
     updateActiveButtons(JSON.parse(tags));
     show();
+  } else {
+    Notifications.add(
+      "You haven't created any tags. You can do it in the settings page",
+      0,
+      4
+    );
   }
 });
 

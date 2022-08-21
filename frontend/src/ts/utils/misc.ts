@@ -1,12 +1,5 @@
 import * as Loader from "../elements/loader";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
-
-export function getuid(): void {
-  console.error("Only share this uid with Miodec and nobody else!");
-  console.log(Auth.currentUser?.uid);
-  console.error("Only share this uid with Miodec and nobody else!");
-}
 
 function hexToHSL(hex: string): {
   hue: number;
@@ -597,6 +590,16 @@ export function getNumbers(len: number): string {
   return ret;
 }
 
+//convert numbers to arabic-indic
+export function convertNumberToArabicIndic(numString: string): string {
+  const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
+  let ret = "";
+  for (let i = 0; i < numString.length; i++) {
+    ret += arabicIndic[parseInt(numString[i])];
+  }
+  return ret;
+}
+
 export function getSpecials(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
@@ -635,8 +638,7 @@ export function getASCII(): string {
   const randLen = randomIntFromRange(1, 10);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    let ran = 33 + randomIntFromRange(0, 93);
-    while (ran == 96 || ran == 94) ran = 33 + randomIntFromRange(0, 93); //todo remove when input rewrite is fixed
+    const ran = 33 + randomIntFromRange(0, 93);
     ret += String.fromCharCode(ran);
   }
   return ret;
@@ -1176,4 +1178,34 @@ export async function getDiscordAvatarUrl(
   } catch (error) {}
 
   return null;
+}
+
+export function getLevel(xp: number): number {
+  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
+}
+
+export function getXpForLevel(level: number): number {
+  return 49 * (level - 1) + 100;
+}
+
+export async function promiseAnimation(
+  el: JQuery<HTMLElement>,
+  animation: Record<string, string>,
+  duration: number,
+  easing: string
+): Promise<void> {
+  return new Promise((resolve) => {
+    el.animate(animation, duration, easing, resolve);
+  });
+}
+
+//abbreviateNumber
+export function abbreviateNumber(num: number): string {
+  if (num < 1000) {
+    return num.toString();
+  }
+
+  const exp = Math.floor(Math.log(num) / Math.log(1000));
+  const pre = "kmbtqQsSond".charAt(exp - 1);
+  return (num / Math.pow(1000, exp)).toFixed(1) + pre;
 }

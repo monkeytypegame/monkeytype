@@ -112,14 +112,14 @@ export async function update(
       const git = profile.details?.socialProfiles.github;
       if (git) {
         socialsEl.append(
-          `<a href='https://github.com/${git}/' aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          `<a href='https://github.com/${git}/' target="_blank" aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
       const twitter = profile.details?.socialProfiles.twitter;
       if (twitter) {
         socialsEl.append(
-          `<a href='https://twitter.com/${twitter}' aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          `<a href='https://twitter.com/${twitter}' target="_blank" aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
@@ -131,11 +131,32 @@ export async function update(
 
       if (website) {
         socialsEl.append(
-          `<a href='${website}' aria-label="${websiteName}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          `<a href='${website}' target="_blank" aria-label="${websiteName}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
   }
+
+  const xp = profile.xp ?? 0;
+  const levelFraction = Misc.getLevel(xp);
+  const level = Math.floor(levelFraction);
+  const xpForLevel = Misc.getXpForLevel(level);
+  const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
+  details.find(".level").text(level);
+  details
+    .find(".xp")
+    .text(
+      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
+        xpForLevel
+      )}`
+    );
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xp")
+    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+
   //structure
 
   const bioAndKey = bio || keyboard;

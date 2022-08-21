@@ -53,6 +53,7 @@ import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
+import * as AdController from "../controllers/ad-controller";
 
 let failReason = "";
 
@@ -68,6 +69,10 @@ export function setNotSignedInUid(uid: string): void {
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
+}
+
+function shouldCapitalize(lastChar: string): boolean {
+  return /[?!.؟]/.test(lastChar);
 }
 
 let spanishSentenceTracker = "";
@@ -106,8 +111,8 @@ export async function punctuateWord(
     }
   } else {
     if (
-      (index == 0 || lastChar == "." || lastChar == "?" || lastChar == "!") &&
-      currentLanguage != "code"
+      currentLanguage != "code" &&
+      (index == 0 || shouldCapitalize(lastChar))
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
 
@@ -142,14 +147,19 @@ export async function punctuateWord(
       } else {
         const rand = Math.random();
         if (rand <= 0.8) {
-          word += ".";
+          if (currentLanguage == "kurdish") {
+            word += ".";
+          } else {
+            word += ".";
+          }
         } else if (rand > 0.8 && rand < 0.9) {
           if (currentLanguage == "french") {
             word = "?";
           } else if (
             currentLanguage == "arabic" ||
             currentLanguage == "persian" ||
-            currentLanguage == "urdu"
+            currentLanguage == "urdu" ||
+            currentLanguage == "kurdish"
           ) {
             word += "؟";
           } else if (currentLanguage == "greek") {
@@ -229,7 +239,7 @@ export async function punctuateWord(
         word = ";";
       } else if (currentLanguage == "greek") {
         word = "·";
-      } else if (currentLanguage == "arabic") {
+      } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
         word += "؛";
       } else {
         word += ";";
@@ -238,7 +248,8 @@ export async function punctuateWord(
       if (
         currentLanguage == "arabic" ||
         currentLanguage == "urdu" ||
-        currentLanguage == "persian"
+        currentLanguage == "persian" ||
+        currentLanguage == "kurdish"
       ) {
         word += "،";
       } else {
@@ -309,13 +320,30 @@ export function startTest(): boolean {
   return true;
 }
 
-export function restart(
-  withSameWordset = false,
-  _?: boolean, // this is nosave and should be renamed to nosave when needed
-  event?: JQuery.KeyDownEvent,
-  practiseMissed = false,
-  noAnim = false
-): void {
+interface RestartOptions {
+  withSameWordset?: boolean;
+  nosave?: boolean;
+  event?: JQuery.KeyDownEvent;
+  practiseMissed?: boolean;
+  noAnim?: boolean;
+}
+
+// withSameWordset = false,
+// _?: boolean, // this is nosave and should be renamed to nosave when needed
+// event?: JQuery.KeyDownEvent,
+// practiseMissed = false,
+// noAnim = false
+
+export function restart(options = {} as RestartOptions): void {
+  const defaultOptions = {
+    withSameWordset: false,
+    practiseMissed: false,
+    noAnim: false,
+    nosave: false,
+  };
+
+  options = { ...defaultOptions, ...options };
+
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
     return;
@@ -324,7 +352,7 @@ export function restart(
     if (!ManualRestart.get()) {
       if (
         TestWords.hasTab &&
-        !event?.shiftKey &&
+        !options.event?.shiftKey &&
         Config.quickRestart !== "esc"
       ) {
         return;
@@ -358,7 +386,10 @@ export function restart(
       Config.mode === "quote" &&
       Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
     ) {
-      withSameWordset = true;
+      options.withSameWordset = true;
+    }
+    if (TestState.isRepeated) {
+      options.withSameWordset = true;
     }
 
     TestInput.pushKeypressesToHistory();
@@ -367,20 +398,19 @@ export function restart(
     // incompleteTestSeconds += ;
     let tt = testSeconds - afkseconds;
     if (tt < 0) tt = 0;
-    console.log(
-      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
-    );
+    // console.log(
+    //   `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    // );
     TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
-    if (tt > 600) {
-      Notifications.add(
-        `Your time typing just increased by ${Misc.roundTo2(
-          tt / 60
-        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
-        -1
-      );
-    }
-    // restartCount++;
+    // if (tt > 600) {
+    //   Notifications.add(
+    //     `Your time typing just increased by ${Misc.roundTo2(
+    //       tt / 60
+    //     )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+    //     -1
+    //   );
+    // }
   }
 
   if (Config.mode == "zen") {
@@ -389,8 +419,8 @@ export function restart(
 
   if (
     PractiseWords.before.mode !== null &&
-    !withSameWordset &&
-    !practiseMissed
+    !options.withSameWordset &&
+    !options.practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
     if (PractiseWords.before.punctuation !== null) {
@@ -404,7 +434,7 @@ export function restart(
   }
 
   let repeatWithPace = false;
-  if (TestUI.resultVisible && Config.repeatedPace && withSameWordset) {
+  if (TestUI.resultVisible && Config.repeatedPace && options.withSameWordset) {
     repeatWithPace = true;
   }
 
@@ -462,14 +492,18 @@ export function restart(
     {
       opacity: 0,
     },
-    noAnim ? 0 : 125,
+    options.noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "test") Focus.set(false);
+      if (ActivePage.get() == "test") {
+        AdController.updateTestPageAds(false);
+        Focus.set(false);
+      }
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
+      AdController.destroyResult();
       let shouldQuoteRepeat = false;
       if (
         Config.mode === "quote" &&
@@ -494,7 +528,7 @@ export function restart(
         UpdateConfig.setNumbers(false, true);
       }
       if (
-        withSameWordset &&
+        options.withSameWordset &&
         (Config.funbox === "plus_one" || Config.funbox === "plus_two")
       ) {
         const toPush = [];
@@ -510,7 +544,7 @@ export function restart(
         TestWords.words.reset();
         toPush.forEach((word) => TestWords.words.push(word));
       }
-      if (!withSameWordset && !shouldQuoteRepeat) {
+      if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
         TestWords.setHasTab(false);
@@ -617,7 +651,7 @@ export function restart(
           {
             opacity: 1,
           },
-          noAnim ? 0 : 125,
+          options.noAnim ? 0 : 125,
           () => {
             TestUI.setTestRestarting(false);
             // resetPaceCaret();
@@ -655,6 +689,9 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
     word = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
+    if (Config.language.split("_")[0] === "kurdish") {
+      word = Misc.convertNumberToArabicIndic(word);
+    }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
@@ -744,6 +781,10 @@ async function getNextWord(
   if (Config.numbers) {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
+
+      if (Config.language.split("_")[0] === "kurdish") {
+        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+      }
     }
   }
 
@@ -1195,6 +1236,16 @@ export async function retrySavingResult(): Promise<void> {
     return Notifications.add("Result not saved. " + response.message, -1);
   }
 
+  if (response.data.xp) {
+    const snapxp = DB.getSnapshot().xp;
+    AccountButton.updateXpBar(
+      snapxp,
+      response.data.xp,
+      response.data.dailyXpBonus
+    );
+    DB.addXp(response.data.xp);
+  }
+
   completedEvent._id = response.data.insertedId;
   if (response.data.isPb) {
     completedEvent.isPb = true;
@@ -1595,6 +1646,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
+  if (response.data.xp) {
+    const snapxp = DB.getSnapshot().xp;
+    AccountButton.updateXpBar(
+      snapxp,
+      response.data.xp,
+      response.data.dailyXpBonus
+    );
+    DB.addXp(response.data.xp);
+  }
+
   Result.hideCrown();
 
   completedEvent._id = response.data.insertedId;
@@ -1676,7 +1737,9 @@ $(document.body).on("click", "#restartTestButton", () => {
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {
-    restart(true);
+    restart({
+      withSameWordset: true,
+    });
   } else {
     restart();
   }
@@ -1701,7 +1764,9 @@ $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
     return;
   }
   ManualRestart.set();
-  restart(true);
+  restart({
+    withSameWordset: true,
+  });
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
@@ -1710,7 +1775,9 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
     return;
   }
   if (event.key === "Enter") {
-    restart(true);
+    restart({
+      withSameWordset: true,
+    });
   }
 });
 
@@ -1776,19 +1843,25 @@ $(document).on("click", "#top .config .mode .textButton", (e) => {
 $("#practiseWordsPopup .button.missed").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, false);
-  restart(false, false, undefined, true);
+  restart({
+    practiseMissed: true,
+  });
 });
 
 $("#practiseWordsPopup .button.slow").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(false, true);
-  restart(false, false, undefined, true);
+  restart({
+    practiseMissed: true,
+  });
 });
 
 $("#practiseWordsPopup .button.both").on("click", () => {
   PractiseWords.hidePopup();
   PractiseWords.init(true, true);
-  restart(false, false, undefined, true);
+  restart({
+    practiseMissed: true,
+  });
 });
 
 $(document).on(
@@ -1815,10 +1888,10 @@ $(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
-    if (eventKey === "difficulty" && !nosave) restart(false, nosave);
-    if (eventKey === "showAllLines" && !nosave) restart(false, nosave);
-    if (eventKey === "keymapMode" && !nosave) restart(false, nosave);
-    if (eventKey === "tapeMode" && !nosave) restart(false, nosave);
+    if (eventKey === "difficulty" && !nosave) restart();
+    if (eventKey === "showAllLines" && !nosave) restart();
+    if (eventKey === "keymapMode" && !nosave) restart();
+    if (eventKey === "tapeMode" && !nosave) restart();
   }
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;

@@ -1,5 +1,6 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
+import * as BannerEvent from "../observables/banner-event";
 
 function updateMargin(): void {
   console.log("updating margin");
@@ -165,6 +166,7 @@ class Notification {
       </div>
       `);
       updateMargin();
+      BannerEvent.dispatch();
       if (this.duration >= 0) {
         $(`#bannerCenter .banner[id='${this.id}'] .closeButton`).on(
           "click",
@@ -213,6 +215,7 @@ class Notification {
           () => {
             $(`#bannerCenter .banner[id='${this.id}']`).remove();
             updateMargin();
+            BannerEvent.dispatch();
           }
         );
     }

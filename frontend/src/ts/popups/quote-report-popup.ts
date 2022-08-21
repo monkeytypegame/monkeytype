@@ -106,6 +106,10 @@ async function submitReport(): Promise<void> {
     return Notifications.add("Please select a valid report reason");
   }
 
+  if (!comment) {
+    return Notifications.add("Please provide a comment");
+  }
+
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
     return Notifications.add(

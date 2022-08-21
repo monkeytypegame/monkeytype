@@ -52,7 +52,7 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
 
    - Run `firebase projects:list` to find your firebase project id.
 
-1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config
+1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config object
 
    - To find it, go to the Firebase console
    - Navigate to `Project Settings > General > Your apps`

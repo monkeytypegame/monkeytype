@@ -1,22 +1,10 @@
 {
   "language": "italian",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -624,6 +612,24 @@
       "source": "Jorge Luis Borges, The Library of Babel",
       "length": 264,
       "id": 101
+    },
+    {
+      "text": "Andai nei boschi perché desideravo vivere con saggezza, affrontando solo i fatti essenziali della vita, per vedere se non fossi riuscito a imparare quanto essa aveva da insegnarmi e per non dover scoprire in punto di morte di non aver vissuto.",
+      "source": "Henry David Thoreau, Walden",
+      "length": 243,
+      "id": 102
+    },
+    {
+      "text": "Carpe diem... Cogliete l'attimo, ragazzi... Rendete straordinaria la vostra vita!",
+      "source": "Robin Williams, L'attimo fuggente",
+      "length": 81,
+      "id": 103
+    },
+    {
+      "text": "Quando i gas velenosi non basteranno più, un uomo fatto come tutti gli altri, nel segreto di una stanza di questo mondo, inventerà un esplosivo incomparabile, in confronto al quale gli esplosivi attualmente esistenti saranno considerati quali innocui giocattoli. Ed un altro uomo fatto anche lui come tutti gli altri, ma degli altri un po’ più ammalato, ruberà tale esplosivo e s’arrampicherà al centro della terra per porlo nel punto ove il suo effetto potrà essere il massimo. Ci sarà un’esplosione enorme che nessuno udrà e la terra ritornata alla forma di nebulosa errerà nei cieli priva di parassiti e di malattie.",
+      "source": "Italo Svevo, La Coscienza di Zeno",
+      "length": 619,
+      "id": 104
     }
   ]
 }

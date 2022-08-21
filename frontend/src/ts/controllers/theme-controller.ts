@@ -74,7 +74,7 @@ function clearCustomTheme(): void {
 
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
 
-async function loadStyle(name: string): Promise<void> {
+export async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
@@ -93,6 +93,7 @@ async function loadStyle(name: string): Promise<void> {
       $("#nextTheme").attr("id", "currentTheme");
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
+      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
     };
     if (name === "custom") {

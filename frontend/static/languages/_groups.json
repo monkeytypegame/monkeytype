@@ -129,6 +129,10 @@
     "languages": ["tamil", "tamil_1k"]
   },
   {
+    "name": "telugu",
+    "languages": ["telugu", "telugu_1k"]
+  },
+  {
     "name": "slovenian",
     "languages": ["slovenian"]
   },
@@ -199,6 +203,10 @@
   {
     "name": "vietnamese",
     "languages": ["vietnamese", "vietnamese_1k", "vietnamese_5k"]
+  },
+  {
+    "name": "jyutping",
+    "languages": ["jyutping"]
   },
   {
     "name": "pinyin",
@@ -291,6 +299,10 @@
   {
     "name": "sanskrit",
     "languages": ["sanskrit"]
+  },
+  {
+	"name": "santali",
+	"languages": ["santali"]
   },
   {
     "name": "macedonian",

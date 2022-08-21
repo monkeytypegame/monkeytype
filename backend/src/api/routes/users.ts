@@ -418,8 +418,9 @@ router.get(
   requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
+    acceptApeKeys: true,
   }),
-  RateLimit.userProfileGet,
+  withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
       uid: joi.string().required(),

@@ -14,6 +14,7 @@ import * as TestInput from "./test-input";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import QuotesController from "../controllers/quotes-controller";
+import * as AdController from "../controllers/ad-controller";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 
@@ -634,6 +635,11 @@ export async function update(
   } else {
     $("#result .loginTip").removeClass("hidden");
   }
+  if (Config.ads === "off" || Config.ads === "result") {
+    $("#result #watchVideoAdButton").addClass("hidden");
+  } else {
+    $("#result #watchVideoAdButton").removeClass("hidden");
+  }
   updateWpmAndAcc();
   updateConsistency();
   updateTime();
@@ -710,6 +716,7 @@ export async function update(
     $("#result"),
     250,
     async () => {
+      AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
@@ -732,6 +739,7 @@ export async function update(
         TestUI.toggleResultWords();
       }
       Keymap.hide();
+      AdController.updateTestPageAds(true);
     }
   );
 }
