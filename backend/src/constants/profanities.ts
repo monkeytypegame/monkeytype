@@ -341,7 +341,6 @@ export const profanities = [
   "foreskin",
   "fotze",
   "fu(",
-  "fuk",
   "futkretzn",
   "gook",
   "guiena",
