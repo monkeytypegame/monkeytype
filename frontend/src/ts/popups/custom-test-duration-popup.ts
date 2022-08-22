@@ -101,7 +101,7 @@ export function hide(): void {
 function apply(): void {
   const val = parseInput($("#customTestDurationPopup input").val() as string);
 
-  if (val !== null && !isNaN(val) && val >= 0) {
+  if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     UpdateConfig.setTimeConfig(val as MonkeyTypes.TimeModes);
     ManualRestart.set();
     TestLogic.restart();
