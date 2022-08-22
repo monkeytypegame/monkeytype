@@ -27,12 +27,14 @@ import * as TestActive from "../states/test-active";
 import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
+import * as Hangul from "hangul-js";
 import { navigate } from "./route-controller";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
+const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 function setWordsInput(value: string): void {
   // Only change #wordsInput if it's not already the wanted value
@@ -288,7 +290,17 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const originalChar = TestWords.words.getCurrent()[charIndex];
+  if (Config.language.startsWith("korean")) {
+    //disassembles Korean current Test word to check against char Input
+    const koWordArray: string[] = Hangul.disassemble(
+      TestWords.words.getCurrent()
+    );
+    const koOriginalChar: string = koWordArray[charIndex];
+
+    return koOriginalChar === char;
+  }
+
+  const originalChar: string = TestWords.words.getCurrent()[charIndex];
 
   if (originalChar == char) {
     return true;
@@ -345,7 +357,11 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   return false;
 }
 
-function handleChar(char: string, charIndex: number): void {
+function handleChar(
+  char: string,
+  charIndex: number,
+  realInputVaue?: string
+): void {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
@@ -400,6 +416,7 @@ function handleChar(char: string, charIndex: number): void {
   Caret.stopAnimation();
 
   const thisCharCorrect = isCharCorrect(char, charIndex);
+  let resultingWord: string;
 
   if (thisCharCorrect && Config.mode !== "zen") {
     char = TestWords.words.getCurrent().charAt(charIndex);
@@ -414,10 +431,21 @@ function handleChar(char: string, charIndex: number): void {
     TestInput.setBurstStart(performance.now());
   }
 
-  const resultingWord =
-    TestInput.input.current.substring(0, charIndex) +
-    char +
-    TestInput.input.current.substring(charIndex + 1);
+  if (!Config.language.startsWith("korean")) {
+    resultingWord =
+      TestInput.input.current.substring(0, charIndex) +
+      char +
+      TestInput.input.current.substring(charIndex + 1);
+  } else {
+    // Get real input from #WordsInput char call.
+    // This is because the chars can't be confirmed correctly.
+    // With chars alone this happens when a previous symbol is completed
+    // Example:
+    // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
+    const realInput: string = (realInputVaue ?? "").slice(1);
+    resultingWord = realInput;
+    koInputVisual.innerText = resultingWord.slice(-1);
+  }
 
   // If a trailing composed char is used, ignore it when counting accuracy
   if (
@@ -896,38 +924,61 @@ $("#wordsInput").on("input", (event) => {
 
   TestInput.setKeypressNotAfk();
 
+  const isLangKorean: boolean = Config.language.startsWith("korean");
+
+  //Hangul.disassemble breaks down Korean characters into its components
+  //allowing it to be treated as normal latin characters
+  //Hangul.disassemble('한글') //['ㅎ','ㅏ','ㄴ','ㄱ','ㅡ','ㄹ']
+  //Hangul.disassemble('한글',true) //[['ㅎ','ㅏ','ㄴ'],['ㄱ','ㅡ','ㄹ']]
   const realInputValue = (event.target as HTMLInputElement).value.normalize();
-  const inputValue = realInputValue.slice(1);
+  const inputValue = isLangKorean
+    ? Hangul.disassemble(realInputValue).join("").slice(1)
+    : realInputValue.slice(1);
+
+  const currTestInput = isLangKorean
+    ? Hangul.disassemble(TestInput.input.current).join("")
+    : TestInput.input.current;
 
   // input will be modified even with the preventDefault() in
   // beforeinput/keydown if it's part of a compose sequence. this undoes
   // the effects of that and takes the input out of compose mode.
   if (
     Config.layout !== "default" &&
-    inputValue.length >= TestInput.input.current.length
+    inputValue.length >= currTestInput.length
   ) {
-    setWordsInput(" " + TestInput.input.current);
+    setWordsInput(" " + currTestInput);
     return;
   }
 
-  if (realInputValue.length === 0 && TestInput.input.current.length === 0) {
+  if (realInputValue.length === 0 && currTestInput.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
-  } else if (inputValue.length < TestInput.input.current.length) {
-    TestInput.input.current = inputValue;
+  } else if (inputValue.length < currTestInput.length) {
+    if (!isLangKorean) {
+      TestInput.input.current = inputValue;
+    } else {
+      const realInput = (event.target as HTMLInputElement).value
+        .normalize()
+        .slice(1);
+
+      TestInput.input.current = realInput;
+      koInputVisual.innerText = realInput.slice(-1);
+    }
+
     TestUI.updateWordElement();
     Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+      Replay.addReplayEvent("setLetterIndex", currTestInput.length);
     }
-  } else if (inputValue !== TestInput.input.current) {
+  } else if (inputValue !== currTestInput) {
     let diffStart = 0;
-    while (inputValue[diffStart] === TestInput.input.current[diffStart]) {
+    while (inputValue[diffStart] === currTestInput[diffStart]) {
       diffStart++;
     }
 
     for (let i = diffStart; i < inputValue.length; i++) {
-      handleChar(inputValue[i], i);
+      // passing realInput to allow for correct Korean character compilation
+      handleChar(inputValue[i], i, realInputValue);
     }
   }
 
