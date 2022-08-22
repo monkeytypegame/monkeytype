@@ -198,7 +198,7 @@
   },
   {
     "name": "persian",
-    "languages": ["persian", "persian_1k", "persian_5k"]
+    "languages": ["persian", "persian_1k", "persian_5k", "persian_20k"]
   },
   {
     "name": "kazakh",
