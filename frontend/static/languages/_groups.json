@@ -66,6 +66,10 @@
     "languages": ["mongolian", "mongolian_10k"]
   },
   {
+    "name": "korean",
+    "languages": ["korean", "korean_1k", "korean_5k"]
+  },
+  {
     "name": "russian",
     "languages": [
       "russian",
@@ -301,8 +305,8 @@
     "languages": ["sanskrit"]
   },
   {
-	"name": "santali",
-	"languages": ["santali"]
+    "name": "santali",
+    "languages": ["santali"]
   },
   {
     "name": "macedonian",
@@ -398,13 +402,5 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
-  },
-  {
-    "name": "korean",
-    "languages": [
-      "korean",
-      "korean_1k",
-      "korean_4k"
-    ]
   }
 ]
