@@ -779,8 +779,8 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = await applyBritishEnglishToWord(randomWord);
   randomWord = applyFunboxesToWord(randomWord, wordset);
+  randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
     randomWord = await punctuateWord(
@@ -1077,8 +1077,8 @@ export async function init(): Promise<void> {
       }
 
       w[i] = applyLazyModeToWord(w[i], language);
-      w[i] = await applyBritishEnglishToWord(w[i]);
       w[i] = applyFunboxesToWord(w[i]);
+      w[i] = await applyBritishEnglishToWord(w[i]);
 
       TestWords.words.push(w[i]);
     }
