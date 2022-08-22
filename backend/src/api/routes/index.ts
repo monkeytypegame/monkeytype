@@ -30,13 +30,14 @@ const API_ROUTE_MAP = {
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/ape-keys": apeKeys,
-  "/configuration": configuration,
 };
 
 function addApiRoutes(app: Application): void {
   app.get("/leaderboard", (_req, res) => {
     res.sendStatus(404);
   });
+
+  app.use("/configuration", configuration);
 
   if (process.env.MODE === "dev") {
     app.use("/configure", express.static(join(__dirname, "../../../private")));
