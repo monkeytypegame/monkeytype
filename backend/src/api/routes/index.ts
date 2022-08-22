@@ -30,6 +30,7 @@ const API_ROUTE_MAP = {
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/ape-keys": apeKeys,
+  "/configuration": configuration,
 };
 
 function addApiRoutes(app: Application): void {
@@ -39,7 +40,6 @@ function addApiRoutes(app: Application): void {
 
   if (process.env.MODE === "dev") {
     app.use("/configure", express.static(join(__dirname, "../../../private")));
-    app.use("/configuration", configuration);
   }
 
   addSwaggerMiddlewares(app);
