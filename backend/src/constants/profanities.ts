@@ -334,7 +334,6 @@ export const profanities = [
   "fanculo",
   "fanny",
   "feces",
-  "feg",
   "felcher",
   "ficken",
   "fitt",
