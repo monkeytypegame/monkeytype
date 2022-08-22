@@ -113,9 +113,10 @@ export async function punctuateWord(
   } else {
     if (
       currentLanguage != "code" &&
+      currentLanguage != "georgian" &&
       (index == 0 || shouldCapitalize(lastChar))
     ) {
-      //always capitalise the first word or if there was a dot unless using a code alphabet
+      //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
       word = Misc.capitalizeFirstLetterOfEachWord(word);
 
