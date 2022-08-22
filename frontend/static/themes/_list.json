@@ -769,4 +769,9 @@
     "bgColor": "#386641",
     "mainColor": "#6a994e"
   }
+  ,{
+    "name": "modern_dolch_light",
+    "bgColor": "#dbdbdb",
+    "mainColor": "#8fd1c3"
+  }
 ]
