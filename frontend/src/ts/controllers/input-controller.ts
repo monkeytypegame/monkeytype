@@ -442,7 +442,7 @@ function handleChar(
     // With chars alone this happens when a previous symbol is completed
     // Example:
     // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
-    const realInput: string = realInputVaue ?? "".slice(1);
+    const realInput: string = (realInputVaue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
   }
