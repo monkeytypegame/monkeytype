@@ -56,6 +56,7 @@ import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 
 let failReason = "";
+const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
   null;
@@ -287,6 +288,7 @@ export function startTest(): boolean {
   } else {
     AnalyticsController.log("testStartedNoLogin");
   }
+
   TestActive.set(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
@@ -415,6 +417,15 @@ export function restart(options = {} as RestartOptions): void {
 
   if (Config.mode == "zen") {
     $("#words").empty();
+  }
+
+  if (Config.language.startsWith("korean")) {
+    koInputVisual.innerText = " ";
+    Config.mode !== "zen"
+      ? $("#koInputVisualContainer").show()
+      : $("#koInputVisualContainer").hide();
+  } else {
+    $("#koInputVisualContainer").hide();
   }
 
   if (
