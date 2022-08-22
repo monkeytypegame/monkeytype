@@ -357,7 +357,11 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   return false;
 }
 
-function handleChar(char: string, charIndex: number, ...extra: any[]): void {
+function handleChar(
+  char: string,
+  charIndex: number,
+  realInputVaue?: string
+): void {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
@@ -438,7 +442,7 @@ function handleChar(char: string, charIndex: number, ...extra: any[]): void {
     // With chars alone this happens when a previous symbol is completed
     // Example:
     // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
-    const realInput: string = extra[0].slice(1);
+    const realInput: string = realInputVaue ?? "".slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
   }
