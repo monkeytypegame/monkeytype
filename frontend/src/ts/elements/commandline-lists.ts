@@ -223,7 +223,18 @@ const commandsTags: MonkeyTypes.CommandsGroup = {
 export function updateTagCommands(): void {
   const snapshot = DB.getSnapshot();
   commandsTags.list = [];
-  if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) return;
+  if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) {
+    commandsTags.list.push({
+      id: "createTag",
+      display: "Create tag",
+      icon: "fa-plus",
+      shouldFocusTestUI: false,
+      exec: (): void => {
+        EditTagPopup.show("add");
+      },
+    });
+    return;
+  }
   commandsTags.list.push({
     id: "clearTags",
     display: `Clear tags`,
@@ -292,6 +303,7 @@ export function updateTagCommands(): void {
     id: "createTag",
     display: "Create tag",
     icon: "fa-plus",
+    shouldFocusTestUI: false,
     exec: (): void => {
       EditTagPopup.show("add");
     },
