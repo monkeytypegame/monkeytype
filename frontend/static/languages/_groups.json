@@ -66,6 +66,10 @@
     "languages": ["mongolian", "mongolian_10k"]
   },
   {
+    "name": "korean",
+    "languages": ["korean", "korean_1k", "korean_5k"]
+  },
+  {
     "name": "russian",
     "languages": [
       "russian",
