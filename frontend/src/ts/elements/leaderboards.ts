@@ -10,6 +10,7 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
+let showingYesterday = false;
 
 type LbKey = 15 | 60;
 
@@ -351,6 +352,9 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
+const showYesterdayButtonText = $(
+  "#leaderboardsWrapper .showYesterdayButton .text"
+);
 
 export function hide(): void {
   $("#leaderboardsWrapper")
@@ -368,7 +372,8 @@ export function hide(): void {
         clearFoot(60);
         reset();
         stopTimer();
-        showYesterdayButton.removeClass("active");
+        showingYesterday = false;
+        updateYesterdayButton();
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -381,7 +386,13 @@ function updateTitle(): void {
   const capitalizedLanguage =
     currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1);
 
-  el.text(`${timeRangeString} ${capitalizedLanguage} Leaderboards`);
+  let text = `${timeRangeString} ${capitalizedLanguage} Leaderboards`;
+
+  if (showingYesterday) {
+    text += " (Yesterday)";
+  }
+
+  el.text(text);
 }
 
 function updateYesterdayButton(): void {
@@ -389,12 +400,16 @@ function updateYesterdayButton(): void {
   if (currentTimeRange === "daily") {
     showYesterdayButton.removeClass("hidden");
   }
+  if (showingYesterday) {
+    showYesterdayButtonText.text("Show today");
+  } else {
+    showYesterdayButtonText.text("Show yesterday");
+  }
 }
 
 function getDailyLeaderboardQuery(): { isDaily: boolean; daysBefore: number } {
   const isDaily = currentTimeRange === "daily";
-  const isViewingDailyAndButtonIsActive =
-    isDaily && showYesterdayButton.hasClass("active");
+  const isViewingDailyAndButtonIsActive = isDaily && showingYesterday;
   const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
 
   return {
@@ -773,13 +788,13 @@ $(
   "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .daily"
 ).on("click", () => {
   currentTimeRange = "daily";
-  showYesterdayButton.removeClass("active");
+  updateYesterdayButton();
   languageSelector.prop("disabled", false);
   update();
 });
 
 $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
-  showYesterdayButton.toggleClass("active");
+  showingYesterday = !showingYesterday;
   update();
 });
 

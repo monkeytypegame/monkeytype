@@ -35,7 +35,7 @@ export function hide(): void {
 function apply(): void {
   const val = parseInt($("#customWordAmountPopup input").val() as string);
 
-  if (val !== null && !isNaN(val) && val >= 0) {
+  if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     UpdateConfig.setWordCount(val as MonkeyTypes.WordsModes);
     ManualRestart.set();
     TestLogic.restart();
