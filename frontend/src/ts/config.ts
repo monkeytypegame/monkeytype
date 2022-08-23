@@ -982,15 +982,8 @@ export function setTimeConfig(
 
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
-  $("#top .config .time .textButton").removeClass("active");
-
-  const timeCustom = ![15, 30, 60, 120].includes(newTime) ? "custom" : newTime;
-
   config.time = newTime;
 
-  $("#top .config .time .textButton[timeConfig='" + timeCustom + "']").addClass(
-    "active"
-  );
   saveToLocalStorage("time", nosave);
   ConfigEvent.dispatch("time", config.time);
 
