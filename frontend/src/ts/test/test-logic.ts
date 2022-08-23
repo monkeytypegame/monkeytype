@@ -1801,7 +1801,17 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#top .config .wordCount .textButton", (e) => {
+$(document).on("click", "#testConfig .mode.textButton", (e) => {
+  if (TestUI.testRestarting) return;
+  if ($(e.currentTarget).hasClass("active")) return;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
+  if (mode === undefined) return;
+  UpdateConfig.setMode(mode);
+  ManualRestart.set();
+  restart();
+});
+
+$(document).on("click", "#testConfig .wordCount.textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1846,16 +1856,6 @@ $(document).on("click", "#top .config .punctuationMode .textButton", () => {
 $(document).on("click", "#top .config .numbersMode .textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  restart();
-});
-
-$(document).on("click", "#top .config .mode .textButton", (e) => {
-  if (TestUI.testRestarting) return;
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
-  if (mode === undefined) return;
-  UpdateConfig.setMode(mode);
   ManualRestart.set();
   restart();
 });

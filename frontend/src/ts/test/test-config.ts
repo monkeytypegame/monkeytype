@@ -47,59 +47,23 @@ export function update(
   current: MonkeyTypes.Mode
 ): void {
   if (previous === current) return;
-  $("#top .config .mode .textButton").removeClass("active");
-  $("#top .config .mode .textButton[mode='" + current + "']").addClass(
-    "active"
-  );
+  $("#testConfig .mode.textButton").removeClass("active");
+  $("#testConfig .mode.textButton[mode='" + current + "']").addClass("active");
 
   if (current == "time") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").removeClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
-    // $("#top .config .puncAndNum").removeClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
   } else if (current == "words") {
-    // $("#top .config .wordCount").removeClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
-    // $("#top .config .puncAndNum").removeClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
   } else if (current == "custom") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
-    // $("#top .config .puncAndNum").removeClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
   } else if (current == "quote") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("disabled");
     $("#top .config .numbersMode").addClass("disabled");
-    // $("#top .config .puncAndNum").addClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#result .stats .source").removeClass("hidden");
-    // $("#top .config .quoteLength").removeClass("hidden");
   } else if (current == "zen") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
-    // $("#top .config .punctuationMode").addClass("hidden");
-    // $("#top .config .numbersMode").addClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
+    //
   }
 
   const submenu = {
