@@ -991,6 +991,16 @@
   width: 100%;
   justify-content: space-around;
   transition: 0.125s;
+  .puncAndNum {
+    transition: 0.25s;
+    overflow: hidden;
+    max-width: 13rem;
+    opacity: 1;
+    &.scrolled {
+      max-width: 0;
+      opacity: 0;
+    }
+  }
   .row {
     display: flex;
     padding: 0.25rem 1rem;

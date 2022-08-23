@@ -1,5 +1,5 @@
 import * as ConfigEvent from "../observables/config-event";
-import * as Misc from "../utils/misc";
+// import * as Misc from "../utils/misc";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);
@@ -50,83 +50,133 @@ export function update(
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
 
-  if (current == "time") {
-    $("#testConfig .punctuationMode").removeClass("disabled");
-    $("#testConfig .numbersMode").removeClass("disabled");
-  } else if (current == "words") {
-    $("#testConfig .punctuationMode").removeClass("disabled");
-    $("#testConfig .numbersMode").removeClass("disabled");
-  } else if (current == "custom") {
-    $("#testConfig .punctuationMode").removeClass("disabled");
-    $("#testConfig .numbersMode").removeClass("disabled");
-  } else if (current == "quote") {
-    $("#testConfig .punctuationMode").addClass("disabled");
-    $("#testConfig .numbersMode").addClass("disabled");
-  } else if (current == "zen") {
-    //
-  }
+  // if (current == "time") {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else if (current == "words") {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else if (current == "custom") {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else if (current == "quote") {
+  //   $("#testConfig .punctuationMode").addClass("hidden");
+  //   $("#testConfig .numbersMode").addClass("hidden");
+  //   $("#testConfig .leftSpacer").addClass("hidden");
+  // } else if (current == "zen") {
+  //   //
+  // }
 
   const submenu = {
     time: "time",
     words: "wordCount",
     custom: "customText",
     quote: "quoteLength",
-    zen: "",
+    zen: "zen",
   };
 
-  const animTime = 250;
+  const puncAndNumVisible = {
+    time: true,
+    words: true,
+    custom: true,
+    quote: false,
+    zen: false,
+  };
 
-  if (current == "zen") {
-    $(`#testConfig .${submenu[previous]}`).animate(
-      {
-        opacity: 0,
-      },
-      animTime / 2,
-      () => {
-        $(`#testConfig .${submenu[previous]}`).addClass("hidden");
-      }
-    );
-    $(`#testConfig .puncAndNum`).animate(
-      {
-        opacity: 0,
-      },
-      animTime / 2,
-      () => {
-        $(`#testConfig .puncAndNum`).addClass("hidden");
-      }
-    );
-    return;
+  // const animTime = 250;
+
+  if (puncAndNumVisible[current]) {
+    $("#testConfig .puncAndNum").removeClass("scrolled");
+  } else {
+    $("#testConfig .puncAndNum").addClass("scrolled");
   }
 
-  if (previous == "zen") {
-    setTimeout(() => {
-      $(`#testConfig .${submenu[current]}`).removeClass("hidden");
-      $(`#testConfig .${submenu[current]}`)
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          animTime / 2
-        );
-      $(`#testConfig .puncAndNum`).removeClass("hidden");
-      $(`#testConfig .puncAndNum`)
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          animTime / 2
-        );
-    }, animTime / 2);
-    return;
-  }
+  // const currentWidth = Math.round(
+  //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??
+  //     0
+  // );
 
-  Misc.swapElements(
-    $("#testConfig ." + submenu[previous]),
-    $("#testConfig ." + submenu[current]),
-    animTime
-  );
+  // if (puncAndNumVisible[current]) {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else {
+  //   $("#testConfig .punctuationMode").addClass("hidden");
+  //   $("#testConfig .numbersMode").addClass("hidden");
+  //   $("#testConfig .leftSpacer").addClass("hidden");
+  // }
+
+  // if (current == "zen") {
+  //   $("#testConfig .rightSpacer").addClass("hidden");
+  // } else {
+  //   $("#testConfig .rightSpacer").removeClass("hidden");
+  // }
+
+  $(`#testConfig .${submenu[previous]}`).addClass("hidden");
+
+  $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+
+  // const newWidth = Math.round(
+  //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??
+  //     0
+  // );
+
+  // console.log(submenu[current], animTime, newWidth, currentWidth);
+
+  // if (current == "zen") {
+  //   $(`#testConfig .${submenu[previous]}`).animate(
+  //     {
+  //       opacity: 0,
+  //     },
+  //     animTime / 2,
+  //     () => {
+  //       $(`#testConfig .${submenu[previous]}`).addClass("hidden");
+  //     }
+  //   );
+  //   $(`#testConfig .puncAndNum`).animate(
+  //     {
+  //       opacity: 0,
+  //     },
+  //     animTime / 2,
+  //     () => {
+  //       $(`#testConfig .puncAndNum`).addClass("hidden");
+  //     }
+  //   );
+  //   return;
+  // }
+
+  // if (previous == "zen") {
+  //   setTimeout(() => {
+  //     $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+  //     $(`#testConfig .${submenu[current]}`)
+  //       .css({ opacity: 0 })
+  //       .animate(
+  //         {
+  //           opacity: 1,
+  //         },
+  //         animTime / 2
+  //       );
+  //     $(`#testConfig .puncAndNum`).removeClass("hidden");
+  //     $(`#testConfig .puncAndNum`)
+  //       .css({ opacity: 0 })
+  //       .animate(
+  //         {
+  //           opacity: 1,
+  //         },
+  //         animTime / 2
+  //       );
+  //   }, animTime / 2);
+  //   return;
+  // }
+
+  // Misc.swapElements(
+  //   $("#testConfig ." + submenu[previous]),
+  //   $("#testConfig ." + submenu[current]),
+  //   animTime
+  // );
 }
 
 export function updateExtras(
