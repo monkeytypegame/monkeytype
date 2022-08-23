@@ -66,6 +66,10 @@
     "languages": ["mongolian", "mongolian_10k"]
   },
   {
+    "name": "korean",
+    "languages": ["korean", "korean_1k", "korean_5k"]
+  },
+  {
     "name": "russian",
     "languages": [
       "russian",
@@ -194,7 +198,7 @@
   },
   {
     "name": "persian",
-    "languages": ["persian", "persian_1k", "persian_5k"]
+    "languages": ["persian", "persian_1k", "persian_5k", "persian_20k"]
   },
   {
     "name": "kazakh",
@@ -301,8 +305,8 @@
     "languages": ["sanskrit"]
   },
   {
-	"name": "santali",
-	"languages": ["santali"]
+    "name": "santali",
+    "languages": ["santali"]
   },
   {
     "name": "macedonian",

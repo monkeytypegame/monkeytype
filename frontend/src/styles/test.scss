@@ -961,6 +961,27 @@
   margin-top: 1rem;
 }
 
+#koInputVisualContainer {
+  position: relative;
+  padding-top: 1rem;
+  width: min-content;
+  width: -moz-min-content;
+  height: 3rem;
+  margin: 0 auto;
+
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--sub-color);
+  cursor: default;
+  user-select: none;
+
+  &.blurred {
+    opacity: 0.25;
+    filter: blur(4px);
+    -webkit-filter: blur(4px);
+  }
+}
+
 .pageTest {
   #wordsWrapper {
     position: relative;

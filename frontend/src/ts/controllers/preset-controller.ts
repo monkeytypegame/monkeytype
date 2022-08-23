@@ -15,6 +15,7 @@ export function apply(_id: string): void {
         preset.config.tags.forEach((tagid) => {
           TagController.set(tagid, true, false);
         });
+        TagController.saveActiveToLocalStorage();
       }
       TestLogic.restart();
       Notifications.add("Preset applied", 1, 2);

@@ -8,6 +8,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
+import { debounce } from "throttle-debounce";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
@@ -173,15 +174,23 @@ export function preview(
   isCustom: boolean,
   randomTheme = false
 ): void {
-  isPreviewingTheme = true;
-  apply(themeIdentifier, isCustom, !randomTheme);
+  debouncedPreview(themeIdentifier, isCustom, randomTheme);
 }
+
+const debouncedPreview = debounce(
+  100,
+  (themeIdenfitier, isCustom, randomTheme) => {
+    isPreviewingTheme = true;
+    apply(themeIdenfitier, isCustom, !randomTheme);
+  }
+);
 
 export function set(themeIdentifier: string, isCustom: boolean): void {
   apply(themeIdentifier, isCustom);
 }
 
 export function clearPreview(applyTheme = true): void {
+  console.log("clearPreview", applyTheme);
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
