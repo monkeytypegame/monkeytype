@@ -47,8 +47,8 @@ export function update(
   current: MonkeyTypes.Mode
 ): void {
   if (previous === current) return;
-  $("#testConfig .mode.textButton").removeClass("active");
-  $("#testConfig .mode.textButton[mode='" + current + "']").addClass("active");
+  $("#testConfig .mode .textButton").removeClass("active");
+  $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
 
   if (current == "time") {
     $("#testConfig .punctuationMode").removeClass("disabled");
@@ -77,22 +77,22 @@ export function update(
   const animTime = 250;
 
   if (current == "zen") {
-    $(`#top .config .${submenu[previous]}`).animate(
+    $(`#testConfig .${submenu[previous]}`).animate(
       {
         opacity: 0,
       },
       animTime / 2,
       () => {
-        $(`#top .config .${submenu[previous]}`).addClass("hidden");
+        $(`#testConfig .${submenu[previous]}`).addClass("hidden");
       }
     );
-    $(`#top .config .puncAndNum`).animate(
+    $(`#testConfig .puncAndNum`).animate(
       {
         opacity: 0,
       },
       animTime / 2,
       () => {
-        $(`#top .config .puncAndNum`).addClass("invisible");
+        $(`#testConfig .puncAndNum`).addClass("hidden");
       }
     );
     return;
@@ -100,8 +100,8 @@ export function update(
 
   if (previous == "zen") {
     setTimeout(() => {
-      $(`#top .config .${submenu[current]}`).removeClass("hidden");
-      $(`#top .config .${submenu[current]}`)
+      $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+      $(`#testConfig .${submenu[current]}`)
         .css({ opacity: 0 })
         .animate(
           {
@@ -109,8 +109,8 @@ export function update(
           },
           animTime / 2
         );
-      $(`#top .config .puncAndNum`).removeClass("invisible");
-      $(`#top .config .puncAndNum`)
+      $(`#testConfig .puncAndNum`).removeClass("hidden");
+      $(`#testConfig .puncAndNum`)
         .css({ opacity: 0 })
         .animate(
           {
@@ -123,8 +123,8 @@ export function update(
   }
 
   Misc.swapElements(
-    $("#top .config ." + submenu[previous]),
-    $("#top .config ." + submenu[current]),
+    $("#testConfig ." + submenu[previous]),
+    $("#testConfig ." + submenu[current]),
     animTime
   );
 }
@@ -134,13 +134,42 @@ export function updateExtras(
   value: MonkeyTypes.ConfigValues
 ): void {
   if (key == "time") {
-    $("#testConfig .time.textButton").removeClass("active");
+    $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
       : value;
-    $("#testConfig .time.textButton[timeConfig='" + timeCustom + "']").addClass(
-      "active"
-    );
+    $(
+      "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
+    ).addClass("active");
+  } else if (key == "words") {
+    $("#testConfig .wordCount .textButton").removeClass("active");
+
+    const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
+      ? "custom"
+      : value;
+
+    $(
+      "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"
+    ).addClass("active");
+  } else if (key == "quoteLength") {
+    $("#testConfig .quoteLength .textButton").removeClass("active");
+    (value as MonkeyTypes.QuoteLength[]).forEach((ql) => {
+      $(
+        "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
+      ).addClass("active");
+    });
+  } else if (key == "numbers") {
+    if (!value) {
+      $("#testConfig .numbersMode.textButton").removeClass("active");
+    } else {
+      $("#testConfig .numbersMode.textButton").addClass("active");
+    }
+  } else if (key == "punctuation") {
+    if (!value) {
+      $("#testConfig .punctuationMode.textButton").removeClass("active");
+    } else {
+      $("#testConfig .punctuationMode.textButton").addClass("active");
+    }
   }
 }
 

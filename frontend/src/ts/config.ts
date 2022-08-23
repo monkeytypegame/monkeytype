@@ -96,11 +96,6 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
     numb = false;
   }
   config.numbers = numb;
-  if (!config.numbers) {
-    $("#top .config .numbersMode .textButton").removeClass("active");
-  } else {
-    $("#top .config .numbersMode .textButton").addClass("active");
-  }
   saveToLocalStorage("numbers", nosave);
   ConfigEvent.dispatch("numbers", config.numbers);
 
@@ -115,11 +110,6 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
     punc = false;
   }
   config.punctuation = punc;
-  if (!config.punctuation) {
-    $("#top .config .punctuationMode .textButton").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .textButton").addClass("active");
-  }
   saveToLocalStorage("punctuation", nosave);
   ConfigEvent.dispatch("punctuation", config.punctuation);
 
@@ -1028,12 +1018,6 @@ export function setQuoteLength(
     }
   }
   // if (!nosave) setMode("quote", nosave);
-  $("#top .config .quoteLength .textButton").removeClass("active");
-  config.quoteLength.forEach((ql) => {
-    $(
-      "#top .config .quoteLength .textButton[quoteLength='" + ql + "']"
-    ).addClass("active");
-  });
   saveToLocalStorage("quoteLength", nosave);
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 
@@ -1049,17 +1033,8 @@ export function setWordCount(
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
 
-  $("#top .config .wordCount .textButton").removeClass("active");
-
-  const wordCustom = ![10, 25, 50, 100, 200].includes(newWordCount)
-    ? "custom"
-    : newWordCount;
-
   config.words = newWordCount;
 
-  $(
-    "#top .config .wordCount .textButton[wordCount='" + wordCustom + "']"
-  ).addClass("active");
   saveToLocalStorage("words", nosave);
   ConfigEvent.dispatch("words", config.words);
 

@@ -1008,6 +1008,15 @@
   .textButton {
     transition: 0.125s;
   }
+  .mode,
+  .time,
+  .wordCount,
+  .puncAndNum,
+  .quoteLength {
+    display: grid;
+    gap: 0.5rem;
+    grid-auto-flow: column;
+  }
 }
 
 .pageTest {
