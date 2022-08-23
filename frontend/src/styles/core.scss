@@ -351,7 +351,7 @@ key {
   color: var(--sub-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   text-align: center;
   user-select: none;
@@ -359,16 +359,16 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
   width: max-content;
   width: -moz-max-content;
   display: grid;
   grid-auto-flow: column;
-  gap: 0.25rem;
+  gap: 0.25em;
   text-decoration: none;
 
   .fas,
