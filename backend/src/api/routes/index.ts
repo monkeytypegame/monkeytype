@@ -37,9 +37,11 @@ function addApiRoutes(app: Application): void {
     res.sendStatus(404);
   });
 
+  // Cannot be added to the route map because it needs to be added before the maintenance handler
+  app.use("/configuration", configuration);
+
   if (process.env.MODE === "dev") {
     app.use("/configure", express.static(join(__dirname, "../../../private")));
-    app.use("/configuration", configuration);
   }
 
   addSwaggerMiddlewares(app);
