@@ -129,6 +129,21 @@ export function update(
   );
 }
 
+export function updateExtras(
+  key: string,
+  value: MonkeyTypes.ConfigValues
+): void {
+  if (key == "time") {
+    $("#testConfig .time.textButton").removeClass("active");
+    const timeCustom = ![15, 30, 60, 120].includes(value as number)
+      ? "custom"
+      : value;
+    $("#testConfig .time.textButton[timeConfig='" + timeCustom + "']").addClass(
+      "active"
+    );
+  }
+}
+
 export function showFavoriteQuoteLength(): void {
   $("#top .desktopConfig .group.quoteLength .favorite").removeClass("hidden");
 }
@@ -143,5 +158,11 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
       eventPreviousValue as MonkeyTypes.Mode,
       eventValue as MonkeyTypes.Mode
     );
+  } else if (
+    ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
+      eventKey
+    )
+  ) {
+    updateExtras(eventKey, eventValue);
   }
 });
