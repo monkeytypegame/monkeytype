@@ -990,6 +990,7 @@
   height: max-content;
   width: 100%;
   justify-content: space-around;
+  transition: 0.125s;
   .row {
     display: flex;
     padding: 0.25rem 1rem;
@@ -1003,6 +1004,9 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: auto 1rem;
+  }
+  .textButton {
+    transition: 0.125s;
   }
 }
 

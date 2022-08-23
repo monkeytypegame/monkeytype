@@ -51,17 +51,17 @@ export function update(
   $("#testConfig .mode.textButton[mode='" + current + "']").addClass("active");
 
   if (current == "time") {
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
+    $("#testConfig .punctuationMode").removeClass("disabled");
+    $("#testConfig .numbersMode").removeClass("disabled");
   } else if (current == "words") {
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
+    $("#testConfig .punctuationMode").removeClass("disabled");
+    $("#testConfig .numbersMode").removeClass("disabled");
   } else if (current == "custom") {
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
+    $("#testConfig .punctuationMode").removeClass("disabled");
+    $("#testConfig .numbersMode").removeClass("disabled");
   } else if (current == "quote") {
-    $("#top .config .punctuationMode").addClass("disabled");
-    $("#top .config .numbersMode").addClass("disabled");
+    $("#testConfig .punctuationMode").addClass("disabled");
+    $("#testConfig .numbersMode").addClass("disabled");
   } else if (current == "zen") {
     //
   }
