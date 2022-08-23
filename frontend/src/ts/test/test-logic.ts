@@ -1821,7 +1821,7 @@ $(document).on("click", "#testConfig .wordCount.textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .time .textButton", (e) => {
+$(document).on("click", "#testConfig .time.textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
